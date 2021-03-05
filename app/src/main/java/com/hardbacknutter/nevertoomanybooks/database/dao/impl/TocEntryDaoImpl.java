@@ -86,11 +86,9 @@ public class TocEntryDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public TocEntryDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public TocEntryDaoImpl() {
+        super(TAG);
     }
 
     @Override
@@ -176,7 +174,7 @@ public class TocEntryDaoImpl
 
         if (rowsAffected > 0) {
             tocEntry.setId(0);
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 bookDao.repositionTocEntries(context);
             }
         }

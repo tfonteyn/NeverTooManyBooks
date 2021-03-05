@@ -119,11 +119,9 @@ public class PublisherDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public PublisherDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public PublisherDaoImpl() {
+        super(TAG);
     }
 
 
@@ -310,7 +308,7 @@ public class PublisherDaoImpl
         if (rowsAffected > 0) {
             publisher.setId(0);
 
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 bookDao.repositionPublishers(context);
             }
         }
@@ -334,7 +332,7 @@ public class PublisherDaoImpl
 
             final Publisher destination = getById(destId);
 
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 for (final long bookId : getBookIds(source.getId())) {
                     final Book book = Book.from(bookId, bookDao);
 

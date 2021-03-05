@@ -72,10 +72,9 @@ public class SearchSuggestionProvider
             final String query = BookDao.Sql.Fts.prepareSearchText(selectionArgs[0], null);
             // do we have anything to search for?
             if (!query.isEmpty()) {
-                //noinspection ConstantConditions,UnnecessaryLocalVariable
-                final Cursor cursor = DBHelper.getDb(getContext())
-                                              .rawQuery(BookDao.Sql.Fts.SEARCH_SUGGESTIONS,
-                                                        new String[]{query});
+                //noinspection UnnecessaryLocalVariable
+                final Cursor cursor = DbLocator
+                        .getDb().rawQuery(BookDao.Sql.Fts.SEARCH_SUGGESTIONS, new String[]{query});
 
                 //  if (cursor != null) {
                 //      //noinspection ConstantConditions

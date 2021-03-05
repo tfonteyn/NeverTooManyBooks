@@ -156,7 +156,7 @@ public class CalibreContentServerWriter
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (BookDao bookDao = new BookDao(context, TAG);
+        try (BookDao bookDao = new BookDao(TAG);
              Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;

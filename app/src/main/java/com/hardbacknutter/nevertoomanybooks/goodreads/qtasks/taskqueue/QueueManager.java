@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,8 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -94,18 +92,23 @@ public final class QueueManager {
     }
 
     /**
-     * Constructor. Called from {@link BooksOnBookshelf}
-     * so processing can start immediately after startup.
+     * Constructor. Called during startup so processing can start immediately.
      *
      * @param context Current context; NOT stored.
-     *
-     * @return the single instance
      */
-    public static QueueManager create(@NonNull final Context context) {
+    public static void start(@NonNull final Context context) {
         if (sInstance == null) {
-            sInstance = new QueueManager(context);
+            // This (re)starts stored tasks.
+            // Note this is not a startup-task; it just needs to be started at startup.
+            // (it does not even need to be a background thread, as we only want
+            // to create the QM, but this way we should get the UI up faster)
+            final Thread qmt = new Thread(() -> {
+                sInstance = new QueueManager(context);
+                sInstance.start();
+            });
+            qmt.setName("QueueManager-create");
+            qmt.start();
         }
-        return sInstance;
     }
 
     /**

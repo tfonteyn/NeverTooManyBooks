@@ -65,7 +65,7 @@ public class ZipArchiveWriter
     public ZipArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportHelper helper)
             throws FileNotFoundException, ExternalStorageException {
-        super(context, helper);
+        super(helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(
                 helper.createOutputStream(context), RecordWriter.BUFFER_SIZE));

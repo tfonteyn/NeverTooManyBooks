@@ -344,7 +344,7 @@ public enum ArchiveEncoding
                 break;
 
             case Csv:
-                reader = new CsvArchiveReader(context, helper);
+                reader = new CsvArchiveReader(helper);
                 break;
 
             case SqLiteDb:
@@ -352,7 +352,7 @@ public enum ArchiveEncoding
                 break;
 
             case Json:
-                reader = new JsonArchiveReader(context, helper);
+                reader = new JsonArchiveReader(helper);
                 break;
 
             case CalibreCS:

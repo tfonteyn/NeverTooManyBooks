@@ -68,10 +68,10 @@ public class TypedCursor
      * @param query     Part of standard cursor constructor.
      * @param sync      Synchronizer object
      */
-    TypedCursor(@NonNull final SQLiteCursorDriver driver,
-                @NonNull final String editTable,
-                @NonNull final SQLiteQuery query,
-                @NonNull final Synchronizer sync) {
+    public TypedCursor(@NonNull final SQLiteCursorDriver driver,
+                       @NonNull final String editTable,
+                       @NonNull final SQLiteQuery query,
+                       @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 

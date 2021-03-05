@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -97,11 +97,9 @@ public class CoverCacheDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public CoverCacheDaoImpl(@NonNull final Context context) {
-        mDb = CoversDbHelper.getDb(context);
+    public CoverCacheDaoImpl() {
+        mDb = DbLocator.getCoversDb();
     }
 
     /**

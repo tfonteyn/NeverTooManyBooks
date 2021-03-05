@@ -71,7 +71,7 @@ public abstract class BaseAdminActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mBookDao = new BookDao(this, TAG);
+        mBookDao = new BookDao(TAG);
 
         super.onCreate(savedInstanceState);
 

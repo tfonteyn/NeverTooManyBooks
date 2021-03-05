@@ -89,8 +89,9 @@ public abstract class BaseSetup {
             throws DaoWriteException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
 
-        try (BookDao bookDao = new BookDao(context, "setup")) {
+        try (BookDao bookDao = new BookDao("setup")) {
 
             final SynchronizedDb db = bookDao.getDb();
             Constants.deleteTocs(db);

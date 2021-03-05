@@ -61,7 +61,7 @@ public class RebuildIndexesTask
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {
-            DBHelper.recreateIndices(context);
+            DBHelper.recreateIndices();
             return true;
 
         } catch (@NonNull final RuntimeException e) {

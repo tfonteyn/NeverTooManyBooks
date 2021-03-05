@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
@@ -267,12 +266,10 @@ public class BookDao
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param logTag  of this DAO for logging.
+     * @param logTag of this DAO for logging.
      */
-    public BookDao(@NonNull final Context context,
-                   @NonNull final String logTag) {
-        super(context, logTag);
+    public BookDao(@NonNull final String logTag) {
+        super(logTag);
         mSqlStatementManager = new SqlStatementManager(mDb);
     }
 
@@ -1367,8 +1364,7 @@ public class BookDao
 
                            + _COLLATION;
 
-        final TypedCursor cursor = (TypedCursor) mDb.rawQueryWithFactory(
-                DBHelper.getTypedCursorFactory(), sql, selectionArgs, null);
+        final TypedCursor cursor = mDb.rawQueryWithTypedCursor(sql, selectionArgs, null);
         // force the TypedCursor to retrieve the real column types.
         cursor.setDb(mDb, TBL_BOOKS);
         return cursor;

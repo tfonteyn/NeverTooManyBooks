@@ -66,7 +66,7 @@ public class JsonArchiveWriterTest {
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(TAG)) {
             mBookInDb = bookDao.countBooks();
 
             mNrOfStyles = StyleUtils.getStyles(context, true).size();
@@ -164,7 +164,7 @@ public class JsonArchiveWriterTest {
         final long deletedBookId = ids.get(3);
         final long modifiedBookId = ids.get(5);
 
-        try (BookDao bookDao = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(TAG)) {
             bookDao.deleteBook(context, deletedBookId);
 
             final Book book = Book.from(modifiedBookId, bookDao);

@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -326,7 +326,7 @@ public class BooklistBuilder {
 
         tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
-        final SynchronizedDb db = DBHelper.getDb(context);
+        final SynchronizedDb db = DbLocator.getDb();
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
@@ -395,9 +395,12 @@ public class BooklistBuilder {
         /** divider to convert nanoseconds to milliseconds. */
         private static final int NANO_TO_MILLIS = 1_000_000;
 
+        /** Supposed to be {@code false}. */
+        private static final boolean COLLATION_IS_CASE_SENSITIVE =
+                DbLocator.isCollationCaseSensitive();
+
         @NonNull
         private final ListStyle mStyle;
-
         /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
         private final boolean mFilteredOnBookshelf;
 
@@ -407,6 +410,7 @@ public class BooklistBuilder {
         /** The table we'll be generating. */
         @NonNull
         private final TableDefinition mListTable;
+
         /**
          * The navigation table we'll be generating.
          * We need this due to SQLite in Android lacking the 3.25 window functions.
@@ -442,14 +446,12 @@ public class BooklistBuilder {
 
         @ListRebuildMode
         private final int mRebuildMode;
-
         private String mSqlForInitialInsert;
 
         /** Table used by the triggers to track the most recent/current row headings. */
         private TableDefinition mTriggerHelperTable;
         private String mTriggerHelperLevelTriggerName;
         private String mTriggerHelperCurrentValueTriggerName;
-
         private Collection<TableDefinition> mLeftOuterJoins;
 
         /**
@@ -465,6 +467,7 @@ public class BooklistBuilder {
                      @NonNull final ListStyle style,
                      final boolean isFilteredOnBookshelf,
                      @ListRebuildMode final int rebuildMode) {
+
             mStyle = style;
             mFilteredOnBookshelf = isFilteredOnBookshelf;
             mRebuildMode = rebuildMode;
@@ -662,7 +665,8 @@ public class BooklistBuilder {
                 Log.d(TAG, "build|insert(" + initialInsertCount + "): "
                            + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }
-            if (!DBHelper.isCollationCaseSensitive()) {
+
+            if (!COLLATION_IS_CASE_SENSITIVE) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
                 db.execSQL(
@@ -1101,7 +1105,7 @@ public class BooklistBuilder {
                         // always use a pre-prepared order-by column as-is
                         orderBy.append(sd.getName());
 
-                    } else if (DBHelper.isCollationCaseSensitive()) {
+                    } else if (COLLATION_IS_CASE_SENSITIVE) {
                         // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
                         // This should never happen, but see the DAO method docs.
                         orderBy.append("lower(").append(sd.getName()).append(')');

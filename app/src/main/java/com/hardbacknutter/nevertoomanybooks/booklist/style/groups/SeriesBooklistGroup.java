@@ -34,12 +34,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
  * Specialized BooklistGroup representing a {@link Series} group.
@@ -81,8 +80,8 @@ public class SeriesBooklistGroup
      * Copy constructor.
      *
      * @param isPersistent flag
-     * @param style Style reference.
-     * @param group to copy from
+     * @param style        Style reference.
+     * @param group        to copy from
      */
     SeriesBooklistGroup(final boolean isPersistent,
                         @NonNull final ListStyle style,
@@ -113,7 +112,8 @@ public class SeriesBooklistGroup
     @NonNull
     private DomainExpression createDisplayDomain() {
         // Not sorted; we sort on the OB domain as defined in the GroupKey.
-        return new DomainExpression(DOM_SERIES_TITLE, TBL_SERIES.dot(DBKeys.KEY_SERIES_TITLE));
+        return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
+                                    DBDefinitions.TBL_SERIES.dot(DBKeys.KEY_SERIES_TITLE));
     }
 
     @NonNull

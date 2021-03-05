@@ -93,7 +93,7 @@ public class GrSendOneBookTask
             final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
             final GoodreadsDao grDao = grManager.getGoodreadsDao();
 
-            try (BookDao bookDao = new BookDao(context, TAG);
+            try (BookDao bookDao = new BookDao(TAG);
                  Cursor cursor = grDao.fetchBookForExport(mBookId)) {
 
                 if (cursor.moveToFirst()) {

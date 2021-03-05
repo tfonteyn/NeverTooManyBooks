@@ -69,11 +69,9 @@ public class DBCleaner
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public DBCleaner(@NonNull final Context context) {
-        mBookDao = new BookDao(context, TAG);
+    public DBCleaner() {
+        mBookDao = new BookDao(TAG);
         mDb = mBookDao.getDb();
     }
 

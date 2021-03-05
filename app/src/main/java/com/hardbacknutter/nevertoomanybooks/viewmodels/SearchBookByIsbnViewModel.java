@@ -93,13 +93,11 @@ public class SearchBookByIsbnViewModel
     /**
      * Pseudo constructor.
      *
-     * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+    public void init(@Nullable final Bundle args) {
         if (mBookDao == null) {
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             if (args != null) {
                 mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);

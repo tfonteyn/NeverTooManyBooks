@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.CallSuper;
@@ -28,8 +27,8 @@ import androidx.annotation.NonNull;
 
 import java.io.Closeable;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
@@ -58,13 +57,11 @@ public final class BooklistNavigatorDao {
     /**
      * Constructor.
      *
-     * @param context       Current context
      * @param listTableName Name of underlying and <strong>existing</strong> table
      */
-    public BooklistNavigatorDao(@NonNull final Context context,
-                                @NonNull final String listTableName) {
+    public BooklistNavigatorDao(@NonNull final String listTableName) {
 
-        mDb = DBHelper.getDb(context);
+        mDb = DbLocator.getDb();
         mListTableName = listTableName;
 
         try (SynchronizedStatement stmt = mDb.compileStatement(

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,11 +111,8 @@ public final class DebugReport {
             // Find all files of interest to send
             final Collection<File> files = new ArrayList<>();
 
-            files.addAll(AppDir.Log.collectFiles(context, file ->
-                    file.getName().startsWith(Logger.ERROR_LOG_FILE)));
-
-            files.addAll(AppDir.Upgrades.collectFiles(context, file ->
-                    file.getName().startsWith(DBHelper.DB_UPGRADE_FILE_PREFIX)));
+            files.addAll(AppDir.Log.collectFiles(context, null));
+            files.addAll(AppDir.Upgrades.collectFiles(context, null));
 
             files.addAll(AppDir.Cache.collectFiles(context, file ->
                     file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));

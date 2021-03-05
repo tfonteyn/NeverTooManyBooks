@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -140,11 +139,9 @@ public class CalibreLibraryDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public CalibreLibraryDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public CalibreLibraryDaoImpl() {
+        super(TAG);
     }
 
     @Nullable

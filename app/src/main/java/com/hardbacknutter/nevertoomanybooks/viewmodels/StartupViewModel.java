@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -249,13 +249,15 @@ public class StartupViewModel
      * @param context Current context
      */
     public void startTasks(@NonNull final Context context) {
-
         // Clear the flag
         mIsFirstStart = false;
 
-        // Explicitly open the database to trigger any database upgrade or the initial creation.
+        // create the singleton service locator
+        DbLocator.init(context);
+
         try {
-            DBHelper.getDb(context);
+            // Explicitly open the main database to trigger any upgrade or the initial creation.
+            DbLocator.getDb();
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");

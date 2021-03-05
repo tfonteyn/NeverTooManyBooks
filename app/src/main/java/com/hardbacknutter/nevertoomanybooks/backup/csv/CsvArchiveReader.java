@@ -71,10 +71,9 @@ public class CsvArchiveReader
      *
      * @param helper import configuration
      */
-    public CsvArchiveReader(@NonNull final Context context,
-                            @NonNull final ImportHelper helper) {
+    public CsvArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(context, TAG);
+        mBookDao = new BookDao(TAG);
     }
 
     @NonNull

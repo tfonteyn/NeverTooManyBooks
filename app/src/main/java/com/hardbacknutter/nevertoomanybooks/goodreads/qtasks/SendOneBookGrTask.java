@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -64,9 +63,8 @@ public class SendOneBookGrTask
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final GoodreadsManager grManager) {
 
-        final Context appContext = grManager.getAppContext();
         final GoodreadsDao grDao = grManager.getGoodreadsDao();
-        try (BookDao bookDao = new BookDao(appContext, TAG);
+        try (BookDao bookDao = new BookDao(TAG);
              Cursor cursor = grDao.fetchBookForExport(mBookId)) {
 
             final DataHolder bookData = new CursorRow(cursor);

@@ -19,15 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 
@@ -43,7 +41,7 @@ public interface BaseDao {
      * Get the local database.
      * This should only be called in test classes, and from the {@link DBCleaner}.
      * <p>
-     * Other code should use {@link DBHelper#getDb(Context)} directly to get
+     * Other code should use {@link DbLocator#getDb()} directly to get
      * a lighter weight object.
      *
      * @return Underlying database connection

@@ -165,7 +165,7 @@ public class AuthorTest
         long existingId;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, "renameAuthorWithTocs")) {
+        try (BookDao bookDao = new BookDao("renameAuthorWithTocs")) {
             final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
             // rename an author

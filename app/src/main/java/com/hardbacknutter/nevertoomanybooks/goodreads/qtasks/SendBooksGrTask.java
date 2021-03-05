@@ -94,10 +94,9 @@ public class SendBooksGrTask
             lastBookSend = 0;
         }
 
-        final Context appContext = grManager.getAppContext();
         final GoodreadsDao grDao = grManager.getGoodreadsDao();
 
-        try (BookDao bookDao = new BookDao(appContext, TAG);
+        try (BookDao bookDao = new BookDao(TAG);
              Cursor cursor = grDao.fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
 
             final DataHolder bookData = new CursorRow(cursor);
@@ -131,6 +130,8 @@ public class SendBooksGrTask
 
         // store the last book id we updated; used to reduce future (needless) checks.
         grManager.putLastBookIdSend(lastBookSend);
+
+        final Context appContext = grManager.getAppContext();
 
         final PendingIntent pendingIntent =
                 Notifier.createPendingIntent(appContext, BooksOnBookshelf.class);

@@ -34,49 +34,61 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
- * Singleton SQLiteOpenHelper for the covers database.
+ * {@link SQLiteOpenHelper}  for the covers database.
+ * Uses the application context.
  */
-public final class CoversDbHelper
+public class CoversDbHelper
         extends SQLiteOpenHelper {
 
-    /** DB name. */
-    public static final String DATABASE_NAME = "covers.db";
     /* Domain definitions. */
     public static final String CKEY_PK_ID = "_id";
     public static final String CKEY_CACHE_ID = "key";
     public static final String CKEY_IMAGE = "image";
     public static final String CKEY_UTC_DATETIME = "last_update_date";
+
+    /** DB name. */
+    private static final String DATABASE_NAME = "covers.db";
+
     /**
      * DB Version.
      * v2: current
      * v1: had a redundant width/height column.
      */
     private static final int DATABASE_VERSION = 2;
-    /** TBL_IMAGE. */
+
+    /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_PK_ID =
-            new Domain.Builder(CKEY_PK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
+            new Domain.Builder(CKEY_PK_ID, ColumnInfo.TYPE_INTEGER)
+                    .primaryKey()
+                    .build();
 
     private static final Domain DOM_CACHE_ID =
-            new Domain.Builder(CKEY_CACHE_ID, ColumnInfo.TYPE_TEXT).notNull().build();
+            new Domain.Builder(CKEY_CACHE_ID, ColumnInfo.TYPE_TEXT)
+                    .notNull()
+                    .build();
 
     private static final Domain DOM_IMAGE =
-            new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB).notNull().build();
+            new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB)
+                    .notNull()
+                    .build();
 
     private static final Domain DOM_UTC_DATETIME =
             new Domain.Builder(CKEY_UTC_DATETIME, ColumnInfo.TYPE_DATETIME)
-                    .notNull().withDefaultCurrentTimeStamp().build();
+                    .notNull()
+                    .withDefaultCurrentTimeStamp()
+                    .build();
 
     /** table definitions. */
     public static final TableDefinition TBL_IMAGE = new TableDefinition("image")
             .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME, DOM_CACHE_ID)
             .setPrimaryKey(DOM_PK_ID);
+
     /** Readers/Writer lock for <strong>this</strong> database. */
     private static final Synchronizer sSynchronizer = new Synchronizer();
+
     /** Static Factory object to create the custom cursor. */
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
-    /** Singleton. */
-    private static CoversDbHelper sInstance;
 
     /* table indexes. */
     static {
@@ -95,37 +107,12 @@ public final class CoversDbHelper
      *
      * @param context Current context
      */
-    private CoversDbHelper(@NonNull final Context context) {
+    CoversDbHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
     }
 
-    /**
-     * Main entry point for clients to get the database.
-     *
-     * @param context Current context
-     *
-     * @return the database instance
-     */
-    public static SynchronizedDb getDb(@NonNull final Context context) {
-        return getInstance(context).getDb();
-    }
-
-    /**
-     * Get/create the singleton instance. This should be kept private and wrapped as needed,
-     * as it allows access to underlying 'things' which clients of DBHelper should not have.
-     *
-     * @param context Current context
-     *
-     * @return the instance
-     */
-    @NonNull
-    private static CoversDbHelper getInstance(@NonNull final Context context) {
-        synchronized (CoversDbHelper.class) {
-            if (sInstance == null) {
-                sInstance = new CoversDbHelper(context);
-            }
-            return sInstance;
-        }
+    void deleteDatabase(@NonNull final Context context) {
+        context.deleteDatabase(DATABASE_NAME);
     }
 
     /**
@@ -134,7 +121,7 @@ public final class CoversDbHelper
      * @return database connection
      */
     @NonNull
-    private SynchronizedDb getDb() {
+    SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);

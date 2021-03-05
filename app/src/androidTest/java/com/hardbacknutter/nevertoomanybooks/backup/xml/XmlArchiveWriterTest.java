@@ -52,8 +52,7 @@ public class XmlArchiveWriterTest {
 
     @Before
     public void count() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(TAG)) {
             mBookInDb = bookDao.countBooks();
         }
         if (mBookInDb < 10) {

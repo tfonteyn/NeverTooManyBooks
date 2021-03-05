@@ -128,11 +128,9 @@ public class SeriesDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public SeriesDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public SeriesDaoImpl() {
+        super(TAG);
     }
 
     @Override
@@ -333,7 +331,7 @@ public class SeriesDaoImpl
 
         if (rowsAffected > 0) {
             series.setId(0);
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 bookDao.repositionSeries(context);
             }
         }
@@ -357,7 +355,7 @@ public class SeriesDaoImpl
 
             final Series destination = getById(destId);
 
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 for (final long bookId : getBookIds(source.getId())) {
                     final Book book = Book.from(bookId, bookDao);
 

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -27,11 +26,10 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 public class GenreDaoImpl
         extends BaseDaoImpl
@@ -43,24 +41,22 @@ public class GenreDaoImpl
     /** name only. */
     private static final String SELECT_ALL =
             SELECT_DISTINCT_ + DBKeys.KEY_GENRE
-            + _FROM_ + TBL_BOOKS.getName()
+            + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
             + _WHERE_ + DBKeys.KEY_GENRE + "<> ''"
             + _ORDER_BY_ + DBKeys.KEY_GENRE + _COLLATION;
 
     /** Global rename. */
     private static final String RENAME =
-            UPDATE_ + TBL_BOOKS.getName()
+            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
             + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
             + ',' + DBKeys.KEY_GENRE + "=?"
             + _WHERE_ + DBKeys.KEY_GENRE + "=?";
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public GenreDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public GenreDaoImpl() {
+        super(TAG);
     }
 
     @Override

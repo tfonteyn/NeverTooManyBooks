@@ -428,7 +428,7 @@ public class XmlRecordWriter
         final List<Domain> externalIdDomains = SearchEngineRegistry
                 .getInstance().getExternalIdDomains();
 
-        try (BookDao bookDao = new BookDao(context, TAG);
+        try (BookDao bookDao = new BookDao(TAG);
              Cursor cursor = bookDao.fetchBooksForExport(utcSinceDateTime)) {
 
             writer.write('<' + RecordType.Books.getName());

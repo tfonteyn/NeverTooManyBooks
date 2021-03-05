@@ -36,12 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
 
 /**
  * Specialized BooklistGroup representing an {@link Author} group.
@@ -137,14 +135,14 @@ public class AuthorBooklistGroup
     @NonNull
     private DomainExpression createDisplayDomain() {
         // Not sorted; sort as defined in #createSortDomain
-        return new DomainExpression(DOM_AUTHOR_FORMATTED, AuthorDaoImpl
+        return new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED, AuthorDaoImpl
                 .getDisplayAuthor(mStyle.isShowAuthorByGivenName()));
     }
 
     @NonNull
     private DomainExpression createSortDomain() {
         // Sorting depends on user preference
-        return new DomainExpression(DOM_BL_AUTHOR_SORT, AuthorDaoImpl
+        return new DomainExpression(DBDefinitions.DOM_BL_AUTHOR_SORT, AuthorDaoImpl
                 .getSortAuthor(mStyle.isSortAuthorByGivenName()), DomainExpression.SORT_ASC);
     }
 

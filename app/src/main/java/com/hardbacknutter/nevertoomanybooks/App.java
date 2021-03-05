@@ -86,11 +86,6 @@ public class App
         return sInstance.getString(stringId);
     }
 
-    @NonNull
-    public static Context getDatabaseContext() {
-        return sInstance.getApplicationContext();
-    }
-
     @Override
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {

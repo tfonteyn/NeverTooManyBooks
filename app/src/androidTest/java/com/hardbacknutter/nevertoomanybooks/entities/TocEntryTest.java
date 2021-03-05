@@ -31,6 +31,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +46,8 @@ public class TocEntryTest {
     @Test
     public void pruneTocEntries01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
         final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
@@ -95,6 +98,8 @@ public class TocEntryTest {
     @Test
     public void pruneTocEntries02() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
         final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
@@ -141,6 +146,8 @@ public class TocEntryTest {
     @Test
     public void pruneTocEntries03() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
         final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);

@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  *
  * <strong>Note:</strong> Fields 'name' attribute must be in LOWER CASE.
  * <p>
- * TODO: Collated indexes need to be done manually. See {@link DBHelper} #createIndices
+ * TODO: Collated indexes need to be done manually. See {@link DBHelper#recreateIndices()}
  * <p>
  * Currently (2020-06-01) UTC dates (time) are used with::
  * <ul>Main database:

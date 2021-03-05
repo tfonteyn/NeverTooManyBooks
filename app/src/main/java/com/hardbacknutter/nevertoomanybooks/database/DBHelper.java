@@ -57,8 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_PREFERRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -100,24 +98,27 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_GOODR
 import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_LAST_UPDATED;
 
 /**
- * Singleton {@link SQLiteOpenHelper} for the main database.
+ * {@link SQLiteOpenHelper} for the main database.
  * Uses the application context.
  */
-public final class DBHelper
+public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
     public static final int DATABASE_VERSION = 15;
 
+    /** NEVER change this name. */
+    private static final String DATABASE_NAME = "nevertoomanybooks.db";
+
+    /** Log tag. */
+    private static final String TAG = "DBHelper";
+
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
      * Stored in {@link AppDir#Upgrades}.
      */
-    public static final String DB_UPGRADE_FILE_PREFIX = "DbUpgrade";
-    /** NEVER change this name. */
-    public static final String DATABASE_NAME = "nevertoomanybooks.db";
-    /** Log tag. */
-    private static final String TAG = "DBHelper";
+    private static final String DB_UPGRADE_FILE_PREFIX = "DbUpgrade";
+
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
@@ -129,46 +130,21 @@ public final class DBHelper
     private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
 
-    /** Static Factory object to create an {@link TypedCursor} cursor. */
-    private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
-            (db, d, et, q) -> new TypedCursor(d, et, q, sSynchronizer);
-
-
-    /** Singleton. */
-    private static DBHelper sInstance;
-
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
-    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb(Context)}. */
+    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS CALLING {@link #getDb()}. */
     @Nullable
     private SynchronizedDb mSynchronizedDb;
 
     /**
-     * Singleton Constructor.
+     * Constructor.
      *
      * @param context Current context
      */
-    private DBHelper(@NonNull final Context context) {
+    DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
     }
-
-    /**
-     * Main entry point for clients to get the database.
-     *
-     * @param context Current context
-     *
-     * @return the database instance
-     */
-    public static SynchronizedDb getDb(@NonNull final Context context) {
-        return getInstance(context).getDb();
-    }
-
-    @NonNull
-    public static SQLiteDatabase.CursorFactory getTypedCursorFactory() {
-        return EXT_CURSOR_FACTORY;
-    }
-
 
     /**
      * Get the physical path of the database file.
@@ -183,30 +159,16 @@ public final class DBHelper
     }
 
     /**
-     * Check if the collation we use is case sensitive.
-     *
-     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
-     */
-    public static boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
-        return sIsCollationCaseSensitive;
-    }
-
-    /**
      * Wrapper to allow
      * {@link com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask}.
      * safe access to the database.
-     *
-     * @param context Current context
      */
-    public static void recreateIndices(@NonNull final Context context) {
-        final DBHelper dbHelper = getInstance(context);
-        final SynchronizedDb db = dbHelper.getDb();
-
+    public static void recreateIndices() {
+        final SynchronizedDb db = DbLocator.getDb();
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // It IS safe here to get the underlying database, as we're in a SyncLock.
-            dbHelper.recreateIndices(db.getSQLiteDatabase());
+            recreateIndices(db.getSQLiteDatabase());
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction(txLock);
@@ -214,21 +176,49 @@ public final class DBHelper
     }
 
     /**
-     * Get/create the singleton instance. This should be kept private and wrapped as needed,
-     * as it allows access to underlying 'things' which clients of DBHelper should not have.
-     *
-     * @param context Current context
-     *
-     * @return the instance
+     * This method should only be called at the *END* of {@link #onUpgrade}.
+     * <p>
+     * (re)Creates the indexes as defined on the tables.
      */
-    @NonNull
-    private static DBHelper getInstance(@NonNull final Context context) {
-        synchronized (DBHelper.class) {
-            if (sInstance == null) {
-                sInstance = new DBHelper(context);
+    private static void recreateIndices(@NonNull final SQLiteDatabase db) {
+        // Delete all indices.
+        // We read the index names from the database, so we can delete
+        // indexes which were removed from the TableDefinition objects.
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+            while (current.moveToNext()) {
+                final String indexName = current.getString(0);
+                try {
+                    db.execSQL("DROP INDEX " + indexName);
+                } catch (@NonNull final SQLException e) {
+                    // bad sql is a developer issue... die!
+                    Logger.error(TAG, e);
+                    throw e;
+                } catch (@NonNull final RuntimeException e) {
+                    Logger.error(TAG, e, "DROP INDEX failed: " + indexName);
+                }
             }
-            return sInstance;
         }
+
+        // now recreate
+        for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
+            table.createIndices(db);
+        }
+
+        db.execSQL("analyze");
+    }
+
+    void deleteDatabase(@NonNull final Context context) {
+        context.deleteDatabase(DATABASE_NAME);
+    }
+
+    /**
+     * Check if the collation we use is case sensitive.
+     *
+     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     */
+    boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
+        return sIsCollationCaseSensitive;
     }
 
     /**
@@ -237,7 +227,7 @@ public final class DBHelper
      * @return database connection
      */
     @NonNull
-    private SynchronizedDb getDb() {
+    SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
@@ -302,38 +292,6 @@ public final class DBHelper
                 Logger.error(TAG, e);
             }
         }
-    }
-
-    /**
-     * This method should only be called at the *END* of {@link #onUpgrade}.
-     * <p>
-     * (re)Creates the indexes as defined on the tables.
-     */
-    private void recreateIndices(@NonNull final SQLiteDatabase db) {
-        // Delete all indices.
-        // We read the index names from the database, so we can delete
-        // indexes which were removed from the TableDefinition objects.
-        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
-            while (current.moveToNext()) {
-                final String indexName = current.getString(0);
-                try {
-                    db.execSQL("DROP INDEX " + indexName);
-                } catch (@NonNull final SQLException e) {
-                    // bad sql is a developer issue... die!
-                    Logger.error(TAG, e);
-                    throw e;
-                } catch (@NonNull final RuntimeException e) {
-                    Logger.error(TAG, e, "DROP INDEX failed: " + indexName);
-                }
-            }
-        }
-
-        // now recreate
-        for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(db);
-        }
-
-        db.execSQL("analyze");
     }
 
     /**
@@ -707,8 +665,8 @@ public final class DBHelper
             // This is the v1.2.0 / 1.2.1 / 1.3.0 release.
             //
             TBL_BOOKLIST_STYLES.alterTableAddColumns(db,
-                                                     DOM_STYLE_MENU_POSITION,
-                                                     DOM_STYLE_IS_PREFERRED);
+                                                     DBDefinitions.DOM_STYLE_MENU_POSITION,
+                                                     DBDefinitions.DOM_STYLE_IS_PREFERRED);
 
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             final String itemsStr = global.getString("bookList.style.preferred.order", null);

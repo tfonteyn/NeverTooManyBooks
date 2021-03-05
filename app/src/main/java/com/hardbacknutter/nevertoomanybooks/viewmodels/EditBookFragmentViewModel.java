@@ -164,7 +164,7 @@ public class EditBookFragmentViewModel
                      @Nullable final Bundle args) {
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);

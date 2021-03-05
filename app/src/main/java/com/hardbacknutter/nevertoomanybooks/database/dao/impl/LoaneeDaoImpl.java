@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -29,12 +28,11 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 public class LoaneeDaoImpl
         extends BaseDaoImpl
@@ -45,34 +43,34 @@ public class LoaneeDaoImpl
 
     /** Get the name of the loanee of a {@link Book} by the Book id. */
     private static final String SELECT_BY_BOOK_ID =
-            SELECT_ + DBKeys.KEY_LOANEE + _FROM_ + TBL_BOOK_LOANEE.getName()
+            SELECT_ + DBKeys.KEY_LOANEE
+            + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + _WHERE_ + DBKeys.KEY_FK_BOOK + "=?";
 
     /** name only. */
     private static final String SELECT_ALL =
             SELECT_DISTINCT_ + DBKeys.KEY_LOANEE
-            + _FROM_ + TBL_BOOK_LOANEE.getName()
+            + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + _WHERE_ + DBKeys.KEY_LOANEE + "<> ''"
             + _ORDER_BY_ + DBKeys.KEY_LOANEE + _COLLATION;
 
     /** Lend a book. */
     private static final String INSERT =
-            INSERT_INTO_ + TBL_BOOK_LOANEE.getName()
+            INSERT_INTO_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
             + '(' + DBKeys.KEY_FK_BOOK
             + ',' + DBKeys.KEY_LOANEE
             + ") VALUES(?,?)";
 
     /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
     private static final String DELETE_BY_BOOK_ID =
-            DELETE_FROM_ + TBL_BOOK_LOANEE.getName() + _WHERE_ + DBKeys.KEY_FK_BOOK + "=?";
+            DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
+            + _WHERE_ + DBKeys.KEY_FK_BOOK + "=?";
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public LoaneeDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public LoaneeDaoImpl() {
+        super(TAG);
     }
 
     @Override
@@ -130,7 +128,7 @@ public class LoaneeDaoImpl
             } else if (!loanee.equals(current)) {
                 final ContentValues cv = new ContentValues();
                 cv.put(DBKeys.KEY_LOANEE, loanee);
-                success = 0 < mDb.update(TBL_BOOK_LOANEE.getName(), cv,
+                success = 0 < mDb.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
                                          DBKeys.KEY_FK_BOOK + "=?",
                                          new String[]{String.valueOf(bookId)});
             }

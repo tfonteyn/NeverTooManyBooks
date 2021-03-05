@@ -104,13 +104,17 @@ public class BookTest {
     public void setup()
             throws IOException {
 
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
+        final DaoLocator daoLocator = DaoLocator.getInstance();
+
         mBookshelfList.clear();
         mAuthorList.clear();
         mPublisherList.clear();
         mTocEntryList.clear();
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, "setup")) {
+        try (BookDao bookDao = new BookDao("setup")) {
 
             final SynchronizedDb db = bookDao.getDb();
             Constants.deleteTocs(db);
@@ -124,8 +128,6 @@ public class BookTest {
 
             mAuthor[0] = Author.from(AuthorFullName(0));
             mAuthor[1] = Author.from(AuthorFullName(1));
-
-            final DaoLocator daoLocator = DaoLocator.getInstance();
 
             // insert author[0] but do NOT insert author[1]
             mAuthorId[0] = daoLocator.getAuthorDao().insert(context, mAuthor[0]);
@@ -220,7 +222,7 @@ public class BookTest {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        try (BookDao bookDao = new BookDao(context, "book")) {
+        try (BookDao bookDao = new BookDao("book")) {
 
             mBook[0] = prepareAndInsertBook(context, bookDao);
             mBookId[0] = mBook[0].getId();
@@ -351,7 +353,7 @@ public class BookTest {
     public void showBookVM()
             throws DaoWriteException, ExternalStorageException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, "ShowBookViewModel-prep")) {
+        try (BookDao bookDao = new BookDao("ShowBookViewModel-prep")) {
             mBook[0] = prepareAndInsertBook(context, bookDao);
             mBookId[0] = mBook[0].getId();
         }

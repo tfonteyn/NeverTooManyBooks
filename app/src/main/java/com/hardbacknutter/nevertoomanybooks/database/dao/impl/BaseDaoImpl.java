@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -35,8 +34,9 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -44,8 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 public abstract class BaseDaoImpl
         implements BaseDao {
@@ -88,7 +86,7 @@ public abstract class BaseDaoImpl
      * Update a single Book's KEY_UTC_LAST_UPDATED to 'now'
      */
     private static final String TOUCH =
-            UPDATE_ + TBL_BOOKS.getName()
+            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
             + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
             + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
 
@@ -110,18 +108,16 @@ public abstract class BaseDaoImpl
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param logTag  of this DAO for logging.
+     * @param logTag of this DAO for logging.
      */
-    protected BaseDaoImpl(@NonNull final Context context,
-                          @NonNull final String logTag) {
+    protected BaseDaoImpl(@NonNull final String logTag) {
         mInstanceName = logTag;
 
         if (BuildConfig.DEBUG /* always */) {
             Logger.d(TAG, "Constructor", mInstanceName);
         }
 
-        mDb = DBHelper.getDb(context);
+        mDb = DbLocator.getDb();
     }
 
     /**

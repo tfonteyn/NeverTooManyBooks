@@ -82,7 +82,7 @@ public class AuthorWorksViewModel
                      @NonNull final Bundle args) {
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             final long authorId = args.getLong(DBKeys.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");

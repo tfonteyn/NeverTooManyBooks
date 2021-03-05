@@ -95,13 +95,11 @@ public abstract class ArchiveWriterAbstract
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  export configuration
+     * @param helper export configuration
      */
-    protected ArchiveWriterAbstract(@NonNull final Context context,
-                                    @NonNull final ExportHelper helper) {
+    protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(context, TAG);
+        mBookDao = new BookDao(TAG);
     }
 
     /**

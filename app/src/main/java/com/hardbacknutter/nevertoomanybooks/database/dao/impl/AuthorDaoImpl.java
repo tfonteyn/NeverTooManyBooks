@@ -193,11 +193,9 @@ public class AuthorDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public AuthorDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public AuthorDaoImpl() {
+        super(TAG);
     }
 
     /**
@@ -466,7 +464,7 @@ public class AuthorDaoImpl
 
         if (rowsAffected > 0) {
             author.setId(0);
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 bookDao.repositionAuthor(context);
             }
         }
@@ -498,7 +496,7 @@ public class AuthorDaoImpl
             // and we want to replace a1 with a2, we cannot simply do a mass update.
             final Author destination = getById(destId);
 
-            try (BookDao bookDao = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 for (final long bookId : getBookIds(source.getId())) {
                     final Book book = Book.from(bookId, bookDao);
 

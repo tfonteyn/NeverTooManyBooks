@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Export the main database file.
+ * <p>
+ * Note on testing: this class is purposely hardcoded to use the actual database file.
  */
 public class DbArchiveWriter
         implements ArchiveWriter {

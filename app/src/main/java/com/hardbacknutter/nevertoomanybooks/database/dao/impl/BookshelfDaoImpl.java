@@ -97,11 +97,9 @@ public class BookshelfDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public BookshelfDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public BookshelfDaoImpl() {
+        super(TAG);
     }
 
     @Override

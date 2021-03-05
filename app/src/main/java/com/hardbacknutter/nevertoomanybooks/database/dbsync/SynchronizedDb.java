@@ -32,6 +32,7 @@ import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -76,6 +77,10 @@ public class SynchronizedDb
     /** Factory object to create the custom cursor. */
     private final SQLiteDatabase.CursorFactory mCursorFactory = (db, mq, et, q) ->
             new SynchronizedCursor(mq, et, q, getSynchronizer());
+
+    /** Factory object to create a {@link TypedCursor} cursor. */
+    private final SQLiteDatabase.CursorFactory mTypedCursorFactory =
+            (db, d, et, q) -> new TypedCursor(d, et, q, getSynchronizer());
 
     /** Currently held transaction lock, if any. */
     @Nullable
@@ -380,6 +385,8 @@ public class SynchronizedDb
             /* lint says this cursor is not always closed.
              * 2019-01-14: the only place it's not closed is in {@link SearchSuggestionProvider}
              * where it seems not possible to close it ourselves.
+             * TEST: do we actually need to use the factory here ? mSqlDb was created
+             *  with a factory?
              */
             return (SynchronizedCursor)
                     mSqlDb.rawQueryWithFactory(mCursorFactory, sql, selectionArgs, null);
@@ -396,27 +403,26 @@ public class SynchronizedDb
      * <p>
      * Runs the provided SQL and returns a cursor over the result set.
      *
-     * @param cursorFactory the cursor factory to use, or {@code null} for the default factory
      * @param sql           the SQL query. The SQL string must not be ; terminated
      * @param selectionArgs You may include ?s in where clause in the query,
      *                      which will be replaced by the values from selectionArgs. The
      *                      values will be bound as Strings.
      * @param editTable     the name of the first table, which is editable
      *
-     * @return A {@link Cursor} object, which is positioned before the first entry. Note that
-     * {@link Cursor}s are not synchronized, see the documentation for more details.
+     * @return A {@link TypedCursor} object, which is positioned before the first entry.
+     * Note that {@link Cursor}s are not synchronized, see the documentation for more details.
      */
     @NonNull
-    public Cursor rawQueryWithFactory(@NonNull final SQLiteDatabase.CursorFactory cursorFactory,
-                                      @NonNull final String sql,
-                                      @Nullable final String[] selectionArgs,
-                                      @Nullable final String editTable) {
+    public TypedCursor rawQueryWithTypedCursor(@NonNull final String sql,
+                                               @Nullable final String[] selectionArgs,
+                                               @Nullable final String editTable) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock == null) {
             txLock = mSynchronizer.getSharedLock();
         }
         try {
-            return mSqlDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
+            return (TypedCursor) mSqlDb
+                    .rawQueryWithFactory(mTypedCursorFactory, sql, selectionArgs, editTable);
         } finally {
             if (txLock != null) {
                 txLock.unlock();

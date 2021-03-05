@@ -33,6 +33,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
 import static org.junit.Assert.assertEquals;
@@ -79,6 +80,8 @@ public class AuthorTest {
     @Test
     public void pruneAuthorList01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
         final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         final List<Author> list = new ArrayList<>();
@@ -178,6 +181,8 @@ public class AuthorTest {
     @Test
     public void pruneAuthorList02() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        DbLocator.init(context);
+
         final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();

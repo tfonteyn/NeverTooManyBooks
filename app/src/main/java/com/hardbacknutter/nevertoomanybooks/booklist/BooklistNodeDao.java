@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
@@ -31,12 +30,11 @@ import androidx.core.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -96,11 +94,9 @@ public class BooklistNodeDao {
 
     /**
      * Purge <strong>all</strong> Booklist node state data.
-     *
-     * @param context Current context
      */
-    public static void clearNodeStateData(@NonNull final Context context) {
-        DBHelper.getDb(context).execSQL(Sql.DELETE_ALL);
+    public static void clearNodeStateData() {
+        DbLocator.getDb().execSQL(Sql.DELETE_ALL);
     }
 
     /**
@@ -249,7 +245,7 @@ public class BooklistNodeDao {
             if (BuildConfig.DEBUG /* always */) {
                 // DEBUG ONLY!
                 // This protects the developer when changing the structure irresponsibly...
-                clearNodeStateData(App.getDatabaseContext());
+                clearNodeStateData();
                 Logger.error(TAG, e);
             }
         } finally {

@@ -90,7 +90,7 @@ public class XmlArchiveWriter
             throws GeneralParsingException, IOException {
 
         final int booksToExport;
-        try (BookDao bookDao = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(TAG)) {
             booksToExport = bookDao.countBooksForExport(null);
         }
 

@@ -119,7 +119,7 @@ public class ShowBookViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mBookDao == null) {
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             final long bookId = args.getLong(DBKeys.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
@@ -136,7 +136,7 @@ public class ShowBookViewModel
             if (navTableName != null && !navTableName.isEmpty()) {
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
                 SanityCheck.requirePositiveValue(rowId, "BKEY_LIST_TABLE_ROW_ID");
-                mNavHelper = new BooklistNavigatorDao(context, navTableName);
+                mNavHelper = new BooklistNavigatorDao(navTableName);
                 mInitialPagerPosition = mNavHelper.getRowNumber(rowId) - 1;
             } else {
                 mInitialPagerPosition = 0;

@@ -43,8 +43,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -52,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -128,7 +126,7 @@ public class MaintenanceFragment
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList;
-            try (BookDao bookDao = new BookDao(v.getContext(), TAG)) {
+            try (BookDao bookDao = new BookDao(TAG)) {
                 bookUuidList = bookDao.getBookUuidList();
             }
 
@@ -154,7 +152,7 @@ public class MaintenanceFragment
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) ->
-                        BooklistNodeDao.clearNodeStateData(v.getContext()))
+                        BooklistNodeDao.clearNodeStateData())
                 .create()
                 .show());
 
@@ -270,9 +268,7 @@ public class MaintenanceFragment
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
-            context.deleteDatabase(DBHelper.DATABASE_NAME);
-            context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
-            context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
+            DbLocator.deleteDatabases(context);
 
             AppDir.deleteAllContent(context);
 

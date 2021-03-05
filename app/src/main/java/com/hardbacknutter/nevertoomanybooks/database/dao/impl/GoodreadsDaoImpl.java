@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
@@ -120,11 +119,9 @@ public class GoodreadsDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public GoodreadsDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public GoodreadsDaoImpl() {
+        super(TAG);
     }
 
     @Override

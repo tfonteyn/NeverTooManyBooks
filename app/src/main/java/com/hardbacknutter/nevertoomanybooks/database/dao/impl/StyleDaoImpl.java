@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -68,11 +67,9 @@ public class StyleDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public StyleDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public StyleDaoImpl() {
+        super(TAG);
     }
 
     @Override

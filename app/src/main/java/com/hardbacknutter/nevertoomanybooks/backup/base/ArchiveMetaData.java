@@ -93,6 +93,7 @@ public class ArchiveMetaData {
         // Pure info/debug information
         metaData.mInfo.putInt(INFO_ARCHIVER_VERSION, version);
         metaData.mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
+
         final PackageInfoWrapper info = PackageInfoWrapper.create(context);
         metaData.mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
         metaData.mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());

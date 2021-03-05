@@ -61,13 +61,11 @@ public class JsonArchiveReader
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  import configuration
+     * @param helper import configuration
      */
-    public JsonArchiveReader(@NonNull final Context context,
-                             @NonNull final ImportHelper helper) {
+    public JsonArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(context, TAG);
+        mBookDao = new BookDao(TAG);
     }
 
     @NonNull

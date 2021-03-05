@@ -156,7 +156,7 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (BookDao bookDao = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(TAG)) {
             // Import part of the sync
             final boolean ok = importReviews(context, bookDao, queueManager);
 

@@ -138,7 +138,7 @@ public class SearchBookUpdatesViewModel
         super.init(context, args);
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             if (args != null) {
                 //noinspection unchecked

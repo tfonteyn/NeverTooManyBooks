@@ -19,15 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -68,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
  * The main issue is that all testing must be done with the emulator as we can't easily
  * inject mock doa's for now.
  * <p>
- * This class is the next step as we can set mock dao classes before running a test.
+ * This class is the next step as we can mock dao classes before running a test.
  * <p>
  * TODO: {@link BookDao} which cannot be a singleton.
  */
@@ -76,9 +71,6 @@ public final class DaoLocator {
 
     /** Singleton. */
     private static DaoLocator sInstance;
-
-    @NonNull
-    private final Context mDatabaseContext;
 
     @Nullable
     private AuthorDao mAuthorDao;
@@ -115,20 +107,15 @@ public final class DaoLocator {
     @Nullable
     private CoverCacheDao mCoverCacheDao;
 
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    private DaoLocator(@NonNull final Context context) {
-        mDatabaseContext = context.getApplicationContext();
+    private DaoLocator() {
     }
 
     @NonNull
     public static DaoLocator getInstance() {
-        if (sInstance == null) {
-            sInstance = new DaoLocator(App.getDatabaseContext());
+        synchronized (DaoLocator.class) {
+            if (sInstance == null) {
+                sInstance = new DaoLocator();
+            }
         }
         return sInstance;
     }
@@ -137,7 +124,7 @@ public final class DaoLocator {
     public AuthorDao getAuthorDao() {
         synchronized (this) {
             if (mAuthorDao == null) {
-                mAuthorDao = new AuthorDaoImpl(mDatabaseContext);
+                mAuthorDao = new AuthorDaoImpl();
             }
         }
         return mAuthorDao;
@@ -152,7 +139,7 @@ public final class DaoLocator {
     public BookshelfDao getBookshelfDao() {
         synchronized (this) {
             if (mBookshelfDao == null) {
-                mBookshelfDao = new BookshelfDaoImpl(mDatabaseContext);
+                mBookshelfDao = new BookshelfDaoImpl();
             }
         }
         return mBookshelfDao;
@@ -167,7 +154,7 @@ public final class DaoLocator {
     public CalibreLibraryDao getCalibreLibraryDao() {
         synchronized (this) {
             if (mCalibreLibraryDao == null) {
-                mCalibreLibraryDao = new CalibreLibraryDaoImpl(mDatabaseContext);
+                mCalibreLibraryDao = new CalibreLibraryDaoImpl();
             }
         }
         return mCalibreLibraryDao;
@@ -182,7 +169,7 @@ public final class DaoLocator {
     public ColorDao getColorDao() {
         synchronized (this) {
             if (mColorDao == null) {
-                mColorDao = new ColorDaoImpl(mDatabaseContext);
+                mColorDao = new ColorDaoImpl();
             }
         }
         return mColorDao;
@@ -197,7 +184,7 @@ public final class DaoLocator {
     public FormatDao getFormatDao() {
         synchronized (this) {
             if (mFormatDao == null) {
-                mFormatDao = new FormatDaoImpl(mDatabaseContext);
+                mFormatDao = new FormatDaoImpl();
             }
         }
         return mFormatDao;
@@ -212,7 +199,7 @@ public final class DaoLocator {
     public GenreDao getGenreDao() {
         synchronized (this) {
             if (mGenreDao == null) {
-                mGenreDao = new GenreDaoImpl(mDatabaseContext);
+                mGenreDao = new GenreDaoImpl();
             }
         }
         return mGenreDao;
@@ -227,7 +214,7 @@ public final class DaoLocator {
     public GoodreadsDao getGoodreadsDao() {
         synchronized (this) {
             if (mGoodreadsDao == null) {
-                mGoodreadsDao = new GoodreadsDaoImpl(mDatabaseContext);
+                mGoodreadsDao = new GoodreadsDaoImpl();
             }
         }
         return mGoodreadsDao;
@@ -243,7 +230,7 @@ public final class DaoLocator {
     public LanguageDao getLanguageDao() {
         synchronized (this) {
             if (mLanguageDao == null) {
-                mLanguageDao = new LanguageDaoImpl(mDatabaseContext);
+                mLanguageDao = new LanguageDaoImpl();
             }
         }
         return mLanguageDao;
@@ -258,7 +245,7 @@ public final class DaoLocator {
     public LoaneeDao getLoaneeDao() {
         synchronized (this) {
             if (mLoaneeDao == null) {
-                mLoaneeDao = new LoaneeDaoImpl(mDatabaseContext);
+                mLoaneeDao = new LoaneeDaoImpl();
             }
         }
         return mLoaneeDao;
@@ -273,7 +260,7 @@ public final class DaoLocator {
     public LocationDao getLocationDaoDao() {
         synchronized (this) {
             if (mLocationDao == null) {
-                mLocationDao = new LocationDaoImpl(mDatabaseContext);
+                mLocationDao = new LocationDaoImpl();
             }
         }
         return mLocationDao;
@@ -288,7 +275,7 @@ public final class DaoLocator {
     public MaintenanceDao getMaintenanceDao() {
         synchronized (this) {
             if (mMaintenanceDao == null) {
-                mMaintenanceDao = new MaintenanceDaoImpl(mDatabaseContext);
+                mMaintenanceDao = new MaintenanceDaoImpl();
             }
         }
         return mMaintenanceDao;
@@ -303,7 +290,7 @@ public final class DaoLocator {
     public PublisherDao getPublisherDao() {
         synchronized (this) {
             if (mPublisherDao == null) {
-                mPublisherDao = new PublisherDaoImpl(mDatabaseContext);
+                mPublisherDao = new PublisherDaoImpl();
             }
         }
         return mPublisherDao;
@@ -318,7 +305,7 @@ public final class DaoLocator {
     public SeriesDao getSeriesDao() {
         synchronized (this) {
             if (mSeriesDao == null) {
-                mSeriesDao = new SeriesDaoImpl(mDatabaseContext);
+                mSeriesDao = new SeriesDaoImpl();
             }
         }
         return mSeriesDao;
@@ -333,7 +320,7 @@ public final class DaoLocator {
     public StyleDao getStyleDao() {
         synchronized (this) {
             if (mStyleDao == null) {
-                mStyleDao = new StyleDaoImpl(mDatabaseContext);
+                mStyleDao = new StyleDaoImpl();
             }
         }
         return mStyleDao;
@@ -348,7 +335,7 @@ public final class DaoLocator {
     public TocEntryDao getTocEntryDao() {
         synchronized (this) {
             if (mTocEntryDao == null) {
-                mTocEntryDao = new TocEntryDaoImpl(mDatabaseContext);
+                mTocEntryDao = new TocEntryDaoImpl();
             }
         }
         return mTocEntryDao;
@@ -363,13 +350,7 @@ public final class DaoLocator {
     public CoverCacheDao getCoverCacheDao() {
         synchronized (this) {
             if (mCoverCacheDao == null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    // Sanity check
-                    if (!ImageUtils.isImageCachingEnabled(mDatabaseContext)) {
-                        throw new IllegalStateException("cache is disabled");
-                    }
-                }
-                mCoverCacheDao = new CoverCacheDaoImpl(mDatabaseContext);
+                mCoverCacheDao = new CoverCacheDaoImpl();
             }
         }
         return mCoverCacheDao;

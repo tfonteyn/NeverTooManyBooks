@@ -19,10 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
-
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.util.ArrayList;
 
@@ -34,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,8 +46,9 @@ public class BaseSetupTest
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao bookDao = new BookDao(context, "basic")) {
+        assertFalse(DbLocator.isCollationCaseSensitive());
+
+        try (BookDao bookDao = new BookDao("basic")) {
 
             // The objects should have been updated with their id
             assertTrue(author[0].getId() > 0);

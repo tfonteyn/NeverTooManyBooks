@@ -66,8 +66,8 @@ public class DBCleanerTask
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
 
-        try (DBCleaner cleaner = new DBCleaner(context);
-             BookDao bookDao = new BookDao(context, TAG)) {
+        try (DBCleaner cleaner = new DBCleaner();
+             BookDao bookDao = new BookDao(TAG)) {
 
             // do a mass update of any languages not yet converted to ISO 639-2 codes
             cleaner.languages(context, userLocale);

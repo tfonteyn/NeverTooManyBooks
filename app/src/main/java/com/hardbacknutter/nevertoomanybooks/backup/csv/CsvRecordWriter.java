@@ -95,7 +95,7 @@ public class CsvRecordWriter
             int delta = 0;
             long lastUpdate = 0;
 
-            try (BookDao bookDao = new BookDao(context, TAG);
+            try (BookDao bookDao = new BookDao(TAG);
                  Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
 
                 writer.write(bookCoder.encodeHeader());

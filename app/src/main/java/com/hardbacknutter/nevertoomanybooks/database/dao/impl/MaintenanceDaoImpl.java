@@ -88,11 +88,9 @@ public class MaintenanceDaoImpl
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public MaintenanceDaoImpl(@NonNull final Context context) {
-        super(context, TAG);
+    public MaintenanceDaoImpl() {
+        super(TAG);
     }
 
     @Override

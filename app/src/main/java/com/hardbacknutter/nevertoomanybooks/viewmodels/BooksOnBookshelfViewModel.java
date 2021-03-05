@@ -194,7 +194,7 @@ public class BooksOnBookshelfViewModel
         if (mBookDao == null) {
             initFixedDomainList();
 
-            mBookDao = new BookDao(context, TAG);
+            mBookDao = new BookDao(TAG);
 
             // first start of the activity, read from user preference
             mRebuildMode = getPreferredListRebuildMode(context);

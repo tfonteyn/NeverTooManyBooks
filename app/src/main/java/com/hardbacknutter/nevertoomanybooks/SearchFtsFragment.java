@@ -128,8 +128,7 @@ public class SearchFtsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mBookDao = new BookDao(getContext(), TAG);
+        mBookDao = new BookDao(TAG);
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {

@@ -37,7 +37,6 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -67,7 +66,7 @@ public class StartupActivity
     private ActivityStartupBinding mVb;
 
     /**
-     * Kludge to allow the {@link DBHelper} to get a reference to the currently running
+     * Kludge to allow the database open-helper to get a reference to the currently running
      * StartupActivity, so it can send progress messages to the local ProgressDialogFragment.
      *
      * @return Reference or {@code null}.
@@ -145,14 +144,8 @@ public class StartupActivity
                 return;
 
             case 3:
-                // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
-                // Note this is not a startup-task; it just needs to be started at startup.
-                // (it does not even need to be a background thread, as we only want
-                // to create the QM, but this way we should get the UI up faster)
-                final Thread qmt = new Thread(() -> QueueManager.create(this).start());
-                qmt.setName("QueueManager-create");
-                qmt.start();
-
+                // Create and start the Goodreads QueueManager (only if not already running).
+                QueueManager.start(this);
                 gotoMainScreen();
                 return;
 
@@ -193,7 +186,6 @@ public class StartupActivity
             nextStage();
         }
     }
-
 
     /**
      * Finally, start the main user activity.

@@ -144,7 +144,7 @@ public class CalibreContentServerReader
                                       @NonNull final ImportHelper helper)
             throws CertificateException, SSLException {
 
-        mBookDao = new BookDao(context, TAG);
+        mBookDao = new BookDao(TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
