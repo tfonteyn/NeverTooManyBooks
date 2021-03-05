@@ -134,7 +134,7 @@ public final class FileUtils {
             }
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination);
 
-        } catch (@NonNull final SecurityException | NullPointerException e) {
+        } catch (@NonNull final SecurityException e) {
             throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination, e);
         }
     }
