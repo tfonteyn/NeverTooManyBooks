@@ -132,7 +132,7 @@
     <string name="gr_info_no_match">Seçili kitabın ISBN\'si Goodreads\'te bulunamadı. Bunun olası iki nedeni vardır: Ya kitap için girdiğiniz veri hatalı (ISBN\'yi kontrol edin) veya kitap Goodreads\'te bulunmuyor.\n\nEğer &APP_NAME;\'de herhangi bir veriyi değiştirirseniz, yalnızca “Yeniden dene” düğmesine basın ve oluşan ardalan görevinin başarıyla tamamlanıp tamamlanmadığına bakın.\n\nEğer veri doğru olup, ancak kitap hala bulunamıyorsa bu kitabın ISBN\'si ile birlikte Goodreads\'e el ile ağ sayfasından eklenmesi gerekmektedir. Bu yapıldıktan sonra kitabı yeniden göndermeyi deneyebilirsiniz.</string>
     <string name="gr_info_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="gr_info_send_books">Bu işlem kitaplığınızı Goodreads\'e gönderecektir.\n\nİster tüm kitaplarınızı gönderebilir veya son göndermenizden bu yana güncellenen, alınan veya gönderilen kitapları seçebilir (henüz gönderilmeyen kitaplar da dahil olmak üzere) veya güncellemeyi iptal edebilirsiniz.\n\nEğer daha önce hiç kitap göndermediyseniz ilk iki seçenek arasında hiçbir ayrım bulunmamaktadır.</string>
-    <string name="gr_menu_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
     <string name="menu_send_all">Tümünü gönder</string>
     <string name="gr_send_to_goodreads">Goodreads\'e gönder</string>
     <string name="menu_send_updated">Güncellenenleri gönder</string>
@@ -331,7 +331,7 @@
     <string name="lt_key_is_incorrect">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
     <string name="lt_lbl_key">Geliştirici anahtarını aldığınızda yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
     <string name="lt_url_text_dev_key">Geliştirici anahtarı iste</string>
-    <string name="lt_url_text_register">LibraryThing\'e kayıt ol</string>
+    <string name="X_lt_url_text_register">LibraryThing\'e kayıt ol</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Uygulama hakkında</string>
     <string name="menu_amazon_books_by_author">Bu yazarın kitapları</string>

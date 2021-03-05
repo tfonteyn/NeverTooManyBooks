@@ -132,7 +132,7 @@
     <string name="gr_info_no_match">ISBN kód zvolené knihy nebyl v Goodreads nalezen. Tato situace může mít dvě možné příčiny: buď jsou data uvedená u knihy špatná (měl by být zkontrolován ISBN kód), nebo tato kniha není v databázi Goodreads.\n\nPokud změníte data v aplikaci &APP_NAME;, můžete použít tlačítko „Opakovat“ a zkontrolovat, zda operace proběhla úspěšně.\n\nPokud jsou data v pořádku a kniha stále nebyla nalezena, musí být kniha s tímto ISBN kódem do Goodreads přidána ručně přes webové rozhraní - poté můžete knihu zkusit znovu odeslat.</string>
     <string name="gr_info_send_all_books_results">%1$d knih zpracováno: %2$d úspěšně odesláno, %3$d bez ISBN a %4$d s ISBN, které nebyly v Goodreads nalezeny.</string>
     <string name="gr_info_send_books">Zde můžete odeslat Vaši knihovnu na Goodreads.\nMůžete odeslat buď všechny knihy, nebo pouze ty knihy, které byly aktualizovány od chvíle, kdy jste naposledy kopíroval z nebo do Goodreads (spolu se všemi knihami, které doposud nebyly odeslány) nebo můžete aktualizaci zrušit.\n\nPokud jste doposud žádnou knihu neodeslal, pak mezi první a druhou volbou není žádký rozdíl.</string>
-    <string name="gr_menu_import_all_from_goodreads">Importovat vše z Goodreads</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Importovat vše z Goodreads</string>
     <string name="menu_send_all">Odeslat vše</string>
     <string name="gr_send_to_goodreads">Poslat do Goodreads</string>
     <string name="menu_send_updated">Odeslat aktualizované</string>
@@ -329,7 +329,7 @@
     <string name="lt_key_is_incorrect">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
     <string name="lt_lbl_key">Až získáte svůj vývojářský klíč, jednoduše jej vložte níže, aby mohl být použit pro získání extra informací.</string>
     <string name="lt_url_text_dev_key">Získat vývojářský klíč</string>
-    <string name="lt_url_text_register">Registrovat na LibraryThing</string>
+    <string name="X_lt_url_text_register">Registrovat na LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">O této aplikaci</string>
     <string name="menu_amazon_books_by_author">Knihy tohoto autora</string>

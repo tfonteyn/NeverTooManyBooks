@@ -133,7 +133,7 @@
     <string name="gr_info_no_match">Ο κωδικός ISBN του επιλεγμένου βιλίου δε βρέθηκε στο Goodreads. Υπάρχουν δύο πιθανές αιτίες γι\'αυτό: είτε τα δεδομένα για το βιβλίο είναι λάθος (παρακαλούμε ελέγξτε το ISBN του), ή το βιβλίο δεν υπάρχει στο Goodreads.\n\nΑν αλλάξετε κάτι στα δεδομένα στο &APP_NAME;, πατήστε το κουμπί «Επανάληψη» για να δείτε αν η εργασία παρασκηνίου που προκύπτει είναι επιτυχής.\n\nΑν τα δεδομένα είναι σωστά και το βιβλίο ακόμα δεν εμφανίζεται, πρέπει να προστεθεί ένα βιβλίο με αυτό το ISBN στο Goodreads χειροκίνητα μέσω της ιστοσελίδας του. Μόλις γίνει αυτό, μπορείτε να δοκιμάσετε να ξαναστείλετε το βιβλίο.</string>
     <string name="gr_info_send_all_books_results">%1$d βιβλία επεξεργάστηκαν: %2$d αποστάλθηκαν επιτυχώς, %3$d χωρίς ISBN και %4$d με ISBN αλλά δεν βρέθηκαν στο Goodreads</string>
     <string name="gr_info_send_books">H βιβλιοθήκη σας θα σταλθεί στο Goodreads.\n\nΜπορείτε να στείλετε όλα τα βιβλία σας, ή τα βιβλία που έχουν ενημερωθεί από την τελευταία φορα που αντιγράφηκαν από ή στο Goodreads (μαζί με όλα τα βιβλία που δεν έχουν σταλεί ακόμα) ή μπορείτε να ακυρώσετε την ενημέρωση.\n\nΑν δεν έχετε στείλει ποτέ βιβλία δεν υπάρχει διαφορά ανάμεσα στις δύο πρώτες επιλογές.</string>
-    <string name="gr_menu_import_all_from_goodreads">Εισαγωγή όλων, από Goodreads</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Εισαγωγή όλων, από Goodreads</string>
     <string name="menu_send_all">Αποστολή όλων</string>
     <string name="gr_send_to_goodreads">Αποστολή στο Goodreads</string>
     <string name="menu_send_updated">Αποστολή ενημερωμένων</string>
@@ -332,7 +332,7 @@
     <string name="lt_key_is_incorrect">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
     <string name="lt_lbl_key">Όταν αποκτήσετε κλειδί developer, μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
     <string name="lt_url_text_dev_key">Αίτημα κλειδιού προγραμματιστή</string>
-    <string name="lt_url_text_register">Εγγραφή με LibraryThing</string>
+    <string name="X_lt_url_text_register">Εγγραφή με LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>
     <string name="menu_amazon_books_by_author">Βιβλία από αυτόν το συγγραφέα</string>

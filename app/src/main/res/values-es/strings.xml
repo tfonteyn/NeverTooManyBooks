@@ -134,7 +134,7 @@
     <string name="gr_info_no_match">El ISBN del libro seleccionado no se pudo localizar en Goodreads. Esto puede ocurrir por dos motivos: los datos del libro son erróneos (debería comprobar el ISBN), o el libro no está en Goodreads.\n\nSi modifica los datos en &APP_NAME;, pulse el botón «Retry» y compruebe si la tarea de fondo creada termina con éxito.\n\nSi los datos son correctos y el libro sigue sin aparecer, entonces debe añadir un libro con ese ISBN de forma manual en el sitio web de Goodreads. Una vez haya hecho eso, puede volver a intentar enviar el libro.</string>
     <string name="gr_info_send_all_books_results">%1$d libros procesados: %2$d enviados correctamente, %3$d sin ISBN y %4$d con ISBN pero no encontrados en Goodreads</string>
     <string name="gr_info_send_books">Esta opción enviará su biblioteca a Goodreads.\n\nPuede elegir enviar todos sus libros o sólo los que haya actualizado desde la última vez que fueron copiados a o desde Goodreads (incluyendo todos los libros que todavía no han sido enviados), o cancelar la actualización.\n\nSi no ha enviado nunca ningún libro, entonces no hay ninguna diferencia entre las dos opciones.</string>
-    <string name="gr_menu_import_all_from_goodreads">Importar todo de Goodreads</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Importar todo de Goodreads</string>
     <string name="menu_send_all">Enviar todo</string>
     <string name="gr_send_to_goodreads">Enviar a Goodreads</string>
     <string name="menu_send_updated">Sólo actualizados</string>
@@ -332,7 +332,7 @@
     <string name="lt_key_is_incorrect">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
     <string name="lt_lbl_key">Una vez obtenga la clave de desarrollador, introdúzcala a continuación. Se utilizará para obtener datos adicionales.</string>
     <string name="lt_url_text_dev_key">Solicitar clave de desarrollador</string>
-    <string name="lt_url_text_register">Registro en LibraryThing</string>
+    <string name="X_lt_url_text_register">Registro en LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Acerca de esta App</string>
     <string name="menu_amazon_books_by_author">Libros del mismo autor</string>

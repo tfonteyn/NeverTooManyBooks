@@ -149,7 +149,7 @@
         gaat veranderen druk je daarna op de „Probeer opnieuw” knop en controleert of de op de achtergrond opgestarte taak met succes is beëindigd.\n\nAls de gegevens correct lijken en het boek nog steeds niet kan worden gevonden dan moet een boek met dat ISBN handmatig worden toegevoegd aan Goodreads via hun website. Nadat dat is gedaan kan je proberen het boek opnieuw te zenden.</string>
     <string name="gr_info_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in Goodreads</string>
     <string name="gr_info_send_books">Dit zendt uw bibliotheek naar Goodreads.\n\nJe kan er voor kiezen alle boeken te sturen of alleen de boeken die je hebt bijgewerkt sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet werden verzonden) of je kan de update annuleren.\n\n Als ja nog nooit boeken hebt verzonden is er geen verschil tussen de eerste twee opties.</string>
-    <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="menu_send_all">Zend alles</string>
     <string name="menu_send_updated">Zend bijgewerkte boeken</string>
     <string name="gr_pt_collect_genre">Gebruik populaire boekenplanknamen als boekgenres</string>
@@ -372,7 +372,7 @@
     <string name="lt_key_is_incorrect">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
     <string name="lt_lbl_key">Zodra je de sleutel hebt kan je die hieronder invullen om zo gebruik te maken van de extra gegevensbron.</string>
     <string name="lt_url_text_dev_key">Ontwikkelaarssleutel aanvragen</string>
-    <string name="lt_url_text_register">Registeren bij LibraryThing</string>
+    <string name="X_lt_url_text_register">Registeren bij LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/reeks</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>

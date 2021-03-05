@@ -505,7 +505,6 @@
         book series, as well as a source of alternate covers. To use these features you need
         to register with LibraryThing (free) and request a LibraryThing developer key (also free).
     </string>
-    <string name="lt_url_text_register">Register with LibraryThing</string>
     <string name="lt_url_text_dev_key">Request developer key</string>
     <string name="lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
     <string name="lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
@@ -535,8 +534,6 @@
     <string name="gr_title_send_book">Send books to Goodreads</string>
     <!-- dialog title, admin menu selection and task description -->
     <string name="gr_title_sync_with_goodreads">Synchronize with Goodreads</string>
-    <!-- admin menu selection -->
-    <string name="gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
 
     <!-- book and book list menu options -->
     <string name="gr_send_to_goodreads">Send to Goodreads</string>
@@ -1687,6 +1684,8 @@
     <string name="X_progress_msg_n_covers_processed_m_missing" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
 
+    <string name="X_lt_url_text_register">Register with LibraryThing</string>
+
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
@@ -1696,6 +1695,7 @@
     <string name="X_use_default_setting">Use default values</string>
 
     <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
 
     <string name="X_lbl_select_image">Select image…</string>
     <string name="X_hardware">Hardware</string>

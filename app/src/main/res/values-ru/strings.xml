@@ -129,7 +129,7 @@
     <string name="gr_info_no_match">ISBN выбранной книги не найден на Goodreads. Для этого есть несколько причин: либо данные о книги не правильны (проверьте ISBN), либо книги нет на Goodreads.\n\nЕсли Вы сделаете какие-либо изменения в &APP_NAME;, просто нажмите кнопку «Повторить» и проверьте выполнилась ли фоновая задача.\n\nЕсли данные о книге правильны и книга все еще не найдена, то эта книга должна быть добавлена на Goodreads вручную через сайт. После того, как это будет сделано, Вы можете повторить отправление книги.</string>
     <string name="gr_info_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="gr_info_send_books">Это отправит Вашу библиотеку на Goodreads.\n\nВы можете выбрать так, чтобы отослать все ваши книги или только те, которые были обновлены с тех пор как были копированы с или на Goodreads (включая все книги, которые ещё не были отправлены). Также Вы можете отменить обновление.\n\nЕсли никогда не отправляли книги, тогда нет никакой разницы между первыми двумя вариантами.</string>
-    <string name="gr_menu_import_all_from_goodreads">Импортировать все из Goodreads</string>
+    <string name="X_gr_menu_import_all_from_goodreads">Импортировать все из Goodreads</string>
     <string name="menu_send_all">Отправить все</string>
     <string name="gr_send_to_goodreads">Послать на Goodreads</string>
     <string name="menu_send_updated">Отправить обновленные</string>
@@ -325,7 +325,7 @@
     <string name="lt_key_is_incorrect">Ваш ключ разработчика LibraryThing не действителен или не возможно установить соединение, чтобы его проверить.</string>
     <string name="lt_lbl_key">Как только вы получите ключ разработчика, просто введите его в поле ниже. Он будет использован для получения дополнительной информации о книге.</string>
     <string name="lt_url_text_dev_key">Запросить ключ разработчика</string>
-    <string name="lt_url_text_register">Зарегистрироваться в LibraryThing</string>
+    <string name="X_lt_url_text_register">Зарегистрироваться в LibraryThing</string>
     <string name="megabytes">%.2fМб</string>
     <string name="lbl_about">О приложении…</string>
     <string name="menu_amazon_books_by_author">Книги этого автора</string>
