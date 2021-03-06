@@ -37,13 +37,22 @@ android {
             minifyEnabled true
         }
         beta {
+            initWith release
+            versionNameSuffix 'beta'
+        }
+        debug {
+            versionNameSuffix 'debug'
         }
     }
+
+    lintOptions {
+        // allow command line builds to complete
+        abortOnError false
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
-dependencies {
-}
