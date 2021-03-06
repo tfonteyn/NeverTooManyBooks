@@ -18,7 +18,7 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
+package com.hardbacknutter.fastscroller;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

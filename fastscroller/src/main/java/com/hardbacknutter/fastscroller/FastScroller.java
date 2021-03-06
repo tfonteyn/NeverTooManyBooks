@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
+package com.hardbacknutter.fastscroller;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
@@ -32,16 +31,11 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * This is the glue class which hooks up the RecyclerView with the actual
@@ -66,12 +60,15 @@ public final class FastScroller {
      * and read them from the xml definition of a RecyclerView
      *
      * @param recyclerView the View to hook up
+     * @param overlayType  Optional overlay
      */
-    public static void attach(@NonNull final RecyclerView recyclerView) {
+    public static void attach(@NonNull final RecyclerView recyclerView,
+                              @OverlayProvider.Style final int overlayType) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
         }
+
         //Note: do not test the adapter here for being a PopupTextProvider,
         // it can still be null.
 
@@ -92,44 +89,33 @@ public final class FastScroller {
                 resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
         );
 
-        final OverlayProvider overlay = createOverlayProvider(recyclerView, thumbDrawable);
+        final OverlayProvider overlay;
+        switch (overlayType) {
+            case OverlayProvider.STYLE_MD2:
+                overlay = new FastScrollerOverlay(recyclerView, null, thumbDrawable,
+                                                  PopupStyles.MD2);
+                break;
+
+            case OverlayProvider.STYLE_MD1:
+                overlay = new FastScrollerOverlay(recyclerView, null, thumbDrawable,
+                                                  PopupStyles.MD);
+                break;
+
+            case OverlayProvider.STYLE_STATIC:
+                overlay = new ClassicOverlay(recyclerView, null, thumbDrawable);
+                break;
+
+            case OverlayProvider.STYLE_NONE:
+            default:
+                overlay = null;
+                break;
+        }
         fastScroller.setOverlayProvider(overlay);
 
         recyclerView.setOnApplyWindowInsetsListener(
                 new ScrollingViewOnApplyWindowInsetsListener(recyclerView, overlay));
-
     }
 
-    @Nullable
-    private static OverlayProvider createOverlayProvider(
-            @NonNull final RecyclerView recyclerView,
-            @NonNull final StateListDrawable thumbDrawable) {
-
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(recyclerView.getContext());
-
-        // Optional overlay
-        @OverlayProvider.Style
-        final int overlayType = ParseUtils.getIntListPref(global,
-                                                          Prefs.pk_booklist_fastscroller_overlay,
-                                                          OverlayProvider.STYLE_MD2);
-        switch (overlayType) {
-            case OverlayProvider.STYLE_MD2:
-                return new FastScrollerOverlay(recyclerView, null, thumbDrawable,
-                                               PopupStyles.MD2);
-
-            case OverlayProvider.STYLE_MD1:
-                return new FastScrollerOverlay(recyclerView, null, thumbDrawable,
-                                               PopupStyles.MD);
-
-            case OverlayProvider.STYLE_STATIC:
-                return new ClassicOverlay(recyclerView, null, thumbDrawable);
-
-            case OverlayProvider.STYLE_NONE:
-            default:
-                return null;
-        }
-    }
 
     /**
      * Get a color int value for the given attribute.

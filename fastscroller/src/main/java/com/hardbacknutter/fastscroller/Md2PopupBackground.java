@@ -33,7 +33,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
+package com.hardbacknutter.fastscroller;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -52,8 +52,6 @@ import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
