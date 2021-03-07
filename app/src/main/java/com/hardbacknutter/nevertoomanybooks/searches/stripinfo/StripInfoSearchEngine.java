@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -121,13 +120,11 @@ public class StripInfoSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public StripInfoSearchEngine(@NonNull final Context appContext,
-                                 @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public StripInfoSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -605,7 +602,8 @@ public class StripInfoSearchEngine
                                     if (!mAuthors.isEmpty()) {
                                         author = mAuthors.get(0);
                                     } else {
-                                        author = Author.createUnknownAuthor(getAppContext());
+                                        author = Author.createUnknownAuthor(
+                                                getContext());
                                     }
                                     final TocEntry tocEntry = new TocEntry(author, title, null);
                                     toc.add(tocEntry);
@@ -734,8 +732,7 @@ public class StripInfoSearchEngine
         final int found = processText(td, DBKeys.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = Languages
-                    .getInstance().getISO3FromDisplayName(getAppContext(), getLocale(), lang);
+            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
             bookData.putString(DBKeys.KEY_LANGUAGE, lang);
         }
         return found;

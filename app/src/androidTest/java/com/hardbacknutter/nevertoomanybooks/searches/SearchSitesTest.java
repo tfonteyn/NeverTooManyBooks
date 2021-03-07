@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -41,6 +43,7 @@ public class SearchSitesTest {
     @Before
     public void setup() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        ServiceLocator.create(context);
         SearchEngineRegistry.create(context);
         mEngineRegistry = SearchEngineRegistry.getInstance();
     }
@@ -56,7 +59,6 @@ public class SearchSitesTest {
 
     @Test
     public void dumpSites() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
             System.out.println("\n------------------------------------------\n\n" + type);
@@ -65,7 +67,7 @@ public class SearchSitesTest {
                 final SearchEngineRegistry.Config config =
                         mEngineRegistry.getByEngineId(site.engineId);
                 assertNotNull(config);
-                final SearchEngine searchEngine = site.getSearchEngine(context);
+                final SearchEngine searchEngine = site.getSearchEngine();
                 assertNotNull(searchEngine);
 
                 System.out.println("\n" + config + "\n\n" + site + "\n\n" + searchEngine);

@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -47,12 +48,9 @@ public final class Backup {
 
     /**
      * Store the date of the last full backup and reset the startup prompt-counter.
-     *
-     * @param context Current context
      */
-    public static void setLastFullBackupDate(@NonNull final Context context,
-                                             @Nullable final LocalDateTime dateTime) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+    public static void setLastFullBackupDate(@Nullable final LocalDateTime dateTime) {
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         if (dateTime == null) {
             global.edit()
                   .remove(PREF_LAST_FULL_BACKUP_DATE)
@@ -90,16 +88,13 @@ public final class Backup {
 
     /**
      * Store the date of the last full export in the given format.
-     *
-     * @param context Current context
      */
-    public static void setLastFullExportDate(@NonNull final Context context,
-                                             @NonNull final ArchiveEncoding encoding,
+    public static void setLastFullExportDate(@NonNull final ArchiveEncoding encoding,
                                              @Nullable final LocalDateTime dateTime) {
 
         final String key = PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt();
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         if (dateTime == null) {
             global.edit().remove(key).apply();
         } else {

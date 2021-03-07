@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.lastdodo;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
@@ -71,13 +70,11 @@ public class LastDodoSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public LastDodoSearchEngine(@NonNull final Context appContext,
-                                @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public LastDodoSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -451,8 +448,7 @@ public class LastDodoSearchEngine
         processText(td, DBKeys.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = Languages.getInstance()
-                            .getISO3FromDisplayName(getAppContext(), getLocale(), lang);
+            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
             bookData.putString(DBKeys.KEY_LANGUAGE, lang);
         }
     }

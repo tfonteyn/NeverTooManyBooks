@@ -34,8 +34,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class UserStyleTest {
 
-    private static final String TAG = "UserStyleTest";
-
     @Test
     public void clone01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -78,16 +76,12 @@ public class UserStyleTest {
         assertEquals(s1.getGroupRowHeight(context), cloned.getGroupRowHeight(context));
         assertEquals(s1.getTopLevel(), cloned.getTopLevel());
 
-        assertEquals(s1.isShowBooksUnderEachAuthor(context),
-                     cloned.isShowBooksUnderEachAuthor(context));
-        assertEquals(s1.isShowBooksUnderEachBookshelf(context),
-                     cloned.isShowBooksUnderEachBookshelf(context));
-        assertEquals(s1.isShowBooksUnderEachPublisher(context),
-                     cloned.isShowBooksUnderEachPublisher(context));
-        assertEquals(s1.isShowBooksUnderEachSeries(context),
-                     cloned.isShowBooksUnderEachSeries(context));
+        assertEquals(s1.isShowBooksUnderEachAuthor(), cloned.isShowBooksUnderEachAuthor());
+        assertEquals(s1.isShowBooksUnderEachBookshelf(), cloned.isShowBooksUnderEachBookshelf());
+        assertEquals(s1.isShowBooksUnderEachPublisher(), cloned.isShowBooksUnderEachPublisher());
+        assertEquals(s1.isShowBooksUnderEachSeries(), cloned.isShowBooksUnderEachSeries());
 
-        assertEquals(s1.getPrimaryAuthorType(context), cloned.getPrimaryAuthorType(context));
+        assertEquals(s1.getPrimaryAuthorType(), cloned.getPrimaryAuthorType());
 
         assertEquals(s1.getTextScale(), cloned.getTextScale());
 

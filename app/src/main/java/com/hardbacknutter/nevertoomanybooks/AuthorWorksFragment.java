@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
@@ -63,11 +66,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Display all TocEntry's for an Author.
@@ -161,7 +165,14 @@ public class AuthorWorksFragment
         mVb.authorWorks
                 .addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
-        FastScroller.attach(mVb.authorWorks);
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(mVb.authorWorks.getContext());
+
+        // Optional overlay
+        final int overlayType = ParseUtils.getIntListPref(global,
+                                                          Prefs.pk_booklist_fastscroller_overlay,
+                                                          FastScroller.OverlayProvider.STYLE_MD2);
+        FastScroller.attach(mVb.authorWorks, overlayType);
 
         mAdapter = new TocAdapter(context);
         mVb.authorWorks.setAdapter(mAdapter);

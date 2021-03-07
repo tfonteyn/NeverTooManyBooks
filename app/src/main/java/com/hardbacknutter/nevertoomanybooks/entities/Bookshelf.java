@@ -38,10 +38,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -205,12 +205,12 @@ public class Bookshelf
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             final String name = global.getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
-                return DaoLocator.getInstance().getBookshelfDao().findByName(name);
+                return ServiceLocator.getInstance().getBookshelfDao().findByName(name);
             }
             return null;
 
         } else {
-            return DaoLocator.getInstance().getBookshelfDao().getById(id);
+            return ServiceLocator.getInstance().getBookshelfDao().getById(id);
         }
     }
 
@@ -226,7 +226,7 @@ public class Bookshelf
             return false;
         }
 
-        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
         final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
             final Bookshelf current = entityMerger.next();
@@ -283,7 +283,7 @@ public class Bookshelf
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         mStyleUuid = style.getUuid();
-        DaoLocator.getInstance().getBookshelfDao().update(context, this);
+        ServiceLocator.getInstance().getBookshelfDao().update(context, this);
 
     }
 
@@ -336,7 +336,7 @@ public class Bookshelf
         mTopItemPosition = position;
         mTopViewOffset = topViewOffset;
 
-        DaoLocator.getInstance().getBookshelfDao().update(context, this);
+        ServiceLocator.getInstance().getBookshelfDao().update(context, this);
     }
 
     /**
@@ -348,7 +348,7 @@ public class Bookshelf
         final String uuid = mStyleUuid;
         final ListStyle style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
-            DaoLocator.getInstance().getBookshelfDao().update(context, this);
+            ServiceLocator.getInstance().getBookshelfDao().update(context, this);
         }
     }
 

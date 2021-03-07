@@ -42,13 +42,13 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -127,7 +127,7 @@ public abstract class ArchiveWriterAbstract
             throws GeneralParsingException, IOException {
 
         // do a cleanup before we start writing
-        DaoLocator.getInstance().getMaintenanceDao().purge();
+        ServiceLocator.getInstance().getMaintenanceDao().purge();
 
         final Set<RecordType> exportEntities = mHelper.getExporterEntries();
 
@@ -221,7 +221,7 @@ public abstract class ArchiveWriterAbstract
 
         // If the backup was a full backup remember that.
         if (!mHelper.isIncremental()) {
-            Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+            Backup.setLastFullBackupDate(LocalDateTime.now(ZoneOffset.UTC));
         }
 
         return mResults;

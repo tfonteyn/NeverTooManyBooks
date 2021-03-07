@@ -117,9 +117,9 @@ public final class FileUtils {
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.error(TAG, new Throwable(),
-                             "renameOrThrow"
-                             + "|source==destination==" + source.getAbsolutePath());
+                Logger.e(TAG, new Throwable(),
+                         "renameOrThrow|source==destination=="
+                         + source.getAbsolutePath());
             }
             return;
         }

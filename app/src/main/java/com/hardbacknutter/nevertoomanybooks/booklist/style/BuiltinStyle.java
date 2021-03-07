@@ -67,7 +67,7 @@ public class BuiltinStyle
         mIsPreferred = isPreferred;
         mMenuPosition = menuPosition;
 
-        initPrefs(context, false);
+        initPrefs(false);
 
         for (@BooklistGroup.Id final int groupId : groupIds) {
             getGroups().add(BooklistGroup.newInstance(groupId, false, this));

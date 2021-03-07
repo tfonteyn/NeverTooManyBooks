@@ -26,8 +26,8 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -66,10 +66,10 @@ public class OptimizeDbTask
         AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
 
         try {
-            DbLocator.getDb().optimize();
+            ServiceLocator.getDb().optimize();
 
-            if (ImageUtils.isImageCachingEnabled(context)) {
-                DbLocator.getCoversDb().optimize();
+            if (ImageUtils.isImageCachingEnabled()) {
+                ServiceLocator.getCoversDb().optimize();
             }
             return true;
 

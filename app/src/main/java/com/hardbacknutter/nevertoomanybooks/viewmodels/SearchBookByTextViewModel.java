@@ -25,15 +25,14 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -64,12 +63,13 @@ public class SearchBookByTextViewModel
 
     /**
      * Pseudo constructor.
-     *
-     * @param context Current context
      */
-    public void init(@NonNull final Context context) {
+    public void init() {
         if (mUsePublisher == null) {
-            mUsePublisher = usePublisher(context);
+            // Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
+            // This will be refactored/moved/... at some point.
+            mUsePublisher = ServiceLocator.getGlobalPreferences()
+                                          .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
         }
     }
 
@@ -96,8 +96,8 @@ public class SearchBookByTextViewModel
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can copy with the formatted version.
         final ArrayList<String> authors =
-                DaoLocator.getInstance().getAuthorDao()
-                          .getNames(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                ServiceLocator.getInstance().getAuthorDao()
+                              .getNames(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (final String s : authors) {
@@ -112,21 +112,6 @@ public class SearchBookByTextViewModel
         }
 
         return authors;
-    }
-
-    /**
-     * Whether a search should (also) use the publisher name to search for books.
-     * <p>
-     * Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
-     * This method will be refactored/moved/... at some point.
-     *
-     * @param context Current context
-     *
-     * @return flag
-     */
-    private boolean usePublisher(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
     }
 
     /**
@@ -156,7 +141,8 @@ public class SearchBookByTextViewModel
     @NonNull
     public ArrayList<String> getPublisherNames(@NonNull final Context context) {
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        final ArrayList<String> publishers = DaoLocator.getInstance().getPublisherDao().getNames();
+        final ArrayList<String> publishers = ServiceLocator.getInstance().getPublisherDao()
+                                                           .getNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
         for (final String s : publishers) {

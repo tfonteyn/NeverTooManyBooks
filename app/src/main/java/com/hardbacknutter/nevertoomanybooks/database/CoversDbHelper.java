@@ -107,11 +107,11 @@ public class CoversDbHelper
      *
      * @param context Current context
      */
-    CoversDbHelper(@NonNull final Context context) {
+    public CoversDbHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
     }
 
-    void deleteDatabase(@NonNull final Context context) {
+    public void deleteDatabase(@NonNull final Context context) {
         context.deleteDatabase(DATABASE_NAME);
     }
 
@@ -121,7 +121,7 @@ public class CoversDbHelper
      * @return database connection
      */
     @NonNull
-    SynchronizedDb getDb() {
+    public SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);

@@ -55,7 +55,7 @@ class OpenLibrarySearchEngineTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (OpenLibrarySearchEngine) Site.Type.Data
-                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine(new MockCaller());
     }
 
     @Test

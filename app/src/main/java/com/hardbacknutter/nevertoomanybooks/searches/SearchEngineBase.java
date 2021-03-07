@@ -29,10 +29,12 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public abstract class SearchEngineBase
         implements SearchEngine {
@@ -41,23 +43,19 @@ public abstract class SearchEngineBase
     protected final int mId;
 
     @NonNull
-    private final Context mAppContext;
-
+    private final SearchEngineRegistry.Config mConfig;
     @Nullable
     private Canceller mCaller;
 
-    @NonNull
-    private final SearchEngineRegistry.Config mConfig;
-
     /**
      * Constructor.
+     * <p>
+     * Developer note: yes, the passed engine id could be hardcoded in each concrete engine
+     * constructor. Leaving as-is for now to allow future changes in loading the config.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
-    public SearchEngineBase(@NonNull final Context appContext,
-                            @SearchSites.EngineId final int engineId) {
-        mAppContext = appContext;
+    public SearchEngineBase(@SearchSites.EngineId final int engineId) {
         mId = engineId;
         mConfig = SearchEngineRegistry.getInstance().getByEngineId(mId);
     }
@@ -115,8 +113,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public Context getAppContext() {
-        return mAppContext;
+    public Context getContext() {
+        return AppLocale.getInstance().apply(ServiceLocator.getAppContext());
     }
 
     @NonNull

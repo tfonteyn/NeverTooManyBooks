@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -153,14 +153,14 @@ public class BookCoder {
         externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
         //noinspection SimplifyStreamApiCallChains
-        DaoLocator.getInstance().getCalibreLibraryDao().getLibraries()
-                  .stream()
-                  .forEach(library -> {
-                      mCalibreLibraryId2StrMap.put(library.getId(),
-                                                   library.getLibraryStringId());
-                      mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
-                                                   library.getId());
-                  });
+        ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries()
+                      .stream()
+                      .forEach(library -> {
+                          mCalibreLibraryId2StrMap.put(library.getId(),
+                                                       library.getLibraryStringId());
+                          mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
+                                                       library.getId());
+                      });
     }
 
     @NonNull

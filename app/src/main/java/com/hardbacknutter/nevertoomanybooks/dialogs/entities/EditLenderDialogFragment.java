@@ -48,8 +48,8 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -121,7 +121,7 @@ public class EditLenderDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final LoaneeDao loaneeDao = DaoLocator.getInstance().getLoaneeDao();
+        final LoaneeDao loaneeDao = ServiceLocator.getInstance().getLoaneeDao();
         // get previously used lender names
         mPeople = loaneeDao.getList();
 
@@ -215,10 +215,10 @@ public class EditLenderDialogFragment
         final boolean success;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            success = DaoLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
         } else {
             // return the book
-            success = DaoLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
         }
 
         if (success) {

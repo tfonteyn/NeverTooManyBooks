@@ -179,8 +179,7 @@ final class MenuHelper {
             final Domain domain = oConfig.get().getExternalIdDomain();
             if (domain != null) {
                 final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
-                        Site.Type.Data.getSite(oConfig.get().getEngineId())
-                                      .getSearchEngine(context);
+                        Site.Type.Data.getSite(oConfig.get().getEngineId()).getSearchEngine();
 
                 final String url = searchEngine.createUrl(rowData.getString(domain.getName()));
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
@@ -1175,7 +1175,7 @@ public class BooklistGroup {
         @Override
         public String toString() {
             return "GroupKey{"
-                   + "mLabelId=`" + App.getLogString(mLabelId) + '`'
+                   + "mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
                    + ", mKeyPrefix=`" + mKeyPrefix + '`'
                    + ", mKeyDomain=" + mKeyDomain
                    + ", mSecondaryDomains=" + mGroupDomains

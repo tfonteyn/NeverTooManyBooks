@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +46,7 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -143,13 +143,11 @@ public class AmazonSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public AmazonSearchEngine(@NonNull final Context appContext,
-                              @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public AmazonSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
 
         final String baseUrl = getSiteUrl();
         // check the domain name to determine the language of the site
@@ -188,12 +186,11 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    public static String getSiteUrl(@NonNull final Context context) {
+    private static String getAmazonUrl() {
         //noinspection ConstantConditions
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getString(PK_HOST_URL, SearchEngineRegistry
-                        .getInstance().getByEngineId(SearchSites.AMAZON).getSiteUrl());
+        return ServiceLocator.getGlobalPreferences()
+                             .getString(PK_HOST_URL, SearchEngineRegistry
+                                     .getInstance().getByEngineId(SearchSites.AMAZON).getSiteUrl());
     }
 
     /**
@@ -238,7 +235,7 @@ public class AmazonSearchEngine
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'ld need to popup
         // an explanation why we cannot search.
-        final String url = getSiteUrl(context) + SEARCH_SUFFIX + fields.trim();
+        final String url = getAmazonUrl() + SEARCH_SUFFIX + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -279,7 +276,7 @@ public class AmazonSearchEngine
             try {
                 fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(getAppContext(), TAG, e, "Unable to add isbn to URL");
+                Logger.error(TAG, e, "Unable to add isbn to URL");
             }
         }
 
@@ -289,7 +286,7 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public String getSiteUrl() {
-        return getSiteUrl(getAppContext());
+        return getAmazonUrl();
     }
 
     @NonNull
@@ -320,7 +317,8 @@ public class AmazonSearchEngine
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                final Locale locale = AppLocale.getInstance().getLocale(getAppContext(), root);
+                final Locale locale = AppLocale.getInstance().getLocale(
+                        getContext(), root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale", "locale=" + locale);
                 }
@@ -496,8 +494,7 @@ public class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    data = Languages.getInstance()
-                                    .getISO3FromDisplayName(getAppContext(), siteLocale, data);
+                    data = Languages.getInstance().getISO3FromDisplayName(siteLocale, data);
                     bookData.putString(DBKeys.KEY_LANGUAGE, data);
                     break;
 

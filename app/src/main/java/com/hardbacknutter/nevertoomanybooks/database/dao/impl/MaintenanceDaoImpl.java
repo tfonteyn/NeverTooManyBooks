@@ -28,8 +28,8 @@ import androidx.annotation.NonNull;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -101,10 +101,10 @@ public class MaintenanceDaoImpl
         // and linked with books via a link table.
 
         try {
-            final DaoLocator daoLocator = DaoLocator.getInstance();
-            daoLocator.getSeriesDao().purge();
-            daoLocator.getAuthorDao().purge();
-            daoLocator.getPublisherDao().purge();
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            serviceLocator.getSeriesDao().purge();
+            serviceLocator.getAuthorDao().purge();
+            serviceLocator.getPublisherDao().purge();
 
             mDb.analyze();
 

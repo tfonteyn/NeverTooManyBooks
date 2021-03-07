@@ -78,17 +78,17 @@ public class GrAuthTask
         Thread.currentThread().setName(TAG);
 
         try {
-            if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (!NetworkUtils.isNetworkAvailable()) {
                 return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
             }
 
-            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth();
             if (grAuth.hasValidCredentials(context)) {
                 return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_ALREADY_GRANTED);
             }
 
             // This step can take several seconds....
-            final Uri authUri = grAuth.requestAuthorization(context);
+            final Uri authUri = grAuth.requestAuthorization();
             // Open the web page.
             final Intent intent = new Intent(Intent.ACTION_VIEW, authUri);
             // fix for running on Android 9+ for starting the new activity

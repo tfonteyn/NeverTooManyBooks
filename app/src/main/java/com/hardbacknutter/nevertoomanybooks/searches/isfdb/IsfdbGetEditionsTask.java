@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class IsfdbGetEditionsTask
         Thread.currentThread().setName(TAG + mIsbn);
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
-                SearchEngineRegistry.getInstance().createSearchEngine(context, SearchSites.ISFDB);
+                SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
         return searchEngine.fetchEditionsByIsbn(mIsbn);

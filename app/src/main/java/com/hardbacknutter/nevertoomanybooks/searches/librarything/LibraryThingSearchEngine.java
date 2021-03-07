@@ -29,7 +29,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -114,13 +114,11 @@ public class LibraryThingSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public LibraryThingSearchEngine(@NonNull final Context appContext,
-                                    @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public LibraryThingSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -141,12 +139,10 @@ public class LibraryThingSearchEngine
     /**
      * external users (to this class) should call this before doing any searches.
      *
-     * @param context Current context
-     *
      * @return {@code true} if there is a developer key configured.
      */
-    private static boolean hasKey(@NonNull final Context context) {
-        final boolean hasKey = !getDevKey(context).isEmpty();
+    private static boolean hasKey() {
+        final boolean hasKey = !getDevKey().isEmpty();
         if (BuildConfig.DEBUG && !hasKey) {
             Log.d(TAG, "hasKey|key not available");
         }
@@ -156,14 +152,11 @@ public class LibraryThingSearchEngine
     /**
      * Get the dev key.
      *
-     * @param context Current context
-     *
      * @return the dev key, CAN BE EMPTY but never {@code null}
      */
     @NonNull
-    private static String getDevKey(@NonNull final Context context) {
-        final String key = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getString(PK_DEV_KEY, null);
+    private static String getDevKey() {
+        final String key = ServiceLocator.getGlobalPreferences().getString(PK_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return DEV_KEY_PATTERN.matcher(key).replaceAll("");
         }
@@ -178,7 +171,7 @@ public class LibraryThingSearchEngine
 
     @Override
     public boolean isAvailable() {
-        return hasKey(getAppContext());
+        return hasKey();
     }
 
     @NonNull
@@ -220,8 +213,7 @@ public class LibraryThingSearchEngine
 
         final Bundle bookData = new Bundle();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(getAppContext()),
-                                                        "id", externalId);
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "id", externalId);
         fetchBook(url, bookData);
 
         if (isCancelled()) {
@@ -255,7 +247,7 @@ public class LibraryThingSearchEngine
 
         final Bundle bookData = new Bundle();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(getAppContext()),
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(),
                                                         "isbn", validIsbn);
         fetchBook(url, bookData);
 
@@ -304,7 +296,7 @@ public class LibraryThingSearchEngine
             }
         }
 
-        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(getAppContext()),
+        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(),
                                          sizeParam, validIsbn);
         return saveImage(url, validIsbn, cIdx, size);
     }
@@ -367,8 +359,8 @@ public class LibraryThingSearchEngine
             // but other than that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new GeneralParsingException(
-                        getAppContext().getString(R.string.error_network_site_has_problems));
+                throw new GeneralParsingException(getContext().getString(
+                        R.string.error_network_site_has_problems));
             }
 
             if (BuildConfig.DEBUG /* always */) {

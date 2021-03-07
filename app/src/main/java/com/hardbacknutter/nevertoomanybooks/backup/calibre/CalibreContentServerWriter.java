@@ -37,12 +37,12 @@ import java.util.Iterator;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -127,7 +127,8 @@ public class CalibreContentServerWriter
 
         try {
             mServer.readMetaData(context);
-            final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
+            final CalibreLibraryDao libraryDao = ServiceLocator.getInstance()
+                                                               .getCalibreLibraryDao();
             for (final CalibreLibrary library : mServer.getLibraries()) {
 
                 final LocalDateTime dateSince;
@@ -367,6 +368,6 @@ public class CalibreContentServerWriter
 
     @Override
     public void close() {
-        DaoLocator.getInstance().getMaintenanceDao().purge();
+        ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 }

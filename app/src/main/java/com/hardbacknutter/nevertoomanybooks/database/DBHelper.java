@@ -39,9 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
@@ -142,7 +142,7 @@ public class DBHelper
      *
      * @param context Current context
      */
-    DBHelper(@NonNull final Context context) {
+    public DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
     }
 
@@ -164,7 +164,7 @@ public class DBHelper
      * safe access to the database.
      */
     public static void recreateIndices() {
-        final SynchronizedDb db = DbLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getDb();
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // It IS safe here to get the underlying database, as we're in a SyncLock.
@@ -207,7 +207,7 @@ public class DBHelper
         db.execSQL("analyze");
     }
 
-    void deleteDatabase(@NonNull final Context context) {
+    public void deleteDatabase(@NonNull final Context context) {
         context.deleteDatabase(DATABASE_NAME);
     }
 
@@ -216,7 +216,7 @@ public class DBHelper
      *
      * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
-    boolean isCollationCaseSensitive() {
+    public boolean isCollationCaseSensitive() {
         //noinspection ConstantConditions
         return sIsCollationCaseSensitive;
     }
@@ -227,7 +227,7 @@ public class DBHelper
      * @return database connection
      */
     @NonNull
-    SynchronizedDb getDb() {
+    public SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
@@ -255,10 +255,11 @@ public class DBHelper
      */
     private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
         final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
-        // Drop and create table
-        db.execSQL(dropTable);
-        db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
         try {
+            // Drop and create table
+            db.execSQL(dropTable);
+            db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
+
             // Row that *should* be returned first assuming 'a' <=> 'A'
             db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
             // Row that *should* be returned second assuming 'a' <=> 'A';
@@ -598,7 +599,7 @@ public class DBHelper
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
-        final Context context = AppLocale.getInstance().apply(App.getAppContext());
+        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
 
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
@@ -624,7 +625,7 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        final Context context = AppLocale.getInstance().apply(App.getAppContext());
+        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {

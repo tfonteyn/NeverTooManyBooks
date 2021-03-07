@@ -71,7 +71,7 @@ public class RebuildFtsTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleFtsRebuild(context, false);
+            StartupViewModel.scheduleFtsRebuild(false);
         }
     }
 }

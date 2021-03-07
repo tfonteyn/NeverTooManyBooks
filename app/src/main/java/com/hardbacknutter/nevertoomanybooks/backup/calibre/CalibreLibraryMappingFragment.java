@@ -183,7 +183,7 @@ public class CalibreLibraryMappingFragment
         if (msg == null) {
             msg = ExMsg.ioExFallbackMsg(context, message.result,
                                         getString(R.string.error_network_site_access_failed,
-                                                  CalibreContentServer.getHostUrl(context)));
+                                                  CalibreContentServer.getHostUrl()));
         }
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_error_24)

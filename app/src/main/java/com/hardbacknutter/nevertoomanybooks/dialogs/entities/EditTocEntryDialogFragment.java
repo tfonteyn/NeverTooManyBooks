@@ -32,8 +32,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -149,8 +149,8 @@ public class EditTocEntryDialogFragment
                 mAuthorAdapter = new ExtArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
                         ExtArrayAdapter.FilterType.Diacritic,
-                        DaoLocator.getInstance().getAuthorDao()
-                                  .getNames(DBKeys.KEY_AUTHOR_FORMATTED));
+                        ServiceLocator.getInstance().getAuthorDao()
+                                      .getNames(DBKeys.KEY_AUTHOR_FORMATTED));
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 

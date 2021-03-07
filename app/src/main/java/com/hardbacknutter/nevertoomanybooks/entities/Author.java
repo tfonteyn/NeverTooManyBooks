@@ -44,10 +44,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -377,13 +377,11 @@ public class Author
     /**
      * Get the global default for this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want "given-names family" formatted authors.
      */
-    private static boolean isShowGivenNameFirst(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_show_author_name_given_first, false);
+    private static boolean isShowGivenNameFirst() {
+        return ServiceLocator.getGlobalPreferences()
+                             .getBoolean(Prefs.pk_show_author_name_given_first, false);
     }
 
     /**
@@ -434,7 +432,7 @@ public class Author
             return false;
         }
 
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         final EntityMerger<Author> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -543,7 +541,7 @@ public class Author
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return getFormattedName(isShowGivenNameFirst(context));
+        return getFormattedName(isShowGivenNameFirst());
     }
 
     /**

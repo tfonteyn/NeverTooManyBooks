@@ -31,8 +31,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 
 import static org.junit.Assert.assertEquals;
@@ -65,9 +64,9 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        DbLocator.init(context);
+        ServiceLocator.create(context);
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -115,9 +114,9 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames02() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        DbLocator.init(context);
+        ServiceLocator.create(context);
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -170,9 +169,9 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames03() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        DbLocator.init(context);
+        ServiceLocator.create(context);
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;

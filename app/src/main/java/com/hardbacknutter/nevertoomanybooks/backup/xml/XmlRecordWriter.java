@@ -37,6 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
@@ -46,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -179,7 +179,7 @@ public class XmlRecordWriter
                                        @NonNull final ProgressListener progressListener)
             throws IOException {
         final ArrayList<CalibreLibrary> calibreLibraries =
-                DaoLocator.getInstance().getCalibreLibraryDao().getLibraries();
+                ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries();
         if (!calibreLibraries.isEmpty()) {
             writer.write("<CalibreLibraryList");
             writer.write(XmlUtils.versionAttr(1));
@@ -235,7 +235,7 @@ public class XmlRecordWriter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = DaoLocator.getInstance().getBookshelfDao().fetchAllUserShelves()) {
+        try (Cursor cursor = ServiceLocator.getInstance().getBookshelfDao().fetchAllUserShelves()) {
             writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_BOOKSHELVES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -267,7 +267,7 @@ public class XmlRecordWriter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = DaoLocator.getInstance().getAuthorDao().fetchAll()) {
+        try (Cursor cursor = ServiceLocator.getInstance().getAuthorDao().fetchAll()) {
             writer.write('<' + Book.BKEY_AUTHOR_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_AUTHORS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -306,7 +306,7 @@ public class XmlRecordWriter
             throws IOException {
 
 
-        try (Cursor cursor = DaoLocator.getInstance().getSeriesDao().fetchAll()) {
+        try (Cursor cursor = ServiceLocator.getInstance().getSeriesDao().fetchAll()) {
             writer.write('<' + Book.BKEY_SERIES_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_SERIES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -340,7 +340,7 @@ public class XmlRecordWriter
             throws IOException {
 
 
-        try (Cursor cursor = DaoLocator.getInstance().getPublisherDao().fetchAll()) {
+        try (Cursor cursor = ServiceLocator.getInstance().getPublisherDao().fetchAll()) {
             writer.write('<' + Book.BKEY_PUBLISHER_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_PUBLISHERS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -370,7 +370,7 @@ public class XmlRecordWriter
                           @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = DaoLocator.getInstance().getTocEntryDao().fetchAll()) {
+        try (Cursor cursor = ServiceLocator.getInstance().getTocEntryDao().fetchAll()) {
             writer.write('<' + Book.BKEY_TOC_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_TOC_LIST));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));

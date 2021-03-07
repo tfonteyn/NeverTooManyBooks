@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -29,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -85,12 +84,6 @@ public class IsfdbSearchEngine
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "isfdb";
-    /** Type: {@code boolean}. */
-    public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
-    /** Type: {@code boolean}. */
-    static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -105,6 +98,12 @@ public class IsfdbSearchEngine
     /** But to encode the search url (a GET), the charset must be 8859-1. */
     @SuppressWarnings("WeakerAccess")
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
+    /** Preferences prefix. */
+    private static final String PREF_KEY = "isfdb";
+    /** Type: {@code boolean}. */
+    public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
+    /** Type: {@code boolean}. */
+    static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /** Common CGI directory. */
     private static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
@@ -218,13 +217,11 @@ public class IsfdbSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public IsfdbSearchEngine(@NonNull final Context appContext,
-                             @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId, CHARSET_DECODE_PAGE);
+    public IsfdbSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId, CHARSET_DECODE_PAGE);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -315,8 +312,7 @@ public class IsfdbSearchEngine
         }
 
         // as per user settings.
-        if (PreferenceManager.getDefaultSharedPreferences(getAppContext())
-                             .getBoolean(PK_USE_PUBLISHER, false)) {
+        if (ServiceLocator.getGlobalPreferences().getBoolean(PK_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
                 args += "&USE_" + index + "=pub_publisher"
@@ -566,7 +562,7 @@ public class IsfdbSearchEngine
             return;
         }
 
-        final DateParser dateParser = DateParser.getInstance(getAppContext());
+        final DateParser dateParser = DateParser.getInstance(getContext());
 
         final Element contentBox = allContentBoxes.first();
         final Element ul = contentBox.selectFirst("ul");
@@ -733,8 +729,7 @@ public class IsfdbSearchEngine
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(getAppContext(), TAG, e,
-                             "path: " + document.location() + "\n\nLI: " + li.toString());
+                Logger.error(TAG, e, "path: " + document.location() + "\n\nLI: " + li.toString());
             }
         }
 
@@ -865,9 +860,8 @@ public class IsfdbSearchEngine
     @WorkerThread
     private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
 
-        final boolean addSeriesFromToc = PreferenceManager
-                .getDefaultSharedPreferences(getAppContext())
-                .getBoolean(PK_SERIES_FROM_TOC, false);
+        final boolean addSeriesFromToc = ServiceLocator.getGlobalPreferences()
+                                                       .getBoolean(PK_SERIES_FROM_TOC, false);
         final ArrayList<TocEntry> toc = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one
@@ -987,13 +981,12 @@ public class IsfdbSearchEngine
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {
-                author = Author.createUnknownAuthor(getAppContext());
+                author = Author.createUnknownAuthor(getContext());
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(getAppContext(), TAG, "getTocList"
-                                                  + "|no title for li=" + li);
+                Logger.warn(TAG, "getTocList|no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"
@@ -1186,7 +1179,7 @@ public class IsfdbSearchEngine
 
         } else {
             // dunno, let's log it
-            Logger.warn(getAppContext(), TAG, "parseDoc|pageUrl=" + pageUrl);
+            Logger.warn(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;

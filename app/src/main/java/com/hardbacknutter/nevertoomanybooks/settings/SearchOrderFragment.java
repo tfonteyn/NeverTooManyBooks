@@ -158,7 +158,7 @@ public class SearchOrderFragment
             final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
             // Reset the global/original list for the type.
-            mType.resetList(getContext(), systemLocale, userLocale);
+            mType.resetList(systemLocale, userLocale);
             // and replace the content of the local list with the (new) defaults.
             mSiteList.clear();
             mSiteList.addAll(mType.getSites());
@@ -214,7 +214,7 @@ public class SearchOrderFragment
             final Context context = getContext();
 
             final Site site = getItem(position);
-            final SearchEngine searchEngine = site.getSearchEngine(context);
+            final SearchEngine searchEngine = site.getSearchEngine();
 
             holder.nameView.setText(searchEngine.getName(context));
 

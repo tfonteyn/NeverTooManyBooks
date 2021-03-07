@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,6 +44,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -213,7 +213,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Preferences
                         || recordType == RecordType.AutoDetect) {
-                        readPreferences(context, root);
+                        readPreferences(root);
                     }
 
                     if (recordType == RecordType.Certificates
@@ -258,12 +258,11 @@ public class JsonRecordReader
         }
     }
 
-    private void readPreferences(@NonNull final Context context,
-                                 @NonNull final JSONObject root)
+    private void readPreferences(@NonNull final JSONObject root)
             throws JSONException {
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
-            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
+            new SharedPreferencesCoder(ServiceLocator.getGlobalPreferences())
                     .decode(jsonRoot);
             mResults.preferences = 1;
         }

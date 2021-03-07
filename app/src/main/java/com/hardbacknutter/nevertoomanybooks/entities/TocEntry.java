@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -178,7 +178,7 @@ public class TocEntry
             return false;
         }
 
-        final TocEntryDao tocEntryDao = DaoLocator.getInstance().getTocEntryDao();
+        final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
 
         final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -279,7 +279,7 @@ public class TocEntry
 
     @NonNull
     public List<Pair<Long, String>> getBookTitles() {
-        return DaoLocator.getInstance().getTocEntryDao().getBookTitles(mId);
+        return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId);
     }
 
     @Override

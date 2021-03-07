@@ -54,11 +54,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -155,7 +155,7 @@ public class SearchCoordinator
     private String mIsbnSearchText = "";
     /** {@code true} for strict ISBN checking, {@code false} for allowing generic codes. */
     private boolean mStrictIsbn = true;
-    /** Created by {@link #prepareSearch(Context)}. NonNull afterwards. */
+    /** Created by {@link #prepareSearch()}. NonNull afterwards. */
     private ISBN mIsbn;
     /** Site external id for search. */
     @Nullable
@@ -448,14 +448,12 @@ public class SearchCoordinator
     /**
      * Search the given engine with the site specific book id.
      *
-     * @param context              Current context
      * @param searchEngine         to use
      * @param externalIdSearchText to search for
      *
      * @return {@code true} if the search was started.
      */
-    public boolean searchByExternalId(@NonNull final Context context,
-                                      @NonNull final SearchEngine searchEngine,
+    public boolean searchByExternalId(@NonNull final SearchEngine searchEngine,
                                       @NonNull final String externalIdSearchText) {
         SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
 
@@ -464,7 +462,7 @@ public class SearchCoordinator
 
         mExternalIdSearchText = new SparseArray<>();
         mExternalIdSearchText.put(searchEngine.getId(), externalIdSearchText);
-        prepareSearch(context);
+        prepareSearch();
 
         mIsSearchActive = startSearch(searchEngine);
         return mIsSearchActive;
@@ -481,12 +479,10 @@ public class SearchCoordinator
      * Once/if an ISBN/code is found, the serial search is abandoned, and a new concurrent search
      * is started on all sites using the ISBN/code.
      *
-     * @param context Current context
-     *
      * @return {@code true} if at least one search was started.
      */
-    public boolean search(@NonNull final Context context) {
-        prepareSearch(context);
+    public boolean search() {
+        prepareSearch();
 
         // If we have one or more ID's
         if ((mExternalIdSearchText != null && mExternalIdSearchText.size() > 0)
@@ -495,14 +491,14 @@ public class SearchCoordinator
 
             // then start a concurrent search
             mWaitingForExactCode = false;
-            mIsSearchActive = startSearch(context);
+            mIsSearchActive = startSearch();
 
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
             // one at a time until we get a ISBN/code.
             mWaitingForExactCode = true;
-            mIsSearchActive = startNextSearch(context);
+            mIsSearchActive = startNextSearch();
         }
 
         return mIsSearchActive;
@@ -527,17 +523,15 @@ public class SearchCoordinator
     /**
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
-     *
-     * @param context Current context
      */
-    private void prepareSearch(@NonNull final Context context) {
+    private void prepareSearch() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
             mSearchStartTime = System.nanoTime();
         }
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (!NetworkUtils.isNetworkAvailable()) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
 
@@ -588,17 +582,15 @@ public class SearchCoordinator
     /**
      * Start all searches which have not been run yet.
      *
-     * @param context Current context
-     *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch(@NonNull final Context context) {
+    private boolean startSearch() {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
         for (final Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
-                if (startSearch(site.getSearchEngine(context))) {
+                if (startSearch(site.getSearchEngine())) {
                     atLeastOneStarted = true;
                 }
             }
@@ -609,15 +601,13 @@ public class SearchCoordinator
     /**
      * Start a single task.
      *
-     * @param context Current context
-     *
      * @return {@code true} if a search was started, {@code false} if not
      */
-    private boolean startNextSearch(@NonNull final Context context) {
+    private boolean startNextSearch() {
         for (final Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
-                return startSearch(site.getSearchEngine(context));
+                return startSearch(site.getSearchEngine());
             }
         }
         return false;
@@ -692,7 +682,8 @@ public class SearchCoordinator
             mActiveTasks.add(task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName(App.getTaskContext()));
+            Log.d(TAG, "startSearch|searchEngine="
+                       + searchEngine.getName(ServiceLocator.getAppContext()));
         }
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         return true;
@@ -751,7 +742,7 @@ public class SearchCoordinator
 
         // Merge the data we have in the order as decided upon above.
         for (final Site site : sites) {
-            final SearchEngine searchEngine = site.getSearchEngine(context);
+            final SearchEngine searchEngine = site.getSearchEngine();
 
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
             if (siteData != null && !siteData.isEmpty()) {
@@ -1010,7 +1001,7 @@ public class SearchCoordinator
             mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
 
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
 
         // clear obsolete progress status
         synchronized (mSearchProgressMessages) {
@@ -1031,10 +1022,10 @@ public class SearchCoordinator
 
                 // Start the others...even if they have run before.
                 // They will redo the search WITH the ISBN.
-                startSearch(context);
+                startSearch();
             } else {
                 // Start next one that has not run yet.
-                startNextSearch(context);
+                startNextSearch();
             }
         }
 

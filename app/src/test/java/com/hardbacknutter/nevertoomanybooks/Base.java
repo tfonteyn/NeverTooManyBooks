@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -124,6 +124,9 @@ public class Base {
         setLocale(Locale.US);
 
         mContext = ContextMock.create(PACKAGE_NAME);
+        ServiceLocator.create(mContext);
+        SearchEngineRegistry.create(mContext);
+
         mMockPreferences = SharedPreferencesMock.create();
 
         mRawData = BundleMock.create();
@@ -145,7 +148,6 @@ public class Base {
 
         setupStringResources(mResources);
         setupLanguageMap(mContext);
-
         setupSearchEnginePreferences();
     }
 
@@ -183,8 +185,6 @@ public class Base {
     }
 
     private void setupSearchEnginePreferences() {
-        SearchEngineRegistry.create(mContext);
-
         mMockPreferences.edit()
                         .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
                         // random some at true, some at false.

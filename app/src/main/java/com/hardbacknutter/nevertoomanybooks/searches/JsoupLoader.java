@@ -241,7 +241,7 @@ public class JsoupLoader {
                 mDoc = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.error(context, TAG, e, "url=" + url);
+                    Logger.error(TAG, e, "url=" + url);
                 }
                 throw e;
             }

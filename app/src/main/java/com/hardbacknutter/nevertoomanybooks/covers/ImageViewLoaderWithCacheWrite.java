@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 // collapse all lines, restart app
 // scroll to Pratchett (175 books) on 1st line, expand, scroll to end.
@@ -96,8 +96,8 @@ public class ImageViewLoaderWithCacheWrite
     protected void onPostExecute(@Nullable final Bitmap bitmap) {
         super.onPostExecute(bitmap);
         if (bitmap != null) {
-            DaoLocator.getInstance().getCoverCacheDao()
-                      .saveCover(mUuid, mCIdx, bitmap, mMaxWidth, mMaxHeight);
+            ServiceLocator.getInstance().getCoverCacheDao()
+                          .saveCover(mUuid, mCIdx, bitmap, mMaxWidth, mMaxHeight);
         }
     }
 }

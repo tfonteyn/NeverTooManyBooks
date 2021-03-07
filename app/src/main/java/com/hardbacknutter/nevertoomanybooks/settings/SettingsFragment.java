@@ -141,12 +141,12 @@ public class SettingsFragment
                     .setCancelable(false)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> {
                         p.setChecked(mCurrentSortTitleReordered);
-                        StartupViewModel.scheduleOrderByRebuild(getContext(), false);
+                        StartupViewModel.scheduleOrderByRebuild(false);
                         setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
                     })
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         p.setChecked(!p.isChecked());
-                        StartupViewModel.scheduleOrderByRebuild(getContext(), true);
+                        StartupViewModel.scheduleOrderByRebuild(true);
                         setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
                     })
                     .create()
@@ -213,7 +213,7 @@ public class SettingsFragment
                                     @NonNull final String schedulerKey) {
         @AttrRes
         final int attr;
-        if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
+        if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
             attr = R.attr.appPreferenceAlertColor;
         } else {
             attr = R.attr.colorControlNormal;

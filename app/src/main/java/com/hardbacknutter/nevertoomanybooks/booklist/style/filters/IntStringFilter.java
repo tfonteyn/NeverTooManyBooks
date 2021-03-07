@@ -28,8 +28,8 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
@@ -215,7 +215,7 @@ abstract class IntStringFilter
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
 
-               + ", mLabelId=`" + App.getLogString(mLabelId) + '`'
+               + ", mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
                + ", mDomainExpression=" + mDomainExpression
                + '}';
     }

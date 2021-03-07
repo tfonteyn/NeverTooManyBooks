@@ -33,8 +33,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
@@ -68,7 +68,7 @@ public class EditBookshelvesViewModel
      */
     public void init(@Nullable final Bundle args) {
         if (mList == null) {
-            mList = DaoLocator.getInstance().getBookshelfDao().getAll();
+            mList = ServiceLocator.getInstance().getBookshelfDao().getAll();
             if (args != null) {
                 // set as the initial result
                 mSelectedBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
@@ -79,7 +79,7 @@ public class EditBookshelvesViewModel
 
     public void reloadListAndSetSelectedPosition(final long bookshelfId) {
         mList.clear();
-        mList.addAll(DaoLocator.getInstance().getBookshelfDao().getAll());
+        mList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
         setSelectedPosition(findSelectedPosition(bookshelfId));
     }
 
@@ -127,12 +127,12 @@ public class EditBookshelvesViewModel
 
     public void deleteBookshelf(final int position) {
         final Bookshelf bookshelf = mList.get(position);
-        DaoLocator.getInstance().getBookshelfDao().delete(bookshelf);
+        ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
         mList.remove(bookshelf);
     }
 
     public void purgeBLNS() {
-        DaoLocator.getInstance().getBookshelfDao()
-                  .purgeNodeStates(mList.get(mSelectedPosition).getId());
+        ServiceLocator.getInstance().getBookshelfDao()
+                      .purgeNodeStates(mList.get(mSelectedPosition).getId());
     }
 }

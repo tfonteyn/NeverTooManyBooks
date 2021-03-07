@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -32,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +38,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -250,19 +249,18 @@ public final class ImageUtils {
     /**
      * Check if caching is enabled.
      *
-     * @param context Current context
-     *
      * @return {@code true} if resized images are cached in a database.
      */
     @AnyThread
-    public static boolean isImageCachingEnabled(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_image_cache_resized, false);
+    public static boolean isImageCachingEnabled() {
+        return ServiceLocator.getGlobalPreferences()
+                             .getBoolean(Prefs.pk_image_cache_resized, false);
     }
 
-    public static void setImageCachingEnabled(@NonNull final Context context,
-                                              final boolean enable) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(Prefs.pk_image_cache_resized, enable).apply();
+    public static void setImageCachingEnabled(final boolean enable) {
+        ServiceLocator.getGlobalPreferences()
+                      .edit()
+                      .putBoolean(Prefs.pk_image_cache_resized, enable)
+                      .apply();
     }
 }

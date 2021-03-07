@@ -55,7 +55,7 @@ public class ValidateKeyTask
         Thread.currentThread().setName(TAG);
 
         final SearchEngine.CoverByIsbn ltm = (SearchEngine.CoverByIsbn) SearchEngineRegistry
-                .getInstance().createSearchEngine(context, SearchSites.LIBRARY_THING);
+                .getInstance().createSearchEngine(SearchSites.LIBRARY_THING);
         final String fileSpec = ltm
                 .searchCoverImageByIsbn("0451451783", 0, ImageFileInfo.Size.Small);
 

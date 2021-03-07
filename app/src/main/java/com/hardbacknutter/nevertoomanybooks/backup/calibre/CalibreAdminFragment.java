@@ -75,7 +75,7 @@ public class CalibreAdminFragment
         getActivity().setTitle(R.string.site_calibre);
 
         mVb.btnLibMap.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl(v.getContext());
+            final String url = CalibreContentServer.getHostUrl();
             if (!url.isEmpty()) {
                 final Bundle args = new Bundle();
                 args.putString(ImportViewModel.BKEY_URL, url);
@@ -92,7 +92,7 @@ public class CalibreAdminFragment
             }
         });
         mVb.btnImport.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl(v.getContext());
+            final String url = CalibreContentServer.getHostUrl();
             if (!url.isEmpty()) {
                 final Bundle args = new Bundle();
                 args.putString(ImportViewModel.BKEY_URL, url);
@@ -109,7 +109,7 @@ public class CalibreAdminFragment
             }
         });
         mVb.btnSendUpdatedBooks.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl(v.getContext());
+            final String url = CalibreContentServer.getHostUrl();
             if (!url.isEmpty()) {
                 final Bundle args = new Bundle();
                 args.putParcelable(ExportFragment.BKEY_ENCODING, ArchiveEncoding.CalibreCS);

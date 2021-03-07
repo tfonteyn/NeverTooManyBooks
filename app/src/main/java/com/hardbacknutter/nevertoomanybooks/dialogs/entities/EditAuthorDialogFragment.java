@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
@@ -129,7 +129,7 @@ public class EditAuthorDialogFragment
 
         final Context context = getContext();
 
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
@@ -184,7 +184,7 @@ public class EditAuthorDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         // check if it already exists (will be 0 if not)
         final long existingId = authorDao.find(context, mAuthor, true, bookLocale);

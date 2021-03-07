@@ -223,13 +223,13 @@ public interface ListStyle {
     @NonNull
     DetailScreenBookFields getDetailScreenBookFields();
 
-    boolean isShowBooksUnderEachSeries(@NonNull Context context);
+    boolean isShowBooksUnderEachSeries();
 
-    boolean isShowBooksUnderEachPublisher(@NonNull Context context);
+    boolean isShowBooksUnderEachPublisher();
 
-    boolean isShowBooksUnderEachBookshelf(@NonNull Context context);
+    boolean isShowBooksUnderEachBookshelf();
 
-    boolean isShowBooksUnderEachAuthor(@NonNull Context context);
+    boolean isShowBooksUnderEachAuthor();
 
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
@@ -245,7 +245,7 @@ public interface ListStyle {
      */
     boolean isSortAuthorByGivenName();
 
-    int getPrimaryAuthorType(@NonNull Context context);
+    int getPrimaryAuthorType();
 
     /**
      * Get a flat map with accumulated preferences for this object and it's children.<br>

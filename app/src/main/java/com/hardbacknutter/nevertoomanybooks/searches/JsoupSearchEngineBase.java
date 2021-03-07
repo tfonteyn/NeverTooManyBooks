@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -65,26 +64,22 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    protected JsoupSearchEngineBase(@SearchSites.EngineId final int engineId) {
+        super(engineId);
         mJsoupLoader = new JsoupLoader();
     }
 
     /**
      * Constructor.
      *
-     * @param appContext  Application context
-     * @param engineId the search engine id
-     * @param charSetName to use
+     * @param engineId            the search engine id
+     * @param charSetName         to use
      */
-    protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    @SearchSites.EngineId final int engineId,
+    protected JsoupSearchEngineBase(@SearchSites.EngineId final int engineId,
                                     @NonNull final String charSetName) {
-        this(appContext, engineId);
+        this(engineId);
         mJsoupLoader.setCharSetName(charSetName);
     }
 
@@ -103,7 +98,7 @@ public abstract class JsoupSearchEngineBase
     public Document loadDocument(@NonNull final String url)
             throws IOException {
         try {
-            return mJsoupLoader.loadDocument(getAppContext(), url, this);
+            return mJsoupLoader.loadDocument(getContext(), url, this);
 
         } catch (@NonNull final FileNotFoundException e) {
             // we couldn't load the page

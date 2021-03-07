@@ -34,9 +34,9 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -117,7 +117,7 @@ public abstract class BaseDaoImpl
             Logger.d(TAG, "Constructor", mInstanceName);
         }
 
-        mDb = DbLocator.getDb();
+        mDb = ServiceLocator.getDb();
     }
 
     /**

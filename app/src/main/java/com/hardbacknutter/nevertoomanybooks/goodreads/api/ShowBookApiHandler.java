@@ -197,7 +197,8 @@ public abstract class ShowBookApiHandler
             final Author author = Author.from(mCurrentAuthorName);
             if (mCurrentAuthorRole != null && !mCurrentAuthorRole.isEmpty()) {
 
-                author.setType(mAuthorTypeMapper.map(getBookLocale(), mCurrentAuthorRole));
+                author.setType(mAuthorTypeMapper.map(
+                        getBookLocale(), mCurrentAuthorRole));
             }
             mAuthors.add(author);
             // reset for next
@@ -826,7 +827,7 @@ public abstract class ShowBookApiHandler
          *
          * optionally used as genre.
          */
-        if (GoodreadsManager.isCollectGenre(mAppContext)) {
+        if (GoodreadsManager.isCollectGenre()) {
             XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                                   XmlTags.XML_POPULAR_SHELVES,
                                   XmlTags.XML_SHELF)

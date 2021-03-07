@@ -34,7 +34,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -158,8 +158,8 @@ public abstract class VMTask<Result>
             mExecutor = ASyncExecutor.SERIAL;
         }
         mExecutor.execute(() -> {
+            final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
             try {
-                final Context context = AppLocale.getInstance().apply(App.getTaskContext());
                 final Result result = doWork(context);
 
                 final FinishedMessage<Result> message = new FinishedMessage<>(mTaskId, result);
@@ -169,7 +169,7 @@ public abstract class VMTask<Result>
                     mFinished.postValue(message);
                 }
             } catch (@NonNull final Exception e) {
-                Logger.error(TAG, e);
+                Logger.error(context, TAG, e);
                 mFailure.postValue(new FinishedMessage<>(mTaskId, e));
             }
             mTaskId = 0;

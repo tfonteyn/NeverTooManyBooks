@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -127,7 +127,7 @@ public class EditBookshelfDialogFragment
         // store changes
         mBookshelf.setName(mName);
 
-        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         // check if it already exists (will be 0 if not)
         final long existingId = bookshelfDao.find(mBookshelf);

@@ -84,9 +84,9 @@ public abstract class SendBooksGrTaskBase
                        @NonNull final QueueManager queueManager) {
         try {
             // can we reach the site at all ?
-            NetworkUtils.ping(context, GoodreadsManager.BASE_URL);
+            NetworkUtils.ping(GoodreadsManager.BASE_URL);
 
-            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth();
             final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
             if (grAuth.hasValidCredentials(context)) {
                 return send(queueManager, grManager);

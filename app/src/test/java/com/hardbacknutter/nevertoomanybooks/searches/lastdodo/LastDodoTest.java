@@ -47,7 +47,7 @@ class LastDodoTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (LastDodoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.LAST_DODO).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.LAST_DODO).getSearchEngine(new MockCaller());
     }
 
     @Test

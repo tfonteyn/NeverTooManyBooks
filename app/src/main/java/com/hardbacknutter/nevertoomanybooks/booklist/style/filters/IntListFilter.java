@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
@@ -255,7 +255,7 @@ public class IntListFilter
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
 
-               + ", mLabelId=`" + App.getLogString(mLabelId) + '`'
+               + ", mLabelId=`" + ServiceLocator.getAppContext().getString(mLabelId) + '`'
                + ", mDomainExpression=" + mDomainExpression
                + '}';
     }

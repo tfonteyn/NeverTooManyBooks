@@ -109,7 +109,7 @@ public class CsvArchiveWriter
 
             // If the backup was a full backup remember that.
             if (!mHelper.isIncremental()) {
-                Backup.setLastFullExportDate(context, ArchiveEncoding.Csv,
+                Backup.setLastFullExportDate(ArchiveEncoding.Csv,
                                              LocalDateTime.now(ZoneOffset.UTC));
             }
             return results;

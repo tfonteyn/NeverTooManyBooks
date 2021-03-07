@@ -34,9 +34,9 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -98,7 +98,8 @@ public class StyleFiltersFragment
             //noinspection ConstantConditions
             bookshelves.setVisible(true);
 
-            final ArrayList<Bookshelf> list = DaoLocator.getInstance().getBookshelfDao().getAll();
+            final ArrayList<Bookshelf> list = ServiceLocator.getInstance().getBookshelfDao()
+                                                            .getAll();
             bookshelves.setEntryValues(
                     list.stream()
                         .map(bookshelf -> String.valueOf(bookshelf.getId()))

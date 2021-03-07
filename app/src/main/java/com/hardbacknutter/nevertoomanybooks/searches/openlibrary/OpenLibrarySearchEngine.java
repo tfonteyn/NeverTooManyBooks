@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.openlibrary;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -149,13 +148,11 @@ public class OpenLibrarySearchEngine
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public OpenLibrarySearchEngine(@NonNull final Context appContext,
-                                   @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public OpenLibrarySearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -505,7 +502,7 @@ public class OpenLibrarySearchEngine
         s = document.optString("publish_date");
         if (!s.isEmpty()) {
             final LocalDateTime date =
-                    DateParser.getInstance(getAppContext()).parse(s, getLocale());
+                    DateParser.getInstance(getContext()).parse(s, getLocale());
             if (date != null) {
                 bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));

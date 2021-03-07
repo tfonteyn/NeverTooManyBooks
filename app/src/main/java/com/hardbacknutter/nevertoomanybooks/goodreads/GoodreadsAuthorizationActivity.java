@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,10 +31,10 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
@@ -81,9 +81,9 @@ public class GoodreadsAuthorizationActivity
         @Override
         protected Boolean doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
-            final Context context = App.getTaskContext();
+            final Context context = ServiceLocator.getAppContext();
 
-            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth();
             try {
                 return grAuth.handleAuthenticationAfterAuthorization(context);
 
@@ -95,7 +95,7 @@ public class GoodreadsAuthorizationActivity
 
         @Override
         protected void onPostExecute(@NonNull final Boolean result) {
-            final Context context = AppLocale.getInstance().apply(App.getAppContext());
+            final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
 
             if (result) {
                 final PendingIntent pendingIntent = Notifier

@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -41,7 +41,7 @@ public class CalibreLibraryMappingViewModel
 
     @NonNull
     List<Bookshelf> getBookshelfList() {
-        return DaoLocator.getInstance().getBookshelfDao().getAll();
+        return ServiceLocator.getInstance().getBookshelfDao().getAll();
     }
 
     @NonNull
@@ -76,7 +76,7 @@ public class CalibreLibraryMappingViewModel
     void mapBookshelfToLibrary(@NonNull final Bookshelf bookshelf) {
         if (bookshelf.getId() != mCurrentLibrary.getMappedBookshelfId()) {
             mCurrentLibrary.setMappedBookshelf(bookshelf.getId());
-            DaoLocator.getInstance().getCalibreLibraryDao().update(mCurrentLibrary);
+            ServiceLocator.getInstance().getCalibreLibraryDao().update(mCurrentLibrary);
         }
     }
 
@@ -86,7 +86,7 @@ public class CalibreLibraryMappingViewModel
         final CalibreVirtualLibrary vlib = mCurrentLibrary.getVirtualLibraries().get(position);
         if (bookshelf.getId() != vlib.getMappedBookshelfId()) {
             vlib.setMappedBookshelf(bookshelf.getId());
-            DaoLocator.getInstance().getCalibreLibraryDao().update(vlib);
+            ServiceLocator.getInstance().getCalibreLibraryDao().update(vlib);
         }
     }
 
@@ -95,7 +95,7 @@ public class CalibreLibraryMappingViewModel
             throws DaoWriteException {
 
         final Bookshelf mappedBookshelf = mCurrentLibrary.createAsBookshelf(context);
-        DaoLocator.getInstance().getCalibreLibraryDao().update(mCurrentLibrary);
+        ServiceLocator.getInstance().getCalibreLibraryDao().update(mCurrentLibrary);
         return mappedBookshelf;
     }
 
@@ -106,7 +106,7 @@ public class CalibreLibraryMappingViewModel
 
         final CalibreVirtualLibrary vlib = mCurrentLibrary.getVirtualLibraries().get(position);
         final Bookshelf mappedBookshelf = vlib.createAsBookshelf(context);
-        DaoLocator.getInstance().getCalibreLibraryDao().update(vlib);
+        ServiceLocator.getInstance().getCalibreLibraryDao().update(vlib);
         return mappedBookshelf;
     }
 }

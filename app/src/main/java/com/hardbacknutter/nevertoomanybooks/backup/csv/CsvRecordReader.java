@@ -114,9 +114,6 @@ public class CsvRecordReader
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
 
-    /** log error string. */
-    private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
-
     /** Database Access. */
     @NonNull
     private final BookDao mBookDao;
@@ -323,10 +320,10 @@ public class CsvRecordReader
 
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Logger.warn(TAG, "e=" + e.getMessage(), ERROR_IMPORT_FAILED_AT_ROW + row);
+                Logger.w(TAG, "Import failed at row " + row + ", e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                Logger.error(TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                Logger.e(TAG, e, "Import failed at row " + row);
             }
         }
     }

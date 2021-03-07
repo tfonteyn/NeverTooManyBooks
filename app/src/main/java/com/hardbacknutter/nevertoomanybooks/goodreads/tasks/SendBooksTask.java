@@ -75,7 +75,7 @@ public class SendBooksTask
     protected GrStatus doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
 
-        if (!NetworkUtils.isNetworkAvailable(context)) {
+        if (!NetworkUtils.isNetworkAvailable()) {
             return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
         }
 
@@ -87,7 +87,7 @@ public class SendBooksTask
             return new GrStatus(GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED);
         }
 
-        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        final GoodreadsAuth grAuth = new GoodreadsAuth();
         if (!grAuth.hasValidCredentials(context)) {
             return new GrStatus(GrStatus.FAILED_CREDENTIALS);
         }

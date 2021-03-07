@@ -47,7 +47,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
@@ -56,9 +55,11 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
@@ -68,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -79,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Handles all views in a multi-type list showing Book, Author, Series etc.
@@ -152,13 +151,13 @@ public class BooklistAdapter
 
         mInflater = LayoutInflater.from(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
-        mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
+        mImageCachingEnabled = ImageUtils.isImageCachingEnabled();
 
         mLevelIndent = context.getResources()
                               .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
-        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
+        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying();
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -176,7 +175,7 @@ public class BooklistAdapter
                           @NonNull final ListStyle style) {
         // First set the style and prepare the related data
         mStyle = style;
-        mFieldsInUse = new FieldsInUse(context, mStyle);
+        mFieldsInUse = new FieldsInUse(mStyle);
 
         mGroupRowHeight = mStyle.getGroupRowHeight(context);
         if (mGroupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
@@ -185,7 +184,7 @@ public class BooklistAdapter
         }
 
         @ListStyle.CoverScale
-        final int frontCoverScale = mStyle.getListScreenBookFields().getCoverScale(context);
+        final int frontCoverScale = mStyle.getListScreenBookFields().getCoverScale();
 
         // The thumbnail scale is used to retrieve the cover dimensions
         // We use a square space for the image so both portrait/landscape images work out.
@@ -779,12 +778,10 @@ public class BooklistAdapter
         /**
          * Constructor. Initialized by the adapter.
          *
-         * @param context Current context
-         * @param style   Style reference.
+         * @param style Style reference.
          */
-        FieldsInUse(@NonNull final Context context,
-                    @NonNull final ListStyle style) {
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        FieldsInUse(@NonNull final ListStyle style) {
+            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
             // Based on global visibility user preference.
             edition = DBKeys.isUsed(global, DBKeys.KEY_EDITION_BITMASK);
@@ -1211,7 +1208,7 @@ public class BooklistAdapter
 
             // 1. If caching is used, and we don't have cache building happening, check it.
             if (mAdapter.isImageCachingEnabled()) {
-                final CoverCacheDao coverCacheDao = DaoLocator.getInstance().getCoverCacheDao();
+                final CoverCacheDao coverCacheDao = ServiceLocator.getInstance().getCoverCacheDao();
                 if (!coverCacheDao.isBusy()) {
                     final Bitmap bitmap = coverCacheDao
                             .getCover(context, uuid, 0, mCoverLongestSide, mCoverLongestSide);

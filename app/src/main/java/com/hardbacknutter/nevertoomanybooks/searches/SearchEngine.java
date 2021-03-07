@@ -43,6 +43,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
@@ -84,13 +85,13 @@ public interface SearchEngine {
     int getId();
 
     /**
-     * The <strong>Application</strong> context. Should not be used for UI interactions.
+     * The <strong>localised Application</strong> context.
      *
-     * @return <strong>Application</strong> context.
+     * @return <strong>localised Application</strong> context.
      */
     @AnyThread
     @NonNull
-    Context getAppContext();
+    Context getContext();
 
     /**
      * Get the configuration for this engine.
@@ -312,7 +313,7 @@ public interface SearchEngine {
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
 
-        final Context context = getAppContext();
+        final Context context = getContext();
 
         final SearchEngineRegistry.Config config = getConfig();
 
@@ -414,8 +415,8 @@ public interface SearchEngine {
          */
         @AnyThread
         default boolean isPreferIsbn10() {
-            return PreferenceManager.getDefaultSharedPreferences(getAppContext())
-                                    .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+            return ServiceLocator.getGlobalPreferences()
+                                 .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
         }
     }
 

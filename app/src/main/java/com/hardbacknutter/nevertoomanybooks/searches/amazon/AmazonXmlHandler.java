@@ -460,9 +460,8 @@ class AmazonXmlHandler
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
                 addIfNotPresent(DBKeys.KEY_LANGUAGE, Languages
-                        .getInstance().getISO3FromDisplayName(mSearchEngine.getAppContext(),
-                                                              mSearchEngine.getLocale(),
-                                                              mBuilder.toString()));
+                        .getInstance().getISO3FromDisplayName(
+                                mSearchEngine.getLocale(), mBuilder.toString()));
 
             } else if (mInListPrice && localName.equalsIgnoreCase(XML_AMOUNT)) {
                 mCurrencyAmount = mBuilder.toString();

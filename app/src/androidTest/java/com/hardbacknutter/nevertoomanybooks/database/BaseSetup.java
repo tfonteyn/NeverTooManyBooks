@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -89,7 +90,7 @@ public abstract class BaseSetup {
             throws DaoWriteException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        DbLocator.init(context);
+        ServiceLocator.create(context);
 
         try (BookDao bookDao = new BookDao("setup")) {
 

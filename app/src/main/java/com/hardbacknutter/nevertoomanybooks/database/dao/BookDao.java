@@ -51,11 +51,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
@@ -661,8 +661,8 @@ public class BookDao
                         FileUtils.delete(Book.getUuidCoverFile(context, uuid, cIdx));
                     }
                     // and from the cache.
-                    if (ImageUtils.isImageCachingEnabled(context)) {
-                        DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
+                    if (ImageUtils.isImageCachingEnabled()) {
+                        ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
                     }
                 }
             }
@@ -749,7 +749,7 @@ public class BookDao
         }
 
         if (book.contains(KEY_LOANEE)) {
-            DaoLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(KEY_LOANEE));
+            ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(KEY_LOANEE));
         }
 
         if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
@@ -799,7 +799,7 @@ public class BookDao
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_BOOKSHELF, () -> Sql.Insert.BOOK_BOOKSHELF);
 
-        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
         for (final Bookshelf bookshelf : list) {
             // create if needed - do NOT do updates here
             if (bookshelf.getId() == 0) {
@@ -888,7 +888,7 @@ public class BookDao
         for (final Author author : list) {
             // create if needed - do NOT do updates here
             if (author.getId() == 0) {
-                if (DaoLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
+                if (ServiceLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
                     throw new DaoWriteException("insert Author");
                 }
             }
@@ -972,7 +972,7 @@ public class BookDao
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_SERIES, () -> Sql.Insert.BOOK_SERIES);
 
-        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
         int position = 0;
         for (final Series series : list) {
@@ -1059,7 +1059,7 @@ public class BookDao
             return;
         }
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_PUBLISHER, () -> Sql.Insert.BOOK_PUBLISHER);
@@ -1124,7 +1124,7 @@ public class BookDao
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookCalibreData(book);
-        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
+        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
@@ -1255,7 +1255,7 @@ public class BookDao
                 // Create if needed - do NOT do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
                 if (author.getId() == 0) {
-                    if (DaoLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
+                    if (ServiceLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
                         throw new DaoWriteException("insert Author");
                     }
                 }

@@ -32,12 +32,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -215,7 +215,7 @@ public class ShowBookViewModel
     public void deleteLoan(@IntRange(from = 0) final int position) {
         final Book book = getBookAtPosition(position);
         book.remove(DBKeys.KEY_LOANEE);
-        DaoLocator.getInstance().getLoaneeDao().setLoanee(book, null);
+        ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, null);
     }
 
     /**

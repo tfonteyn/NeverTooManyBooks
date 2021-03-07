@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
@@ -85,7 +86,7 @@ public class DBCleaner
                           @NonNull final Locale userLocale) {
 
 
-        final LanguageDao languageDao = DaoLocator.getInstance().getLanguageDao();
+        final LanguageDao languageDao = ServiceLocator.getInstance().getLanguageDao();
         final Languages langHelper = Languages.getInstance();
 
         for (final String lang : languageDao.getList()) {
@@ -94,7 +95,7 @@ public class DBCleaner
 
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = langHelper.getISO3FromDisplayName(context, userLocale, lang);
+                    iso = langHelper.getISO3FromDisplayName(userLocale, lang);
                 } else {
                     // It's almost certainly a language code
                     iso = langHelper.getISO3FromCode(lang);
@@ -163,7 +164,7 @@ public class DBCleaner
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        for (final Bookshelf bookshelf : DaoLocator.getInstance().getBookshelfDao().getAll()) {
+        for (final Bookshelf bookshelf : ServiceLocator.getInstance().getBookshelfDao().getAll()) {
             bookshelf.validateStyle(context);
         }
     }

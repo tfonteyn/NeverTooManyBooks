@@ -79,11 +79,11 @@ public class GoodreadsRegistrationActivity
             mGrAuthTask.start();
         });
 
-        final GoodreadsAuth grAuth = new GoodreadsAuth(this);
-        if (grAuth.hasCredentials(this)) {
+        final GoodreadsAuth grAuth = new GoodreadsAuth();
+        if (grAuth.hasCredentials()) {
             mVb.lblDeleteCredentials.setVisibility(View.VISIBLE);
             mVb.btnDeleteCredentials.setVisibility(View.VISIBLE);
-            mVb.btnDeleteCredentials.setOnClickListener(v -> GoodreadsAuth.clearAll(this));
+            mVb.btnDeleteCredentials.setOnClickListener(v -> GoodreadsAuth.clearAll());
         } else {
             mVb.lblDeleteCredentials.setVisibility(View.GONE);
             mVb.btnDeleteCredentials.setVisibility(View.GONE);

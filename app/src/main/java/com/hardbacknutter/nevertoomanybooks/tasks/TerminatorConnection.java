@@ -40,7 +40,6 @@ import java.util.Objects;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -118,7 +117,7 @@ public final class TerminatorConnection
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(App.getTaskContext(), TAG, e, "url=" + urlStr);
+                Logger.e(TAG, e, "url=" + urlStr);
             }
             throw e;
         }

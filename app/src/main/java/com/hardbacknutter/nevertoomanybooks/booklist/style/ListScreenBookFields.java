@@ -25,7 +25,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
@@ -109,13 +109,11 @@ public class ListScreenBookFields
     /**
      * Get the scale <strong>identifier</strong> for the thumbnail size preferred.
      *
-     * @param context Current context
-     *
      * @return scale id
      */
     @ListStyle.CoverScale
-    public int getCoverScale(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+    public int getCoverScale() {
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         if (isShowField(global, PK_COVERS)) {
             return mThumbnailScale.getValue();
@@ -132,7 +130,7 @@ public class ListScreenBookFields
      * @return summary text
      */
     public String getCoverScaleSummaryText(@NonNull final Context context) {
-        final int scale = getCoverScale(context);
+        final int scale = getCoverScale();
         return context.getResources().getStringArray(R.array.pe_bob_thumbnail_scale)[scale];
     }
 

@@ -140,12 +140,12 @@ public class SearchBookByExternalIdFragment
         //noinspection OptionalGetWithoutIsPresent
         final SearchEngineRegistry.Config config = SearchEngineRegistry
                 .getInstance().getByViewId(viewId).get();
-        //noinspection ConstantConditions
         mSelectedSearchEngine = (SearchEngine.ByExternalId)
-                Site.Type.Data.getSite(config.getEngineId()).getSearchEngine(getContext());
+                Site.Type.Data.getSite(config.getEngineId()).getSearchEngine();
 
         if (!mSelectedSearchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.
+            //noinspection ConstantConditions
             mSelectedSearchEngine.promptToRegister(getContext(), true, null, action -> {
                 if (action == SearchEngine.RegistrationAction.NotNow
                     || action == SearchEngine.RegistrationAction.Cancelled) {
@@ -216,7 +216,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         final String externalId = mVb.externalId.getText().toString().trim();
         //noinspection ConstantConditions
-        return mCoordinator.searchByExternalId(getContext(), mSelectedSearchEngine, externalId);
+        return mCoordinator.searchByExternalId(mSelectedSearchEngine, externalId);
     }
 
     @Override

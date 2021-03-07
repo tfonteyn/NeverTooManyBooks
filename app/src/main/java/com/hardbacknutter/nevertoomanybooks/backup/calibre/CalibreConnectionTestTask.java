@@ -64,8 +64,8 @@ public class CalibreConnectionTestTask
     protected Boolean doWork(@NonNull final Context context)
             throws IOException, CertificateException {
         try {
-            return new CalibreContentServer(context)
-                    .createTestConnection();
+            return new CalibreContentServer(context).createTestConnection();
+
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e);
             throw e;

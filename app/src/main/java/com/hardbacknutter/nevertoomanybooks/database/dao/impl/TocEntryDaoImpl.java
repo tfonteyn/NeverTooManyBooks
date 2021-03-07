@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -97,8 +97,8 @@ public class TocEntryDaoImpl
                       final boolean lookupLocale,
                       @NonNull final Locale bookLocale) {
 
-        DaoLocator.getInstance().getAuthorDao()
-                  .fixId(context, tocEntry.getPrimaryAuthor(), lookupLocale, bookLocale);
+        ServiceLocator.getInstance().getAuthorDao()
+                      .fixId(context, tocEntry.getPrimaryAuthor(), lookupLocale, bookLocale);
 
         final long id = find(context, tocEntry, lookupLocale, bookLocale);
         tocEntry.setId(id);

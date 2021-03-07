@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -44,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -372,7 +372,7 @@ public abstract class ArchiveReaderAbstract
 
         mBookDao.close();
 
-        DaoLocator.getInstance().getMaintenanceDao().purge();
+        ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 
     /**

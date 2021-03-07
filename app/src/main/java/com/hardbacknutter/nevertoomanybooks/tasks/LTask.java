@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,8 +31,8 @@ import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -95,7 +95,7 @@ public abstract class LTask<Result>
     @Override
     @WorkerThread
     protected final Result doInBackground(@Nullable final Void... voids) {
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
         return doWork(context);
     }
 

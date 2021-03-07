@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
@@ -619,7 +618,7 @@ public class ShowBookFragment
             // Personal fields
             fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
                                () -> new ArrayList<>(
-                                       DaoLocator.getInstance().getBookshelfDao().getAll()),
+                                       ServiceLocator.getInstance().getBookshelfDao().getAll()),
                                false), Book.BKEY_BOOKSHELF_LIST,
                        DBKeys.KEY_FK_BOOKSHELF)
                   .setRelatedFields(R.id.lbl_bookshelves);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public class BuildLanguageMappingsTask
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final SharedPreferences languageCache = Languages.getInstance().getCacheFile(context);
+        final SharedPreferences languageCache = Languages.getInstance().getCacheFile();
 
         try {
             // the one the user is using our app in (can be different from the system one)

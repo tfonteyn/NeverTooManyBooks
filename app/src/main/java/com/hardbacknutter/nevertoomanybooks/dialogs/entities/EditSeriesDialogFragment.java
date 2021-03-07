@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
@@ -126,7 +126,7 @@ public class EditSeriesDialogFragment
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                DaoLocator.getInstance().getSeriesDao().getNames());
+                ServiceLocator.getInstance().getSeriesDao().getNames());
 
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
@@ -162,7 +162,7 @@ public class EditSeriesDialogFragment
         mSeries.setComplete(mIsComplete);
 
         final Context context = getContext();
-        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions

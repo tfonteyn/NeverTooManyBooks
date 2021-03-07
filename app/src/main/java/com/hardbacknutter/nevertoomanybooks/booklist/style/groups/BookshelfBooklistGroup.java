@@ -19,18 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
-import android.content.Context;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
@@ -99,14 +97,10 @@ public class BookshelfBooklistGroup
     /**
      * Get the global default for this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Bookshelves.
      */
-    public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
+    public static boolean showBooksUnderEachDefault() {
+        return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     private void initPrefs() {

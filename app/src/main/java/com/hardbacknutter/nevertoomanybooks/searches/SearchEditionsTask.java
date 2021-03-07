@@ -79,10 +79,10 @@ public class SearchEditionsTask
         isbnList.add(mIsbn);
 
         for (final Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
-            final SearchEngine searchEngine = site.getSearchEngine(context, this);
+            final SearchEngine searchEngine = site.getSearchEngine(this);
             try {
                 // can we reach the site at all ?
-                NetworkUtils.ping(context, searchEngine.getSiteUrl());
+                NetworkUtils.ping(searchEngine.getSiteUrl());
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));

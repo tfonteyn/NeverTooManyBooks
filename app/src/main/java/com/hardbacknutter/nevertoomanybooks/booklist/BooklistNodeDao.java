@@ -32,15 +32,14 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -96,7 +95,7 @@ public class BooklistNodeDao {
      * Purge <strong>all</strong> Booklist node state data.
      */
     public static void clearNodeStateData() {
-        DbLocator.getDb().execSQL(Sql.DELETE_ALL);
+        ServiceLocator.getDb().execSQL(Sql.DELETE_ALL);
     }
 
     /**
@@ -246,7 +245,7 @@ public class BooklistNodeDao {
                 // DEBUG ONLY!
                 // This protects the developer when changing the structure irresponsibly...
                 clearNodeStateData();
-                Logger.error(TAG, e);
+                throw new IllegalStateException(e);
             }
         } finally {
             if (txLock != null) {

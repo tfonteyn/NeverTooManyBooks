@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.googlebooks;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -75,13 +74,11 @@ public class GoogleBooksSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public GoogleBooksSearchEngine(@NonNull final Context appContext,
-                                   @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public GoogleBooksSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {

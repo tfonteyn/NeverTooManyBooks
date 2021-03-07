@@ -42,9 +42,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -99,7 +98,7 @@ public class CoverCacheDaoImpl
      * Constructor.
      */
     public CoverCacheDaoImpl() {
-        mDb = DbLocator.getCoversDb();
+        mDb = ServiceLocator.getCoversDb();
     }
 
     /**
@@ -309,10 +308,9 @@ public class CoverCacheDaoImpl
 
             } catch (@NonNull final RuntimeException e) {
                 // do not crash... ever! This is just a cache!
-                final Context context = App.getTaskContext();
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
                 // and disable the cache (we don't bother cancelling any pending tasks... oh well)
-                ImageUtils.setImageCachingEnabled(context, false);
+                ImageUtils.setImageCachingEnabled(false);
                 //FIXME: we should let the user know....
             }
 

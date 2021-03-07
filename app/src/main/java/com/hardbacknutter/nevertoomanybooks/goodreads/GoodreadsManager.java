@@ -27,7 +27,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,8 +38,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -131,7 +130,7 @@ public class GoodreadsManager {
                             @NonNull final GoodreadsAuth grAuth) {
         mAppContext = appContext;
         mGoodreadsAuth = grAuth;
-        mGoodreadsDao = DaoLocator.getInstance().getGoodreadsDao();
+        mGoodreadsDao = ServiceLocator.getInstance().getGoodreadsDao();
     }
 
     /**
@@ -146,20 +145,17 @@ public class GoodreadsManager {
         return global.getBoolean(PK_SHOW_MENUS, true);
     }
 
-    public static boolean isCollectGenre(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_COLLECT_GENRE, true);
+    public static boolean isCollectGenre() {
+        return ServiceLocator.getGlobalPreferences().getBoolean(PK_COLLECT_GENRE, true);
     }
 
     @Nullable
-    public static String getLastSyncDate(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PK_LAST_SYNC_DATE, null);
+    public static String getLastSyncDate() {
+        return ServiceLocator.getGlobalPreferences().getString(PK_LAST_SYNC_DATE, null);
     }
 
-    public static void setLastSyncDate(@NonNull final Context context,
-                                       @Nullable final LocalDateTime dateTime) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+    public static void setLastSyncDate(@Nullable final LocalDateTime dateTime) {
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         if (dateTime == null) {
             global.edit().remove(PK_LAST_SYNC_DATE).apply();
         } else {
@@ -171,14 +167,13 @@ public class GoodreadsManager {
     }
 
     public long getLastBookIdSend() {
-        return PreferenceManager.getDefaultSharedPreferences(mAppContext)
-                                .getLong(PK_LAST_BOOK_SEND, 0);
+        return ServiceLocator.getGlobalPreferences().getLong(PK_LAST_BOOK_SEND, 0);
     }
 
     public void putLastBookIdSend(final long lastBookSend) {
-        PreferenceManager.getDefaultSharedPreferences(mAppContext)
-                         .edit().putLong(PK_LAST_BOOK_SEND, lastBookSend)
-                         .apply();
+        ServiceLocator.getGlobalPreferences()
+                      .edit().putLong(PK_LAST_BOOK_SEND, lastBookSend)
+                      .apply();
     }
 
     @NonNull

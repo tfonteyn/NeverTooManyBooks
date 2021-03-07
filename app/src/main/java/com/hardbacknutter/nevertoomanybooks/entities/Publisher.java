@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -124,7 +124,7 @@ public class Publisher
             return false;
         }
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         final EntityMerger<Publisher> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {

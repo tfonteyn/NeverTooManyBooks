@@ -33,8 +33,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -87,7 +87,7 @@ public class AuthorWorksViewModel
             final long authorId = args.getLong(DBKeys.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
             mAuthor = Objects.requireNonNull(
-                    DaoLocator.getInstance().getAuthorDao().getById(authorId),
+                    ServiceLocator.getInstance().getAuthorDao().getById(authorId),
                     String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBKeys.KEY_FK_BOOKSHELF,
@@ -136,7 +136,7 @@ public class AuthorWorksViewModel
 
     @NonNull
     public ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
-        return DaoLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
+        return ServiceLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
     }
 
     /**
@@ -151,7 +151,8 @@ public class AuthorWorksViewModel
                           @NonNull final AuthorWork work) {
         final boolean success;
         if (work instanceof TocEntry) {
-            success = DaoLocator.getInstance().getTocEntryDao().delete(context, (TocEntry) work);
+            success = ServiceLocator.getInstance().getTocEntryDao()
+                                    .delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
             success = mBookDao.deleteBook(context, work.getId());

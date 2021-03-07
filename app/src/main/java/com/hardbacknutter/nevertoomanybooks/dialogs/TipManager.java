@@ -40,6 +40,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -125,24 +126,20 @@ public final class TipManager {
 
     /**
      * Reset all tips so that they will be displayed again.
-     *
-     * @param context Current context
      */
-    public void reset(@NonNull final Context context) {
+    public void reset() {
         // remove all. This has the benefit of removing any obsolete keys.
-        reset(context, PREF_TIP);
+        reset(PREF_TIP);
         ALL.clear();
     }
 
     /**
      * Reset a sub set of tips, all starting (in preferences) with the given prefix.
      *
-     * @param context Current context
-     * @param prefix  to match
+     * @param prefix to match
      */
-    public void reset(@NonNull final Context context,
-                      @NonNull final String prefix) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+    public void reset(@NonNull final String prefix) {
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         final SharedPreferences.Editor ed = global.edit();
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
         for (final String key : global.getAll().keySet()) {
@@ -173,7 +170,7 @@ public final class TipManager {
             }
             return;
         }
-        if (!tip.shouldBeShown(context)) {
+        if (!tip.shouldBeShown()) {
             if (postRun != null) {
                 postRun.run();
             }
@@ -206,7 +203,7 @@ public final class TipManager {
             }
             return;
         }
-        if (!tip.shouldBeShown(context, tipKey)) {
+        if (!tip.shouldBeShown(tipKey)) {
             if (postRun != null) {
                 postRun.run();
             }
@@ -264,27 +261,22 @@ public final class TipManager {
         /**
          * Check if this tip should be shown.
          *
-         * @param context Current context
-         *
          * @return {@code true} if this Tip should be displayed
          */
-        private boolean shouldBeShown(@NonNull final Context context) {
-            return shouldBeShown(context, mDefaultKey);
+        private boolean shouldBeShown() {
+            return shouldBeShown(mDefaultKey);
         }
 
         /**
          * Check if this tip should be shown.
          *
-         * @param context Current context
-         * @param key     Preferences key suffix specific to this tip
+         * @param key Preferences key suffix specific to this tip
          *
          * @return {@code true} if this Tip should be displayed
          */
-        private boolean shouldBeShown(@NonNull final Context context,
-                                      @NonNull final String key) {
-            return !mHasBeenDisplayed && PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getBoolean(PREF_TIP + key, true);
+        private boolean shouldBeShown(@NonNull final String key) {
+            return !mHasBeenDisplayed
+                   && ServiceLocator.getGlobalPreferences().getBoolean(PREF_TIP + key, true);
         }
 
         /**

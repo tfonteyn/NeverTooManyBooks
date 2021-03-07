@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -127,7 +128,9 @@ public enum RecordType {
             }
         }
 
-        Logger.warn(TAG, "getType|Unknown entry=" + entryName);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.w(TAG, "getType|Unknown entry=" + entryName);
+        }
         return Optional.empty();
     }
 

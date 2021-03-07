@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -145,18 +145,16 @@ public class SearchBookUpdatesViewModel
                 mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
             }
 
-            initFields(context);
+            initFields();
         }
     }
 
     /**
      * Entries are displayed in the order they are added here.
-     *
-     * @param context Current context
      */
-    private void initFields(@NonNull final Context context) {
+    private void initFields() {
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         addCoverField(global, R.string.lbl_cover_front, 0);
         addCoverField(global, R.string.lbl_cover_back, 1);
@@ -326,12 +324,9 @@ public class SearchBookUpdatesViewModel
 
     /**
      * Write current settings to the user preferences.
-     *
-     * @param context Current context
      */
-    public void writePreferences(@NonNull final Context context) {
-        final SharedPreferences.Editor ed =
-                PreferenceManager.getDefaultSharedPreferences(context).edit();
+    public void writePreferences() {
+        final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
 
         for (final FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
@@ -342,13 +337,12 @@ public class SearchBookUpdatesViewModel
     /**
      * Reset current usage back to defaults, and write to preferences.
      *
-     * @param context Current context
      */
-    public void resetPreferences(@NonNull final Context context) {
+    public void resetPreferences() {
         for (final FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.reset();
         }
-        writePreferences(context);
+        writePreferences();
     }
 
     /**
@@ -477,7 +471,7 @@ public class SearchBookUpdatesViewModel
                         setFetchThumbnail(thumbs);
 
                         // Start searching
-                        if (search(context)) {
+                        if (search()) {
                             // Update the progress base message.
                             if (!title.isEmpty()) {
                                 setBaseMessage(title);

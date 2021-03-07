@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * Languages.
  * <ul>
@@ -106,15 +108,13 @@ public final class Languages {
      * Each time the user switches language, we generate an additional set.
      * That probably covers a lot if not all.
      *
-     * @param context     Current context
      * @param locale      the locale of the displayName
      * @param displayName the string as normally produced by {@link Locale#getDisplayLanguage}
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public String getISO3FromDisplayName(@NonNull final Context context,
-                                         @NonNull final Locale locale,
+    public String getISO3FromDisplayName(@NonNull final Locale locale,
                                          @NonNull final String displayName) {
 
         final String source = displayName.trim().toLowerCase(locale);
@@ -122,7 +122,7 @@ public final class Languages {
             return "";
         }
         //noinspection ConstantConditions
-        return getCacheFile(context).getString(source, source);
+        return getCacheFile().getString(source, source);
     }
 
     /**
@@ -372,13 +372,12 @@ public final class Languages {
     /**
      * Convenience method to get the language SharedPreferences file.
      *
-     * @param context Current context
-     *
      * @return the SharedPreferences representing the language mapper
      */
     @NonNull
-    public SharedPreferences getCacheFile(@NonNull final Context context) {
-        return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
+    public SharedPreferences getCacheFile() {
+        return ServiceLocator.getAppContext()
+                             .getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     /**

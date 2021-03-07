@@ -46,7 +46,7 @@ class AmazonHtmlHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (AmazonSearchEngine) Site.Type.Data
-                .getSite(SearchSites.AMAZON).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.AMAZON).getSearchEngine(new MockCaller());
     }
 
     @Test

@@ -29,6 +29,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 
 public class SearchSuggestionProvider
@@ -73,7 +74,7 @@ public class SearchSuggestionProvider
             // do we have anything to search for?
             if (!query.isEmpty()) {
                 //noinspection UnnecessaryLocalVariable
-                final Cursor cursor = DbLocator
+                final Cursor cursor = ServiceLocator
                         .getDb().rawQuery(BookDao.Sql.Fts.SEARCH_SUGGESTIONS, new String[]{query});
 
                 //  if (cursor != null) {

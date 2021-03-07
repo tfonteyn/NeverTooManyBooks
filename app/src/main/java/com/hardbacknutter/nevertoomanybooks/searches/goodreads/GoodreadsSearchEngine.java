@@ -78,14 +78,12 @@ public class GoodreadsSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public GoodreadsSearchEngine(@NonNull final Context appContext,
-                                 @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
-        mGoodreadsAuth = new GoodreadsAuth(getAppContext());
+    public GoodreadsSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
+        mGoodreadsAuth = new GoodreadsAuth();
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -115,7 +113,7 @@ public class GoodreadsSearchEngine
     public boolean isAvailable() {
         // makes sure we *have* credentials, but does not check them.
         return !mGoodreadsAuth.getDevKey().isEmpty()
-               && mGoodreadsAuth.hasCredentials(getAppContext());
+               && mGoodreadsAuth.hasCredentials();
     }
 
     @Nullable
@@ -155,7 +153,7 @@ public class GoodreadsSearchEngine
 
         try {
             if (mByIdApi == null) {
-                mByIdApi = new ShowBookByIdApiHandler(getAppContext(), mGoodreadsAuth);
+                mByIdApi = new ShowBookByIdApiHandler(getContext(), mGoodreadsAuth);
             }
             final long grBookId = Long.parseLong(externalId);
             return mByIdApi.searchByExternalId(grBookId, fetchThumbnail, bookData);
@@ -176,7 +174,7 @@ public class GoodreadsSearchEngine
 
         try {
             if (mByIsbnApi == null) {
-                mByIsbnApi = new ShowBookByIsbnApiHandler(getAppContext(), mGoodreadsAuth);
+                mByIsbnApi = new ShowBookByIsbnApiHandler(getContext(), mGoodreadsAuth);
             }
             return mByIsbnApi.searchByIsbn(validIsbn, fetchThumbnail, bookData);
 
@@ -208,13 +206,15 @@ public class GoodreadsSearchEngine
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             try {
                 if (mSearchApi == null) {
-                    mSearchApi = new SearchBookApiHandler(getAppContext(), mGoodreadsAuth);
+                    mSearchApi = new SearchBookApiHandler(getContext(),
+                                                          mGoodreadsAuth);
                 }
                 final List<Long> grIdList = mSearchApi.searchBookIds(author + ' ' + title);
                 // return the first one found
                 if (!grIdList.isEmpty()) {
                     if (mByIdApi == null) {
-                        mByIdApi = new ShowBookByIdApiHandler(getAppContext(), mGoodreadsAuth);
+                        mByIdApi = new ShowBookByIdApiHandler(getContext(),
+                                                              mGoodreadsAuth);
                     }
                     return mByIdApi.searchByExternalId(grIdList.get(0), fetchThumbnail, bookData);
                 }
@@ -231,12 +231,12 @@ public class GoodreadsSearchEngine
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @IntRange(from = 0, to = 1) final int cIdx,
                                          @Nullable final ImageFileInfo.Size size) {
-        if (!mGoodreadsAuth.hasValidCredentials(getAppContext())) {
+        if (!mGoodreadsAuth.hasValidCredentials(getContext())) {
             return null;
         }
         try {
             if (mByIsbnApi == null) {
-                mByIsbnApi = new ShowBookByIsbnApiHandler(getAppContext(), mGoodreadsAuth);
+                mByIsbnApi = new ShowBookByIsbnApiHandler(getContext(), mGoodreadsAuth);
             }
             return mByIsbnApi.searchCoverImageByIsbn(validIsbn, new Bundle());
 

@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
@@ -91,8 +90,8 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
-        final PreferenceScreen screen = getPreferenceScreen();
-        screen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceScreen().getSharedPreferences()
+                             .registerOnSharedPreferenceChangeListener(this);
 
         if (mAutoScrollToKey != null) {
             scrollToPreference(mAutoScrollToKey);

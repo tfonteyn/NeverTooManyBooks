@@ -24,8 +24,8 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -112,7 +112,7 @@ abstract class LibraryBase
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context));
-        if (DaoLocator.getInstance().getBookshelfDao().insert(context, bookshelf) == -1) {
+        if (ServiceLocator.getInstance().getBookshelfDao().insert(context, bookshelf) == -1) {
             throw new DaoWriteException("insert Bookshelf");
         }
 

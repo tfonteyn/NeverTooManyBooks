@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -46,7 +47,7 @@ public class BaseSetupTest
         ArrayList<Long> bookIdList;
         ArrayList<AuthorWork> works;
 
-        assertFalse(DbLocator.isCollationCaseSensitive());
+        assertFalse(ServiceLocator.isCollationCaseSensitive());
 
         try (BookDao bookDao = new BookDao("basic")) {
 
@@ -70,9 +71,9 @@ public class BaseSetupTest
             assertTrue(tocEntry[2].getId() > 0);
             assertTrue(tocEntry[3].getId() > 0);
 
-            final DaoLocator daoLocator = DaoLocator.getInstance();
-            final AuthorDao authorDao = daoLocator.getAuthorDao();
-            final PublisherDao publisherDao = daoLocator.getPublisherDao();
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+            final AuthorDao authorDao = serviceLocator.getAuthorDao();
+            final PublisherDao publisherDao = serviceLocator.getPublisherDao();
 
             // a0 is present in b0, b3
             bookIdList = authorDao.getBookIds(author[0].getId());

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -89,13 +88,11 @@ public class KbNlSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param appContext Application context
-     * @param engineId   the search engine id
+     * @param engineId the search engine id
      */
     @Keep
-    public KbNlSearchEngine(@NonNull final Context appContext,
-                            @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId);
+    public KbNlSearchEngine(@SearchSites.EngineId final int engineId) {
+        super(engineId);
     }
 
     public static SearchEngineRegistry.Config createConfig() {

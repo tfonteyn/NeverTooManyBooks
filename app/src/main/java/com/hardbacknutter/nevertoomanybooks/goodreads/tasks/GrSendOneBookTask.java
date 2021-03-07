@@ -77,11 +77,11 @@ public class GrSendOneBookTask
         Thread.currentThread().setName(TAG + mBookId);
 
         try {
-            if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (!NetworkUtils.isNetworkAvailable()) {
                 return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
             }
 
-            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth();
             if (!grAuth.hasValidCredentials(context)) {
                 return new GrStatus(GrStatus.FAILED_CREDENTIALS);
             }

@@ -64,7 +64,7 @@ class StripInfoTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (StripInfoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(new MockCaller());
     }
 
     @Test

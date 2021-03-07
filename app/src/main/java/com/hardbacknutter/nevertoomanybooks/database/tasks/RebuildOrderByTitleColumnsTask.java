@@ -26,7 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -63,10 +63,10 @@ public class RebuildOrderByTitleColumnsTask
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
         try {
-            final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);
+            final boolean reorder = ItemWithTitle.isReorderTitleForSorting();
 
-            DaoLocator.getInstance().getMaintenanceDao()
-                      .rebuildOrderByTitleColumns(context, reorder);
+            ServiceLocator.getInstance().getMaintenanceDao()
+                          .rebuildOrderByTitleColumns(context, reorder);
             return true;
 
         } catch (@NonNull final RuntimeException e) {
@@ -76,7 +76,7 @@ public class RebuildOrderByTitleColumnsTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleOrderByRebuild(context, false);
+            StartupViewModel.scheduleOrderByRebuild(false);
         }
     }
 }

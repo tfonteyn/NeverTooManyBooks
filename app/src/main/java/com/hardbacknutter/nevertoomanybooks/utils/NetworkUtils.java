@@ -28,7 +28,6 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -39,6 +38,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.NetworkUnavailableException;
@@ -50,7 +50,7 @@ public final class NetworkUtils {
 
     private static final Pattern SLASH_PATTERN = Pattern.compile("//");
 
-    /** Timeout for {@link #ping(Context, String)}. */
+    /** Timeout for {@link #ping(String)}. */
     private static final int PING_TIMEOUT_MS = 5_000;
 
     private NetworkUtils() {
@@ -62,21 +62,19 @@ public final class NetworkUtils {
      * <p>
      * When running a JUnit test, this method will always return {@code true}.
      *
-     * @param context Application context
-     *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable(@NonNull final Context context) {
+    public static boolean isNetworkAvailable() {
         if (BuildConfig.DEBUG /* always */) {
             if (Logger.isJUnitTest) {
                 return true;
             }
         }
 
-        final ConnectivityManager connMgr =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connMgr = (ConnectivityManager)
+                ServiceLocator.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final Network network = connMgr.getActiveNetwork();
         if (network != null) {
             final NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
@@ -99,7 +97,7 @@ public final class NetworkUtils {
                 }
 
                 return hasInternet && isValidated
-                       && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
+                       && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork());
 
             }
         }
@@ -108,9 +106,9 @@ public final class NetworkUtils {
         return false;
     }
 
-    private static boolean allowMeteredNetwork(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext)
-                                .getBoolean(Prefs.pk_network_allow_metered, false);
+    private static boolean allowMeteredNetwork() {
+        return ServiceLocator.getGlobalPreferences()
+                             .getBoolean(Prefs.pk_network_allow_metered, false);
     }
 
     /**
@@ -120,18 +118,16 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param context Application context
-     * @param urlStr  url to check
+     * @param urlStr url to check
      *
      * @throws NetworkUnavailableException if the network itself is unavailable
      * @throws IOException                 if we cannot reach the site
      */
     @WorkerThread
-    public static void ping(@NonNull final Context context,
-                            @NonNull final String urlStr)
+    public static void ping(@NonNull final String urlStr)
             throws NetworkUnavailableException, UnknownHostException, IOException {
 
-        if (!isNetworkAvailable(context)) {
+        if (!isNetworkAvailable()) {
             throw new NetworkUnavailableException();
         }
 

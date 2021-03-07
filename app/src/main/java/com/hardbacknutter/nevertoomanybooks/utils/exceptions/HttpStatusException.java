@@ -28,8 +28,8 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 import java.net.URL;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Signals that a HTTP request resulted in a not OK HTTP response.
@@ -104,7 +104,7 @@ public class HttpStatusException
                + ", mStatusCode=" + mStatusCode
                + ", mStatusMessage=" + mStatusMessage
                + ", mUrl=" + mUrl
-               + ", mSiteResId=" + App.getLogString(mSiteResId)
+               + ", mSiteResId=" + ServiceLocator.getAppContext().getString(mSiteResId)
                + '}';
     }
 }

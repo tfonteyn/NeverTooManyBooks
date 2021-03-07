@@ -430,8 +430,7 @@ public class ExportFragment
         helper.setExportEntry(RecordType.Certificates, false);
 
 
-        //noinspection ConstantConditions
-        helper.setUri(Uri.parse(CalibreContentServer.getHostUrl(getContext())));
+        helper.setUri(Uri.parse(CalibreContentServer.getHostUrl()));
         mArchiveWriterTask.start(helper);
     }
 

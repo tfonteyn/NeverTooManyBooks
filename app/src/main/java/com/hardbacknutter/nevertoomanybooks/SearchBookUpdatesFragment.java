@@ -170,8 +170,7 @@ public class SearchBookUpdatesFragment
 
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!NetworkUtils.isNetworkAvailable()) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -230,8 +229,7 @@ public class SearchBookUpdatesFragment
             return true;
 
         } else if (itemId == R.id.MENU_RESET) {
-            //noinspection ConstantConditions
-            mVm.resetPreferences(getContext());
+            mVm.resetPreferences();
             mVb.fieldList.removeAllViews();
             populateFields();
             return true;
@@ -272,8 +270,7 @@ public class SearchBookUpdatesFragment
             return;
         }
 
-        //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!NetworkUtils.isNetworkAvailable()) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -282,6 +279,7 @@ public class SearchBookUpdatesFragment
         // If the user has selected to overwrite thumbnails...
         if (mVm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.menu_update_fields)
@@ -311,9 +309,9 @@ public class SearchBookUpdatesFragment
     }
 
     private void startUpdate() {
-        //noinspection ConstantConditions
-        mVm.writePreferences(getContext());
+        mVm.writePreferences();
 
+        //noinspection ConstantConditions
         if (!mVm.startSearch(getContext())) {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();

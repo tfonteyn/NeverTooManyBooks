@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -58,7 +59,7 @@ public class AuthorTest
         boolean updateOk;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         author[0] = Author.from(AuthorFullName(0));
         authorId[0] = authorDao.insert(context, author[0]);
@@ -102,7 +103,7 @@ public class AuthorTest
         final Author tmpAuthor;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         // rename an author
         // UPDATE in the database
@@ -166,7 +167,7 @@ public class AuthorTest
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (BookDao bookDao = new BookDao("renameAuthorWithTocs")) {
-            final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
             // rename an author
             // UPDATE in the database

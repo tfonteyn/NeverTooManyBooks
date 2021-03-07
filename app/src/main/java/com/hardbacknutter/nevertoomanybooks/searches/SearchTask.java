@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 /**
  * Searches a single {@link SearchEngine}.
  * <p>
- * When a context is needed, this class should call {@link SearchEngine#getAppContext()}
+ * When a context is needed, this class should call {@link SearchEngine#getContext()}
  * to ensure it runs/uses in the same context as the engine it is using.
  */
 public class SearchTask
@@ -102,9 +102,9 @@ public class SearchTask
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
 
-        mProgressTitle = mSearchEngine.getAppContext().getString(
-                R.string.progress_msg_searching_site,
-                searchEngine.getName(mSearchEngine.getAppContext()));
+        final Context context = mSearchEngine.getContext();
+        mProgressTitle = context.getString(R.string.progress_msg_searching_site,
+                                           searchEngine.getName(context));
     }
 
     @NonNull
@@ -184,7 +184,7 @@ public class SearchTask
 
         try {
             // can we reach the site at all ?
-            NetworkUtils.ping(context, mSearchEngine.getSiteUrl());
+            NetworkUtils.ping(mSearchEngine.getSiteUrl());
 
             // sanity check, see #setFetchThumbnail
             if (mFetchThumbnail == null) {

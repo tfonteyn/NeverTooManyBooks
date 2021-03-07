@@ -67,6 +67,7 @@ import java.util.Objects;
 
 import javax.net.ssl.SSLException;
 
+import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreAdminContract;
@@ -122,14 +123,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
-import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -353,7 +355,7 @@ public class BooksOnBookshelf
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
-                    mVm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
+                    mVm.resetPreferredListRebuildMode();
                     // and do a rebuild
                     buildBookList();
                 }
@@ -513,7 +515,12 @@ public class BooksOnBookshelf
         //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
-        FastScroller.attach(mVb.list);
+
+        // Optional overlay
+        final int overlayType = ParseUtils.getIntListPref(
+                global, Prefs.pk_booklist_fastscroller_overlay,
+                FastScroller.OverlayProvider.STYLE_MD2);
+        FastScroller.attach(mVb.list, overlayType);
 
         // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
         mVb.list.setItemViewCacheSize(20);
@@ -576,7 +583,14 @@ public class BooksOnBookshelf
         // No, we do NOT have a fixed size for each row
         //mVb.list.setHasFixedSize(false);
 
-        mVb.list.setAdapter(new ConcatAdapter(headerAdapter, mAdapter));
+        final ConcatAdapter concatAdapter = new ConcatAdapter(
+                new ConcatAdapter.Config.Builder()
+                        .setIsolateViewTypes(true)
+                        .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+                        .build(),
+                headerAdapter, mAdapter);
+
+        mVb.list.setAdapter(concatAdapter);
     }
 
     /**
@@ -1749,6 +1763,10 @@ public class BooksOnBookshelf
 
     private class HeaderAdapter
             extends RecyclerView.Adapter<HeaderViewHolder> {
+
+        HeaderAdapter() {
+            setHasStableIds(true);
+        }
 
         @NonNull
         @Override

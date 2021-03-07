@@ -46,9 +46,9 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -139,7 +139,7 @@ public class ImportGrTask
         // If it's a sync job, then find date of last successful sync and only apply
         // records from after that date. If no other job, then get all.
         if (mIsSync) {
-            final String lastSyncDateStr = GoodreadsManager.getLastSyncDate(context);
+            final String lastSyncDateStr = GoodreadsManager.getLastSyncDate();
             mLastSyncDate = DateParser.getInstance(context).parseISO(lastSyncDateStr);
         } else {
             mLastSyncDate = null;
@@ -166,7 +166,7 @@ public class ImportGrTask
                 final TQTask task = new SendBooksGrTask(desc, false, true);
                 QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
 
-                GoodreadsManager.setLastSyncDate(context, mStartDate);
+                GoodreadsManager.setLastSyncDate(mStartDate);
             }
             return ok;
 
@@ -191,7 +191,7 @@ public class ImportGrTask
                                   @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
-        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        final GoodreadsAuth grAuth = new GoodreadsAuth();
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
 
         // the result from the API call for a single page.
@@ -594,7 +594,8 @@ public class ImportGrTask
             return null;
         }
         if (mBookshelfLookup == null) {
-            final List<Bookshelf> bookshelves = DaoLocator.getInstance().getBookshelfDao().getAll();
+            final List<Bookshelf> bookshelves = ServiceLocator.getInstance().getBookshelfDao()
+                                                              .getAll();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (final Bookshelf bookshelf : bookshelves) {
                 mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(locale, bookshelf.getName()),

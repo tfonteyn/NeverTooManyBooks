@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ class IsfdbEditionsHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.ISFDB).getSearchEngine(new MockCaller());
     }
 
     @Test

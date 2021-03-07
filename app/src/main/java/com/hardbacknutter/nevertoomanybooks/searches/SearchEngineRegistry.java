@@ -153,19 +153,17 @@ public final class SearchEngineRegistry {
     /**
      * Create a SearchEngine instance.
      *
-     * @param context  Current context
      * @param engineId the search engine id
      *
      * @return the instance
      */
     @NonNull
-    public SearchEngine createSearchEngine(@NonNull final Context context,
-                                           @SearchSites.EngineId final int engineId) {
+    public SearchEngine createSearchEngine(@SearchSites.EngineId final int engineId) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         //noinspection ConstantConditions
-        return mSiteConfigs.get(engineId).createSearchEngine(context);
+        return mSiteConfigs.get(engineId).createSearchEngine();
     }
 
     /**
@@ -267,18 +265,15 @@ public final class SearchEngineRegistry {
         }
 
         @NonNull
-        SearchEngine createSearchEngine(@NonNull final Context context) {
+        SearchEngine createSearchEngine() {
             try {
-                final Constructor<? extends SearchEngine> c =
-                        mClass.getConstructor(Context.class, int.class);
-                // ALWAYS use the localized Application context here
-                // It's going to get used in background tasks!
-                return c.newInstance(context.getApplicationContext(), mId);
+                final Constructor<? extends SearchEngine> c = mClass.getConstructor(int.class);
+                return c.newInstance(mId);
 
             } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                     | InstantiationException | InvocationTargetException e) {
                 throw new IllegalStateException(mClass
-                                                + " must implement SearchEngine(Context,int)", e);
+                                                + " must implement SearchEngine(int)", e);
             }
         }
 

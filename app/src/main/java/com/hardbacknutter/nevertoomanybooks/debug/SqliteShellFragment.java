@@ -36,7 +36,7 @@ import androidx.fragment.app.Fragment;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
@@ -82,7 +82,7 @@ public class SqliteShellFragment
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
 
-        mDb = DbLocator.getDb();
+        mDb = ServiceLocator.getDb();
     }
 
     @Override

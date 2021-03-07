@@ -55,7 +55,7 @@ class IsfdbBookHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
+                .getSite(SearchSites.ISFDB).getSearchEngine(new MockCaller());
 
         // Override the default 'false'
         mMockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();

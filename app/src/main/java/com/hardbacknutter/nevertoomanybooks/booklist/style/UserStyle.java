@@ -53,7 +53,7 @@ public class UserStyle
         // negative == builtin; MIN_VALUE because why not....
         mId = Integer.MIN_VALUE;
 
-        initPrefs(context, true);
+        initPrefs(true);
     }
 
     /**
@@ -69,7 +69,7 @@ public class UserStyle
         super(context, uuid, true);
         mId = 0;
 
-        initPrefs(context, true);
+        initPrefs(true);
     }
 
     /**
@@ -86,7 +86,7 @@ public class UserStyle
         mIsPreferred = dataHolder.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED);
         mMenuPosition = dataHolder.getInt(DBKeys.KEY_STYLE_MENU_POSITION);
 
-        initPrefs(context, true);
+        initPrefs(true);
     }
 
     /**

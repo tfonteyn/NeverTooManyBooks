@@ -39,11 +39,11 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -83,7 +83,7 @@ public final class StyleUtils {
 
         // resolve the id based on the UUID
         // e.g. we're might be importing a style with a known UUID
-        style.setId(DaoLocator.getInstance().getStyleDao().getStyleIdByUuid(style.getUuid()));
+        style.setId(ServiceLocator.getInstance().getStyleDao().getStyleIdByUuid(style.getUuid()));
         if (style.getId() == 0) {
             return insert(style);
 
@@ -100,7 +100,7 @@ public final class StyleUtils {
      * @return {@code true} on success
      */
     private static boolean insert(@NonNull final ListStyle style) {
-        if (DaoLocator.getInstance().getStyleDao().insert(style) > 0) {
+        if (ServiceLocator.getInstance().getStyleDao().insert(style) > 0) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             }
@@ -122,7 +122,7 @@ public final class StyleUtils {
             SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
         }
 
-        if (DaoLocator.getInstance().getStyleDao().update(style)) {
+        if (ServiceLocator.getInstance().getStyleDao().update(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             } else if (style instanceof BuiltinStyle) {
@@ -151,7 +151,7 @@ public final class StyleUtils {
             SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
         }
 
-        if (DaoLocator.getInstance().getStyleDao().delete(style)) {
+        if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.remove(style.getUuid());
                 context.deleteSharedPreferences(style.getUuid());
@@ -178,7 +178,7 @@ public final class StyleUtils {
     public static void updateMenuOrder(@NonNull final Collection<ListStyle> styles) {
         int order = 0;
 
-        final StyleDao styleDao = DaoLocator.getInstance().getStyleDao();
+        final StyleDao styleDao = ServiceLocator.getInstance().getStyleDao();
 
         // sort the preferred styles at the top
         for (final ListStyle style : styles) {
@@ -361,7 +361,7 @@ public final class StyleUtils {
             if (S_USER_STYLES.isEmpty()) {
                 final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-                try (Cursor cursor = DaoLocator.getInstance().getStyleDao().fetchStyles(true)) {
+                try (Cursor cursor = ServiceLocator.getInstance().getStyleDao().fetchStyles(true)) {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
                         final String uuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
@@ -576,7 +576,7 @@ public final class StyleUtils {
             final Map<Integer, Boolean> preferred = new HashMap<>();
             final Map<Integer, Integer> menuPos = new HashMap<>();
 
-            try (Cursor cursor = DaoLocator.getInstance().getStyleDao().fetchStyles(false)) {
+            try (Cursor cursor = ServiceLocator.getInstance().getStyleDao().fetchStyles(false)) {
                 final DataHolder rowData = new CursorRow(cursor);
                 while (cursor.moveToNext()) {
                     preferred.put(rowData.getInt(DBKeys.KEY_PK_ID),

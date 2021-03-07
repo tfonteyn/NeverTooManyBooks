@@ -69,6 +69,6 @@ public class LanguageFormatter
     @Override
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return Languages.getInstance().getISO3FromDisplayName(context, mLocale, text);
+        return Languages.getInstance().getISO3FromDisplayName(mLocale, text);
     }
 }

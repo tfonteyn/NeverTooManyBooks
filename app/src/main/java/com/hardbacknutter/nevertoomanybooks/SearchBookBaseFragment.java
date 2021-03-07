@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -115,8 +114,7 @@ public abstract class SearchBookBaseFragment
         });
 
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!NetworkUtils.isNetworkAvailable()) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -246,8 +244,7 @@ public abstract class SearchBookBaseFragment
             return;
         }
 
-        //noinspection ConstantConditions
-        if (!NetworkUtils.isNetworkAvailable(getContext())) {
+        if (!NetworkUtils.isNetworkAvailable()) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
@@ -275,13 +272,12 @@ public abstract class SearchBookBaseFragment
 
     /**
      * Override to customize which search function is called.
-     * The default implementation starts the generic {@link SearchCoordinator#search(Context)}.
+     * The default implementation starts the generic {@link SearchCoordinator#search()}.
      *
      * @return {@code true} if a search was started
      */
     boolean onSearch() {
-        //noinspection ConstantConditions
-        return mCoordinator.search(getContext());
+        return mCoordinator.search();
     }
 
     /**

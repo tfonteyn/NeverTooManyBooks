@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,13 +23,13 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -120,25 +120,21 @@ public interface ItemWithTitle {
     /**
      * Get the global default for this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    static boolean isReorderTitleForDisplaying(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_show_title_reordered, false);
+    static boolean isReorderTitleForDisplaying() {
+        return ServiceLocator.getGlobalPreferences()
+                             .getBoolean(Prefs.pk_show_title_reordered, false);
     }
 
     /**
      * Get the global default for this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    static boolean isReorderTitleForSorting(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_sort_title_reordered, true);
+    static boolean isReorderTitleForSorting() {
+        return ServiceLocator.getGlobalPreferences()
+                             .getBoolean(Prefs.pk_sort_title_reordered, true);
     }
 
     @NonNull
@@ -155,7 +151,7 @@ public interface ItemWithTitle {
     default String reorderTitleForDisplaying(@NonNull final Context context,
                                              @NonNull final Locale titleLocale) {
 
-        if (isReorderTitleForDisplaying(context)) {
+        if (isReorderTitleForDisplaying()) {
             return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();
@@ -173,7 +169,7 @@ public interface ItemWithTitle {
     default String reorderTitleForSorting(@NonNull final Context context,
                                           @NonNull final Locale titleLocale) {
 
-        if (isReorderTitleForSorting(context)) {
+        if (isReorderTitleForSorting()) {
             return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();

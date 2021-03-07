@@ -25,7 +25,6 @@ import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -45,9 +44,6 @@ public class App
     private static final int ACRA_LOGFILE_LINES = 1_000;
     private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
 
-    /** Singleton. */
-    private static App sInstance;
-
     /** Flag to indicate the startup can skip a full init. */
     private boolean mHotStart;
 
@@ -59,39 +55,9 @@ public class App
         mHotStart = true;
     }
 
-    /**
-     * Get the Application Context <strong>using the device Locale</strong>.
-     *
-     * @return app context
-     */
-    @NonNull
-    public static Context getAppContext() {
-        return sInstance.getApplicationContext();
-    }
-
-    /**
-     * Get the Application Context <strong>using the device Locale</strong>.
-     * This is purely for readability / debug.
-     * <p>
-     * If a background task/runnable/... needs a context, it should call this method.
-     *
-     * @return app context
-     */
-    @NonNull
-    public static Context getTaskContext() {
-        return sInstance.getApplicationContext();
-    }
-
-    public static String getLogString(@StringRes final int stringId) {
-        return sInstance.getString(stringId);
-    }
-
     @Override
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {
-        // create singleton self reference.
-        sInstance = this;
-
         super.attachBaseContext(base);
 
         initAcra();
@@ -109,6 +75,7 @@ public class App
     public void onCreate() {
         super.onCreate();
 
+        ServiceLocator.create(getApplicationContext());
         SearchEngineRegistry.create(getApplicationContext());
     }
 

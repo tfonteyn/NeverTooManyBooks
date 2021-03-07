@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -94,7 +95,9 @@ public enum RecordEncoding {
             }
         }
 
-        Logger.warn(TAG, "getEncoding|Unknown entry=" + entryName);
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.w(TAG, "getEncoding|Unknown entry=" + entryName);
+        }
         return Optional.empty();
     }
 

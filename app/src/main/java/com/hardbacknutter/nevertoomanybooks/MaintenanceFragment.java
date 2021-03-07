@@ -43,7 +43,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -118,7 +117,7 @@ public class MaintenanceFragment
         });
 
         mVb.btnResetTips.setOnClickListener(v -> {
-            TipManager.getInstance().reset(v.getContext());
+            TipManager.getInstance().reset();
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
         });
@@ -161,11 +160,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.menu_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.scheduleFtsRebuild(v.getContext(), false);
+                    StartupViewModel.scheduleFtsRebuild(false);
                     mVb.btnRebuildFts.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.scheduleFtsRebuild(v.getContext(), true);
+                    StartupViewModel.scheduleFtsRebuild(true);
                     mVb.btnRebuildFts.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
@@ -176,11 +175,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.menu_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.scheduleIndexRebuild(v.getContext(), false);
+                    StartupViewModel.scheduleIndexRebuild(false);
                     mVb.btnRebuildIndex.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.scheduleIndexRebuild(v.getContext(), true);
+                    StartupViewModel.scheduleIndexRebuild(true);
                     mVb.btnRebuildIndex.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
@@ -268,7 +267,7 @@ public class MaintenanceFragment
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
-            DbLocator.deleteDatabases(context);
+            ServiceLocator.deleteDatabases(context);
 
             AppDir.deleteAllContent(context);
 

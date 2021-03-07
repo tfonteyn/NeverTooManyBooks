@@ -30,7 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -87,7 +87,7 @@ public class EditLanguageDialogFragment
     @Override
     protected List<String> getList() {
         //noinspection ConstantConditions
-        return DaoLocator.getInstance().getLanguageDao().getNameList(getContext());
+        return ServiceLocator.getInstance().getLanguageDao().getNameList(getContext());
     }
 
     @Override
@@ -96,8 +96,8 @@ public class EditLanguageDialogFragment
         //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
         final String iso = Languages.getInstance()
-                                    .getISO3FromDisplayName(getContext(), userLocale, currentText);
+                                    .getISO3FromDisplayName(userLocale, currentText);
 
-        DaoLocator.getInstance().getLanguageDao().rename(originalText, iso);
+        ServiceLocator.getInstance().getLanguageDao().rename(originalText, iso);
     }
 }

@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -47,6 +46,7 @@ import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
@@ -144,11 +144,9 @@ public class GoodreadsAuth {
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
     @AnyThread
-    public GoodreadsAuth(@NonNull final Context context) {
+    public GoodreadsAuth() {
 
         mConsumer = new DefaultOAuthConsumer(BuildConfig.GOODREADS_PUBLIC_KEY,
                                              BuildConfig.GOODREADS_PRIVATE_KEY);
@@ -157,7 +155,7 @@ public class GoodreadsAuth {
                                              AUTHORIZATION_WEBSITE_URL);
 
         // load the credentials
-        hasCredentials(context);
+        hasCredentials();
     }
 
     public static void invalidateCredentials() {
@@ -166,18 +164,16 @@ public class GoodreadsAuth {
 
     /**
      * Clear all credentials related data from the preferences and local cache.
-     *
-     * @param context Current context
      */
-    static void clearAll(@NonNull final Context context) {
+    static void clearAll() {
 
         sAccessToken = "";
         sAccessSecret = "";
         sCredentialsValidated = false;
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
-                         .putString(ACCESS_TOKEN, "")
-                         .putString(ACCESS_SECRET, "")
-                         .apply();
+        ServiceLocator.getGlobalPreferences().edit()
+                      .putString(ACCESS_TOKEN, "")
+                      .putString(ACCESS_SECRET, "")
+                      .apply();
     }
 
     /**
@@ -186,20 +182,18 @@ public class GoodreadsAuth {
      * <p>
      * No network access.
      *
-     * @param context Application context
-     *
      * @return {@code true} if we have credentials.
      *
      * @throws IllegalStateException if the developer key is not present
      */
     @AnyThread
-    public boolean hasCredentials(@NonNull final Context context)
+    public boolean hasCredentials()
             throws IllegalStateException {
 
         // sanity check; see gradle.build
         if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
             // This should only happen if the developer forgot to add the Goodreads keys... (me)
-            Logger.warn(context, TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
+            Logger.warn(TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
             if (BuildConfig.DEBUG /* always */) {
                 throw new IllegalStateException(DEV_KEY_NOT_AVAILABLE);
             } else {
@@ -213,7 +207,7 @@ public class GoodreadsAuth {
         }
 
         // Get the stored token values from prefs
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         sAccessToken = global.getString(ACCESS_TOKEN, null);
         sAccessSecret = global.getString(ACCESS_SECRET, null);
 
@@ -290,7 +284,7 @@ public class GoodreadsAuth {
         }
 
         // If we don't have credentials at all, just leave
-        if (!hasCredentials(context)) {
+        if (!hasCredentials()) {
             return false;
         }
 
@@ -319,15 +313,13 @@ public class GoodreadsAuth {
      * Request authorization for this application, for the current user,
      * by going to the OAuth web page.
      *
-     * @param context Application context
-     *
      * @return the authentication Uri to which the user should be send
      *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
-    public Uri requestAuthorization(@NonNull final Context context)
+    public Uri requestAuthorization()
             throws AuthorizationException,
                    IOException {
 
@@ -351,18 +343,18 @@ public class GoodreadsAuth {
 
         // Some urls come back without a scheme, add it to make a valid URL
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
-            Logger.warn(context, TAG, "requestAuthorization|no scheme for authUrl=" + authUrl);
+            Logger.warn(TAG, "requestAuthorization|no scheme for authUrl=" + authUrl);
             // Assume http will auto-redirect to https if the website needs that instead.
             authUrl = "http://" + authUrl;
         }
 
         // Temporarily save the token; this object may be destroyed
         // before the web page returns.
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(REQUEST_TOKEN, mConsumer.getToken())
-                         .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
-                         .apply();
+        ServiceLocator.getGlobalPreferences()
+                      .edit()
+                      .putString(REQUEST_TOKEN, mConsumer.getToken())
+                      .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
+                      .apply();
 
         return Uri.parse(authUrl);
     }
@@ -383,7 +375,7 @@ public class GoodreadsAuth {
             throws AuthorizationException, IOException {
 
         // Get the temporarily saved request tokens.
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         final String requestToken = global.getString(REQUEST_TOKEN, null);
         final String requestSecret = global.getString(REQUEST_SECRET, null);
 

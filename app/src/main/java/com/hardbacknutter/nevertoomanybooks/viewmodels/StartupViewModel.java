@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -135,49 +135,37 @@ public class StartupViewModel
 
     /**
      * Set the flag to indicate an FTS rebuild is required.
-     *
-     * @param context Current context
      */
-    public static void scheduleFtsRebuild(@NonNull final Context context,
-                                          final boolean flag) {
-        schedule(context, PK_REBUILD_FTS, flag);
+    public static void scheduleFtsRebuild(final boolean flag) {
+        schedule(PK_REBUILD_FTS, flag);
     }
 
     /**
      * Set or remove the flag to indicate an OrderBy column rebuild is required.
      *
-     * @param context Current context
      */
-    public static void scheduleOrderByRebuild(@NonNull final Context context,
-                                              final boolean flag) {
-        schedule(context, PK_REBUILD_ORDERBY_COLUMNS, flag);
+    public static void scheduleOrderByRebuild(final boolean flag) {
+        schedule(PK_REBUILD_ORDERBY_COLUMNS, flag);
     }
 
     /**
      * Set or remove the flag to indicate an index rebuild is required.
      *
-     * @param context Current context
      */
-    public static void scheduleIndexRebuild(@NonNull final Context context,
-                                            final boolean flag) {
-        schedule(context, PK_REBUILD_INDEXES, flag);
+    public static void scheduleIndexRebuild(final boolean flag) {
+        schedule(PK_REBUILD_INDEXES, flag);
     }
 
     /**
      * Set or remove the flag to indicate maintenance is required.
-     *
-     * @param context Current context
      */
-    public static void scheduleMaintenance(@NonNull final Context context,
-                                           final boolean flag) {
-        schedule(context, PK_RUN_MAINTENANCE, flag);
+    public static void scheduleMaintenance(final boolean flag) {
+        schedule(PK_RUN_MAINTENANCE, flag);
     }
 
-    private static void schedule(@NonNull final Context context,
-                                 @NonNull final String key,
+    private static void schedule(@NonNull final String key,
                                  final boolean flag) {
-        final SharedPreferences.Editor ed = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
+        final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
         if (flag) {
             ed.putBoolean(key, true);
         } else {
@@ -252,12 +240,9 @@ public class StartupViewModel
         // Clear the flag
         mIsFirstStart = false;
 
-        // create the singleton service locator
-        DbLocator.init(context);
-
         try {
             // Explicitly open the main database to trigger any upgrade or the initial creation.
-            DbLocator.getDb();
+            ServiceLocator.getDb();
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");

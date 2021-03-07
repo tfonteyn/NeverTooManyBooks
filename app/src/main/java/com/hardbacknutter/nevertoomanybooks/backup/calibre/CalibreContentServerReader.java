@@ -43,13 +43,13 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -201,7 +201,7 @@ public class CalibreContentServerReader
                               @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
 
-        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
+        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
         mResults = new ImportResults();
 
@@ -655,6 +655,6 @@ public class CalibreContentServerReader
     @Override
     public void close() {
         mBookDao.close();
-        DaoLocator.getInstance().getMaintenanceDao().purge();
+        ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 }

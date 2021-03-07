@@ -27,7 +27,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -326,7 +325,7 @@ public class BooklistBuilder {
 
         tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
-        final SynchronizedDb db = DbLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getDb();
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
@@ -397,7 +396,7 @@ public class BooklistBuilder {
 
         /** Supposed to be {@code false}. */
         private static final boolean COLLATION_IS_CASE_SENSITIVE =
-                DbLocator.isCollationCaseSensitive();
+                ServiceLocator.isCollationCaseSensitive();
 
         @NonNull
         private final ListStyle mStyle;
@@ -619,7 +618,7 @@ public class BooklistBuilder {
             mSqlForInitialInsert =
                     INSERT_INTO_ + mListTable.getName() + " (" + destColumns + ") "
                     + SELECT_ + sourceColumns
-                    + _FROM_ + buildFrom(context) + buildWhere(context)
+                    + _FROM_ + buildFrom() + buildWhere(context)
                     + _ORDER_BY_ + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -965,13 +964,11 @@ public class BooklistBuilder {
          *      <li>{@link DBDefinitions#TBL_CALIBRE_BOOKS}</li>
          * </ul>
          *
-         * @param context Current context
-         *
          * @return FROM clause
          */
         @NonNull
-        private String buildFrom(@NonNull final Context context) {
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        private String buildFrom() {
+            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
             // Text of join statement
             final StringBuilder sql = new StringBuilder();
 
@@ -998,9 +995,9 @@ public class BooklistBuilder {
 
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
-            if (!mStyle.isShowBooksUnderEachAuthor(context)) {
+            if (!mStyle.isShowBooksUnderEachAuthor()) {
                 @Author.Type
-                final int primaryAuthorType = mStyle.getPrimaryAuthorType(context);
+                final int primaryAuthorType = mStyle.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
                     sql.append(_AND_)
@@ -1029,7 +1026,7 @@ public class BooklistBuilder {
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
                 // Extend the join filtering on the primary Series unless
                 // the user wants the book to show under all its Series
-                if (!mStyle.isShowBooksUnderEachSeries(context)) {
+                if (!mStyle.isShowBooksUnderEachSeries()) {
                     sql.append(_AND_)
                        .append(TBL_BOOK_SERIES.dot(DBKeys.KEY_BOOK_SERIES_POSITION))
                        .append("=1");
@@ -1044,7 +1041,7 @@ public class BooklistBuilder {
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
                 // Extend the join filtering on the primary Publisher unless
                 // the user wants the book to show under all its Publishers
-                if (!mStyle.isShowBooksUnderEachPublisher(context)) {
+                if (!mStyle.isShowBooksUnderEachPublisher()) {
                     sql.append(_AND_)
                        .append(TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_BOOK_PUBLISHER_POSITION))
                        .append("=1");

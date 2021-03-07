@@ -210,11 +210,9 @@ public abstract class BooklistStyle
     /**
      * Only ever init the Preferences if you have a valid UUID.
      *
-     * @param context      Current context
      * @param isPersistent flag
      */
-    void initPrefs(@NonNull final Context context,
-                   final boolean isPersistent) {
+    void initPrefs(final boolean isPersistent) {
 
         mShowAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
                                               Prefs.pk_show_author_name_given_first);
@@ -232,7 +230,7 @@ public abstract class BooklistStyle
         mTextScale = new TextScale(isPersistent, mPersistenceLayer);
 
         mListScreenBookFields = new ListScreenBookFields(isPersistent, mPersistenceLayer);
-        mDetailScreenBookFields = new DetailScreenBookFields(context, isPersistent,
+        mDetailScreenBookFields = new DetailScreenBookFields(isPersistent,
                                                              mPersistenceLayer);
 
         mFilters = new Filters(isPersistent, mPersistenceLayer);
@@ -356,19 +354,17 @@ public abstract class BooklistStyle
      * Wrapper that gets the preference from {@link SeriesBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Series.
      */
     @Override
-    public boolean isShowBooksUnderEachSeries(@NonNull final Context context) {
+    public boolean isShowBooksUnderEachSeries() {
         final SeriesBooklistGroup group = (SeriesBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.SERIES));
         if (group != null) {
             return group.showBooksUnderEach();
         } else {
             // return the global default.
-            return SeriesBooklistGroup.showBooksUnderEachDefault(context);
+            return SeriesBooklistGroup.showBooksUnderEachDefault();
         }
     }
 
@@ -376,19 +372,17 @@ public abstract class BooklistStyle
      * Wrapper that gets the preference from {@link PublisherBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
     @Override
-    public boolean isShowBooksUnderEachPublisher(@NonNull final Context context) {
+    public boolean isShowBooksUnderEachPublisher() {
         final PublisherBooklistGroup group = (PublisherBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.PUBLISHER));
         if (group != null) {
             return group.showBooksUnderEach();
         } else {
             // return the global default.
-            return PublisherBooklistGroup.showBooksUnderEachDefault(context);
+            return PublisherBooklistGroup.showBooksUnderEachDefault();
         }
     }
 
@@ -396,19 +390,17 @@ public abstract class BooklistStyle
      * Wrapper that gets the preference from {@link BookshelfBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
     @Override
-    public boolean isShowBooksUnderEachBookshelf(@NonNull final Context context) {
+    public boolean isShowBooksUnderEachBookshelf() {
         final BookshelfBooklistGroup group = (BookshelfBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.BOOKSHELF));
         if (group != null) {
             return group.showBooksUnderEach();
         } else {
             // return the global default.
-            return BookshelfBooklistGroup.showBooksUnderEachDefault(context);
+            return BookshelfBooklistGroup.showBooksUnderEachDefault();
         }
     }
 
@@ -416,19 +408,17 @@ public abstract class BooklistStyle
      * Wrapper that gets the preference from {@link AuthorBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Authors
      */
     @Override
-    public boolean isShowBooksUnderEachAuthor(@NonNull final Context context) {
+    public boolean isShowBooksUnderEachAuthor() {
         final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.showBooksUnderEach();
         } else {
             // return the global default.
-            return AuthorBooklistGroup.showBooksUnderEachDefault(context);
+            return AuthorBooklistGroup.showBooksUnderEachDefault();
         }
     }
 
@@ -436,22 +426,19 @@ public abstract class BooklistStyle
      * Wrapper that gets the getPrimaryType flag from the
      * {@link AuthorBooklistGroup} if we have it, or from the global default.
      *
-     * @param context Current context
-     *
      * @return the type of author we consider the primary author
      */
     @Override
-    public int getPrimaryAuthorType(@NonNull final Context context) {
+    public int getPrimaryAuthorType() {
         final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.getPrimaryType();
         } else {
             // return the global default.
-            return AuthorBooklistGroup.getPrimaryTypeGlobalDefault(context);
+            return AuthorBooklistGroup.getPrimaryTypeGlobalDefault();
         }
     }
-
 
     @NonNull
     public Map<String, PPref<?>> getRawPreferences() {

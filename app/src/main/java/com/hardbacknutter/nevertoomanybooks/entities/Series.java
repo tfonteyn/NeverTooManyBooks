@@ -32,9 +32,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -405,7 +405,7 @@ public class Series
             return false;
         }
 
-        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
         final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -566,7 +566,7 @@ public class Series
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong. For now this is partially mitigated by making
         // entering the book language mandatory.
-        final String lang = DaoLocator.getInstance().getSeriesDao().getLanguage(mId);
+        final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(mId);
         if (!lang.isEmpty()) {
             final Locale seriesLocale = AppLocale.getInstance().getLocale(context, lang);
             if (seriesLocale != null) {

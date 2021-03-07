@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -182,7 +182,7 @@ public final class Site
             final Site site = sites.poll();
             //noinspection ConstantConditions
             if (site.isEnabled()) {
-                final SearchEngine searchEngine = site.getSearchEngine(context);
+                final SearchEngine searchEngine = site.getSearchEngine();
                 if (searchEngine.promptToRegister(context, false, callerIdString, action -> {
                     switch (action) {
                         case Register:
@@ -232,15 +232,13 @@ public final class Site
      * Get the {@link SearchEngine} instance for this site.
      * If the engine was cached, it will be reset before being returned.
      *
-     * @param context Current context
-     *
      * @return (cached) instance
      */
     @NonNull
-    public SearchEngine getSearchEngine(@NonNull final Context context) {
+    public SearchEngine getSearchEngine() {
         if (mSearchEngine == null) {
             mSearchEngine = SearchEngineRegistry
-                    .getInstance().createSearchEngine(context, engineId);
+                    .getInstance().createSearchEngine(engineId);
         }
 
         mSearchEngine.reset();
@@ -251,15 +249,13 @@ public final class Site
      * Convenience method to get the {@link SearchEngine} instance for this site,
      * and set the caller.
      *
-     * @param context Current context
-     * @param caller  to set
+     * @param caller to set
      *
      * @return (cached) instance
      */
     @NonNull
-    public SearchEngine getSearchEngine(@NonNull final Context context,
-                                        @NonNull final Canceller caller) {
-        final SearchEngine searchEngine = getSearchEngine(context);
+    public SearchEngine getSearchEngine(@NonNull final Canceller caller) {
+        final SearchEngine searchEngine = getSearchEngine();
         searchEngine.setCaller(caller);
         return searchEngine;
     }
@@ -423,19 +419,17 @@ public final class Site
 
             // configure the site type enums.
             for (final Type type : values()) {
-                type.createList(context, systemLocale, userLocale);
+                type.createList(systemLocale, userLocale);
             }
         }
 
         /**
          * Create the list for <strong>this</strong> type.
          *
-         * @param context      Current context
          * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
          * @param userLocale   user locale <em>(passed in to allow mocking)</em>
          */
-        private void createList(@NonNull final Context context,
-                                @NonNull final Locale systemLocale,
+        private void createList(@NonNull final Locale systemLocale,
                                 @NonNull final Locale userLocale) {
 
             // re-create the global list for the type
@@ -443,18 +437,16 @@ public final class Site
             SearchSites.createSiteList(systemLocale, userLocale, this);
 
             // apply stored user preferences to the list
-            loadPrefs(context);
+            loadPrefs();
         }
 
         /**
          * Reset the list back to the hardcoded defaults.
          *
-         * @param context      Current context
          * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
          * @param userLocale   user locale <em>(passed in to allow mocking)</em>
          */
-        public void resetList(@NonNull final Context context,
-                              @NonNull final Locale systemLocale,
+        public void resetList(@NonNull final Locale systemLocale,
                               @NonNull final Locale userLocale) {
 
             // re-create the global list for the type
@@ -462,22 +454,20 @@ public final class Site
             SearchSites.createSiteList(systemLocale, userLocale, this);
 
             // overwrite stored user preferences with the defaults from the list
-            savePrefs(context);
+            savePrefs();
         }
 
         /**
          * Replace the current list with the given list. A deep-copy will be taken.
          *
-         * @param context Current context
          * @param sites   list to use
          */
-        public void setList(@NonNull final Context context,
-                            @NonNull final Collection<Site> sites) {
+        public void setList(@NonNull final Collection<Site> sites) {
             mList.clear();
             for (final Site site : sites) {
                 mList.add(new Site(site));
             }
-            savePrefs(context);
+            savePrefs();
         }
 
         /**
@@ -535,13 +525,11 @@ public final class Site
 
         /**
          * Load the site settings and the order of the list.
-         *
-         * @param context Current context
          */
         @VisibleForTesting
-        public void loadPrefs(@NonNull final Context context) {
+        public void loadPrefs() {
 
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences global = ServiceLocator.getGlobalPreferences();
             for (final Site site : mList) {
                 site.loadFromPrefs(global);
             }
@@ -560,7 +548,7 @@ public final class Site
                             reorderedList.add(site);
                         }
                     }
-                    savePrefs(context);
+                    savePrefs();
                 }
 
                 // simply replace in the new order.
@@ -571,15 +559,12 @@ public final class Site
 
         /**
          * Save the site settings and the order of the list.
-         *
-         * @param context Current context
          */
-        public void savePrefs(@NonNull final Context context) {
+        public void savePrefs() {
 
             // Save the order of the given list (ID's) and
             // the individual site settings to preferences.
-            final SharedPreferences.Editor ed =
-                    PreferenceManager.getDefaultSharedPreferences(context).edit();
+            final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
 
             final String order = mList.stream()
                                       .map(site -> {

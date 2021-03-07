@@ -40,8 +40,8 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -71,7 +71,7 @@ public final class Logger {
     //public static final String LOG_PATH = AppDir.LOG_SUB_DIR + "/" + ERROR_LOG_FILE;
 
     /** serious errors are written to this file. Stored in {@link AppDir#Log}. */
-    static final String ERROR_LOG_FILE = "error.log";
+    private static final String ERROR_LOG_FILE = "error.log";
 
     /** Keep the last 3 log files. */
     private static final int LOGFILE_COPIES = 3;
@@ -114,7 +114,7 @@ public final class Logger {
     public static void error(@NonNull final String tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
-        error(App.getAppContext(), tag, e, params);
+        error(ServiceLocator.getAppContext(), tag, e, params);
     }
 
     /**
@@ -142,7 +142,7 @@ public final class Logger {
 
     public static void warn(@NonNull final String tag,
                             @NonNull final Object... params) {
-        warn(App.getAppContext(), tag, params);
+        warn(ServiceLocator.getAppContext(), tag, params);
     }
 
     /**

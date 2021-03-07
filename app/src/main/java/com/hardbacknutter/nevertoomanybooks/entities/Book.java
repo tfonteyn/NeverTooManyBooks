@@ -47,11 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -661,7 +661,7 @@ public class Book
      */
     public void refreshAuthorList(@NonNull final Context context) {
 
-        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
         for (final Author author : list) {
@@ -687,7 +687,7 @@ public class Book
      */
     public void refreshSeriesList(@NonNull final Context context) {
 
-        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
         for (final Series series : list) {
@@ -713,7 +713,7 @@ public class Book
      */
     public void refreshPublishersList(@NonNull final Context context) {
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         for (final Publisher publisher : list) {
@@ -729,7 +729,7 @@ public class Book
 
         } else {
             // but if not, go explicitly fetch it.
-            final CalibreLibrary library = DaoLocator
+            final CalibreLibrary library = ServiceLocator
                     .getInstance().getCalibreLibraryDao()
                     .getLibrary(getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY));
 
@@ -768,7 +768,7 @@ public class Book
 
         } else {
             // but if not, go explicitly fetch it.
-            String loanee = DaoLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
+            String loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
             if (loanee == null) {
                 loanee = "";
             }
@@ -1344,9 +1344,9 @@ public class Book
                 }
 
                 FileUtils.delete(getUuidCoverFile(context, cIdx));
-                if (ImageUtils.isImageCachingEnabled(context)) {
+                if (ImageUtils.isImageCachingEnabled()) {
                     // We delete *all* files related to this book from the cache.
-                    DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
+                    ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
                 }
             }
 
@@ -1388,8 +1388,8 @@ public class Book
                     FileUtils.delete(getUuidCoverFile(context, cIdx));
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
-                    if (ImageUtils.isImageCachingEnabled(context)) {
-                        DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
+                    if (ImageUtils.isImageCachingEnabled()) {
+                        ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name

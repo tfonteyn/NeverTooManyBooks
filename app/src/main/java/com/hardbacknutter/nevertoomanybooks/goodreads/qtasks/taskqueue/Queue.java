@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDAO.ScheduledTask;
@@ -95,7 +95,7 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
+        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
         try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 final ScheduledTask scheduledTask;

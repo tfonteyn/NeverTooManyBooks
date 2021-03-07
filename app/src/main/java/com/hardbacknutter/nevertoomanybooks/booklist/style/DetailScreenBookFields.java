@@ -19,13 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 
@@ -44,15 +43,13 @@ public class DetailScreenBookFields
     /**
      * Constructor.
      *
-     * @param context          Current context
      * @param isPersistent     flag
      * @param persistenceLayer Style reference.
      */
-    DetailScreenBookFields(@NonNull final Context context,
-                           final boolean isPersistent,
+    DetailScreenBookFields(final boolean isPersistent,
                            @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             addField(new PBoolean(isPersistent, persistenceLayer,

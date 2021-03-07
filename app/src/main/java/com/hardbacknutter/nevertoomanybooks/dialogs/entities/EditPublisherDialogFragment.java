@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
@@ -122,7 +122,7 @@ public class EditPublisherDialogFragment
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                DaoLocator.getInstance().getPublisherDao().getNames());
+                ServiceLocator.getInstance().getPublisherDao().getNames());
         mVb.publisher.setText(mName);
         mVb.publisher.setAdapter(adapter);
     }
@@ -159,7 +159,7 @@ public class EditPublisherDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
-        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
         // check if it already exists (will be 0 if not)
         final long existingId = publisherDao.find(context, mPublisher, true, bookLocale);
 

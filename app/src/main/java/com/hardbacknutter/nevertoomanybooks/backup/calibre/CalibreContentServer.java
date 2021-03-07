@@ -78,10 +78,10 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -226,7 +226,7 @@ public class CalibreContentServer {
     @AnyThread
     CalibreContentServer(@NonNull final Context context)
             throws CertificateException, SSLException {
-        this(context, Uri.parse(getHostUrl(context)));
+        this(context, Uri.parse(getHostUrl()));
     }
 
     /**
@@ -271,16 +271,13 @@ public class CalibreContentServer {
     /**
      * Get the default/stored host url.
      *
-     * @param context current context
-     *
      * @return url
      */
     @NonNull
     @AnyThread
-    public static String getHostUrl(@NonNull final Context context) {
+    public static String getHostUrl() {
         //noinspection ConstantConditions
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PK_HOST_URL, "");
+        return ServiceLocator.getGlobalPreferences().getString(PK_HOST_URL, "");
     }
 
     @AnyThread
@@ -289,10 +286,10 @@ public class CalibreContentServer {
             throws SecurityException {
         final ContentResolver contentResolver = context.getContentResolver();
 
-        final String oldFolder = PreferenceManager.getDefaultSharedPreferences(context)
-                                                  .getString(PK_LOCAL_FOLDER_URI, "");
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         // If the old one is different then the current selection, release the previous Uri
+        final String oldFolder = global.getString(PK_LOCAL_FOLDER_URI, "");
         //noinspection ConstantConditions
         if (!oldFolder.equals(uri.toString())) {
             getFolderUri(context).ifPresent(
@@ -307,10 +304,9 @@ public class CalibreContentServer {
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                          | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit()
-                             .putString(PK_LOCAL_FOLDER_URI, uri.toString())
-                             .apply();
+            global.edit()
+                  .putString(PK_LOCAL_FOLDER_URI, uri.toString())
+                  .apply();
         } catch (@NonNull final SecurityException e) {
             Logger.error(context, TAG, e, "uri=" + uri.toString());
             throw e;
@@ -402,7 +398,7 @@ public class CalibreContentServer {
         mLibraries.clear();
         mDefaultLibrary = null;
 
-        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
+        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
         final Bookshelf currentBookshelf = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);

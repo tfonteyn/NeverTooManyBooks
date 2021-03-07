@@ -27,8 +27,8 @@ import androidx.annotation.NonNull;
 
 import java.io.Closeable;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.DbLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
@@ -61,7 +61,7 @@ public final class BooklistNavigatorDao {
      */
     public BooklistNavigatorDao(@NonNull final String listTableName) {
 
-        mDb = DbLocator.getDb();
+        mDb = ServiceLocator.getDb();
         mListTableName = listTableName;
 
         try (SynchronizedStatement stmt = mDb.compileStatement(

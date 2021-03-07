@@ -137,7 +137,7 @@ public class JsonArchiveWriter
 
             // If the backup was a full backup remember that.
             if (!mHelper.isIncremental()) {
-                Backup.setLastFullExportDate(context, ArchiveEncoding.Json,
+                Backup.setLastFullExportDate(ArchiveEncoding.Json,
                                              LocalDateTime.now(ZoneOffset.UTC));
             }
             return results;

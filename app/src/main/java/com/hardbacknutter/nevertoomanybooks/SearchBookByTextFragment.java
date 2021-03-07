@@ -88,8 +88,7 @@ public class SearchBookByTextFragment
         super.onViewCreated(view, savedInstanceState);
 
         mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(getContext());
+        mVm.init();
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_for_books);
@@ -118,6 +117,7 @@ public class SearchBookByTextFragment
         populatePublisherList();
 
         if (savedInstanceState == null) {
+            //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
                     Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
                                           "searchByText", null));

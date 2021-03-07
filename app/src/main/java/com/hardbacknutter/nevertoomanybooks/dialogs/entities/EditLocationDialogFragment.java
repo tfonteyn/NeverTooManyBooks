@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Location.
@@ -67,12 +67,12 @@ public class EditLocationDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        return DaoLocator.getInstance().getLocationDaoDao().getList();
+        return ServiceLocator.getInstance().getLocationDaoDao().getList();
     }
 
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        DaoLocator.getInstance().getLocationDaoDao().rename(originalText, currentText);
+        ServiceLocator.getInstance().getLocationDaoDao().rename(originalText, currentText);
     }
 }

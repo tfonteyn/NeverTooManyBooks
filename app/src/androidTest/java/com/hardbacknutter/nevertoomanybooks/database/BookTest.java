@@ -37,6 +37,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -105,9 +106,9 @@ public class BookTest {
             throws IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        DbLocator.init(context);
+        ServiceLocator.create(context);
 
-        final DaoLocator daoLocator = DaoLocator.getInstance();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         mBookshelfList.clear();
         mAuthorList.clear();
@@ -130,7 +131,7 @@ public class BookTest {
             mAuthor[1] = Author.from(AuthorFullName(1));
 
             // insert author[0] but do NOT insert author[1]
-            mAuthorId[0] = daoLocator.getAuthorDao().insert(context, mAuthor[0]);
+            mAuthorId[0] = serviceLocator.getAuthorDao().insert(context, mAuthor[0]);
             mAuthorList.clear();
             mAuthorList.add(mAuthor[0]);
 
@@ -139,8 +140,8 @@ public class BookTest {
 
             // insert publisher[0] but do NOT publisher author[1]
 
-            mPublisherId[0] = daoLocator.getPublisherDao().insert(context, mPublisher[0],
-                                                                  Locale.getDefault());
+            mPublisherId[0] = serviceLocator.getPublisherDao().insert(context, mPublisher[0],
+                                                                      Locale.getDefault());
             mPublisherList.clear();
             mPublisherList.add(mPublisher[0]);
         }
