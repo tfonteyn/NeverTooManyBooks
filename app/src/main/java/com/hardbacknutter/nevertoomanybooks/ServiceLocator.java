@@ -17,12 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
+import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
@@ -56,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublisherDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper;
 
 /**
  * The use and definition of DAO in this project has a long history.
@@ -63,14 +71,23 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
  * The main issue is that all testing must be done with the emulator as we can't easily
  * inject mock doa's for now.
  * <p>
- * This class is the next step as we can mock dao classes before running a test.
+ * This class is the next step as we can mock Context/db/dao classes before running a test.
  * <p>
  * TODO: {@link BookDao} which cannot be a singleton.
  */
-public final class DaoLocator {
+public final class ServiceLocator {
 
     /** Singleton. */
-    private static DaoLocator sInstance;
+    private static ServiceLocator sInstance;
+
+    @NonNull
+    private final Context mAppContext;
+
+    @Nullable
+    private DBHelper mDBHelper;
+    @Nullable
+    private CoversDbHelper mCoversDbHelper;
+
 
     @Nullable
     private AuthorDao mAuthorDao;
@@ -107,18 +124,109 @@ public final class DaoLocator {
     @Nullable
     private CoverCacheDao mCoverCacheDao;
 
-    private DaoLocator() {
+    /**
+     * Private constructor.
+     *
+     * @param context Current context
+     */
+    private ServiceLocator(@NonNull final Context context) {
+        mAppContext = context.getApplicationContext();
+    }
+
+    /**
+     * Get the Application Context <strong>using the device Locale</strong>.
+     *
+     * @return app context
+     */
+    @NonNull
+    public static Context getAppContext() {
+        return sInstance.mAppContext;
+    }
+
+    public static SharedPreferences getGlobalPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.mAppContext);
+    }
+
+    /**
+     * Public constructor.
+     *
+     * @param context application or test context.
+     */
+    public static void create(@NonNull final Context context) {
+        synchronized (ServiceLocator.class) {
+            if (sInstance == null) {
+                sInstance = new ServiceLocator(context);
+            }
+        }
     }
 
     @NonNull
-    public static DaoLocator getInstance() {
-        synchronized (DaoLocator.class) {
-            if (sInstance == null) {
-                sInstance = new DaoLocator();
-            }
-        }
+    public static ServiceLocator getInstance() {
         return sInstance;
     }
+
+
+    public static boolean isCollationCaseSensitive() {
+        return sInstance.getDBHelper().isCollationCaseSensitive();
+    }
+
+    static void deleteDatabases(@NonNull final Context context) {
+        sInstance.getDBHelper().deleteDatabase(context);
+        sInstance.getCoversDbHelper().deleteDatabase(context);
+
+        context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
+    }
+
+
+    /**
+     * Main entry point for clients to get the main database.
+     *
+     * @return the database instance
+     */
+    public static SynchronizedDb getDb() {
+        return sInstance.getDBHelper().getDb();
+    }
+
+    /**
+     * Main entry point for clients to get the covers database.
+     *
+     * @return the database instance
+     */
+    public static SynchronizedDb getCoversDb() {
+        return sInstance.getCoversDbHelper().getDb();
+    }
+
+
+    @NonNull
+    private DBHelper getDBHelper() {
+        synchronized (this) {
+            if (mDBHelper == null) {
+                mDBHelper = new DBHelper(mAppContext);
+            }
+        }
+        return mDBHelper;
+    }
+
+    @VisibleForTesting
+    public void setDBHelper(@Nullable final DBHelper openHelper) {
+        mDBHelper = openHelper;
+    }
+
+    @NonNull
+    private CoversDbHelper getCoversDbHelper() {
+        synchronized (this) {
+            if (mCoversDbHelper == null) {
+                mCoversDbHelper = new CoversDbHelper(mAppContext);
+            }
+        }
+        return mCoversDbHelper;
+    }
+
+    @VisibleForTesting
+    public void setCoversDbHelper(@Nullable final CoversDbHelper openHelper) {
+        mCoversDbHelper = openHelper;
+    }
+
 
     @NonNull
     public AuthorDao getAuthorDao() {
