@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,10 +21,10 @@
 
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <dimen name="cover_details_0_height">400dp</dimen>
-    <dimen name="cover_details_0_width">256dp</dimen>
-    <dimen name="cover_details_1_height">300dp</dimen>
-    <dimen name="cover_details_1_width">192dp</dimen>
+    <dimen name="cover_details_0_height">300dp</dimen>
+    <dimen name="cover_details_0_width">192dp</dimen>
+    <dimen name="cover_details_1_height">200dp</dimen>
+    <dimen name="cover_details_1_width">128dp</dimen>
 
     <integer name="cover_browser_gallery_span_count">2</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>
