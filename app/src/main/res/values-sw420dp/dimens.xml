@@ -26,6 +26,5 @@
     land: w683dp h387dp
 -->
 <resources>
-    <!-- The ISBN edit field. 22sp is the Material large text size. -->
-    <dimen name="isbn_edit_text_size">22sp</dimen>
+
 </resources>

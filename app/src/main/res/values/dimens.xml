@@ -153,7 +153,4 @@
     -->
     <dimen name="large_menu_button">296dp</dimen>
 
-    <!-- The ISBN edit field. 18sp is the Material medium text size.
-         We make it bigger on larger screens. -->
-    <dimen name="isbn_edit_text_size">18sp</dimen>
 </resources>
