@@ -27,6 +27,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -82,6 +86,9 @@ public final class ServiceLocator {
 
     @NonNull
     private final Context mAppContext;
+
+    @Nullable
+    private CookieManager mCookieManager;
 
     @Nullable
     private DBHelper mDBHelper;
@@ -227,6 +234,27 @@ public final class ServiceLocator {
         mCoversDbHelper = openHelper;
     }
 
+
+    /**
+     * Client must call this <strong>before</strong> doing its first request (lazy init).
+     *
+     * @return the global cookie manager.
+     */
+    @NonNull
+    public CookieManager getCookieManager() {
+        synchronized (this) {
+            if (mCookieManager == null) {
+                mCookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
+                CookieHandler.setDefault(mCookieManager);
+            }
+        }
+        return mCookieManager;
+    }
+
+    @VisibleForTesting
+    public void setCookieManager(@Nullable final CookieManager cookieManager) {
+        mCookieManager = cookieManager;
+    }
 
     @NonNull
     public AuthorDao getAuthorDao() {
