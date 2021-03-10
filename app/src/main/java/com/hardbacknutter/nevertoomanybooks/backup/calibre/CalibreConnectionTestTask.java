@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
@@ -63,12 +62,6 @@ public class CalibreConnectionTestTask
     @Override
     protected Boolean doWork(@NonNull final Context context)
             throws IOException, CertificateException {
-        try {
-            return new CalibreContentServer(context).createTestConnection();
-
-        } catch (@NonNull final Exception e) {
-            Logger.error(context, TAG, e);
-            throw e;
-        }
+        return new CalibreContentServer(context).createTestConnection();
     }
 }
