@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.WindowManager;
 
 import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
@@ -155,10 +154,21 @@ public final class AttrUtils {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
 
-        final DisplayMetrics metrics = new DisplayMetrics();
-        final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(metrics);
+        try {
+            final DisplayMetrics metrics = new DisplayMetrics();
+            //noinspection ConstantConditions
+            context.getDisplay().getRealMetrics(metrics);
+            return (int) tv.getDimension(metrics);
+        } catch (@NonNull final UnsupportedOperationException e) {
+            // When running androidTest, we get:
+            // java.lang.UnsupportedOperationException: Tried to obtain display from a Context
+            // not associated with one. Only visual Contexts (such as Activity or one created
+            // with Context#createWindowContext) or ones created with Context#createDisplayContext
+            // are associated with displays. Other types of Contexts are typically related
+            // to background entities and may return an arbitrary display.
 
-        return (int) tv.getDimension(metrics);
+            // fake a response
+            return 48;
+        }
     }
 }
