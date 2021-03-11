@@ -81,6 +81,7 @@
             android:title="@string/lbl_isbn"
             />
 
+        <!-- under development - disabled in release. -->
         <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
