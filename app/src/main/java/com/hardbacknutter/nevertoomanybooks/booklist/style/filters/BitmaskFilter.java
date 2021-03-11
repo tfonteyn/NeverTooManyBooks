@@ -50,7 +50,7 @@ public class BitmaskFilter
     /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private final StylePersistenceLayer mPersistence;
+    private final StylePersistenceLayer mPersistenceLayer;
 
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
@@ -90,7 +90,7 @@ public class BitmaskFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = key;
         mDefaultValue = 0;
 
@@ -116,7 +116,7 @@ public class BitmaskFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = that.mKey;
         mDefaultValue = that.mDefaultValue;
 
@@ -167,7 +167,7 @@ public class BitmaskFilter
 
         if (mPersisted) {
             //noinspection ConstantConditions
-            return mPersistence.getNonGlobalBoolean(mKey + ACTIVE);
+            return mPersistenceLayer.getNonGlobalBoolean(mKey + ACTIVE);
         } else {
             return mNonPersistedValueIsActive;
         }
@@ -201,10 +201,10 @@ public class BitmaskFilter
         if (mPersisted) {
             if (value != null) {
                 //noinspection ConstantConditions
-                mPersistence.setBitmask(mKey, value & mMask);
+                mPersistenceLayer.setBitmask(mKey, value & mMask);
             } else {
                 //noinspection ConstantConditions
-                mPersistence.setBitmask(mKey, null);
+                mPersistenceLayer.setBitmask(mKey, null);
             }
         } else {
             if (value != null) {
@@ -222,7 +222,7 @@ public class BitmaskFilter
     public Integer getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions
-            final Integer value = mPersistence.getBitmask(mKey);
+            final Integer value = mPersistenceLayer.getBitmask(mKey);
             if (value != null) {
                 return value & mMask;
             }
@@ -242,10 +242,10 @@ public class BitmaskFilter
             return false;
         }
         final BitmaskFilter that = (BitmaskFilter) o;
+        // mPersisted is NOT part of the values to compare!
         return mKey.equals(that.mKey)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
                && mDefaultValue.equals(that.mDefaultValue)
-               && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
                && mDomainExpression.equals(that.mDomainExpression)
@@ -256,7 +256,7 @@ public class BitmaskFilter
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
                             mLabelId, mDomainExpression,
                             mNonPersistedValueIsActive,
                             mMask);

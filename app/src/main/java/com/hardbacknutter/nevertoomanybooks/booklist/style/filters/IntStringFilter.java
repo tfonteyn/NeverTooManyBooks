@@ -60,7 +60,7 @@ abstract class IntStringFilter
     /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private final StylePersistenceLayer mPersistence;
+    private final StylePersistenceLayer mPersistenceLayer;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
@@ -92,7 +92,7 @@ abstract class IntStringFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = key;
         mDefaultValue = P_NOT_USED;
         mNonPersistedValue = P_NOT_USED;
@@ -117,7 +117,7 @@ abstract class IntStringFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = that.mKey;
         mDefaultValue = that.mDefaultValue;
 
@@ -160,7 +160,7 @@ abstract class IntStringFilter
     public void set(@Nullable final Integer value) {
         if (mPersisted) {
             //noinspection ConstantConditions
-            mPersistence.setStringedInt(mKey, value);
+            mPersistenceLayer.setStringedInt(mKey, value);
         } else {
             mNonPersistedValue = value;
         }
@@ -171,7 +171,7 @@ abstract class IntStringFilter
     public Integer getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions
-            final Integer value = mPersistence.getStringedInt(mKey);
+            final Integer value = mPersistenceLayer.getStringedInt(mKey);
             if (value != null) {
                 return value;
             }
@@ -191,10 +191,10 @@ abstract class IntStringFilter
             return false;
         }
         final IntStringFilter that = (IntStringFilter) o;
+        // mPersisted is NOT part of the values to compare!
         return mKey.equals(that.mKey)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
                && mDefaultValue.equals(that.mDefaultValue)
-               && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
                && mDomainExpression.equals(that.mDomainExpression);
@@ -202,7 +202,7 @@ abstract class IntStringFilter
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
                             mLabelId, mDomainExpression);
     }
 

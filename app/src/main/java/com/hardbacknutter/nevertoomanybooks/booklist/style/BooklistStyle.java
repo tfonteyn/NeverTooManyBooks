@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.MultiSelectListPreference;
 
 import java.util.HashMap;
@@ -179,32 +178,10 @@ public abstract class BooklistStyle
     @NonNull
     @Override
     public UserStyle clone(@NonNull final Context context) {
-        SanityCheck.requireValue(getUuid(), "mUuid");
-
-        return clone(context, 0, UUID.randomUUID().toString(), true);
-    }
-
-    /**
-     * FOR TESTING ONLY: allows to pass in id, uuid and isPersistent==false.
-     * <p>
-     * see {@link #clone(Context)}.
-     *
-     * @param context      Current context
-     * @param id           for the new style
-     * @param uuid         for the new style
-     * @param isPersistent Should always be {@code true},
-     *                     but for testing {@code false} can be passed in.
-     *
-     * @return the new copy
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @NonNull
-    public UserStyle clone(@NonNull final Context context,
-                           final long id,
-                           @NonNull final String uuid,
-                           final boolean isPersistent) {
-
-        return new UserStyle(context, this, id, uuid, isPersistent);
+        SanityCheck.requireValue(mUuid, "mUuid");
+        // A cloned style is *always* a UserStyle/persistent regardless of the original
+        // being a UserStyle or BuiltinStyle.
+        return new UserStyle(context, this, 0, UUID.randomUUID().toString());
     }
 
     /**
@@ -230,8 +207,7 @@ public abstract class BooklistStyle
         mTextScale = new TextScale(isPersistent, mPersistenceLayer);
 
         mListScreenBookFields = new ListScreenBookFields(isPersistent, mPersistenceLayer);
-        mDetailScreenBookFields = new DetailScreenBookFields(isPersistent,
-                                                             mPersistenceLayer);
+        mDetailScreenBookFields = new DetailScreenBookFields(isPersistent, mPersistenceLayer);
 
         mFilters = new Filters(isPersistent, mPersistenceLayer);
         mGroups = new Groups(isPersistent, this);
@@ -494,7 +470,6 @@ public abstract class BooklistStyle
     @Override
     public int hashCode() {
         return Objects.hash(mId, mUuid, mMenuPosition, mIsPreferred,
-                            //mPersistenceLayer,
                             mShowAuthorByGivenName, mSortAuthorByGivenName,
                             mExpansionLevel, mShowHeaderInfo, mGroupRowPreferredHeight,
                             mTextScale, mListScreenBookFields, mDetailScreenBookFields,

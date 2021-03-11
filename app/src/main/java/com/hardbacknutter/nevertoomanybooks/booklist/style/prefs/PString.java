@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ public class PString
     /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private final StylePersistenceLayer mPersistence;
+    private final StylePersistenceLayer mPersistenceLayer;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final String mDefaultValue;
@@ -66,7 +66,7 @@ public class PString
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = key;
         mDefaultValue = "";
     }
@@ -87,7 +87,7 @@ public class PString
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = that.mKey;
         mDefaultValue = that.mDefaultValue;
 
@@ -108,7 +108,7 @@ public class PString
     public void set(@Nullable final String value) {
         if (mPersisted) {
             //noinspection ConstantConditions
-            mPersistence.setString(getKey(), value);
+            mPersistenceLayer.setString(getKey(), value);
         } else {
             mNonPersistedValue = value;
         }
@@ -119,7 +119,7 @@ public class PString
     public String getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions
-            final String value = mPersistence.getString(getKey());
+            final String value = mPersistenceLayer.getString(getKey());
             if (value != null) {
                 return value;
             }
@@ -139,15 +139,15 @@ public class PString
             return false;
         }
         final PString that = (PString) o;
+        // mPersisted is NOT part of the values to compare!
         return mKey.equals(that.mKey)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
-               && mDefaultValue.equals(that.mDefaultValue)
-               && mPersisted == that.mPersisted;
+               && mDefaultValue.equals(that.mDefaultValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue);
     }
 
     @Override

@@ -87,7 +87,7 @@ public class SeriesBooklistGroup
         super(isPersistent, style, group);
         mDisplayDomain = createDisplayDomain();
 
-        mUnderEach = new PBoolean(isPersistent, mPersistence, group.mUnderEach);
+        mUnderEach = new PBoolean(isPersistent, mPersistenceLayer, group.mUnderEach);
     }
 
     /**
@@ -100,7 +100,7 @@ public class SeriesBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mPersisted, mPersistence, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull

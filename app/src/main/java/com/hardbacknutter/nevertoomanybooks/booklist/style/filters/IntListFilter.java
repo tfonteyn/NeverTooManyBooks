@@ -53,7 +53,7 @@ public class IntListFilter
     /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private final StylePersistenceLayer mPersistence;
+    private final StylePersistenceLayer mPersistenceLayer;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final ArrayList<Integer> mDefaultValue;
@@ -86,7 +86,7 @@ public class IntListFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = key;
         mDefaultValue = new ArrayList<>();
 
@@ -110,7 +110,7 @@ public class IntListFilter
             }
         }
         mPersisted = isPersistent;
-        mPersistence = persistenceLayer;
+        mPersistenceLayer = persistenceLayer;
         mKey = that.mKey;
         mDefaultValue = new ArrayList<>(that.mDefaultValue);
 
@@ -164,7 +164,7 @@ public class IntListFilter
 
         if (mPersisted) {
             //noinspection ConstantConditions
-            return mPersistence.getNonGlobalBoolean(mKey + ACTIVE);
+            return mPersistenceLayer.getNonGlobalBoolean(mKey + ACTIVE);
         } else {
             return mNonPersistedValueIsActive;
         }
@@ -190,7 +190,7 @@ public class IntListFilter
     public void set(@Nullable final ArrayList<Integer> value) {
         if (mPersisted) {
             //noinspection ConstantConditions
-            mPersistence.setIntList(mKey, value);
+            mPersistenceLayer.setIntList(mKey, value);
         } else {
             if (value != null) {
                 mNonPersistedValue = new ArrayList<>(value);
@@ -207,7 +207,7 @@ public class IntListFilter
     public ArrayList<Integer> getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions
-            final ArrayList<Integer> value = mPersistence.getIntList(mKey);
+            final ArrayList<Integer> value = mPersistenceLayer.getIntList(mKey);
             if (value != null) {
                 return value;
             }
@@ -227,10 +227,10 @@ public class IntListFilter
             return false;
         }
         final IntListFilter that = (IntListFilter) o;
+        // mPersisted is NOT part of the values to compare!
         return mKey.equals(that.mKey)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
                && mDefaultValue.equals(that.mDefaultValue)
-               && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
                && mDomainExpression.equals(that.mDomainExpression)
@@ -240,7 +240,7 @@ public class IntListFilter
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
                             mLabelId, mDomainExpression,
                             mNonPersistedValueIsActive);
     }

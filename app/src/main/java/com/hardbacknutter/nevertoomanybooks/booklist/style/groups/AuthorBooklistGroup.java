@@ -99,8 +99,8 @@ public class AuthorBooklistGroup
         mDisplayDomain = createDisplayDomain();
         mSortedDomain = createSortDomain();
 
-        mUnderEach = new PBoolean(mPersisted, mPersistence, group.mUnderEach);
-        mPrimaryType = new PBitmask(mPersisted, mPersistence, group.mPrimaryType);
+        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
+        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, group.mPrimaryType);
     }
 
 
@@ -153,9 +153,9 @@ public class AuthorBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mPersisted, mPersistence, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, PK_SHOW_BOOKS_UNDER_EACH);
 
-        mPrimaryType = new PBitmask(mPersisted, mPersistence, PK_PRIMARY_TYPE,
+        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
                                     Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
     }
 

@@ -193,7 +193,7 @@ public class BooklistGroup {
     /** The {@link StylePersistenceLayer} to use. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    final StylePersistenceLayer mPersistence;
+    final StylePersistenceLayer mPersistenceLayer;
     @NonNull
     final ListStyle mStyle;
     /** Flag indicating we should use the persistence store. */
@@ -227,7 +227,7 @@ public class BooklistGroup {
 
         mPersisted = isPersistent;
         mStyle = style;
-        mPersistence = mStyle.getPersistenceLayer();
+        mPersistenceLayer = mStyle.getPersistenceLayer();
     }
 
     /**
@@ -242,7 +242,7 @@ public class BooklistGroup {
                          @NonNull final BooklistGroup group) {
         mPersisted = isPersistent;
         mStyle = style;
-        mPersistence = mStyle.getPersistenceLayer();
+        mPersistenceLayer = mStyle.getPersistenceLayer();
 
         mId = group.mId;
         mGroupKey = GroupKey.getGroupKey(mId);
@@ -562,15 +562,15 @@ public class BooklistGroup {
             return false;
         }
         final BooklistGroup that = (BooklistGroup) o;
-        return mPersisted == that.mPersisted
-               && mId == that.mId
+        // mPersisted is NOT part of the values to compare!
+        return mId == that.mId
                && mGroupKey.equals(that.mGroupKey)
                && Objects.equals(mAccumulatedDomains, that.mAccumulatedDomains);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mPersistence, mPersisted, mId, mGroupKey, mAccumulatedDomains,
+        return Objects.hash(mId, mGroupKey, mAccumulatedDomains,
                             // UUID only
                             mStyle.getUuid());
     }

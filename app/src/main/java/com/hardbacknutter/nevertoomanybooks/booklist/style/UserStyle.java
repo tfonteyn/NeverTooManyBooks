@@ -99,15 +99,13 @@ public class UserStyle
      * @param style        to clone
      * @param id           for the new style
      * @param uuid         for the new style
-     * @param isPersistent Should always be {@code true},
-     *                     but for testing {@code false} can be passed in.
      */
     protected UserStyle(@NonNull final Context context,
                         @NonNull final BooklistStyle style,
                         final long id,
-                        @NonNull final String uuid,
-                        final boolean isPersistent) {
-        super(context, uuid, isPersistent);
+                        @NonNull final String uuid) {
+        super(context, uuid, true);
+
         mId = id;
 
         // Store the new name.
@@ -118,27 +116,27 @@ public class UserStyle
         mMenuPosition = style.getMenuPosition();
 
         // clone the preferences
-        mShowAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
+        mShowAuthorByGivenName = new PBoolean(true, mPersistenceLayer,
                                               style.mShowAuthorByGivenName);
-        mSortAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
+        mSortAuthorByGivenName = new PBoolean(true, mPersistenceLayer,
                                               style.mSortAuthorByGivenName);
 
-        mExpansionLevel = new PInteger(isPersistent, mPersistenceLayer, style.mExpansionLevel);
-        mShowHeaderInfo = new PBitmask(isPersistent, mPersistenceLayer, style.mShowHeaderInfo);
-        mGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
+        mExpansionLevel = new PInteger(true, mPersistenceLayer, style.mExpansionLevel);
+        mShowHeaderInfo = new PBitmask(true, mPersistenceLayer, style.mShowHeaderInfo);
+        mGroupRowPreferredHeight = new PBoolean(true, mPersistenceLayer,
                                                 style.mGroupRowPreferredHeight);
 
-        mTextScale = new TextScale(isPersistent, mPersistenceLayer, style.mTextScale);
+        mTextScale = new TextScale(true, mPersistenceLayer, style.mTextScale);
 
-        mListScreenBookFields = new ListScreenBookFields(isPersistent, mPersistenceLayer,
+        mListScreenBookFields = new ListScreenBookFields(true, mPersistenceLayer,
                                                          style.mListScreenBookFields);
 
-        mDetailScreenBookFields = new DetailScreenBookFields(isPersistent, mPersistenceLayer,
+        mDetailScreenBookFields = new DetailScreenBookFields(true, mPersistenceLayer,
                                                              style.mDetailScreenBookFields);
 
-        mFilters = new Filters(isPersistent, mPersistenceLayer, style.mFilters);
+        mFilters = new Filters(true, mPersistenceLayer, style.mFilters);
 
-        mGroups = new Groups(isPersistent, this, style.mGroups);
+        mGroups = new Groups(true, this, style.mGroups);
     }
 
     public static UserStyle createGlobal(@NonNull final Context context) {

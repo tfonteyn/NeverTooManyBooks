@@ -21,9 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
-
-import java.util.UUID;
 
 import org.junit.Test;
 
@@ -47,48 +46,53 @@ public class UserStyleTest {
 
         assertNotNull(s1);
 
-        final UserStyle cloned = s1.clone(context, 0,
-                                          UUID.randomUUID().toString(),
-                                          // FALSE!!
-                                          false);
+        // clone a BuiltinStyles
+        final UserStyle s2 = s1.clone(context);
+        compare(context, s1, s2);
+        // clone a UserStyle
+        compare(context, s2, s2.clone(context));
+    }
 
+    private void compare(@NonNull final Context context,
+                         @NonNull final ListStyle s1,
+                         @NonNull final ListStyle s2) {
         // new style, so no id, and a new uuid
-        assertEquals(0, cloned.getId());
-        assertNotEquals(s1.getUuid(), cloned.getUuid());
-        assertFalse(cloned.getUuid().isEmpty());
+        assertEquals(0, s2.getId());
+        assertNotEquals(s1.getUuid(), s2.getUuid());
+        assertFalse(s2.getUuid().isEmpty());
 
-        assertEquals(s1.getLabel(context), cloned.getLabel(context));
+        assertEquals(s1.getLabel(context), s2.getLabel(context));
 
-        assertEquals(s1.isPreferred(), cloned.isPreferred());
-        assertEquals(s1.getMenuPosition(), cloned.getMenuPosition());
-        assertEquals(s1.isGlobal(), cloned.isGlobal());
+        assertEquals(s1.isPreferred(), s2.isPreferred());
+        assertEquals(s1.getMenuPosition(), s2.getMenuPosition());
+        assertEquals(s1.isGlobal(), s2.isGlobal());
 
-        assertEquals(s1.isShowAuthorByGivenName(), cloned.isShowAuthorByGivenName());
-        assertEquals(s1.isSortAuthorByGivenName(), cloned.isSortAuthorByGivenName());
+        assertEquals(s1.isShowAuthorByGivenName(), s2.isShowAuthorByGivenName());
+        assertEquals(s1.isSortAuthorByGivenName(), s2.isSortAuthorByGivenName());
 
         assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT),
-                     cloned.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT));
+                     s2.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT));
         assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME),
-                     cloned.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME));
+                     s2.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME));
         assertEquals(s1.isShowHeader(ListStyle.HEADER_SHOW_FILTER),
-                     cloned.isShowHeader(ListStyle.HEADER_SHOW_FILTER));
+                     s2.isShowHeader(ListStyle.HEADER_SHOW_FILTER));
 
-        assertEquals(s1.getGroupRowHeight(context), cloned.getGroupRowHeight(context));
-        assertEquals(s1.getTopLevel(), cloned.getTopLevel());
+        assertEquals(s1.getGroupRowHeight(context), s2.getGroupRowHeight(context));
+        assertEquals(s1.getTopLevel(), s2.getTopLevel());
 
-        assertEquals(s1.isShowBooksUnderEachAuthor(), cloned.isShowBooksUnderEachAuthor());
-        assertEquals(s1.isShowBooksUnderEachBookshelf(), cloned.isShowBooksUnderEachBookshelf());
-        assertEquals(s1.isShowBooksUnderEachPublisher(), cloned.isShowBooksUnderEachPublisher());
-        assertEquals(s1.isShowBooksUnderEachSeries(), cloned.isShowBooksUnderEachSeries());
+        assertEquals(s1.isShowBooksUnderEachAuthor(), s2.isShowBooksUnderEachAuthor());
+        assertEquals(s1.isShowBooksUnderEachBookshelf(), s2.isShowBooksUnderEachBookshelf());
+        assertEquals(s1.isShowBooksUnderEachPublisher(), s2.isShowBooksUnderEachPublisher());
+        assertEquals(s1.isShowBooksUnderEachSeries(), s2.isShowBooksUnderEachSeries());
 
-        assertEquals(s1.getPrimaryAuthorType(), cloned.getPrimaryAuthorType());
+        assertEquals(s1.getPrimaryAuthorType(), s2.getPrimaryAuthorType());
 
-        assertEquals(s1.getTextScale(), cloned.getTextScale());
+        assertEquals(s1.getTextScale(), s2.getTextScale());
 
-        assertEquals(s1.getListScreenBookFields(), cloned.getListScreenBookFields());
-        assertEquals(s1.getDetailScreenBookFields(), cloned.getDetailScreenBookFields());
+        assertEquals(s1.getListScreenBookFields(), s2.getListScreenBookFields());
+        assertEquals(s1.getDetailScreenBookFields(), s2.getDetailScreenBookFields());
 
-        assertEquals(s1.getFilters(), cloned.getFilters());
-        assertEquals(s1.getGroups(), cloned.getGroups());
+        assertEquals(s1.getFilters(), s2.getFilters());
+        assertEquals(s1.getGroups(), s2.getGroups());
     }
 }
