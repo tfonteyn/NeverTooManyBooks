@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -44,6 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 
 /**
+ * FIXME: open screen, click in field -> keyb up * now rotate screen... logcat msg
+ * https://stackoverflow.com/questions/8122625/getextractedtext-on-inactive-inputconnection-warning-on-android#15732554
+ *
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
  * ENHANCE: SHOW the list, just like the system search does?
@@ -70,8 +72,6 @@ public class SearchFtsFragment
     /** The maximum number of suggestions we'll show during a live search. */
     private static final int MAX_SUGGESTIONS = 20;
 
-    /** Handle inter-thread messages. */
-    private final Handler mHandler = new Handler();
     /** The results book id list. For sending back to the caller. */
     private final ArrayList<Long> mBookIdList = new ArrayList<>();
     /** Database Access. */
@@ -362,7 +362,8 @@ public class SearchFtsFragment
 
                 // Update the UI in main thread.
                 final int bookCount = count;
-                mHandler.post(() -> updateUi(bookCount));
+                //noinspection ConstantConditions
+                getView().getHandler().post(() -> updateUi(bookCount));
             }
         }
     }
