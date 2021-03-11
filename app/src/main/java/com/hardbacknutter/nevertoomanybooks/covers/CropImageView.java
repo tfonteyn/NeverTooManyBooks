@@ -48,13 +48,13 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -76,8 +76,6 @@ public class CropImageView
 
     /** 400% zoom regardless of screen or image orientation. */
     private static final int ZOOM_FACTOR = 4;
-
-    private final Handler mHandler = new Handler();
 
     /** This is the base transformation which is used to show the image initially. */
     private final Matrix mBaseMatrix = new Matrix();
@@ -143,6 +141,7 @@ public class CropImageView
      *
      * @param bitmap to crop
      */
+    @MainThread
     public void initCropView(@NonNull final Bitmap bitmap) {
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
@@ -452,7 +451,7 @@ public class CropImageView
             final float oldScale = getScale();
             final long startTime = System.currentTimeMillis();
 
-            mHandler.post(new Runnable() {
+            getHandler().post(new Runnable() {
                 public void run() {
                     final long now = System.currentTimeMillis();
                     final float currentMs = Math.min(duration, now - startTime);
@@ -460,7 +459,7 @@ public class CropImageView
                     zoomTo(target, coordinates[0], coordinates[1]);
 
                     if (currentMs < duration) {
-                        mHandler.post(this);
+                        getHandler().post(this);
                     }
                 }
             });
