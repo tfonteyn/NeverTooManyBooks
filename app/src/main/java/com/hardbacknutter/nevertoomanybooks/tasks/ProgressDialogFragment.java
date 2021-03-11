@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -57,7 +58,7 @@ public class ProgressDialogFragment
 
     /** Handles progress updates send before {@link #onCreateDialog} is called. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Handler mHandler = new Handler();
+    private Handler mHandler;
     /** the current Canceller (i.e. Task). */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -106,6 +107,9 @@ public class ProgressDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mHandler = new Handler(Looper.myLooper());
 
         Bundle args = requireArguments();
         mPreventSleep = args.getBoolean(BKEY_PREVENT_SLEEP, false);
@@ -175,14 +179,15 @@ public class ProgressDialogFragment
                              final boolean isIndeterminate,
                              final int currentPosition,
                              final int maxPosition) {
-        if (mVb == null) {
+        if (mVb != null) {
+            updateProgress(text, isIndeterminate, currentPosition, maxPosition);
+
+        } else if (mHandler != null) {
             mHandler.post(() -> {
                 if (!isRemoving()) {
                     tryUpdating(text, isIndeterminate, currentPosition, maxPosition);
                 }
             });
-        } else {
-            updateProgress(text, isIndeterminate, currentPosition, maxPosition);
         }
     }
 
