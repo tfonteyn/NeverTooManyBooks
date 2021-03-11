@@ -107,9 +107,7 @@ if (project.hasProperty("NeverTooManyBooks.email")
 }
 
 android {
-    // show-stopper bug preventing to use API 30:
-    // https://issuetracker.google.com/issues/162838995
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
     // 2021-02-16 world wide:
@@ -133,9 +131,7 @@ android {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         // see NOTES.txt
         minSdkVersion 24
-        // show-stopper bug preventing to use API 30:
-        // https://issuetracker.google.com/issues/162838995
-        targetSdkVersion 29
+        targetSdkVersion 30
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
@@ -164,7 +160,6 @@ android {
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
         buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
 
-
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
         // Confirmed in LT forums; The entire API is currently disabled because of work on LT2.
@@ -172,10 +167,10 @@ android {
         // but the alternative edition link still works (for now?).
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
-        // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
-        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
-
-        buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'true')
+        // under development
+        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
+        buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'false')
+        buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'false')
     }
 
     buildTypes {
@@ -184,12 +179,6 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-
-            // uses reflection to access a private variable
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
-
-            // under development
-            buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'false')
         }
         beta {
             initWith release
@@ -197,6 +186,14 @@ android {
         }
         debug {
             versionNameSuffix 'debug'
+
+            // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
+            // uses reflection to access a private variable
+            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
+            // under development
+            buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'true')
+            // under development
+            buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'true')
         }
     }
 
