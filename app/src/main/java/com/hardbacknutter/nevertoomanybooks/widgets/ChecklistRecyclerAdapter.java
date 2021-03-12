@@ -133,7 +133,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
     public interface SelectionListener<ID> {
 
-        void onSelected(ID id,
+        void onSelected(@NonNull ID id,
                         boolean checked);
     }
 
