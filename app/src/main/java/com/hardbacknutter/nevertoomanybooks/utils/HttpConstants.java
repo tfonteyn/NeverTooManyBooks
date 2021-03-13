@@ -26,13 +26,30 @@ public final class HttpConstants {
 
     /** HTTP authentication header. */
     public static final String AUTHORIZATION = "Authorization";
+
     /** HTTP Request Header. */
     public static final String CONNECTION = "Connection";
-    /** HTTP Request Header. */
-    public static final String USER_AGENT = "User-Agent";
+    public static final String CONNECTION_CLOSE = "close";
+
     /** HTTP Request Header. */
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
+
+
+    /** HTTP Request Header. */
+    public static final String USER_AGENT = "User-Agent";
+    /**
+     * RELEASE: Chrome 2021-03-13. Continuously update to latest version.
+     * Some sites don't return full data unless the user agent is set to a valid browser.
+     */
+    public static final String USER_AGENT_VALUE =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            + " AppleWebKit/537.36 (KHTML, like Gecko)"
+            + " Chrome/88.0.4324.190 Safari/537.36";
+
+
+    /** HTTP Response Header. */
+    public static final String LOCATION = "location";
 
     private HttpConstants() {
     }

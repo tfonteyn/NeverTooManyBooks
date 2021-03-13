@@ -140,7 +140,7 @@ public class CalibreLibrary
         mLastSyncDate = lastSyncDate;
     }
 
-    void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+    public void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         if (lastSyncDate != null) {
             mLastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         } else {
@@ -154,7 +154,7 @@ public class CalibreLibrary
     }
 
     @Nullable
-    LocalDateTime getLastSyncDate(@NonNull final Context context) {
+    public LocalDateTime getLastSyncDate(@NonNull final Context context) {
         if (!mLastSyncDate.isEmpty()) {
             return DateParser.getInstance(context).parseISO(mLastSyncDate);
         }
@@ -171,7 +171,7 @@ public class CalibreLibrary
     }
 
     @NonNull
-    Set<CustomFields.Field> getCustomFields() {
+    public Set<CustomFields.Field> getCustomFields() {
         return mCustomFields;
     }
 

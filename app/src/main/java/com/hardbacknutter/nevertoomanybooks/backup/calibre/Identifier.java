@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 @SuppressWarnings("WeakerAccess")
 public class Identifier {
 
-    static final String AMAZON = "amazon";
+    public static final String AMAZON = "amazon";
     static final String GOODREADS = "goodreads";
     static final String GOOGLE = "google";
     static final String ISBN = "isbn";
@@ -42,7 +42,7 @@ public class Identifier {
     static final String STRIPINFO = "stripinfo";
 
     /** Key is the remote (Calibre) identifier. */
-    static final Map<String, Identifier> MAP = new HashMap<>();
+    public static final Map<String, Identifier> MAP = new HashMap<>();
 
     static {
         Identifier identifier;

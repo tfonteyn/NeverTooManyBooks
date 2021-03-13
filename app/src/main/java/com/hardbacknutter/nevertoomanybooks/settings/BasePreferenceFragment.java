@@ -77,7 +77,7 @@ public abstract class BasePreferenceFragment
      * This will make sure the current fragment can be the top-fragment (then finish)
      * or be called from another fragment (then pop).
      */
-    void popBackStackOrFinish() {
+    protected void popBackStackOrFinish() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
         } else {

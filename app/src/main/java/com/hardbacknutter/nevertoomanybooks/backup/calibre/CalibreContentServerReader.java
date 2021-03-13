@@ -393,8 +393,7 @@ public class CalibreContentServerReader
         // paranoia ...
         if (!calibreBook.isNull(CalibreBook.TITLE)) {
             // always overwrite
-            localBook.putString(DBKeys.KEY_TITLE,
-                                calibreBook.getString(CalibreBook.TITLE));
+            localBook.putString(DBKeys.KEY_TITLE, calibreBook.getString(CalibreBook.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
@@ -509,8 +508,7 @@ public class CalibreContentServerReader
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // Note if there is more then one, we end up with the 'last' one.
-                            localBook.putString(DBKeys.KEY_ESID_ASIN,
-                                                remotes.optString(key));
+                            localBook.putString(DBKeys.KEY_ESID_ASIN, remotes.optString(key));
                         }
                     }
                 }

@@ -143,13 +143,13 @@ public class CalibreContentServer {
     public static final String SERVER_CA = "CalibreContentServer.ca";
 
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
-    static final String VALUE_IS_NONE = "None";
+    public static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
-    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
+    public static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: Number of items returned in 'this' call. */
-    static final String RESPONSE_TAG_NUM = "num";
+    public static final String RESPONSE_TAG_NUM = "num";
     /** Response root tag: The array of book ids returned in 'this' call. */
-    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+    public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
@@ -239,8 +239,8 @@ public class CalibreContentServer {
      * @throws SSLException         on secure connection failures
      */
     @AnyThread
-    CalibreContentServer(@NonNull final Context context,
-                         @NonNull final Uri uri)
+    public CalibreContentServer(@NonNull final Context context,
+                                @NonNull final Uri uri)
             throws CertificateException, SSLException {
 
         mServerUri = uri;
@@ -392,7 +392,7 @@ public class CalibreContentServer {
      * @throws IOException on failures
      */
     @WorkerThread
-    void readMetaData(@NonNull final Context context)
+    public void readMetaData(@NonNull final Context context)
             throws IOException, JSONException {
 
         mLibraries.clear();
@@ -549,7 +549,7 @@ public class CalibreContentServer {
      */
     @NonNull
     @AnyThread
-    ArrayList<CalibreLibrary> getLibraries() {
+    public ArrayList<CalibreLibrary> getLibraries() {
         return mLibraries;
     }
 
@@ -559,7 +559,7 @@ public class CalibreContentServer {
      * @return library
      */
     @NonNull
-    CalibreLibrary getDefaultLibrary() {
+    public CalibreLibrary getDefaultLibrary() {
         return Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
     }
 
@@ -588,8 +588,8 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @Nullable
-    JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryId,
-                                           @NonNull final JSONArray calibreIds)
+    public JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryId,
+                                                  @NonNull final JSONArray calibreIds)
             throws IOException, JSONException {
         if (!mCalibreExtensionInstalled) {
             return null;
@@ -632,9 +632,9 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @NonNull
-    JSONObject getBookIds(@NonNull final String libraryId,
-                          @SuppressWarnings("SameParameterValue") final int num,
-                          final int offset)
+    public JSONObject getBookIds(@NonNull final String libraryId,
+                                 @SuppressWarnings("SameParameterValue") final int num,
+                                 final int offset)
             throws IOException, JSONException {
 
         final String url = "/ajax/category/616c6c626f6f6b73/" + libraryId
@@ -671,10 +671,10 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @NonNull
-    JSONObject search(@NonNull final String libraryId,
-                      @SuppressWarnings("SameParameterValue") final int num,
-                      final int offset,
-                      @NonNull final String query)
+    public JSONObject search(@NonNull final String libraryId,
+                             @SuppressWarnings("SameParameterValue") final int num,
+                             final int offset,
+                             @NonNull final String query)
             throws IOException, JSONException {
 
         final String url = "/ajax/search/" + libraryId
@@ -955,8 +955,8 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @NonNull
-    JSONObject getBooks(@NonNull final String libraryId,
-                        @NonNull final JSONArray calibreIds)
+    public JSONObject getBooks(@NonNull final String libraryId,
+                               @NonNull final JSONArray calibreIds)
             throws IOException, JSONException {
 
         final String url = "/ajax/books/" + libraryId
@@ -1026,11 +1026,12 @@ public class CalibreContentServer {
 
     @WorkerThread
     @Nullable
-    File getCover(@NonNull final Context context,
-                  final int calibreId,
-                  @NonNull final String coverUrl) {
+    public File getCover(@NonNull final Context context,
+                         final int calibreId,
+                         @NonNull final String coverUrl) {
         try {
             if (mImageDownloader == null) {
+                // no timeouts, we're assuming private home network.
                 mImageDownloader = new ImageDownloader(mSslContext, mAuthHeader);
             }
             final File tmpFile = mImageDownloader
@@ -1118,9 +1119,9 @@ public class CalibreContentServer {
      *
      * @throws IOException on other failures
      */
-    void pushChanges(@NonNull final String libraryId,
-                     final int calibreId,
-                     @NonNull final JSONObject changes)
+    public void pushChanges(@NonNull final String libraryId,
+                            final int calibreId,
+                            @NonNull final JSONObject changes)
             throws IOException, JSONException {
 
         final JSONObject data = new JSONObject();
@@ -1253,8 +1254,9 @@ public class CalibreContentServer {
             throws IOException {
 
         try (TerminatorConnection con = new TerminatorConnection(mServerUri + path)) {
-            con.setTimeouts(CONNECT_TIMEOUT_IN_MS, READ_TIMEOUT_IN_MS);
-            con.setSSLContext(mSslContext);
+            con.setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
+               .setReadTimeout(READ_TIMEOUT_IN_MS)
+               .setSSLContext(mSslContext);
             if (mAuthHeader != null) {
                 con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
             }

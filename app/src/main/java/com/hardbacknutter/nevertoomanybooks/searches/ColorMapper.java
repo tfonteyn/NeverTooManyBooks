@@ -51,7 +51,7 @@ public final class ColorMapper
         return DBKeys.KEY_COLOR;
     }
 
-    static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
+    public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
         return global.getBoolean(Prefs.pk_search_reformat_color, false);
     }
 }

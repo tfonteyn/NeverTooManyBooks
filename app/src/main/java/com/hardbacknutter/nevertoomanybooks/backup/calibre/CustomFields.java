@@ -40,16 +40,16 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 public final class CustomFields {
 
     @Type
-    static final String TYPE_BOOL = "bool";
+    public static final String TYPE_BOOL = "bool";
     @Type
-    static final String TYPE_DATETIME = "datetime";
+    public static final String TYPE_DATETIME = "datetime";
     @Type
-    static final String TYPE_COMMENTS = "comments";
+    public static final String TYPE_COMMENTS = "comments";
     @Type
-    static final String TYPE_TEXT = "text";
+    public static final String TYPE_TEXT = "text";
 
-    static final String METADATA_DATATYPE = "datatype";
-    static final String VALUE = "#value#";
+    public static final String METADATA_DATATYPE = "datatype";
+    public static final String VALUE = "#value#";
 
     private static CustomFields sInstance;
 
@@ -94,12 +94,12 @@ public final class CustomFields {
             }
         };
         @NonNull
-        final String calibreKey;
+        public final String calibreKey;
         @NonNull
-        final String dbKey;
+        public final String dbKey;
         @NonNull
         @Type
-        final String type;
+        public final String type;
 
         Field(@NonNull final String calibreKey,
               @NonNull final String dbKey,

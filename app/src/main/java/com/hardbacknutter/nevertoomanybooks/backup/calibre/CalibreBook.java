@@ -19,7 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
-final class CalibreBook {
+public final class CalibreBook {
+
+    public static final String USER_METADATA = "user_metadata";
+
 
     static final String ID = "application_id";
     static final String UUID = "uuid";
