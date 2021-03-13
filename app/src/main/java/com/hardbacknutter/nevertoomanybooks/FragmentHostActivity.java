@@ -30,9 +30,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreAdminFragment;
 
 /**
  * Hosting activity for generic fragments <strong>without</strong>

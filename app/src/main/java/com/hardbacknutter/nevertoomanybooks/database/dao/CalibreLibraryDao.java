@@ -25,9 +25,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 
 public interface CalibreLibraryDao
         extends BaseDao {

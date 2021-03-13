@@ -36,8 +36,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class ImportViewModel
