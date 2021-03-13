@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -146,6 +147,8 @@ public class CoverHandler {
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
 
+    private ImageViewLoader mImageLoader;
+
     /**
      * Constructor.
      *
@@ -165,6 +168,7 @@ public class CoverHandler {
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
+        mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, mMaxWidth, mMaxHeight);
 
         mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
             @Override
@@ -253,8 +257,7 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to either the view or book!
         final File file = book.getCoverFile(view.getContext(), mCIdx);
         if (file != null) {
-            new ImageViewLoader(view, mMaxWidth, mMaxHeight, file, null)
-                    .execute();
+            mImageLoader.loadAndDisplay(view, file, null);
             view.setBackground(null);
         } else {
             ImageUtils.setPlaceholder(view, mMaxWidth, mMaxHeight,

@@ -28,7 +28,6 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -66,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
@@ -75,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -929,6 +928,9 @@ public class BooklistAdapter
         @Nullable
         private TextView mDbgRowIdView;
 
+        @Nullable
+        private ImageViewLoader mImageLoader;
+
         /**
          * Constructor.
          *
@@ -980,13 +982,17 @@ public class BooklistAdapter
 
             mCoverLongestSide = coverLongestSide;
             mCoverView = itemView.findViewById(R.id.coverImage0);
-            if (!mInUse.cover) {
-                // shown by default, so hide it if not in use.
+            if (mInUse.cover) {
+                // Do not go overkill here by adding a full-blown CoverHandler.
+                // We only provide zooming by clicking on the image.
+                mCoverView.setOnClickListener(this::onZoomCover);
+
+                mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN,
+                                                   mCoverLongestSide, mCoverLongestSide);
+            } else {
+                // hide it if not in use.
                 mCoverView.setVisibility(View.GONE);
             }
-            // We do not go overkill here by adding a CoverHandler
-            // but only provide zooming by clicking on the image
-            mCoverView.setOnClickListener(this::onZoomCover);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
                 // add a text view to display the "position/rowId" for a book
@@ -1078,12 +1084,8 @@ public class BooklistAdapter
                 mLendOutIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
-
             if (mInUse.cover) {
-                final String uuid = rowData.getString(DBKeys.KEY_BOOK_UUID);
-                // store the uuid for use in the OnClickListener
-                mCoverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
-                setImageView(uuid);
+                setImageView(rowData.getString(DBKeys.KEY_BOOK_UUID));
             }
 
             if (mInUse.series) {
@@ -1203,6 +1205,8 @@ public class BooklistAdapter
          * @param uuid UUID of the book
          */
         void setImageView(@NonNull final String uuid) {
+            // store the uuid for use in the OnClickListener
+            mCoverView.setTag(R.id.TAG_THUMBNAIL_UUID, uuid);
 
             final Context context = mCoverView.getContext();
 
@@ -1238,15 +1242,17 @@ public class BooklistAdapter
             if (mAdapter.isImageCachingEnabled()) {
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
-                // This 2nd task uses the serial executor.
-                new ImageViewLoaderWithCacheWrite(mCoverView, mCoverLongestSide, mCoverLongestSide,
-                                                  file, null, uuid, 0)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+                //noinspection ConstantConditions
+                mImageLoader.loadAndDisplay(mCoverView, file, (bitmap) -> {
+                    if (bitmap != null) {
+                        ServiceLocator.getInstance().getCoverCacheDao().saveCover(
+                                uuid, 0, bitmap, mCoverLongestSide, mCoverLongestSide);
+                    }
+                });
             } else {
                 // Cache not used: Get the image from the file system and display it.
-                new ImageViewLoader(mCoverView, mCoverLongestSide, mCoverLongestSide, file, null)
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                //noinspection ConstantConditions
+                mImageLoader.loadAndDisplay(mCoverView, file, null);
             }
         }
     }

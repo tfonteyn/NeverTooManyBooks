@@ -96,6 +96,8 @@ public class CoverBrowserDialogFragment
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
 
+    private ImageViewLoader mPreviewLoader;
+
     /**
      * No-arg constructor for OS use.
      */
@@ -173,6 +175,9 @@ public class CoverBrowserDialogFragment
                 mVb.progressBar.hide();
             }
         });
+
+        mPreviewLoader = new ImageViewLoader(mModel.getPreviewDisplayExecutor(),
+                                             mPreviewMaxWidth, mPreviewMaxHeight);
     }
 
     @Override
@@ -316,14 +321,12 @@ public class CoverBrowserDialogFragment
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
             if (file != null && file.exists()) {
-                new ImageViewLoader(mVb.preview, mPreviewMaxWidth, mPreviewMaxHeight, file, () -> {
+                mPreviewLoader.loadAndDisplay(mVb.preview, file, (bitmap) -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mModel.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
                     mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
-                })
-                        // use the default executor which is free right now
-                        .execute();
+                });
                 return;
             }
         }
@@ -421,6 +424,9 @@ public class CoverBrowserDialogFragment
         /** A single image fixed height. */
         private final int mMaxHeight;
 
+        @NonNull
+        private final ImageViewLoader mImageLoader;
+
         /**
          * Constructor.
          */
@@ -429,6 +435,9 @@ public class CoverBrowserDialogFragment
             final Resources res = getResources();
             mMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
             mMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
+
+            mImageLoader = new ImageViewLoader(mModel.getGalleryDisplayExecutor(),
+                                               mMaxWidth, mMaxHeight);
         }
 
         @Override
@@ -469,8 +478,7 @@ public class CoverBrowserDialogFragment
                 final File file = imageFileInfo.getFile();
                 if (file != null && file.exists()) {
                     // YES, load it into the view.
-                    new ImageViewLoader(holder.imageView, mMaxWidth, mMaxHeight, file, null)
-                            .executeOnExecutor(mModel.getGalleryDisplayExecutor());
+                    mImageLoader.loadAndDisplay(holder.imageView, file, null);
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));

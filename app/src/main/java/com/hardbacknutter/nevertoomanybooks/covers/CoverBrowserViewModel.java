@@ -207,6 +207,16 @@ public class CoverBrowserViewModel
     }
 
     /**
+     * Get the executor used for displaying the selected image.
+     *
+     * @return executor
+     */
+    @NonNull
+    Executor getPreviewDisplayExecutor() {
+        return ASyncExecutor.MAIN;
+    }
+
+    /**
      * Get the executor used for displaying gallery images.
      *
      * @return executor
