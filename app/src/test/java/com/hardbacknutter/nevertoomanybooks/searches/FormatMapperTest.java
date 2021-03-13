@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,8 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
+import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
