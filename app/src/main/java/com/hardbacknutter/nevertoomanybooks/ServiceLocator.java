@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper;
 
 /**
  * The use and definition of DAO in this project has a long history.

@@ -84,7 +84,7 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean SEARCH_COORDINATOR_TIMERS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.sync.goodreads}. */
     public static final boolean GOODREADS_HTTP_XML = false;
     public static final boolean GOODREADS_SEND = false;
     public static final boolean GOODREADS_IMPORT = false;
