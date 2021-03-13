@@ -109,11 +109,10 @@ public final class ApiUtils {
             return null;
         }
 
-        final ImageDownloader imageDownloader = new ImageDownloader();
-
-        imageDownloader.setTimeouts(GoodreadsManager.CONNECTION_TIMEOUT_MS,
-                                    GoodreadsManager.READ_TIMEOUT_MS);
-        imageDownloader.setThrottler(GoodreadsSearchEngine.THROTTLER);
+        final ImageDownloader imageDownloader = new ImageDownloader()
+                .setConnectTimeout(GoodreadsManager.CONNECTION_TIMEOUT_MS)
+                .setReadTimeout(GoodreadsManager.READ_TIMEOUT_MS)
+                .setThrottler(GoodreadsSearchEngine.THROTTLER);
 
         try {
             final File tmpFile = imageDownloader.createTmpFile(

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ public class Throttler {
     private long mLastRequestTime;
 
     /** Default thread delay time; 1 second as per LibraryThing/GoodReads. */
-    private long mDelayInMillis = 1_000L;
+    private int mDelayInMillis = 1_000;
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ public class Throttler {
      * @param delayInMillis the delay time between requests.
      */
     @SuppressWarnings("unused")
-    public Throttler(final long delayInMillis) {
+    public Throttler(final int delayInMillis) {
         mDelayInMillis = delayInMillis;
     }
 

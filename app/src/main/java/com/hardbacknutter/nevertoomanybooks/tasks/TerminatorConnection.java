@@ -81,7 +81,6 @@ public final class TerminatorConnection
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
-
     @Nullable
     private Throttler mThrottler;
     @Nullable
@@ -127,23 +126,33 @@ public final class TerminatorConnection
     }
 
     /**
-     * Set the optional timeouts.
+     * Set the optional connect-timeout.
      *
-     * @param connectTimeoutInMs in millis, use {@code 0} for system default
-     * @param readTimeoutInMs    in millis, use {@code 0} for system default
+     * @param timeoutInMs in millis, use {@code 0} for system default
      */
-    public TerminatorConnection setTimeouts(@IntRange(from = 0) final int connectTimeoutInMs,
-                                            @IntRange(from = 0) final int readTimeoutInMs) {
+    @NonNull
+    public TerminatorConnection setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
         Objects.requireNonNull(mRequest, "mRequest");
 
-        if (connectTimeoutInMs > 0) {
-            mRequest.setConnectTimeout(connectTimeoutInMs);
+        if (timeoutInMs > 0) {
+            mRequest.setConnectTimeout(timeoutInMs);
         } else {
             mRequest.setConnectTimeout(CONNECT_TIMEOUT_MS);
         }
+        return this;
+    }
 
-        if (readTimeoutInMs > 0) {
-            mRequest.setReadTimeout(readTimeoutInMs);
+    /**
+     * Set the optional read-timeout.
+     *
+     * @param timeoutInMs in millis, use {@code 0} for system default
+     */
+    @NonNull
+    public TerminatorConnection setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
+        Objects.requireNonNull(mRequest, "mRequest");
+
+        if (timeoutInMs > 0) {
+            mRequest.setReadTimeout(timeoutInMs);
         } else {
             mRequest.setReadTimeout(READ_TIMEOUT_MS);
         }
@@ -156,6 +165,7 @@ public final class TerminatorConnection
      *
      * @param throttler (optional) to use
      */
+    @NonNull
     public TerminatorConnection setThrottler(@Nullable final Throttler throttler) {
         mThrottler = throttler;
         return this;

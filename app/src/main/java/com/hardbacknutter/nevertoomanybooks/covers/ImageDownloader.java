@@ -96,20 +96,32 @@ public class ImageDownloader {
      *
      * @param throttler (optional) {@link Throttler} to use
      */
-    public void setThrottler(@Nullable final Throttler throttler) {
+    @NonNull
+    public ImageDownloader setThrottler(@Nullable final Throttler throttler) {
         mThrottler = throttler;
+        return this;
     }
 
     /**
      * Set the optional timeouts.
      *
      * @param connectTimeoutInMs in millis, use {@code 0} for system default
-     * @param readTimeoutInMs    in millis, use {@code 0} for system default
      */
-    public void setTimeouts(@IntRange(from = 0) final int connectTimeoutInMs,
-                            @IntRange(from = 0) final int readTimeoutInMs) {
+    @NonNull
+    public ImageDownloader setConnectTimeout(@IntRange(from = 0) final int connectTimeoutInMs) {
         mConnectTimeoutInMs = connectTimeoutInMs;
+        return this;
+    }
+
+    /**
+     * Set the optional timeouts.
+     *
+     * @param readTimeoutInMs in millis, use {@code 0} for system default
+     */
+    @NonNull
+    public ImageDownloader setReadTimeout(@IntRange(from = 0) final int readTimeoutInMs) {
         mReadTimeoutInMs = readTimeoutInMs;
+        return this;
     }
 
     /**
@@ -174,7 +186,8 @@ public class ImageDownloader {
 
             } else {
                 try (TerminatorConnection con = new TerminatorConnection(url)) {
-                    con.setTimeouts(mConnectTimeoutInMs, mReadTimeoutInMs)
+                    con.setConnectTimeout(mConnectTimeoutInMs)
+                       .setReadTimeout(mReadTimeoutInMs)
                        .setThrottler(mThrottler)
                        .setSSLContext(mSslContext);
                     if (mAuthHeader != null) {
