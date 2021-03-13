@@ -25,14 +25,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_CACHE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_IMAGE;
@@ -192,19 +191,6 @@ public class CoverCacheDaoImpl
         return null;
     }
 
-    @Override
-    @UiThread
-    public void saveCover(@NonNull final String uuid,
-                          @IntRange(from = 0, to = 1) final int cIdx,
-                          @NonNull final Bitmap bitmap,
-                          final int width,
-                          final int height) {
-        // Start a task to send it to the cache; use the default serial
-        // executor, we only want a single write thread at a time.
-        new WriterTask(mDb, uuid, cIdx, width, height, bitmap)
-                .execute();
-    }
-
     /**
      * Check if there is an active task in the queue.
      *
@@ -216,70 +202,25 @@ public class CoverCacheDaoImpl
         return RUNNING_TASKS.get() != 0;
     }
 
-    /**
-     * Background task to save a bitmap into the covers thumbnail database. Runs in the background
-     * because it involves compression and IO, and can be safely queued. Failures can be ignored
-     * because it is just writing to a cache used solely for optimization.
-     * <p>
-     * Standard AsyncTask for writing data. There is no point in more than one thread since
-     * the database will force serialization of the updates.
-     */
-    private static final class WriterTask
-            extends AsyncTask<Void, Void, Void> {
-
-        /** Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "WriterTask";
-
-        /** Bitmap to store. */
-        private final Bitmap mBitmap;
-        /** Book UUID. */
-        @NonNull
-        private final String mUuid;
-        private final int mCIdx;
-        private final int mWidth;
-        private final int mHeight;
-
-        private final SynchronizedDb mDb;
-
-        /**
-         * Create a task that will compress the passed bitmap and write it to the database,
-         * it will also be recycled if flag is set.
-         *
-         * @param db     Database access
-         * @param uuid   UUID of the book
-         * @param cIdx   0..n image index
-         * @param source Raw bitmap to store
-         */
-        @UiThread
-        WriterTask(@NonNull final SynchronizedDb db,
-                   @NonNull final String uuid,
-                   @IntRange(from = 0, to = 1) final int cIdx,
-                   final int width,
-                   final int height,
-                   @NonNull final Bitmap source) {
-            mDb = db;
-            mUuid = uuid;
-            mCIdx = cIdx;
-            mWidth = width;
-            mHeight = height;
-            mBitmap = source;
-        }
-
-        @Override
-        @WorkerThread
-        protected Void doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG);
-
+    @Override
+    @UiThread
+    public void saveCover(@NonNull final String uuid,
+                          @IntRange(from = 0, to = 1) final int cIdx,
+                          @NonNull final Bitmap bitmap,
+                          final int width,
+                          final int height) {
+        // Start a task to send it to the cache.
+        // Use the default serial executor as we only want a single write thread at a time.
+        // Failures are ignored as it is just writing to a cache used solely for optimization.
+        ASyncExecutor.SERIAL.execute(() -> {
             RUNNING_TASKS.incrementAndGet();
-
             try {
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 // Rapid scrolling of view could already have recycled the bitmap.
-                if (!mBitmap.isRecycled()) {
-                    mBitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+                if (!bitmap.isRecycled()) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
 
-                    final String cacheId = constructCacheId(mUuid, mCIdx, mWidth, mHeight);
+                    final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
                     final ContentValues cv = new ContentValues();
                     cv.put(CKEY_CACHE_ID, cacheId);
@@ -309,13 +250,13 @@ public class CoverCacheDaoImpl
             } catch (@NonNull final RuntimeException e) {
                 // do not crash... ever! This is just a cache!
                 Logger.error(TAG, e);
-                // and disable the cache (we don't bother cancelling any pending tasks... oh well)
+                // and disable the cache
+                // We don't bother cancelling any pending tasks... oh well...
                 ImageUtils.setImageCachingEnabled(false);
                 //FIXME: we should let the user know....
             }
 
             RUNNING_TASKS.decrementAndGet();
-            return null;
-        }
+        });
     }
 }
