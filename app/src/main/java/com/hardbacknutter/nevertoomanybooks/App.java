@@ -63,11 +63,21 @@ public class App
         initAcra();
 
         // https://developer.android.com/reference/android/os/StrictMode
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                               .detectAll()
+        if (BuildConfig.DEBUG) {
+            if (DEBUG_SWITCHES.STRICT_MODE_THREADING) {
+                StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                                                   .detectAll()
+                                                   .penaltyLog()
+                                                   .build());
+            }
+            if (DEBUG_SWITCHES.STRICT_MODE_VM) {
+                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                               .detectLeakedSqlLiteObjects()
+                                               .detectLeakedClosableObjects()
+                                               .detectActivityLeaks()
                                                .penaltyLog()
                                                .build());
+            }
         }
     }
 
