@@ -124,8 +124,6 @@ public class Base {
         setLocale(Locale.US);
 
         mContext = ContextMock.create(PACKAGE_NAME);
-        ServiceLocator.create(mContext);
-        SearchEngineRegistry.create(mContext);
 
         mMockPreferences = SharedPreferencesMock.create();
 
@@ -145,6 +143,9 @@ public class Base {
 
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 
+
+        ServiceLocator.create(mContext);
+        SearchEngineRegistry.create(mContext);
 
         setupStringResources(mResources);
         setupLanguageMap(mContext);

@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
@@ -107,32 +107,35 @@ public class LibraryThingSearchEngine
     /** param 1: dev-key; param 2: size; param 3: isbn. */
     private static final String COVER_BY_ISBN_URL =
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
+
     /** Can only send requests at a throttled speed. */
     private static final Throttler THROTTLER = new Throttler();
+
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public LibraryThingSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public LibraryThingSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(LibraryThingSearchEngine.class,
-                                                       SearchSites.LIBRARY_THING,
-                                                       R.string.site_library_thing,
-                                                       PREF_KEY,
-                                                       "https://www.librarything.com")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(LibraryThingSearchEngine.class,
+                                              SearchSites.LIBRARY_THING,
+                                              R.string.site_library_thing,
+                                              PREF_KEY,
+                                              "https://www.librarything.com")
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("LT")
 
                 .setDomainKey(DBKeys.KEY_ESID_LIBRARY_THING)
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
+
                 .build();
     }
 

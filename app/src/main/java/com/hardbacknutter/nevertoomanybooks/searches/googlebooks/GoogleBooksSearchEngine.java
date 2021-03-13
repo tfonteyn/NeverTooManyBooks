@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -74,19 +74,19 @@ public class GoogleBooksSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public GoogleBooksSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public GoogleBooksSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(GoogleBooksSearchEngine.class,
-                                                       SearchSites.GOOGLE_BOOKS,
-                                                       R.string.site_google_books,
-                                                       "googlebooks",
-                                                       "https://books.google.com")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(GoogleBooksSearchEngine.class,
+                                              SearchSites.GOOGLE_BOOKS,
+                                              R.string.site_google_books,
+                                              "googlebooks",
+                                              "https://books.google.com")
                 .build();
     }
 

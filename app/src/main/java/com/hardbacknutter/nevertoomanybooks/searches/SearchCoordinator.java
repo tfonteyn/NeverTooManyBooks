@@ -1040,7 +1040,7 @@ public class SearchCoordinator
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                SearchEngineRegistry.Config config = mSearchEngineRegistry.getByEngineId(taskId);
+                SearchEngineConfig config = mSearchEngineRegistry.getByEngineId(taskId);
                 Log.d(TAG, "mSearchTaskListener.onFinished"
                            + "|finished=" + context.getString(config.getNameResId()));
 
@@ -1134,7 +1134,7 @@ public class SearchCoordinator
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
             for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final SearchEngineRegistry.Config config = mSearchEngineRegistry
+                final SearchEngineConfig config = mSearchEngineRegistry
                         .getByEngineId(entry.getKey());
                 final String engineName = context.getString(config.getNameResId());
                 final Exception exception = entry.getValue();

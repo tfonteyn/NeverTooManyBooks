@@ -39,25 +39,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 public abstract class SearchEngineBase
         implements SearchEngine {
 
-    @SearchSites.EngineId
-    protected final int mId;
-
     @NonNull
-    private final SearchEngineRegistry.Config mConfig;
+    private final SearchEngineConfig mConfig;
     @Nullable
     private Canceller mCaller;
 
     /**
      * Constructor.
-     * <p>
-     * Developer note: yes, the passed engine id could be hardcoded in each concrete engine
-     * constructor. Leaving as-is for now to allow future changes in loading the config.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
-    public SearchEngineBase(@SearchSites.EngineId final int engineId) {
-        mId = engineId;
-        mConfig = SearchEngineRegistry.getInstance().getByEngineId(mId);
+    public SearchEngineBase(@NonNull final SearchEngineConfig config) {
+        mConfig = config;
     }
 
     /**
@@ -106,9 +99,10 @@ public abstract class SearchEngineBase
         }
     }
 
+    @SearchSites.EngineId
     @Override
     public int getId() {
-        return mId;
+        return mConfig.getEngineId();
     }
 
     @NonNull
@@ -119,7 +113,7 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public SearchEngineRegistry.Config getConfig() {
+    public SearchEngineConfig getConfig() {
         return mConfig;
     }
 

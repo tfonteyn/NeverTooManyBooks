@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -28,16 +29,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpCookie;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,15 +57,18 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -72,6 +80,13 @@ public class StripInfoSearchEngine
         implements SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
+    /** The {@link Bookshelf} to which the wishlist is mapped. */
+    public static final String PK_WISHLIST_BOOKSHELF = "stripinfo.wishlist.bookshelf";
+    /**
+     * Whether the user wants to login to the website during a search or update-fields.
+     * This is independent from a future full sync.
+     */
+    private static final String PK_LOGIN_TO_SEARCH = "stripinfo.login.to.search";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
 
@@ -117,22 +132,29 @@ public class StripInfoSearchEngine
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
 
+    private static final String ATTR_CHECKED = "checked";
+    private static final String ATTR_STYLE = "style";
+    private static final Pattern ATTR_STYLE_PATTERN = Pattern.compile("[:;]");
+
+    @Nullable
+    private HttpCookie mUserDataCookie;
+
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public StripInfoSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public StripInfoSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(StripInfoSearchEngine.class,
-                                                       SearchSites.STRIP_INFO_BE,
-                                                       R.string.site_stripinfo_be,
-                                                       "stripinfo",
-                                                       "https://stripinfo.be")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(StripInfoSearchEngine.class,
+                                              SearchSites.STRIP_INFO_BE,
+                                              R.string.site_stripinfo_be,
+                                              "stripinfo",
+                                              "https://stripinfo.be")
                 .setCountry("BE", "nl")
                 .setFilenameSuffix("SI")
 
@@ -140,7 +162,8 @@ public class StripInfoSearchEngine
                 .setDomainViewId(R.id.site_strip_info_be)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
 
-                .setTimeout(7_000, 60_000)
+                .setConnectTimeoutMs(7_000)
+                .setReadTimeoutMs(60_000)
                 .build();
     }
 
@@ -148,6 +171,25 @@ public class StripInfoSearchEngine
     @Override
     public String createUrl(@NonNull final String externalId) {
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+    }
+
+    private boolean isLoginToSearch() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext())
+                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
+    }
+
+    @Nullable
+    @Override
+    public Document loadDocument(@NonNull final String url)
+            throws IOException {
+
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            if (mUserDataCookie == null && isLoginToSearch()) {
+                new LoginHelper().login().ifPresent(c -> mUserDataCookie = c);
+            }
+        }
+
+        return super.loadDocument(url);
     }
 
     @NonNull
@@ -167,7 +209,7 @@ public class StripInfoSearchEngine
     }
 
     /**
-     * Also handles {@link SearchEngine.ByBarcode}.
+     * Also handles {@link ByBarcode}.
      *
      * <br><br>{@inheritDoc}
      */
@@ -269,6 +311,7 @@ public class StripInfoSearchEngine
         // extracted from the title section.
         String primarySeriesBookNr = null;
 
+        long externalId = 0;
         final Elements rows = document.select("div.row");
         for (final Element row : rows) {
 
@@ -286,7 +329,7 @@ public class StripInfoSearchEngine
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     bookData.putString(DBKeys.KEY_TITLE, cleanText(titleUrlElement.text()));
                     // extract the external (site) id from the url
-                    processExternalId(titleUrlElement, bookData);
+                    externalId = processExternalId(titleUrlElement, bookData);
 
                     final Elements tds = row.select("td");
                     int i = 0;
@@ -396,11 +439,20 @@ public class StripInfoSearchEngine
             }
         }
 
-        // process the description
-        final Element item = document.selectFirst("div.item");
+        // find and process the description
+        final Element item = document.selectFirst("div.item > section.grid > div.row");
         if (item != null) {
             processDescription(item, bookData);
         }
+
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            // are we logged in ? Then look for any user data.
+            if (mUserDataCookie != null) {
+                processUserdata(document, bookData, externalId);
+            }
+        }
+
+        // post-process all found data.
 
         if (primarySeriesTitle != null && !primarySeriesTitle.isEmpty()) {
             final Series series = Series.from3(primarySeriesTitle);
@@ -618,66 +670,33 @@ public class StripInfoSearchEngine
         return null;
     }
 
-
     /**
      * Extract the site book id from the url.
      *
      * @param titleUrlElement element containing the book url
      * @param bookData        Bundle to update
+     *
+     * @return the website book id, or {@code 0} if not found.
+     * The latter should never happen unless the website structure was changed.
      */
-    private void processExternalId(@NonNull final Element titleUrlElement,
+    private long processExternalId(@NonNull final Element titleUrlElement,
                                    @NonNull final Bundle bookData) {
+        long bookId = 0;
         try {
             final String titleUrl = titleUrlElement.attr("href");
             // https://www.stripinfo.be/reeks/strip/336348
             // _Hauteville_House_14_De_37ste_parallel
             final String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
                                             .split("_")[0];
-            final long bookId = Long.parseLong(idString);
+            bookId = Long.parseLong(idString);
             if (bookId > 0) {
                 bookData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, bookId);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
         }
-    }
 
-    /**
-     * Extract the series title from the header.
-     *
-     * @param document to parse
-     *
-     * @return title, or {@code null} for none
-     */
-    @Nullable
-    private String processPrimarySeriesTitle(@NonNull final Element document) {
-        final Element seriesElement = document.selectFirst("h1.c12");
-        // Two possibilities:
-        // <h1 class="c12">
-        // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
-        // <img src="https://www.stripinfo.be/images/images/380000/381645.gif"
-        //      alt="Capricornus">
-        // </a>
-        // </h1>
-        // or:
-        // <h1 class="c12">
-        // <a href="https://www.stripinfo.be/reeks/index/632_Coutoo">
-        //    Coutoo
-        // </a>
-        // </h1>
-        if (seriesElement != null) {
-            final Element img = seriesElement.selectFirst("img");
-            if (img != null) {
-                return img.attr("alt");
-            } else {
-                final Element a = seriesElement.selectFirst("a");
-                if (a != null) {
-                    return a.text();
-                }
-            }
-        }
-
-        return null;
+        return bookId;
     }
 
     /**
@@ -727,17 +746,6 @@ public class StripInfoSearchEngine
         return 0;
     }
 
-    private int processLanguage(@NonNull final Element td,
-                                @NonNull final Bundle bookData) {
-        final int found = processText(td, DBKeys.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
-        if (lang != null && !lang.isEmpty()) {
-            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
-            bookData.putString(DBKeys.KEY_LANGUAGE, lang);
-        }
-        return found;
-    }
-
     /**
      * Found an Author.
      *
@@ -776,7 +784,45 @@ public class StripInfoSearchEngine
     }
 
     /**
-     * Found a Series/Collection.
+     * Extract the series title from the header.
+     *
+     * @param document to parse
+     *
+     * @return title, or {@code null} for none
+     */
+    @Nullable
+    private String processPrimarySeriesTitle(@NonNull final Element document) {
+        final Element seriesElement = document.selectFirst("h1.c12");
+        // Two possibilities:
+        // <h1 class="c12">
+        // <a href="https://www.stripinfo.be/reeks/index/831_Capricornus">
+        // <img src="https://www.stripinfo.be/images/images/380000/381645.gif"
+        //      alt="Capricornus">
+        // </a>
+        // </h1>
+        // or:
+        // <h1 class="c12">
+        // <a href="https://www.stripinfo.be/reeks/index/632_Coutoo">
+        //    Coutoo
+        // </a>
+        // </h1>
+        if (seriesElement != null) {
+            final Element img = seriesElement.selectFirst("img");
+            if (img != null) {
+                return img.attr("alt");
+            } else {
+                final Element a = seriesElement.selectFirst("a");
+                if (a != null) {
+                    return a.text();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Found a Series/Collection. The latter being a publisher-named collection.
      *
      * @param td label td
      *
@@ -827,6 +873,17 @@ public class StripInfoSearchEngine
         return 0;
     }
 
+    private int processLanguage(@NonNull final Element td,
+                                @NonNull final Bundle bookData) {
+        final int found = processText(td, DBKeys.KEY_LANGUAGE, bookData);
+        String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
+        if (lang != null && !lang.isEmpty()) {
+            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
+            bookData.putString(DBKeys.KEY_LANGUAGE, lang);
+        }
+        return found;
+    }
+
     /**
      * Found the description element. Consists of a number of sections which we combine.
      * <ul>
@@ -838,8 +895,8 @@ public class StripInfoSearchEngine
      * <strong>Note:</strong> the description sometimes contains a TOC (solely,
      * or in addition to the page TOC) but it's not in a standard format so we cannot
      * capture it.
+     *  @param item     description element, containing 1+ sections
      *
-     * @param item     description element, containing 1+ sections
      * @param bookData Bundle to update
      */
     private void processDescription(@NonNull final Element item,
@@ -867,6 +924,88 @@ public class StripInfoSearchEngine
                 bookData.putString(DBKeys.KEY_DESCRIPTION, content.toString());
             }
         }
+    }
+
+    @NonNull
+    public Bookshelf getWishListBookshelf() {
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        final int id = ParseUtils.getIntListPref(global, PK_WISHLIST_BOOKSHELF, Bookshelf.DEFAULT);
+        return Bookshelf.getBookshelf(getContext(), id, Bookshelf.PREFERRED);
+    }
+
+    /**
+     * Parse the userdata.
+     *
+     * @param document   root element
+     * @param bookData   Bundle to update
+     * @param externalId StripInfo id for the book
+     */
+    private void processUserdata(@NonNull final Element document,
+                                 @NonNull final Bundle bookData,
+                                 final long externalId) {
+
+        final Boolean isRead = getCheckboxValue(document, "stripCollectieGelezen-" + externalId);
+        if (isRead != null) {
+            bookData.putBoolean(DBKeys.KEY_READ, isRead);
+        }
+
+        final Boolean isWanted =
+                getCheckboxValue(document, "stripCollectieInWishlist-" + externalId);
+        if (isWanted != null) {
+            final ArrayList<Bookshelf> list = new ArrayList<>();
+            list.add(getWishListBookshelf());
+            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+        }
+
+        // The site has a concept of "I own this book" and "I have this book in my collection"
+
+        // Owning a book
+//        final Boolean isOwned = getCheckboxValue(document, "stripCollectieInBezit-" + siId);
+//        if (isRead != null) {
+//            bookData.putBoolean(DBKeys.X, isOwned);
+//        }
+
+        // In my collection: these are books where the user made SOME note/flag/...
+        // i.e. a book the user has 'touched' and is remembered on the site
+        // until they remove it from the collection.
+        // An 'owned' books is automatically part of the collection,
+        // but a book in the collection can be 'owned', 'not owned', 'wanted', 'remark added', ...
+
+//        final boolean isInCollection;
+//        final Element showIfInCollection = document
+//                .getElementById("showIfInCollection-" + externalId);
+//        if (showIfInCollection != null) {
+//            final Map<String, String[]> styleMap = getStyleMap(showIfInCollection);
+//            final String[] display = styleMap.get("display");
+//            isInCollection = (display != null && display.length > 0
+//                              && "block".equalsIgnoreCase(display[0]));
+//        } else {
+//            isInCollection = false;
+//        }
+    }
+
+    @Nullable
+    private Boolean getCheckboxValue(@NonNull final Element root,
+                                     @NonNull final String id) {
+        final Element checkbox = root.getElementById(id);
+        if (checkbox != null && "checkbox".equalsIgnoreCase(checkbox.attr("type"))) {
+            return ATTR_CHECKED.equalsIgnoreCase(checkbox.attr(ATTR_CHECKED));
+        }
+        return null;
+    }
+
+    private Map<String, String[]> getStyleMap(@NonNull final Element element) {
+        final Map<String, String[]> keymaps = new HashMap<>();
+        if (!element.hasAttr(ATTR_STYLE)) {
+            return keymaps;
+        }
+
+        final String[] list = ATTR_STYLE_PATTERN.split(element.attr(ATTR_STYLE));
+        for (int i = 0; i < list.length; i += 2) {
+            keymaps.put(list[i].trim(), list[i + 1].trim().split(" "));
+        }
+        return keymaps;
     }
 
     /**

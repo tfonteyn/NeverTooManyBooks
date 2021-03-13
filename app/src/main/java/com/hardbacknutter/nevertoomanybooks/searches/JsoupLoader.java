@@ -28,6 +28,8 @@ import androidx.annotation.WorkerThread;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javax.net.ssl.SSLProtocolException;
 
@@ -46,34 +48,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
  */
 public class JsoupLoader {
 
-
-    /**
-     * RELEASE: Chrome 2020-09-16. Continuously update to latest version.
-     * - KBNL site does not return full data unless the user agent is set to a valid browser.
-     * <p>
-     * Set by default. Call {@link #setUserAgent(String)} to override.
-     */
-    private static final String USER_AGENT_VALUE =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-            + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/86.0.4209.0 Safari/537.36";
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
-
-    /** HTTP Response Header. */
-    private static final String HEADER_LOCATION = "location";
-
 
     /** The downloaded and parsed web page. */
     @Nullable
     private Document mDoc;
+
     /** The <strong>request</strong> url for the web page. */
     @Nullable
     private String mDocRequestUrl;
 
-    /** The user agent to send. */
+    /** The user agent to send. Call {@link #setUserAgent(String)} to override. */
     @Nullable
-    private String mUserAgent = USER_AGENT_VALUE;
+    private String mUserAgent = HttpConstants.USER_AGENT_VALUE;
 
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
@@ -95,8 +83,8 @@ public class JsoupLoader {
      *
      * @param charSetName to use
      */
-    void setCharSetName(@SuppressWarnings("SameParameterValue")
-                        @NonNull final String charSetName) {
+    public void setCharSetName(@SuppressWarnings("SameParameterValue")
+                               @NonNull final String charSetName) {
         mCharSetName = charSetName;
     }
 
@@ -114,9 +102,9 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param context      Current context
-     * @param url          to fetch
-     * @param searchEngine to make the connection for
+     * @param context     Current context
+     * @param url         to fetch
+     * @param conProvider a provider that constructs a fully configured TerminatorConnection
      *
      * @return the parsed Document, or {@code null} on failure to load.
      *
@@ -124,10 +112,12 @@ public class JsoupLoader {
      */
     @WorkerThread
     @Nullable
-    Document loadDocument(@NonNull final Context context,
-                          @NonNull final String url,
-                          @NonNull final SearchEngine searchEngine)
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url,
+                                 @NonNull
+                                 final Function<String, Optional<TerminatorConnection>> conProvider)
             throws IOException {
+
 
         // are we requesting the same url again ?
         if (mDoc != null && url.equals(mDocRequestUrl)) {
@@ -138,72 +128,18 @@ public class JsoupLoader {
         // new download
         mDoc = null;
         mDocRequestUrl = url;
+
         // If the site drops connection, we retry once
         int attempts = 2;
         while (attempts > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Logger.d(TAG, "loadDocument", "REQUESTED|url=\"" + url + '\"');
+                Logger.d(TAG, "loadDocument",
+                         "REQUESTED|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
             }
 
-            try (TerminatorConnection con = searchEngine.createConnection(url)) {
-                // Don't retry if the initial connection fails...
-                // We use our own retry mechanism here.
-                con.setRetryCount(0);
-
-                // added due to https://github.com/square/okhttp/issues/1517
-                // it's a server issue, this is a workaround.
-                con.setRequestProperty(HttpConstants.CONNECTION, "close");
-
-                if (mUserAgent != null) {
-                    con.setRequestProperty(HttpConstants.USER_AGENT, mUserAgent);
-                }
-
-                // GO!
-                final InputStream inputStream = con.getInputStream();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadDocument", "AFTER open"
-                                                  + "\ncon.getURL=" + con.getURL()
-                                                  + "\nlocation  =" + con
-                                                          .getHeaderField(HEADER_LOCATION));
-                }
-
-                // the original url will change after a redirect.
-                // We need the actual url for further processing.
-                String locationHeader = con.getHeaderField(HEADER_LOCATION);
-                if (locationHeader == null || locationHeader.isEmpty()) {
-                    //noinspection ConstantConditions
-                    locationHeader = con.getURL().toString();
-
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                        Logger.d(TAG, "loadDocument", "location header not set, using url");
-                    }
-                }
-
-                /*
-                 VERY IMPORTANT: Explicitly set the baseUri to the location header.
-                 JSoup by default uses the absolute path from the inputStream
-                 and sets that as the document 'location'
-                 From JSoup docs:
-
-                * Get the URL this Document was parsed from. If the starting URL is a redirect,
-                * this will return the final URL from which the document was served from.
-                * @return location
-                public String location() {
-                    return location;
-                }
-
-                However that is WRONG (org.jsoup:jsoup:1.11.3)
-                It will NOT resolve the redirect itself and 'location' == 'baseUri'
-                */
-                mDoc = Jsoup.parse(inputStream, mCharSetName, locationHeader);
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.d(TAG, "loadDocument",
-                             "AFTER parsing|mDoc.location()=" + mDoc.location());
-                }
-
-                // Success
+            try (TerminatorConnection con = conProvider.apply(mDocRequestUrl)
+                                                       .orElseThrow(IOException::new)) {
+                mDoc = handleConnection(con);
                 return mDoc;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
@@ -230,7 +166,7 @@ public class JsoupLoader {
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
                 Logger.warn(context, TAG, "loadDocument"
                                           + "|e=" + e.getLocalizedMessage()
-                                          + "|url=\"" + url + '\"');
+                                          + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
                 // we'll retry.
                 attempts--;
                 if (attempts == 0) {
@@ -241,7 +177,7 @@ public class JsoupLoader {
                 mDoc = null;
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Logger.error(TAG, e, "url=" + url);
+                    Logger.error(TAG, e, "mDocRequestUrl=" + mDocRequestUrl);
                 }
                 throw e;
             }
@@ -249,5 +185,68 @@ public class JsoupLoader {
 
         // Shouldn't get here ... flw
         return null;
+    }
+
+    private Document handleConnection(@NonNull final TerminatorConnection con)
+            throws IOException {
+        // Don't retry if the initial connection fails...
+        // We use our own retry mechanism here.
+        con.setRetryCount(0);
+
+        // added due to https://github.com/square/okhttp/issues/1517
+        // it's a server issue, this is a workaround.
+        con.setRequestProperty(HttpConstants.CONNECTION, HttpConstants.CONNECTION_CLOSE);
+
+        if (mUserAgent != null) {
+            con.setRequestProperty(HttpConstants.USER_AGENT, mUserAgent);
+        }
+
+        // GO!
+        final InputStream inputStream = con.getInputStream();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+            Logger.d(TAG, "loadDocument",
+                     "AFTER open"
+                     + "\ncon.getURL=" + con.getURL()
+                     + "\nlocation  =" + con.getHeaderField(HttpConstants.LOCATION));
+        }
+
+        // the original url will change after a redirect.
+        // We need the actual url for further processing.
+        String locationHeader = con.getHeaderField(HttpConstants.LOCATION);
+        if (locationHeader == null || locationHeader.isEmpty()) {
+            //noinspection ConstantConditions
+            locationHeader = con.getURL().toString();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                Logger.d(TAG, "loadDocument", "location header not set, using url");
+            }
+        }
+
+        /*
+         VERY IMPORTANT: Explicitly set the baseUri to the location header.
+         JSoup by default uses the absolute path from the inputStream
+         and sets that as the document 'location'
+         From JSoup docs:
+
+        * Get the URL this Document was parsed from. If the starting URL is a redirect,
+        * this will return the final URL from which the document was served from.
+        * @return location
+        public String location() {
+            return location;
+        }
+
+        However that is WRONG (org.jsoup:jsoup:1.11.3)
+        It will NOT resolve the redirect itself and 'location' == 'baseUri'
+        */
+        final Document document = Jsoup.parse(inputStream, mCharSetName, locationHeader);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+            Logger.d(TAG, "loadDocument",
+                     "AFTER parsing|mDoc.location()=" + document.location());
+        }
+
+        // Success
+        return document;
     }
 }

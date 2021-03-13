@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
@@ -138,7 +139,7 @@ public class SearchBookByExternalIdFragment
         // on false->true transition
 
         //noinspection OptionalGetWithoutIsPresent
-        final SearchEngineRegistry.Config config = SearchEngineRegistry
+        final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByViewId(viewId).get();
         mSelectedSearchEngine = (SearchEngine.ByExternalId)
                 Site.Type.Data.getSite(config.getEngineId()).getSearchEngine();

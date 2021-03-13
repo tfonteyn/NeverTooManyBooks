@@ -24,26 +24,21 @@ import android.content.Context;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
- * A registry of all {@link SearchEngine} classes and their {@link Config}.
+ * A registry of all {@link SearchEngine} classes and their {@link SearchEngineConfig}.
  */
 public final class SearchEngineRegistry {
 
@@ -54,7 +49,7 @@ public final class SearchEngineRegistry {
     private static SearchEngineRegistry sInstance;
 
     /** All site configurations. */
-    private final Map<Integer, Config> mSiteConfigs = new HashMap<>();
+    private final Map<Integer, SearchEngineConfig> mSiteConfigs = new HashMap<>();
 
     /**
      * Constructor. Use {@link #getInstance()}.
@@ -86,7 +81,7 @@ public final class SearchEngineRegistry {
      * @param config to register
      */
     @NonNull
-    SearchEngineRegistry add(@NonNull final Config config) {
+    SearchEngineRegistry add(@NonNull final SearchEngineConfig config) {
         mSiteConfigs.put(config.getEngineId(), config);
         return this;
     }
@@ -97,7 +92,7 @@ public final class SearchEngineRegistry {
      * @return list
      */
     @NonNull
-    public Collection<Config> getAll() {
+    public Collection<SearchEngineConfig> getAll() {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
@@ -109,10 +104,10 @@ public final class SearchEngineRegistry {
      *
      * @param engineId the search engine id
      *
-     * @return Config
+     * @return SearchEngineConfig
      */
     @NonNull
-    public Config getByEngineId(@SearchSites.EngineId final int engineId) {
+    public SearchEngineConfig getByEngineId(@SearchSites.EngineId final int engineId) {
         return Objects.requireNonNull(mSiteConfigs.get(engineId), "engine not found");
     }
 
@@ -121,10 +116,10 @@ public final class SearchEngineRegistry {
      *
      * @param viewId for the engine
      *
-     * @return Optional Config
+     * @return Optional SearchEngineConfig
      */
     @NonNull
-    public Optional<Config> getByViewId(@IdRes final int viewId) {
+    public Optional<SearchEngineConfig> getByViewId(@IdRes final int viewId) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
@@ -138,10 +133,10 @@ public final class SearchEngineRegistry {
      *
      * @param menuId to get
      *
-     * @return Optional Config
+     * @return Optional SearchEngineConfig
      */
     @NonNull
-    public Optional<Config> getByMenuId(@IdRes final int menuId) {
+    public Optional<SearchEngineConfig> getByMenuId(@IdRes final int menuId) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
@@ -176,311 +171,11 @@ public final class SearchEngineRegistry {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
-        return mSiteConfigs.values().stream()
-                           .map(Config::getExternalIdDomain)
+        return mSiteConfigs.values()
+                           .stream()
+                           .map(SearchEngineConfig::getExternalIdDomain)
                            .filter(Objects::nonNull)
                            .collect(Collectors.toList());
     }
 
-    /**
-     * Immutable configuration data for a {@link SearchEngine}.
-     * See {@link SearchSites} for more details.
-     */
-    public static final class Config {
-
-        @NonNull
-        private final Class<? extends SearchEngine> mClass;
-
-        @SearchSites.EngineId
-        private final int mId;
-
-        @StringRes
-        private final int mNameResId;
-
-        @NonNull
-        private final String mPrefKey;
-
-        @NonNull
-        private final String mUrl;
-
-        /** Constructed from language+country. */
-        @NonNull
-        private final Locale mLocale;
-
-        /** {@link SearchEngine.ByExternalId} only. */
-        @Nullable
-        private final Domain mExternalIdDomain;
-
-        @IdRes
-        private final int mDomainViewId;
-
-        @IdRes
-        private final int mDomainMenuId;
-
-        private final int mConnectTimeoutMs;
-
-        private final int mReadTimeoutMs;
-
-        /** {@link SearchEngine.CoverByIsbn} only. */
-        private final boolean mSupportsMultipleCoverSizes;
-
-        /** file suffix for cover files. */
-        @NonNull
-        private final String mFilenameSuffix;
-
-
-        /**
-         * Constructor.
-         */
-        private Config(@NonNull final Builder builder) {
-            mClass = builder.mClass;
-            mId = builder.mId;
-            mNameResId = builder.mNameResId;
-            mPrefKey = builder.mPrefKey;
-            mUrl = builder.mUrl;
-
-            if (builder.mLang != null && !builder.mLang.isEmpty()
-                && builder.mCountry != null && !builder.mCountry.isEmpty()) {
-                mLocale = new Locale(builder.mLang, builder.mCountry.toUpperCase(Locale.ENGLISH));
-
-            } else {
-                // be lenient...
-                mLocale = Locale.US;
-            }
-
-            if (builder.mDomainKey == null || builder.mDomainKey.isEmpty()) {
-                mExternalIdDomain = null;
-            } else {
-                mExternalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(builder.mDomainKey);
-            }
-
-            mDomainViewId = builder.mDomainViewId;
-            mDomainMenuId = builder.mDomainMenuId;
-
-            mConnectTimeoutMs = builder.mConnectTimeoutMs;
-            mReadTimeoutMs = builder.mReadTimeoutMs;
-
-            mSupportsMultipleCoverSizes = builder.mSupportsMultipleCoverSizes;
-            mFilenameSuffix = builder.mFilenameSuffix != null ? builder.mFilenameSuffix : "";
-        }
-
-        @NonNull
-        SearchEngine createSearchEngine() {
-            try {
-                final Constructor<? extends SearchEngine> c = mClass.getConstructor(int.class);
-                return c.newInstance(mId);
-
-            } catch (@NonNull final NoSuchMethodException | IllegalAccessException
-                    | InstantiationException | InvocationTargetException e) {
-                throw new IllegalStateException(mClass
-                                                + " must implement SearchEngine(int)", e);
-            }
-        }
-
-        @SearchSites.EngineId
-        public int getEngineId() {
-            return mId;
-        }
-
-        /**
-         * Get the human-readable name of the site.
-         *
-         * @return the displayable name resource id
-         */
-        @StringRes
-        public int getNameResId() {
-            return mNameResId;
-        }
-
-        @NonNull
-        String getPreferenceKey() {
-            return mPrefKey;
-        }
-
-        @NonNull
-        String getFilenameSuffix() {
-            return mFilenameSuffix;
-        }
-
-        @NonNull
-        public String getSiteUrl() {
-            return mUrl;
-        }
-
-        /**
-         * Get the <strong>standard</strong> Locale for this engine.
-         *
-         * @return site locale
-         */
-        @NonNull
-        public Locale getLocale() {
-            return mLocale;
-        }
-
-        @Nullable
-        public Domain getExternalIdDomain() {
-            return mExternalIdDomain;
-        }
-
-        @IdRes
-        int getDomainViewId() {
-            return mDomainViewId;
-        }
-
-        @IdRes
-        int getDomainMenuId() {
-            return mDomainMenuId;
-        }
-
-        /**
-         * Timeout we allow for a connection to work.
-         *
-         * @return defaults to 5 second. Override as needed.
-         */
-        public int getConnectTimeoutInMs() {
-            return mConnectTimeoutMs;
-        }
-
-        /**
-         * Timeout we allow for a response to a request.
-         *
-         * @return defaults to 10 second. Override as needed.
-         */
-        public int getReadTimeoutInMs() {
-            return mReadTimeoutMs;
-        }
-
-        /**
-         * {@link SearchEngine.CoverByIsbn} only.
-         * <p>
-         * A site can support a single (default) or multiple sizes.
-         *
-         * @return {@code true} if multiple sizes are supported.
-         */
-        boolean supportsMultipleCoverSizes() {
-            return mSupportsMultipleCoverSizes;
-        }
-
-        @Override
-        public String toString() {
-            return "Config{"
-                   + "mClass=" + mClass
-                   + ", mId=" + mId
-                   + ", mName=`" + mNameResId + '`'
-                   + ", mPrefKey=`" + mPrefKey + '`'
-                   + ", mUrl=`" + mUrl + '`'
-                   + ", mLocale=" + mLocale
-                   + ", mExternalIdDomain=" + mExternalIdDomain
-                   + ", mDomainViewId=" + mDomainViewId
-                   + ", mDomainMenuId=" + mDomainMenuId
-                   + ", mConnectTimeoutMs=" + mConnectTimeoutMs
-                   + ", mReadTimeoutMs=" + mReadTimeoutMs
-                   + ", mSupportsMultipleCoverSizes=" + mSupportsMultipleCoverSizes
-                   + ", mFilenameSuffix=`" + mFilenameSuffix + '`'
-                   + '}';
-        }
-
-        public static class Builder {
-
-            static final int FIVE_SECONDS = 5_000;
-            static final int TEN_SECONDS = 10_000;
-
-            @NonNull
-            private final Class<? extends SearchEngine> mClass;
-
-            @SearchSites.EngineId
-            private final int mId;
-
-            @StringRes
-            private final int mNameResId;
-
-            @NonNull
-            private final String mPrefKey;
-
-            @NonNull
-            private final String mUrl;
-
-            @Nullable
-            private String mLang;
-
-            @Nullable
-            private String mCountry;
-
-            @Nullable
-            private String mDomainKey;
-
-            @IdRes
-            private int mDomainViewId;
-
-            @IdRes
-            private int mDomainMenuId;
-
-            private int mConnectTimeoutMs = FIVE_SECONDS;
-
-            private int mReadTimeoutMs = TEN_SECONDS;
-
-            /** {@link SearchEngine.CoverByIsbn} only. */
-            private boolean mSupportsMultipleCoverSizes;
-
-            /** file suffix for cover files. */
-            @Nullable
-            private String mFilenameSuffix;
-
-
-            public Builder(@NonNull final Class<? extends SearchEngine> clazz,
-                           @SearchSites.EngineId final int id,
-                           @StringRes final int nameResId,
-                           @NonNull final String prefKey,
-                           @NonNull final String url) {
-                mClass = clazz;
-                mId = id;
-                mNameResId = nameResId;
-                mPrefKey = prefKey;
-                mUrl = url;
-            }
-
-            public Config build() {
-                return new Config(this);
-            }
-
-            public Builder setCountry(@NonNull final String country,
-                                      @NonNull final String lang) {
-                mCountry = country;
-                mLang = lang;
-                return this;
-            }
-
-            public Builder setTimeout(final int connectTimeoutMs,
-                                      final int readTimeoutMs) {
-                mConnectTimeoutMs = connectTimeoutMs;
-                mReadTimeoutMs = readTimeoutMs;
-                return this;
-            }
-
-            public Builder setDomainKey(@NonNull final String domainKey) {
-                mDomainKey = domainKey;
-                return this;
-            }
-
-            public Builder setDomainMenuId(@IdRes final int domainMenuId) {
-                mDomainMenuId = domainMenuId;
-                return this;
-            }
-
-            public Builder setDomainViewId(@IdRes final int domainViewId) {
-                mDomainViewId = domainViewId;
-                return this;
-            }
-
-            public Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
-                mSupportsMultipleCoverSizes = supportsMultipleCoverSizes;
-                return this;
-            }
-
-            public Builder setFilenameSuffix(@NonNull final String filenameSuffix) {
-                mFilenameSuffix = filenameSuffix;
-                return this;
-            }
-        }
-    }
 }

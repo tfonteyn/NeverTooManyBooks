@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -78,28 +78,28 @@ public class GoodreadsSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public GoodreadsSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public GoodreadsSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
         mGoodreadsAuth = new GoodreadsAuth();
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(GoodreadsSearchEngine.class,
-                                                       SearchSites.GOODREADS,
-                                                       R.string.site_goodreads,
-                                                       GoodreadsManager.PREF_KEY,
-                                                       GoodreadsManager.BASE_URL)
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(GoodreadsSearchEngine.class,
+                                              SearchSites.GOODREADS,
+                                              R.string.site_goodreads,
+                                              GoodreadsManager.PREF_KEY,
+                                              GoodreadsManager.BASE_URL)
                 .setFilenameSuffix(GoodreadsManager.FILENAME_SUFFIX)
 
                 .setDomainKey(DBKeys.KEY_ESID_GOODREADS_BOOK)
                 .setDomainViewId(R.id.site_goodreads)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
 
-                .setTimeout(GoodreadsManager.CONNECTION_TIMEOUT_MS,
-                            GoodreadsManager.READ_TIMEOUT_MS)
+                .setConnectTimeoutMs(GoodreadsManager.CONNECTION_TIMEOUT_MS)
+                .setReadTimeoutMs(GoodreadsManager.READ_TIMEOUT_MS)
                 .build();
     }
 

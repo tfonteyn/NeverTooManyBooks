@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -88,19 +88,19 @@ public class KbNlSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public KbNlSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public KbNlSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(KbNlSearchEngine.class,
-                                                       SearchSites.KB_NL,
-                                                       R.string.site_kb_nl,
-                                                       PREF_KEY,
-                                                       "http://opc4.kb.nl")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(KbNlSearchEngine.class,
+                                              SearchSites.KB_NL,
+                                              R.string.site_kb_nl,
+                                              PREF_KEY,
+                                              "http://opc4.kb.nl")
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("KB")
                 .setSupportsMultipleCoverSizes(true)

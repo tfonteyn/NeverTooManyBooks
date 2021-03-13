@@ -30,6 +30,8 @@ import androidx.annotation.WorkerThread;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +40,7 @@ import org.jsoup.nodes.Document;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -64,22 +67,22 @@ public abstract class JsoupSearchEngineBase
     /**
      * Constructor.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
-    protected JsoupSearchEngineBase(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    protected JsoupSearchEngineBase(@NonNull final SearchEngineConfig config) {
+        super(config);
         mJsoupLoader = new JsoupLoader();
     }
 
     /**
      * Constructor.
      *
-     * @param engineId            the search engine id
-     * @param charSetName         to use
+     * @param config      the search engine configuration
+     * @param charSetName to use
      */
-    protected JsoupSearchEngineBase(@SearchSites.EngineId final int engineId,
+    protected JsoupSearchEngineBase(@NonNull final SearchEngineConfig config,
                                     @NonNull final String charSetName) {
-        this(engineId);
+        this(config);
         mJsoupLoader.setCharSetName(charSetName);
     }
 
@@ -98,7 +101,15 @@ public abstract class JsoupSearchEngineBase
     public Document loadDocument(@NonNull final String url)
             throws IOException {
         try {
-            return mJsoupLoader.loadDocument(getContext(), url, this);
+            final Function<String, Optional<TerminatorConnection>> conCreator = (String u) -> {
+                try {
+                    return Optional.of(createConnection(u));
+                } catch (@NonNull final IOException ignore) {
+                    return Optional.empty();
+                }
+            };
+
+            return mJsoupLoader.loadDocument(getContext(), url, conCreator);
 
         } catch (@NonNull final FileNotFoundException e) {
             // we couldn't load the page

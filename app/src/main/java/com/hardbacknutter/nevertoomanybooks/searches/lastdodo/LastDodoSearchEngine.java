@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -70,19 +70,19 @@ public class LastDodoSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public LastDodoSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public LastDodoSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(LastDodoSearchEngine.class,
-                                                       SearchSites.LAST_DODO,
-                                                       R.string.site_lastdodo_nl,
-                                                       "lastdodo",
-                                                       "https://www.lastdodo.nl/")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(LastDodoSearchEngine.class,
+                                              SearchSites.LAST_DODO,
+                                              R.string.site_lastdodo_nl,
+                                              "lastdodo",
+                                              "https://www.lastdodo.nl/")
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
 

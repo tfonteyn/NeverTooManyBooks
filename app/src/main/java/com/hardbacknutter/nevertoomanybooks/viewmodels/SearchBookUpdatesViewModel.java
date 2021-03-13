@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -191,7 +192,7 @@ public class SearchBookUpdatesViewModel
         addField(global, DBKeys.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
         addField(global, DBKeys.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
-        for (final SearchEngineRegistry.Config config : SearchEngineRegistry
+        for (final SearchEngineConfig config : SearchEngineRegistry
                 .getInstance().getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
@@ -436,7 +437,7 @@ public class SearchBookUpdatesViewModel
 
                     // Collect external ID's we can use
                     final SparseArray<String> externalIds = new SparseArray<>();
-                    for (final SearchEngineRegistry.Config config : SearchEngineRegistry
+                    for (final SearchEngineConfig config : SearchEngineRegistry
                             .getInstance().getAll()) {
                         final Domain domain = config.getExternalIdDomain();
                         if (domain != null) {

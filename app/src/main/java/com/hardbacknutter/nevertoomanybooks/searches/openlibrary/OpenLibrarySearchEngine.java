@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -148,19 +148,19 @@ public class OpenLibrarySearchEngine
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public OpenLibrarySearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public OpenLibrarySearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(OpenLibrarySearchEngine.class,
-                                                       SearchSites.OPEN_LIBRARY,
-                                                       R.string.site_open_library,
-                                                       "openlibrary",
-                                                       "https://openlibrary.org")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(OpenLibrarySearchEngine.class,
+                                              SearchSites.OPEN_LIBRARY,
+                                              R.string.site_open_library,
+                                              "openlibrary",
+                                              "https://openlibrary.org")
 
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("OL")

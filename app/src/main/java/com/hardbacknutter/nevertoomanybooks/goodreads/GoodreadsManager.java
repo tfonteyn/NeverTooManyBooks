@@ -70,8 +70,10 @@ public class GoodreadsManager {
     public static final String BASE_URL = "https://www.goodreads.com";
     public static final Locale SITE_LOCALE = Locale.US;
 
+    public static final int THROTTLER_DELAY_MS = 1_000;
     public static final int CONNECTION_TIMEOUT_MS = 10_000;
     public static final int READ_TIMEOUT_MS = 10_000;
+
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "GR";
 

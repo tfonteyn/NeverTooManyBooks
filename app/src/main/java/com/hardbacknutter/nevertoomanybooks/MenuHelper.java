@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -149,7 +150,7 @@ final class MenuHelper {
             final MenuItem menuItem = subMenu.getItem(i);
             boolean visible = false;
 
-            final Optional<SearchEngineRegistry.Config> oConfig =
+            final Optional<SearchEngineConfig> oConfig =
                     registry.getByMenuId(menuItem.getItemId());
             if (oConfig.isPresent()) {
                 final Domain domain = oConfig.get().getExternalIdDomain();
@@ -173,7 +174,7 @@ final class MenuHelper {
                                                @IdRes final int menuItemId,
                                                @NonNull final DataHolder rowData) {
 
-        final Optional<SearchEngineRegistry.Config> oConfig = SearchEngineRegistry
+        final Optional<SearchEngineConfig> oConfig = SearchEngineRegistry
                 .getInstance().getByMenuId(menuItemId);
         if (oConfig.isPresent()) {
             final Domain domain = oConfig.get().getExternalIdDomain();

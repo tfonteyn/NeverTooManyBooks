@@ -100,7 +100,7 @@ public interface SearchEngine {
      */
     @AnyThread
     @NonNull
-    SearchEngineRegistry.Config getConfig();
+    SearchEngineConfig getConfig();
 
     /**
      * Get the name for this engine.
@@ -210,7 +210,7 @@ public interface SearchEngine {
                                            @Nullable final String callerIdString,
                                            @NonNull final Consumer<RegistrationAction> onResult) {
 
-        final SearchEngineRegistry.Config config = getConfig();
+        final SearchEngineConfig config = getConfig();
         final String key;
         if (callerIdString != null) {
             key = config.getPreferenceKey() + ".hide_alert." + callerIdString;
@@ -289,10 +289,11 @@ public interface SearchEngine {
     default TerminatorConnection createConnection(@NonNull final String url)
             throws IOException {
 
-        final SearchEngineRegistry.Config config = getConfig();
+        final SearchEngineConfig config = getConfig();
 
         return new TerminatorConnection(url)
-                .setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs())
+                .setConnectTimeout(config.getConnectTimeoutInMs())
+                .setReadTimeout(config.getReadTimeoutInMs())
                 .setThrottler(getThrottler());
     }
 
@@ -315,11 +316,12 @@ public interface SearchEngine {
 
         final Context context = getContext();
 
-        final SearchEngineRegistry.Config config = getConfig();
+        final SearchEngineConfig config = getConfig();
 
-        final ImageDownloader imageDownloader = new ImageDownloader();
-        imageDownloader.setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs());
-        imageDownloader.setThrottler(getThrottler());
+        final ImageDownloader imageDownloader = new ImageDownloader()
+                .setConnectTimeout(config.getConnectTimeoutInMs())
+                .setReadTimeout(config.getReadTimeoutInMs())
+                .setThrottler(getThrottler());
 
         try {
             final File tmpFile = imageDownloader

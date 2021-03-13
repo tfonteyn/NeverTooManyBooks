@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
  *          or a similar setup.<br>
  *          Don't forget the "@Keep" annotation on the required constructor.<br>
- *          Configure the engine using {@link SearchEngineRegistry.Config}.
+ *          Configure the engine using {@link SearchEngineConfig}.
  *      </li>
  *
  *     <li>Add the {@link SearchEngine} class to

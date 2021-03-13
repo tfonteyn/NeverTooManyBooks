@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -143,11 +144,11 @@ public class AmazonSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public AmazonSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId);
+    public AmazonSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config);
 
         final String baseUrl = getSiteUrl();
         // check the domain name to determine the language of the site
@@ -170,12 +171,12 @@ public class AmazonSearchEngine
         mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(AmazonSearchEngine.class,
-                                                       SearchSites.AMAZON,
-                                                       R.string.site_amazon,
-                                                       PREF_KEY,
-                                                       "https://www.amazon.com")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(AmazonSearchEngine.class,
+                                              SearchSites.AMAZON,
+                                              R.string.site_amazon,
+                                              PREF_KEY,
+                                              "https://www.amazon.com")
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN

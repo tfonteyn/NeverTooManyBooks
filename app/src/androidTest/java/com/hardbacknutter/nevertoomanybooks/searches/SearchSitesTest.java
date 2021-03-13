@@ -50,8 +50,8 @@ public class SearchSitesTest {
 
     @Test
     public void dumpEngines() {
-        final Collection<SearchEngineRegistry.Config> all = mEngineRegistry.getAll();
-        for (final SearchEngineRegistry.Config config : all) {
+        final Collection<SearchEngineConfig> all = mEngineRegistry.getAll();
+        for (final SearchEngineConfig config : all) {
             assertNotNull(config);
             System.out.println("\n" + config);
         }
@@ -64,7 +64,7 @@ public class SearchSitesTest {
             System.out.println("\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
-                final SearchEngineRegistry.Config config =
+                final SearchEngineConfig config =
                         mEngineRegistry.getByEngineId(site.engineId);
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine();

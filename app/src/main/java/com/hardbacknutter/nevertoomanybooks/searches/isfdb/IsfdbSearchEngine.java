@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -217,26 +217,27 @@ public class IsfdbSearchEngine
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
-     * @param engineId the search engine id
+     * @param config the search engine configuration
      */
     @Keep
-    public IsfdbSearchEngine(@SearchSites.EngineId final int engineId) {
-        super(engineId, CHARSET_DECODE_PAGE);
+    public IsfdbSearchEngine(@NonNull final SearchEngineConfig config) {
+        super(config, CHARSET_DECODE_PAGE);
     }
 
-    public static SearchEngineRegistry.Config createConfig() {
-        return new SearchEngineRegistry.Config.Builder(IsfdbSearchEngine.class,
-                                                       SearchSites.ISFDB,
-                                                       R.string.site_isfdb,
-                                                       PREF_KEY,
-                                                       "http://www.isfdb.org")
+    public static SearchEngineConfig createConfig() {
+        return new SearchEngineConfig.Builder(IsfdbSearchEngine.class,
+                                              SearchSites.ISFDB,
+                                              R.string.site_isfdb,
+                                              PREF_KEY,
+                                              "http://www.isfdb.org")
                 .setFilenameSuffix("ISFDB")
 
                 .setDomainKey(DBKeys.KEY_ESID_ISFDB)
                 .setDomainViewId(R.id.site_isfdb)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
 
-                .setTimeout(20_000, 60_000)
+                .setConnectTimeoutMs(20_000)
+                .setReadTimeoutMs(60_000)
                 .build();
     }
 
