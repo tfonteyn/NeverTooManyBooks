@@ -96,6 +96,15 @@
             android:title="@string/site_library_thing">
         </Preference>
 
+        <!-- under development - disabled in release. -->
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"
+            android:icon="@drawable/ic_stripinfo"
+            android:key="psk_search_site_stripinfo_be"
+            android:summary="@string/pt_site_settings"
+            android:title="@string/site_stripinfo_be">
+        </Preference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

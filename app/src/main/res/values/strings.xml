@@ -1712,5 +1712,7 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
+    <string name="lbl_login_to_search">Login to search</string>
+    <string name="lbl_strip_info_wishlist_bookshelf">Wishlist mapped bookshelf</string>
 
 </resources>

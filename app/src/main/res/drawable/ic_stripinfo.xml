@@ -1,0 +1,35 @@
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--suppress LongLine -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?attr/colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="m 20.849385,1.6446539 h 2.863528 V 22.809254 H 20.849385 Z M 15.10815,2.3392718 V 5.1319216 Q 13.47792,4.3522476 12.031986,3.9694988 10.586042,3.5867503 9.239332,3.5867503 q -2.339025,0 -3.614854,0.9072565 -1.2616539,0.9072564 -1.2616539,2.5800113 0,1.4034126 0.8363768,2.1263828 0.8505531,0.708795 3.2037521,1.1482451 l 1.72946,0.354398 q 3.203753,0.609565 4.720573,2.154733 1.530991,1.530999 1.530991,4.111008 0,3.076168 -2.069678,4.663868 -2.055503,1.587698 -6.038929,1.587698 -1.502646,0 -3.2037521,-0.34022 Q 3.384688,22.53991 1.5701743,21.873645 v -2.948586 q 1.743634,0.978136 3.4163888,1.47429 1.6727539,0.496158 3.2888069,0.496158 2.452431,0 3.784969,-0.96396 1.332529,-0.963958 1.332529,-2.75012 0,-1.559348 -0.963955,-2.438255 -0.94979,-0.8789 -3.132877,-1.318355 L 7.552398,13.084592 Q 4.3486483,12.446675 2.9168836,11.085793 1.4851191,9.7249079 1.4851191,7.3008315 q 0,-2.8068247 1.9704481,-4.422876 1.9846248,-1.6160507 5.4577188,-1.6160507 1.488472,0 3.033647,0.269342 1.545165,0.2693414 3.161217,0.808025 z"
+        tools:ignore="VectorPath" />
+
+</vector>

@@ -39,7 +39,6 @@ public final class CalibreBook {
     static final String LANGUAGES_ARRAY = "languages";
     static final String AUTHOR_ARRAY = "authors";
 
-    static final String USER_METADATA = "user_metadata";
     static final String IDENTIFIERS = "identifiers";
     /** The URL when reading; Base64 encoded image when writing. */
     static final String COVER = "cover";

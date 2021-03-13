@@ -35,6 +35,7 @@ public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
     private static final String PSK_SEARCH_SITE_LIBRARY_THING = "psk_search_site_library_thing";
+    private static final String PSK_SEARCH_SITE_STRIP_INFO_BE = "psk_search_site_stripinfo_be";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -45,6 +46,11 @@ public class SearchInternetPreferenceFragment
         //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_LIBRARY_THING)
                 .setVisible(BuildConfig.ENABLE_LIBRARY_THING);
+
+        //noinspection ConstantConditions
+        findPreference(PSK_SEARCH_SITE_STRIP_INFO_BE)
+                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
+
     }
 
     @Override

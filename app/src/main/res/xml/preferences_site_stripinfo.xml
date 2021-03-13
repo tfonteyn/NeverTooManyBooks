@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/site_stripinfo_be">
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/ic_baseline_person_24"
+            android:key="stripinfo.host.user"
+            android:summary="@string/info_not_set"
+            android:title="@string/username"
+            />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:icon="@drawable/ic_baseline_password_24"
+            android:key="stripinfo.host.password"
+            android:summary="@string/info_not_set"
+            android:title="@string/password"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_login_24"
+            android:key="stripinfo.login.to.search"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_login_to_search" />
+
+        <ListPreference
+            android:icon="@drawable/ic_baseline_sync_alt_24"
+            android:key="stripinfo.wishlist.bookshelf"
+            android:title="@string/lbl_strip_info_wishlist_bookshelf"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

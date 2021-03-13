@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,19 +28,19 @@
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine} :
  *          The interface that the engine class implements and responsible for the actual searches.
  *      </li>
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config} :
+ *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig} :
  *          The annotation that configures the engine class.
  *      </li>
  *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry} :
  *          A registry of all {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine}
  *          classes and their
- *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config}.
+ *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig}.
  *      </li>
  *
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config} :
+ *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig} :
  *          Encapsulates
- *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config},
+ *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig},
  *          resolving complex config items (e.g. Locale).
  *      </li>
  *
