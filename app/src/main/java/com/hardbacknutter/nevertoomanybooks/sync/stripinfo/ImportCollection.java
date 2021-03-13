@@ -37,11 +37,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 public class ImportCollection {
 

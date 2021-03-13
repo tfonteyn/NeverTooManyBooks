@@ -43,8 +43,8 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.org.json.JSONObject;
 
 public class LoginHelper {

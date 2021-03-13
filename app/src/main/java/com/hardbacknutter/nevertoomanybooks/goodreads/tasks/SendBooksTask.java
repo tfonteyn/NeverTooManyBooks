@@ -31,8 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendBooksGrTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQTask;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * Start a background task that export books to Goodreads.

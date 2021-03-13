@@ -53,10 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.

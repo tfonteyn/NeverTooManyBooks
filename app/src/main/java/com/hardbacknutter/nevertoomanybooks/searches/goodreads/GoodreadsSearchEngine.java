@@ -42,13 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActiv
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
