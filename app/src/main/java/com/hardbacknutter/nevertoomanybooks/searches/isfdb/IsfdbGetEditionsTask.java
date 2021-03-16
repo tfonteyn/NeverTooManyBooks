@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * as in this particular circumstance it's faster.
  */
 public class IsfdbGetEditionsTask
-        extends VMTask<List<Edition>> {
+        extends MTask<List<Edition>> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
@@ -48,10 +48,14 @@ public class IsfdbGetEditionsTask
     /** The isbn we're looking up. */
     private String mIsbn;
 
+    public IsfdbGetEditionsTask() {
+        super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
+    }
+
     @UiThread
     public void search(@NonNull final ISBN isbn) {
         mIsbn = isbn.asText();
-        execute(R.id.TASK_ID_SEARCH_EDITIONS);
+        execute();
     }
 
     @NonNull
@@ -59,7 +63,6 @@ public class IsfdbGetEditionsTask
     @WorkerThread
     protected List<Edition> doWork(@NonNull final Context context)
             throws IOException {
-        Thread.currentThread().setName(TAG + mIsbn);
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);

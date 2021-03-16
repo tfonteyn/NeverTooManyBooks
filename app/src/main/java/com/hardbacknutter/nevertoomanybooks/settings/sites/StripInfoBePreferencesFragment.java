@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoConnectionTestTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
@@ -55,7 +54,7 @@ public class StripInfoBePreferencesFragment
     /** Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
 
-    private StripInfoConnectionTestTask mConnectionTestTask;
+    private StripInfoBePreferencesViewModel mVm;
 
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -70,7 +69,7 @@ public class StripInfoBePreferencesFragment
                                     popBackStackOrFinish())
                             .setPositiveButton(android.R.string.ok, (d, w) -> {
                                 d.dismiss();
-                                mConnectionTestTask.start();
+                                mVm.validateConnection();
                             })
                             .create()
                             .show();
@@ -152,9 +151,9 @@ public class StripInfoBePreferencesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mConnectionTestTask = new ViewModelProvider(this).get(StripInfoConnectionTestTask.class);
-        mConnectionTestTask.onFailure().observe(getViewLifecycleOwner(), this::onFailure);
-        mConnectionTestTask.onFinished().observe(getViewLifecycleOwner(), this::onSuccess);
+        mVm = new ViewModelProvider(this).get(StripInfoBePreferencesViewModel.class);
+        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
+        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
     }
 
     private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {

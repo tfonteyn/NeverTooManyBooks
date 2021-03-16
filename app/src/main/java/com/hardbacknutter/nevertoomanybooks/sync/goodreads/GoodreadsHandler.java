@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,12 +37,10 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.GrAuthTask;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * A delegate class for handling a Goodreads enabled Book.
@@ -56,10 +53,7 @@ public class GoodreadsHandler {
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
-    /** Goodreads authorization task. */
-    private GrAuthTask mAuthTask;
-    /** Goodreads send-book task. */
-    private GrSendOneBookTask mSendOneBookTask;
+    private GoodreadsHandlerViewModel mVm;
 
     private String mRegistrationText;
     private String mSendBookText;
@@ -94,29 +88,41 @@ public class GoodreadsHandler {
         mRegistrationText = context.getString(R.string.lbl_registration,
                                               context.getString(R.string.site_goodreads));
 
-        mAuthTask = new ViewModelProvider(viewModelStoreOwner).get(GrAuthTask.class);
-        mAuthTask.onProgressUpdate().observe(lifecycleOwner, this::onProgress);
-        mAuthTask.onCancelled().observe(lifecycleOwner, this::onCancelled);
-        mAuthTask.onFailure().observe(lifecycleOwner, this::onFailure);
-        mAuthTask.onFinished().observe(lifecycleOwner, this::onFinished);
-
-        mSendOneBookTask = new ViewModelProvider(viewModelStoreOwner)
-                .get(GrSendOneBookTask.class);
-        mSendOneBookTask.onProgressUpdate().observe(lifecycleOwner, this::onProgress);
-        mSendOneBookTask.onCancelled().observe(lifecycleOwner, this::onCancelled);
-        mSendOneBookTask.onFailure().observe(lifecycleOwner, this::onFailure);
-        mSendOneBookTask.onFinished().observe(lifecycleOwner, this::onFinished);
+        mVm = new ViewModelProvider(viewModelStoreOwner).get(GoodreadsHandlerViewModel.class);
+        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
+        mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
+        mVm.onFailure().observe(lifecycleOwner, this::onFailure);
+        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
     }
 
     public void sendBook(@IntRange(from = 1) final long bookId) {
         Snackbar.make(mView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mSendOneBookTask.start(bookId);
+        mVm.sendBook(bookId);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog(message.taskId);
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
+                    mProgressDialog = ProgressDialogFragment.newInstance(
+                            mRegistrationText, false, true);
+                } else if (message.taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
+                    mProgressDialog = ProgressDialogFragment.newInstance(
+                            mSendBookText, false, true);
+                } else {
+                    throw new IllegalArgumentException("id=" + message.taskId);
+                }
+                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+            }
+
+            // hook the task up.
+            mVm.connectProgressDialog(message.taskId, mProgressDialog);
         }
+
         mProgressDialog.onProgress(message);
     }
 
@@ -140,46 +146,13 @@ public class GoodreadsHandler {
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                mAuthTask.prompt(mView.getContext());
+                mVm.promptForAuthentication(mView.getContext());
 
             } else if (message.result.getStatus() != GrStatus.SUCCESS) {
                 Snackbar.make(mView, message.result.getMessage(mView.getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
         }
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog(@IdRes final int taskId) {
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-
-        // not found? create it
-        if (dialog == null) {
-            if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
-                dialog = ProgressDialogFragment.newInstance(mRegistrationText, false, true);
-
-            } else if (taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
-                dialog = ProgressDialogFragment.newInstance(mSendBookText, false, true);
-
-            } else {
-                throw new IllegalArgumentException("id=" + taskId);
-            }
-            dialog.show(mFragmentManager, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
-            dialog.setCanceller(mAuthTask);
-
-        } else if (taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
-            dialog.setCanceller(mSendOneBookTask);
-
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
-        return dialog;
     }
 
     private void closeProgressDialog() {

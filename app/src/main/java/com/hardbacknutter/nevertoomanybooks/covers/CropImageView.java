@@ -54,9 +54,9 @@ import android.view.MotionEvent;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.preference.PreferenceManager;
 
@@ -141,7 +141,7 @@ public class CropImageView
      *
      * @param bitmap to crop
      */
-    @MainThread
+    @UiThread
     public void initCropView(@NonNull final Bitmap bitmap) {
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());

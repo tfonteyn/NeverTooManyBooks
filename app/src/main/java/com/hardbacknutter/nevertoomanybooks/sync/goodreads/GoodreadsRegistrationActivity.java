@@ -35,10 +35,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegisterBinding;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Allow the user to explain Goodreads and authorize this application to access their
@@ -51,7 +50,7 @@ public class GoodreadsRegistrationActivity
     private ActivityGoodreadsRegisterBinding mVb;
 
     /** Goodreads authorization task. */
-    private GrAuthTask mGrAuthTask;
+    private GoodreadsAuthenticationViewModel mVm;
 
     @Override
     protected void onSetContentView() {
@@ -63,11 +62,11 @@ public class GoodreadsRegistrationActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
-        mGrAuthTask.onProgressUpdate().observe(this, this::onProgress);
-        mGrAuthTask.onCancelled().observe(this, this::onCancelled);
-        mGrAuthTask.onFailure().observe(this, this::onGrFailure);
-        mGrAuthTask.onFinished().observe(this, this::onGrFinished);
+        mVm = new ViewModelProvider(this).get(GoodreadsAuthenticationViewModel.class);
+        mVm.onProgress().observe(this, this::onProgress);
+        mVm.onCancelled().observe(this, this::onCancelled);
+        mVm.onFailure().observe(this, this::onGrFailure);
+        mVm.onFinished().observe(this, this::onGrFinished);
 
         // Goodreads Reg Link
         mVb.goodreadsUrl.setOnClickListener(v -> startActivity(
@@ -76,7 +75,7 @@ public class GoodreadsRegistrationActivity
         mVb.btnAuthorize.setOnClickListener(v -> {
             Snackbar.make(mVb.btnAuthorize, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mGrAuthTask.start();
+            mVm.authenticate();
         });
 
         final GoodreadsAuth grAuth = new GoodreadsAuth();
@@ -114,7 +113,7 @@ public class GoodreadsRegistrationActivity
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                mGrAuthTask.prompt(this);
+                mVm.promptForAuthentication(this);
             } else {
                 Snackbar.make(mVb.getRoot(), message.result.getMessage(this),
                               Snackbar.LENGTH_LONG).show();

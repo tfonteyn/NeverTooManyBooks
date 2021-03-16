@@ -62,13 +62,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_websites">
+        android:title="@string/pt_site_settings">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.AmazonPreferencesFragment"
             android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_amazon"
-            android:summary="@string/pt_site_settings"
             android:title="@string/site_amazon">
         </Preference>
 
@@ -76,7 +75,6 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment"
             android:icon="@drawable/ic_goodreads"
             android:key="psk_search_site_goodreads"
-            android:summary="@string/pt_site_settings"
             android:title="@string/site_goodreads">
         </Preference>
 
@@ -84,7 +82,6 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
             android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_isfdb"
-            android:summary="@string/pt_site_settings"
             android:title="@string/site_isfdb">
         </Preference>
 
@@ -92,7 +89,6 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LibraryThingPreferencesFragment"
             android:icon="@drawable/ic_librarything"
             android:key="psk_search_site_library_thing"
-            android:summary="@string/pt_site_settings"
             android:title="@string/site_library_thing">
         </Preference>
 
@@ -101,7 +97,6 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"
             android:icon="@drawable/ic_stripinfo"
             android:key="psk_search_site_stripinfo_be"
-            android:summary="@string/pt_site_settings"
             android:title="@string/site_stripinfo_be">
         </Preference>
 

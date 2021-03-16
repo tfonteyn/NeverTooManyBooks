@@ -58,8 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
@@ -91,11 +89,10 @@ public class ImportFragment
      * Also see {@link #mOpenUriLauncher}.
      */
     private static final String MIME_TYPES = "*/*";
-    /**
-     * The ViewModel and the {@link #mArchiveReaderTask} could be folded into one object,
-     * but we're trying to keep task logic separate for now.
-     */
+
+    /** The ViewModel. */
     protected ImportViewModel mVm;
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -106,10 +103,9 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
+
     /** View Binding. */
     private FragmentImportBinding mVb;
-
-    private ArchiveReadMetaDataTask mMetaDataTask;
 
     /**
      * The launcher for picking a Uri to read from.
@@ -119,7 +115,6 @@ public class ImportFragment
      */
     private final ActivityResultLauncher<String> mOpenUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
-    private ArchiveReaderTask mArchiveReaderTask;
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
@@ -154,16 +149,13 @@ public class ImportFragment
         mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
         mVm.init(getArguments());
 
-        mMetaDataTask = new ViewModelProvider(this).get(ArchiveReadMetaDataTask.class);
-        mMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
-        mArchiveReaderTask = new ViewModelProvider(this).get(ArchiveReaderTask.class);
-        mArchiveReaderTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mArchiveReaderTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
-
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onImportCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mVm.onImportFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
         if (!mVm.hasUri()) {
             // start the import process by asking the user for a Uri
@@ -198,7 +190,7 @@ public class ImportFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            mArchiveReaderTask.start(mVm.getImportHelper());
+            mVm.startImport();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -265,12 +257,12 @@ public class ImportFragment
      * Update the screen with archive specific options and values.
      */
     private void showOptions() {
-        final ImportHelper helper = mVm.getImportHelper();
-
         showArchiveDetails();
         if (mVm.getArchiveMetaData() == null) {
-            mMetaDataTask.start(helper);
+            mVm.readMetaData();
         }
+
+        final ImportHelper helper = mVm.getImportHelper();
 
         final Set<RecordType> entries = helper.getImportEntries();
 
@@ -620,29 +612,22 @@ public class ImportFragment
 
     protected void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog();
+            final FragmentManager fm = getChildFragmentManager();
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                mProgressDialog = ProgressDialogFragment.newInstance(
+                        getString(R.string.lbl_importing), false, true);
+                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            }
+
+            // hook the task up.
+            mVm.connectProgressDialog(mProgressDialog);
         }
+
         mProgressDialog.onProgress(message);
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog() {
-        final FragmentManager fm = getChildFragmentManager();
-
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        // not found? create it
-        if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(
-                    getString(R.string.lbl_importing), false, true);
-            dialog.show(fm, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        dialog.setCanceller(mArchiveReaderTask);
-
-        return dialog;
     }
 
     private void closeProgressDialog() {

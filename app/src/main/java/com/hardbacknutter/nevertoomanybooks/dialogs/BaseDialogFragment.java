@@ -47,7 +47,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 

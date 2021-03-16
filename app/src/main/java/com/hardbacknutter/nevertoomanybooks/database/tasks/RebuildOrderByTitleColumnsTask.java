@@ -27,18 +27,17 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
  */
 public class RebuildOrderByTitleColumnsTask
-        extends LTask<Boolean> {
+        extends LTask<Boolean>
+        implements StartupViewModel.StartupTask {
 
     /** Log tag. */
     private static final String TAG = "RebuildOrderByTitle";
@@ -50,29 +49,28 @@ public class RebuildOrderByTitleColumnsTask
      */
     @UiThread
     public RebuildOrderByTitleColumnsTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_REBUILD_REORDER_TITLES, taskListener);
+        super(R.id.TASK_ID_DB_REBUILD_REORDER_TITLES, TAG, taskListener);
+    }
+
+    @Override
+    @UiThread
+    public void start() {
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
-
         // incorrect progress message, but it's half-true.
-        publishProgress(new ProgressMessage(getTaskId(), context.getString(
-                R.string.progress_msg_rebuilding_search_index)));
+        publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
+
         try {
             final boolean reorder = ItemWithTitle.isReorderTitleForSorting();
 
             ServiceLocator.getInstance().getMaintenanceDao()
                           .rebuildOrderByTitleColumns(context, reorder);
             return true;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return false;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...

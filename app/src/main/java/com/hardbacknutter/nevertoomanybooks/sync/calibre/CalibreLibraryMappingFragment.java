@@ -39,9 +39,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
@@ -84,10 +82,8 @@ public class CalibreLibraryMappingFragment
         mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
         mVm.init(getArguments());
 
-        final ArchiveReadMetaDataTask readMetaDataTask = new ViewModelProvider(this)
-                .get(ArchiveReadMetaDataTask.class);
-        readMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        readMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
+        mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
         //noinspection ConstantConditions
         mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
@@ -119,9 +115,8 @@ public class CalibreLibraryMappingFragment
         });
 
         if (mVm.getLibraries().isEmpty()) {
-            final ImportHelper helper = mVm.getImportHelper();
             Snackbar.make(view, R.string.progress_msg_connecting, Snackbar.LENGTH_SHORT).show();
-            readMetaDataTask.start(helper);
+            mVm.readMetaData();
         } else {
             onLibrarySelected(0);
             mVb.getRoot().setVisibility(View.VISIBLE);

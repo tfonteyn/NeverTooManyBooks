@@ -32,13 +32,13 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
  * Hard coded not to fetch any images.
  */
 public class IsfdbGetBookTask
-        extends VMTask<Bundle> {
+        extends MTask<Bundle> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
@@ -48,6 +48,10 @@ public class IsfdbGetBookTask
     /** ISFDB book edition to get. */
     @Nullable
     private Edition mEdition;
+
+    public IsfdbGetBookTask() {
+        super(R.id.TASK_ID_ISFDB_GET_BOOK, TAG);
+    }
 
     /**
      * Initiate a single book lookup by edition.
@@ -59,7 +63,7 @@ public class IsfdbGetBookTask
         mIsfdbId = 0;
         mEdition = edition;
 
-        execute(R.id.TASK_ID_ISFDB_GET_BOOK);
+        execute();
     }
 
     /**
@@ -72,7 +76,7 @@ public class IsfdbGetBookTask
         mIsfdbId = isfdbId;
         mEdition = null;
 
-        execute(R.id.TASK_ID_ISFDB_GET_BOOK);
+        execute();
     }
 
     @NonNull
@@ -80,7 +84,6 @@ public class IsfdbGetBookTask
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
             throws IOException {
-        Thread.currentThread().setName(TAG);
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);

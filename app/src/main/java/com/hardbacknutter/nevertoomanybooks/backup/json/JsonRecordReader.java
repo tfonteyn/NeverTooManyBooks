@@ -369,7 +369,7 @@ public class JsonRecordReader
                                                      mResults.booksCreated,
                                                      mResults.booksUpdated,
                                                      mResults.booksSkipped);
-                    progressListener.publishProgressStep(delta, msg);
+                    progressListener.publishProgress(delta, msg);
                     lastUpdateTime = now;
                     delta = 0;
                 }

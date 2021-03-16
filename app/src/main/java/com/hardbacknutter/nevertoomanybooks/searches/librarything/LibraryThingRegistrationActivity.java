@@ -49,7 +49,7 @@ public class LibraryThingRegistrationActivity
     /** View Binding. */
     private ActivityLibrarythingRegisterBinding mVb;
 
-    private ValidateKeyTask mValidateKeyTask;
+    private LibraryThingRegistrationViewModel mVm;
 
     @Override
     protected void onSetContentView() {
@@ -61,21 +61,21 @@ public class LibraryThingRegistrationActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mValidateKeyTask = new ViewModelProvider(this).get(ValidateKeyTask.class);
-        mValidateKeyTask.onFailure().observe(this, message -> {
+        mVm = new ViewModelProvider(this).get(LibraryThingRegistrationViewModel.class);
+        mVm.onFailure().observe(this, message -> {
             if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), getString(R.string.error_network_site_access_failed,
                                                        getString(R.string.site_library_thing)),
                               Snackbar.LENGTH_LONG).show();
             }
         });
-        mValidateKeyTask.onCancelled().observe(this, message -> {
+        mVm.onCancelled().observe(this, message -> {
             if (message.isNewEvent()) {
                 Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
             }
         });
-        mValidateKeyTask.onFinished().observe(this, message -> {
+        mVm.onFinished().observe(this, message -> {
             if (message.isNewEvent()) {
                 final String msg = message.result != null
                                    ? getString(message.result)
@@ -141,7 +141,7 @@ public class LibraryThingRegistrationActivity
         if (!devKey.isEmpty()) {
             Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mValidateKeyTask.start();
+            mVm.validateKey();
         } else {
             showError(mVb.lblDevKey, getString(R.string.vldt_non_blank_required));
         }

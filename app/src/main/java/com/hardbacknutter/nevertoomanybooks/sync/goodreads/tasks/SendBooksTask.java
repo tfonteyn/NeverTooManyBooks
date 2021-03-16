@@ -32,7 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendBooksGrTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Start a background task that export books to Goodreads.
@@ -43,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
  * is kicked of to do the actual work.
  */
 public class SendBooksTask
-        extends VMTask<GrStatus> {
+        extends LTask<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.SendBooksTask";
@@ -56,24 +57,31 @@ public class SendBooksTask
     /**
      * Constructor.
      *
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public SendBooksTask(@NonNull final TaskListener<GrStatus> taskListener) {
+        super(R.id.TASK_ID_GR_SEND_BOOKS, TAG, taskListener);
+    }
+
+    /**
+     * Start sending.
+     *
      * @param fromLastBookId {@code true} to send from the last book we did earlier,
      *                       {@code false} for all books.
      * @param updatesOnly    {@code true} to send updated books only,
      *                       {@code false} for all books.
      */
-    public void start(final boolean fromLastBookId,
-                      final boolean updatesOnly) {
+    public void send(final boolean fromLastBookId,
+                     final boolean updatesOnly) {
         mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
-
-        execute(R.id.TASK_ID_GR_SEND_BOOKS);
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
 
         if (!NetworkUtils.isNetworkAvailable()) {
             return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);

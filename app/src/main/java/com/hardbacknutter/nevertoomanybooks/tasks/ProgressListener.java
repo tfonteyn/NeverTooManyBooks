@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,46 +19,40 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * Listener interface for progress messages.
- * One of the publishProgress should be implemented.
  */
 public interface ProgressListener {
 
     /**
+     * Send a progress message.
+     *
+     * @param message to send
+     */
+    @WorkerThread
+    void publishProgress(@NonNull final ProgressMessage message);
+
+    /**
      * Advance progress by 'delta'.
-     *
-     * @param delta   increment/decrement value for the progress counter
-     * @param message optional message to display
-     */
-    default void publishProgressStep(final int delta,
-                                     @Nullable final String message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Advance progress to absolute position.
-     *
-     * @param position absolute position for the progress counter
-     * @param message  optional message to display
-     */
-    default void publishPosition(final int position,
-                                 @Nullable final String message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Optional to use/override: the interval to send progress updates in milliseconds.
      * <p>
-     * Default: 200ms. i.e. 5x a second.
+     * Convenience method which should build the {@link ProgressMessage} based
+     * on the current progress counters and the passed data and call
+     * {@link #publishProgress(ProgressMessage)}.
+     * <p>
+     * See {@link TaskBase} for the default implementation.
      *
-     * @return interval in ms
+     * @param delta the relative step in the overall progress count.
+     * @param text  (optional) text message
      */
-    default int getUpdateIntervalInMs() {
-        return 200;
-    }
+    @WorkerThread
+    void publishProgress(int delta,
+                         @Nullable String text);
 
     /**
      * Check if the user wants to cancel the operation.
@@ -89,4 +83,15 @@ public interface ProgressListener {
      * @param maxPosition value
      */
     void setMaxPos(int maxPosition);
+
+    /**
+     * Optional to override: the interval to send progress updates in milliseconds.
+     * <p>
+     * Default: 200ms. i.e. 5x a second.
+     *
+     * @return interval in ms
+     */
+    default int getUpdateIntervalInMs() {
+        return 200;
+    }
 }

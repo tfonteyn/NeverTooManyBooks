@@ -119,7 +119,7 @@ public class JsonRecordWriter
 
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
-                progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));
+                progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
                 final List<ListStyle> styles = StyleUtils.getStyles(context, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
@@ -130,7 +130,7 @@ public class JsonRecordWriter
 
             if (entries.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
-                progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
+                progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
                 final JsonCoder<SharedPreferences> coder = new SharedPreferencesCoder();
                 jsonData.put(RecordType.Preferences.getName(),
                              coder.encode(PreferenceManager.getDefaultSharedPreferences(context)));
@@ -139,7 +139,7 @@ public class JsonRecordWriter
 
             if (entries.contains(RecordType.Certificates)
                 && !progressListener.isCancelled()) {
-                progressListener.publishProgressStep(1, context.getString(
+                progressListener.publishProgress(1, context.getString(
                         R.string.lbl_certificate_ca));
 
                 final JsonCoder<X509Certificate> coder = new CertificateCoder();
@@ -188,7 +188,7 @@ public class JsonRecordWriter
                         delta++;
                         final long now = System.currentTimeMillis();
                         if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                            progressListener.publishProgressStep(delta, book.getTitle());
+                            progressListener.publishProgress(delta, book.getTitle());
                             lastUpdate = now;
                             delta = 0;
                         }

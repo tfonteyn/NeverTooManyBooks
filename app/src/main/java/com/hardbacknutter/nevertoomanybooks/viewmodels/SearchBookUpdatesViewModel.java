@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.File;
@@ -105,13 +106,13 @@ public class SearchBookUpdatesViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<FinishedMessage<Bundle>> onAllDone() {
+    public LiveData<FinishedMessage<Bundle>> onAllDone() {
         return mListFinished;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<FinishedMessage<Exception>> onCatastrophe() {
+    public LiveData<FinishedMessage<Exception>> onCatastrophe() {
         return mListFailed;
     }
 

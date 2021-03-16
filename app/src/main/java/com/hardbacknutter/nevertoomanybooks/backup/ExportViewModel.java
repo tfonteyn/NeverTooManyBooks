@@ -20,9 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
@@ -31,6 +33,10 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 public class ExportViewModel
         extends ViewModel {
@@ -53,6 +59,8 @@ public class ExportViewModel
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
     private boolean mQuickOptionsAlreadyShown;
+
+    private final ArchiveWriterTask mArchiveWriterTask = new ArchiveWriterTask();
 
     @NonNull
     ExportHelper getExportHelper() {
@@ -103,5 +111,38 @@ public class ExportViewModel
         }
 
         return new Pair<>(initialPos, list);
+    }
+
+    @NonNull
+    LiveData<ProgressMessage> onProgress() {
+        return mArchiveWriterTask.onProgressUpdate();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ExportResults>> onExportCancelled() {
+        return mArchiveWriterTask.onCancelled();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<Exception>> onExportFailure() {
+        return mArchiveWriterTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ExportResults>> onExportFinished() {
+        return mArchiveWriterTask.onFinished();
+    }
+
+    boolean isExportRunning() {
+        return mArchiveWriterTask.isRunning();
+    }
+
+    void startExport(@NonNull final Uri uri) {
+        mExportHelper.setUri(uri);
+        mArchiveWriterTask.start(mExportHelper);
+    }
+
+    void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
+        dialog.setCanceller(mArchiveWriterTask);
     }
 }

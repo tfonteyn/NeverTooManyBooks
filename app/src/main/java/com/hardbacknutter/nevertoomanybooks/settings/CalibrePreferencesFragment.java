@@ -49,7 +49,6 @@ import java.security.cert.X509Certificate;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreConnectionTestTask;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -68,7 +67,7 @@ public class CalibrePreferencesFragment
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
 
-    private CalibreConnectionTestTask mConnectionTestTask;
+    private CalibrePreferencesViewModel mVm;
 
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -86,7 +85,7 @@ public class CalibrePreferencesFragment
                                         popBackStackOrFinish())
                                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                                     d.dismiss();
-                                    mConnectionTestTask.start();
+                                    mVm.validateConnection();
                                 })
                                 .create()
                                 .show();
@@ -178,9 +177,9 @@ public class CalibrePreferencesFragment
                     setFolderSummary(findPreference(PSK_PICK_FOLDER));
                 });
 
-        mConnectionTestTask = new ViewModelProvider(this).get(CalibreConnectionTestTask.class);
-        mConnectionTestTask.onFailure().observe(getViewLifecycleOwner(), this::onFailure);
-        mConnectionTestTask.onFinished().observe(getViewLifecycleOwner(), this::onSuccess);
+        mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
+        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
+        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
     }
 
     private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {

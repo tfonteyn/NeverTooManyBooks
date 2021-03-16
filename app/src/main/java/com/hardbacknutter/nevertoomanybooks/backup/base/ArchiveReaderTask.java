@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * Output: {@link ImportResults}.
  */
 public class ArchiveReaderTask
-        extends VMTask<ImportResults> {
+        extends MTask<ImportResults> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveReaderTask";
@@ -48,15 +48,19 @@ public class ArchiveReaderTask
     /** import configuration. */
     private ImportHelper mHelper;
 
+    public ArchiveReaderTask() {
+        super(R.id.TASK_ID_IMPORT, TAG);
+    }
+
     /**
      * Start the task.
      *
      * @param helper import configuration
      */
     @UiThread
-    public void start(@NonNull final ImportHelper helper) {
+    public boolean start(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        execute(R.id.TASK_ID_IMPORT);
+        return execute();
     }
 
     @NonNull
@@ -65,7 +69,6 @@ public class ArchiveReaderTask
     protected ImportResults doWork(@NonNull final Context context)
             throws InvalidArchiveException, GeneralParsingException, ImportException,
                    IOException, CertificateException {
-        Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
             return reader.read(context, this);

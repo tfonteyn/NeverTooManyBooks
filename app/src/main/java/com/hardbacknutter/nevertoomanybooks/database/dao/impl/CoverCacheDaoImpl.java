@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Process;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -213,6 +214,8 @@ public class CoverCacheDaoImpl
         // Use the default serial executor as we only want a single write thread at a time.
         // Failures are ignored as it is just writing to a cache used solely for optimization.
         ASyncExecutor.SERIAL.execute(() -> {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
             RUNNING_TASKS.incrementAndGet();
             try {
                 final ByteArrayOutputStream out = new ByteArrayOutputStream();

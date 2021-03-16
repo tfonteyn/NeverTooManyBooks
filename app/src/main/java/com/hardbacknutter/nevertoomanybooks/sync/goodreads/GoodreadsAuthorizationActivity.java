@@ -23,8 +23,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Process;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
@@ -44,89 +46,81 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 public class GoodreadsAuthorizationActivity
         extends BaseActivity {
 
+    private static final String TAG = "GoodreadsAuthActivity";
+
+    private Handler mHandler;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Uri uri = getIntent().getData();
         if (uri != null) {
+            mHandler = new Handler(Looper.getMainLooper());
+
             // Goodreads does not set the verifier...but we may as well check for it.
             // The verifier was added in version 1.0A, and Goodreads seems to implement 1.0.
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
-            // Handle the auth response by passing it off to a background task to check.
-            new AuthorizationResultCheckTask().execute();
+            // Simple task to verify Goodreads credentials and
+            // display a notification with the result.
+            // This task is run as the last part of the Goodreads auth process.
+            ASyncExecutor.SERIAL.execute(() -> {
+                Thread.currentThread().setName(TAG);
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                final Context context = ServiceLocator.getAppContext();
+
+                boolean res = false;
+                Exception ex = null;
+                try {
+                    res = new GoodreadsAuth().handleAuthenticationAfterAuthorization(context);
+                } catch (@NonNull final GoodreadsAuth.AuthorizationException | IOException e) {
+                    ex = e;
+                }
+
+                // need 'final' to post()
+                final boolean result = res;
+                final Exception exception = ex;
+                mHandler.post(() -> {
+                    if (result) {
+                        final PendingIntent pendingIntent =
+                                Notifier.createPendingIntent(context, BooksOnBookshelf.class);
+
+                        Notifier.getInstance(context)
+                                .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
+                                          R.string.info_authorized,
+                                          context.getString(
+                                                  R.string.info_site_authorization_successful,
+                                                  context.getString(R.string.site_goodreads)));
+
+                    } else {
+                        final String msg;
+                        if (exception != null) {
+                            msg = context.getString(R.string.error_site_authorization_failed,
+                                                    context.getString(R.string.site_goodreads))
+                                  + ' '
+                                  + context.getString(R.string.error_if_the_problem_persists,
+                                                      context.getString(R.string.lbl_send_debug));
+                        } else {
+                            msg = context.getString(R.string.error_site_authentication_failed,
+                                                    context.getString(R.string.site_goodreads));
+                        }
+
+                        final PendingIntent pendingIntent =
+                                Notifier.createPendingIntentWithParentStack(
+                                        context, GoodreadsRegistrationActivity.class);
+
+                        Notifier.getInstance(context)
+                                .sendError(context, Notifier.ID_GOODREADS, pendingIntent,
+                                           R.string.info_not_authorized,
+                                           msg);
+                    }
+                });
+            });
         }
 
         // Bring our app back to the top
         startActivity(new Intent(this, BooksOnBookshelf.class));
         finish();
-    }
-
-    /**
-     * Simple task to verify Goodreads credentials and  display a notification with the result.
-     * <p>
-     * This task is run as the last part of the Goodreads auth process.
-     * Runs in background because it can take several seconds.
-     */
-    private static class AuthorizationResultCheckTask
-            extends AsyncTask<Void, Void, Boolean> {
-
-        /** Log tag. */
-        private static final String TAG = "GR.AuthResultCheckTask";
-
-        @Nullable
-        private Exception mException;
-
-        @Override
-        protected Boolean doInBackground(@Nullable final Void... voids) {
-            Thread.currentThread().setName(TAG);
-            final Context context = ServiceLocator.getAppContext();
-
-            final GoodreadsAuth grAuth = new GoodreadsAuth();
-            try {
-                return grAuth.handleAuthenticationAfterAuthorization(context);
-
-            } catch (@NonNull final GoodreadsAuth.AuthorizationException | IOException e) {
-                mException = e;
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(@NonNull final Boolean result) {
-            final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
-
-            if (result) {
-                final PendingIntent pendingIntent = Notifier
-                        .createPendingIntent(context, BooksOnBookshelf.class);
-                Notifier.getInstance(context)
-                        .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
-                                  R.string.info_authorized,
-                                  context.getString(R.string.info_site_authorization_successful,
-                                                    context.getString(R.string.site_goodreads)));
-
-            } else {
-                final String msg;
-                if (mException != null) {
-                    msg = context.getString(R.string.error_site_authorization_failed,
-                                            context.getString(R.string.site_goodreads)) + ' '
-                          + context.getString(R.string.error_if_the_problem_persists,
-                                              context.getString(R.string.lbl_send_debug));
-                } else {
-                    msg = context.getString(R.string.error_site_authentication_failed,
-                                            context.getString(R.string.site_goodreads));
-                }
-
-
-                final PendingIntent pendingIntent = Notifier
-                        .createPendingIntentWithParentStack(context,
-                                                            GoodreadsRegistrationActivity.class);
-                Notifier.getInstance(context)
-                        .sendError(context, Notifier.ID_GOODREADS, pendingIntent,
-                                   R.string.info_not_authorized,
-                                   msg);
-            }
-        }
     }
 }

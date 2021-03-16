@@ -17,38 +17,30 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
+package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
-import android.content.Context;
-
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-
-import java.io.IOException;
-import java.net.HttpCookie;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.SendOneBookTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 
-public class StripInfoConnectionTestTask
-        extends VMTask<Boolean> {
+public class GoodreadsHandlerViewModel
+        extends GoodreadsAuthenticationViewModel {
 
-    /**
-     * Start the task.
-     */
-    @UiThread
-    public void start() {
-        execute(R.id.TASK_ID_VALIDATE_CONNECTION);
+    private final SendOneBookTask mSendOneBookTask = new SendOneBookTask(mTaskListener);
+
+    void sendBook(final long bookId) {
+        mSendOneBookTask.send(bookId);
     }
 
-    @Nullable
-    @Override
-    protected Boolean doWork(@NonNull final Context context)
-            throws IOException {
-        final LoginHelper loginHelper = new LoginHelper();
-        final Optional<HttpCookie> cookie = loginHelper.login();
-        return cookie.isPresent();
+    void connectProgressDialog(@IdRes final int taskId,
+                               @NonNull final ProgressDialogFragment dialog) {
+        if (taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
+            dialog.setCanceller(mSendOneBookTask);
+        } else {
+            super.connectProgressDialog(taskId, dialog);
+        }
     }
 }

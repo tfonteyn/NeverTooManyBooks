@@ -43,12 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TasksAdminActivity;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.GrAuthTask;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.ImportTask;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Starting point for sending and importing books with Goodreads.
@@ -59,12 +56,7 @@ public class GoodreadsAdminFragment
     /** Fragment manager tag. */
     public static final String TAG = "GoodreadsAdminFragment";
 
-    /** Goodreads authorization task. */
-    private GrAuthTask mGrAuthTask;
-    /** ViewModel with task. */
-    private ImportTask mImportTask;
-    /** ViewModel with task. */
-    private SendBooksTask mSendBooksTask;
+    private GoodreadsAdminViewModel mVm;
 
     /** View Binding. */
     private FragmentGoodreadsAdminBinding mVb;
@@ -92,23 +84,11 @@ public class GoodreadsAdminFragment
         //noinspection ConstantConditions
         mToolbar = getActivity().findViewById(R.id.toolbar);
 
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
-        mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
-        mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
-
-        mImportTask = new ViewModelProvider(this).get(ImportTask.class);
-        mImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mImportTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
-        mImportTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
-
-        mSendBooksTask = new ViewModelProvider(this).get(SendBooksTask.class);
-        mSendBooksTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mSendBooksTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mSendBooksTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
-        mSendBooksTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
+        mVm = new ViewModelProvider(this).get(GoodreadsAdminViewModel.class);
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mVm.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
+        mVm.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
         mVb.btnSync.setOnClickListener(v -> importBooks(true));
         mVb.btnImport.setOnClickListener(v -> importBooks(false));
@@ -149,7 +129,7 @@ public class GoodreadsAdminFragment
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
                 //noinspection ConstantConditions
-                mGrAuthTask.prompt(getContext());
+                mVm.promptForAuthentication(getContext());
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(mVb.getRoot(), message.result.getMessage(getContext()),
@@ -197,11 +177,11 @@ public class GoodreadsAdminFragment
 
     private void importBooks(final boolean sync) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mImportTask.start(sync);
+        mVm.startImport(sync);
     }
 
     private void sendBooks(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mSendBooksTask.start(false, updatesOnly);
+        mVm.startSend(false, updatesOnly);
     }
 }

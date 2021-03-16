@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -35,6 +34,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -224,7 +225,7 @@ public class SearchCoordinator
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<ProgressMessage> onProgress() {
+    public LiveData<ProgressMessage> onProgress() {
         return mSearchCoordinatorProgress;
     }
 
@@ -234,13 +235,13 @@ public class SearchCoordinator
      * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Bundle>> onSearchFinished() {
+    public LiveData<FinishedMessage<Bundle>> onSearchFinished() {
         return mSearchCoordinatorFinished;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<FinishedMessage<Bundle>> onSearchCancelled() {
+    public LiveData<FinishedMessage<Bundle>> onSearchCancelled() {
         return mSearchCoordinatorCancelled;
     }
 
@@ -643,6 +644,8 @@ public class SearchCoordinator
         }
 
         final SearchTask task = new SearchTask(searchEngine, mSearchTaskListener);
+        task.setExecutor(ASyncExecutor.MAIN);
+
         task.setFetchThumbnail(mFetchThumbnail);
 
         if (externalId != null && !externalId.isEmpty()
@@ -685,11 +688,10 @@ public class SearchCoordinator
             mActiveTasks.add(task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine="
-                       + searchEngine.getName(ServiceLocator.getAppContext()));
+            Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName());
         }
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
-        return true;
+
+        return task.startSearch();
     }
 
     /**
@@ -750,8 +752,7 @@ public class SearchCoordinator
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
             if (siteData != null && !siteData.isEmpty()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "accumulateSiteData|searchEngine="
-                               + searchEngine.getName(context));
+                    Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
                 }
                 final Locale locale = searchEngine.getLocale();
                 accumulateSiteData(context, siteData, locale);

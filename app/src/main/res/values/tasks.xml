@@ -28,7 +28,7 @@
 
     <!-- Restore/Import task. -->
     <item name="TASK_ID_IMPORT" type="id" />
-    <item name="TASK_ID_IMPORT_META_DATA" type="id" />
+    <item name="TASK_ID_READ_META_DATA" type="id" />
     <!-- Backup/Export task. -->
     <item name="TASK_ID_EXPORT" type="id" />
 

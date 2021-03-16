@@ -28,17 +28,17 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Run 'PRAGMA optimize' on our databases.
  */
 public class OptimizeDbTask
-        extends LTask<Boolean> {
+        extends LTask<Boolean>
+        implements StartupViewModel.StartupTask {
 
     /** Log tag. */
     private static final String TAG = "OptimizeDbTask";
@@ -50,33 +50,30 @@ public class OptimizeDbTask
      */
     @UiThread
     public OptimizeDbTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_OPTIMIZE, taskListener);
+        super(R.id.TASK_ID_DB_OPTIMIZE, TAG, taskListener);
+    }
+
+    @Override
+    @UiThread
+    public void start() {
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
 
-        publishProgress(new ProgressMessage(getTaskId(), context.getString(
-                R.string.progress_msg_optimizing)));
+        publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         // Cleanup the cache. Out of precaution we only trash jpg files
         AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
 
-        try {
-            ServiceLocator.getDb().optimize();
+        ServiceLocator.getDb().optimize();
 
-            if (ImageUtils.isImageCachingEnabled()) {
-                ServiceLocator.getCoversDb().optimize();
-            }
-            return true;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return false;
+        if (ImageUtils.isImageCachingEnabled()) {
+            ServiceLocator.getCoversDb().optimize();
         }
+        return true;
     }
 }

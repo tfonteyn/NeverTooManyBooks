@@ -193,7 +193,7 @@ public class TableDefinition {
      * @param db                    Database Access
      * @param withDomainConstraints Indicates if fields should have constraints applied
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition create(@NonNull final SQLiteDatabase db,
@@ -248,7 +248,7 @@ public class TableDefinition {
      *
      * @param type type
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition setType(@NonNull final TableType type) {
@@ -271,7 +271,7 @@ public class TableDefinition {
      *
      * @param newName New table name
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
@@ -332,7 +332,7 @@ public class TableDefinition {
      *
      * @param newAlias New table alias
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition setAlias(@Nullable final String newAlias) {
@@ -345,7 +345,7 @@ public class TableDefinition {
      *
      * @param domains List of domains to add
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final Domain... domains) {
@@ -424,7 +424,7 @@ public class TableDefinition {
      *
      * @param domains List of domains in PK
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition setPrimaryKey(@NonNull final Domain... domains) {
@@ -438,7 +438,7 @@ public class TableDefinition {
      *
      * @param fk The FK object
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     private TableDefinition addReference(@NonNull final FkReference fk) {
@@ -456,7 +456,7 @@ public class TableDefinition {
      * @param parent  The referenced table (with the PK)
      * @param domains Domains in this table that reference Primary Key (PK) in parent
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition addReference(@NonNull final TableDefinition parent,
@@ -471,7 +471,7 @@ public class TableDefinition {
      * @param parent  The referenced table (with the PK)
      * @param domains Domains in this table that reference Primary Key (PK) in parent
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings({"UnusedReturnValue", "unused"})
     @NonNull
@@ -488,7 +488,7 @@ public class TableDefinition {
      * @param parentKey single Domain key in the parent table
      * @param domain    single Domain in child table that references parentKey in parent
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings("unused")
     @NonNull
@@ -504,7 +504,7 @@ public class TableDefinition {
      *
      * @param parent The referenced Table
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
@@ -520,7 +520,7 @@ public class TableDefinition {
      * @param child Child table
      * @param fk    FK object
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
@@ -537,7 +537,7 @@ public class TableDefinition {
      *
      * @param child Child table
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
@@ -554,7 +554,7 @@ public class TableDefinition {
      * @param unique     FLag indicating index is UNIQUE
      * @param domains    List of domains index
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public TableDefinition addIndex(@NonNull final String nameSuffix,
@@ -571,7 +571,7 @@ public class TableDefinition {
      * @param unique     FLag indicating index is UNIQUE
      * @param domains    List of domains index
      *
-     * @return TableDefinition (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     private TableDefinition addIndex(@NonNull final String nameSuffix,

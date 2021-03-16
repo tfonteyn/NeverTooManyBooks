@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,21 +19,19 @@
  */
 
 /**
- * July 2020: restructured tasks:
+ * March 2021: restructured tasks once again, dropping all android.os.ASyncTask usage:
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.LTask}
- * extends {@link android.os.AsyncTask}.
- * They use an {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}.
+ * They use a {@link com.hardbacknutter.nevertoomanybooks.tasks.TaskListener}.
  * <p>
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.VMTask}
- * extends {@link androidx.lifecycle.ViewModel}.
+ * {@link com.hardbacknutter.nevertoomanybooks.tasks.MTask}
  * They use {@link androidx.lifecycle.MutableLiveData} and
- * {@link com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent}.
+ * {@link com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent}.
  * <p>
  * <p>
- * In some other places, we use {@link android.os.AsyncTask} when there is no feedback required.
- * and the above is overkill.
+ * In some other places, we use {@link java.util.concurrent.Executor} and
+ * {@link android.os.Handler} directly and the above is overkill.
  * - fire-and-forget type of tasks
  * - tasks that manage the result themselves
  */

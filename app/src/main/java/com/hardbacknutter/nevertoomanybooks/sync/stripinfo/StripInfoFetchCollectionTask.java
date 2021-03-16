@@ -22,16 +22,15 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
  * A simple task wrapping {@link ImportCollection}.
@@ -40,17 +39,20 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
  * on the site.
  */
 public class StripInfoFetchCollectionTask
-        extends VMTask<List<ImportCollection.ColData>> {
+        extends MTask<List<ImportCollection.ColData>> {
 
-    /**
-     * Start the task.
-     */
-    @UiThread
-    public void start() {
-        execute(R.id.TASK_ID_IMPORT);
+    /** Log tag. */
+    private static final String TAG = "StripInfoFetchCollTask";
+
+    public StripInfoFetchCollectionTask() {
+        super(R.id.TASK_ID_IMPORT, TAG);
     }
 
-    @Nullable
+    void fetch() {
+        execute();
+    }
+
+    @NonNull
     @Override
     protected List<ImportCollection.ColData> doWork(@NonNull final Context context)
             throws IOException {
@@ -64,6 +66,6 @@ public class StripInfoFetchCollectionTask
             }
         }
 
-        return null;
+        return new ArrayList<>();
     }
 }

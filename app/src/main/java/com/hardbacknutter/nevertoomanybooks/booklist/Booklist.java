@@ -52,11 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class Booklist
         implements AutoCloseable {
 
-    /** Counter for {@link BooklistBuilder} ID's. Only increment. */
-    @NonNull
-    static final AtomicInteger ID_COUNTER = new AtomicInteger();
-
-    /** DEBUG Instance counter. Increment and decrements to check leaks. */
+    /**
+     * DEBUG Instance counter. Increment and decrements to check leaks.
+     * This is probably no longer needed.
+     */
     @NonNull
     static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
@@ -250,7 +249,8 @@ public class Booklist
 
         if (mSqlGetOffsetCursor == null) {
             mSqlGetOffsetCursor =
-                    SELECT_ + mListTable.getDomains().stream()
+                    SELECT_ + mListTable.getDomains()
+                                        .stream()
                                         .map(domain -> mListTable.dot(domain.getName()))
                                         .collect(Collectors.joining(","))
                     + ',' + (mListTable.dot(DBKeys.KEY_PK_ID)

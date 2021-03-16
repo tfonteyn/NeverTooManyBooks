@@ -183,8 +183,21 @@ public abstract class SearchBookBaseFragment
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog();
+            final FragmentManager fm = getChildFragmentManager();
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                mProgressDialog = ProgressDialogFragment.newInstance(
+                        getString(R.string.progress_msg_searching), true, false);
+                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            }
+
+            // hook the task up.
+            mProgressDialog.setCanceller(mCoordinator);
         }
+
         mProgressDialog.onProgress(message);
     }
 
@@ -193,26 +206,6 @@ public abstract class SearchBookBaseFragment
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog() {
-        final FragmentManager fm = getChildFragmentManager();
-
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        // not found? create it
-        if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(
-                    getString(R.string.progress_msg_searching), true, false);
-            dialog.show(fm, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        dialog.setCanceller(mCoordinator);
-
-        return dialog;
     }
 
 

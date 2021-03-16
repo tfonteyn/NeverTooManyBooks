@@ -65,6 +65,7 @@ public class LoginHelper {
     private static final String COOKIE_SI_USERDATA = "si_userdata";
     private static final String COOKIE_DOMAIN = "stripinfo.be";
 
+    @Nullable
     private String mUserId;
 
     /**
@@ -157,7 +158,7 @@ public class LoginHelper {
      * @return user id or {@code null}
      */
     @Nullable
-    public String getUserId() {
+    String getUserId() {
         return mUserId;
     }
 }

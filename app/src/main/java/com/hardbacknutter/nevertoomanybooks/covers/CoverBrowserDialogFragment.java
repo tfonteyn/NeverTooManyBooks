@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -88,10 +89,8 @@ public class CoverBrowserDialogFragment
     /** The max height to be used for the preview image. */
     private int mPreviewMaxHeight;
 
-    /** The Fragment ViewModel. */
-    private CoverBrowserViewModel mModel;
-    /** Editions. */
-    private SearchEditionsTask mSearchEditionsTask;
+    /** The ViewModel. */
+    private CoverBrowserViewModel mVm;
 
     /** View Binding. */
     private DialogCoverBrowserBinding mVb;
@@ -133,42 +132,21 @@ public class CoverBrowserDialogFragment
                 requireArguments().getString(DBKeys.KEY_TITLE));
         mVb.toolbar.setSubtitle(bookTitle);
 
+        mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
+        mVm.init(requireArguments());
+
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = Objects.requireNonNull(
                 (LinearLayoutManager) mVb.gallery.getLayoutManager(),
                 "Missing LinearLayoutManager");
-
         //noinspection ConstantConditions
         mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
-        mGalleryAdapter = new GalleryAdapter();
+        mGalleryAdapter = new GalleryAdapter(mVm.getGalleryDisplayExecutor());
         mVb.gallery.setAdapter(mGalleryAdapter);
 
-        // When the preview image is clicked, send the fileSpec back to the caller and terminate.
-        mVb.preview.setOnClickListener(v -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFileAbsPath());
-            }
-
-            if (mModel.getSelectedFileAbsPath() != null) {
-                Launcher.setResult(this, mRequestKey, mModel.getSelectedFileAbsPath());
-            }
-            // close the CoverBrowserDialogFragment
-            dismiss();
-        });
-
-        mSearchEditionsTask = new ViewModelProvider(this).get(SearchEditionsTask.class);
-        // dismiss silently
-        mSearchEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
-        // the task throws no exceptions; but paranoia... dismiss silently is fine
-        mSearchEditionsTask.onFailure().observe(getViewLifecycleOwner(), message -> dismiss());
-        mSearchEditionsTask.onFinished().observe(getViewLifecycleOwner(), this::showGallery);
-
-        mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mModel.init(requireArguments());
-        mModel.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
-        mModel.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
-        mModel.onShowGalleryProgress().observe(getViewLifecycleOwner(), show -> {
+        mVm.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
+        mVm.onShowGalleryProgress().observe(getViewLifecycleOwner(), show -> {
             if (show) {
                 mVb.progressBar.show();
             } else {
@@ -176,13 +154,33 @@ public class CoverBrowserDialogFragment
             }
         });
 
-        mPreviewLoader = new ImageViewLoader(mModel.getPreviewDisplayExecutor(),
+        // dismiss silently
+        mVm.onSearchEditionsTaskCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
+        // the task throws no exceptions; but paranoia... dismiss silently is fine
+        mVm.onSearchEditionsTaskFailure().observe(getViewLifecycleOwner(), message -> dismiss());
+        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), this::showGallery);
+
+        mVm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
+        mPreviewLoader = new ImageViewLoader(mVm.getPreviewDisplayExecutor(),
                                              mPreviewMaxWidth, mPreviewMaxHeight);
+
+        // When the preview image is clicked, send the fileSpec back to the caller and terminate.
+        mVb.preview.setOnClickListener(v -> {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                Log.d(TAG, "preview.onClick|filePath=" + mVm.getSelectedFileAbsPath());
+            }
+
+            if (mVm.getSelectedFileAbsPath() != null) {
+                Launcher.setResult(this, mRequestKey, mVm.getSelectedFileAbsPath());
+            }
+            // close the CoverBrowserDialogFragment
+            dismiss();
+        });
     }
 
     @Override
     public void onCancel(@NonNull final DialogInterface dialog) {
-        mModel.cancelAllTasks();
+        mVm.cancelAllTasks();
         super.onCancel(dialog);
     }
 
@@ -190,12 +188,12 @@ public class CoverBrowserDialogFragment
     public void onResume() {
         super.onResume();
         // if the task is NOT already running and we have no editions loaded before
-        if (!mSearchEditionsTask.isRunning()) {
-            if (mModel.getEditions().isEmpty()) {
+        if (!mVm.isSearchEditionsTaskRunning()) {
+            if (mVm.getEditions().isEmpty()) {
                 // start the task
                 mVb.statusMessage.setText(R.string.progress_msg_searching_editions);
                 mVb.progressBar.show();
-                mSearchEditionsTask.search(mModel.getBaseIsbn());
+                mVm.searchEditions();
             }
         }
 
@@ -226,7 +224,7 @@ public class CoverBrowserDialogFragment
             }
 
             // set the list and trigger the adapter
-            mModel.setEditions(message.result);
+            mVm.setEditions(message.result);
             mGalleryAdapter.notifyDataSetChanged();
 
             // Show help message
@@ -248,7 +246,7 @@ public class CoverBrowserDialogFragment
 
         final int editionIndex;
         if (imageFileInfo != null) {
-            editionIndex = mModel.getEditions().indexOf(imageFileInfo.getIsbn());
+            editionIndex = mVm.getEditions().indexOf(imageFileInfo.getIsbn());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "setGalleryImage"
@@ -270,7 +268,7 @@ public class CoverBrowserDialogFragment
             }
 
             // No file. Remove the defunct view from the gallery
-            mModel.getEditions().remove(editionIndex);
+            mVm.getEditions().remove(editionIndex);
             mGalleryAdapter.notifyItemRemoved(editionIndex);
         }
 
@@ -302,7 +300,7 @@ public class CoverBrowserDialogFragment
                 mVb.previewProgressBar.show();
 
                 // start a task to fetch a larger image
-                mModel.fetchSelectedImage(imageFileInfo);
+                mVm.fetchSelectedImage(imageFileInfo);
             }
         }
     }
@@ -314,7 +312,7 @@ public class CoverBrowserDialogFragment
      */
     private void setSelectedImage(@Nullable final ImageFileInfo imageFileInfo) {
         // Always reset the preview and hide the progress bar
-        mModel.setSelectedFile(null);
+        mVm.setSelectedFile(null);
         mVb.preview.setVisibility(View.INVISIBLE);
         mVb.previewProgressBar.hide();
 
@@ -323,7 +321,7 @@ public class CoverBrowserDialogFragment
             if (file != null && file.exists()) {
                 mPreviewLoader.loadAndDisplay(mVb.preview, file, (bitmap) -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
-                    mModel.setSelectedFile(file);
+                    mVm.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
                     mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
                 });
@@ -429,15 +427,16 @@ public class CoverBrowserDialogFragment
 
         /**
          * Constructor.
+         *
+         * @param executor to use for loading images
          */
         @SuppressWarnings("SameParameterValue")
-        GalleryAdapter() {
+        GalleryAdapter(@NonNull final Executor executor) {
             final Resources res = getResources();
             mMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
             mMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
 
-            mImageLoader = new ImageViewLoader(mModel.getGalleryDisplayExecutor(),
-                                               mMaxWidth, mMaxHeight);
+            mImageLoader = new ImageViewLoader(executor, mMaxWidth, mMaxHeight);
         }
 
         @Override
@@ -452,12 +451,12 @@ public class CoverBrowserDialogFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            if (mModel.isCancelled()) {
+            if (mVm.isCancelled()) {
                 return;
             }
 
-            final String isbn = mModel.getEditions().get(position);
-            final ImageFileInfo imageFileInfo = mModel.getFileInfo(isbn);
+            final String isbn = mVm.getEditions().get(position);
+            final ImageFileInfo imageFileInfo = mVm.getFileInfo(isbn);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "onBindViewHolder"
@@ -470,7 +469,7 @@ public class CoverBrowserDialogFragment
                 ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
                                           R.drawable.ic_baseline_image_24, 0);
                 // and queue a request for it.
-                mModel.fetchGalleryImage(isbn);
+                mVm.fetchGalleryImage(isbn);
                 holder.siteView.setText("");
 
             } else {
@@ -501,7 +500,7 @@ public class CoverBrowserDialogFragment
 
         @Override
         public int getItemCount() {
-            return mModel.getEditions().size();
+            return mVm.getEditions().size();
         }
     }
 }

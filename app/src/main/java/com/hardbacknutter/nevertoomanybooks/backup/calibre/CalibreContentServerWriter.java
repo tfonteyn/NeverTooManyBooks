@@ -124,7 +124,7 @@ public class CalibreContentServerWriter
         mResults = new ExportResults();
 
         progressListener.setIndeterminate(true);
-        progressListener.publishProgressStep(
+        progressListener.publishProgress(
                 0, context.getString(R.string.progress_msg_connecting));
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
@@ -190,7 +190,7 @@ public class CalibreContentServerWriter
                 delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgressStep(delta, book.getTitle());
+                    progressListener.publishProgress(delta, book.getTitle());
                     lastUpdate = now;
                     delta = 0;
                 }

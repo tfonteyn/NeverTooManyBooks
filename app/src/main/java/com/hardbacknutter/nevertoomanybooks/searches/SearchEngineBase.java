@@ -119,8 +119,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public String getName(@NonNull final Context context) {
-        return context.getString(mConfig.getNameResId());
+    public String getName() {
+        return getContext().getString(mConfig.getNameResId());
     }
 
     @NonNull

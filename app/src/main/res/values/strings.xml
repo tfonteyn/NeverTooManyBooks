@@ -132,6 +132,8 @@
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
+    <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
+
     <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
     <string name="error_unknown">An unknown error occurred.</string>
@@ -1711,7 +1713,6 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
-    <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
     <string name="lbl_login_to_search">Login to search</string>
     <string name="lbl_strip_info_wishlist_bookshelf">Wishlist mapped bookshelf</string>
 

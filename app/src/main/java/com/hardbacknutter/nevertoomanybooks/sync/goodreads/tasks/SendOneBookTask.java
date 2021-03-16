@@ -42,7 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -51,11 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * <p>
  * See also {@link SendOneBookGrTask}. The core of the task is (should be) identical.
  */
-public class GrSendOneBookTask
-        extends VMTask<GrStatus> {
+public class SendOneBookTask
+        extends LTask<GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "GR.SendOneBook";
+    private static final String TAG = "GR.SendOneBookTask";
 
     /** The book to send. */
     private long mBookId;
@@ -63,18 +64,27 @@ public class GrSendOneBookTask
     /**
      * Constructor.
      *
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public SendOneBookTask(@NonNull final TaskListener<GrStatus> taskListener) {
+        super(R.id.TASK_ID_GR_SEND_ONE_BOOK, TAG, taskListener);
+    }
+
+
+    /**
+     * Start sending.
+     *
      * @param bookId the book to send
      */
-    public void start(@IntRange(from = 1) final long bookId) {
+    public void send(@IntRange(from = 1) final long bookId) {
         mBookId = bookId;
-        execute(R.id.TASK_ID_GR_SEND_ONE_BOOK);
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG + mBookId);
 
         try {
             if (!NetworkUtils.isNetworkAvailable()) {
@@ -100,8 +110,7 @@ public class GrSendOneBookTask
                     if (isCancelled()) {
                         return new GrStatus(GrStatus.CANCELLED);
                     }
-                    publishProgressStep(0, context.getString(R.string.progress_msg_sending));
-
+                    publishProgress(1, context.getString(R.string.progress_msg_sending));
 
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status

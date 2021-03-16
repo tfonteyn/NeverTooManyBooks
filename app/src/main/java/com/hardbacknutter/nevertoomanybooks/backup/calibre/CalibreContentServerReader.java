@@ -210,7 +210,7 @@ public class CalibreContentServerReader
         mResults = new ImportResults();
 
         progressListener.setIndeterminate(true);
-        progressListener.publishProgressStep(
+        progressListener.publishProgress(
                 0, context.getString(R.string.progress_msg_connecting));
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
@@ -284,7 +284,7 @@ public class CalibreContentServerReader
                                                              mResults.booksCreated,
                                                              mResults.booksUpdated,
                                                              mResults.booksSkipped);
-                            progressListener.publishProgressStep(1, msg);
+                            progressListener.publishProgress(1, msg);
                         }
                     }
                     offset += num;

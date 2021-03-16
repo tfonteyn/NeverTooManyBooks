@@ -142,31 +142,31 @@ public class XmlRecordWriter
         if (entries.contains(RecordType.Books)) {
 
             // parsing will be faster if these go in the order done here.
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.lbl_bookshelves));
             writeBookshelves(writer, progressListener);
 
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.site_calibre));
             writeCalibreLibraries(writer, progressListener);
 
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.lbl_authors));
             writeAuthors(writer, progressListener);
 
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.lbl_series_multiple));
             writeSeries(writer, progressListener);
 
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.lbl_publishers));
             writePublishers(writer, progressListener);
 
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     1, context.getString(R.string.lbl_table_of_content));
             writeToc(writer, progressListener);
 
-            progressListener.publishProgressStep(1, context.getString(R.string.lbl_books));
+            progressListener.publishProgress(1, context.getString(R.string.lbl_books));
             results.add(writeBooks(context, writer, mUtcSinceDateTime,
                                    entries.contains(RecordType.Cover),
                                    progressListener));
@@ -634,7 +634,7 @@ public class XmlRecordWriter
                 delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgressStep(delta, title);
+                    progressListener.publishProgress(delta, title);
                     lastUpdate = now;
                     delta = 0;
                 }

@@ -32,7 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * Output: {@link ExportResults}.
  */
 public class ArchiveWriterTask
-        extends VMTask<ExportResults> {
+        extends MTask<ExportResults> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveWriterTask";
@@ -49,14 +49,18 @@ public class ArchiveWriterTask
     @Nullable
     private ExportHelper mHelper;
 
+    public ArchiveWriterTask() {
+        super(R.id.TASK_ID_EXPORT, TAG);
+    }
+
     /**
      * Start the task.
      *
      * @param exportHelper with uri/options
      */
-    public void start(@NonNull final ExportHelper exportHelper) {
+    public boolean start(@NonNull final ExportHelper exportHelper) {
         mHelper = exportHelper;
-        execute(R.id.TASK_ID_EXPORT);
+        return execute();
     }
 
     @NonNull
@@ -64,7 +68,6 @@ public class ArchiveWriterTask
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
             throws GeneralParsingException, IOException, CertificateException {
-        Thread.currentThread().setName(TAG);
 
         ExportResults results = null;
         //noinspection ConstantConditions

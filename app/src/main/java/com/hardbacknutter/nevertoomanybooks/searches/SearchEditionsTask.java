@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -43,12 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * The sites are contacted one by one, in the order as set in user preferences.
  */
 public class SearchEditionsTask
-        extends VMTask<Collection<String>> {
+        extends MTask<Collection<String>> {
 
     /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
     /** the book to look up. */
     private String mIsbn;
+
+    public SearchEditionsTask() {
+        super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
+    }
 
     /**
      * Start the task.
@@ -64,15 +68,13 @@ public class SearchEditionsTask
 
         mIsbn = validIsbn;
 
-        execute(R.id.TASK_ID_SEARCH_EDITIONS);
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected Collection<String> doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG + mIsbn);
-
         // keep the order, but eliminate duplicates.
         final Collection<String> isbnList = new LinkedHashSet<>();
         // Always add the original isbn!
@@ -91,7 +93,6 @@ public class SearchEditionsTask
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
                 Logger.error(context, TAG, e);
-
             }
         }
         return isbnList;

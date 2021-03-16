@@ -109,4 +109,5 @@ public class CalibreLibraryMappingViewModel
         ServiceLocator.getInstance().getCalibreLibraryDao().update(vlib);
         return mappedBookshelf;
     }
+
 }

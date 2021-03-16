@@ -23,19 +23,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -95,22 +93,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * The main class and the inner table class could be (re)merged into one,
  * but keeping the two separate should make the API easier to handle.
  */
-public class BooklistBuilder {
-
-    /** id values for state preservation property. See {@link ListRebuildMode}. */
-    public static final int PREF_REBUILD_SAVED_STATE = 0;
-    public static final int PREF_REBUILD_EXPANDED = 1;
-    @SuppressWarnings("WeakerAccess")
-    public static final int PREF_REBUILD_PREFERRED_STATE = 3;
-    @SuppressWarnings("WeakerAccess")
-    public static final int PREF_REBUILD_COLLAPSED = 2;
+class BooklistBuilder {
 
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
-
-    private static final String SELECT_ = "SELECT ";
-    private static final String _FROM_ = " FROM ";
-    private static final String _WHERE_ = " WHERE ";
 
     /**
      * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
@@ -118,25 +104,34 @@ public class BooklistBuilder {
      * The order of the returned names will be arbitrary.
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
-    public static final String EXP_BOOKSHELF_NAME_CSV =
+    static final String EXP_BOOKSHELF_NAME_CSV =
             "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKeys.KEY_BOOKSHELF_NAME) + ",', ')"
             + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
             + _WHERE_
             + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOK)
             + ")";
 
+    private static final String SELECT_ = "SELECT ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
     /**
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
      * <p>
      * The order of the returned names will be arbitrary.
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
-    public static final String EXP_PUBLISHER_NAME_CSV =
+    static final String EXP_PUBLISHER_NAME_CSV =
             "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKeys.KEY_PUBLISHER_NAME) + ",', ')"
             + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
             + _WHERE_
             + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_FK_BOOK)
             + ")";
+    /**
+     * Counter for generating ID's. Only increments.
+     * Used to create unique names for the temporary tables.
+     */
+    @NonNull
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
     private static final String _AND_ = " AND ";
 
@@ -157,8 +152,7 @@ public class BooklistBuilder {
 
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
-
-    @ListRebuildMode
+    @RebuildBooklist.Mode
     private int mRebuildMode;
 
     /**
@@ -169,9 +163,9 @@ public class BooklistBuilder {
      * @param bookshelf   the current bookshelf
      * @param rebuildMode booklist mode to use in next rebuild.
      */
-    public BooklistBuilder(@NonNull final ListStyle style,
-                           @NonNull final Bookshelf bookshelf,
-                           @ListRebuildMode final int rebuildMode) {
+    BooklistBuilder(@NonNull final ListStyle style,
+                    @NonNull final Bookshelf bookshelf,
+                    @RebuildBooklist.Mode final int rebuildMode) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|Booklist"
@@ -190,7 +184,8 @@ public class BooklistBuilder {
      *
      * @param tableDefinition TableDefinition to add
      */
-    public void addLeftOuterJoin(@NonNull final TableDefinition tableDefinition) {
+    void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
+                          @NonNull final TableDefinition tableDefinition) {
         if (!mLeftOuterJoins.containsKey(tableDefinition.getName())) {
             mLeftOuterJoins.put(tableDefinition.getName(), tableDefinition);
 
@@ -205,7 +200,7 @@ public class BooklistBuilder {
      *
      * @param domainExpression Domain to add
      */
-    public void addDomain(@NonNull final DomainExpression domainExpression) {
+    void addDomain(@NonNull final DomainExpression domainExpression) {
         if (!mBookDomains.containsKey(domainExpression.getName())) {
             mBookDomains.put(domainExpression.getName(), domainExpression);
 
@@ -223,7 +218,7 @@ public class BooklistBuilder {
      *
      * @param filter a list of book ID's.
      */
-    public void addFilterOnBookIdList(@Nullable final List<Long> filter) {
+    void addFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
             mFilters.add(new NumberListFilter(TBL_BOOKS, DBKeys.KEY_PK_ID, filter));
         }
@@ -240,11 +235,11 @@ public class BooklistBuilder {
      * @param publisherName Publisher name related keywords to find
      * @param keywords      Keywords to find anywhere in book; this includes all above fields
      */
-    public void addFilterOnKeywords(@Nullable final String author,
-                                    @Nullable final String title,
-                                    @Nullable final String seriesTitle,
-                                    @Nullable final String publisherName,
-                                    @Nullable final String keywords) {
+    void addFilterOnKeywords(@Nullable final String author,
+                             @Nullable final String title,
+                             @Nullable final String seriesTitle,
+                             @Nullable final String publisherName,
+                             @Nullable final String keywords) {
 
         final String query = BookDao.Sql.Fts.createMatchString(author, title, seriesTitle,
                                                                publisherName, keywords);
@@ -267,7 +262,7 @@ public class BooklistBuilder {
      *
      * @param filter the exact name of the person we lend books to.
      */
-    public void addFilterOnLoanee(@Nullable final String filter) {
+    void addFilterOnLoanee(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
@@ -283,7 +278,8 @@ public class BooklistBuilder {
      *
      * @param rebuildMode booklist state to use in next rebuild.
      */
-    public void setRebuildMode(@ListRebuildMode final int rebuildMode) {
+    void setRebuildMode(@SuppressWarnings("SameParameterValue")
+                        @RebuildBooklist.Mode final int rebuildMode) {
         mRebuildMode = rebuildMode;
     }
 
@@ -316,8 +312,7 @@ public class BooklistBuilder {
             }
         }
 
-        // Internal ID. Used to create unique names for the temporary tables.
-        final int instanceId = Booklist.ID_COUNTER.incrementAndGet();
+        final int instanceId = ID_COUNTER.incrementAndGet();
 
         // Construct the list table and all needed structures.
         final TableBuilder tableBuilder = new TableBuilder(
@@ -338,18 +333,18 @@ public class BooklistBuilder {
                                                                     mStyle, mBookshelves.get(0));
 
             switch (mRebuildMode) {
-                case PREF_REBUILD_SAVED_STATE:
+                case RebuildBooklist.FROM_SAVED_STATE:
                     // all rows will be collapsed/hidden; restore the saved state
                     rowStateDAO.restoreSavedState();
                     break;
 
-                case PREF_REBUILD_PREFERRED_STATE:
+                case RebuildBooklist.FROM_PREFERRED_STATE:
                     // all rows will be collapsed/hidden; now adjust as required.
                     rowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
                     break;
 
-                case PREF_REBUILD_EXPANDED:
-                case PREF_REBUILD_COLLAPSED:
+                case RebuildBooklist.EXPANDED:
+                case RebuildBooklist.COLLAPSED:
                     // handled during table creation
                     break;
 
@@ -364,15 +359,6 @@ public class BooklistBuilder {
         } finally {
             db.endTransaction(txLock);
         }
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PREF_REBUILD_SAVED_STATE,
-             PREF_REBUILD_EXPANDED,
-             PREF_REBUILD_COLLAPSED,
-             PREF_REBUILD_PREFERRED_STATE})
-    public @interface ListRebuildMode {
-
     }
 
     /**
@@ -443,7 +429,7 @@ public class BooklistBuilder {
         /** Guards from adding duplicates. */
         private final Collection<String> mOrderByDupCheck = new HashSet<>();
 
-        @ListRebuildMode
+        @RebuildBooklist.Mode
         private final int mRebuildMode;
         private String mSqlForInitialInsert;
 
@@ -465,7 +451,7 @@ public class BooklistBuilder {
         TableBuilder(final int instanceId,
                      @NonNull final ListStyle style,
                      final boolean isFilteredOnBookshelf,
-                     @ListRebuildMode final int rebuildMode) {
+                     @RebuildBooklist.Mode final int rebuildMode) {
 
             mStyle = style;
             mFilteredOnBookshelf = isFilteredOnBookshelf;
@@ -599,14 +585,14 @@ public class BooklistBuilder {
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
             switch (mRebuildMode) {
-                case PREF_REBUILD_COLLAPSED:
-                case PREF_REBUILD_PREFERRED_STATE:
-                case PREF_REBUILD_SAVED_STATE:
+                case RebuildBooklist.COLLAPSED:
+                case RebuildBooklist.FROM_PREFERRED_STATE:
+                case RebuildBooklist.FROM_SAVED_STATE:
                     sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
                     sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
                     break;
 
-                case PREF_REBUILD_EXPANDED:
+                case RebuildBooklist.EXPANDED:
                     sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
                     sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
                     break;
@@ -758,7 +744,7 @@ public class BooklistBuilder {
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
-                final int expVis = (mRebuildMode == PREF_REBUILD_EXPANDED) ? 1 : 0;
+                final int expVis = (mRebuildMode == RebuildBooklist.EXPANDED) ? 1 : 0;
 
                 // Create the VALUES clause for the next level up
                 final StringBuilder listValues = new StringBuilder()

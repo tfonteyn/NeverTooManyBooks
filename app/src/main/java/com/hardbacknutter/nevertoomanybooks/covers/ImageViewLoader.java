@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Process;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -34,12 +35,14 @@ import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 /**
  * Load a Bitmap from a file, and populate the view.
  */
 public class ImageViewLoader {
+
+    /** Log tag. */
+    private static final String TAG = "ImageViewLoader";
 
     @NonNull
     private final Handler mHandler;
@@ -52,7 +55,7 @@ public class ImageViewLoader {
     /**
      * Constructor.
      *
-     * @param executor  to use; should usually be {@link ASyncExecutor#MAIN}
+     * @param executor  to use
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
      */
@@ -83,6 +86,8 @@ public class ImageViewLoader {
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
         mExecutor.execute(() -> {
+            Thread.currentThread().setName(TAG);
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
             final Bitmap bitmap = ImageUtils.decodeFile(file, mMaxWidth, mMaxHeight);
 

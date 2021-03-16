@@ -53,9 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * A delegate class for handling a Calibre enabled Book.
@@ -69,8 +69,9 @@ public class CalibreHandler {
     private final CalibreContentServer mServer;
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
-    /** Task to download the Calibre eBook. */
-    private SingleFileDownload mFileDownload;
+
+    private CalibreHandlerViewModel mVm;
+
     /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
@@ -129,38 +130,33 @@ public class CalibreHandler {
                     }
                 });
 
-        mFileDownload = new ViewModelProvider(viewModelStoreOwner)
-                .get(SingleFileDownload.class);
-        mFileDownload.init(mServer);
+        mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
+        mVm.init(mServer);
 
-        mFileDownload.onProgressUpdate().observe(lifecycleOwner, this::onProgress);
-        mFileDownload.onCancelled().observe(lifecycleOwner, this::onCancelled);
-        mFileDownload.onFailure().observe(lifecycleOwner, this::onFailure);
-        mFileDownload.onFinished().observe(lifecycleOwner, this::onFinished);
+        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
+        mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
+        mVm.onFailure().observe(lifecycleOwner, this::onFailure);
+        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
-
         if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog();
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                mProgressDialog = ProgressDialogFragment.newInstance(
+                        mView.getContext().getString(R.string.progress_msg_downloading),
+                        true, true);
+                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+            }
+
+            // hook the task up.
+            mVm.connectProgressDialog(mProgressDialog);
         }
+
         mProgressDialog.onProgress(message);
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog() {
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-        // not found? create it
-        if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(
-                    mView.getContext().getString(R.string.progress_msg_downloading), true, true);
-            dialog.show(mFragmentManager, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        dialog.setCanceller(mFileDownload);
-        return dialog;
     }
 
     private void closeProgressDialog() {
@@ -221,7 +217,7 @@ public class CalibreHandler {
 
     private void download(@NonNull final Book book,
                           @NonNull final Uri folder) {
-        if (!mFileDownload.start(book, folder)) {
+        if (!mVm.download(book, folder)) {
             //TODO: better message
             Snackbar.make(mView, R.string.error_download_failed, Snackbar.LENGTH_LONG).show();
         }

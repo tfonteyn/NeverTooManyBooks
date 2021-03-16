@@ -174,7 +174,7 @@ public class SimpleXmlFilter {
      *
      * @param tag that starts
      *
-     * @return SimpleXmlFilter (for chaining)
+     * @return {@code this} (for chaining)
      */
     @NonNull
     public SimpleXmlFilter s(@NonNull final String tag) {

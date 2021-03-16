@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 public class TestProgressListener
         implements ProgressListener {
@@ -40,8 +41,8 @@ public class TestProgressListener
     }
 
     @Override
-    public void publishProgressStep(final int delta,
-                                    @Nullable final String message) {
+    public void publishProgress(final int delta,
+                                @Nullable final String message) {
         mProgressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG) {
@@ -51,6 +52,14 @@ public class TestProgressListener
                   + "|message=" + message);
         }
 
+    }
+
+    @Override
+    public void publishProgress(@NonNull final ProgressMessage message) {
+        // eat all message when in debug; it's to much of a slow down otherwise.
+        if (BuildConfig.DEBUG) {
+            Log.d(mTag + "|publishProgress", "message=" + message);
+        }
     }
 
     @Override

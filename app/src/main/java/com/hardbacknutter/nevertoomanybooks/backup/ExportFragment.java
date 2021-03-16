@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
@@ -77,12 +76,9 @@ public class ExportFragment
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
 
-    /**
-     * The ViewModel and the {@link #mArchiveWriterTask} could be folded into one object,
-     * but we're trying to keep task logic separate for now.
-     */
+    /** The ViewModel. */
     private ExportViewModel mVm;
-    private ArchiveWriterTask mArchiveWriterTask;
+
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
@@ -125,14 +121,13 @@ public class ExportFragment
 
         mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
-        mArchiveWriterTask = new ViewModelProvider(this).get(ArchiveWriterTask.class);
-        mArchiveWriterTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mArchiveWriterTask.onCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mArchiveWriterTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mArchiveWriterTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
         // if the task is NOT already running (e.g. after a screen rotation...) ...
-        if (!mArchiveWriterTask.isRunning()) {
+        if (!mVm.isExportRunning()) {
             // show either the full details screen or the quick options dialog
             if (mVm.isQuickOptionsAlreadyShown()) {
                 showOptions();
@@ -417,9 +412,7 @@ public class ExportFragment
      */
     private void exportToUri(@Nullable final Uri uri) {
         if (uri != null) {
-            final ExportHelper helper = mVm.getExportHelper();
-            helper.setUri(uri);
-            mArchiveWriterTask.start(helper);
+            mVm.startExport(uri);
         }
     }
 
@@ -429,35 +422,27 @@ public class ExportFragment
         helper.setExportEntry(RecordType.Preferences, false);
         helper.setExportEntry(RecordType.Certificates, false);
 
-
-        helper.setUri(Uri.parse(CalibreContentServer.getHostUrl()));
-        mArchiveWriterTask.start(helper);
+        mVm.startExport(Uri.parse(CalibreContentServer.getHostUrl()));
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog();
+            final FragmentManager fm = getChildFragmentManager();
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                mProgressDialog = ProgressDialogFragment.newInstance(
+                        getString(R.string.menu_backup_and_export), false, true);
+                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+            }
+
+            // hook the task up.
+            mVm.connectProgressDialog(mProgressDialog);
         }
+
         mProgressDialog.onProgress(message);
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog() {
-        final FragmentManager fm = getChildFragmentManager();
-
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        // not found? create it
-        if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(
-                    getString(R.string.menu_backup_and_export), false, true);
-            dialog.show(fm, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        dialog.setCanceller(mArchiveWriterTask);
-        return dialog;
     }
 
     private void closeProgressDialog() {

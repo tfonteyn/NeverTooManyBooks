@@ -32,12 +32,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -98,18 +96,13 @@ public class SearchTask
      */
     SearchTask(@NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(searchEngine.getId(), taskListener);
+        super(searchEngine.getId(), TAG + ' ' + searchEngine.getName(), taskListener);
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
 
         final Context context = mSearchEngine.getContext();
         mProgressTitle = context.getString(R.string.progress_msg_searching_site,
-                                           searchEngine.getName(context));
-    }
-
-    @NonNull
-    public SearchEngine getSearchEngine() {
-        return mSearchEngine;
+                                           searchEngine.getName());
     }
 
     void setSearchBy(@By final int by) {
@@ -174,63 +167,58 @@ public class SearchTask
         }
     }
 
+    boolean startSearch() {
+        return execute();
+    }
+
     @NonNull
     @Override
     @WorkerThread
-    protected Bundle doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
+    protected Bundle doWork(@NonNull final Context context)
+            throws IOException, GeneralParsingException {
+        publishProgress(1, mProgressTitle);
 
-        publishProgress(new ProgressMessage(getTaskId(), mProgressTitle));
+        // can we reach the site at all ?
+        NetworkUtils.ping(mSearchEngine.getSiteUrl());
 
-        try {
-            // can we reach the site at all ?
-            NetworkUtils.ping(mSearchEngine.getSiteUrl());
-
-            // sanity check, see #setFetchThumbnail
-            if (mFetchThumbnail == null) {
-                mFetchThumbnail = new boolean[2];
-            }
-
-            final Bundle bookData;
-            switch (mBy) {
-                case BY_EXTERNAL_ID:
-                    SanityCheck.requireValue(mExternalId, "mExternalId");
-                    bookData = ((SearchEngine.ByExternalId) mSearchEngine)
-                            .searchByExternalId(mExternalId, mFetchThumbnail);
-                    break;
-
-                case BY_ISBN:
-                    SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
-                    bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                            .searchByIsbn(mIsbnStr, mFetchThumbnail);
-                    break;
-
-                case BY_BARCODE:
-                    SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
-                    bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                            .searchByBarcode(mIsbnStr, mFetchThumbnail);
-                    break;
-
-                case BY_TEXT:
-                    bookData = ((SearchEngine.ByText) mSearchEngine)
-                            .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchThumbnail);
-                    break;
-
-                default:
-                    // we should never get here...
-                    throw new IllegalArgumentException("SearchEngine "
-                                                       + mSearchEngine.getName(context)
-                                                       + " does not implement By=" + mBy);
-            }
-
-            return bookData;
-
-        } catch (@NonNull final IOException | GeneralParsingException
-                | RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return new Bundle();
+        // sanity check, see #setFetchThumbnail
+        if (mFetchThumbnail == null) {
+            mFetchThumbnail = new boolean[2];
         }
+
+        final Bundle bookData;
+        switch (mBy) {
+            case BY_EXTERNAL_ID:
+                SanityCheck.requireValue(mExternalId, "mExternalId");
+                bookData = ((SearchEngine.ByExternalId) mSearchEngine)
+                        .searchByExternalId(mExternalId, mFetchThumbnail);
+                break;
+
+            case BY_ISBN:
+                SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
+                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
+                        .searchByIsbn(mIsbnStr, mFetchThumbnail);
+                break;
+
+            case BY_BARCODE:
+                SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
+                bookData = ((SearchEngine.ByBarcode) mSearchEngine)
+                        .searchByBarcode(mIsbnStr, mFetchThumbnail);
+                break;
+
+            case BY_TEXT:
+                bookData = ((SearchEngine.ByText) mSearchEngine)
+                        .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+                break;
+
+            default:
+                // we should never get here...
+                throw new IllegalArgumentException("SearchEngine "
+                                                   + mSearchEngine.getName()
+                                                   + " does not implement By=" + mBy);
+        }
+
+        return bookData;
     }
 
     @IntDef({BY_EXTERNAL_ID, BY_ISBN, BY_BARCODE, BY_TEXT})

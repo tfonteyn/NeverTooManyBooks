@@ -225,7 +225,7 @@ public class CalibreContentServer {
      * @throws SSLException         on secure connection failures
      */
     @AnyThread
-    CalibreContentServer(@NonNull final Context context)
+    public CalibreContentServer(@NonNull final Context context)
             throws CertificateException, SSLException {
         this(context, Uri.parse(getHostUrl()));
     }
@@ -361,7 +361,7 @@ public class CalibreContentServer {
      *
      * @throws IOException on failure
      */
-    boolean createTestConnection()
+    public boolean validateConnection()
             throws IOException {
         return !fetch("/ajax/library-info", BUFFER_SMALL).isEmpty();
     }
@@ -1096,7 +1096,7 @@ public class CalibreContentServer {
                          BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
                          BufferedOutputStream bos = new BufferedOutputStream(os)) {
 
-                        progressListener.publishProgressStep(0, context.getString(
+                        progressListener.publishProgress(0, context.getString(
                                 R.string.progress_msg_loading));
                         FileUtils.copy(bis, bos);
                     }

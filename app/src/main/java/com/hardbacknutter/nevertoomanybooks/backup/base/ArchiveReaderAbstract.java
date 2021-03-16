@@ -275,7 +275,7 @@ public abstract class ArchiveReaderAbstract
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (importEntries.contains(RecordType.Styles)) {
-                progressListener.publishProgressStep(
+                progressListener.publishProgress(
                         1, context.getString(R.string.lbl_styles_long));
                 final ArchiveReaderRecord record = seek(RecordType.Styles);
                 if (record != null) {
@@ -286,7 +286,7 @@ public abstract class ArchiveReaderAbstract
 
             // Seek the preferences record next, so we can apply any prefs while reading data.
             if (importEntries.contains(RecordType.Preferences)) {
-                progressListener.publishProgressStep(
+                progressListener.publishProgress(
                         1, context.getString(R.string.lbl_settings));
                 final ArchiveReaderRecord record = seek(RecordType.Preferences);
                 if (record != null) {
@@ -341,7 +341,7 @@ public abstract class ArchiveReaderAbstract
                                                  mResults.coversCreated,
                                                  mResults.coversUpdated,
                                                  mResults.coversSkipped);
-                progressListener.publishProgressStep(1, msg);
+                progressListener.publishProgress(1, msg);
 
             } else {
                 // everything else, keep it clean and create a new reader for each entry.

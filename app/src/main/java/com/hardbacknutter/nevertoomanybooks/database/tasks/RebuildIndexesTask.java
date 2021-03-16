@@ -27,17 +27,16 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Rebuild all indexes. Can take several seconds.
  */
 public class RebuildIndexesTask
-        extends LTask<Boolean> {
+        extends LTask<Boolean>
+        implements StartupViewModel.StartupTask {
 
     /** Log tag. */
     private static final String TAG = "RebuildIndexesTask";
@@ -49,30 +48,28 @@ public class RebuildIndexesTask
      */
     @UiThread
     public RebuildIndexesTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_REBUILD_INDEXES, taskListener);
+        super(R.id.TASK_ID_DB_REBUILD_INDEXES, TAG, taskListener);
+    }
+
+    @Override
+    @UiThread
+    public void start() {
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
+        publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
-        publishProgress(new ProgressMessage(getTaskId(), context.getString(
-                R.string.progress_msg_rebuilding_search_index)));
         try {
             DBHelper.recreateIndices();
             return true;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return false;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
             StartupViewModel.scheduleIndexRebuild(false);
         }
-
     }
 }

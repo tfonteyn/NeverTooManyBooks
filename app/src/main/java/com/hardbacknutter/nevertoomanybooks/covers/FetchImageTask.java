@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ class FetchImageTask
                    @NonNull final FileManager fileManager,
                    @NonNull final TaskListener<ImageFileInfo> taskListener,
                    @NonNull final ImageFileInfo.Size... sizes) {
-        super(taskId, taskListener);
+        super(taskId, TAG, taskListener);
         mCIdx = cIdx;
         mSizes = sizes;
 
@@ -81,12 +81,14 @@ class FetchImageTask
         mFileManager = fileManager;
     }
 
+    public boolean start() {
+        return execute();
+    }
+
     @NonNull
     @Override
     @WorkerThread
     protected ImageFileInfo doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG + mIsbn);
-
         try {
             return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);
 

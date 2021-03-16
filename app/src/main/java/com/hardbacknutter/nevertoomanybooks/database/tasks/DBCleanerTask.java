@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
@@ -42,7 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
  * Data cleaning. Done on each startup.
  */
 public class DBCleanerTask
-        extends LTask<Boolean> {
+        extends LTask<Boolean>
+        implements StartupViewModel.StartupTask {
 
     /** Log tag. */
     private static final String TAG = "DBCleanerTask";
@@ -54,18 +54,21 @@ public class DBCleanerTask
      */
     @UiThread
     public DBCleanerTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_CLEANER, taskListener);
+        super(R.id.TASK_ID_DB_CLEANER, TAG, taskListener);
+    }
+
+    @Override
+    @UiThread
+    public void start() {
+        execute();
     }
 
     @WorkerThread
     @Override
     protected Boolean doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
+        publishProgress(1, context.getString(R.string.progress_msg_optimizing));
+
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-
-        publishProgress(new ProgressMessage(getTaskId(), context.getString(
-                R.string.progress_msg_optimizing)));
-
         try (DBCleaner cleaner = new DBCleaner();
              BookDao bookDao = new BookDao(TAG)) {
 
@@ -97,11 +100,6 @@ public class DBCleanerTask
                 Logger.warn(context, TAG, "bookDao.reposition modified=" + modified);
             }
             return true;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return false;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...

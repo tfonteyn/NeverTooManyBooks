@@ -27,17 +27,16 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Rebuild FTS. Can take several seconds.
  */
 public class RebuildFtsTask
-        extends LTask<Boolean> {
+        extends LTask<Boolean>
+        implements StartupViewModel.StartupTask {
 
     /** Log tag. */
     private static final String TAG = "RebuildFtsTask";
@@ -49,25 +48,24 @@ public class RebuildFtsTask
      */
     @UiThread
     public RebuildFtsTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_REBUILD_FTS, taskListener);
+        super(R.id.TASK_ID_DB_REBUILD_FTS, TAG, taskListener);
+    }
+
+    @Override
+    @UiThread
+    public void start() {
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
+        publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
-        publishProgress(new ProgressMessage(getTaskId(), context.getString(
-                R.string.progress_msg_rebuilding_search_index)));
         try (BookDao bookDao = new BookDao(TAG)) {
             bookDao.ftsRebuild(context);
             return true;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            mException = e;
-            return false;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...

@@ -31,7 +31,7 @@ import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * Output: {@link ArchiveMetaData}.
  */
 public class ArchiveReadMetaDataTask
-        extends VMTask<ArchiveMetaData> {
+        extends MTask<ArchiveMetaData> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveReadMetaDataTask";
@@ -47,15 +47,19 @@ public class ArchiveReadMetaDataTask
     /** import configuration. */
     private ImportHelper mHelper;
 
+    public ArchiveReadMetaDataTask() {
+        super(R.id.TASK_ID_READ_META_DATA, TAG);
+    }
+
     /**
      * Start the task.
      *
      * @param helper import configuration
      */
     @UiThread
-    public void start(@NonNull final ImportHelper helper) {
+    public boolean start(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        execute(R.id.TASK_ID_IMPORT_META_DATA);
+        return execute();
     }
 
     @Nullable
@@ -64,7 +68,6 @@ public class ArchiveReadMetaDataTask
     protected ArchiveMetaData doWork(@NonNull final Context context)
             throws InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
-        Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
             return reader.readMetaData(context);

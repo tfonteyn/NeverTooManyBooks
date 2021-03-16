@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -612,17 +613,17 @@ public class EditBookFragmentViewModel
 
 
     @NonNull
-    public MutableLiveData<ArrayList<Author>> onAuthorList() {
+    public LiveData<ArrayList<Author>> onAuthorList() {
         return mAuthorList;
     }
 
     @NonNull
-    public MutableLiveData<ArrayList<Series>> onSeriesList() {
+    public LiveData<ArrayList<Series>> onSeriesList() {
         return mSeriesList;
     }
 
     @NonNull
-    public MutableLiveData<ArrayList<Publisher>> onPublisherList() {
+    public LiveData<ArrayList<Publisher>> onPublisherList() {
         return mPublisherList;
     }
 

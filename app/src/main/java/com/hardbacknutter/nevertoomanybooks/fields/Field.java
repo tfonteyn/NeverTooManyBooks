@@ -174,7 +174,7 @@ public class Field<T, V extends View> {
      *
      * @param relatedFields labels etc
      *
-     * @return Field (for chaining)
+     * @return {@code this} (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     public Field<T, V> setRelatedFields(@NonNull @IdRes final Integer... relatedFields) {
@@ -259,7 +259,7 @@ public class Field<T, V extends View> {
      *
      * @param viewId view id
      *
-     * @return Field (for chaining)
+     * @return {@code this} (for chaining)
      */
     public Field<T, V> setTextInputLayout(@IdRes final int viewId) {
         mTextInputLayoutId = viewId;
@@ -278,7 +278,7 @@ public class Field<T, V extends View> {
      *
      * @param viewId view id
      *
-     * @return Field (for chaining)
+     * @return {@code this} (for chaining)
      */
     public Field<T, V> setErrorViewId(@IdRes final int viewId) {
         mErrorViewId = viewId;
@@ -292,7 +292,7 @@ public class Field<T, V extends View> {
      *
      * @param validator to use
      *
-     * @return Field (for chaining)
+     * @return {@code this} (for chaining)
      */
     public Field<T, V> setFieldValidator(@NonNull final FieldValidator<T, V> validator) {
         mValidator = validator;

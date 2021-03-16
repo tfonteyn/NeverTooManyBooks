@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -34,9 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;

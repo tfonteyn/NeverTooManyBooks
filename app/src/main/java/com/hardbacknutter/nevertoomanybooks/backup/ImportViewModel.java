@@ -28,6 +28,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.FileNotFoundException;
@@ -35,9 +36,14 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class ImportViewModel
@@ -52,13 +58,13 @@ public class ImportViewModel
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+    private final ArchiveReadMetaDataTask mArchiveReadMetaDataTask = new ArchiveReadMetaDataTask();
+    private final ArchiveReaderTask mArchiveReaderTask = new ArchiveReaderTask();
 
     /** The import configuration. */
     @Nullable
     private ImportHelper mImportHelper;
-
     private boolean mInitWasCalled;
-
     @Nullable
     private ArchiveMetaData mArchiveMetaData;
 
@@ -102,8 +108,30 @@ public class ImportViewModel
      * @throws NullPointerException as a bug
      */
     @NonNull
-    public ImportHelper getImportHelper() {
+    ImportHelper getImportHelper() {
         return Objects.requireNonNull(mImportHelper, "mImportHelper");
+    }
+
+    @Override
+    protected void onCleared() {
+        mArchiveReadMetaDataTask.cancel(true);
+        mArchiveReaderTask.cancel(true);
+        super.onCleared();
+    }
+
+    public void readMetaData() {
+        Objects.requireNonNull(mImportHelper, "mImportHelper");
+        mArchiveReadMetaDataTask.start(mImportHelper);
+    }
+
+    @NonNull
+    public LiveData<FinishedMessage<ArchiveMetaData>> onMetaDataRead() {
+        return mArchiveReadMetaDataTask.onFinished();
+    }
+
+    @NonNull
+    public LiveData<FinishedMessage<Exception>> onMetaDataFailure() {
+        return mArchiveReadMetaDataTask.onFailure();
     }
 
     @Nullable
@@ -141,5 +169,34 @@ public class ImportViewModel
         } else {
             return mArchiveMetaData != null;
         }
+    }
+
+    @NonNull
+    LiveData<ProgressMessage> onProgress() {
+        return mArchiveReaderTask.onProgressUpdate();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ImportResults>> onImportCancelled() {
+        return mArchiveReaderTask.onCancelled();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<Exception>> onImportFailure() {
+        return mArchiveReaderTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ImportResults>> onImportFinished() {
+        return mArchiveReaderTask.onFinished();
+    }
+
+    void startImport() {
+        Objects.requireNonNull(mImportHelper, "mImportHelper");
+        mArchiveReaderTask.start(mImportHelper);
+    }
+
+    void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
+        dialog.setCanceller(mArchiveReaderTask);
     }
 }

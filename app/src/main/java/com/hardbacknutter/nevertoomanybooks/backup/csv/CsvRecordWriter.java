@@ -122,7 +122,7 @@ public class CsvRecordWriter
                     delta++;
                     final long now = System.currentTimeMillis();
                     if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                        progressListener.publishProgressStep(delta, book.getTitle());
+                        progressListener.publishProgress(delta, book.getTitle());
                         lastUpdate = now;
                         delta = 0;
                     }

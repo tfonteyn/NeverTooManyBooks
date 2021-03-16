@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -37,23 +36,33 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Before we can access Goodreads, we must authorize our application to do so.
  */
-public class GrAuthTask
-        extends VMTask<GrStatus> {
+public class AuthTask
+        extends LTask<GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "GR.RequestAuthTask";
+    private static final String TAG = "GR.AuthTask";
 
     /**
-     * Prompt the user to register.
+     * Constructor.
+     *
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public AuthTask(@NonNull final TaskListener<GrStatus> taskListener) {
+        super(R.id.TASK_ID_GR_REQUEST_AUTH, TAG, taskListener);
+    }
+
+    /**
+     * Prompt the user to register / authorize access.
      *
      * @param context Current context
      */
-    public void prompt(@NonNull final Context context) {
+    public void authorize(@NonNull final Context context) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_security_24)
                 .setTitle(R.string.info_authorized_needed)
@@ -61,21 +70,22 @@ public class GrAuthTask
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(R.string.btn_learn_more, (d, w) -> context.startActivity(
                         new Intent(context, GoodreadsRegistrationActivity.class)))
-                .setPositiveButton(android.R.string.ok, (d, w) -> start())
+                .setPositiveButton(android.R.string.ok, (d, w) -> execute())
                 .create()
                 .show();
     }
 
-    @UiThread
-    public void start() {
-        execute(R.id.TASK_ID_GR_REQUEST_AUTH);
+    /**
+     * Authenticate with the site.
+     */
+    public void authenticate() {
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
 
         try {
             if (!NetworkUtils.isNetworkAvailable()) {

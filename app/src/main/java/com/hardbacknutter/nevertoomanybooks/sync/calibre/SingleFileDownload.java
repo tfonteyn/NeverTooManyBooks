@@ -29,28 +29,31 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.org.json.JSONException;
 
 public class SingleFileDownload
-        extends VMTask<Uri> {
+        extends MTask<Uri> {
 
+    /** Log tag. */
+    private static final String TAG = "SingleFileDownload";
+
+    private final CalibreContentServer mServer;
     private Book mBook;
     private Uri mFolder;
 
-    private CalibreContentServer mServer;
-
     /**
-     * Pseudo constructor.
+     * Constructor.
      *
-     * @param server to access Calibre
+     * @param server to access
      */
-    public void init(@NonNull final CalibreContentServer server) {
+    SingleFileDownload(@NonNull final CalibreContentServer server) {
+        super(R.id.TASK_ID_DOWNLOAD_SINGLE_FILE, TAG);
         mServer = server;
     }
 
-    public boolean start(@NonNull final Book book,
-                         @NonNull final Uri folder) {
+    public boolean download(@NonNull final Book book,
+                            @NonNull final Uri folder) {
         mBook = book;
         mFolder = folder;
 
@@ -58,9 +61,7 @@ public class SingleFileDownload
         if (mBook.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             return false;
         }
-
-        execute(R.id.TASK_ID_DOWNLOAD_SINGLE_FILE);
-        return true;
+        return execute();
     }
 
     @NonNull
@@ -69,7 +70,7 @@ public class SingleFileDownload
             throws IOException, JSONException {
 
         setIndeterminate(true);
-        publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
+        publishProgress(0, context.getString(R.string.progress_msg_please_wait));
 
         if (!mServer.isMetaDataRead()) {
             mServer.readMetaData(context);

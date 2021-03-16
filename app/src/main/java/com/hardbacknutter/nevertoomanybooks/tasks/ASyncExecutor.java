@@ -71,7 +71,7 @@ public final class ASyncExecutor {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(@NonNull final Runnable r) {
-            return new Thread(r, "CustomAsyncTask #" + mCount.getAndIncrement());
+            return new Thread(r, "CustomTask #" + mCount.getAndIncrement());
         }
     };
 
@@ -99,7 +99,7 @@ public final class ASyncExecutor {
             };
 
     static {
-        // copied from the ASyncTask code
+        // Values copied from the android.os.ASyncTask code
         final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
@@ -114,7 +114,7 @@ public final class ASyncExecutor {
     /**
      * Create a <strong>new</strong> Executor.
      * This allows to run specific tasks that we don't want to submit (and wait on) the
-     * shared one in AsyncTask.
+     * shared one.
      * <p>
      * <strong>Note:</strong> this executor uses a {@link SynchronousQueue}.
      *

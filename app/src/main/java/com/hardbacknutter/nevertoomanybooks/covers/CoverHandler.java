@@ -34,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResult;
@@ -128,9 +127,11 @@ public class CoverHandler {
     @NonNull
     private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher;
     private final MenuPickerDialogFragment.Launcher mMenuLauncher;
+    @NonNull
+    private final ImageViewLoader mImageLoader;
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
-    private TransFormTaskViewModel mTransFormTaskViewModel;
+    private CoverHandlerViewModel mVm;
     private ActivityResultLauncher<String> mCameraPermissionLauncher;
     private ActivityResultLauncher<Uri> mTakePictureLauncher;
     private ActivityResultLauncher<CropImageActivity.ResultContract.Input> mCropPictureLauncher;
@@ -146,8 +147,6 @@ public class CoverHandler {
     private CircularProgressIndicator mProgressIndicator;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
-
-    private ImageViewLoader mImageLoader;
 
     /**
      * Constructor.
@@ -229,10 +228,10 @@ public class CoverHandler {
             mMenuLauncher.registerForFragmentResult(fm, lifecycleOwner);
         }
 
-        mTransFormTaskViewModel = new ViewModelProvider(viewModelStoreOwner)
-                .get(String.valueOf(mCIdx), TransFormTaskViewModel.class);
+        mVm = new ViewModelProvider(viewModelStoreOwner)
+                .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
 
-        mTransFormTaskViewModel.onFinished().observe(lifecycleOwner, event -> {
+        mVm.onFinished().observe(lifecycleOwner, event -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + event);
             }
@@ -515,9 +514,7 @@ public class CoverHandler {
                 final File file = getTempFile(context);
                 if (file.exists()) {
                     showProgress();
-                    mTransFormTaskViewModel.startTask(
-                            new TransFormTaskViewModel.Transformation(file)
-                                    .setScale(true));
+                    mVm.execute(new TransFormTask.Transformation(file).setScale(true));
                     return;
                 }
             } catch (@NonNull final ExternalStorageException e) {
@@ -542,8 +539,7 @@ public class CoverHandler {
                 final File file = FileUtils.copyInputStream(context, is, getTempFile(context));
 
                 showProgress();
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file).setScale(true));
+                mVm.execute(new TransFormTask.Transformation(file).setScale(true));
 
             } catch (@NonNull final ExternalStorageException e) {
                 StandardDialogs.showError(context, e);
@@ -602,9 +598,8 @@ public class CoverHandler {
                 final int explicitRotation = ParseUtils
                         .getIntListPref(global, Prefs.pk_camera_image_autorotate, 0);
 
-                final WindowManager wm = (WindowManager)
-                        context.getSystemService(Context.WINDOW_SERVICE);
-                final int surfaceRotation = wm.getDefaultDisplay().getRotation();
+                //noinspection ConstantConditions
+                final int surfaceRotation = context.getDisplay().getRotation();
 
                 // What action (if any) should we take after we're done?
                 @NextAction
@@ -612,12 +607,11 @@ public class CoverHandler {
                         .getIntListPref(global, Prefs.pk_camera_image_action, ACTION_DONE);
 
                 showProgress();
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file)
-                                .setScale(true)
-                                .setSurfaceRotation(surfaceRotation)
-                                .setRotation(explicitRotation)
-                                .setReturnCode(action));
+                mVm.execute(new TransFormTask.Transformation(file)
+                                    .setScale(true)
+                                    .setSurfaceRotation(surfaceRotation)
+                                    .setRotation(explicitRotation)
+                                    .setReturnCode(action));
             }
         }
     }
@@ -632,9 +626,7 @@ public class CoverHandler {
         try {
             final File srcFile = mBookSupplier.get().createTempCoverFile(context, mCIdx);
             showProgress();
-            mTransFormTaskViewModel.startTask(
-                    new TransFormTaskViewModel.Transformation(srcFile)
-                            .setRotation(angle));
+            mVm.execute(new TransFormTask.Transformation(srcFile).setRotation(angle));
 
         } catch (@NonNull final ExternalStorageException e) {
             StandardDialogs.showError(context, e);
@@ -643,7 +635,7 @@ public class CoverHandler {
         }
     }
 
-    private void onAfterTransform(@NonNull final TransFormTaskViewModel.TransformedData result) {
+    private void onAfterTransform(@NonNull final TransFormTask.TransformedData result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "onAfterTransform"
                        + "|returnCode=" + result.getReturnCode()

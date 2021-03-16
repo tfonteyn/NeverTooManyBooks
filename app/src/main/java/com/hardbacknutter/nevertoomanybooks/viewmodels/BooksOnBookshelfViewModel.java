@@ -24,13 +24,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -40,38 +40,30 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 public class BooksOnBookshelfViewModel
-        extends VMTask<List<BooklistNode>> {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelfViewModel";
@@ -82,8 +74,7 @@ public class BooksOnBookshelfViewModel
     /** Allows to set an explicit shelf. */
     public static final String BKEY_BOOKSHELF = TAG + ":bs";
 
-    /** The fixed list of domains we always need for building the book list. */
-    private final Collection<DomainExpression> mFixedDomainList = new ArrayList<>();
+    private static final String ERROR_NULL_BOOKLIST = "mBooklist";
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
@@ -91,82 +82,47 @@ public class BooksOnBookshelfViewModel
     /** Cache for all bookshelves. */
     private final List<Bookshelf> mBookshelfList = new ArrayList<>();
 
+    private final BoBTask mBoBTask = new BoBTask();
+
     /** Database Access. */
     private BookDao mBookDao;
-
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean mForceRebuildInOnResume;
-
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
-
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mBookshelf;
-
     /** The row id we want the new list to display more-or-less in the center. */
     private long mDesiredCentralBookId;
-
     /** Preferred booklist state in next rebuild. */
-    @BooklistBuilder.ListRebuildMode
+    @RebuildBooklist.Mode
     private int mRebuildMode;
-
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
 
-    private void initFixedDomainList() {
-        mFixedDomainList.add(
-                // Title for displaying; do NOT sort on it
-                new DomainExpression(
-                        DBDefinitions.DOM_TITLE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE)));
-        mFixedDomainList.add(
-                // Title for sorting
-                new DomainExpression(
-                        DBDefinitions.DOM_TITLE_OB,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE_OB),
-                        DomainExpression.SORT_ASC));
+    @NonNull
+    public LiveData<ProgressMessage> onProgress() {
+        return mBoBTask.onProgressUpdate();
+    }
 
-        mFixedDomainList.add(
-                // the book language is needed for reordering titles
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_LANGUAGE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LANGUAGE)));
+    @NonNull
+    public LiveData<FinishedMessage<BoBTask.Outcome>> onCancelled() {
+        return mBoBTask.onCancelled();
+    }
 
-        mFixedDomainList.add(
-                // Always get the read flag
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_READ,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
+    @NonNull
+    public LiveData<FinishedMessage<Exception>> onFailure() {
+        return mBoBTask.onFailure();
+    }
 
-        mFixedDomainList.add(
-                // Always get the Author ID
-                // (the need for the name will depend on the style).
-                new DomainExpression(
-                        DBDefinitions.DOM_FK_AUTHOR,
-                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR)));
-
-        mFixedDomainList.add(
-                // We want the UUID for the book so we can get thumbnails
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_UUID,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_UUID)));
-
-        mFixedDomainList.add(
-                // Always get the ISBN
-                new DomainExpression(
-                        DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_ISBN)));
-
-        // external site ID's
-        for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
-            mFixedDomainList.add(
-                    new DomainExpression(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
-        }
+    @NonNull
+    public LiveData<FinishedMessage<BoBTask.Outcome>> onFinished() {
+        return mBoBTask.onFinished();
     }
 
     @Override
@@ -192,12 +148,10 @@ public class BooksOnBookshelfViewModel
                      @Nullable final Bundle args) {
 
         if (mBookDao == null) {
-            initFixedDomainList();
-
             mBookDao = new BookDao(TAG);
 
             // first start of the activity, read from user preference
-            mRebuildMode = getPreferredListRebuildMode();
+            mRebuildMode = RebuildBooklist.getPreferredMode();
 
             if (args != null) {
                 // extract search criteria if any are present
@@ -216,7 +170,7 @@ public class BooksOnBookshelfViewModel
             }
         } else {
             // always preserve the state when the hosting fragment was revived
-            mRebuildMode = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
+            mRebuildMode = RebuildBooklist.FROM_SAVED_STATE;
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
@@ -227,22 +181,7 @@ public class BooksOnBookshelfViewModel
     }
 
     public void resetPreferredListRebuildMode() {
-        mRebuildMode = getPreferredListRebuildMode();
-    }
-
-    /**
-     * Get the current preferred rebuild mode for the list.
-     *
-     * @return ListRebuildMode
-     */
-    @BooklistBuilder.ListRebuildMode
-    private int getPreferredListRebuildMode() {
-        final String value = ServiceLocator.getGlobalPreferences()
-                                           .getString(Prefs.pk_booklist_rebuild_state, null);
-        if (value != null && !value.isEmpty()) {
-            return Integer.parseInt(value);
-        }
-        return BooklistBuilder.PREF_REBUILD_SAVED_STATE;
+        mRebuildMode = RebuildBooklist.getPreferredMode();
     }
 
     /**
@@ -471,7 +410,6 @@ public class BooksOnBookshelfViewModel
         return (loanee == null) || loanee.isEmpty();
     }
 
-
     @NonNull
     public SearchCriteria getSearchCriteria() {
         return mSearchCriteria;
@@ -499,7 +437,7 @@ public class BooksOnBookshelfViewModel
             return null;
         }
 
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         final long bookId = mDesiredCentralBookId;
         mDesiredCentralBookId = 0;
 
@@ -520,26 +458,26 @@ public class BooksOnBookshelfViewModel
     public BooklistNode setNode(final long nodeRowId,
                                 @BooklistNode.NextState final int nextState,
                                 final int relativeChildLevel) {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         mBooklist.setAllNodes(topLevel, expand);
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getCurrentBookIdList();
     }
 
     @Nullable
     public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
                                                 final long rowId) {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getNextBookWithoutCover(context, rowId);
     }
 
@@ -598,212 +536,8 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     public String getBookNavigationTableName() {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getNavigationTableName();
-    }
-
-    /**
-     * Queue a rebuild of the underlying cursor and data.
-     */
-    public void buildBookList() {
-        execute(R.id.TASK_ID_BOOKLIST_BUILDER);
-    }
-
-    /**
-     * (re)Build the book list.
-     *
-     * @return the row(s) we want to center the new list on when displaying; can be {@code null}.
-     */
-    @Nullable
-    @Override
-    @WorkerThread
-    protected List<BooklistNode> doWork(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, "mBooklist");
-
-        Thread.currentThread().setName(TAG);
-
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final ListStyle style = mBookshelf.getStyle(context);
-
-        Booklist booklist = null;
-        try {
-            // get a new builder and add the required domains
-            final BooklistBuilder builder = new BooklistBuilder(style, mBookshelf, mRebuildMode);
-
-            // Add the fixed list of domains we always need.
-            for (final DomainExpression domainDetails : mFixedDomainList) {
-                builder.addDomain(domainDetails);
-            }
-
-            // Add Calibre bridging data ?
-            if (CalibreContentServer.isEnabled(global)) {
-                builder.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_CALIBRE_BOOK_ID,
-                        DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBKeys.KEY_CALIBRE_BOOK_ID)));
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_CALIBRE_BOOK_UUID,
-                        DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBKeys.KEY_CALIBRE_BOOK_UUID)));
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                        DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
-
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
-                        DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBKeys.KEY_FK_CALIBRE_LIBRARY)));
-            }
-
-            // Add the conditional domains; global level.
-
-            if (DBKeys.isUsed(global, DBKeys.KEY_EDITION_BITMASK)) {
-                // The edition bitmask
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_EDITION_BITMASK)));
-            }
-
-            if (DBKeys.isUsed(global, DBKeys.KEY_SIGNED)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_SIGNED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_SIGNED)));
-            }
-
-            if (DBKeys.isUsed(global, DBKeys.KEY_BOOK_CONDITION)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_CONDITION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_CONDITION)));
-            }
-
-            if (DBKeys.isUsed(global, DBKeys.KEY_LOANEE)) {
-                // Used to display/hide the 'lend' icon for each book.
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_LOANEE,
-                        DBDefinitions.TBL_BOOK_LOANEE.dot(DBKeys.KEY_LOANEE)));
-            }
-
-            // Add the conditional domains; style level.
-            final ListScreenBookFields bookFields = style.getListScreenBookFields();
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
-                // This collects a CSV list of the bookshelves the book is on.
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                        BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
-            }
-
-            // we fetch ONLY the primary author
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_AUTHOR_FORMATTED,
-                        AuthorDaoImpl.getDisplayAuthor(style.isShowAuthorByGivenName())));
-            }
-
-            // for now, don't get the author type.
-//              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
-//                  builder.addDomain(new DomainExpression(
-//                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-//                          DBDefinitions.TBL_BOOK_AUTHOR
-//                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
-//              }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
-                // Collect a CSV list of the publishers of the book
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_PUBLISHER_NAME_CSV,
-                        BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_DATE_PUBLISHED)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_FORMAT,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_FORMAT)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_LOCATION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LOCATION)));
-            }
-
-            if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BOOK_RATING,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_RATING)));
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
-            }
-
-            // if we have a list of ID's, ignore other criteria
-            if (mSearchCriteria.hasIdList()) {
-                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
-
-            } else {
-                // Criteria supported by FTS
-                builder.addFilterOnKeywords(mSearchCriteria.getFtsAuthor(),
-                                            mSearchCriteria.getFtsTitle(),
-                                            mSearchCriteria.getFtsSeries(),
-                                            mSearchCriteria.getFtsPublisher(),
-                                            mSearchCriteria.getFtsKeywords());
-
-                builder.addFilterOnLoanee(mSearchCriteria.getLoanee());
-            }
-
-            // if we have any criteria set at all, the build should expand the book list.
-            if (!mSearchCriteria.isEmpty()) {
-                builder.setRebuildMode(BooklistBuilder.PREF_REBUILD_EXPANDED);
-            }
-
-            // Build the underlying data
-            booklist = builder.build(context);
-
-            // pre-count and cache (in the builder) these while we're in the background.
-            // They are used for the header, and will not change even if the list cursor changes.
-            if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT)) {
-                booklist.countBooks();
-                booklist.countDistinctBooks();
-            }
-
-            // Get the row(s) which will be used to determine new cursor position
-            @Nullable
-            final ArrayList<BooklistNode> targetRows =
-                    booklist.getBookNodes(mDesiredCentralBookId);
-
-            // the new build is completely done. We can safely discard the previous one.
-            if (mBooklist != null) {
-                mBooklist.close();
-            }
-            mBooklist = booklist;
-
-            // Save a flag to say list was loaded at least once successfully
-            mListHasBeenLoaded = true;
-
-            // preserve the new state by default
-            mRebuildMode = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
-
-            return targetRows;
-
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-            if (booklist != null) {
-                booklist.close();
-            }
-            throw e;
-
-        } finally {
-            // reset the central book id.
-            mDesiredCentralBookId = 0;
-        }
     }
 
     /**
@@ -814,10 +548,9 @@ public class BooksOnBookshelfViewModel
      */
     @NonNull
     public BooklistCursor getNewListCursor() {
-        Objects.requireNonNull(mBooklist, "mBooklist");
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getNewListCursor();
     }
-
 
     /**
      * Get the Book for the given row.
@@ -1026,5 +759,51 @@ public class BooksOnBookshelfViewModel
     public boolean lendBook(@IntRange(from = 1) final long bookId,
                             @Nullable final String loanee) {
         return ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, loanee);
+    }
+
+
+    /**
+     * Queue a rebuild of the underlying cursor and data.
+     */
+    public void buildBookList() {
+        Objects.requireNonNull(mBookshelf, ERROR_NULL_BOOKLIST);
+
+        mBoBTask.build(mBookshelf, mRebuildMode, mSearchCriteria, mDesiredCentralBookId);
+    }
+
+    public boolean isBuilding() {
+        return mBoBTask.isRunning();
+    }
+
+    public void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+        // the new build is completely done. We can safely discard the previous one.
+        if (mBooklist != null) {
+            mBooklist.close();
+        }
+        // sanity check
+        Objects.requireNonNull(message.result, "message.result");
+
+        mBooklist = message.result.list;
+
+        // Save a flag to say list was loaded at least once successfully
+        mListHasBeenLoaded = true;
+
+        // preserve the new state by default
+        mRebuildMode = RebuildBooklist.FROM_SAVED_STATE;
+
+        // reset the central book id.
+        mDesiredCentralBookId = 0;
+    }
+
+    public void onBuildCancelled(@SuppressWarnings("unused")
+                                 @NonNull final FinishedMessage<BoBTask.Outcome> message) {
+        // reset the central book id.
+        mDesiredCentralBookId = 0;
+    }
+
+    public void onBuildFailed(@SuppressWarnings("unused")
+                              @NonNull final FinishedMessage<Exception> message) {
+        // reset the central book id.
+        mDesiredCentralBookId = 0;
     }
 }

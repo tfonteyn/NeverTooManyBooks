@@ -22,7 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -46,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
- * It's also an unhealthy mix of VMTask and LTask components.
  * We're using MutableLiveData to report back, but our tasks are LTasks.
  */
 public class StartupViewModel
@@ -142,7 +144,6 @@ public class StartupViewModel
 
     /**
      * Set or remove the flag to indicate an OrderBy column rebuild is required.
-     *
      */
     public static void scheduleOrderByRebuild(final boolean flag) {
         schedule(PK_REBUILD_ORDERBY_COLUMNS, flag);
@@ -150,7 +151,6 @@ public class StartupViewModel
 
     /**
      * Set or remove the flag to indicate an index rebuild is required.
-     *
      */
     public static void scheduleIndexRebuild(final boolean flag) {
         schedule(PK_REBUILD_INDEXES, flag);
@@ -232,7 +232,8 @@ public class StartupViewModel
     }
 
     /**
-     * We use the standard AsyncTask execute, so tasks are run serially.
+     * We use the default {@link LTask}
+     * executor which runs serially.
      *
      * @param context Current context
      */
@@ -290,10 +291,10 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final LTask<Boolean> task) {
+    private void startTask(@NonNull final StartupTask task) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getTaskId());
-            task.execute();
+            task.start();
         }
     }
 
@@ -303,7 +304,7 @@ public class StartupViewModel
      * @return the Result which can be considered to be complete and correct.
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Void>> onFinished() {
+    public LiveData<FinishedMessage<Void>> onFinished() {
         return mFinished;
     }
 
@@ -313,7 +314,7 @@ public class StartupViewModel
      * @return the result is the Exception
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<FinishedMessage<Exception>> onFailure() {
         return mFailure;
     }
 
@@ -323,8 +324,17 @@ public class StartupViewModel
      * @return a {@link ProgressMessage} with the progress counter, a text message, ...
      */
     @NonNull
-    public MutableLiveData<ProgressMessage> onProgressUpdate() {
+    public LiveData<ProgressMessage> onProgressUpdate() {
         return mProgress;
+    }
+
+    public interface StartupTask {
+
+        @AnyThread
+        int getTaskId();
+
+        @UiThread
+        void start();
     }
 
 }

@@ -108,8 +108,7 @@ public class ProgressDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mHandler = new Handler(Looper.myLooper());
+        mHandler = new Handler(Looper.getMainLooper());
 
         Bundle args = requireArguments();
         mPreventSleep = args.getBoolean(BKEY_PREVENT_SLEEP, false);

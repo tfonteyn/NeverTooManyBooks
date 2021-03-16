@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
@@ -116,7 +117,7 @@ public class EditBookshelvesViewModel
     }
 
     @NonNull
-    public MutableLiveData<Void> onSelectedPositionChanged() {
+    public LiveData<Void> onSelectedPositionChanged() {
         return mSelectedPositionChanged;
     }
 

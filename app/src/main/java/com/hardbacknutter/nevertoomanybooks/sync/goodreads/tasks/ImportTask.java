@@ -32,7 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.ImportGrTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Start a background task that imports books from Goodreads.
@@ -43,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
  * is kicked of to do the real work.
  */
 public class ImportTask
-        extends VMTask<GrStatus> {
+        extends LTask<GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "GR.ImportTask";
@@ -54,18 +55,26 @@ public class ImportTask
     /**
      * Constructor.
      *
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public ImportTask(@NonNull final TaskListener<GrStatus> taskListener) {
+        super(R.id.TASK_ID_GR_IMPORT, TAG, taskListener);
+    }
+
+    /**
+     * Start the import.
+     *
      * @param isSync Flag to indicate sync data or import all.
      */
-    public void start(final boolean isSync) {
+    public void startImport(final boolean isSync) {
         mIsSync = isSync;
-        execute(R.id.TASK_ID_GR_IMPORT);
+        execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
 
         if (!NetworkUtils.isNetworkAvailable()) {
             return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);

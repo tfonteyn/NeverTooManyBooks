@@ -86,9 +86,9 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
@@ -128,7 +128,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
@@ -379,15 +378,6 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -456,6 +446,15 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
     /** The adapter used to fill the Bookshelf selector. */
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
@@ -495,7 +494,7 @@ public class BooksOnBookshelf
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mVm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         mVm.init(this, getIntent().getExtras());
-        mVm.onCancelled().observe(this, this::onBuildFailed);
+        mVm.onCancelled().observe(this, this::onBuildCancelled);
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
 
@@ -1411,11 +1410,11 @@ public class BooksOnBookshelf
     private void buildBookList() {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "buildBookList"
-                       + "|already running=" + mVm.isRunning()
+                       + "| mVm.isBuilding()=" + mVm.isBuilding()
                        + "|called from:", new Throwable());
         }
 
-        if (!mVm.isRunning()) {
+        if (!mVm.isBuilding()) {
             mVb.progressBar.show();
             // Invisible... theoretically this means the page should not re-layout
             mVb.list.setVisibility(View.INVISIBLE);
@@ -1438,13 +1437,17 @@ public class BooksOnBookshelf
      *
      * @param message from the task; contains the (optional) target rows.
      */
-    private void onBuildFinished(@NonNull final FinishedMessage<List<BooklistNode>> message) {
+    private void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
         mVb.progressBar.hide();
         if (message.isNewEvent()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
             }
-            displayList(message.result);
+
+            mVm.onBuildFinished(message);
+
+            Objects.requireNonNull(message.result, "message.result");
+            displayList(message.result.targetRows);
         }
     }
 
@@ -1453,24 +1456,48 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    public void onBuildFailed(@NonNull final LiveDataEvent message) {
+    public void onBuildCancelled(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
         mVb.progressBar.hide();
         if (message.isNewEvent()) {
+            mVm.onBuildCancelled(message);
+
             if (mVm.isListLoaded()) {
                 displayList(null);
             } else {
-                // Something is REALLY BAD
-                // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
-                // with the Styles. i.e. the style used to build is very likely corrupt.
-                // Another reason can be during development when the database structure
-                // was changed...
-                final ListStyle style = mVm.getCurrentStyle(this);
-                // so we reset the style to recover.. and restarting the app will work.
-                mVm.onStyleChanged(this, StyleUtils.BuiltinStyles.DEFAULT_STYLE_UUID);
-                // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
-                throw new IllegalStateException("Style=" + style);
+                recoverAfterFailedBuild();
             }
         }
+    }
+
+    /**
+     * Called when the list build failed or was cancelled.
+     *
+     * @param message from the task
+     */
+    public void onBuildFailed(@NonNull final FinishedMessage<Exception> message) {
+        mVb.progressBar.hide();
+        if (message.isNewEvent()) {
+            mVm.onBuildFailed(message);
+
+            if (mVm.isListLoaded()) {
+                displayList(null);
+            } else {
+                recoverAfterFailedBuild();
+            }
+        }
+    }
+
+    private void recoverAfterFailedBuild() {
+        // Something is REALLY BAD
+        // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
+        // with the Styles. i.e. the style used to build is very likely corrupt.
+        // Another reason can be during development when the database structure
+        // was changed...
+        final ListStyle style = mVm.getCurrentStyle(this);
+        // so we reset the style to recover.. and restarting the app will work.
+        mVm.onStyleChanged(this, StyleUtils.BuiltinStyles.DEFAULT_STYLE_UUID);
+        // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
+        throw new IllegalStateException("Style=" + style);
     }
 
     private void setNode(@NonNull final DataHolder rowData,

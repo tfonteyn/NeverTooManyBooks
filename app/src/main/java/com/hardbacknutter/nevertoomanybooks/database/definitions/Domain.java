@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -357,7 +357,7 @@ public class Domain
          * Define the domain to be a primary key.
          * Automatically adds a constraint for NOT NULL.
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder primaryKey() {
@@ -369,7 +369,7 @@ public class Domain
         /**
          * Add a constraint for NOT NULL.
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder notNull() {
@@ -382,7 +382,7 @@ public class Domain
          *
          * @param value to use as default
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder withDefault(final long value) {
@@ -395,7 +395,7 @@ public class Domain
          *
          * @param value to use as default
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder withDefault(final double value) {
@@ -408,7 +408,7 @@ public class Domain
          *
          * @param value to add (a string default must include the quotes!)
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder withDefault(@NonNull final String value) {
@@ -419,7 +419,7 @@ public class Domain
         /**
          * Add a current UTC timestamp default constraint.
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder withDefaultCurrentTimeStamp() {
@@ -430,7 +430,7 @@ public class Domain
         /**
          * Add a string default '' constraint.
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder withDefaultEmptyString() {
@@ -448,7 +448,7 @@ public class Domain
          * if this domain is in fact pre-prepared for sorting.
          * i.e. the values are stripped of spaces etc.. before being stored.
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder prePreparedOrderBy() {
@@ -462,7 +462,7 @@ public class Domain
          * @param table   to reference
          * @param actions 'on delete...' etc...
          *
-         * @return Builder (for chaining)
+         * @return {@code this} (for chaining)
          */
         @NonNull
         public Builder references(@NonNull final TableDefinition table,

@@ -19,142 +19,103 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import android.content.Context;
-import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * The base for a task which uses a {@link TaskListener} for the results.
- * <p>
- * The Progress parameter is always {@link ProgressMessage}, and Params always Void.
  *
  * @param <Result> the type of the result of the background computation.
  */
 public abstract class LTask<Result>
-        extends AsyncTask<Void, ProgressMessage, Result>
-        implements Canceller {
+        extends TaskBase<Result> {
 
     private static final String LISTENER_WAS_DEAD = "Listener was dead";
-
-    /** Log tag. */
-    private static final String TAG = "LTask";
-
-    /** id set at construction time, passed back in all messages. */
-    private final int mTaskId;
 
     /** The client listener where to send our results to. */
     @NonNull
     private final WeakReference<TaskListener<Result>> mTaskListener;
-    /**
-     * {@link #doInBackground} should catch exceptions, and set this field.
-     * {@link #onPostExecute} can check it.
-     */
-    @Nullable
-    protected Exception mException;
+
+    @NonNull
+    private final Handler mHandler;
 
     /**
      * Constructor.
      *
-     * @param taskId       a task identifier, will be returned in the task listener.
+     * @param taskId       a unique task identifier, returned with each message
+     * @param taskName     a (preferably unique) name used for identification of this task
      * @param taskListener for sending progress and finish messages to.
      */
+    @UiThread
     protected LTask(final int taskId,
+                    @NonNull final String taskName,
                     @NonNull final TaskListener<Result> taskListener) {
-        mTaskId = taskId;
+        super(taskId, taskName);
         mTaskListener = new WeakReference<>(taskListener);
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
-    /**
-     * Access for other classes.
-     *
-     * @return task ID
-     */
-    public int getTaskId() {
-        return mTaskId;
-    }
-
-
-    /**
-     * Final, override {@link #doWork(Context)} instead.
-     */
-    @Nullable
-    @Override
     @WorkerThread
-    protected final Result doInBackground(@Nullable final Void... voids) {
-        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
-        return doWork(context);
-    }
-
-    /**
-     * @param context a localized application context
-     *
-     * @return task result
-     */
-    @Nullable
-    @WorkerThread
-    protected Result doWork(@NonNull final Context context) {
-        return null;
-    }
-
     @Override
-    @UiThread
-    protected void onProgressUpdate(@NonNull final ProgressMessage... values) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onProgress(values[0]);
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onProgressUpdate|" + LISTENER_WAS_DEAD);
-            }
-        }
-    }
-
-    /**
-     * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-     * {@link #doInBackground} has finished.</p>
-     *
-     * @param result The result, if any, computed in {@link #doInBackground}, can be {@code null}.
-     *               If the task was cancelled before starting the result
-     *               <strong>WILL ALWAYS BE {@code null}</strong>
-     */
-    @Override
-    @CallSuper
-    protected void onCancelled(@Nullable final Result result) {
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onCancelled(new FinishedMessage<>(mTaskId, result));
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onCancelled|" + LISTENER_WAS_DEAD);
-            }
-        }
-    }
-
-    @Override
-    @UiThread
-    protected void onPostExecute(@NonNull final Result result) {
-        if (mTaskListener.get() != null) {
-            if (mException == null) {
-                mTaskListener.get().onFinished(new FinishedMessage<>(mTaskId, result));
+    public void publishProgress(@NonNull final ProgressMessage message) {
+        mHandler.post(() -> {
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onProgress(message);
             } else {
-                mTaskListener.get().onFailure(new FinishedMessage<>(mTaskId, mException));
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(getTaskName(), "publishProgress|" + LISTENER_WAS_DEAD);
+                }
             }
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onPostExecute|" + LISTENER_WAS_DEAD);
+        });
+    }
+
+    protected void onFinished(@NonNull final FinishedMessage<Result> message) {
+        mHandler.post(() -> {
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onFinished(message);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(getTaskName(), "onFinished|" + LISTENER_WAS_DEAD);
+                }
             }
-        }
+        });
+    }
+
+    protected void onCancelled(@NonNull final FinishedMessage<Result> message) {
+        mHandler.post(() -> {
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onCancelled(message);
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    // Will be shown on genuine bug,
+                    // but also when the ViewModel onCleared() is called.
+                    // The latter situation is normal and can be ignored.
+                    Log.d(getTaskName(), "onCancelled|" + LISTENER_WAS_DEAD);
+                }
+            }
+        });
+    }
+
+    protected void onFailure(@NonNull final Exception e) {
+        mHandler.post(() -> {
+            if (mTaskListener.get() != null) {
+                mTaskListener.get().onFailure(new FinishedMessage<>(getTaskId(), e));
+            } else {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(getTaskName(), "onFailure|" + LISTENER_WAS_DEAD);
+                }
+            }
+        });
     }
 }

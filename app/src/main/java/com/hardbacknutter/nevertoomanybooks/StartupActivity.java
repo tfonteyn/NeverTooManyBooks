@@ -155,7 +155,7 @@ public class StartupActivity
     }
 
     /**
-     * Setup the task observers and start the tasks.
+     * Start the tasks.
      * When the last tasks finishes, it will trigger the next startup stage.
      * <p>
      * If the tasks are not allowed to start, simply move to the next startup stage.

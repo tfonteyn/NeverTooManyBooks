@@ -213,7 +213,7 @@ public abstract class ArchiveWriterAbstract
         } finally {
             // closing a very large archive may take a while, so keep the progress dialog open
             progressListener.setIndeterminate(true);
-            progressListener.publishProgressStep(
+            progressListener.publishProgress(
                     0, context.getString(R.string.progress_msg_please_wait));
             // reset; won't take effect until the next publish call.
             progressListener.setIndeterminate(null);
@@ -338,7 +338,7 @@ public abstract class ArchiveWriterAbstract
                             @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers_long));
+        progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 
         int exported = 0;
         int delta = 0;
@@ -357,7 +357,7 @@ public abstract class ArchiveWriterAbstract
                 final String msg = context.getString(R.string.name_colon_value,
                                                      coverStr,
                                                      String.valueOf(exported));
-                progressListener.publishProgressStep(delta, msg);
+                progressListener.publishProgress(delta, msg);
                 lastUpdate = now;
                 delta = 0;
             }

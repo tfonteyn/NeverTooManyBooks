@@ -216,7 +216,7 @@ public class SearchOrderFragment
             final Site site = getItem(position);
             final SearchEngine searchEngine = site.getSearchEngine();
 
-            holder.nameView.setText(searchEngine.getName(context));
+            holder.nameView.setText(searchEngine.getName());
 
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(site.isEnabled());

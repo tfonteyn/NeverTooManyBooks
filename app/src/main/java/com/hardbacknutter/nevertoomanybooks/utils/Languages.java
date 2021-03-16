@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 
 /**
  * Languages.
@@ -51,6 +52,8 @@ public final class Languages {
      */
     @VisibleForTesting
     public static final String LANGUAGE_MAP = "language2iso3";
+    /** Prefix added to the iso code for the 'done' flag in the language cache. */
+    private static final String LANG_CREATED_PREFIX = "___";
     /** Singleton. */
     private static Languages sInstance;
     @NonNull
@@ -369,13 +372,56 @@ public final class Languages {
         }
     }
 
+
+    /**
+     * Create all cache files. This method is called during startup
+     * from {@link BuildLanguageMappingsTask}.
+     *
+     * @param context a localized application context
+     */
+    public void createLanguageMappingCache(@NonNull final Context context) {
+        // the one the user is using our app in (can be different from the system one)
+        createLanguageMappingCache(AppLocale.getInstance().getUserLocale(context));
+        // the system default
+        createLanguageMappingCache(AppLocale.getInstance().getSystemLocale());
+        // Always add English
+        createLanguageMappingCache(Locale.ENGLISH);
+
+        //NEWTHINGS: adding a new search engine: add mappings for site specific languages
+
+        // Dutch: StripInfoSearchEngine, KbNlSearchEngine
+        createLanguageMappingCache(new Locale("nl"));
+    }
+
+    /**
+     * Generate language mappings for a given Locale.
+     *
+     * @param locale the Locale for which to create a mapping
+     */
+    private void createLanguageMappingCache(@NonNull final Locale locale) {
+        final SharedPreferences cacheFile = getCacheFile();
+
+        // just return if already done for this Locale.
+        if (cacheFile.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
+            return;
+        }
+        final SharedPreferences.Editor ed = cacheFile.edit();
+        for (final Locale loc : Locale.getAvailableLocales()) {
+            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
+                         loc.getISO3Language());
+        }
+        // signal this Locale was done
+        ed.putBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), true);
+        ed.apply();
+    }
+
     /**
      * Convenience method to get the language SharedPreferences file.
      *
      * @return the SharedPreferences representing the language mapper
      */
     @NonNull
-    public SharedPreferences getCacheFile() {
+    private SharedPreferences getCacheFile() {
         return ServiceLocator.getAppContext()
                              .getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }

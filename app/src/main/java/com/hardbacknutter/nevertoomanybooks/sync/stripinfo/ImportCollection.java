@@ -102,14 +102,13 @@ public class ImportCollection {
         mJsoupLoader = new JsoupLoader();
     }
 
-
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @NonNull
-    public List<ColData> fetch(@NonNull final Context context)
+    public ArrayList<ColData> fetch(@NonNull final Context context)
             throws IOException {
 
-        final List<ColData> collection = new ArrayList<>();
+        final ArrayList<ColData> collection = new ArrayList<>();
 
         List<ColData> pageList = null;
         String url;

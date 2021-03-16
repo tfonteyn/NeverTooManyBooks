@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -66,12 +68,20 @@ public class CoverBrowserViewModel
     private final Executor mGalleryDisplayExecutor = ASyncExecutor.create("gallery/d");
     /** Executor for fetching gallery images. */
     private final Executor mGalleryNetworkExecutor = ASyncExecutor.create("gallery/n");
+    /** Executor for displaying preview images. */
+    private final Executor mPreviewDisplayExecutor = ASyncExecutor.MAIN;
+    /** Executor for fetching preview images. */
+    private final Executor mPreviewNetworkExecutor = ASyncExecutor.MAIN;
 
     /**
      * Holder for all active tasks, so we can cancel them if needed.
      * key: isbn.
      */
     private final Map<String, FetchImageTask> mGalleryTasks = new HashMap<>();
+
+    /** Editions. */
+    private final SearchEditionsTask mSearchEditionsTask = new SearchEditionsTask();
+
     /** List of ISBN numbers for alternative editions. The base list for the gallery adapter. */
     @NonNull
     private final ArrayList<String> mEditions = new ArrayList<>();
@@ -213,7 +223,7 @@ public class CoverBrowserViewModel
      */
     @NonNull
     Executor getPreviewDisplayExecutor() {
-        return ASyncExecutor.MAIN;
+        return mPreviewDisplayExecutor;
     }
 
     /**
@@ -224,11 +234,6 @@ public class CoverBrowserViewModel
     @NonNull
     Executor getGalleryDisplayExecutor() {
         return mGalleryDisplayExecutor;
-    }
-
-    @NonNull
-    String getBaseIsbn() {
-        return mBaseIsbn;
     }
 
     @NonNull
@@ -286,9 +291,10 @@ public class CoverBrowserViewModel
                         new FetchImageTask(mTaskIdCounter.getAndIncrement(), isbn, mCIdx,
                                            mFileManager, mTaskListener,
                                            ImageFileInfo.Size.SMALL_FIRST);
+                task.setExecutor(mGalleryNetworkExecutor);
 
                 mGalleryTasks.put(isbn, task);
-                task.executeOnExecutor(mGalleryNetworkExecutor);
+                task.start();
 
                 final Boolean isShowing = mShowGalleryProgress.getValue();
                 if (isShowing == null || !isShowing) {
@@ -304,7 +310,7 @@ public class CoverBrowserViewModel
      * @return boolean whether to show or hide the progress bar
      */
     @NonNull
-    MutableLiveData<Boolean> onShowGalleryProgress() {
+    LiveData<Boolean> onShowGalleryProgress() {
         return mShowGalleryProgress;
     }
 
@@ -314,7 +320,7 @@ public class CoverBrowserViewModel
      * @return a gallery image file info; can be {@code null}.
      */
     @NonNull
-    MutableLiveData<ImageFileInfo> onGalleryImage() {
+    LiveData<ImageFileInfo> onGalleryImage() {
         return mGalleryImage;
     }
 
@@ -332,8 +338,8 @@ public class CoverBrowserViewModel
                                                 mFileManager, mTaskListener,
                                                 ImageFileInfo.Size.LARGE_FIRST);
 
-        // use the default executor which is free right now
-        mSelectedImageTask.execute();
+        mSelectedImageTask.setExecutor(mPreviewNetworkExecutor);
+        mSelectedImageTask.start();
     }
 
     /**
@@ -342,8 +348,30 @@ public class CoverBrowserViewModel
      * @return the preview image file info; can be {@code null}.
      */
     @NonNull
-    MutableLiveData<ImageFileInfo> onSelectedImage() {
+    LiveData<ImageFileInfo> onSelectedImage() {
         return mSelectedImage;
     }
 
+    @NonNull
+    LiveData<FinishedMessage<Collection<String>>> onSearchEditionsTaskFinished() {
+        return mSearchEditionsTask.onFinished();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<Exception>> onSearchEditionsTaskFailure() {
+        return mSearchEditionsTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<Collection<String>>> onSearchEditionsTaskCancelled() {
+        return mSearchEditionsTask.onCancelled();
+    }
+
+    void searchEditions() {
+        mSearchEditionsTask.search(mBaseIsbn);
+    }
+
+    boolean isSearchEditionsTaskRunning() {
+        return mSearchEditionsTask.isRunning();
+    }
 }

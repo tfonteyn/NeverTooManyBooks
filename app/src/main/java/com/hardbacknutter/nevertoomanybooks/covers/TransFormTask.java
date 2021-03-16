@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
  * Note that by default this task <strong>only</strong> decodes the file to a Bitmap.
@@ -54,24 +54,28 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
  * To use a different file, and leaving the srcFile unchanged,
  * call {@link Transformation#setDestinationFile(File)}.
  */
-public class TransFormTaskViewModel
-        extends VMTask<TransFormTaskViewModel.TransformedData> {
+public class TransFormTask
+        extends MTask<TransFormTask.TransformedData> {
 
     /** Log tag. */
-    private static final String TAG = "TransFormTaskViewModel";
+    private static final String TAG = "TransFormTask";
 
     private Transformation mTransformation;
 
-    void startTask(@NonNull final Transformation transformation) {
+    TransFormTask() {
+        super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    boolean transform(@NonNull final Transformation transformation) {
         mTransformation = transformation;
-        execute(R.id.TASK_ID_IMAGE_TRANSFORMATION);
+        return execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
     protected TransformedData doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG);
 
         @Nullable
         Bitmap bitmap;
@@ -391,7 +395,7 @@ public class TransFormTaskViewModel
          *
          * @param dstFile to write to
          *
-         * @return Transformation (for chaining)
+         * @return {@code this} (for chaining)
          */
         @SuppressWarnings("unused")
         Transformation setDestinationFile(@NonNull final File dstFile) {
@@ -405,7 +409,7 @@ public class TransFormTaskViewModel
          * @param width  to use
          * @param height to use
          *
-         * @return Transformation (for chaining)
+         * @return {@code this} (for chaining)
          */
         @SuppressWarnings("unused")
         Transformation setScale(final int width,
@@ -421,38 +425,10 @@ public class TransFormTaskViewModel
          *
          * @param rotation to rotate; or {@code 0} for none.
          *
-         * @return Transformation (for chaining)
+         * @return {@code this} (for chaining)
          */
         Transformation setRotation(final int rotation) {
             mExplicitRotation = rotation;
-            return this;
-        }
-
-        /**
-         * Optional. Set the device rotation.
-         * Will be ignored if {@link #setRotation(int)} is set to a non-zero value.
-         *
-         * @param surfaceRotation as taken from the window manager
-         *
-         * @return Transformation (for chaining)
-         */
-        Transformation setSurfaceRotation(final int surfaceRotation) {
-            switch (surfaceRotation) {
-                case Surface.ROTATION_0:
-                    mSurfaceRotation = +90;
-                    break;
-
-                case Surface.ROTATION_180:
-                    mSurfaceRotation = -90;
-                    break;
-
-                case Surface.ROTATION_90:
-                case Surface.ROTATION_270:
-                default:
-                    mSurfaceRotation = 0;
-                    break;
-            }
-
             return this;
         }
 
@@ -483,7 +459,7 @@ public class TransFormTaskViewModel
          *
          * @param scale flag
          *
-         * @return Transformation (for chaining)
+         * @return {@code this} (for chaining)
          */
         Transformation setScale(final boolean scale) {
             mScale = scale;
@@ -498,6 +474,34 @@ public class TransFormTaskViewModel
             return mSurfaceRotation;
         }
 
+        /**
+         * Optional. Set the device rotation.
+         * Will be ignored if {@link #setRotation(int)} is set to a non-zero value.
+         *
+         * @param surfaceRotation as taken from the window manager
+         *
+         * @return {@code this} (for chaining)
+         */
+        Transformation setSurfaceRotation(final int surfaceRotation) {
+            switch (surfaceRotation) {
+                case Surface.ROTATION_0:
+                    mSurfaceRotation = +90;
+                    break;
+
+                case Surface.ROTATION_180:
+                    mSurfaceRotation = -90;
+                    break;
+
+                case Surface.ROTATION_90:
+                case Surface.ROTATION_270:
+                default:
+                    mSurfaceRotation = 0;
+                    break;
+            }
+
+            return this;
+        }
+
         int getReturnCode() {
             return mReturnCode;
         }
@@ -507,12 +511,11 @@ public class TransFormTaskViewModel
          *
          * @param returnCode to pass back
          *
-         * @return Transformation (for chaining)
+         * @return {@code this} (for chaining)
          */
         Transformation setReturnCode(final int returnCode) {
             mReturnCode = returnCode;
             return this;
         }
-
     }
 }
