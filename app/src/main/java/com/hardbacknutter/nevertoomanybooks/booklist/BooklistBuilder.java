@@ -97,6 +97,9 @@ class BooklistBuilder {
 
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
+    private static final String SELECT_ = "SELECT ";
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
 
     /**
      * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
@@ -111,9 +114,6 @@ class BooklistBuilder {
             + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOK)
             + ")";
 
-    private static final String SELECT_ = "SELECT ";
-    private static final String _FROM_ = " FROM ";
-    private static final String _WHERE_ = " WHERE ";
     /**
      * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
      * <p>
