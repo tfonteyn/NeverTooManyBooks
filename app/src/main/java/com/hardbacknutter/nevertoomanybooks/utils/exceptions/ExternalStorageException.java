@@ -30,9 +30,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Thrown when external storage media is not available.
- * <p>
- * URGENT / TEST: changed ExternalStorageException to extends IOException
- * -> check all catch etc...
  */
 public class ExternalStorageException
         extends IOException

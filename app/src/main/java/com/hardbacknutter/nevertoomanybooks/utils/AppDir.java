@@ -42,8 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
 
 /**
  * The set of named directories used and support functions for them.
- * <p>
- * TODO: ExternalStorageException added were appropriate, but other than here we don't catch them.
  */
 public enum AppDir {
     /** Nothing stored here, just the sub directories. */
