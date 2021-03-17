@@ -481,6 +481,32 @@ public class CoverHandler {
         final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
         final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
 
+        // <manifest ...>
+        //
+        // Needed since Android 11:
+        // https://developer.android.com/training/basics/intents/package-visibility#intent-signature
+        //       <queries>
+        //        <intent>
+        //            <action android:name="android.intent.action.EDIT" />
+        //            <data android:mimeType="image/*" />
+        //        </intent>
+        //    </queries>
+        //    <application ...>
+        //
+        // Needed for all Android versions:
+        // Do NOT set exported="true"; the app will fail to start.
+        // We handle this using grantUriPermissions.
+        //
+        //        <provider
+        //            android:name=".utils.GenericFileProvider"
+        //            android:authorities="${applicationId}.GenericFileProvider"
+        //            android:exported="false"
+        //            android:grantUriPermissions="true">
+        //            <meta-data
+        //                android:name="android.support.FILE_PROVIDER_PATHS"
+        //                android:resource="@xml/provider_paths" />
+        //        </provider>
+
         final Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(srcUri, IMAGE_MIME_TYPE)
                 // read access to the input uri

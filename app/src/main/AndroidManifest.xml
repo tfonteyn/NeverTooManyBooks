@@ -39,6 +39,16 @@
     <!-- for the book-lending functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <!-- Android 11 support
+      https://developer.android.com/training/basics/intents/package-visibility#intent-signature
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.EDIT" />
+            <data android:mimeType="image/*" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
