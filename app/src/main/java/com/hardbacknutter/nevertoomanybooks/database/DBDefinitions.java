@@ -271,7 +271,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_DATE_READ_END;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_SIGNED;
-    /** {@link #TBL_BOOKS}. A rating goes from 0 to 5 stars, in 0.5 increments. */
+    /** {@link #TBL_BOOKS}. A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
     public static final Domain DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PRIVATE_NOTES;

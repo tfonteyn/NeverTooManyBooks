@@ -44,7 +44,7 @@ public final class SearchEngineConfig {
     private final int mId;
 
     @StringRes
-    private final int mNameResId;
+    private final int mLabelId;
 
     @NonNull
     private final String mPrefKey;
@@ -84,7 +84,7 @@ public final class SearchEngineConfig {
     private SearchEngineConfig(@NonNull final Builder builder) {
         mClass = builder.mClass;
         mId = builder.mId;
-        mNameResId = builder.mNameResId;
+        mLabelId = builder.mLabelId;
         mPrefKey = builder.mPrefKey;
         mUrl = builder.mUrl;
 
@@ -138,8 +138,8 @@ public final class SearchEngineConfig {
      * @return the displayable name resource id
      */
     @StringRes
-    public int getNameResId() {
-        return mNameResId;
+    public int getLabelId() {
+        return mLabelId;
     }
 
     @NonNull
@@ -216,7 +216,7 @@ public final class SearchEngineConfig {
         return "SearchEngineConfig{"
                + "mClass=" + mClass
                + ", mId=" + mId
-               + ", mName=`" + mNameResId + '`'
+               + ", mName=`" + mLabelId + '`'
                + ", mPrefKey=`" + mPrefKey + '`'
                + ", mUrl=`" + mUrl + '`'
                + ", mLocale=" + mLocale
@@ -242,7 +242,7 @@ public final class SearchEngineConfig {
         private final int mId;
 
         @StringRes
-        private final int mNameResId;
+        private final int mLabelId;
 
         @NonNull
         private final String mPrefKey;
@@ -279,12 +279,12 @@ public final class SearchEngineConfig {
 
         public Builder(@NonNull final Class<? extends SearchEngine> clazz,
                        @SearchSites.EngineId final int id,
-                       @StringRes final int nameResId,
+                       @StringRes final int labelId,
                        @NonNull final String prefKey,
                        @NonNull final String url) {
             mClass = clazz;
             mId = id;
-            mNameResId = nameResId;
+            mLabelId = labelId;
             mPrefKey = prefKey;
             mUrl = url;
         }

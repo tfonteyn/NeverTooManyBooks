@@ -1046,12 +1046,12 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineConfig config = mSearchEngineRegistry.getByEngineId(taskId);
                 Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|finished=" + context.getString(config.getNameResId()));
+                           + "|finished=" + context.getString(config.getLabelId()));
 
                 for (final SearchTask searchTask : mActiveTasks) {
                     config = mSearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     Log.d(TAG, "mSearchTaskListener.onFinished"
-                               + "|running=" + context.getString(config.getNameResId()));
+                               + "|running=" + context.getString(config.getLabelId()));
                 }
             }
 
@@ -1092,7 +1092,7 @@ public class SearchCoordinator
                         final long end = mSearchTasksEndTime.get(key);
 
                         final String engineName = context.getString(
-                                mSearchEngineRegistry.getByEngineId(key).getNameResId());
+                                mSearchEngineRegistry.getByEngineId(key).getLabelId());
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -1140,7 +1140,7 @@ public class SearchCoordinator
             for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
                 final SearchEngineConfig config = mSearchEngineRegistry
                         .getByEngineId(entry.getKey());
-                final String engineName = context.getString(config.getNameResId());
+                final String engineName = context.getString(config.getLabelId());
                 final Exception exception = entry.getValue();
 
                 final String error;

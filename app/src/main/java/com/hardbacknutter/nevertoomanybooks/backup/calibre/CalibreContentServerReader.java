@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
@@ -90,7 +91,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * => bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
  * => and then define some tags as being shelves ?
  * <p>
- * ENHANCE: implement {@link com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage}.
+ * ENHANCE: implement {@link SyncAction}.
  * For now overwrite/skip is a bit ad-hoc.
  */
 public class CalibreContentServerReader

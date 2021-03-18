@@ -485,7 +485,7 @@ public class CoverBrowserDialogFragment
                     holder.siteView.setText(SearchEngineRegistry
                                                     .getInstance()
                                                     .getByEngineId(imageFileInfo.getEngineId())
-                                                    .getNameResId());
+                                                    .getLabelId());
 
                 } else {
                     // no file. Theoretically we should not get here,

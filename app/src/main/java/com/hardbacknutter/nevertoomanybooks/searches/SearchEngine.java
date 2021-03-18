@@ -225,7 +225,7 @@ public interface SearchEngine {
         }
 
         if (showAlert) {
-            final String siteName = context.getString(config.getNameResId());
+            final String siteName = context.getString(config.getLabelId());
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)

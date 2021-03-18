@@ -1243,7 +1243,7 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
-                mImageLoader.loadAndDisplay(mCoverView, file, (bitmap) -> {
+                mImageLoader.loadAndDisplay(mCoverView, file, bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
                                 uuid, 0, bitmap, mCoverLongestSide, mCoverLongestSide);

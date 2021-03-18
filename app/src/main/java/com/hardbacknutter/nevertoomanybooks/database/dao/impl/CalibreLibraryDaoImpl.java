@@ -145,7 +145,7 @@ public class CalibreLibraryDaoImpl
     }
 
     @Nullable
-    private CalibreLibrary loadLibrary(final Cursor cursor) {
+    private CalibreLibrary loadLibrary(@NonNull final Cursor cursor) {
         if (cursor.moveToNext()) {
             final DataHolder rowData = new CursorRow(cursor);
             final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKeys.KEY_PK_ID),

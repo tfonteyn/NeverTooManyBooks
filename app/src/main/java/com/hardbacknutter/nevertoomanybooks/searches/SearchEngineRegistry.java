@@ -79,6 +79,8 @@ public final class SearchEngineRegistry {
      * Register a {@link SearchEngine}.
      *
      * @param config to register
+     *
+     * @return {@code this} (for chaining)
      */
     @NonNull
     SearchEngineRegistry add(@NonNull final SearchEngineConfig config) {

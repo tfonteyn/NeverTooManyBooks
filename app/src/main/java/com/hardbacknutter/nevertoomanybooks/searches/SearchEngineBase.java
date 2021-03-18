@@ -120,7 +120,7 @@ public abstract class SearchEngineBase
     @NonNull
     @Override
     public String getName() {
-        return getContext().getString(mConfig.getNameResId());
+        return getContext().getString(mConfig.getLabelId());
     }
 
     @NonNull

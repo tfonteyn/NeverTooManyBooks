@@ -346,7 +346,7 @@ public final class Site
 
         /** User displayable name. */
         @StringRes
-        private final int mNameResId;
+        private final int mLabelId;
         /** Internal name (for prefs). */
         private final String mTypeName;
 
@@ -355,12 +355,12 @@ public final class Site
         /**
          * Constructor.
          *
-         * @param stringId for displaying the type name to the user
+         * @param labelId  for displaying the type name to the user
          * @param typeName for internal usage
          */
-        Type(@StringRes final int stringId,
+        Type(@StringRes final int labelId,
              @NonNull final String typeName) {
-            mNameResId = stringId;
+            mLabelId = labelId;
             mTypeName = typeName;
         }
 
@@ -460,7 +460,7 @@ public final class Site
         /**
          * Replace the current list with the given list. A deep-copy will be taken.
          *
-         * @param sites   list to use
+         * @param sites list to use
          */
         public void setList(@NonNull final Collection<Site> sites) {
             mList.clear();
@@ -582,7 +582,7 @@ public final class Site
 
         @StringRes
         public int getLabelId() {
-            return mNameResId;
+            return mLabelId;
         }
 
         @NonNull

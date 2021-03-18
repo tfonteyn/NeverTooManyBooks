@@ -301,8 +301,7 @@ public class ImportGrTask
         try {
             // Find the book in our local database - there may be more than one!
             // First look by Goodreads book ID
-            cursor = bookDao.fetchBooksByKey(DBKeys.KEY_ESID_GOODREADS_BOOK,
-                                             String.valueOf(grBookId));
+            cursor = bookDao.fetchBooksByKey(DBKeys.KEY_ESID_GOODREADS_BOOK, grBookId);
 
             boolean found = cursor.getCount() > 0;
             if (!found) {

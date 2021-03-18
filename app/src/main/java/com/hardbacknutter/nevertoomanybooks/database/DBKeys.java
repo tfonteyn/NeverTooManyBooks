@@ -185,6 +185,7 @@ public final class DBKeys {
     public static final String KEY_READ_START = "read_start";
     public static final String KEY_READ_END = "read_end";
     public static final String KEY_SIGNED = "signed";
+    /** A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
     public static final String KEY_RATING = "rating";
     public static final String KEY_PRIVATE_NOTES = "notes";
     public static final String KEY_BOOK_CONDITION = "cond_bk";

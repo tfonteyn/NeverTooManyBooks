@@ -39,7 +39,7 @@ public class BuiltinStyle
      * Always {@code 0} for a user-defined style
      */
     @StringRes
-    private final int mNameResId;
+    private final int mLabelId;
 
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public class BuiltinStyle
      * @param context      Current context
      * @param id           a negative int
      * @param uuid         UUID for the builtin style.
-     * @param nameId       the resource id for the name
+     * @param labelId      the resource id for the name
      * @param isPreferred  flag
      * @param menuPosition to set
      * @param groupIds     a list of groups to attach to this style
@@ -55,14 +55,14 @@ public class BuiltinStyle
     BuiltinStyle(@NonNull final Context context,
                  @IntRange(from = StyleUtils.BuiltinStyles.MAX_ID, to = -1) final long id,
                  @NonNull final String uuid,
-                 @StringRes final int nameId,
+                 @StringRes final int labelId,
                  final boolean isPreferred,
                  final int menuPosition,
                  @NonNull final int... groupIds) {
         super(context, uuid, false);
         mId = id;
 
-        mNameResId = nameId;
+        mLabelId = labelId;
 
         mIsPreferred = isPreferred;
         mMenuPosition = menuPosition;
@@ -77,7 +77,7 @@ public class BuiltinStyle
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return context.getString(mNameResId);
+        return context.getString(mLabelId);
     }
 
     @Override
@@ -92,11 +92,11 @@ public class BuiltinStyle
             return false;
         }
         final BuiltinStyle that = (BuiltinStyle) o;
-        return mNameResId == that.mNameResId;
+        return mLabelId == that.mLabelId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), mNameResId);
+        return Objects.hash(super.hashCode(), mLabelId);
     }
 }
