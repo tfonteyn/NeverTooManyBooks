@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
@@ -1170,7 +1171,7 @@ public class BookDao
     }
 
     /**
-     * Delete all data related to Calibre from the book (both in the db, and in the book object).
+     * Delete all data related to Calibre from the database (but leaves them in the book object).
      *
      * @param book to process
      */
@@ -1400,6 +1401,15 @@ public class BookDao
                              TBL_BOOKS.dot(KEY_PK_ID));
     }
 
+    @NonNull
+    public TypedCursor fetchBooksByKey(@NonNull final String key,
+                                       final long externalId) {
+        return getBookCursor(TBL_BOOKS.dot(key) + "=?",
+                             new String[]{String.valueOf(externalId)},
+                             TBL_BOOKS.dot(KEY_PK_ID));
+    }
+
+
     /**
      * Return an Cursor with all Books for the given list of {@link Book} ID's.
      *
@@ -1557,9 +1567,9 @@ public class BookDao
             if (list.isEmpty()) {
                 // sure, this is very crude and discriminating.
                 // But it will only ever be used *once* per currency column
-                list.add("EUR");
-                list.add("GBP");
-                list.add("USD");
+                list.add(Money.EUR);
+                list.add(Money.GBP);
+                list.add(Money.USD);
             }
             return list;
         }
