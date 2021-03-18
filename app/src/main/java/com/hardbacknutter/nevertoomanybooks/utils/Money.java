@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,6 +52,10 @@ import java.util.regex.Pattern;
  */
 public class Money
         extends Number {
+
+    public static final String EUR = "EUR";
+    public static final String GBP = "GBP";
+    public static final String USD = "USD";
 
     /** For prefixed currencies, split on first digit, but leave it in the second part. */
     private static final Pattern CURRENCY_AS_PREFIX_PATTERN = Pattern.compile("(?=\\d)");
@@ -121,13 +125,13 @@ public class Money
         CURRENCY_MAP.clear();
 
         CURRENCY_MAP.put("", "");
-        CURRENCY_MAP.put("€", "EUR");
+        CURRENCY_MAP.put("€", EUR);
 
         // English
         CURRENCY_MAP.put("a$", "AUD"); // Australian Dollar
         CURRENCY_MAP.put("nz$", "NZD"); // New Zealand Dollar
-        CURRENCY_MAP.put("£", "GBP"); // British Pound
-        CURRENCY_MAP.put("$", "USD"); // Trump Disney's
+        CURRENCY_MAP.put("£", GBP); // British Pound
+        CURRENCY_MAP.put("$", USD); // Trump Disney's
 
         CURRENCY_MAP.put("c$", "CAD"); // Canadian Dollar
         CURRENCY_MAP.put("ir£", "IEP"); // Irish Punt
@@ -193,7 +197,7 @@ public class Money
                 // the British pound was made up of 20 shillings, each of which was
                 // made up of 12 pence, a total of 240 pence. Madness...
                 mValue = ((shillings * 12) + pence) / 240f;
-                mCurrency = "GBP";
+                mCurrency = GBP;
                 return true;
 
             } catch (@NonNull final NumberFormatException ignore) {

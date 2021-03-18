@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,35 +34,35 @@ class MoneyTest
     void uk00() {
         final Money m = new Money(Locale.UK, "GBP&nbsp;12.34");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("GBP", m.getCurrency());
+        assertEquals(Money.GBP, m.getCurrency());
     }
 
     @Test
     void uk01() {
         final Money m = new Money(Locale.UK, "£ 12.34");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("GBP", m.getCurrency());
+        assertEquals(Money.GBP, m.getCurrency());
     }
 
     @Test
     void uk02() {
         final Money m = new Money(Locale.UK, "£12.34");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("GBP", m.getCurrency());
+        assertEquals(Money.GBP, m.getCurrency());
     }
 
     @Test
     void uk03() {
         final Money m = new Money(Locale.UK, "GBP12.34");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("GBP", m.getCurrency());
+        assertEquals(Money.GBP, m.getCurrency());
     }
 
     @Test
     void uk04() {
         final Money m = new Money(Locale.UK, "£12");
         assertEquals(12d, m.doubleValue());
-        assertEquals("GBP", m.getCurrency());
+        assertEquals(Money.GBP, m.getCurrency());
     }
 
 
@@ -70,27 +70,27 @@ class MoneyTest
     void fr01() {
         final Money m = new Money(Locale.FRANCE, "12,34&nbsp;€");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("EUR", m.getCurrency());
+        assertEquals(Money.EUR, m.getCurrency());
     }
 
     @Test
     void fr02() {
         final Money m = new Money(Locale.FRANCE, "12,34 €");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("EUR", m.getCurrency());
+        assertEquals(Money.EUR, m.getCurrency());
     }
 
     @Test
     void fr03() {
         final Money m = new Money(Locale.FRANCE, "12,34€");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("EUR", m.getCurrency());
+        assertEquals(Money.EUR, m.getCurrency());
     }
 
     @Test
     void fr04() {
         final Money m = new Money(Locale.FRANCE, "12,34 eur");
         assertEquals(12.34d, m.doubleValue());
-        assertEquals("EUR", m.getCurrency());
+        assertEquals(Money.EUR, m.getCurrency());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ class MoneyFormatterTest
         setLocale(Locale.US);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("$1,234.50", f.format(mContext, new Money(1234.50d, "USD")));
+        assertEquals("$1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
     }
 
     @Test
@@ -50,7 +50,7 @@ class MoneyFormatterTest
         setLocale(Locale.UK);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("USD1,234.50", f.format(mContext, new Money(1234.50d, "USD")));
+        assertEquals("USD1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
     }
 
     @Test
@@ -58,7 +58,7 @@ class MoneyFormatterTest
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 USD", f.format(mContext, new Money(1234.50d, "USD")));
+        assertEquals("1.234,50 USD", f.format(mContext, new Money(1234.50d, Money.USD)));
     }
 
     @Test
@@ -66,7 +66,7 @@ class MoneyFormatterTest
         setLocale(Locale.US);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("GBP1,234.50", f.format(mContext, new Money(1234.50d, "GBP")));
+        assertEquals("GBP1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
     }
 
     @Test
@@ -74,7 +74,7 @@ class MoneyFormatterTest
         setLocale(Locale.UK);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, "GBP")));
+        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
     }
 
     @Test
@@ -82,7 +82,7 @@ class MoneyFormatterTest
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 GBP", f.format(mContext, new Money(1234.50d, "GBP")));
+        assertEquals("1.234,50 GBP", f.format(mContext, new Money(1234.50d, Money.GBP)));
     }
 
     @Test
@@ -90,7 +90,7 @@ class MoneyFormatterTest
         setLocale(Locale.US);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("EUR1,234.50", f.format(mContext, new Money(1234.50d, "EUR")));
+        assertEquals("EUR1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 
     @Test
@@ -98,7 +98,7 @@ class MoneyFormatterTest
         setLocale(Locale.UK);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, "EUR")));
+        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 
     @Test
@@ -106,6 +106,6 @@ class MoneyFormatterTest
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, "EUR")));
+        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 }
