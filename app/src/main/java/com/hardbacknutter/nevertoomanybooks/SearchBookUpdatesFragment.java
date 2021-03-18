@@ -47,12 +47,12 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.FieldSync;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -135,7 +135,7 @@ public class SearchBookUpdatesFragment
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
         mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
-                mVm.processSearchResults(getContext(), message.result));
+                mVm.processOne(getContext(), message.result));
         // User cancelled the update
         mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
@@ -180,21 +180,20 @@ public class SearchBookUpdatesFragment
      * Display the list of fields.
      */
     private void populateFields() {
-        for (final FieldUsage usage : mVm.getFieldUsages()) {
+        for (final FieldSync fieldSync : mVm.getFieldSyncList()) {
             final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
                     .inflate(getLayoutInflater(), mVb.fieldList, false);
 
-            rowVb.field.setText(usage.getLabelResId());
+            rowVb.field.setText(fieldSync.getFieldLabelId());
 
-            rowVb.cbxUsage.setChecked(usage.isWanted());
-            //noinspection ConstantConditions
-            rowVb.cbxUsage.setText(usage.getUsageLabel(getContext()));
-            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, usage);
+            rowVb.cbxUsage.setChecked(fieldSync.isWanted());
+            rowVb.cbxUsage.setText(fieldSync.getActionLabelId());
+            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, fieldSync);
             rowVb.cbxUsage.setOnClickListener(v -> {
-                final FieldUsage fu = (FieldUsage) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
-                fu.nextState();
-                rowVb.cbxUsage.setChecked(fu.isWanted());
-                rowVb.cbxUsage.setText(fu.getUsageLabel(getContext()));
+                final FieldSync fs = (FieldSync) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
+                fs.nextState();
+                rowVb.cbxUsage.setChecked(fs.isWanted());
+                rowVb.cbxUsage.setText(fs.getActionLabelId());
             });
 
             mVb.fieldList.addView(rowVb.getRoot());
@@ -249,8 +248,8 @@ public class SearchBookUpdatesFragment
             final View view = mVb.fieldList.getChildAt(i);
             final CompoundButton cb = view.findViewById(R.id.cbx_usage);
             if (cb != null) {
-                final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
-                if (fieldUsage.isWanted()) {
+                final FieldSync fieldSync = (FieldSync) cb.getTag(R.id.TAG_FIELD_USAGE);
+                if (fieldSync.isWanted()) {
                     return true;
                 }
             }
@@ -286,19 +285,11 @@ public class SearchBookUpdatesFragment
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
-                        mVm.updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".0",
-                                             FieldUsage.Usage.CopyIfBlank);
-                        mVm.updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".1",
-                                             FieldUsage.Usage.CopyIfBlank);
+                        mVm.setCoverSyncAction(SyncAction.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
-                        mVm
-                                .updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".0",
-                                                  FieldUsage.Usage.Overwrite);
-                        mVm
-                                .updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".1",
-                                                  FieldUsage.Usage.Overwrite);
+                        mVm.setCoverSyncAction(SyncAction.Overwrite);
                         startUpdate();
                     })
                     .create()

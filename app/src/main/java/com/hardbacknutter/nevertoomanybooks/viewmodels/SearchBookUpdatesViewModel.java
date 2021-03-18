@@ -21,51 +21,39 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.SparseArray;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.FieldSync;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction;
+import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
-import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
+import static com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction.Overwrite;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -73,19 +61,15 @@ public class SearchBookUpdatesViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
-
-    /** which fields to update and how. */
-    @NonNull
-    private final Map<String, FieldUsage> mFields = new LinkedHashMap<>();
-
     private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
-
     /**
      * Current and original book data.
      * The object gets cleared and reused for each iteration of the loop.
      */
     private final Book mCurrentBook = new Book();
+    /** which fields to update and how. */
+    private SyncProcessor mSyncProcessor;
     /** Database Access. */
     private BookDao mBookDao;
     /** Book ID's to fetch. {@code null} for all books. */
@@ -98,7 +82,7 @@ public class SearchBookUpdatesViewModel
     /** Tracks the current book ID. */
     private long mCurrentBookId;
     /** The (subset) of fields relevant to the current book. */
-    private Map<String, FieldUsage> mCurrentFieldsWanted;
+    private Map<String, FieldSync> mCurrentFieldsWanted;
 
     private int mCurrentProgressCounter;
     private int mCurrentCursorCount;
@@ -147,64 +131,59 @@ public class SearchBookUpdatesViewModel
                 mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
             }
 
-            initFields();
+            mSyncProcessor = createSyncProcessor();
         }
     }
 
     /**
      * Entries are displayed in the order they are added here.
      */
-    private void initFields() {
+    private SyncProcessor createSyncProcessor() {
+        final SyncProcessor.Builder builder =
+                new SyncProcessor.Builder("fields.update.usage.")
+                        .addCover(R.string.lbl_cover_front, 0)
+                        .addCover(R.string.lbl_cover_back, 1)
 
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
+                        .add(R.string.lbl_title, DBKeys.KEY_TITLE)
+                        .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
 
-        addCoverField(global, R.string.lbl_cover_front, 0);
-        addCoverField(global, R.string.lbl_cover_back, 1);
+                        .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+                        .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
+                                 Book.BKEY_SERIES_LIST)
 
-        addField(global, DBKeys.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
-        addField(global, DBKeys.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addListField(global, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
-                     DBKeys.KEY_FK_AUTHOR);
-        addListField(global, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
-                     DBKeys.KEY_SERIES_TITLE);
-        addField(global, DBKeys.KEY_DESCRIPTION, R.string.lbl_description,
-                 CopyIfBlank);
+                        .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
 
-        addListField(global, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
-                     DBKeys.KEY_TOC_BITMASK);
+                        .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
+                                 Book.BKEY_TOC_LIST)
 
-        addListField(global, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
-                     DBKeys.KEY_PUBLISHER_NAME);
-        addField(global, DBKeys.KEY_PRINT_RUN, R.string.lbl_print_run,
-                 CopyIfBlank);
-        addField(global, DBKeys.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_date_published,
-                 CopyIfBlank);
-        addField(global, DBKeys.KEY_DATE_FIRST_PUBLICATION,
-                 R.string.lbl_first_publication,
-                 CopyIfBlank);
+                        .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
+                                 Book.BKEY_PUBLISHER_LIST)
+                        .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
+                        .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
+                        .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
 
-        // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(global, DBKeys.KEY_PRICE_LISTED, R.string.lbl_price_listed,
-                 CopyIfBlank);
+                        // list price has related DBDefinitions.KEY_PRICE_LISTED
+                        .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
 
-        addField(global, DBKeys.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
-        addField(global, DBKeys.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
-        addField(global, DBKeys.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
-        addField(global, DBKeys.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
-        addField(global, DBKeys.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
+                        .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
+                        .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
+                        .add(R.string.lbl_color, DBKeys.KEY_COLOR)
+                        .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
+                        .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
 
-        for (final SearchEngineConfig config : SearchEngineRegistry
-                .getInstance().getAll()) {
+        for (final SearchEngineConfig config : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
-                addField(global, domain.getName(), config.getNameResId(), Overwrite);
+                builder.add(config.getLabelId(), domain.getName(), Overwrite);
             }
         }
+
+        return builder.build(mBookDao);
     }
 
     @NonNull
-    public Collection<FieldUsage> getFieldUsages() {
-        return mFields.values();
+    public Collection<FieldSync> getFieldSyncList() {
+        return mSyncProcessor.getFieldSyncList();
     }
 
     /**
@@ -219,24 +198,19 @@ public class SearchBookUpdatesViewModel
             return false;
         }
 
-        // More than 10 books, check if the user actually wants covers
-        final FieldUsage covers = mFields.get(DBKeys.PREFS_IS_USED_COVER + ".0");
-        return covers != null && covers.getUsage() == FieldUsage.Usage.Overwrite;
+        // More than 10 books, check if the user wants ALL covers
+        return mSyncProcessor.isOverwrite(DBKeys.PREFS_IS_USED_COVER + ".0");
     }
 
     /**
-     * Update the fields usage flag.
+     * Update the covers {@link SyncAction}.
      * Does nothing if the field ws not actually added before.
      *
-     * @param key   field to update
-     * @param usage to set
+     * @param action to set
      */
-    public void updateFieldUsage(@NonNull final String key,
-                                 @NonNull final FieldUsage.Usage usage) {
-        final FieldUsage fieldUsage = mFields.get(key);
-        if (fieldUsage != null) {
-            fieldUsage.setUsage(usage);
-        }
+    public void setCoverSyncAction(@NonNull final SyncAction action) {
+        mSyncProcessor.setSyncAction(DBKeys.PREFS_IS_USED_COVER + ".0", action);
+        mSyncProcessor.setSyncAction(DBKeys.PREFS_IS_USED_COVER + ".1", action);
     }
 
     /**
@@ -251,100 +225,17 @@ public class SearchBookUpdatesViewModel
     }
 
     /**
-     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
-     * <p>
-     *
-     * @param global    Global preferences
-     * @param fieldId   List-field name to use in FieldUsages
-     * @param nameResId Field label resource id
-     * @param key       Field name to use for preferences.
-     */
-    private void addListField(@NonNull final SharedPreferences global,
-                              @NonNull final String fieldId,
-                              @StringRes final int nameResId,
-                              @NonNull final String key) {
-
-        if (DBKeys.isUsed(global, key)) {
-            mFields.put(fieldId, FieldUsage.createListField(fieldId, nameResId, global));
-        }
-    }
-
-    /**
-     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
-     *
-     * @param global    Global preferences
-     * @param nameResId Field label resource id
-     * @param cIdx      0..n image index
-     */
-    private void addCoverField(@NonNull final SharedPreferences global,
-                               @StringRes final int nameResId,
-                               @IntRange(from = 0, to = 1) final int cIdx) {
-
-        if (DBKeys.isCoverUsed(global, cIdx)) {
-            final String fieldId = DBKeys.PREFS_IS_USED_COVER + "." + cIdx;
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, CopyIfBlank));
-        }
-    }
-
-    /**
-     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
-     *
-     * @param global    Global preferences
-     * @param fieldId   Field name to use in FieldUsages, and as key for preferences.
-     * @param nameResId Field label resource id
-     * @param defValue  default Usage for this field
-     */
-    private void addField(@NonNull final SharedPreferences global,
-                          @NonNull final String fieldId,
-                          @StringRes final int nameResId,
-                          @NonNull final FieldUsage.Usage defValue) {
-
-        if (DBKeys.isUsed(global, fieldId)) {
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, defValue));
-        }
-    }
-
-    /**
-     * Add any related fields with the same setting.
-     * <p>
-     * We enforce a name (string id), although it's never displayed, for sanity/debug sake.
-     *
-     * @param primaryFieldId the field to check
-     * @param relatedFieldId to add if the primary field is present
-     * @param nameResId      Field label resource id (not used)
-     */
-    private void addRelatedField(@NonNull final String primaryFieldId,
-                                 @NonNull final String relatedFieldId,
-                                 @StringRes final int nameResId) {
-        final FieldUsage primaryField = mFields.get(primaryFieldId);
-
-        if (primaryField != null && primaryField.isWanted()) {
-            final FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameResId);
-            mFields.put(relatedFieldId, fu);
-        }
-    }
-
-    /**
      * Write current settings to the user preferences.
      */
     public void writePreferences() {
-        final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
-
-        for (final FieldUsage fieldUsage : mFields.values()) {
-            fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
-        }
-        ed.apply();
+        mSyncProcessor.writePreferences();
     }
 
     /**
      * Reset current usage back to defaults, and write to preferences.
-     *
      */
     public void resetPreferences() {
-        for (final FieldUsage fieldUsage : mFields.values()) {
-            fieldUsage.reset();
-        }
-        writePreferences();
+        mSyncProcessor.resetPreferences();
     }
 
     /**
@@ -355,18 +246,16 @@ public class SearchBookUpdatesViewModel
      * @return {@code true} if a search was started.
      */
     public boolean startSearch(@NonNull final Context context) {
-        // add related fields.
-        // i.e. if we do the 'list-price' field, we'll also want its currency.
-        addRelatedField(DBKeys.KEY_PRICE_LISTED,
-                        DBKeys.KEY_PRICE_LISTED_CURRENCY,
-                        R.string.lbl_currency);
 
-        addRelatedField(DBKeys.PREFS_IS_USED_COVER + ".0",
-                        Book.BKEY_TMP_FILE_SPEC[0],
-                        R.string.lbl_cover_front);
-        addRelatedField(DBKeys.PREFS_IS_USED_COVER + ".1",
-                        Book.BKEY_TMP_FILE_SPEC[1],
-                        R.string.lbl_cover_back);
+        // if we do the 'list-price' field, we'll also want its currency.
+        mSyncProcessor.addRelatedField(R.string.lbl_currency, DBKeys.KEY_PRICE_LISTED,
+                                       DBKeys.KEY_PRICE_LISTED_CURRENCY);
+
+        // if covers are wanted, also get the actual file names
+        mSyncProcessor.addRelatedField(R.string.lbl_cover_front, DBKeys.PREFS_IS_USED_COVER + ".0",
+                                       Book.BKEY_TMP_FILE_SPEC[0]);
+        mSyncProcessor.addRelatedField(R.string.lbl_cover_back, DBKeys.PREFS_IS_USED_COVER + ".1",
+                                       Book.BKEY_TMP_FILE_SPEC[1]);
 
         mCurrentProgressCounter = 0;
 
@@ -411,7 +300,7 @@ public class SearchBookUpdatesViewModel
                 mCurrentBook.load(mCurrentBookId, mCurrentCursor, mBookDao);
 
                 // Check which fields this book needs.
-                mCurrentFieldsWanted = filter(context, mFields);
+                mCurrentFieldsWanted = mSyncProcessor.filter(context, mCurrentBook);
 
                 final String title = mCurrentBook.getString(DBKeys.KEY_TITLE);
 
@@ -499,87 +388,20 @@ public class SearchBookUpdatesViewModel
     }
 
     /**
-     * Process the search-result data.
+     * Process the search-result data for one book.
      *
      * @param context  Current context
      * @param bookData result-data to process
      *
-     * @return {@code true} if a search was started.
+     * @return {@code true} if a new search (for the next book) was started.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean processSearchResults(@NonNull final Context context,
-                                        @Nullable final Bundle bookData) {
+    public boolean processOne(@NonNull final Context context,
+                              @Nullable final Bundle bookData) {
 
         if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
-
-            // Filter the data to remove keys we don't care about
-            final Collection<String> toRemove = new ArrayList<>();
-            for (final String key : bookData.keySet()) {
-                final FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
-                if (fieldUsage == null || !fieldUsage.isWanted()) {
-                    toRemove.add(key);
-                }
-            }
-            for (final String key : toRemove) {
-                bookData.remove(key);
-            }
-
-            final Locale bookLocale = mCurrentBook.getLocale(context);
-
-            // For each field, process it according the usage.
-            mCurrentFieldsWanted
-                    .values()
-                    .stream()
-                    .filter(usage -> bookData.containsKey(usage.fieldId))
-                    .forEach(usage -> {
-                        // Handle thumbnail specially
-                        if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                            processSearchResultsCoverImage(context, bookData, usage, 0);
-                        } else if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                            processSearchResultsCoverImage(context, bookData, usage, 1);
-                        } else {
-                            switch (usage.getUsage()) {
-                                case CopyIfBlank:
-                                    // remove unneeded fields from the new data
-                                    if (hasField(usage.fieldId)) {
-                                        bookData.remove(usage.fieldId);
-                                    }
-                                    break;
-
-                                case Append:
-                                    appendLists(context, usage.fieldId, bookLocale, bookData);
-                                    break;
-
-                                case Overwrite:
-                                case Skip:
-                                    break;
-                            }
-                        }
-                    });
-
-            // Commit the new data
-            if (!bookData.isEmpty()) {
-                // Get the language, if there was one requested for updating.
-                String bookLang = bookData.getString(DBKeys.KEY_LANGUAGE);
-                if (bookLang == null || bookLang.isEmpty()) {
-                    // Otherwise add the original one.
-                    bookLang = mCurrentBook.getString(DBKeys.KEY_LANGUAGE);
-                    if (!bookLang.isEmpty()) {
-                        bookData.putString(DBKeys.KEY_LANGUAGE, bookLang);
-                    }
-                }
-
-                //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
-                // we want to commit to the existing book.
-                final Book delta = Book.from(bookData);
-                delta.putLong(DBKeys.KEY_PK_ID, mCurrentBookId);
-                try {
-                    mBookDao.update(context, delta, 0);
-                } catch (@NonNull final DaoWriteException e) {
-                    // ignore, but log it.
-                    Logger.error(context, TAG, e);
-                }
-            }
+            mSyncProcessor.processOne(context, mCurrentBookId, mCurrentBook,
+                                      mCurrentFieldsWanted, bookData);
         }
 
         //update the counter, another one done.
@@ -592,44 +414,6 @@ public class SearchBookUpdatesViewModel
         return nextBook(context);
     }
 
-    private void processSearchResultsCoverImage(@NonNull final Context context,
-                                                @NonNull final Bundle bookData,
-                                                @NonNull final FieldUsage usage,
-                                                @IntRange(from = 0, to = 1) final int cIdx) {
-        boolean copyThumb = false;
-        // check if we already have an image, and what we should do with the new image
-        switch (usage.getUsage()) {
-            case CopyIfBlank:
-                final File file = mCurrentBook.getUuidCoverFile(context, cIdx);
-                copyThumb = file == null || file.length() == 0;
-                break;
-
-            case Overwrite:
-                copyThumb = true;
-                break;
-
-            case Skip:
-            case Append:
-                break;
-        }
-
-        if (copyThumb) {
-            final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-            if (fileSpec != null) {
-                final File downloadedFile = new File(fileSpec);
-                try {
-                    final File destination = mCurrentBook.getUuidCoverFileOrNew(context, cIdx);
-                    FileUtils.rename(downloadedFile, destination);
-
-                } catch (@NonNull final IOException e) {
-                    final String uuid = mCurrentBook.getString(DBKeys.KEY_BOOK_UUID);
-                    Logger.error(context, TAG, e,
-                                 "processSearchResultsCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
-                }
-            }
-            bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-        }
-    }
 
     /**
      * Cleanup up and report the final outcome.
@@ -684,164 +468,6 @@ public class SearchBookUpdatesViewModel
             } else {
                 mListFinished.setValue(message);
             }
-        }
-    }
-
-    /**
-     * Filter the fields we want versus the fields we actually need for the given book data.
-     *
-     * @param context         Current context
-     * @param requestedFields the FieldUsage map to clean up
-     *
-     * @return the filtered FieldUsage map
-     */
-    private Map<String, FieldUsage> filter(@NonNull final Context context,
-                                           @NonNull final Map<String, FieldUsage> requestedFields) {
-
-        final Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
-        for (final FieldUsage usage : requestedFields.values()) {
-            switch (usage.getUsage()) {
-                case Skip:
-                    // duh...
-                    break;
-
-                case Append:
-                case Overwrite:
-                    // Append + Overwrite: we always need to get the data
-                    fieldUsages.put(usage.fieldId, usage);
-                    break;
-
-                case CopyIfBlank:
-                    // Handle special cases first, 'default:' for the rest
-                    if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        filterCoverImage(context, fieldUsages, usage, 0);
-                    } else if (usage.fieldId.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        filterCoverImage(context, fieldUsages, usage, 1);
-                    } else {
-                        switch (usage.fieldId) {
-                            // We should never have a book without authors, but be paranoid
-                            case Book.BKEY_AUTHOR_LIST:
-                            case Book.BKEY_SERIES_LIST:
-                            case Book.BKEY_PUBLISHER_LIST:
-                            case Book.BKEY_TOC_LIST:
-                                if (mCurrentBook.contains(usage.fieldId)) {
-                                    final ArrayList<Parcelable> list =
-                                            mCurrentBook.getParcelableArrayList(usage.fieldId);
-                                    if (list.isEmpty()) {
-                                        fieldUsages.put(usage.fieldId, usage);
-                                    }
-                                }
-                                break;
-
-                            default:
-                                // If the original was blank, add to list
-                                final String value = mCurrentBook.getString(usage.fieldId);
-                                if (value.isEmpty()) {
-                                    fieldUsages.put(usage.fieldId, usage);
-                                }
-                                break;
-                        }
-                    }
-                    break;
-            }
-        }
-
-        return fieldUsages;
-    }
-
-    private void filterCoverImage(@NonNull final Context context,
-                                  @NonNull final Map<String, FieldUsage> fieldUsages,
-                                  @NonNull final FieldUsage usage,
-                                  @IntRange(from = 0, to = 1) final int cIdx) {
-        // - If it's a thumbnail, then see if it's missing or empty.
-        final File file = mCurrentBook.getUuidCoverFile(context, cIdx);
-        if (file == null || file.length() == 0) {
-            fieldUsages.put(usage.fieldId, usage);
-        }
-    }
-
-    /**
-     * Check if we already have this field in the original data.
-     *
-     * @param fieldId to test for
-     *
-     * @return {@code true} if already present
-     */
-    private boolean hasField(@NonNull final String fieldId) {
-        switch (fieldId) {
-            case Book.BKEY_AUTHOR_LIST:
-            case Book.BKEY_SERIES_LIST:
-            case Book.BKEY_PUBLISHER_LIST:
-            case Book.BKEY_TOC_LIST:
-                if (mCurrentBook.contains(fieldId)) {
-                    if (!mCurrentBook.getParcelableArrayList(fieldId).isEmpty()) {
-                        return true;
-                    }
-                }
-                break;
-
-            default:
-                // If the original was non-blank, erase from list
-                final Object o = mCurrentBook.get(fieldId);
-                if (o != null) {
-                    final String value = o.toString().trim();
-                    if (!value.isEmpty() && !"0".equals(value)) {
-                        return true;
-                    }
-                }
-                break;
-        }
-
-        return false;
-    }
-
-    /**
-     * Combines two ParcelableArrayList's, weeding out duplicates.
-     *
-     * @param context    Current context
-     * @param key        for data
-     * @param bookLocale to use
-     * @param bookData   Bundle to update
-     */
-    private void appendLists(@NonNull final Context context,
-                             @NonNull final String key,
-                             @NonNull final Locale bookLocale,
-                             @NonNull final Bundle bookData) {
-        switch (key) {
-            case Book.BKEY_AUTHOR_LIST: {
-                final ArrayList<Author> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
-                    list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Author.pruneList(list, context, false, bookLocale);
-                }
-                break;
-            }
-            case Book.BKEY_SERIES_LIST: {
-                final ArrayList<Series> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
-                    list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Series.pruneList(list, context, false, bookLocale);
-                }
-                break;
-            }
-            case Book.BKEY_PUBLISHER_LIST: {
-                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
-                    list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Publisher.pruneList(list, context, false, bookLocale);
-                }
-                break;
-            }
-            case Book.BKEY_TOC_LIST: {
-                final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
-                if (list != null && !list.isEmpty()) {
-                    list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    TocEntry.pruneList(list, context, false, bookLocale);
-                }
-                break;
-            }
-            default:
-                throw new IllegalArgumentException(key);
         }
     }
 
