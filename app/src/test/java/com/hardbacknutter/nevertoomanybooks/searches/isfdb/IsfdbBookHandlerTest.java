@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.PK_SERIES_FROM_TOC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,7 +82,7 @@ class IsfdbBookHandlerTest
         assertEquals("0413600106", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("9780413600103", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(1.95d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.GBP, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("159", mRawData.getString(DBKeys.KEY_PAGES));
         assertEquals("pb", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("COLLECTION", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
@@ -149,7 +150,7 @@ class IsfdbBookHandlerTest
         assertEquals("9781473200104", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(9.99d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.GBP, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("257", mRawData.getString(DBKeys.KEY_PAGES));
         assertEquals("hc", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
@@ -204,7 +205,7 @@ class IsfdbBookHandlerTest
         assertEquals("9780062429995", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
         assertEquals(11.99d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("USD", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.USD, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
         assertEquals("ebook", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 

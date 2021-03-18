@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,7 +66,7 @@ class AmazonHtmlHandlerTest
         assertEquals("Hardcover", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("eng", mRawData.getString(DBKeys.KEY_LANGUAGE));
         assertEquals(14.49d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.GBP, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -97,7 +98,7 @@ class AmazonHtmlHandlerTest
         assertEquals("Paperback", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("eng", mRawData.getString(DBKeys.KEY_LANGUAGE));
         assertEquals(5.84d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.GBP, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -128,7 +129,7 @@ class AmazonHtmlHandlerTest
                      mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("978-2205057331", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals(12d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("EUR", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.EUR, mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

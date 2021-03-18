@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -102,7 +103,7 @@ class BookTest
         final Book book = new Book(mRawData);
         book.putString(DBKeys.KEY_LANGUAGE, "fra");
         book.putString(DBKeys.KEY_PRICE_LISTED, "");
-        book.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, "EUR");
+        book.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, Money.EUR);
         book.putString(DBKeys.KEY_PRICE_PAID, "test");
         // no KEY_PRICE_PAID_CURRENCY
 
@@ -113,7 +114,7 @@ class BookTest
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("EUR", book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.EUR, book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
         // "test" is correct according to preprocessPrices NOT changing illegal values.
         assertEquals("test", book.get(DBKeys.KEY_PRICE_PAID));
         assertNull(book.get(DBKeys.KEY_PRICE_PAID_CURRENCY));
@@ -133,7 +134,7 @@ class BookTest
         //dump(book);
 
         assertEquals(45d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("EUR", book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(Money.EUR, book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
     }
 
     @Test

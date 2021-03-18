@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,15 +39,15 @@ class CurrencyUtilsTest
         Money money;
 
         money = new Money(locale, "$10.50");
-        assertEquals("USD", money.getCurrency());
+        assertEquals(Money.USD, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
 
         money = new Money(locale, "£10.50");
-        assertEquals("GBP", money.getCurrency());
+        assertEquals(Money.GBP, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
 
         money = new Money(locale, "EUR 10.50");
-        assertEquals("EUR", money.getCurrency());
+        assertEquals(Money.EUR, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
     }
 
@@ -73,7 +73,7 @@ class CurrencyUtilsTest
         assertEquals(10.50d, money.doubleValue());
 
         money = new Money(locale, "$10.50");
-        assertEquals("USD", money.getCurrency());
+        assertEquals(Money.USD, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
     }
 
@@ -84,7 +84,7 @@ class CurrencyUtilsTest
         final Money money;
 
         money = new Money(locale, "£10.50");
-        assertEquals("GBP", money.getCurrency());
+        assertEquals(Money.GBP, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
     }
 
@@ -95,7 +95,7 @@ class CurrencyUtilsTest
         final Money money;
 
         money = new Money(locale, "EUR 10.50");
-        assertEquals("EUR", money.getCurrency());
+        assertEquals(Money.EUR, money.getCurrency());
         assertEquals(10.50d, money.doubleValue());
     }
 }
