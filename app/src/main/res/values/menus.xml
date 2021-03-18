@@ -172,6 +172,8 @@
     <item name="MENU_CALIBRE_READ" type="id" />
     <item name="MENU_CALIBRE_SETTING" type="id" />
 
+    <item name="MENU_STRIP_INFO_SETTING" type="id" />
+
 
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE" type="id" />

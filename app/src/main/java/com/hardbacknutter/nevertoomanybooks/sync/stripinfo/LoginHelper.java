@@ -19,10 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,14 +45,19 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.org.json.JSONObject;
 
 public class LoginHelper {
 
     public static final String PK_HOST_USER = "stripinfo.host.user";
     public static final String PK_HOST_PASS = "stripinfo.host.password";
+
+    /** The {@link Bookshelf} to which the wishlist is mapped. */
+    public static final String PK_WISHLIST_BOOKSHELF = "stripinfo.wishlist.bookshelf";
     /** Log tag. */
     private static final String TAG = "LoginHelper";
     /** the id returned in the cookie. Stored for easy access. */
@@ -66,18 +73,22 @@ public class LoginHelper {
     private static final String COOKIE_DOMAIN = "stripinfo.be";
 
     @Nullable
+    private HttpCookie mUserDataCookie;
+
+    /** Parsed from the Cookie. */
+    @Nullable
     private String mUserId;
+
 
     /**
      * Initialises the global {@link CookieManager} and performs a login
      * using the stored credentials.
      *
-     * @return the Optional&lt;HttpCookie&gt;; when present indicates login was successful.
+     * @return {@code true} for success
      *
      * @throws IOException on any failure
      */
-    @NonNull
-    public Optional<HttpCookie> login()
+    public boolean login()
             throws IOException {
 
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
@@ -87,7 +98,7 @@ public class LoginHelper {
         // Sanity check
         //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
-            return Optional.empty();
+            return false;
         }
 
         final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
@@ -130,23 +141,31 @@ public class LoginHelper {
                              .findFirst();
         request.disconnect();
 
-        optional.ifPresent(cookie -> {
+        if (optional.isPresent()) {
+            // preserve the Cookie as-is for future access
+            mUserDataCookie = optional.get();
             try {
-                final String cookieValue = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                final String cookieValue = URLDecoder.decode(mUserDataCookie.getValue(), "UTF-8");
                 // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
                 final JSONObject jsonCookie = new JSONObject(cookieValue);
-                mUserId = jsonCookie.optString("userid");
-                if (mUserId != null && !mUserId.isEmpty()) {
+                final String userId = jsonCookie.optString("userid");
+                if (userId != null && !userId.isEmpty()) {
+                    mUserId = userId;
                     // store as String. We don't need to know it's a number.
                     global.edit().putString(PK_HOST_USER_ID, mUserId).apply();
+                    return true;
                 }
-
             } catch (@NonNull final UnsupportedEncodingException e) {
-                mUserId = null;
-                Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                Logger.e(TAG, e, "cookie.getValue()=" + mUserDataCookie.getValue());
             }
-        });
-        return optional;
+        }
+        mUserId = null;
+        return false;
+    }
+
+    @Nullable
+    public HttpCookie getUserDataCookie() {
+        return mUserDataCookie;
     }
 
     /**
@@ -158,7 +177,21 @@ public class LoginHelper {
      * @return user id or {@code null}
      */
     @Nullable
-    String getUserId() {
+    public String getUserId() {
         return mUserId;
+    }
+
+    /**
+     * Get the mapped bookshelf where to put "wanted" books on.
+     *
+     * @param context Current context
+     *
+     * @return Bookshelf, or {@code null} if not configured.
+     */
+    @Nullable
+    public Bookshelf getWishListBookshelf(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final int id = ParseUtils.getIntListPref(global, PK_WISHLIST_BOOKSHELF, Bookshelf.DEFAULT);
+        return Bookshelf.getBookshelf(context, id);
     }
 }

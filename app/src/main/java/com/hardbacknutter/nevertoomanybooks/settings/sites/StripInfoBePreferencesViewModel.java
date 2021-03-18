@@ -27,8 +27,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
-import java.net.HttpCookie;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
@@ -90,9 +88,7 @@ public class StripInfoBePreferencesViewModel
         @Override
         protected Boolean doWork(@NonNull final Context context)
                 throws IOException {
-            final LoginHelper loginHelper = new LoginHelper();
-            final Optional<HttpCookie> cookie = loginHelper.login();
-            return cookie.isPresent();
+            return new LoginHelper().login();
         }
     }
 }

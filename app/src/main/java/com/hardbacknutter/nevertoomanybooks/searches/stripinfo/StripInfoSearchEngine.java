@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -35,13 +34,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpCookie;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,8 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -80,8 +77,6 @@ public class StripInfoSearchEngine
         implements SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
-    /** The {@link Bookshelf} to which the wishlist is mapped. */
-    public static final String PK_WISHLIST_BOOKSHELF = "stripinfo.wishlist.bookshelf";
     /**
      * Whether the user wants to login to the website during a search or update-fields.
      * This is independent from a future full sync.
@@ -132,12 +127,13 @@ public class StripInfoSearchEngine
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
 
-    private static final String ATTR_CHECKED = "checked";
-    private static final String ATTR_STYLE = "style";
-    private static final Pattern ATTR_STYLE_PATTERN = Pattern.compile("[:;]");
+    /** Delegate common Element handling. */
+    private final JSoupHelper mJSoupHelper = new JSoupHelper();
 
     @Nullable
-    private HttpCookie mUserDataCookie;
+    private LoginHelper mLoginHelper;
+    @Nullable
+    private Bookshelf mWishListBookshelf;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -178,14 +174,26 @@ public class StripInfoSearchEngine
                                 .getBoolean(PK_LOGIN_TO_SEARCH, false);
     }
 
+    public void setLoginHelper(@NonNull final LoginHelper loginHelper) {
+        mLoginHelper = loginHelper;
+    }
+
     @Nullable
     @Override
     public Document loadDocument(@NonNull final String url)
             throws IOException {
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            if (mUserDataCookie == null && isLoginToSearch()) {
-                new LoginHelper().login().ifPresent(c -> mUserDataCookie = c);
+            if (isLoginToSearch()) {
+                if (mLoginHelper == null) {
+                    mLoginHelper = new LoginHelper();
+                }
+                if (mLoginHelper.getUserId() == null) {
+                    mLoginHelper.login();
+                }
+
+                // set every time we load a doc; the user could have changed the preferences.
+                mWishListBookshelf = mLoginHelper.getWishListBookshelf(getContext());
             }
         }
 
@@ -392,7 +400,7 @@ public class StripInfoSearchEngine
                                 break;
 
                             case "Collectie":
-                                i += processCollectie(td);
+                                i += processSeriesOrCollection(td);
                                 break;
 
                             case "Oplage":
@@ -447,7 +455,7 @@ public class StripInfoSearchEngine
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
             // are we logged in ? Then look for any user data.
-            if (mUserDataCookie != null) {
+            if (mLoginHelper != null && mLoginHelper.getUserId() != null) {
                 processUserdata(document, bookData, externalId);
             }
         }
@@ -828,7 +836,7 @@ public class StripInfoSearchEngine
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processCollectie(@NonNull final Element td) {
+    private int processSeriesOrCollection(@NonNull final Element td) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
@@ -926,16 +934,24 @@ public class StripInfoSearchEngine
         }
     }
 
-    @NonNull
-    public Bookshelf getWishListBookshelf() {
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        final int id = ParseUtils.getIntListPref(global, PK_WISHLIST_BOOKSHELF, Bookshelf.DEFAULT);
-        return Bookshelf.getBookshelf(getContext(), id, Bookshelf.PREFERRED);
-    }
-
     /**
      * Parse the userdata.
+     * <p>
+     * ENHANCE: side ajax panel has:
+     * <form method="POST" action="ajax_collectie.php">
+     * <input type="text" name="score" id="score" placeholder="Score" value="3.00" />
+     * <input type="text" name="aankoopDatum" id="aankoopDatum" value="01/05/1992" />
+     * <input type="text" name="aankoopPrijs" id="aankoopPrijs" value="30.00" />
+     * <input type="text" name="druk" id="druk" value="20" />
+     * <input type="text" name="aantal" id="aantal" value="1" />
+     * <input type="text" name="locatie" id="locatie" value="thuis" />
+     * <textarea name="opmerking" id="opmerking">testing</textarea>
+     * <input type="hidden" name="stripId" id="stripId" value="153809" />
+     * <input type="hidden" name="stripCollectieId" id="stripCollectieId" value="2544201" />
+     * <input type="hidden" name="mode" id="mode" value="form" />
+     * <input type="submit" name="save" id="save" value="Aanpassingen opslaan" />
+     * <input type="hidden" name="frmName" id="frmName" value="collDetail" />
+     * </form>
      *
      * @param document   root element
      * @param bookData   Bundle to update
@@ -944,68 +960,49 @@ public class StripInfoSearchEngine
     private void processUserdata(@NonNull final Element document,
                                  @NonNull final Bundle bookData,
                                  final long externalId) {
+        Boolean tmpBool;
 
-        final Boolean isRead = getCheckboxValue(document, "stripCollectieGelezen-" + externalId);
-        if (isRead != null) {
-            bookData.putBoolean(DBKeys.KEY_READ, isRead);
+        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieGelezen-" + externalId);
+        if (tmpBool != null) {
+            bookData.putBoolean(DBKeys.KEY_READ, tmpBool);
         }
 
-        final Boolean isWanted =
-                getCheckboxValue(document, "stripCollectieInWishlist-" + externalId);
-        if (isWanted != null) {
-            final ArrayList<Bookshelf> list = new ArrayList<>();
-            list.add(getWishListBookshelf());
-            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieInWishlist-" + externalId);
+        if (tmpBool != null) {
+            if (mWishListBookshelf != null) {
+                final ArrayList<Bookshelf> list = new ArrayList<>();
+                list.add(mWishListBookshelf);
+                bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+            }
         }
 
         // The site has a concept of "I own this book" and "I have this book in my collection"
 
         // Owning a book
-//        final Boolean isOwned = getCheckboxValue(document, "stripCollectieInBezit-" + siId);
-//        if (isRead != null) {
-//            bookData.putBoolean(DBKeys.X, isOwned);
-//        }
+        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieInBezit-" + externalId);
+        if (tmpBool != null) {
+            bookData.putBoolean(SiteField.OWNED, tmpBool);
+        }
 
         // In my collection: these are books where the user made SOME note/flag/...
         // i.e. a book the user has 'touched' and is remembered on the site
         // until they remove it from the collection.
         // An 'owned' books is automatically part of the collection,
         // but a book in the collection can be 'owned', 'not owned', 'wanted', 'remark added', ...
-
-//        final boolean isInCollection;
-//        final Element showIfInCollection = document
-//                .getElementById("showIfInCollection-" + externalId);
-//        if (showIfInCollection != null) {
-//            final Map<String, String[]> styleMap = getStyleMap(showIfInCollection);
-//            final String[] display = styleMap.get("display");
-//            isInCollection = (display != null && display.length > 0
-//                              && "block".equalsIgnoreCase(display[0]));
-//        } else {
-//            isInCollection = false;
-//        }
-    }
-
-    @Nullable
-    private Boolean getCheckboxValue(@NonNull final Element root,
-                                     @NonNull final String id) {
-        final Element checkbox = root.getElementById(id);
-        if (checkbox != null && "checkbox".equalsIgnoreCase(checkbox.attr("type"))) {
-            return ATTR_CHECKED.equalsIgnoreCase(checkbox.attr(ATTR_CHECKED));
-        }
-        return null;
-    }
-
-    private Map<String, String[]> getStyleMap(@NonNull final Element element) {
-        final Map<String, String[]> keymaps = new HashMap<>();
-        if (!element.hasAttr(ATTR_STYLE)) {
-            return keymaps;
+        //
+        // The actual data can only be retrieved by an additional HTTP call, see method doc.
+        final Element showIfInCollection = document
+                .getElementById("showIfInCollection-" + externalId);
+        if (showIfInCollection != null) {
+            final Map<String, String[]> styleMap = mJSoupHelper.getStyleMap(showIfInCollection);
+            final String[] display = styleMap.get("display");
+            if ((display != null && display.length > 0
+                 && "block".equalsIgnoreCase(display[0]))) {
+                bookData.putBoolean(SiteField.IN_COLLECTION, true);
+            }
         }
 
-        final String[] list = ATTR_STYLE_PATTERN.split(element.attr(ATTR_STYLE));
-        for (int i = 0; i < list.length; i += 2) {
-            keymaps.put(list[i].trim(), list[i + 1].trim().split(" "));
-        }
-        return keymaps;
+        // other user data is ONLY read when importing a collection
     }
 
     /**
@@ -1039,8 +1036,21 @@ public class StripInfoSearchEngine
      */
     public static final class SiteField {
 
-        /** The barcode (e.g. the EAN code) is not always an ISBN. */
-        static final String BARCODE = "__barcode";
+        /** String - The barcode (e.g. the EAN code) is not always an ISBN. */
+        public static final String BARCODE = "__barcode";
+
+        /** boolean. */
+        public static final String OWNED = "__owned";
+        /** boolean. */
+        public static final String IN_COLLECTION = "__in_collection";
+        /**
+         * long. Not sure we really need this.
+         * This is the website id for storing OUR details about the book.
+         */
+        public static final String COLLECTION_ID = "__collection_id";
+
+        /** int. The number of copies of this book. */
+        public static final String AMOUNT = "__amount";
 
         private SiteField() {
         }

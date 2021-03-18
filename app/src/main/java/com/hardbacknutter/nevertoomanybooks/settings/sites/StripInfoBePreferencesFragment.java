@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -109,7 +108,7 @@ public class StripInfoBePreferencesFragment
             }
         });
 
-        final ListPreference wb = findPreference(StripInfoSearchEngine.PK_WISHLIST_BOOKSHELF);
+        final ListPreference wb = findPreference(LoginHelper.PK_WISHLIST_BOOKSHELF);
 
         final ArrayList<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
         final CharSequence[] entries = new CharSequence[all.size()];
