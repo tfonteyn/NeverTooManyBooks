@@ -198,16 +198,18 @@ public class CalibrePreferencesFragment
     }
 
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        //noinspection ConstantConditions
-        String msg = ExMsg.map(getContext(), TAG, message.result);
-        if (msg == null) {
-            msg = "";
-        } else {
-            msg += "\n";
-        }
+        if (message.isNewEvent()) {
+            //noinspection ConstantConditions
+            String msg = ExMsg.map(getContext(), TAG, message.result);
+            if (msg == null) {
+                msg = "";
+            } else {
+                msg += "\n";
+            }
 
-        StandardDialogs.showError(
-                getContext(), msg + getString(R.string.error_network_failed_try_again));
+            StandardDialogs.showError(
+                    getContext(), msg + getString(R.string.error_network_failed_try_again));
+        }
     }
 
     @Override
