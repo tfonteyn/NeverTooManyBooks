@@ -84,6 +84,7 @@ public class CalibreAdminFragment
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
+                  .setReorderingAllowed(true)
                   .addToBackStack(CalibreLibraryMappingFragment.TAG)
                   .replace(R.id.main_fragment, fragment, CalibreLibraryMappingFragment.TAG)
                   .commit();
@@ -101,6 +102,7 @@ public class CalibreAdminFragment
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
+                  .setReorderingAllowed(true)
                   .addToBackStack(ImportFragment.TAG)
                   .replace(R.id.main_fragment, fragment, ImportFragment.TAG)
                   .commit();
@@ -118,6 +120,7 @@ public class CalibreAdminFragment
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
+                  .setReorderingAllowed(true)
                   .addToBackStack(ExportFragment.TAG)
                   .replace(R.id.main_fragment, fragment, ExportFragment.TAG)
                   .commit();
@@ -154,6 +157,7 @@ public class CalibreAdminFragment
         final Fragment fragment = new CalibrePreferencesFragment();
         final FragmentManager fm = getParentFragmentManager();
         fm.beginTransaction()
+          .setReorderingAllowed(true)
           .addToBackStack(CalibrePreferencesFragment.TAG)
           .replace(R.id.main_fragment, fragment, CalibrePreferencesFragment.TAG)
           .commit();

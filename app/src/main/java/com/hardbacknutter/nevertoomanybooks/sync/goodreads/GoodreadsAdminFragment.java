@@ -166,6 +166,7 @@ public class GoodreadsAdminFragment
             final Fragment fragment = new GoodreadsPreferencesFragment();
             final FragmentManager fm = getParentFragmentManager();
             fm.beginTransaction()
+              .setReorderingAllowed(true)
               .addToBackStack(GoodreadsPreferencesFragment.TAG)
               .replace(R.id.main_fragment, fragment, GoodreadsPreferencesFragment.TAG)
               .commit();

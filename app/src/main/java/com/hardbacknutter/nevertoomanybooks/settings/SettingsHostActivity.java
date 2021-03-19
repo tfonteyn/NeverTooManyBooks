@@ -132,6 +132,7 @@ public class SettingsHostActivity
         fragment.setArguments(args);
 
         fm.beginTransaction()
+          .setReorderingAllowed(true)
           .addToBackStack(fragment.getTag())
           .replace(R.id.main_fragment, fragment)
           .commit();

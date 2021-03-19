@@ -210,6 +210,7 @@ public class MaintenanceFragment
 
             final FragmentManager fm = getParentFragmentManager();
             fm.beginTransaction()
+              .setReorderingAllowed(true)
               .addToBackStack(SqliteShellFragment.TAG)
               .replace(R.id.main_fragment, fragment, SqliteShellFragment.TAG)
               .commit();

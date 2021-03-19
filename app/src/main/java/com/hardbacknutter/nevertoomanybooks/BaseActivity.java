@@ -207,6 +207,7 @@ public abstract class BaseActivity
             fragment.setArguments(getIntent().getExtras());
 
             fm.beginTransaction()
+              .setReorderingAllowed(true)
               .add(containerViewId, fragment, fragmentTag)
               .commit();
         }
