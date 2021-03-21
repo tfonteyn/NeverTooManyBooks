@@ -283,7 +283,7 @@ public class ShowBookViewModel
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBKeys.isCoverUsed(global, cIdx)) {
+        if (!DBKeys.isUsed(global, DBKeys.COVER_IS_USED[cIdx])) {
             return false;
         }
 

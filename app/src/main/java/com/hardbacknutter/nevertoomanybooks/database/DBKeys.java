@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.SharedPreferences;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
@@ -251,9 +250,14 @@ public final class DBKeys {
     public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
 
+    public static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
+            // fields.visibility.thumbnail.0
+            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[0],
+            // fields.visibility.thumbnail.1
+            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[1]
+    };
     /** The "field is used" key for thumbnails. */
-    public static final String PREFS_IS_USED_COVER = "thumbnail";
-
+    private static final String PREFIX_COVER_IS_USED = "thumbnail";
 
     /**
      * Users can select which fields they use / don't want to use.
@@ -261,12 +265,10 @@ public final class DBKeys {
      * The key is suffixed with the name of the field.
      */
     private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
-    public static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
-            // fields.visibility.thumbnail.0
-            PREFS_PREFIX_FIELD_VISIBILITY + PREFS_IS_USED_COVER + ".0",
-            // fields.visibility.thumbnail.1
-            PREFS_PREFIX_FIELD_VISIBILITY + PREFS_IS_USED_COVER + ".1",
-            };
+    public static final String[] COVER_IS_USED = new String[]{
+            PREFIX_COVER_IS_USED + ".0",
+            PREFIX_COVER_IS_USED + ".1"
+    };
 
 
     /**
@@ -300,20 +302,6 @@ public final class DBKeys {
     public static boolean isUsed(@NonNull final SharedPreferences global,
                                  @UserSelectedDomain @NonNull final String dbdKey) {
         return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
-    }
-
-    /**
-     * Is the cover field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param global Global preferences
-     * @param cIdx   0..n image index
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isCoverUsed(@NonNull final SharedPreferences global,
-                                      @IntRange(from = 0, to = 1) final int cIdx) {
-        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
-                                 + PREFS_IS_USED_COVER + "." + cIdx, true);
     }
 
     public static boolean isMoneyKey(@NonNull final CharSequence key) {

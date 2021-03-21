@@ -603,7 +603,8 @@ public interface SearchEngine {
                 }
 
                 final ArrayList<String> imageList = bookData
-                        .getStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
+                        .getStringArrayList(
+                                SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
                 if (imageList != null && !imageList.isEmpty()) {
                     // let the system resolve any path variations
                     return new File(imageList.get(0)).getAbsolutePath();

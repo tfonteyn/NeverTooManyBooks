@@ -422,8 +422,7 @@ public class AmazonSearchEngine
             }
         }
 
-        final Elements authorSpans = document.select("div#bylineInfo > span.author");
-        for (final Element span : authorSpans) {
+        for (final Element span : document.select("div#bylineInfo > span.author")) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
             Element a = span.selectFirst("a.contributorNameID");
             if (a == null) {
@@ -599,7 +598,7 @@ public class AmazonSearchEngine
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                bookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
                                             imageList);
             }
         }

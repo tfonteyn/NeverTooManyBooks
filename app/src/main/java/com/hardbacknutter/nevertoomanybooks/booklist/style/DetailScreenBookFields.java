@@ -53,7 +53,8 @@ public class DetailScreenBookFields
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             addField(new PBoolean(isPersistent, persistenceLayer,
-                                  PK_COVER[cIdx], DBKeys.isCoverUsed(global, cIdx)));
+                                  PK_COVER[cIdx],
+                                  DBKeys.isUsed(global, DBKeys.COVER_IS_USED[cIdx])));
         }
     }
 

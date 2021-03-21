@@ -61,6 +61,8 @@ public class SearchBookUpdatesViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+    private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
+
     private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
     /**
@@ -139,37 +141,36 @@ public class SearchBookUpdatesViewModel
      * Entries are displayed in the order they are added here.
      */
     private SyncProcessor createSyncProcessor() {
-        final SyncProcessor.Builder builder =
-                new SyncProcessor.Builder("fields.update.usage.")
-                        .addCover(R.string.lbl_cover_front, 0)
-                        .addCover(R.string.lbl_cover_back, 1)
+        final SyncProcessor.Builder builder = new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+                .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
+                .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
 
-                        .add(R.string.lbl_title, DBKeys.KEY_TITLE)
-                        .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
+                .add(R.string.lbl_title, DBKeys.KEY_TITLE)
+                .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
 
-                        .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-                        .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
-                                 Book.BKEY_SERIES_LIST)
+                .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+                .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
+                         Book.BKEY_SERIES_LIST)
 
-                        .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
+                .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
 
-                        .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
-                                 Book.BKEY_TOC_LIST)
+                .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
+                         Book.BKEY_TOC_LIST)
 
-                        .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
-                                 Book.BKEY_PUBLISHER_LIST)
-                        .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
-                        .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
-                        .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
+                .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
+                         Book.BKEY_PUBLISHER_LIST)
+                .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
+                .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
+                .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
 
-                        // list price has related DBDefinitions.KEY_PRICE_LISTED
-                        .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
+                // list price has related DBDefinitions.KEY_PRICE_LISTED
+                .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
 
-                        .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
-                        .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
-                        .add(R.string.lbl_color, DBKeys.KEY_COLOR)
-                        .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
-                        .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
+                .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
+                .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
+                .add(R.string.lbl_color, DBKeys.KEY_COLOR)
+                .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
+                .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
 
         for (final SearchEngineConfig config : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = config.getExternalIdDomain();
@@ -199,7 +200,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return mSyncProcessor.isOverwrite(DBKeys.PREFS_IS_USED_COVER + ".0");
+        return mSyncProcessor.isOverwrite(DBKeys.COVER_IS_USED[0]);
     }
 
     /**
@@ -209,8 +210,8 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     public void setCoverSyncAction(@NonNull final SyncAction action) {
-        mSyncProcessor.setSyncAction(DBKeys.PREFS_IS_USED_COVER + ".0", action);
-        mSyncProcessor.setSyncAction(DBKeys.PREFS_IS_USED_COVER + ".1", action);
+        mSyncProcessor.setSyncAction(DBKeys.COVER_IS_USED[0], action);
+        mSyncProcessor.setSyncAction(DBKeys.COVER_IS_USED[1], action);
     }
 
     /**
@@ -251,10 +252,13 @@ public class SearchBookUpdatesViewModel
         mSyncProcessor.addRelatedField(R.string.lbl_currency, DBKeys.KEY_PRICE_LISTED,
                                        DBKeys.KEY_PRICE_LISTED_CURRENCY);
 
-        // if covers are wanted, also get the actual file names
-        mSyncProcessor.addRelatedField(R.string.lbl_cover_front, DBKeys.PREFS_IS_USED_COVER + ".0",
+        // if covers are wanted, get the actual file names
+        // Reminder:
+        // DBKeys.PREFS_IS_USED_COVER is the SharedPreference key indicating the Action!
+        // The data itself is the Book.BKEY_TMP_FILE_SPEC array.
+        mSyncProcessor.addRelatedField(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0],
                                        Book.BKEY_TMP_FILE_SPEC[0]);
-        mSyncProcessor.addRelatedField(R.string.lbl_cover_back, DBKeys.PREFS_IS_USED_COVER + ".1",
+        mSyncProcessor.addRelatedField(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1],
                                        Book.BKEY_TMP_FILE_SPEC[1]);
 
         mCurrentProgressCounter = 0;

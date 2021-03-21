@@ -338,12 +338,13 @@ class AmazonXmlHandler
                     .saveImage(mCoverUrl, mBookData.getString(DBKeys.KEY_ISBN), 0, null);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        mBookData.getStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0]);
+                        mBookData.getStringArrayList(
+                                SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                mBookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                mBookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
                                              imageList);
             }
         }

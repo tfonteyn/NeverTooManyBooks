@@ -228,8 +228,9 @@ public class LibraryThingSearchEngine
             if (isbnStr != null && !isbnStr.isEmpty()) {
                 final ArrayList<String> imageList = searchBestCoverImageByIsbn(isbnStr, 0);
                 if (!imageList.isEmpty()) {
-                    bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
-                                                imageList);
+                    bookData.putStringArrayList(
+                            SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
+                            imageList);
                 }
             }
         }
@@ -261,7 +262,7 @@ public class LibraryThingSearchEngine
         if (fetchThumbnail[0]) {
             final ArrayList<String> imageList = searchBestCoverImageByIsbn(validIsbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                bookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
                                             imageList);
             }
         }

@@ -301,13 +301,14 @@ class GoogleBooksEntryHandler
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(
-                                    SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0]);
+                                    SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
                     if (imageList == null) {
                         imageList = new ArrayList<>();
                     }
                     imageList.add(fileSpec);
-                    mBookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
-                                                 imageList);
+                    mBookData.putStringArrayList(
+                            SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
+                            imageList);
                 }
             }
         } else if (XML_PRICE.equalsIgnoreCase(localName)) {
