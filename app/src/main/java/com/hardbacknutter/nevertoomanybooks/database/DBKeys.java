@@ -250,14 +250,12 @@ public final class DBKeys {
     public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
 
-    public static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
-            // fields.visibility.thumbnail.0
-            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[0],
-            // fields.visibility.thumbnail.1
-            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[1]
-    };
     /** The "field is used" key for thumbnails. */
     private static final String PREFIX_COVER_IS_USED = "thumbnail";
+    public static final String[] COVER_IS_USED = new String[]{
+            PREFIX_COVER_IS_USED + ".0",
+            PREFIX_COVER_IS_USED + ".1"
+    };
 
     /**
      * Users can select which fields they use / don't want to use.
@@ -265,11 +263,12 @@ public final class DBKeys {
      * The key is suffixed with the name of the field.
      */
     private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
-    public static final String[] COVER_IS_USED = new String[]{
-            PREFIX_COVER_IS_USED + ".0",
-            PREFIX_COVER_IS_USED + ".1"
+    public static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
+            // fields.visibility.thumbnail.0
+            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[0],
+            // fields.visibility.thumbnail.1
+            PREFS_PREFIX_FIELD_VISIBILITY + COVER_IS_USED[1]
     };
-
 
     /**
      * All money keys.
