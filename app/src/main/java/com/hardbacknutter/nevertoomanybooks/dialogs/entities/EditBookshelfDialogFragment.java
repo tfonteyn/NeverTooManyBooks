@@ -99,6 +99,7 @@ public class EditBookshelfDialogFragment
         mVb = DialogEditBookshelfBinding.bind(view);
 
         mVb.bookshelf.setText(mName);
+        mVb.bookshelf.requestFocus();
     }
 
     @Override

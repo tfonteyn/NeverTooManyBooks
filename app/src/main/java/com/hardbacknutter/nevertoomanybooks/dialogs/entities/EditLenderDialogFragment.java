@@ -164,6 +164,8 @@ public class EditLenderDialogFragment
         } else {
             mRequestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
         }
+
+        mVb.lendTo.requestFocus();
     }
 
     @RequiresPermission(Manifest.permission.READ_CONTACTS)

@@ -147,6 +147,8 @@ public class EditAuthorDialogFragment
         mVb.givenNames.setText(mGivenNames);
         mVb.givenNames.setAdapter(givenNameAdapter);
         mVb.cbxIsComplete.setChecked(mIsComplete);
+
+        // don't requestFocus() as we have multiple fields.
     }
 
     @Override

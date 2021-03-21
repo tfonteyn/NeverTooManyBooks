@@ -129,6 +129,8 @@ public abstract class EditStringBaseDialogFragment
                     ExtArrayAdapter.FilterType.Diacritic, objects);
             mVb.editString.setAdapter(adapter);
         }
+
+        mVb.editString.requestFocus();
     }
 
     @Override

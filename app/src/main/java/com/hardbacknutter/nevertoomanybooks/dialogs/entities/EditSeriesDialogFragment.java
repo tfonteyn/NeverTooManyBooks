@@ -131,6 +131,8 @@ public class EditSeriesDialogFragment
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
         mVb.cbxIsComplete.setChecked(mIsComplete);
+
+        // don't requestFocus() as we have multiple fields.
     }
 
     @Override

@@ -125,6 +125,8 @@ public class EditPublisherDialogFragment
                 ServiceLocator.getInstance().getPublisherDao().getNames());
         mVb.publisher.setText(mName);
         mVb.publisher.setAdapter(adapter);
+
+        mVb.publisher.requestFocus();
     }
 
     @Override
