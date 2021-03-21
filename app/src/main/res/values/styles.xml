@@ -438,8 +438,6 @@
 
     <!-- Cover image. -->
     <style name="CoverImage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <!-- padding MUST be 0dp to allow scaling ratio to work properly. -->
         <item name="android:padding">0dp</item>
         <item name="android:layout_margin">4dp</item>
@@ -447,12 +445,12 @@
         <item name="android:adjustViewBounds">true</item>
     </style>
 
-    <style name="CoverImage.Preview">
+    <style name="CoverImage.BrowserPreview">
         <item name="android:layout_width">@dimen/cover_browser_preview_width</item>
         <item name="android:layout_height">@dimen/cover_browser_preview_height</item>
     </style>
 
-    <style name="CoverImage.Gallery">
+    <style name="CoverImage.BrowserGallery">
         <item name="android:layout_width">@dimen/cover_browser_gallery_width</item>
         <item name="android:layout_height">@dimen/cover_browser_gallery_height</item>
     </style>

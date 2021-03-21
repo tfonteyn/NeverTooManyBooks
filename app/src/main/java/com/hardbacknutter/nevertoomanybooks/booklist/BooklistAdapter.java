@@ -193,22 +193,12 @@ public class BooklistAdapter
         coverSizes.recycle();
 
         // The thumbnail scale defines the Book layout file to use.
-        // The layout names ending in 3/4 are ONLY the references, they are not
-        // hard coded in the layout files themselves (other than in 'tools' settings).
-        switch (frontCoverScale) {
-            case ListStyle.IMAGE_SCALE_6_MAX:
-            case ListStyle.IMAGE_SCALE_5_VERY_LARGE:
-            case ListStyle.IMAGE_SCALE_4_LARGE:
-                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
-                break;
-
-            case ListStyle.IMAGE_SCALE_3_MEDIUM:
-            case ListStyle.IMAGE_SCALE_2_SMALL:
-            case ListStyle.IMAGE_SCALE_1_VERY_SMALL:
-            case ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
-            default:
-                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
-                break;
+        // The layout names ending in 3/4 are ONLY as reference,
+        // with the hardcoded values in them always replaced at runtime.
+        if (frontCoverScale > ListStyle.IMAGE_SCALE_3_MEDIUM) {
+            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
+        } else {
+            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
         }
 
         // now the actual new cursor
@@ -841,7 +831,7 @@ public class BooklistAdapter
 
         /**
          * The view to install on-click listeners on. Can be the same as the itemView.
-         * This is also the view where we will add tags with rowId etc,
+         * This is also the view where we can/should add tags,
          * as it is this View that will be passed to the onClick handlers.
          */
         @NonNull
@@ -854,8 +844,10 @@ public class BooklistAdapter
          */
         RowViewHolder(@NonNull final View itemView) {
             super(itemView);
+            // if present, redirect all clicks to this view
             onClickTargetView = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
             if (onClickTargetView == null) {
+                // if not, then just let the main view get them.
                 onClickTargetView = itemView;
             }
         }

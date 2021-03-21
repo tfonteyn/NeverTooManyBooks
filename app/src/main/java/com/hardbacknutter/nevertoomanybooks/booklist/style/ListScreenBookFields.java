@@ -25,6 +25,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
+import androidx.core.math.MathUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -116,7 +117,11 @@ public class ListScreenBookFields
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         if (isShowField(global, PK_COVERS)) {
-            return mThumbnailScale.getValue();
+            // clamping because we removed value "6" which would make us crash if the user
+            // had it configured... and paranoia
+            return MathUtils.clamp(mThumbnailScale.getValue(),
+                                   ListStyle.IMAGE_SCALE_1_VERY_SMALL,
+                                   ListStyle.IMAGE_SCALE_5_VERY_LARGE);
         }
         return ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
     }
