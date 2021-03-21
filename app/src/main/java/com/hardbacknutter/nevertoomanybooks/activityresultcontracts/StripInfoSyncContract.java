@@ -19,31 +19,45 @@
  */
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoSyncFragment;
 
-public class GoodreadsAdminContract
-        extends ActivityResultContract<Void, Void> {
+public class StripInfoSyncContract
+        extends ActivityResultContract<Void, Bundle> {
+
+    private static final String TAG = "StripInfoSyncContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StripinfoSyncFragment.TAG);
     }
 
     @Override
     @Nullable
-    public Void parseResult(final int resultCode,
-                            @Nullable final Intent intent) {
-        return null;
+    public Bundle parseResult(final int resultCode,
+                              @Nullable final Intent intent) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+        }
+
+        if (intent == null || resultCode != Activity.RESULT_OK) {
+            return null;
+        }
+        return intent.getExtras();
     }
 }

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
@@ -83,7 +83,7 @@ public class StripInfoBePreferencesFragment
 
         EditTextPreference etp;
 
-        etp = findPreference(LoginHelper.PK_HOST_USER);
+        etp = findPreference(StripinfoLoginHelper.PK_HOST_USER);
         //noinspection ConstantConditions
         etp.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -92,7 +92,7 @@ public class StripInfoBePreferencesFragment
         etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
 
-        etp = findPreference(LoginHelper.PK_HOST_PASS);
+        etp = findPreference(StripinfoLoginHelper.PK_HOST_PASS);
         //noinspection ConstantConditions
         etp.setOnBindEditTextListener(editText -> {
             editText.setInputType(InputType.TYPE_CLASS_TEXT
@@ -108,7 +108,7 @@ public class StripInfoBePreferencesFragment
             }
         });
 
-        final ListPreference wb = findPreference(LoginHelper.PK_WISHLIST_BOOKSHELF);
+        final ListPreference wb = findPreference(StripinfoLoginHelper.PK_WISHLIST_BOOKSHELF);
 
         final ArrayList<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
         final CharSequence[] entries = new CharSequence[all.size()];

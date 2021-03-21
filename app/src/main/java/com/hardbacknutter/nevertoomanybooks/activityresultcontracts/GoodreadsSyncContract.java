@@ -26,25 +26,33 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;
 
-public class CalibrePreferencesContract
+public class GoodreadsSyncContract
         extends ActivityResultContract<Void, Void> {
+
+    private static final String TAG = "GoodreadsSyncContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return new Intent(context, SettingsHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, CalibrePreferencesFragment.TAG);
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, GoodreadsSyncFragment.TAG);
     }
 
     @Override
     @Nullable
     public Void parseResult(final int resultCode,
                             @Nullable final Intent intent) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+        }
+
         return null;
     }
 }

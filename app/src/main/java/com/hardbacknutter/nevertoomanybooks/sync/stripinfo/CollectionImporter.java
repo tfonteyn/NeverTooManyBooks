@@ -1,0 +1,346 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
+import androidx.core.math.MathUtils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
+
+/**
+ * Ratings as suggested by the site.
+ * 10 - Subliem!
+ * 9 - Uitstekend
+ * 8 - Zeer goed
+ * 7 - Bovengemiddeld
+ * 6 - Goed, maar niet bijzonder
+ * 5 - Matig
+ * 4 - Zwak
+ * 3 - Zeer zwak
+ * 2 - Bijzonder zwak
+ * 1 - Waarom is deze strip ooit gemaakt?
+ */
+public class CollectionImporter {
+
+    @VisibleForTesting
+    static final String ROW_ID_ATTR = "showIfInCollection-";
+    /**
+     * param 1: userId
+     * param 2: page number
+     * param 3: binary flags; see {@link #mFlags}.
+     * <p>
+     * suffix: "_search_%4s" : with a search-filter... not fully sure what fields are searched.
+     * => not supported for now.
+     * <p>
+     * The suffix "_search-" is always added by the site form; so we add it as well.
+     */
+    private static final String URL_MY_BOOKS =
+            "https://www.stripinfo.be/userCollection/index/%1$s/0/%2$d/%3$s_search-";
+    /** A full page contains 25 rows. */
+    private static final int MAX_PAGE_SIZE = 25;
+    private static final int ROW_ID_ATTR_LEN = ROW_ID_ATTR.length();
+
+    /**
+     * Filters.
+     * <ul>Each flag can be:
+     * <li>0: don't care</li>
+     * <li>1: Yes</li>
+     * <li>2: No</li>
+     * </ul>
+     * <ul>
+     *     <li>1000: books I own ("in bezit")</li>
+     *     <li>0100: in wishlist ("verlanglijst")</li>
+     *     <li>0010: read ("gelezen")</li>
+     *     <li>0001: which I rated ("met score")</li>
+     * </ul>
+     * <p>
+     * Examples: 1020: all books I own but have not yet read. Don't care about wishlist/rating.
+     * <p>
+     * For now hardcoded to getting all books in the collection.
+     * So we get the "owned" books; but we also get the "wanted" books.
+     */
+    private static final String mFlags = "0000";
+
+    /** Responsible for loading and parsing the web page. */
+    @NonNull
+    private final JsoupLoader mJsoupLoader;
+
+    private final JSoupHelper mJSoupHelper = new JSoupHelper();
+
+    /** Internal id from the website; used in the auth Cookie and links. */
+    @NonNull
+    private final String mUserId;
+
+    @Nullable
+    private final Bookshelf mWishListBookshelf;
+
+    /**
+     * Constructor
+     *
+     * @param userId            as extracted from the auth Cookie.
+     * @param wishListBookshelf mapped bookshelf
+     */
+    CollectionImporter(@NonNull final String userId,
+                       @Nullable final Bookshelf wishListBookshelf) {
+        mUserId = userId;
+        mWishListBookshelf = wishListBookshelf;
+
+        mJsoupLoader = new JsoupLoader();
+    }
+
+    /**
+     * @param context          Current context
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return list with book-data Bundles
+     *
+     * @throws IOException on failure
+     */
+    @SuppressLint("DefaultLocale")
+    @WorkerThread
+    @NonNull
+    public ArrayList<Bundle> fetch(@NonNull final Context context,
+                                   @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        final ArrayList<Bundle> collection = new ArrayList<>();
+
+        final Function<String, Optional<TerminatorConnection>> conCreator = (String u) -> {
+            try {
+                final SearchEngineConfig config = SearchEngineRegistry
+                        .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+
+                final TerminatorConnection con = new TerminatorConnection(u)
+                        .setConnectTimeout(config.getConnectTimeoutInMs())
+                        .setReadTimeout(config.getReadTimeoutInMs());
+
+                return Optional.of(con);
+            } catch (@NonNull final IOException ignore) {
+                return Optional.empty();
+            }
+        };
+
+        Document document;
+        List<Bundle> pageList;
+        int page = 0;
+        do {
+            pageList = null;
+            page++;
+            progressListener.publishProgress(1, context.getString(
+                    R.string.progress_msg_loading_page, page));
+
+            final String url = String.format(URL_MY_BOOKS, mUserId, page, mFlags);
+            document = loadDocument(context, url, conCreator);
+
+            if (document != null) {
+                final Element root = document.getElementById("collectionContent");
+                if (root != null) {
+                    if (page == 1) {
+                        final Element last = root.select("div.pagination > a").last();
+                        if (last != null) {
+                            try {
+                                final int maxPages = Integer.parseInt(last.text());
+                                progressListener.setMaxPos(maxPages);
+                                progressListener.setIndeterminate(false);
+                                progressListener.publishProgress(0, null);
+
+                            } catch (@NonNull final NumberFormatException e) {
+                                // ignore; we'll just stay indeterminate
+                            }
+                        }
+                    }
+
+                    pageList = parse(root);
+                    collection.addAll(pageList);
+                }
+            }
+        } while (document != null && pageList != null && pageList.size() == MAX_PAGE_SIZE);
+
+        progressListener.setIndeterminate(null);
+
+        return collection;
+    }
+
+    /**
+     * Load the url into a parsed {@link org.jsoup.nodes.Document}.
+     *
+     * @param url to load
+     *
+     * @return the document, or {@code null} if it failed to load while NOT causing a real error.
+     * e.g. the website said 404
+     *
+     * @throws IOException on any failure except a FileNotFoundException.
+     */
+    @WorkerThread
+    @Nullable
+    private Document loadDocument(@NonNull final Context context,
+                                  @NonNull final String url,
+                                  @NonNull
+                                  final Function<String, Optional<TerminatorConnection>> conCreator)
+            throws IOException {
+        try {
+            return mJsoupLoader.loadDocument(context, url, conCreator);
+
+        } catch (@NonNull final FileNotFoundException e) {
+            // we couldn't load the page
+            return null;
+        }
+    }
+
+    /**
+     * Parse a "collectionContent" section consisting of up to 25 book rows.
+     *
+     * @param root of the section to parse
+     *
+     * @return list with book data bundles.
+     */
+    @NonNull
+    public List<Bundle> parse(@NonNull final Element root) {
+
+        final List<Bundle> collection = new ArrayList<>();
+
+        // showing 'progress' here is pointless as even older devices will be fast.
+        for (final Element row : root.select("div.collectionRow")) {
+            final String idAttr = row.id();
+            if (!idAttr.isEmpty() && idAttr.startsWith(ROW_ID_ATTR)) {
+                // ok, we should have a book.
+                final Bundle cData = new Bundle();
+
+                parseRow(row, idAttr, cData);
+                if (!cData.isEmpty()) {
+                    collection.add(cData);
+                }
+            }
+        }
+
+        return collection;
+    }
+
+    @VisibleForTesting
+    void parseRow(@NonNull final Element row,
+                  @NonNull final String idAttr,
+                  @NonNull final Bundle cData) {
+        try {
+            final long bookId = Long.parseLong(idAttr.substring(ROW_ID_ATTR_LEN));
+            final Element mine = row.getElementById("stripCollectie-" + bookId);
+            if (mine != null) {
+                final long myId = Long.parseLong(mine.val());
+
+                cData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, bookId);
+                cData.putLong(StripInfoSearchEngine.SiteField.COLLECTION_ID, myId);
+                // Obviously ALL books here are in the collection,
+                // but the Bundle will be passed on and might get processed together with
+                // books NOT in the collection, so it's mandatory to set it here.
+                cData.putBoolean(StripInfoSearchEngine.SiteField.IN_COLLECTION, true);
+
+                String tmpStr;
+                int tmpInt;
+
+                tmpStr = mJSoupHelper.getString(row, "locatie-" + myId);
+                if (!tmpStr.isEmpty()) {
+                    cData.putString(DBKeys.KEY_LOCATION, tmpStr);
+                }
+
+                tmpStr = mJSoupHelper.getString(row, "opmerking-" + myId);
+                if (!tmpStr.isEmpty()) {
+                    cData.putString(DBKeys.KEY_PRIVATE_NOTES, tmpStr);
+                }
+
+                // Incoming value attribute is in the format "DD/MM/YYYY".
+                tmpStr = mJSoupHelper.getString(row, "aankoopdatum-" + myId);
+                if (tmpStr.length() == 10) {
+                    // we could use the date parser...
+                    // but that would be overkill for this website
+                    // ISO formatted {@code "YYYY-MM-DD"}
+                    tmpStr = tmpStr.substring(6, 10)
+                             + '-' + tmpStr.substring(3, 5)
+                             + '-' + tmpStr.substring(0, 2);
+                    cData.putString(DBKeys.KEY_DATE_ACQUIRED, tmpStr);
+                }
+
+                tmpInt = mJSoupHelper.getInt(row, "score-" + myId);
+                if (tmpInt > 0) {
+                    // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
+                    cData.putFloat(DBKeys.KEY_RATING,
+                                   MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
+                }
+                tmpInt = mJSoupHelper.getInt(row, "druk-" + myId);
+                if (tmpInt == 1) {
+                    cData.putInt(DBKeys.KEY_EDITION_BITMASK, Book.Edition.FIRST);
+                }
+                tmpInt = mJSoupHelper.getInt(row, "aantal-" + myId);
+                if (tmpInt > 0) {
+                    cData.putInt(StripInfoSearchEngine.SiteField.AMOUNT, tmpInt);
+                }
+
+                if (mJSoupHelper.getBoolean(row, "gelezen-" + myId)) {
+                    cData.putBoolean(DBKeys.KEY_READ, true);
+                }
+                if (mJSoupHelper.getBoolean(row, "bezit-" + myId)) {
+                    cData.putBoolean(StripInfoSearchEngine.SiteField.OWNED, true);
+                }
+                if (mJSoupHelper.getBoolean(row, "wishlist-" + myId)) {
+                    final ArrayList<Bookshelf> list = new ArrayList<>();
+                    list.add(mWishListBookshelf);
+                    cData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+                }
+
+                // '0' is an acceptable value that should be stored.
+                final Double tmpDbl = mJSoupHelper.getDoubleOrNull(row, "prijs-" + myId);
+                if (tmpDbl != null) {
+                    cData.putDouble(DBKeys.KEY_PRICE_PAID, tmpDbl);
+                    cData.putString(DBKeys.KEY_PRICE_PAID_CURRENCY, Money.EUR);
+                }
+            }
+        } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
+        }
+    }
+
+}

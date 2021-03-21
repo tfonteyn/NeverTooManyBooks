@@ -64,22 +64,24 @@ public class CalibreHandler {
 
     /** Log tag. */
     private static final String TAG = "CalibreHandler";
+
     /** The Calibre API object. */
     @NonNull
     private final CalibreContentServer mServer;
+
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
-
-    private CalibreHandlerViewModel mVm;
-
     /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
+
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
+
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     private FragmentManager mFragmentManager;
+    private CalibreHandlerViewModel mVm;
 
     /**
      * Constructor.
@@ -94,11 +96,22 @@ public class CalibreHandler {
         mServer = new CalibreContentServer(context);
     }
 
+    /**
+     * Initializer for use from within an Activity.
+     *
+     * @param activity the hosting Activity
+     * @param view     the root view of the Activity (e.g. mVb.getRoot())
+     */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
         onViewCreated(view, activity, activity, activity.getSupportFragmentManager(), activity);
     }
 
+    /**
+     * Initializer for use from within an Fragment.
+     *
+     * @param fragment the hosting Fragment
+     */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
         onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
@@ -110,11 +123,11 @@ public class CalibreHandler {
      *
      * @param view the hosting component root view
      */
-    public void onViewCreated(@NonNull final View view,
-                              @NonNull final LifecycleOwner lifecycleOwner,
-                              @NonNull final ViewModelStoreOwner viewModelStoreOwner,
-                              @NonNull final FragmentManager fm,
-                              @NonNull final ActivityResultCaller caller) {
+    private void onViewCreated(@NonNull final View view,
+                               @NonNull final LifecycleOwner lifecycleOwner,
+                               @NonNull final ViewModelStoreOwner viewModelStoreOwner,
+                               @NonNull final FragmentManager fm,
+                               @NonNull final ActivityResultCaller caller) {
         mView = view;
         mFragmentManager = fm;
 
@@ -132,69 +145,72 @@ public class CalibreHandler {
 
         mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
         mVm.init(mServer);
-
-        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
+        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
         mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
         mVm.onFailure().observe(lifecycleOwner, this::onFailure);
-        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
+        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        mView.getContext().getString(R.string.progress_msg_downloading),
-                        true, true);
-                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+    /**
+     * Add a Calibre submenu with read/download/settings options as appropriate for the given Book.
+     *
+     * @param menu   to add to
+     * @param book   to use
+     * @param global Global preferences
+     */
+    public void prepareMenu(@NonNull final Menu menu,
+                            @NonNull final Book book,
+                            @NonNull final SharedPreferences global) {
+
+        final boolean calibre = CalibreContentServer.isSyncEnabled(global)
+                                && !book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID).isEmpty();
+
+        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
+        if (calibre) {
+            if (CalibreContentServer.getFolderUri(mView.getContext()).isPresent()) {
+                // conditional
+                menu.findItem(R.id.MENU_CALIBRE_READ)
+                    .setVisible(existsLocally(book));
+
+                // always shown
+                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
+                    .setTitle(mView.getContext().getString(
+                            R.string.menu_download_ebook_format,
+                            book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)))
+                    .setVisible(true);
+
+                // don't show
+                menu.findItem(R.id.MENU_CALIBRE_SETTINGS)
+                    .setVisible(false);
+
+            } else {
+                // Calibre is enabled, but the folder is not set
+                menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
+                menu.findItem(R.id.MENU_CALIBRE_SETTINGS)
+                    .setTitle(R.string.menu_set_download_folder)
+                    .setVisible(true);
             }
 
-            // hook the task up.
-            mVm.connectProgressDialog(mProgressDialog);
-        }
-
-        mProgressDialog.onProgress(message);
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        } else {
+            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
+            menu.findItem(R.id.MENU_CALIBRE_SETTINGS).setVisible(false);
         }
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent message) {
-        closeProgressDialog();
+    /**
+     * Open the given book for reading.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param book to get
+     */
+    public void read(@NonNull final Book book) {
+        try {
+            openBookUri(getDocumentUri(mView.getContext(), book));
 
-        if (message.isNewEvent()) {
-            Snackbar.make(mView, R.string.cancelled, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        closeProgressDialog();
-
-        if (message.isNewEvent()) {
-            String msg = ExMsg.map(mView.getContext(), TAG, message.result);
-            if (msg == null) {
-                msg = mView.getContext().getString(R.string.error_unknown);
-            }
-            Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onFinished(@NonNull final FinishedMessage<Uri> message) {
-        closeProgressDialog();
-
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            final Uri uri = message.result;
-            Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.lbl_read, v -> openBookUri(uri))
-                    .show();
+        } catch (@NonNull final FileNotFoundException e) {
+            Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -242,21 +258,6 @@ public class CalibreHandler {
     }
 
     /**
-     * Open the given book for reading.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param book to get
-     */
-    public void read(@NonNull final Book book) {
-        try {
-            openBookUri(getDocumentUri(mView.getContext(), book));
-
-        } catch (@NonNull final FileNotFoundException e) {
-            Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
      * Get the book file from the local folder.
      * This only works if the user has not renamed the file outside of this app.
      *
@@ -292,45 +293,62 @@ public class CalibreHandler {
                 intent, mView.getContext().getString(R.string.whichViewApplication)));
     }
 
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final Book book,
-                            @NonNull final SharedPreferences global) {
+    private void onFinished(@NonNull final FinishedMessage<Uri> message) {
+        closeProgressDialog();
 
-        final boolean calibre = CalibreContentServer.isEnabled(global)
-                                && !book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID).isEmpty();
+        if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Uri uri = message.result;
+            Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.lbl_read, v -> openBookUri(uri))
+                    .show();
+        }
+    }
 
-        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
-        if (calibre) {
-            if (CalibreContentServer.getFolderUri(mView.getContext()).isPresent()) {
-                // conditional
-                menu.findItem(R.id.MENU_CALIBRE_READ)
-                    .setVisible(existsLocally(book));
+    private void onCancelled(@NonNull final LiveDataEvent message) {
+        closeProgressDialog();
 
-                // always shown
-                final String fileFormat = book
-                        .getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
-                    .setTitle(mView.getContext()
-                                   .getString(R.string.menu_download_ebook_format, fileFormat))
-                    .setVisible(true);
+        if (message.isNewEvent()) {
+            Snackbar.make(mView, R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        }
+    }
 
-                // don't show
-                menu.findItem(R.id.MENU_CALIBRE_SETTING)
-                    .setVisible(false);
+    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
+        closeProgressDialog();
 
-            } else {
-                // Calibre is enabled, but the folder is not set
-                menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
-                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
-                menu.findItem(R.id.MENU_CALIBRE_SETTING)
-                    .setTitle(R.string.menu_set_download_folder)
-                    .setVisible(true);
+        if (message.isNewEvent()) {
+            String msg = ExMsg.map(mView.getContext(), TAG, message.result);
+            if (msg == null) {
+                msg = mView.getContext().getString(R.string.error_unknown);
+            }
+            Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (mProgressDialog == null) {
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                mProgressDialog = ProgressDialogFragment.newInstance(
+                        mView.getContext().getString(R.string.progress_msg_downloading),
+                        true, true);
+                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
             }
 
-        } else {
-            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
-            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
-            menu.findItem(R.id.MENU_CALIBRE_SETTING).setVisible(false);
+            // hook the task up.
+            mVm.connectProgressDialog(mProgressDialog);
+        }
+
+        mProgressDialog.onProgress(message);
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 }

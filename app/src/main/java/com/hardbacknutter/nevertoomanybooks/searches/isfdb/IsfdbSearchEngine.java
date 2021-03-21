@@ -555,7 +555,7 @@ public class IsfdbSearchEngine
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
-        if (allContentBoxes == null) {
+        if (allContentBoxes.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "parseDoc|no contentbox found|mDoc.location()="
                            + document.location());
@@ -602,14 +602,12 @@ public class IsfdbSearchEngine
 
                 } else if ("Author:".equalsIgnoreCase(fieldName)
                            || "Authors:".equalsIgnoreCase(fieldName)) {
-                    final Elements as = li.select("a");
-                    if (as != null) {
-                        for (final Element a : as) {
-                            final Author author = Author.from(a.text());
-                            // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                            mAuthors.add(author);
-                        }
+                    for (final Element a : li.select("a")) {
+                        final Author author = Author.from(a.text());
+                        // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                        mAuthors.add(author);
                     }
+
                 } else if ("Date:".equalsIgnoreCase(fieldName)) {
                     // dates are in fact displayed as YYYY-MM-DD which is very nice.
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
@@ -642,23 +640,16 @@ public class IsfdbSearchEngine
                     }
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
-                    final Elements as = li.select("a");
-                    if (as != null) {
-                        for (final Element a : as) {
-                            final Publisher publisher = Publisher.from(a.text());
-                            // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                            mPublishers.add(publisher);
-                        }
+                    for (final Element a : li.select("a")) {
+                        final Publisher publisher = Publisher.from(a.text());
+                        // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                        mPublishers.add(publisher);
                     }
-
                 } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
-                    final Elements as = li.select("a");
-                    if (as != null) {
-                        for (final Element a : as) {
-                            final Series series = Series.from(a.text());
-                            // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                            mSeries.add(series);
-                        }
+                    for (final Element a : li.select("a")) {
+                        final Series series = Series.from(a.text());
+                        // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                        mSeries.add(series);
                     }
                 } else if ("Pub. Series #:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
@@ -698,18 +689,15 @@ public class IsfdbSearchEngine
 
                 } else if ("Cover:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
-                    if (as != null) {
-                        //TODO: if there are multiple art/artists... will this barf ?
-                        // bookData.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
-
-                        if (as.size() > 1) {
-                            // Cover artist
-                            final Element a = as.get(1);
-                            final Author author = Author.from(a.text());
-                            author.setType(Author.TYPE_COVER_ARTIST);
-                            // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                            mAuthors.add(author);
-                        }
+                    //TODO: if there are multiple art/artists... will this barf ?
+                    // bookData.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
+                    if (as.size() > 1) {
+                        // Cover artist
+                        final Element a = as.get(1);
+                        final Author author = Author.from(a.text());
+                        author.setType(Author.TYPE_COVER_ARTIST);
+                        // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
+                        mAuthors.add(author);
                     }
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
@@ -717,14 +705,11 @@ public class IsfdbSearchEngine
                     processExternalIdElements(li.select("ul li"), bookData);
 
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-                    final Elements as = li.select("a");
-                    if (as != null) {
-                        for (final Element a : as) {
-                            final Author author = Author.from(a.text());
-                            author.setType(Author.TYPE_EDITOR);
-                            // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                            mAuthors.add(author);
-                        }
+                    for (final Element a : li.select("a")) {
+                        final Author author = Author.from(a.text());
+                        author.setType(Author.TYPE_EDITOR);
+                        // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                        mAuthors.add(author);
                     }
                 }
             } catch (@NonNull final IndexOutOfBoundsException e) {
@@ -735,9 +720,9 @@ public class IsfdbSearchEngine
         }
 
         // publication record.
-        final Elements recordIDDiv = contentBox.select("span.recordID");
+        final Element recordIDDiv = contentBox.select("span.recordID").first();
         if (recordIDDiv != null) {
-            tmpString = recordIDDiv.first().ownText();
+            tmpString = recordIDDiv.ownText();
             tmpString = digits(tmpString, false);
             if (!tmpString.isEmpty()) {
                 try {
@@ -752,7 +737,7 @@ public class IsfdbSearchEngine
         //ENHANCE: it would make much more sense to get the notes from the URL_TITLE_CGI page.
         // and if there are none, then fall back to the notes on this page.
         final Elements notesDiv = contentBox.select("div.notes");
-        if (notesDiv != null) {
+        if (!notesDiv.isEmpty()) {
             tmpString = notesDiv.html();
             // it should always have this at the start, but paranoia...
             if (tmpString.startsWith("<b>Notes:</b>")) {
@@ -825,7 +810,7 @@ public class IsfdbSearchEngine
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 0);
             if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
+                bookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
                                             imageList);
             }
         }
@@ -867,8 +852,8 @@ public class IsfdbSearchEngine
 
         // <div class="ContentBox"> but there are two, so get last one
         final Element contentBox = document.select(CSS_Q_DIV_CONTENTBOX).last();
-        final Elements lis = contentBox.select("li");
-        for (final Element li : lis) {
+        if (contentBox != null) {
+            for (final Element li : contentBox.select("li")) {
 
             /* LI entries, possibilities:
             7
@@ -942,68 +927,67 @@ public class IsfdbSearchEngine
             For now, we will get two entries in the TOC, same title but different author.
             TODO: avoid duplicate TOC entries when there are two lines.
              */
-            final String liAsString = li.toString();
-            String title = null;
-            Author author = null;
-            final Elements aas = li.select("a");
-            // find the first occurrence of each
-            for (final Element a : aas) {
-                final String href = a.attr("href");
+                final String liAsString = li.toString();
+                String title = null;
+                Author author = null;
+                // find the first occurrence of each
+                for (final Element a : li.select("a")) {
+                    final String href = a.attr("href");
 
-                if (title == null && href.contains(URL_TITLE_CGI)) {
-                    title = cleanUpName(a.text());
-                    //ENHANCE: tackle 'variant' titles later
+                    if (title == null && href.contains(URL_TITLE_CGI)) {
+                        title = cleanUpName(a.text());
+                        //ENHANCE: tackle 'variant' titles later
 
-                } else if (author == null && href.contains(URL_EA_CGI)) {
-                    author = Author.from(cleanUpName(a.text()));
+                    } else if (author == null && href.contains(URL_EA_CGI)) {
+                        author = Author.from(cleanUpName(a.text()));
 
-                } else if (addSeriesFromToc && href.contains(URL_PE_CGI)) {
-                    final Series series = Series.from(a.text());
+                    } else if (addSeriesFromToc && href.contains(URL_PE_CGI)) {
+                        final Series series = Series.from(a.text());
 
-                    //  • 4] • (1987) • novel by
-                    String nr = a.nextSibling().toString();
-                    final int dotIdx = nr.indexOf('•');
-                    if (dotIdx != -1) {
-                        final int closeBrIdx = nr.indexOf(']');
-                        if (closeBrIdx > dotIdx) {
-                            nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
-                            if (!nr.isEmpty()) {
-                                series.setNumber(nr);
+                        //  • 4] • (1987) • novel by
+                        String nr = a.nextSibling().toString();
+                        final int dotIdx = nr.indexOf('•');
+                        if (dotIdx != -1) {
+                            final int closeBrIdx = nr.indexOf(']');
+                            if (closeBrIdx > dotIdx) {
+                                nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
+                                if (!nr.isEmpty()) {
+                                    series.setNumber(nr);
+                                }
                             }
                         }
+                        mSeries.add(series);
                     }
-                    mSeries.add(series);
                 }
-            }
 
-            // no author found, set to 'unknown, unknown'
-            // example when this happens: ISBN=044100590X
-            // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151">
-            //      Appendixes (Dune)</a> • essay by uncredited
-            // </li>
-            if (author == null) {
-                author = Author.createUnknownAuthor(getContext());
-            }
-            // very unlikely
-            if (title == null) {
-                title = "";
-                Logger.warn(TAG, "getTocList|no title for li=" + li);
-            }
+                // no author found, set to 'unknown, unknown'
+                // example when this happens: ISBN=044100590X
+                // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151">
+                //      Appendixes (Dune)</a> • essay by uncredited
+                // </li>
+                if (author == null) {
+                    author = Author.createUnknownAuthor(getContext());
+                }
+                // very unlikely
+                if (title == null) {
+                    title = "";
+                    Logger.warn(TAG, "getTocList|no title for li=" + li);
+                }
 
-            // scan for first occurrence of "• (1234)"
-            final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
-            final String year = matcher.find() ? matcher.group(2) : "";
-            // see if we can use it as the first publication year for the book.
-            // i.e. if this entry has the same title as the book title
-            if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
-                && title.equalsIgnoreCase(mTitle)) {
-                mFirstPublicationYear = digits(year, false);
-            }
+                // scan for first occurrence of "• (1234)"
+                final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
+                final String year = matcher.find() ? matcher.group(2) : "";
+                // see if we can use it as the first publication year for the book.
+                // i.e. if this entry has the same title as the book title
+                if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
+                    && title.equalsIgnoreCase(mTitle)) {
+                    mFirstPublicationYear = digits(year, false);
+                }
 
-            final TocEntry tocEntry = new TocEntry(author, title, year);
-            toc.add(tocEntry);
+                final TocEntry tocEntry = new TocEntry(author, title, year);
+                toc.add(tocEntry);
+            }
         }
-
         return toc;
     }
 

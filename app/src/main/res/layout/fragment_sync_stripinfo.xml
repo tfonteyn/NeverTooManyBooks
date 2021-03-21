@@ -30,45 +30,19 @@
     <TextView
         android:id="@+id/header"
         style="@style/Text.Header.Indented"
-        android:text="@string/pt_maintenance"
+        android:text="@string/site_stripinfo_be"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
     <Button
-        android:id="@+id/btn_sync"
+        android:id="@+id/btn_import"
         style="@style/Button.Menu"
-        android:text="@string/action_synchronize"
-        app:icon="@drawable/ic_baseline_sync_alt_24"
+        android:text="@string/action_import"
+        app:icon="@drawable/ic_baseline_cloud_download_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         />
 
-    <Button
-        android:id="@+id/btn_import"
-        style="@style/Button.Menu"
-        android:text="@string/menu_import_all"
-        app:icon="@drawable/ic_baseline_file_download_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_sync"
-        />
-
-    <Button
-        android:id="@+id/btn_send_updated_books"
-        style="@style/Button.Menu"
-        android:text="@string/menu_send_updated"
-        app:icon="@drawable/ic_baseline_send_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_import"
-        />
-
-    <Button
-        android:id="@+id/btn_send_all_books"
-        style="@style/Button.Menu"
-        android:text="@string/menu_send_all"
-        app:icon="@drawable/ic_baseline_file_upload_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

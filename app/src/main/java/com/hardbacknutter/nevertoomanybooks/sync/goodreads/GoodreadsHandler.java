@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.IntRange;
@@ -52,19 +51,25 @@ public class GoodreadsHandler {
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-
+    private FragmentManager mFragmentManager;
     private GoodreadsHandlerViewModel mVm;
 
-    private String mRegistrationText;
-    private String mSendBookText;
-
-    private FragmentManager mFragmentManager;
-
+    /**
+     * Initializer for use from within an Activity.
+     *
+     * @param activity the hosting Activity
+     * @param view     the root view of the Activity (e.g. mVb.getRoot())
+     */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
         onViewCreated(view, activity, activity, activity.getSupportFragmentManager());
     }
 
+    /**
+     * Initializer for use from within an Fragment.
+     *
+     * @param fragment the hosting Fragment
+     */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
         onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
@@ -76,23 +81,18 @@ public class GoodreadsHandler {
      *
      * @param view the hosting component root view
      */
-    public void onViewCreated(@NonNull final View view,
-                              @NonNull final LifecycleOwner lifecycleOwner,
-                              @NonNull final ViewModelStoreOwner viewModelStoreOwner,
-                              @NonNull final FragmentManager fm) {
+    private void onViewCreated(@NonNull final View view,
+                               @NonNull final LifecycleOwner lifecycleOwner,
+                               @NonNull final ViewModelStoreOwner viewModelStoreOwner,
+                               @NonNull final FragmentManager fm) {
         mView = view;
         mFragmentManager = fm;
 
-        final Context context = view.getContext();
-        mSendBookText = context.getString(R.string.gr_title_send_book);
-        mRegistrationText = context.getString(R.string.lbl_registration,
-                                              context.getString(R.string.site_goodreads));
-
         mVm = new ViewModelProvider(viewModelStoreOwner).get(GoodreadsHandlerViewModel.class);
-        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
+        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
         mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
         mVm.onFailure().observe(lifecycleOwner, this::onFailure);
-        mVm.onFinished().observe(lifecycleOwner, this::onFinished);
+        mVm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
 
     public void sendBook(@IntRange(from = 1) final long bookId) {
@@ -100,30 +100,18 @@ public class GoodreadsHandler {
         mVm.sendBook(bookId);
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            mRegistrationText, false, true);
-                } else if (message.taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
-                    mProgressDialog = ProgressDialogFragment.newInstance(
-                            mSendBookText, false, true);
-                } else {
-                    throw new IllegalArgumentException("id=" + message.taskId);
-                }
-                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+    private void onFinished(@NonNull final FinishedMessage<GrStatus> message) {
+        closeProgressDialog();
+        if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+                mVm.promptForAuthentication(mView.getContext());
+
+            } else if (message.result.getStatus() != GrStatus.SUCCESS) {
+                Snackbar.make(mView, message.result.getMessage(mView.getContext()),
+                              Snackbar.LENGTH_LONG).show();
             }
-
-            // hook the task up.
-            mVm.connectProgressDialog(message.taskId, mProgressDialog);
         }
-
-        mProgressDialog.onProgress(message);
     }
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
@@ -141,18 +129,36 @@ public class GoodreadsHandler {
         }
     }
 
-    private void onFinished(@NonNull final FinishedMessage<GrStatus> message) {
-        closeProgressDialog();
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                mVm.promptForAuthentication(mView.getContext());
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (mProgressDialog == null) {
+            // get dialog after a fragment restart
+            mProgressDialog = (ProgressDialogFragment)
+                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
+            // not found? create it
+            if (mProgressDialog == null) {
+                final String dialogTitle;
 
-            } else if (message.result.getStatus() != GrStatus.SUCCESS) {
-                Snackbar.make(mView, message.result.getMessage(mView.getContext()),
-                              Snackbar.LENGTH_LONG).show();
+                if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
+                    dialogTitle = mView.getContext().getString(
+                            R.string.lbl_registration,
+                            mView.getContext().getString(R.string.site_goodreads));
+
+                } else if (message.taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
+                    dialogTitle = mView.getContext().getString(R.string.gr_title_send_book);
+
+                } else {
+                    throw new IllegalArgumentException("id=" + message.taskId);
+                }
+
+                mProgressDialog = ProgressDialogFragment.newInstance(dialogTitle, false, true);
+                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
             }
+
+            // hook the task up.
+            mVm.connectProgressDialog(message.taskId, mProgressDialog);
         }
+
+        mProgressDialog.onProgress(message);
     }
 
     private void closeProgressDialog() {

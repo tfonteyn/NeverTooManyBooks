@@ -20,7 +20,7 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    >
 
     <item
         android:id="@+id/nav_advanced_search"
@@ -48,21 +48,10 @@
         android:icon="@drawable/ic_baseline_file_download_24"
         android:title="@string/menu_import" />
 
-    <!-- visibility set from code. -->
     <item
-        android:id="@+id/nav_calibre"
-        android:icon="@drawable/ic_baseline_cloud_24"
-        android:title="@string/site_calibre"
-        android:visible="false"
-        tools:visible="true" />
-
-    <!-- visibility set from code. -->
-    <item
-        android:id="@+id/nav_goodreads"
-        android:icon="@drawable/ic_goodreads"
-        android:title="@string/site_goodreads"
-        android:visible="false"
-        tools:visible="true" />
+        android:id="@+id/nav_sync"
+        android:icon="@drawable/ic_baseline_sync_alt_24"
+        android:title="@string/action_synchronize" />
 
     <item
         android:id="@+id/nav_settings"

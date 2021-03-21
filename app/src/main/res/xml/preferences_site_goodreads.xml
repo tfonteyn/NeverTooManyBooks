@@ -26,13 +26,13 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="goodreads.showMenu"
+            android:key="goodreads.enabled"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/enabled" />
 
         <Preference
-            android:dependency="goodreads.showMenu"
+            android:dependency="goodreads.enabled"
             android:icon="@drawable/ic_baseline_security_24"
             android:key="pa_credentials"
             android:title="@string/lbl_credentials">
@@ -40,7 +40,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:dependency="goodreads.showMenu"
+            android:dependency="goodreads.enabled"
             android:icon="@drawable/ic_baseline_library_books_24"
             android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"

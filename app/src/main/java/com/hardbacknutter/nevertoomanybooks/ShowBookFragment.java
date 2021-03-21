@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibrePreferencesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -119,12 +119,12 @@ public class ShowBookFragment
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
-    /** Delegate for Goodreads. */
-    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
-
     /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
-            registerForActivityResult(new CalibrePreferencesContract(), aVoid -> { });
+    private final ActivityResultLauncher<Void> mCalibreSettingsLauncher =
+            registerForActivityResult(new CalibreSettingsContract(), aVoid -> { });
+
+    /** Delegate for Goodreads. */
+    private GoodreadsHandler mGoodreadsHandler;
 
     /** Delegate for Calibre. */
     @Nullable
@@ -149,6 +149,7 @@ public class ShowBookFragment
 
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
+
     private Toolbar mToolbar;
 
     /** User edits a book. */
@@ -213,6 +214,7 @@ public class ShowBookFragment
             // ignore
         }
 
+        mGoodreadsHandler = new GoodreadsHandler();
         mGoodreadsHandler.onViewCreated(this);
 
         // The FAB lives in the activity.
@@ -308,7 +310,7 @@ public class ShowBookFragment
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsManager.isShowSyncMenus(global));
+            .setVisible(GoodreadsManager.isSyncEnabled(global));
 
         if (mCalibreHandler != null) {
             mCalibreHandler.prepareMenu(menu, book, global);
@@ -381,8 +383,8 @@ public class ShowBookFragment
             }
             return true;
 
-        } else if (itemId == R.id.MENU_CALIBRE_SETTING) {
-            mCalibrePreferencesLauncher.launch(null);
+        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            mCalibreSettingsLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -738,8 +740,8 @@ public class ShowBookFragment
             /**
              * At this point we're told to load our local (to the fragment) fields from the Book.
              *
-             * @param fields  to populate
-             * @param book    to load
+             * @param fields to populate
+             * @param book   to load
              */
             void onBindViewHolder(@NonNull final Fields fields,
                                   @NonNull final Book book) {

@@ -98,7 +98,7 @@ public class SearchCoordinator
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    public static final String[] BKEY_TMP_FILE_SPEC_ARRAY = new String[]{
+    public static final String[] BKEY_DOWNLOADED_FILE_SPEC_ARRAY = new String[]{
             TAG + ":fileSpec_array:0",
             TAG + ":fileSpec_array:1"
     };
@@ -125,6 +125,7 @@ public class SearchCoordinator
     @NonNull
     private final Collection<Mapper> mMappers = new ArrayList<>();
 
+    private final CoverFilter mCoverFilter = new CoverFilter();
 
     /** Accumulates the last message from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
@@ -308,9 +309,10 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                mFetchThumbnail = new boolean[2];
-                mFetchThumbnail[0] = DBKeys.isCoverUsed(global, 0);
-                mFetchThumbnail[1] = DBKeys.isCoverUsed(global, 1);
+                mFetchThumbnail = new boolean[]{
+                        DBKeys.isUsed(global, DBKeys.COVER_IS_USED[0]),
+                        DBKeys.isUsed(global, DBKeys.COVER_IS_USED[1])
+                };
 
                 mIsbnSearchText = args.getString(DBKeys.KEY_ISBN, "");
 
@@ -754,8 +756,7 @@ public class SearchCoordinator
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
                 }
-                final Locale locale = searchEngine.getLocale();
-                accumulateSiteData(context, siteData, locale);
+                accumulateSiteData(context, siteData, searchEngine.getLocale());
             }
         }
 
@@ -765,17 +766,7 @@ public class SearchCoordinator
         }
 
         // Pick the best covers for each list (if any) and clean/delete all others.
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            final ArrayList<String> imageList = mBookData
-                    .getStringArrayList(BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
-            if (imageList != null && !imageList.isEmpty()) {
-                final String coverName = getBestImage(imageList);
-                if (coverName != null) {
-                    mBookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
-                }
-            }
-            mBookData.remove(BKEY_TMP_FILE_SPEC_ARRAY[cIdx]);
-        }
+        mCoverFilter.filter(mBookData);
 
         // If we did not get an ISBN, use the one we originally searched for.
         final String isbnStr = mBookData.getString(DBKeys.KEY_ISBN);
@@ -788,57 +779,6 @@ public class SearchCoordinator
         if (title == null || title.isEmpty()) {
             mBookData.putString(DBKeys.KEY_TITLE, mTitleSearchText);
         }
-    }
-
-    /**
-     * Pick the largest image from the given list, and delete all others.
-     *
-     * @param imageList a list of images
-     *
-     * @return name of cover found, or {@code null} for none.
-     */
-    @AnyThread
-    @Nullable
-    private String getBestImage(@NonNull final ArrayList<String> imageList) {
-
-        // biggest size based on height * width
-        long bestImageSize = -1;
-        // index of the file which is the biggest
-        int bestFileIndex = -1;
-
-        // Just read the image files to get file size
-        final BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-
-        // Loop, finding biggest image
-        for (int i = 0; i < imageList.size(); i++) {
-            final String fileSpec = imageList.get(i);
-            if (new File(fileSpec).exists()) {
-                BitmapFactory.decodeFile(fileSpec, opt);
-                // If no size info, assume file bad and skip
-                if (opt.outHeight > 0 && opt.outWidth > 0) {
-                    final long size = opt.outHeight * opt.outWidth;
-                    if (size > bestImageSize) {
-                        bestImageSize = size;
-                        bestFileIndex = i;
-                    }
-                }
-            }
-        }
-
-        // Delete all but the best one.
-        // Note there *may* be no best one, so all would be deleted. This is fine.
-        for (int i = 0; i < imageList.size(); i++) {
-            if (i != bestFileIndex) {
-                FileUtils.delete(new File(imageList.get(i)));
-            }
-        }
-
-        if (bestFileIndex >= 0) {
-            return imageList.get(bestFileIndex);
-        }
-
-        return null;
     }
 
     /**
@@ -866,8 +806,8 @@ public class SearchCoordinator
                        || Book.BKEY_SERIES_LIST.equals(key)
                        || Book.BKEY_PUBLISHER_LIST.equals(key)
                        || Book.BKEY_TOC_LIST.equals(key)
-                       || BKEY_TMP_FILE_SPEC_ARRAY[0].equals(key)
-                       || BKEY_TMP_FILE_SPEC_ARRAY[1].equals(key)) {
+                       || BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0].equals(key)
+                       || BKEY_DOWNLOADED_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);
 
             } else {
@@ -1235,5 +1175,84 @@ public class SearchCoordinator
         return new ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
                                    progressMax, progressCount, null
         );
+    }
+
+    public static class CoverFilter {
+
+        /**
+         * Filter the {@link #BKEY_DOWNLOADED_FILE_SPEC_ARRAY} present, selecting only
+         * the best image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
+         * <p>
+         * This may result in removing ALL images if none are found suitable.
+         *
+         * @param bookData to filter
+         */
+        @AnyThread
+        public void filter(@NonNull final Bundle bookData) {
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                final ArrayList<String> imageList = bookData
+                        .getStringArrayList(BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
+                if (imageList != null && !imageList.isEmpty()) {
+                    // ALWAYS call even if we only have 1 image...
+                    // We want to remove bad ones if needed.
+                    final String coverName = getBestImage(imageList);
+                    if (coverName != null) {
+                        bookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
+                    }
+                }
+                bookData.remove(BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
+            }
+        }
+
+        /**
+         * Pick the largest image from the given list, and delete all others.
+         *
+         * @param imageList a list of images
+         *
+         * @return name of cover found, or {@code null} for none.
+         */
+        @AnyThread
+        @Nullable
+        private String getBestImage(@NonNull final ArrayList<String> imageList) {
+
+            // biggest size based on height * width
+            long bestImageSize = -1;
+            // index of the file which is the biggest
+            int bestFileIndex = -1;
+
+            // Just read the image files to get file size
+            final BitmapFactory.Options opt = new BitmapFactory.Options();
+            opt.inJustDecodeBounds = true;
+
+            // Loop, finding biggest image
+            for (int i = 0; i < imageList.size(); i++) {
+                final String fileSpec = imageList.get(i);
+                if (new File(fileSpec).exists()) {
+                    BitmapFactory.decodeFile(fileSpec, opt);
+                    // If no size info, assume file bad and skip
+                    if (opt.outHeight > 0 && opt.outWidth > 0) {
+                        final long size = opt.outHeight * opt.outWidth;
+                        if (size > bestImageSize) {
+                            bestImageSize = size;
+                            bestFileIndex = i;
+                        }
+                    }
+                }
+            }
+
+            // Delete all but the best one.
+            // Note there *may* be no best one, so all would be deleted. This is fine.
+            for (int i = 0; i < imageList.size(); i++) {
+                if (i != bestFileIndex) {
+                    FileUtils.delete(new File(imageList.get(i)));
+                }
+            }
+
+            if (bestFileIndex >= 0) {
+                return imageList.get(bestFileIndex);
+            }
+
+            return null;
+        }
     }
 }

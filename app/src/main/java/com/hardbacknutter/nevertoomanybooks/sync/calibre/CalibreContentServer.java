@@ -264,8 +264,15 @@ public class CalibreContentServer {
         }
     }
 
+    /**
+     * Check if SYNC menus should be shown at all. This does not affect searching.
+     *
+     * @param global Global preferences
+     *
+     * @return {@code true} if menus should be shown
+     */
     @AnyThread
-    public static boolean isEnabled(@NonNull final SharedPreferences global) {
+    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
         return global.getBoolean(PK_ENABLED, true);
     }
 

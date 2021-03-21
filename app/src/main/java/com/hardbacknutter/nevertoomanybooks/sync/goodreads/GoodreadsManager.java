@@ -80,11 +80,10 @@ public class GoodreadsManager {
     /** Preferences prefix. */
     public static final String PREF_KEY = "goodreads";
 
-
     /** Log tag. */
     private static final String TAG = "GoodreadsManager";
     /** Whether to show any Goodreads sync menus at all. */
-    private static final String PK_SHOW_MENUS = PREF_KEY + ".showMenu";
+    private static final String PK_ENABLED = PREF_KEY + ".enabled";
     /** Whether to collect genre string from the popular bookshelves. */
     private static final String PK_COLLECT_GENRE = PREF_KEY + ".search.collect.genre";
     /** last id we send to Goodreads. */
@@ -136,15 +135,14 @@ public class GoodreadsManager {
     }
 
     /**
-     * Check if Goodreads SYNC menus should be shown at all.
-     * This does not affect searching on Goodreads.
+     * Check if SYNC menus should be shown at all. This does not affect searching.
      *
      * @param global Global preferences
      *
      * @return {@code true} if menus should be shown
      */
-    public static boolean isShowSyncMenus(@NonNull final SharedPreferences global) {
-        return global.getBoolean(PK_SHOW_MENUS, true);
+    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PK_ENABLED, true);
     }
 
     public static boolean isCollectGenre() {

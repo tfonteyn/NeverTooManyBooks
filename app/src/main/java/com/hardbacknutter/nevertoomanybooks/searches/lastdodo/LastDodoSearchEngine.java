@@ -172,11 +172,10 @@ public class LastDodoSearchEngine
         String tmpSeriesNr = null;
 
         final Element container = document.getElementById("catalogue_information");
-        final Elements trs = container.select("tr");
 
         String tmpString;
 
-        for (final Element tr : trs) {
+        for (final Element tr : container.select("tr")) {
             final Element th = tr.child(0);
             final Element td = tr.child(1);
             switch (th.text()) {
@@ -329,7 +328,8 @@ public class LastDodoSearchEngine
                             final ArrayList<String> imageList = new ArrayList<>();
                             imageList.add(fileSpec);
                             bookData.putStringArrayList(
-                                    SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[cIdx], imageList);
+                                    SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx],
+                                    imageList);
                         }
                     }
                 }
@@ -362,10 +362,8 @@ public class LastDodoSearchEngine
         if (section != null) {
             final ArrayList<TocEntry> toc = new ArrayList<>();
             section = section.nextElementSibling();
-            final Elements entries = section.select("tr:contains(Verhaaltitel)");
-            for (final Element tr : entries) {
-                final String title = tr.child(1).text();
-                toc.add(new TocEntry(mAuthors.get(0), title, null));
+            for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
+                toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text(), null));
             }
             return toc;
         }
@@ -382,8 +380,7 @@ public class LastDodoSearchEngine
     private void processAuthor(@NonNull final Element td,
                                @Author.Type final int currentAuthorType) {
 
-        final Elements aas = td.select("a");
-        for (final Element a : aas) {
+        for (final Element a : td.select("a")) {
             final String name = a.text();
             final Author currentAuthor = Author.from(name);
             boolean add = true;
@@ -410,8 +407,7 @@ public class LastDodoSearchEngine
      * @param td data td
      */
     private void processSeries(@NonNull final Element td) {
-        final Elements aas = td.select("a");
-        for (final Element a : aas) {
+        for (final Element a : td.select("a")) {
             final String name = a.text();
             final Series currentSeries = Series.from(name);
             // check if already present
@@ -429,8 +425,7 @@ public class LastDodoSearchEngine
      * @param td data td
      */
     private void processPublisher(@NonNull final Element td) {
-        final Elements aas = td.select("a");
-        for (final Element a : aas) {
+        for (final Element a : td.select("a")) {
             final String name = cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present

@@ -26,6 +26,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -44,8 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
-final class MenuHelper {
+public final class MenuHelper {
 
     private MenuHelper() {
     }
@@ -189,5 +193,28 @@ final class MenuHelper {
 
         }
         return false;
+    }
+
+    /**
+     * Customize the given menu item title to give it the same look as preference categories.
+     * The color is set to 'colorAccent' + the text is scaled 0.88 (16sp versus default 18sp).
+     *
+     * @param context Current context
+     * @param menu    hosting menu
+     * @param itemId  menu item id
+     */
+    public static void customizeMenuGroupTitle(@NonNull final Context context,
+                                               @NonNull final Menu menu,
+                                               @IdRes final int itemId) {
+        final MenuItem item = menu.findItem(itemId);
+        final SpannableString title = new SpannableString(item.getTitle());
+        final int color = AttrUtils.getColorInt(context, R.attr.colorAccent);
+        title.setSpan(new ForegroundColorSpan(color), 0, title.length(), 0);
+        title.setSpan(new RelativeSizeSpan(0.88f), 0, title.length(), 0);
+        item.setTitle(title);
+
+        // can be set in xml, but here for paranoia
+        item.setCheckable(false);
+        item.setEnabled(false);
     }
 }

@@ -275,16 +275,16 @@ public final class SyncProcessor {
                                    @NonNull final Bundle incoming,
                                    @NonNull final SyncAction syncAction,
                                    @IntRange(from = 0, to = 1) final int cIdx) {
-        boolean copyThumb = false;
+        boolean copyImage = false;
         // check if we already have an image, and what we should do with the new image
         switch (syncAction) {
             case CopyIfBlank:
                 final File file = book.getUuidCoverFile(context, cIdx);
-                copyThumb = file == null || file.length() == 0;
+                copyImage = file == null || file.length() == 0;
                 break;
 
             case Overwrite:
-                copyThumb = true;
+                copyImage = true;
                 break;
 
             case Skip:
@@ -292,7 +292,7 @@ public final class SyncProcessor {
                 break;
         }
 
-        if (copyThumb) {
+        if (copyImage) {
             final String fileSpec = incoming.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
@@ -480,28 +480,6 @@ public final class SyncProcessor {
         public Builder add(@StringRes final int labelId,
                            @NonNull final String key) {
             return add(labelId, key, SyncAction.CopyIfBlank);
-        }
-
-        /**
-         * Add a {@link FieldSync} for a <strong>cover</strong> field
-         * if it has not been hidden by the user.
-         * <p>
-         * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
-         *
-         * @param labelId Field label resource id
-         * @param cIdx    0..n image index
-         */
-        public Builder addCover(@StringRes final int labelId,
-                                @IntRange(from = 0, to = 1) final int cIdx) {
-
-            if (DBKeys.isCoverUsed(mGlobalPref, cIdx)) {
-                final String key = DBKeys.PREFS_IS_USED_COVER + "." + cIdx;
-                final SyncAction action = SyncAction
-                        .read(mGlobalPref, mPrefPrefix + key, SyncAction.CopyIfBlank);
-                mFields.put(key, new FieldSync(key, labelId, false,
-                                               SyncAction.CopyIfBlank, action));
-            }
-            return this;
         }
 
         /**

@@ -81,6 +81,9 @@
     <!-- Used by the MenuPicker (aka PopupMenu). -->
     <item name="MENU_DIVIDER" type="id" />
 
+    <item name="MENU_GROUP_CALIBRE" type="id" />
+    <item name="MENU_GROUP_GOODREADS" type="id" />
+    <item name="MENU_GROUP_STRIPINFO" type="id" />
 
     <item name="MENU_EDIT" type="id" />
     <item name="MENU_DELETE" type="id" />
@@ -170,10 +173,15 @@
     <item name="SUBMENU_CALIBRE" type="id" />
     <item name="MENU_CALIBRE_DOWNLOAD" type="id" />
     <item name="MENU_CALIBRE_READ" type="id" />
-    <item name="MENU_CALIBRE_SETTING" type="id" />
 
+    <!-- options menu -->
+    <item name="MENU_CALIBRE_SETTINGS" type="id" />
+    <item name="MENU_GOODREADS_SETTINGS" type="id" />
     <item name="MENU_STRIP_INFO_SETTING" type="id" />
 
+    <item name="MENU_SYNC_CALIBRE" type="id" />
+    <item name="MENU_SYNC_GOODREADS" type="id" />
+    <item name="MENU_SYNC_STRIP_INFO" type="id" />
 
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE" type="id" />

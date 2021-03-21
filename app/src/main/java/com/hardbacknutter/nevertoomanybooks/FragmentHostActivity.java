@@ -31,8 +31,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoSyncFragment;
 
 /**
  * Hosting activity for generic fragments <strong>without</strong>
@@ -61,10 +62,11 @@ public class FragmentHostActivity
 
         sMap.put(PreferredStylesFragment.TAG, PreferredStylesFragment.class);
 
-        sMap.put(CalibreAdminFragment.TAG, CalibreAdminFragment.class);
+        sMap.put(CalibreSyncFragment.TAG, CalibreSyncFragment.class);
+        sMap.put(GoodreadsSyncFragment.TAG, GoodreadsSyncFragment.class);
+        sMap.put(StripinfoSyncFragment.TAG, StripinfoSyncFragment.class);
 
         sMap.put(EditBookshelvesFragment.TAG, EditBookshelvesFragment.class);
-        sMap.put(GoodreadsAdminFragment.TAG, GoodreadsAdminFragment.class);
         sMap.put(AboutFragment.TAG, AboutFragment.class);
     }
 

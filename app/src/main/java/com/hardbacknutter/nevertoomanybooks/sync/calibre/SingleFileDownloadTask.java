@@ -32,11 +32,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.org.json.JSONException;
 
-public class SingleFileDownload
+class SingleFileDownloadTask
         extends MTask<Uri> {
 
     /** Log tag. */
-    private static final String TAG = "SingleFileDownload";
+    private static final String TAG = "SingleFileDownloadTask";
 
     private final CalibreContentServer mServer;
     private Book mBook;
@@ -47,7 +47,7 @@ public class SingleFileDownload
      *
      * @param server to access
      */
-    SingleFileDownload(@NonNull final CalibreContentServer server) {
+    SingleFileDownloadTask(@NonNull final CalibreContentServer server) {
         super(R.id.TASK_ID_DOWNLOAD_SINGLE_FILE, TAG);
         mServer = server;
     }

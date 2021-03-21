@@ -24,9 +24,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
-    android:layout_height="wrap_content"
+    android:layout_height="0dp"
     android:paddingStart="@dimen/field_margin_start"
     android:paddingEnd="@dimen/field_margin_start"
+    tools:layout_height="wrap_content"
     tools:layout_width="match_parent"
     >
 

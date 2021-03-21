@@ -238,6 +238,8 @@ public class Base {
 
         when(resources.getString(eq(R.string.unknown_title))).thenReturn("[Unknown title]");
         when(resources.getString(eq(R.string.unknown_author))).thenReturn("[Unknown author]");
+
+        when(resources.getString(eq(R.string.lbl_book))).thenReturn("Book");
     }
 
 }

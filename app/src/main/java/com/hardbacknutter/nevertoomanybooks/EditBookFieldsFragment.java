@@ -142,17 +142,19 @@ public class EditBookFieldsFragment
         final Resources res = getResources();
 
         if (mVm.isCoverUsed(global, 0)) {
-            createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
+            createCoverHandler(0,
+                               res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
                                res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
-                               0, mVb.coverOperationProgressBar);
+                               mVb.coverOperationProgressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
         if (mVm.isCoverUsed(global, 1)) {
-            createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
+            createCoverHandler(1,
+                               res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
                                res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
-                               1, mVb.coverOperationProgressBar);
+                               mVb.coverOperationProgressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -201,9 +203,9 @@ public class EditBookFieldsFragment
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
     }
 
-    private void createCoverHandler(final int maxWidth,
+    private void createCoverHandler(final int cIdx,
+                                    final int maxWidth,
                                     final int maxHeight,
-                                    final int cIdx,
                                     @NonNull final CircularProgressIndicator progressIndicator) {
         mCoverHandler[cIdx] = new CoverHandler(this, mVm.getBookDao(), cIdx, maxWidth, maxHeight);
         mCoverHandler[cIdx].onViewCreated(this);
@@ -307,8 +309,11 @@ public class EditBookFieldsFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.sm_isbn_validity, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
+        inflater.inflate(R.menu.sm_isbn_validity, menu);
+
+        //noinspection ConstantConditions
+        MenuHelper.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

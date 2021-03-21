@@ -24,8 +24,16 @@
     <PreferenceCategory
         android:title="@string/site_stripinfo_be">
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="stripinfo.enabled"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/enabled" />
+
         <EditTextPreference
             android:defaultValue=""
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_person_24"
             android:key="stripinfo.host.user"
             android:summary="@string/info_not_set"
@@ -34,6 +42,7 @@
 
         <EditTextPreference
             android:defaultValue=""
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_password_24"
             android:key="stripinfo.host.password"
             android:summary="@string/info_not_set"
@@ -42,6 +51,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_login_24"
             android:key="stripinfo.login.to.search"
             android:summaryOff="@string/no"
@@ -49,6 +59,7 @@
             android:title="@string/lbl_login_to_search" />
 
         <ListPreference
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_sync_alt_24"
             android:key="stripinfo.wishlist.bookshelf"
             android:title="@string/lbl_strip_info_wishlist_bookshelf"

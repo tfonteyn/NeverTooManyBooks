@@ -70,18 +70,19 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreAdminContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibrePreferencesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSettingsContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GoodreadsAdminContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GoodreadsSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -122,9 +123,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
@@ -134,6 +137,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
+ * <p>
+ * FIXME: This class is becoming increasingly overloaded with ActivityResultLauncher
+ * and *DialogFragment.Launcher objects. Need to find a way to refactor all these into
+ * something more manageable.
+ *
+ *
  * <p>
  * Notes on the local-search:
  * <ol>Advanced:
@@ -176,60 +185,66 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
-    /** Bring up the Goodreads synchronization options. */
-    private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
-            new GoodreadsAdminContract(), aVoid -> updateNavigationMenuVisibility());
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
-
-    /** Delegate for Goodreads. */
-    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
     /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
-            registerForActivityResult(new CalibrePreferencesContract(),
-                                      aVoid -> updateNavigationMenuVisibility());
+    private final ActivityResultLauncher<Void> mCalibreSettingsLauncher =
+            registerForActivityResult(new CalibreSettingsContract(), aVoid -> {});
+    /** Bring up the synchronization options. */
+    private final ActivityResultLauncher<Void> mGoodreadsSyncLauncher =
+            registerForActivityResult(new GoodreadsSyncContract(), aVoid -> {});
+    /** Bring up the synchronization options. */
+    private final ActivityResultLauncher<Void> mStripInfoSyncLauncher =
+            registerForActivityResult(new StripInfoSyncContract(), data -> {});
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
+            registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
-
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookContract.Input>
-            mDisplayBookLauncher = registerForActivityResult(
-            new ShowBookContract(), this::onBookEditFinished);
-
     /** Edit a Book. */
-    private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookEditFinished);
-
+    private final ActivityResultLauncher<Long> mEditByIdLauncher =
+            registerForActivityResult(new EditBookByIdContract(), this::onBookEditFinished);
     /** Duplicate and edit a Book. */
-    private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
-            new EditBookFromBundleContract(), this::onBookEditFinished);
+    private final ActivityResultLauncher<Bundle> mDuplicateLauncher =
+            registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditFinished);
+    /** Update an individual Book with information from the internet. */
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
+            registerForActivityResult(new UpdateSingleBookContract(), this::onBookEditFinished);
 
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> mAddBookBySearchLauncher =
             registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
-
-    /** Update an individual Book with information from the internet. */
-    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
-            registerForActivityResult(new UpdateSingleBookContract(),
-                                      this::onBookEditFinished);
-
     /** Update a list of Books with information from the internet. */
-    private final ActivityResultLauncher<UpdateBooklistContract.Input>
-            mUpdateBookListLauncher = registerForActivityResult(
-            new UpdateBooklistContract(), this::onBookEditFinished);
-
+    private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
+            registerForActivityResult(new UpdateBooklistContract(), this::onBookEditFinished);
     /** View all works of an Author. */
-    private final ActivityResultLauncher<AuthorWorksContract.Input>
-            mAuthorWorksLauncher = registerForActivityResult(
-            new AuthorWorksContract(), this::onBookEditFinished);
+    private final ActivityResultLauncher<AuthorWorksContract.Input> mAuthorWorksLauncher =
+            registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
+    /** Manage the list of (preferred) styles. */
+    private final ActivityResultLauncher<String> mEditStylesLauncher =
+            registerForActivityResult(new PreferredStylesContract(), data -> {
+                if (data != null) {
+                    // we get the UUID for the selected style back.
+                    final String uuid = data.getString(ListStyle.BKEY_STYLE_UUID);
+                    if (uuid != null) {
+                        mVm.onStyleChanged(this, uuid);
+                    }
+
+                    // This is independent from the above style having been modified ot not.
+                    if (data.getBoolean(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
+                        mVm.setForceRebuildInOnResume(true);
+                    }
+                }
+            });
 
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
@@ -248,28 +263,9 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-    /** Manage the list of (preferred) styles. */
-    private final ActivityResultLauncher<String> mEditStylesLauncher = registerForActivityResult(
-            new PreferredStylesContract(), data -> {
-                if (data != null) {
-                    // we get the UUID for the selected style back.
-                    final String uuid = data.getString(ListStyle.BKEY_STYLE_UUID);
-                    if (uuid != null) {
-                        mVm.onStyleChanged(this, uuid);
-                    }
-
-                    // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
-                        mVm.setForceRebuildInOnResume(true);
-                    }
-                }
-            });
-
     /** Edit an individual style. */
-    private final ActivityResultLauncher<EditStyleContract.Input>
-            mEditStyleLauncher = registerForActivityResult(
-            new EditStyleContract(), data -> {
+    private final ActivityResultLauncher<EditStyleContract.Input> mEditStyleLauncher =
+            registerForActivityResult(new EditStyleContract(), data -> {
                 if (data != null) {
                     // We get here from the StylePickerDialogFragment (i.e. the style menu)
                     // when the user choose to EDIT a style.
@@ -284,26 +280,38 @@ public class BooksOnBookshelf
                     }
                 }
             });
-
     /** Do an import. */
-    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
-            new ImportContract(), this::onImportFinished);
-
-    /** Calibre synchronization options. */
-    private final ActivityResultLauncher<Void> mCalibreAdminLauncher =
-            registerForActivityResult(new CalibreAdminContract(), data -> {
-
-                updateNavigationMenuVisibility();
+    private final ActivityResultLauncher<String> mImportLauncher =
+            registerForActivityResult(new ImportContract(), this::onImportFinished);
+    /** Bring up the synchronization options. */
+    private final ActivityResultLauncher<Void> mCalibreSyncLauncher =
+            registerForActivityResult(new CalibreSyncContract(), data -> {
                 if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+    /**
+     * Accept the result from the dialog.
+     */
+    private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
+            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
+                @Override
+                public void onResult(final long bookshelfId) {
+                    if (bookshelfId != mVm.getCurrentBookshelf().getId()) {
+                        onRowChange(RowChangeListener.BOOKSHELF, bookshelfId);
+                    }
+                }
+            };
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
+
     /** View Binding. */
     private BooksonbookshelfBinding mVb;
+
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -339,8 +347,10 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** React to row changes made. */
     private final RowChangeListener mRowChangeListener = this::onRowChange;
+
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -359,17 +369,9 @@ public class BooksOnBookshelf
                     buildBookList();
                 }
             };
-    /** Accept the result from the dialog. */
-    private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
-                @Override
-                public void onResult(final long bookshelfId) {
-                    if (bookshelfId != mVm.getCurrentBookshelf().getId()) {
-                        onRowChange(RowChangeListener.BOOKSHELF, bookshelfId);
-                    }
-                }
-            };
-    /** Accept the result from the dialog. */
+    /**
+     * Accept the result from the dialog.
+     */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
                 @Override
@@ -378,7 +380,11 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** Listener for clicks on the list. */
+    /** Delegate for Goodreads. */
+    private GoodreadsHandler mGoodreadsHandler;
+    /**
+     * Listener for clicks on the list.
+     */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
 
@@ -446,7 +452,9 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    /**
+     * React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT).
+     */
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
             new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
@@ -455,7 +463,9 @@ public class BooksOnBookshelf
                     return onContextItemSelected(itemId, position);
                 }
             };
-    /** The adapter used to fill the Bookshelf selector. */
+    /**
+     * The adapter used to fill the Bookshelf selector.
+     */
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
     @Override
@@ -477,9 +487,33 @@ public class BooksOnBookshelf
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // remove the default title to make space for the bookshelf spinner.
-        setTitle("");
+        onCreateFragmentResultListeners();
+        onCreateViewModel();
+        onCreateDelegates();
 
+        onCreateBookshelfSpinner();
+        onCreateBooklist(global);
+
+        // Initialise adapter without a cursor. We'll recreate it with a cursor when
+        // we're ready to display the book-list.
+        // If we don't create it here then some Android internals cause problems.
+        onCreateAdapter(null);
+
+        onCreateFabMenu(global);
+        updateSyncMenuVisibility(global);
+
+        // Popup the search widget when the user starts to type.
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+
+        // check & get search text coming from a system search intent
+        handleStandardSearchIntent(getIntent());
+
+        if (savedInstanceState == null) {
+            TipManager.getInstance().display(this, R.string.tip_book_list, null);
+        }
+    }
+
+    private void onCreateFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
         fm.setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
@@ -490,14 +524,18 @@ public class BooksOnBookshelf
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mMenuLauncher.registerForFragmentResult(fm, this);
         }
+    }
 
+    private void onCreateViewModel() {
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mVm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         mVm.init(this, getIntent().getExtras());
         mVm.onCancelled().observe(this, this::onBuildCancelled);
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
+    }
 
+    private void onCreateDelegates() {
         try {
             mCalibreHandler = new CalibreHandler(this);
             mCalibreHandler.onViewCreated(this, mVb.getRoot());
@@ -505,12 +543,11 @@ public class BooksOnBookshelf
             // ignore
         }
 
+        mGoodreadsHandler = new GoodreadsHandler();
         mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
+    }
 
-        // show/hide the sync menus
-        updateNavigationMenuVisibility();
-
-        // The booklist.
+    private void onCreateBooklist(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
@@ -525,34 +562,6 @@ public class BooksOnBookshelf
         mVb.list.setItemViewCacheSize(20);
         mVb.list.setDrawingCacheEnabled(true);
         mVb.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-
-        // initialise adapter without a cursor.
-        // Not creating the adapter here creates issues with Android internals.
-        createAdapter(null);
-
-        // Setup the Bookshelf spinner;
-        // The list is initially empty here; loading the list and
-        // setting/selecting the current shelf are both done in onResume
-        mBookshelfAdapter = new EntityArrayAdapter<>(this, mVm.getBookshelfList());
-
-        mVb.bookshelfSpinner.setAdapter(mBookshelfAdapter);
-        mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
-        mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
-
-        mFabMenu.attach(mVb.list);
-        mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
-        // mVb.fab4SearchExternalId
-        mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.isShowTab(global));
-
-        // Popup the search widget when the user starts to type.
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-        // check & get search text coming from a system search intent
-        handleStandardSearchIntent(getIntent());
-
-        if (savedInstanceState == null) {
-            TipManager.getInstance().display(this, R.string.tip_book_list, null);
-        }
     }
 
     /**
@@ -570,7 +579,7 @@ public class BooksOnBookshelf
      *
      * @param cursor to use, or {@code null} for initial creation.
      */
-    public void createAdapter(@Nullable final Cursor cursor) {
+    public void onCreateAdapter(@Nullable final Cursor cursor) {
 
         final HeaderAdapter headerAdapter = new HeaderAdapter();
 
@@ -590,6 +599,37 @@ public class BooksOnBookshelf
                 headerAdapter, mAdapter);
 
         mVb.list.setAdapter(concatAdapter);
+    }
+
+    private void onCreateBookshelfSpinner() {
+        // remove the default title to make space for the spinner.
+        setTitle("");
+
+        // The list is initially empty here; loading the list and
+        // setting/selecting the current shelf are both done in onResume
+        mBookshelfAdapter = new EntityArrayAdapter<>(this, mVm.getBookshelfList());
+
+        mVb.bookshelfSpinner.setAdapter(mBookshelfAdapter);
+        mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
+        mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
+    }
+
+    private void onCreateFabMenu(@NonNull final SharedPreferences global) {
+        mFabMenu.attach(mVb.list);
+        mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
+        // mVb.fab4SearchExternalId
+        mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.isShowTab(global));
+    }
+
+    /**
+     * Show or hide the synchronization menu.
+     */
+    private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
+        //noinspection ConstantConditions
+        getNavigationMenuItem(R.id.nav_sync).setVisible(
+                CalibreContentServer.isSyncEnabled(global)
+                || GoodreadsManager.isSyncEnabled(global)
+                || StripinfoLoginHelper.isSyncEnabled(global));
     }
 
     /**
@@ -717,7 +757,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsManager.isShowSyncMenus(global));
+                    .setVisible(GoodreadsManager.isSyncEnabled(global));
 
                 if (mCalibreHandler != null) {
                     final Book book = Objects.requireNonNull(mVm.getBook(rowData));
@@ -848,6 +888,23 @@ public class BooksOnBookshelf
     private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
+        // first check the non-row menus.
+
+        if (itemId == R.id.MENU_SYNC_CALIBRE) {
+            mCalibreSyncLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_GOODREADS) {
+            mGoodreadsSyncLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO) {
+            mStripInfoSyncLauncher.launch(null);
+            return true;
+        }
+
+        // Next handle the real context menus.
+
         final Cursor cursor = mAdapter.getCursor();
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
@@ -913,8 +970,8 @@ public class BooksOnBookshelf
             }
             return true;
 
-        } else if (itemId == R.id.MENU_CALIBRE_SETTING) {
-            mCalibrePreferencesLauncher.launch(null);
+        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            mCalibreSettingsLauncher.launch(null);
             return true;
 
             /* ********************************************************************************** */
@@ -1165,16 +1222,49 @@ public class BooksOnBookshelf
             mExportLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.nav_goodreads) {
-            mGoodreadsLauncher.launch(null);
-            return true;
+        } else if (itemId == R.id.nav_sync) {
+            showSyncMenu();
+            //mCalibreSyncLauncher.launch(null);
+//            final PopupMenu popupMenu = new PopupMenu(this, mVb.progressBar);
+//            popupMenu.inflate(R.menu.book);
+//            popupMenu.setOnMenuItemClickListener(item -> false);
+//            if (Build.VERSION.SDK_INT >= 29) {
+//                popupMenu.setForceShowIcon(true);
+//            }
+//            popupMenu.show();
 
-        } else if (itemId == R.id.nav_calibre) {
-            mCalibreAdminLauncher.launch(null);
             return true;
         }
 
         return super.onNavigationItemSelected(itemId);
+    }
+
+    private void showSyncMenu() {
+        final Menu menu = MenuPicker.createMenu(this);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (CalibreContentServer.isSyncEnabled(global)) {
+            menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
+                .setIcon(R.drawable.ic_baseline_cloud_24);
+        }
+
+        if (GoodreadsManager.isSyncEnabled(global)) {
+            menu.add(Menu.NONE, R.id.MENU_SYNC_GOODREADS, 0, R.string.site_goodreads)
+                .setIcon(R.drawable.ic_goodreads);
+        }
+
+        if (StripinfoLoginHelper.isSyncEnabled(global)) {
+            menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
+                .setIcon(R.drawable.ic_stripinfo);
+        }
+
+        final String title = getString(R.string.action_synchronize);
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            mMenuLauncher.launch(title, null, menu, 0);
+        } else {
+            new MenuPicker(this, title, null, menu, 0, this::onContextItemSelected)
+                    .show();
+        }
     }
 
     /**
@@ -1374,6 +1464,9 @@ public class BooksOnBookshelf
         // then we should display the 'up' indicator. See #onBackPressed.
         updateActionBar(mVm.getSearchCriteria().isEmpty());
 
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+
+        updateSyncMenuVisibility(global);
 
         // Initialize/Update the list of bookshelves
         mVm.reloadBookshelfList(this);
@@ -1565,7 +1658,7 @@ public class BooksOnBookshelf
         }
 
         mVb.list.setVisibility(View.VISIBLE);
-        createAdapter(mVm.getNewListCursor());
+        onCreateAdapter(mVm.getNewListCursor());
         scrollToSavedPosition(targetNodes);
     }
 

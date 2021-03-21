@@ -165,7 +165,7 @@ public class BoBTask
             }
 
             // Add Calibre bridging data ?
-            if (CalibreContentServer.isEnabled(global)) {
+            if (CalibreContentServer.isSyncEnabled(global)) {
                 addCalibreDomains(builder);
             }
 

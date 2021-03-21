@@ -380,6 +380,8 @@
     <!-- [VERIFIED] -->
     <string name="progress_msg_loading">Loading…</string>
 
+    <string name="progress_msg_loading_page">Loading page %1$d…</string>
+
     <!-- During startup. -->
     <string name="progress_msg_starting_up">Starting up…</string>
     <string name="progress_msg_upgrading">Upgrading…</string>
@@ -1715,5 +1717,6 @@
 
     <string name="lbl_login_to_search">Login to search</string>
     <string name="lbl_strip_info_wishlist_bookshelf">Wishlist mapped bookshelf</string>
+    <string name="lbl_wishlist">Wishlist</string>
 
 </resources>

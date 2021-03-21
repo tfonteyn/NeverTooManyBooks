@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,20 +38,20 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 
 /**
  * Starting point for sending and importing books with Calibre.
  */
-public class CalibreAdminFragment
+@Keep
+public class CalibreSyncFragment
         extends Fragment {
 
-    /** Log tag. */
-    public static final String TAG = "CalibreAdminFragment";
+    public static final String TAG = "CalibreSyncFragment";
 
     /** View Binding. */
-    private FragmentCalibreBinding mVb;
+    private FragmentSyncCalibreBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class CalibreAdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentCalibreBinding.inflate(inflater, container, false);
+        mVb = FragmentSyncCalibreBinding.inflate(inflater, container, false);
         return mVb.getRoot();
     }
 
@@ -71,8 +72,6 @@ public class CalibreAdminFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.site_calibre);
 
         mVb.btnLibMap.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl();
@@ -134,9 +133,8 @@ public class CalibreAdminFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTING, 0, R.string.lbl_settings)
-            .setIcon(R.drawable.ic_baseline_settings_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        menu.add(R.id.MENU_GROUP_CALIBRE, R.id.MENU_CALIBRE_SETTINGS, 0, R.string.lbl_settings)
+            .setIcon(R.drawable.ic_baseline_settings_24);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -145,7 +143,7 @@ public class CalibreAdminFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.MENU_CALIBRE_SETTING) {
+        if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
             openSettings();
             return true;
         }

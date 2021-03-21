@@ -29,7 +29,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 
@@ -88,7 +88,7 @@ public class StripInfoBePreferencesViewModel
         @Override
         protected Boolean doWork(@NonNull final Context context)
                 throws IOException {
-            return new LoginHelper().login();
+            return new StripinfoLoginHelper().login();
         }
     }
 }

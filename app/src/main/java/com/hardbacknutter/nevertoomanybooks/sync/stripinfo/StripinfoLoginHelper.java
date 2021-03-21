@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -51,17 +52,24 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class LoginHelper {
+public class StripinfoLoginHelper {
 
-    public static final String PK_HOST_USER = "stripinfo.host.user";
-    public static final String PK_HOST_PASS = "stripinfo.host.password";
+    /** Preferences prefix. */
+    private static final String PREF_KEY = "stripinfo";
+    public static final String PK_HOST_USER = PREF_KEY + ".host.user";
+    public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
     /** The {@link Bookshelf} to which the wishlist is mapped. */
-    public static final String PK_WISHLIST_BOOKSHELF = "stripinfo.wishlist.bookshelf";
-    /** Log tag. */
-    private static final String TAG = "LoginHelper";
+    public static final String PK_WISHLIST_BOOKSHELF = PREF_KEY + ".wishlist.bookshelf";
+    /** Whether to show any sync menus at all. */
+    private static final String PK_ENABLED = PREF_KEY + ".enabled";
+
+    private static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */
-    private static final String PK_HOST_USER_ID = "stripinfo.host.userId";
+    private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
+
+    /** Log tag. */
+    private static final String TAG = "StripinfoLoginHelper";
 
     private static final String STRIPINFO_BE_USER_LOGIN = "https://www.stripinfo.be/user/login";
 
@@ -79,6 +87,31 @@ public class LoginHelper {
     @Nullable
     private String mUserId;
 
+    /**
+     * Check if SYNC menus should be shown at all. This does not affect searching.
+     *
+     * @param global Global preferences
+     *
+     * @return {@code true} if menus should be shown
+     */
+    @AnyThread
+    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PK_ENABLED, true);
+    }
+
+    /**
+     * Check whether the user should be logged in to the website during a <strong>search</strong>.
+     * This is independent from synchronization actions (where obviously login is always required).
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we should perform a login
+     */
+    @AnyThread
+    public static boolean isLoginToSearch(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
+    }
 
     /**
      * Initialises the global {@link CookieManager} and performs a login

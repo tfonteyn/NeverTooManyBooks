@@ -22,13 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.LoginHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -77,11 +77,6 @@ public class StripInfoSearchEngine
         implements SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
-    /**
-     * Whether the user wants to login to the website during a search or update-fields.
-     * This is independent from a future full sync.
-     */
-    private static final String PK_LOGIN_TO_SEARCH = "stripinfo.login.to.search";
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
 
@@ -131,7 +126,7 @@ public class StripInfoSearchEngine
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
 
     @Nullable
-    private LoginHelper mLoginHelper;
+    private StripinfoLoginHelper mLoginHelper;
     @Nullable
     private Bookshelf mWishListBookshelf;
 
@@ -169,12 +164,7 @@ public class StripInfoSearchEngine
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
-    private boolean isLoginToSearch() {
-        return PreferenceManager.getDefaultSharedPreferences(getContext())
-                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
-    }
-
-    public void setLoginHelper(@NonNull final LoginHelper loginHelper) {
+    public void setLoginHelper(@NonNull final StripinfoLoginHelper loginHelper) {
         mLoginHelper = loginHelper;
     }
 
@@ -184,9 +174,9 @@ public class StripInfoSearchEngine
             throws IOException {
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            if (isLoginToSearch()) {
+            if (StripinfoLoginHelper.isLoginToSearch(getContext())) {
                 if (mLoginHelper == null) {
-                    mLoginHelper = new LoginHelper();
+                    mLoginHelper = new StripinfoLoginHelper();
                 }
                 if (mLoginHelper.getUserId() == null) {
                     mLoginHelper.login();
@@ -271,39 +261,36 @@ public class StripInfoSearchEngine
                           @NonNull final Bundle bookData)
             throws IOException {
 
-        final Elements sections = document.select("section.c6");
-        if (sections != null) {
-            for (final Element section : sections) {
-                // A series:
-                // <a href="https://stripinfo.be/reeks/index/481
-                //      _Het_narrenschip">Het narrenschip</a>
-                // The book:
-                // <a href="https://stripinfo.be/reeks/strip/1652
-                //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
-                final Element urlElement = section.selectFirst(A_HREF_STRIP);
-                if (urlElement != null) {
-                    final Document redirected = loadDocument(urlElement.attr("href"));
-                    if (redirected != null && !isCancelled()) {
-                        // prevent looping.
-                        if (!isMultiResult(redirected)) {
-                            parse(redirected, fetchThumbnail, bookData);
-                        }
+        for (final Element section : document.select("section.c6")) {
+            // A series:
+            // <a href="https://stripinfo.be/reeks/index/481
+            //      _Het_narrenschip">Het narrenschip</a>
+            // The book:
+            // <a href="https://stripinfo.be/reeks/strip/1652
+            //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
+            final Element urlElement = section.selectFirst(A_HREF_STRIP);
+            if (urlElement != null) {
+                final Document redirected = loadDocument(urlElement.attr("href"));
+                if (redirected != null && !isCancelled()) {
+                    // prevent looping.
+                    if (!isMultiResult(redirected)) {
+                        parse(redirected, fetchThumbnail, bookData);
                     }
-                    return;
                 }
-                // A no-results page will contain:
-
-                // <section class="c6 fullInMediumScreens bottomMargin">
-                // <h4 class="title"></h4>
-                // <table>
-                //  <tbody>
-                //   <tr>
-                //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
-                //   </tr>
-                //  </tbody>
-                // </table>
-                //</section>
+                return;
             }
+            // A no-results page will contain:
+
+            // <section class="c6 fullInMediumScreens bottomMargin">
+            // <h4 class="title"></h4>
+            // <table>
+            //  <tbody>
+            //   <tr>
+            //    <td>Er werden geen resultaten gevonden voor uw zoekopdracht</td>
+            //   </tr>
+            //  </tbody>
+            // </table>
+            //</section>
         }
     }
 
@@ -322,7 +309,6 @@ public class StripInfoSearchEngine
         long externalId = 0;
         final Elements rows = document.select("div.row");
         for (final Element row : rows) {
-
             if (isCancelled()) {
                 return;
             }
@@ -507,12 +493,7 @@ public class StripInfoSearchEngine
 
         // front cover
         if (fetchThumbnail[0]) {
-            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-            final ArrayList<String> imageList = parseCovers(document, isbn, 0);
-            if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],
-                                            imageList);
-            }
+            processCover(document, 0, bookData);
         }
 
         if (isCancelled()) {
@@ -521,58 +502,93 @@ public class StripInfoSearchEngine
 
         // back cover
         if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
-            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-            final ArrayList<String> imageList = parseCovers(document, isbn, 1);
-            if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[1],
-                                            imageList);
+            processCover(document, 1, bookData);
+        }
+    }
+
+    /**
+     * Parses the downloaded {@link Document} for the given cover index and saves/stores
+     * the found file.
+     *
+     * @param document to parse
+     * @param cIdx     0..n image index
+     * @param bookData Bundle to update
+     */
+    @WorkerThread
+    private void processCover(@NonNull final Document document,
+                              @IntRange(from = 0, to = 1) final int cIdx,
+                              @NonNull final Bundle bookData) {
+
+        final String isbn = bookData.getString(DBKeys.KEY_ISBN);
+        // parse
+        final String url = parseCover(document, cIdx);
+        if (url != null) {
+            // get
+            final String fileSpec = saveCover(isbn, cIdx, url);
+            if (fileSpec != null && !fileSpec.isEmpty()) {
+                // store
+                final ArrayList<String> imageList = new ArrayList<>();
+                imageList.add(fileSpec);
+                bookData.putStringArrayList(
+                        SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx], imageList);
             }
         }
     }
 
     /**
-     * Parses the downloaded {@link Document} for the cover and fetches it when present.
+     * Parses the downloaded {@link Document} for the given cover index.
      *
      * @param document to parse
-     * @param isbn     (optional) ISBN of the book, will be used for the cover filename
      * @param cIdx     0..n image index
+     *
+     * @return full url, or {@code null} when no image found
      */
-    @WorkerThread
-    @VisibleForTesting
-    @NonNull
-    private ArrayList<String> parseCovers(@NonNull final Document document,
-                                          @Nullable final String isbn,
-                                          @IntRange(from = 0, to = 1) final int cIdx) {
-        final Element coverElement;
-        String url = null;
-
+    @AnyThread
+    @Nullable
+    private String parseCover(@NonNull final Document document,
+                              @IntRange(from = 0, to = 1) final int cIdx) {
         switch (cIdx) {
-            case 0:
-                coverElement = document
+            case 0: {
+                final Element element = document
                         .selectFirst("a.stripThumb > figure.stripThumbInnerWrapper > img");
-                if (coverElement != null) {
-                    url = coverElement.attr("src");
+                if (element != null) {
+                    return element.attr("src");
                 }
                 break;
-            case 1:
-                coverElement = document.selectFirst("a.belowImage");
-                if (coverElement != null) {
-                    url = coverElement.attr("data-ajax-url");
+            }
+            case 1: {
+                final Element element = document.selectFirst("a.belowImage");
+                if (element != null) {
+                    return element.attr("data-ajax-url");
                 }
                 break;
+            }
             default:
                 throw new IllegalArgumentException(String.valueOf(cIdx));
         }
+        return null;
+    }
 
-        final ArrayList<String> imageList = new ArrayList<>();
+    /**
+     * Download the given cover index.
+     *
+     * @param isbn (optional) ISBN of the book, will be used for the tmp cover filename
+     * @param cIdx 0..n image index
+     * @param url  location
+     *
+     * @return fileSpec, or {@code null} when not found
+     */
+    @WorkerThread
+    @Nullable
+    private String saveCover(@Nullable final String isbn,
+                             @IntRange(from = 0, to = 1) final int cIdx,
+                             @NonNull final String url) {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
         // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
-        // 2020-08-11: parsing modified to bypass the 18+ image block but leaving the tests
+        // 2020-08-11: parsing was modified to bypass the 18+ image block but leaving the tests
         // in place to guard against website changes.
-        if (url != null && !url.isEmpty()
-            && !url.endsWith("i=0")
-            && !url.endsWith("mature.png")) {
+        if (!url.isEmpty() && !url.endsWith("i=0") && !url.endsWith("mature.png")) {
 
             final String fileSpec = saveImage(url, isbn, cIdx, null);
             if (fileSpec != null) {
@@ -590,15 +606,15 @@ public class StripInfoSearchEngine
                         || Arrays.equals(digest, MATURE_COVER_MD5)) {
                         //noinspection ResultOfMethodCallIgnored
                         file.delete();
-                        return imageList;
+                        return null;
                     }
                 }
 
-                imageList.add(fileSpec);
+                return fileSpec;
             }
         }
 
-        return imageList;
+        return null;
     }
 
     /**
@@ -622,55 +638,52 @@ public class StripInfoSearchEngine
      */
     @Nullable
     private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
-        final Elements sections = document.select("div.c12");
-        if (sections != null) {
-            for (final Element section : sections) {
-                final Element divs = section.selectFirst("div");
-                if (divs != null) {
-                    final Elements sectionChildren = divs.children();
-                    if (!sectionChildren.isEmpty()) {
-                        final Element sectionContent = sectionChildren.get(0);
-                        // the section header we're hoping to find.
-                        // <h4>Dit is een bundeling. De inhoud komt uit volgende strips:</h4>
-                        final Node header = sectionContent.selectFirst("h4");
-                        if (header != null && header.toString().contains("bundeling")) {
-                            // the div's inside Element 'row' should now contain the TOC.
-                            final ArrayList<TocEntry> toc = new ArrayList<>();
-                            for (final Element entry : sectionContent.select("div div")) {
-                                String number = null;
-                                String title = null;
+        for (final Element section : document.select("div.c12")) {
+            final Element divs = section.selectFirst("div");
+            if (divs != null) {
+                final Elements sectionChildren = divs.children();
+                if (!sectionChildren.isEmpty()) {
+                    final Element sectionContent = sectionChildren.get(0);
+                    // the section header we're hoping to find.
+                    // <h4>Dit is een bundeling. De inhoud komt uit volgende strips:</h4>
+                    final Node header = sectionContent.selectFirst("h4");
+                    if (header != null && header.toString().contains("bundeling")) {
+                        // the div's inside Element 'row' should now contain the TOC.
+                        final ArrayList<TocEntry> toc = new ArrayList<>();
+                        for (final Element entry : sectionContent.select("div div")) {
+                            String number = null;
+                            String title = null;
 
-                                final Element a = entry.selectFirst(A_HREF_STRIP);
-                                if (a != null) {
-                                    final Node nrNode = a.previousSibling();
-                                    if (nrNode != null) {
-                                        number = nrNode.toString().trim();
-                                    }
-
-                                    // the number is not used in the TOC as we don't support
-                                    // linking a TOC entry to another book.
-                                    // Instead prepend it to the title as a reference.
-                                    if (number != null) {
-                                        title = number + ' ' + a.text();
-                                    } else {
-                                        title = a.text();
-                                    }
+                            final Element a = entry.selectFirst(A_HREF_STRIP);
+                            if (a != null) {
+                                final Node nrNode = a.previousSibling();
+                                if (nrNode != null) {
+                                    number = nrNode.toString().trim();
                                 }
 
-                                if (title != null && !title.isEmpty()) {
-                                    final Author author;
-                                    if (!mAuthors.isEmpty()) {
-                                        author = mAuthors.get(0);
-                                    } else {
-                                        author = Author.createUnknownAuthor(
-                                                getContext());
-                                    }
-                                    final TocEntry tocEntry = new TocEntry(author, title, null);
-                                    toc.add(tocEntry);
+                                // the number is not used in the TOC as we don't support
+                                // linking a TOC entry to another book.
+                                // Instead prepend it to the title as a reference.
+                                if (number != null) {
+                                    title = number + ' ' + a.text();
+                                } else {
+                                    title = a.text();
                                 }
                             }
-                            return toc;
+
+                            if (title != null && !title.isEmpty()) {
+                                final Author author;
+                                if (!mAuthors.isEmpty()) {
+                                    author = mAuthors.get(0);
+                                } else {
+                                    author = Author.createUnknownAuthor(
+                                            getContext());
+                                }
+                                final TocEntry tocEntry = new TocEntry(author, title, null);
+                                toc.add(tocEntry);
+                            }
                         }
+                        return toc;
                     }
                 }
             }
@@ -910,7 +923,7 @@ public class StripInfoSearchEngine
     private void processDescription(@NonNull final Element item,
                                     @NonNull final Bundle bookData) {
         final Elements sections = item.select("section.c4");
-        if (sections != null && !sections.isEmpty()) {
+        if (!sections.isEmpty()) {
             final StringBuilder content = new StringBuilder();
             for (int i = 0; i < sections.size(); i++) {
                 final Element sectionElement = sections.get(i);
@@ -960,15 +973,12 @@ public class StripInfoSearchEngine
     private void processUserdata(@NonNull final Element document,
                                  @NonNull final Bundle bookData,
                                  final long externalId) {
-        Boolean tmpBool;
 
-        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieGelezen-" + externalId);
-        if (tmpBool != null) {
-            bookData.putBoolean(DBKeys.KEY_READ, tmpBool);
+        if (mJSoupHelper.getBoolean(document, "stripCollectieGelezen-" + externalId)) {
+            bookData.putBoolean(DBKeys.KEY_READ, true);
         }
 
-        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieInWishlist-" + externalId);
-        if (tmpBool != null) {
+        if (mJSoupHelper.getBoolean(document, "stripCollectieInWishlist-" + externalId)) {
             if (mWishListBookshelf != null) {
                 final ArrayList<Bookshelf> list = new ArrayList<>();
                 list.add(mWishListBookshelf);
@@ -979,9 +989,8 @@ public class StripInfoSearchEngine
         // The site has a concept of "I own this book" and "I have this book in my collection"
 
         // Owning a book
-        tmpBool = mJSoupHelper.getBoolean(document, "stripCollectieInBezit-" + externalId);
-        if (tmpBool != null) {
-            bookData.putBoolean(SiteField.OWNED, tmpBool);
+        if (mJSoupHelper.getBoolean(document, "stripCollectieInBezit-" + externalId)) {
+            bookData.putBoolean(SiteField.OWNED, true);
         }
 
         // In my collection: these are books where the user made SOME note/flag/...

@@ -104,7 +104,7 @@
                 android:title="@string/book_format_ebook" />
 
             <item
-                android:id="@id/MENU_CALIBRE_SETTING"
+                android:id="@id/MENU_CALIBRE_SETTINGS"
                 android:icon="@drawable/ic_baseline_settings_24"
                 android:title="@string/lbl_settings" />
         </menu>

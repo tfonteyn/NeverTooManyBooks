@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 
-public class GoodreadsAdminViewModel
+public class GoodreadsSyncViewModel
         extends GoodreadsAuthenticationViewModel {
 
     private final ImportTask mImportTask = new ImportTask(mTaskListener);

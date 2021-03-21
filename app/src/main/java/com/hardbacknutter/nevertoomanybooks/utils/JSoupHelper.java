@@ -34,6 +34,31 @@ public class JSoupHelper {
     private static final String ATTR_STYLE = "style";
     private static final Pattern ATTR_STYLE_PATTERN = Pattern.compile("[:;]");
 
+    @NonNull
+    public String getString(@NonNull final Element root,
+                            @NonNull final String id) {
+        final String v = getStringOrNull(root, id);
+        return v != null ? v : "";
+    }
+
+    public boolean getBoolean(@NonNull final Element root,
+                              @NonNull final String id) {
+        final Boolean v = getBooleanOrNull(root, id);
+        return v != null ? v : false;
+    }
+
+    public int getInt(@NonNull final Element root,
+                      @NonNull final String id) {
+        final Integer v = getIntOrNull(root, id);
+        return v != null ? v : 0;
+    }
+
+    public double getDouble(@NonNull final Element root,
+                            @NonNull final String id) {
+        final Double v = getDoubleOrNull(root, id);
+        return v != null ? v : 0;
+    }
+
     /**
      * Get the String value, or {@code null} if the element was not found.
      *
@@ -43,8 +68,8 @@ public class JSoupHelper {
      * @return String
      */
     @Nullable
-    public String getString(@NonNull final Element root,
-                            @NonNull final String id) {
+    public String getStringOrNull(@NonNull final Element root,
+                                  @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
             return element.val();
@@ -61,8 +86,8 @@ public class JSoupHelper {
      * @return Integer
      */
     @Nullable
-    public Integer getInt(@NonNull final Element root,
-                          @NonNull final String id) {
+    public Integer getIntOrNull(@NonNull final Element root,
+                                @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
             final String val = element.val();
@@ -86,8 +111,8 @@ public class JSoupHelper {
      * @return Double
      */
     @Nullable
-    public Double getDouble(@NonNull final Element root,
-                            @NonNull final String id) {
+    public Double getDoubleOrNull(@NonNull final Element root,
+                                  @NonNull final String id) {
         final Element element = root.getElementById(id);
         if (element != null) {
             final String val = element.val();
@@ -111,8 +136,8 @@ public class JSoupHelper {
      * @return boolean
      */
     @Nullable
-    public Boolean getBoolean(@NonNull final Element root,
-                              @NonNull final String id) {
+    public Boolean getBooleanOrNull(@NonNull final Element root,
+                                    @NonNull final String id) {
         final Element checkbox = root.getElementById(id);
         if (checkbox != null && "checkbox".equalsIgnoreCase(checkbox.attr("type"))) {
             return ATTR_CHECKED.equalsIgnoreCase(checkbox.attr(ATTR_CHECKED));
@@ -120,6 +145,15 @@ public class JSoupHelper {
         return null;
     }
 
+    /**
+     * Read the style attribute from the given Element and return a map
+     * with each style element mapped to one or more values.
+     * Interpretation of multi-value entries is up to the caller.
+     *
+     * @param element to parse
+     *
+     * @return map
+     */
     @NonNull
     public Map<String, String[]> getStyleMap(@NonNull final Element element) {
         final Map<String, String[]> keymaps = new HashMap<>();

@@ -51,8 +51,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -103,7 +101,12 @@ public abstract class BaseActivity
     private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
                                       bookshelfId -> {});
-
+    private final ActivityResultLauncher<String> mSettingsLauncher =
+            registerForActivityResult(new SettingsContract(), recreateActivity -> {
+                if (recreateActivity) {
+                    sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
+                }
+            });
     /** Locale at {@link #onCreate} time. */
     private String mInitialLocaleSpec;
     /** Night-mode at {@link #onCreate} time. */
@@ -115,15 +118,6 @@ public abstract class BaseActivity
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
-
-    private final ActivityResultLauncher<String> mSettingsLauncher =
-            registerForActivityResult(new SettingsContract(), recreateActivity -> {
-                updateNavigationMenuVisibility();
-                if (recreateActivity) {
-                    sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
-                }
-            });
-
     /** Flag indicating this Activity is a self-proclaimed root Activity. */
     private boolean mHomeIsRootMenu;
 
@@ -180,6 +174,12 @@ public abstract class BaseActivity
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
+    }
+
+    @Nullable
+    protected MenuItem getNavigationMenuItem(
+            @SuppressWarnings("SameParameterValue") @IdRes final int menuId) {
+        return mNavigationView != null ? mNavigationView.getMenu().findItem(menuId) : null;
     }
 
     /**
@@ -295,27 +295,6 @@ public abstract class BaseActivity
                              @NonNull final CharSequence error) {
         view.setError(error);
         view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
-    }
-
-    public void updateNavigationMenuVisibility() {
-        if (mNavigationView != null) {
-            updateMenuItemVisibility(mNavigationView.getMenu());
-        }
-    }
-
-    public void updateMenuItemVisibility(@NonNull final Menu menu) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-        MenuItem item;
-
-        item = menu.findItem(R.id.nav_goodreads);
-        if (item != null) {
-            item.setVisible(GoodreadsManager.isShowSyncMenus(global));
-        }
-
-        item = menu.findItem(R.id.nav_calibre);
-        if (item != null) {
-            item.setVisible(CalibreContentServer.isEnabled(global));
-        }
     }
 
     @CallSuper

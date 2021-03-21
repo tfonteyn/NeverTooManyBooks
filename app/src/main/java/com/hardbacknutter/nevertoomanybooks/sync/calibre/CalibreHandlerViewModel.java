@@ -33,40 +33,40 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 public class CalibreHandlerViewModel
         extends ViewModel {
 
-    private SingleFileDownload mSingleFileDownload;
+    private SingleFileDownloadTask mSingleFileDownloadTask;
 
     public void init(@NonNull final CalibreContentServer server) {
-        if (mSingleFileDownload == null) {
-            mSingleFileDownload = new SingleFileDownload(server);
+        if (mSingleFileDownloadTask == null) {
+            mSingleFileDownloadTask = new SingleFileDownloadTask(server);
         }
     }
 
     @NonNull
     public LiveData<ProgressMessage> onProgress() {
-        return mSingleFileDownload.onProgressUpdate();
+        return mSingleFileDownloadTask.onProgressUpdate();
     }
 
     @NonNull
     public LiveData<FinishedMessage<Uri>> onCancelled() {
-        return mSingleFileDownload.onCancelled();
+        return mSingleFileDownloadTask.onCancelled();
     }
 
     @NonNull
     public LiveData<FinishedMessage<Exception>> onFailure() {
-        return mSingleFileDownload.onFailure();
+        return mSingleFileDownloadTask.onFailure();
     }
 
     @NonNull
     public LiveData<FinishedMessage<Uri>> onFinished() {
-        return mSingleFileDownload.onFinished();
+        return mSingleFileDownloadTask.onFinished();
     }
 
     public boolean download(@NonNull final Book book,
                             @NonNull final Uri folder) {
-        return mSingleFileDownload.download(book, folder);
+        return mSingleFileDownloadTask.download(book, folder);
     }
 
     void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
-        dialog.setCanceller(mSingleFileDownload);
+        dialog.setCanceller(mSingleFileDownloadTask);
     }
 }

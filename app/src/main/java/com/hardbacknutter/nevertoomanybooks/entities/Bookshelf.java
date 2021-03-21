@@ -27,6 +27,7 @@ import android.os.Parcelable;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -121,6 +122,19 @@ public class Bookshelf
                      @NonNull final ListStyle style) {
         mName = name.trim();
         mStyleUuid = style.getUuid();
+    }
+
+    /**
+     * For testing only.
+     *
+     * @param name      for the Bookshelf
+     * @param styleUuid the UUID of the style to apply to this shelf
+     */
+    @VisibleForTesting
+    public Bookshelf(@NonNull final String name,
+                     @NonNull final String styleUuid) {
+        mName = name.trim();
+        mStyleUuid = styleUuid;
     }
 
     /**

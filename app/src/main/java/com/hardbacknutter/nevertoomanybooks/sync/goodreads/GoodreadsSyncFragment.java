@@ -28,9 +28,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -40,7 +40,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncGoodreadsBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -50,17 +50,16 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 /**
  * Starting point for sending and importing books with Goodreads.
  */
-public class GoodreadsAdminFragment
+@Keep
+public class GoodreadsSyncFragment
         extends Fragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "GoodreadsAdminFragment";
-
-    private GoodreadsAdminViewModel mVm;
+    public static final String TAG = "GoodreadsSyncFragment";
 
     /** View Binding. */
-    private FragmentGoodreadsAdminBinding mVb;
-    private Toolbar mToolbar;
+    private FragmentSyncGoodreadsBinding mVb;
+
+    private GoodreadsSyncViewModel mVm;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -73,7 +72,7 @@ public class GoodreadsAdminFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentGoodreadsAdminBinding.inflate(inflater, container, false);
+        mVb = FragmentSyncGoodreadsBinding.inflate(inflater, container, false);
         return mVb.getRoot();
     }
 
@@ -81,10 +80,8 @@ public class GoodreadsAdminFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
 
-        mVm = new ViewModelProvider(this).get(GoodreadsAdminViewModel.class);
+        mVm = new ViewModelProvider(this).get(GoodreadsSyncViewModel.class);
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
         mVm.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
@@ -96,11 +93,14 @@ public class GoodreadsAdminFragment
         mVb.btnSendAllBooks.setOnClickListener(v -> sendBooks(false));
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.site_goodreads);
-        mToolbar.setSubtitle("");
+    private void importBooks(final boolean sync) {
+        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
+        mVm.startImport(sync);
+    }
+
+    private void sendBooks(final boolean updatesOnly) {
+        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
+        mVm.startSend(false, updatesOnly);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
@@ -142,13 +142,12 @@ public class GoodreadsAdminFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_GOODREADS_TASKS, 0, R.string.gr_tq_menu_background_tasks)
-            .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        menu.add(R.id.MENU_GROUP_GOODREADS, R.id.MENU_GOODREADS_TASKS, 0,
+                 R.string.gr_tq_menu_background_tasks)
+            .setIcon(R.drawable.ic_baseline_format_list_bulleted_24);
 
-        menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
-            .setIcon(R.drawable.ic_baseline_settings_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        menu.add(R.id.MENU_GROUP_GOODREADS, R.id.MENU_GOODREADS_SETTINGS, 0, R.string.lbl_settings)
+            .setIcon(R.drawable.ic_baseline_settings_24);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -162,27 +161,21 @@ public class GoodreadsAdminFragment
             startActivity(new Intent(getContext(), TasksAdminActivity.class));
             return true;
 
-        } else if (itemId == R.id.MENU_SETTINGS) {
-            final Fragment fragment = new GoodreadsPreferencesFragment();
-            final FragmentManager fm = getParentFragmentManager();
-            fm.beginTransaction()
-              .setReorderingAllowed(true)
-              .addToBackStack(GoodreadsPreferencesFragment.TAG)
-              .replace(R.id.main_fragment, fragment, GoodreadsPreferencesFragment.TAG)
-              .commit();
+        } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
+            openSettings();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void importBooks(final boolean sync) {
-        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mVm.startImport(sync);
-    }
-
-    private void sendBooks(final boolean updatesOnly) {
-        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mVm.startSend(false, updatesOnly);
+    private void openSettings() {
+        final Fragment fragment = new GoodreadsPreferencesFragment();
+        final FragmentManager fm = getParentFragmentManager();
+        fm.beginTransaction()
+          .setReorderingAllowed(true)
+          .addToBackStack(GoodreadsPreferencesFragment.TAG)
+          .replace(R.id.main_fragment, fragment, GoodreadsPreferencesFragment.TAG)
+          .commit();
     }
 }
