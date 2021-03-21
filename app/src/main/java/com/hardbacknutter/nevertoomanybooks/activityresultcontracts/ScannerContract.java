@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 public class ScannerContract
         extends ActivityResultContract<Fragment, String> {
 
-    /** Log tag. */
     private static final String TAG = "ScannerContract";
 
     /**

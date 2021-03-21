@@ -75,8 +75,7 @@ public class EditStyleContract
     public Output parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(StyleFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

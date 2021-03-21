@@ -160,8 +160,7 @@ public class EditBookshelvesFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
-            .setIcon(R.drawable.ic_baseline_delete_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            .setIcon(R.drawable.ic_baseline_delete_24);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

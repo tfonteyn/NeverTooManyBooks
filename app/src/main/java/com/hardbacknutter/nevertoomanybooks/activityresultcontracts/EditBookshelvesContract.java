@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesViewModel;
 public class EditBookshelvesContract
         extends ActivityResultContract<Long, Long> {
 
+    private static final String TAG = "EditBookshelvesContract";
+
     public static void setResultAndFinish(@NonNull final Activity activity,
                                           final long bookshelfId) {
         final Intent resultIntent = new Intent()
@@ -64,8 +66,7 @@ public class EditBookshelvesContract
     public Long parseResult(final int resultCode,
                             @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(EditBookshelvesFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

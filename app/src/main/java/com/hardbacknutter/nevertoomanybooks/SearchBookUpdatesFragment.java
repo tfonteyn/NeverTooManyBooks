@@ -212,8 +212,7 @@ public class SearchBookUpdatesFragment
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_baseline_undo_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            .setIcon(R.drawable.ic_baseline_undo_24);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class AuthorWorksContract
         extends ActivityResultContract<AuthorWorksContract.Input, Bundle> {
 
+    private static final String TAG = "AuthorWorksContract";
+
     public static void setResultAndFinish(@NonNull final Activity activity,
                                           final boolean dataModified) {
         final Intent resultIntent = new Intent()
@@ -62,8 +64,7 @@ public class AuthorWorksContract
     public Bundle parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(AuthorWorksFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

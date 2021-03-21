@@ -40,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 public class ShowBookContract
         extends ActivityResultContract<ShowBookContract.Input, Bundle> {
 
+    private static final String TAG = "ShowBookContract";
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -63,8 +65,7 @@ public class ShowBookContract
     public Bundle parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(ShowBookActivity.TAG,
-                     "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

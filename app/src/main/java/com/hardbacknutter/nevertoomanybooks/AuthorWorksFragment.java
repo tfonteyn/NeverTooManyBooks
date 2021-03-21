@@ -185,8 +185,8 @@ public class AuthorWorksFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.author_works, menu);
         MenuCompat.setGroupDividerEnabled(menu, true);
+        inflater.inflate(R.menu.author_works, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

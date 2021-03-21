@@ -368,6 +368,7 @@ public class BookDao
             // and populate the search suggestions table
             ftsInsert(context, newBookId);
 
+            // lastly we move the covers from the cache dir to their permanent dir/name
             if (!book.storeCovers(context)) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);

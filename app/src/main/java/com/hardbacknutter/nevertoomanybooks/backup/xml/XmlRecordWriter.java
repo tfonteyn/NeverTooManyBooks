@@ -200,23 +200,17 @@ public class XmlRecordWriter
                                            library.getMappedBookshelfId()));
                 writer.write(">");
 
-                final ArrayList<CalibreVirtualLibrary> virtualLibraries = library
-                        .getVirtualLibraries();
-                if (!virtualLibraries.isEmpty()) {
-                    for (final CalibreVirtualLibrary vlib : virtualLibraries) {
-                        writer.write("<CalibreVirtualLibrary");
-                        writer.write(XmlUtils.idAttr(vlib.getId()));
-                        writer.write(XmlUtils.attr(DBKeys.KEY_FK_CALIBRE_LIBRARY,
-                                                   vlib.getLibraryId()));
-                        writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_NAME,
-                                                   vlib.getName()));
-                        writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR,
-                                                   vlib.getExpr()));
-                        writer.write(XmlUtils.attr(DBKeys.KEY_FK_BOOKSHELF,
-                                                   vlib.getMappedBookshelfId()));
-                        writer.write("/>");
-                    }
+                for (final CalibreVirtualLibrary vlib : library.getVirtualLibraries()) {
+                    writer.write("<CalibreVirtualLibrary");
+                    writer.write(XmlUtils.idAttr(vlib.getId()));
+                    writer.write(XmlUtils.attr(DBKeys.KEY_FK_CALIBRE_LIBRARY, vlib.getLibraryId()));
+                    writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_NAME, vlib.getName()));
+                    writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR, vlib.getExpr()));
+                    writer.write(XmlUtils.attr(DBKeys.KEY_FK_BOOKSHELF,
+                                               vlib.getMappedBookshelfId()));
+                    writer.write("/>");
                 }
+
                 writer.write("</CalibreLibrary>\n");
             }
             writer.write("</CalibreLibraryList>\n");

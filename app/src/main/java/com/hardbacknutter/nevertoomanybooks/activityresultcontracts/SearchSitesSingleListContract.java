@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,8 +61,7 @@ public class SearchSitesSingleListContract
     public ArrayList<Site> parseResult(final int resultCode,
                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode
-                                         + "|intent=" + intent
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent
                                          + "|mListKey=" + mListKey);
         }
 

@@ -79,7 +79,7 @@ public final class CameraDetection {
      * Get the user preferred camera id.
      *
      * @param context Current context
-     * @param global  the global preferences
+     * @param global  Global preferences
      *
      * @return camera id, or {@code -1} for no-preference
      */

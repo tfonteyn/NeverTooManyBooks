@@ -42,6 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class SearchFtsContract
         extends ActivityResultContract<SearchCriteria, Bundle> {
 
+    private static final String TAG = "SearchFtsContract";
+
     public static void setResultAndFinish(@NonNull final Activity activity,
                                           @SuppressWarnings("TypeMayBeWeakened")
                                           @NonNull final ArrayList<Long> bookIdList,
@@ -79,8 +81,7 @@ public class SearchFtsContract
     public Bundle parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(SearchFtsFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

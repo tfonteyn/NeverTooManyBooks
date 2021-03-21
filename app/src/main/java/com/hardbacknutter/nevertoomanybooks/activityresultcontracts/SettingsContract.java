@@ -38,6 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 public class SettingsContract
         extends ActivityResultContract<String, Boolean> {
 
+    private static final String TAG = "SettingsContract";
+
     /** Something changed (or not) that requires a recreation of the caller Activity. */
     private static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
 
@@ -66,8 +68,7 @@ public class SettingsContract
     public Boolean parseResult(final int resultCode,
                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(SettingsFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

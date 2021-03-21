@@ -38,6 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class ExportContract
         extends ActivityResultContract<ArchiveEncoding, Boolean> {
 
+    private static final String TAG = "ExportContract";
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -55,8 +57,7 @@ public class ExportContract
     public Boolean parseResult(final int resultCode,
                                @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(ExportFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         return intent != null && resultCode == Activity.RESULT_OK;

@@ -142,8 +142,7 @@ public class SearchOrderFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_baseline_undo_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            .setIcon(R.drawable.ic_baseline_undo_24);
 
         super.onCreateOptionsMenu(menu, inflater);
     }

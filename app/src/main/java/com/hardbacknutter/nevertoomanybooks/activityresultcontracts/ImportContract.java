@@ -38,6 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class ImportContract
         extends ActivityResultContract<String, ImportResults> {
 
+    private static final String TAG = "ImportContract";
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -55,8 +57,7 @@ public class ImportContract
     public ImportResults parseResult(final int resultCode,
                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(ImportFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {

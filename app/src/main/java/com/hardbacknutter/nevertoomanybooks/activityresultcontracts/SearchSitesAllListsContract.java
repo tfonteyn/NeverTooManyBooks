@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 public class SearchSitesAllListsContract
         extends ActivityResultContract<Void, Boolean> {
 
-    /** Log tag. */
     private static final String TAG = "SearchSitesAllLists";
 
     @NonNull

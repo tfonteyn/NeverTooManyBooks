@@ -141,7 +141,7 @@ public class BookCoder {
     private final StringList<Bookshelf> mBookshelfCoder;
 
     @NonNull
-    private final List<Domain> externalIdDomains;
+    private final List<Domain> mExternalIdDomains;
 
     private final Map<Long, String> mCalibreLibraryId2StrMap = new HashMap<>();
     private final Map<String, Long> mCalibreLibraryStr2IdMap = new HashMap<>();
@@ -150,7 +150,7 @@ public class BookCoder {
 
         mBookshelfCoder = new StringList<>(new BookshelfCoder(context));
 
-        externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+        mExternalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
         //noinspection SimplifyStreamApiCallChains
         ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries()
@@ -167,7 +167,7 @@ public class BookCoder {
     public String encodeHeader() {
         // row 0 with the column labels
         final StringBuilder columnLabels = new StringBuilder(EXPORT_FIELD_HEADERS_BASE);
-        for (final Domain domain : externalIdDomains) {
+        for (final Domain domain : mExternalIdDomains) {
             columnLabels.append(COMMA).append('"').append(domain.getName()).append('"');
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
@@ -238,7 +238,7 @@ public class BookCoder {
         }
 
         // external ID's
-        for (final Domain domain : externalIdDomains) {
+        for (final Domain domain : mExternalIdDomains) {
             line.add(encode(book.getString(domain.getName())));
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
