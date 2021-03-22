@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TaskAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoSyncFragment;
 
 /**
@@ -60,14 +61,18 @@ public class FragmentHostActivity
         sMap.put(ImportFragment.TAG, ImportFragment.class);
         sMap.put(ExportFragment.TAG, ExportFragment.class);
 
+        sMap.put(EditBookshelvesFragment.TAG, EditBookshelvesFragment.class);
+
         sMap.put(PreferredStylesFragment.TAG, PreferredStylesFragment.class);
 
         sMap.put(CalibreSyncFragment.TAG, CalibreSyncFragment.class);
         sMap.put(GoodreadsSyncFragment.TAG, GoodreadsSyncFragment.class);
         sMap.put(StripinfoSyncFragment.TAG, StripinfoSyncFragment.class);
 
-        sMap.put(EditBookshelvesFragment.TAG, EditBookshelvesFragment.class);
         sMap.put(AboutFragment.TAG, AboutFragment.class);
+
+        sMap.put(TaskAdminFragment.TAG, TaskAdminFragment.class);
+
     }
 
     @Override
