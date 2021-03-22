@@ -120,13 +120,13 @@ class StripInfoTest
 
 
         final ArrayList<String> covers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith("SI_9789463064385_0_.jpg"));
 
         final ArrayList<String> backCovers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[1]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith("SI_9789463064385_1_.jpg"));
@@ -186,13 +186,13 @@ class StripInfoTest
         // there are more...
 
         final ArrayList<String> covers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
         assertTrue(covers.get(0).endsWith("SI_905581315X_0_.jpg"));
 
         final ArrayList<String> backCovers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[1]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNotNull(backCovers);
         assertEquals(1, backCovers.size());
         assertTrue(backCovers.get(0).endsWith("SI_905581315X_1_.jpg"));
@@ -248,14 +248,14 @@ class StripInfoTest
         assertEquals(Author.TYPE_ARTIST, author.getType());
 
         final ArrayList<String> covers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
         assertNotNull(covers);
         assertEquals(1, covers.size());
 
         assertTrue(covers.get(0).endsWith("SI_9789085522072_0_.jpg"));
 
         final ArrayList<String> backCovers =
-                mRawData.getStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[1]);
+                mRawData.getStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[1]);
         assertNull(backCovers);
     }
 
