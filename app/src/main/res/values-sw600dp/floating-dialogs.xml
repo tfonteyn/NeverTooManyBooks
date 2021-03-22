@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@
 
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java
+    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java
      FLOATING dialog enabled.
     -->
     <bool name="floating_dialogs_enabled">true</bool>

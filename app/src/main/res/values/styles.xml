@@ -657,7 +657,7 @@
     <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
          FLOATING and FULLSCREEN dialog
          Important: in FLOATING mode, some adjustments are done from code.
-         See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
+         See com/hardbacknutter/nevertoomanybooks/dialogs/FFBaseDialogFragment.java#onViewCreated
      -->
     <style name="Dialog.Frame" parent="">
         <item name="android:layout_width">match_parent</item>
