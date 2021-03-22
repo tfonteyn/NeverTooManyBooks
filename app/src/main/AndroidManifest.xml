@@ -148,8 +148,6 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity android:name=".sync.goodreads.GoodreadsRegistrationActivity" />
-        <activity android:name=".sync.goodreads.qtasks.admin.TasksAdminActivity" />
-        <activity android:name=".sync.goodreads.qtasks.admin.EventsAdminActivity" />
 
         <!--
              The callback-activity after we requested authorizing this application
