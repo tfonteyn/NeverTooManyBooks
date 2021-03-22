@@ -52,12 +52,12 @@ public abstract class BaseFragment
 
     public void setTitle(@StringRes final int resId) {
         //noinspection ConstantConditions
-        ((BaseActivity) getActivity()).setTitle(resId);
+        getActivity().setTitle(resId);
     }
 
     public void setTitle(@Nullable final CharSequence title) {
         //noinspection ConstantConditions
-        ((BaseActivity) getActivity()).setTitle(title);
+        getActivity().setTitle(title);
     }
 
     public void setSubtitle(@StringRes final int resId) {

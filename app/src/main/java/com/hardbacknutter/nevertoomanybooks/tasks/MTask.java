@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -61,7 +62,7 @@ public abstract class MTask<Result>
      * @return the {@link Result} which can be considered to be complete and correct.
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Result>> onFinished() {
+    public LiveData<FinishedMessage<Result>> onFinished() {
         return mFinishedObservable;
     }
 
@@ -76,7 +77,7 @@ public abstract class MTask<Result>
      * complete/correct (if at all) this result is.
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Result>> onCancelled() {
+    public LiveData<FinishedMessage<Result>> onCancelled() {
         return mCancelObservable;
     }
 
@@ -90,7 +91,7 @@ public abstract class MTask<Result>
      * @return the result is the Exception
      */
     @NonNull
-    public MutableLiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<FinishedMessage<Exception>> onFailure() {
         return mFailureObservable;
     }
 
@@ -104,7 +105,7 @@ public abstract class MTask<Result>
      * @return a {@link ProgressMessage} with the progress counter, a text message, ...
      */
     @NonNull
-    public MutableLiveData<ProgressMessage> onProgressUpdate() {
+    public LiveData<ProgressMessage> onProgressUpdate() {
         return mProgressObservable;
     }
 

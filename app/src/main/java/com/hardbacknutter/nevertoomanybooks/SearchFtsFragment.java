@@ -186,6 +186,7 @@ public class SearchFtsFragment
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
         // When the show results buttons is tapped, return and show the resulting booklist.
+        //noinspection ConstantConditions
         mVb.btnSearch.setOnClickListener(
                 v -> SearchFtsContract.setResultAndFinish(getActivity(),
                                                           mBookIdList,
