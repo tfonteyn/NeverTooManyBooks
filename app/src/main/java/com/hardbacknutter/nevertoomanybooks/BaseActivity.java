@@ -34,6 +34,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -210,6 +211,40 @@ public abstract class BaseActivity
               .setReorderingAllowed(true)
               .add(containerViewId, fragment, fragmentTag)
               .commit();
+        }
+    }
+
+    @Override
+    public void setTitle(@StringRes final int title) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        } else {
+            super.setTitle(title);
+        }
+    }
+
+    @Override
+    public void setTitle(@Nullable final CharSequence title) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        } else {
+            super.setTitle(title);
+        }
+    }
+
+    public void setSubtitle(@StringRes final int title) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(title);
+        }
+    }
+
+    public void setSubtitle(@Nullable final CharSequence title) {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setSubtitle(title);
         }
     }
 
