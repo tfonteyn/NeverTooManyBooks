@@ -28,12 +28,14 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResult;
@@ -624,8 +626,15 @@ public class CoverHandler {
                 final int explicitRotation = ParseUtils
                         .getIntListPref(global, Prefs.pk_camera_image_autorotate, 0);
 
-                //noinspection ConstantConditions
-                final int surfaceRotation = context.getDisplay().getRotation();
+                final int surfaceRotation;
+                if (Build.VERSION.SDK_INT >= 30) {
+                    //noinspection ConstantConditions
+                    surfaceRotation = context.getDisplay().getRotation();
+                } else {
+                    final WindowManager wm = (WindowManager)
+                            context.getSystemService(Context.WINDOW_SERVICE);
+                    surfaceRotation = wm.getDefaultDisplay().getRotation();
+                }
 
                 // What action (if any) should we take after we're done?
                 @NextAction

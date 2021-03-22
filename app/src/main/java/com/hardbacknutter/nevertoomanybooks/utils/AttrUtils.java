@@ -24,8 +24,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.WindowManager;
 
 import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
@@ -156,9 +158,16 @@ public final class AttrUtils {
 
         try {
             final DisplayMetrics metrics = new DisplayMetrics();
-            //noinspection ConstantConditions
-            context.getDisplay().getRealMetrics(metrics);
+            if (Build.VERSION.SDK_INT >= 30) {
+                //noinspection ConstantConditions
+                context.getDisplay().getRealMetrics(metrics);
+            } else {
+                final WindowManager wm = (WindowManager)
+                        context.getSystemService(Context.WINDOW_SERVICE);
+                wm.getDefaultDisplay().getMetrics(metrics);
+            }
             return (int) tv.getDimension(metrics);
+
         } catch (@NonNull final UnsupportedOperationException e) {
             // When running androidTest, we get:
             // java.lang.UnsupportedOperationException: Tried to obtain display from a Context
