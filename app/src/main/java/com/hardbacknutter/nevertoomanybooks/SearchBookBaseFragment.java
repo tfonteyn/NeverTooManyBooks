@@ -33,7 +33,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -55,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public abstract class SearchBookBaseFragment
-        extends Fragment {
+        extends BaseFragment {
 
     private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);

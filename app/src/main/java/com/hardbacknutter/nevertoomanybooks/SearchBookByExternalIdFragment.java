@@ -87,11 +87,9 @@ public class SearchBookByExternalIdFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.fab_add_book_by_external_id);
 
         mVm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.fab_add_book_by_external_id);
 
         if (savedInstanceState != null) {
             final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);

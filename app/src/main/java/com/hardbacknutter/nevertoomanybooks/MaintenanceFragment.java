@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -58,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 @Keep
 public class MaintenanceFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "MaintenanceFragment";
@@ -77,7 +76,6 @@ public class MaintenanceFragment
 
     /** View Binding. */
     private FragmentMaintenanceBinding mVb;
-    private Toolbar mToolbar;
 
     @Nullable
     @Override
@@ -93,8 +91,8 @@ public class MaintenanceFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        setTitle(R.string.lbl_settings,
+                 R.string.pt_maintenance);
 
         mVb.btnDebug.setOnClickListener(v -> {
             mDebugClicks++;
@@ -224,13 +222,6 @@ public class MaintenanceFragment
                 .setPositiveButton(R.string.action_delete, (d, w) -> onDeleteAll())
                 .create()
                 .show());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.pt_maintenance);
     }
 
     /**

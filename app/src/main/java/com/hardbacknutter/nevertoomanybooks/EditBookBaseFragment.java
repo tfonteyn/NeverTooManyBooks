@@ -36,7 +36,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -69,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
 public abstract class EditBookBaseFragment
-        extends Fragment
+        extends BaseFragment
         implements DataEditor<Book> {
 
     /** Log tag. */
@@ -116,7 +115,6 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
-    private Toolbar mToolbar;
 
     /**
      * Init all Fields, and add them the fields collection.
@@ -168,9 +166,8 @@ public abstract class EditBookBaseFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
 
+        //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
         final Fields fields = getFields();
@@ -294,17 +291,17 @@ public abstract class EditBookBaseFragment
         // Set the activity title
         if (book.isNew()) {
             // New book
-            mToolbar.setTitle(R.string.lbl_add_book);
-            mToolbar.setSubtitle(null);
+            setTitle(R.string.lbl_add_book);
+            setSubtitle(null);
         } else {
             // Existing book
             String title = book.getString(DBKeys.KEY_TITLE);
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
-            mToolbar.setTitle(title);
+            setTitle(title);
             //noinspection ConstantConditions
-            mToolbar.setSubtitle(Author.getCondensedNames(
+            setSubtitle(Author.getCondensedNames(
                     getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
         }
     }

@@ -212,13 +212,6 @@ public class CalibrePreferencesFragment
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.site_calibre);
-    }
-
     /**
      * Read the existing download folder, and set the preference summary.
      *

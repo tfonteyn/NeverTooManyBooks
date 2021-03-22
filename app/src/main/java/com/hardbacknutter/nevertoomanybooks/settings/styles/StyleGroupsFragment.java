@@ -30,7 +30,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -40,6 +39,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStyleGroupsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 @Keep
 public class StyleGroupsFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;

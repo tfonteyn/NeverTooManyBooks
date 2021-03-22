@@ -28,7 +28,6 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class CalibreLibraryMappingFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "CalibreLibraryMapFrag";

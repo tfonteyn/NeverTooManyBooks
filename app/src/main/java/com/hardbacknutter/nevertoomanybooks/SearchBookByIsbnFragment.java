@@ -112,12 +112,10 @@ public class SearchBookByIsbnFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.lbl_search_isbn);
 
         mVm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         mVm.init(getArguments());
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_search_isbn);
 
         mVb.isbn.setText(mCoordinator.getIsbnSearchText());
 

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment;
@@ -52,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 @Keep
 public class StripinfoSyncFragment
-        extends Fragment {
+        extends BaseFragment {
 
     public static final String TAG = "StripinfoSyncFragment";
 
@@ -82,6 +83,7 @@ public class StripinfoSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.action_synchronize);
 
         mVm = new ViewModelProvider(this).get(StripinfoSyncViewModel.class);
         //noinspection ConstantConditions

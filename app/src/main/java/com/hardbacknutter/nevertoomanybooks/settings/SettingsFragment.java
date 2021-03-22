@@ -167,13 +167,6 @@ public class SettingsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle("");
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);

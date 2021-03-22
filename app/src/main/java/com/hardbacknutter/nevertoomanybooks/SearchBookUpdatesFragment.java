@@ -35,8 +35,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -68,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookUpdatesViewMode
  * See {@link SearchBookUpdatesViewModel} mFromBookIdOnwards
  */
 public class SearchBookUpdatesFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "SearchBookUpdatesFragment";
@@ -110,21 +108,19 @@ public class SearchBookUpdatesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        final Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
 
         final Bundle args = getArguments();
 
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
-            toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
+            setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
-            toolbar.setTitle(R.string.lbl_select_fields);
+            setTitle(R.string.lbl_select_fields);
         }
 
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+            setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
         mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
@@ -150,6 +146,7 @@ public class SearchBookUpdatesFragment
         mVm.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
 
         // The FAB lives in the activity.
+        //noinspection ConstantConditions
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
         fab.setVisibility(View.VISIBLE);

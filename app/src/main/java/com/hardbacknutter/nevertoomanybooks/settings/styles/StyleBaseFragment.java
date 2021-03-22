@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,18 +60,19 @@ public abstract class StyleBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         final ListStyle style = mVm.getStyle();
         if (style.getId() == 0) {
-            mToolbar.setTitle(R.string.lbl_clone_style);
+            mActionBar.setTitle(R.string.lbl_clone_style);
         } else {
-            mToolbar.setTitle(R.string.lbl_edit_style);
+            mActionBar.setTitle(R.string.lbl_edit_style);
         }
 
         //noinspection ConstantConditions
-        mToolbar.setSubtitle(style.getLabel(getContext()));
+        mActionBar.setSubtitle(style.getLabel(getContext()));
     }
 
     @Override

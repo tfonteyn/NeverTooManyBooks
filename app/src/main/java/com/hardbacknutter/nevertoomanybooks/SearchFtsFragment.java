@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -60,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBi
  * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.
  */
 public class SearchFtsFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "SearchFtsFragment";
@@ -154,9 +153,7 @@ public class SearchFtsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_local_search);
+        setTitle(R.string.lbl_local_search);
 
         if (mTitleSearchText != null) {
             mVb.title.setText(mTitleSearchText);

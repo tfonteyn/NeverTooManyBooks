@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 public class StripInfoBePreferencesFragment
         extends BasePreferenceFragment {
 
-    /** Log tag. */
     public static final String TAG = "StripInfoBePrefFrag";
 
     private StripInfoBePreferencesViewModel mVm;
@@ -181,12 +180,5 @@ public class StripInfoBePreferencesFragment
 
         StandardDialogs.showError(
                 getContext(), msg + getString(R.string.error_network_failed_try_again));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.site_stripinfo_be);
     }
 }

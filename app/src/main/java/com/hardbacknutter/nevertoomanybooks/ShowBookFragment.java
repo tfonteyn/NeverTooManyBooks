@@ -38,8 +38,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -107,7 +105,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  * Do NOT assume fields are empty by default when populating them manually.
  */
 public class ShowBookFragment
-        extends Fragment
+        extends BaseFragment
         implements CoverHandler.CoverHandlerHost {
 
     /** Log tag. */
@@ -150,8 +148,6 @@ public class ShowBookFragment
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
 
-    private Toolbar mToolbar;
-
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
@@ -193,10 +189,9 @@ public class ShowBookFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         // Popup the search widget when the user starts to type.
+        //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -464,16 +459,14 @@ public class ShowBookFragment
     }
 
     private void setActivityTitle(@NonNull final Book book) {
-
-        // Set the activity title
         String title = book.getString(DBKeys.KEY_TITLE);
         if (BuildConfig.DEBUG /* always */) {
             title = "[" + book.getId() + "] " + title;
         }
+        setTitle(title);
 
-        mToolbar.setTitle(title);
         //noinspection ConstantConditions
-        mToolbar.setSubtitle(Author.getCondensedNames(
+        setSubtitle(Author.getCondensedNames(
                 getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
     }
 

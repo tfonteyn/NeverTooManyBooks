@@ -34,7 +34,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -58,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesViewModel;
  * Lists all bookshelves and can add/delete/edit them.
  */
 public class EditBookshelvesFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "EditBookshelvesFragment";
@@ -129,10 +128,9 @@ public class EditBookshelvesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.lbl_bookshelves);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_bookshelves);
-
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 

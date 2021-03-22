@@ -92,11 +92,4 @@ public class ImagesPreferenceFragment
             preference.setSummary("");
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.lbl_covers_long);
-    }
 }

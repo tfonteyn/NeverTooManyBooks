@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -36,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class AboutFragment
-        extends Fragment {
+        extends BaseFragment {
 
     public static final String TAG = "AboutFragment";
 
@@ -57,8 +56,7 @@ public class AboutFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_about);
+        setTitle(R.string.lbl_about);
 
         //noinspection ConstantConditions
         final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());

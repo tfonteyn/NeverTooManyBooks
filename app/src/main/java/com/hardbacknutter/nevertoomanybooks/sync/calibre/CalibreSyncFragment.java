@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
@@ -46,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
  */
 @Keep
 public class CalibreSyncFragment
-        extends Fragment {
+        extends BaseFragment {
 
     public static final String TAG = "CalibreSyncFragment";
 
@@ -72,6 +73,7 @@ public class CalibreSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.action_synchronize);
 
         mVb.btnLibMap.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl();

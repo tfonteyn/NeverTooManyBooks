@@ -32,8 +32,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -45,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -61,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Persistence is handled in {@link SearchAdminActivity} / {@link SearchAdminViewModel}.
  */
 public class SearchOrderFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     private static final String TAG = "SearchOrderFragment";
@@ -87,8 +86,6 @@ public class SearchOrderFragment
      */
     private ArrayList<Site> mSiteList;
 
-    private Toolbar mToolbar;
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,9 +105,10 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        setTitle(R.string.lbl_settings,
+                 R.string.lbl_websites);
 
+        //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
         mSiteList = mModel.getList(mType);
@@ -128,13 +126,6 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.siteList);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.lbl_websites);
     }
 
     @Override

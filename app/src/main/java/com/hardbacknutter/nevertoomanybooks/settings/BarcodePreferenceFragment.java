@@ -92,13 +92,6 @@ public class BarcodePreferenceFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.pg_barcode_scanner);
-    }
-
-    @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {

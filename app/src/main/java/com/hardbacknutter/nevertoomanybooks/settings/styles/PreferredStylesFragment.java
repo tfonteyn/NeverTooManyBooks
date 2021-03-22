@@ -35,7 +35,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -44,6 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * All changes are saved immediately.
  */
 public class PreferredStylesFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "PreferredStylesFragment";
@@ -204,13 +204,13 @@ public class PreferredStylesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.lbl_styles_long);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
         }
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_styles_long);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 

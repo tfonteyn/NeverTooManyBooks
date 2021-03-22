@@ -26,10 +26,11 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -50,7 +51,7 @@ public abstract class BasePreferenceFragment
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-    protected Toolbar mToolbar;
+    protected ActionBar mActionBar;
     @Nullable
     private String mAutoScrollToKey;
 
@@ -69,7 +70,11 @@ public abstract class BasePreferenceFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        mActionBar.setTitle(R.string.lbl_settings);
+        // preventative erasing of any existing subtitle
+        mActionBar.setSubtitle("");
     }
 
     /**

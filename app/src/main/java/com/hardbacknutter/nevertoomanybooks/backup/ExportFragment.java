@@ -35,9 +35,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -53,6 +51,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
@@ -68,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ExportFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
@@ -85,7 +84,6 @@ public class ExportFragment
                                       this::exportToUri);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    private Toolbar mToolbar;
     /** View Binding. */
     private FragmentExportBinding mVb;
     @Nullable
@@ -117,8 +115,6 @@ public class ExportFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
-
         mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
@@ -142,7 +138,7 @@ public class ExportFragment
         final ExportHelper helper = mVm.getExportHelper();
 
         if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            mToolbar.setTitle(R.string.action_export);
+            setTitle(R.string.action_export);
             helper.setEncoding(mPresetEncoding);
 
             //noinspection ConstantConditions
@@ -162,7 +158,7 @@ public class ExportFragment
                     .create()
                     .show();
         } else {
-            mToolbar.setTitle(R.string.lbl_backup);
+            setTitle(R.string.lbl_backup);
             helper.setEncoding(ArchiveEncoding.Zip);
 
             //noinspection ConstantConditions
@@ -229,7 +225,7 @@ public class ExportFragment
                 .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
 
         if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            mToolbar.setTitle(R.string.action_export);
+            setTitle(R.string.action_export);
             helper.setEncoding(mPresetEncoding);
 
             mVb.cbxBooks.setChecked(true);
@@ -286,7 +282,7 @@ public class ExportFragment
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (encoding) {
             case Zip: {
-                mToolbar.setTitle(R.string.lbl_backup);
+                setTitle(R.string.lbl_backup);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -306,7 +302,7 @@ public class ExportFragment
                 break;
             }
             case Csv: {
-                mToolbar.setTitle(R.string.action_export);
+                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -326,7 +322,7 @@ public class ExportFragment
                 break;
             }
             case Json: {
-                mToolbar.setTitle(R.string.action_export);
+                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_json_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -347,7 +343,7 @@ public class ExportFragment
                 break;
             }
             case Xml: {
-                mToolbar.setTitle(R.string.action_export);
+                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
@@ -369,7 +365,7 @@ public class ExportFragment
                 break;
             }
             case SqLiteDb: {
-                mToolbar.setTitle(R.string.action_export);
+                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 

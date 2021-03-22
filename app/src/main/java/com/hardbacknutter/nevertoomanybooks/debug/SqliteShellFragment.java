@@ -31,10 +31,10 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBindi
  * A crude sql shell.
  */
 public class SqliteShellFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "SqliteShellFragment";
@@ -148,8 +148,7 @@ public class SqliteShellFragment
         final String lcSql = sql.toLowerCase(Locale.ROOT);
         try {
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
-                //noinspection ConstantConditions
-                getActivity().setTitle("");
+                setTitle("");
 
                 if (mAllowUpdates) {
                     try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
@@ -164,9 +163,7 @@ public class SqliteShellFragment
                 }
             } else {
                 try (Cursor cursor = mDb.rawQuery(sql, null)) {
-                    final String title = STR_LAST_COUNT + cursor.getCount();
-                    //noinspection ConstantConditions
-                    getActivity().setTitle(title);
+                    setTitle(STR_LAST_COUNT + cursor.getCount());
 
                     final StringBuilder sb = new StringBuilder("<table>");
                     final String[] columnNames = cursor.getColumnNames();
@@ -192,8 +189,7 @@ public class SqliteShellFragment
                 }
             }
         } catch (@NonNull final Exception e) {
-            //noinspection ConstantConditions
-            getActivity().setTitle("");
+            setTitle("");
             mVb.output.loadDataWithBaseURL(null, e.getLocalizedMessage(),
                                            TEXT_HTML, UTF_8, null);
         }

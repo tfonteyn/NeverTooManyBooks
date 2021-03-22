@@ -50,13 +50,5 @@ public class SearchInternetPreferenceFragment
         //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_STRIP_INFO_BE)
                 .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.pg_internet_search);
     }
 }

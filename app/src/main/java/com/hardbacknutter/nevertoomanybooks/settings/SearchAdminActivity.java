@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,9 +65,9 @@ public class SearchAdminActivity
 
         if (mVm.isSingleListMode()) {
             final Site.Type type = mVm.getType();
-            mVb.toolbar.setSubtitle(type.getLabelId());
-            mVb.tabPanel.setVisibility(View.GONE);
+            setSubtitle(type.getLabelId());
 
+            mVb.tabPanel.setVisibility(View.GONE);
             mTabAdapter = new TabAdapter(this, type);
         } else {
             mTabAdapter = new TabAdapter(this, null);

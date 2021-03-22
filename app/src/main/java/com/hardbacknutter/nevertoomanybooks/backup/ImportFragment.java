@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -55,6 +54,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ImportFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
@@ -118,6 +118,7 @@ public class ImportFragment
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+    /** Ref to the actual Toolbar so we can get its menu. */
     private Toolbar mToolbar;
 
     @Override
@@ -139,9 +140,10 @@ public class ImportFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.lbl_import);
+
         //noinspection ConstantConditions
         mToolbar = getActivity().findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.lbl_import);
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);

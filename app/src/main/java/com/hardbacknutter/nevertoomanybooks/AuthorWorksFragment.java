@@ -39,9 +39,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -82,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel
  * This is intentionally different from the behaviour of {@link SearchFtsFragment}.
  */
 public class AuthorWorksFragment
-        extends Fragment {
+        extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "AuthorWorksFragment";
@@ -116,7 +114,6 @@ public class AuthorWorksFragment
                 }
             };
 
-    private Toolbar mToolbar;
     /** View Binding. */
     private FragmentAuthorWorksBinding mVb;
 
@@ -143,23 +140,21 @@ public class AuthorWorksFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
-
-        final Context context = getContext();
 
         // Popup the search widget when the user starts to type.
+        //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
+        final Context context = getContext();
         mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection ConstantConditions
         mVm.init(context, requireArguments());
 
-        mToolbar.setTitle(mVm.getScreenTitle(context));
-        mToolbar.setSubtitle(mVm.getScreenSubtitle());
+        setTitle(mVm.getScreenTitle(context),
+                 mVm.getScreenSubtitle());
 
         mVb.authorWorks.setHasFixedSize(true);
         mVb.authorWorks
@@ -231,8 +226,8 @@ public class AuthorWorksFragment
             mVm.reloadWorkList();
             mAdapter.notifyDataSetChanged();
             //noinspection ConstantConditions
-            mToolbar.setTitle(mVm.getScreenTitle(getContext()));
-            mToolbar.setSubtitle(mVm.getScreenSubtitle());
+            setTitle(mVm.getScreenTitle(getContext()),
+                     mVm.getScreenSubtitle());
             return true;
         }
 

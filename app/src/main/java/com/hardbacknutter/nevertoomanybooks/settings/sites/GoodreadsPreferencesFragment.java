@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsRegistration
 public class GoodreadsPreferencesFragment
         extends BasePreferenceFragment {
 
-    /** Log tag. */
     public static final String TAG = "GoodreadsPrefsFrag";
 
     @Override
@@ -48,12 +47,5 @@ public class GoodreadsPreferencesFragment
                     startActivity(new Intent(getContext(), GoodreadsRegistrationActivity.class));
                     return true;
                 });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.site_goodreads);
     }
 }

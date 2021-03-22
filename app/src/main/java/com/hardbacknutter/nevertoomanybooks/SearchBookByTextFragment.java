@@ -86,12 +86,10 @@ public class SearchBookByTextFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.lbl_search_for_books);
 
         mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
         mVm.init();
-
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_search_for_books);
 
         if (mVm.usePublisher()) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);
