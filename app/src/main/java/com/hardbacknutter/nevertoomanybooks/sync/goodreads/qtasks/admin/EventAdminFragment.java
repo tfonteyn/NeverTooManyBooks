@@ -19,10 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin;
 
-import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -30,42 +32,53 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQItem;
 
-/**
- * Activity to display the available QueueManager Task object subclasses to the user.
- */
-public class TasksAdminActivity
-        extends BaseAdminActivity {
+public class EventAdminFragment
+        extends BaseAdminFragment {
+
+    static final String TAG = "EventAdminFragment";
+
+    /** Key to store optional task id when activity is started. */
+    static final String REQ_BKEY_TASK_ID = TAG + ":taskId";
+
+    /** Task ID, if provided in the arguments. */
+    private long mTaskId;
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
 
-        mVb.toolbar.setTitle(R.string.site_goodreads);
-        mVb.toolbar.setSubtitle(R.string.gr_tq_menu_background_tasks);
+        final Bundle args = getArguments();
+        if (args != null) {
+            mTaskId = args.getLong(REQ_BKEY_TASK_ID, 0);
+        }
 
-        //When any task is added/changed/deleted, we'll update the Cursor.
-        QueueManager.getInstance().registerTaskListener(mOnChangeListener);
+        // Once we have the task id, call the parent
+        super.onViewCreated(view, savedInstanceState);
+        setSubtitle(R.string.gr_tq_title_task_errors);
+
+        //When any event is added/changed/deleted, we'll update the Cursor.
+        QueueManager.getInstance().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
-            TipManager.getInstance().display(this, R.string.tip_background_tasks, null);
+            //noinspection ConstantConditions
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_background_task_events, null);
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.gr_tq_btn_cleanup_old_tasks)
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.gr_tq_btn_cleanup_old_events)
             .setIcon(R.drawable.ic_baseline_delete_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -73,12 +86,13 @@ public class TasksAdminActivity
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_RESET) {
-            new MaterialAlertDialogBuilder(this)
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
+                    .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        QueueManager.getInstance().deleteTasksOlderThan(7);
+                        QueueManager.getInstance().deleteEventsOlderThan(7);
                         refreshData();
                     })
                     .create()
@@ -90,32 +104,31 @@ public class TasksAdminActivity
     }
 
     /**
-     * Get a CursorAdapter returning all tasks.
+     * Get a CursorAdapter returning all events we are interested in,
+     * either specific to our task or all events.
+     *
+     * @param bookDao Database Access
      *
      * @return CursorAdapter to use
      */
     @NonNull
     @Override
-    protected TaskCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
-        return new TaskCursorAdapter(this, QueueManager.getInstance().getTasks());
-    }
+    protected EventCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
+        final Cursor cursor;
+        if (mTaskId == 0) {
+            cursor = QueueManager.getInstance().getEvents();
+        } else {
+            cursor = QueueManager.getInstance().getEvents(mTaskId);
+        }
 
-    @Override
-    protected void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
-                                       @NonNull final TQItem item) {
-        // do this here instead of on the task itself, so we have clean access to the activity
-        // for startActivity.
-        menuItems.add(new ContextDialogItem(getString(R.string.gr_tq_show_events_ellipsis), () -> {
-            final Intent intent = new Intent(this, EventsAdminActivity.class)
-                    .putExtra(EventsAdminActivity.REQ_BKEY_TASK_ID, item.getId());
-            startActivity(intent);
-        }));
+        //noinspection ConstantConditions
+        return new EventCursorAdapter(getContext(), cursor, bookDao);
     }
 
     @Override
     @CallSuper
-    protected void onDestroy() {
-        QueueManager.getInstance().unregisterTaskListener(mOnChangeListener);
+    public void onDestroy() {
+        QueueManager.getInstance().unregisterEventListener(mOnChangeListener);
         super.onDestroy();
     }
 }

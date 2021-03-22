@@ -19,7 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -28,19 +32,19 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.databinding.ActivityTaskQueueListBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminListviewBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQCursorAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQItem;
 
-public abstract class BaseAdminActivity
-        extends BaseActivity {
+public abstract class BaseAdminFragment
+        extends BaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "BaseAdminActivity";
+    public static final String TAG = "BaseAdminFragment";
 
     /** Database Access. */
     private BookDao mBookDao;
@@ -49,7 +53,9 @@ public abstract class BaseAdminActivity
     private TQCursorAdapter mListAdapter;
 
     /** Listener to handle changes made to the underlying cursor. */
-    protected final QueueManager.OnChangeListener mOnChangeListener = this::refreshData;
+    final QueueManager.OnChangeListener mOnChangeListener = this::refreshData;
+    /** View Binding. */
+    private FragmentGoodreadsAdminListviewBinding mVb;
 
     /**
      * Get a CursorAdapter returning the items we are interested in.
@@ -61,19 +67,28 @@ public abstract class BaseAdminActivity
     @NonNull
     protected abstract TQCursorAdapter getListAdapter(@NonNull BookDao bookDao);
 
-    protected ActivityTaskQueueListBinding mVb;
-
     @Override
-    protected void onSetContentView() {
-        mVb = ActivityTaskQueueListBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentGoodreadsAdminListviewBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mBookDao = new BookDao(TAG);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.site_goodreads);
 
-        super.onCreate(savedInstanceState);
+        mBookDao = new BookDao(TAG);
 
         mListAdapter = getListAdapter(mBookDao);
 
@@ -90,8 +105,10 @@ public abstract class BaseAdminActivity
     private void onItemClick(@NonNull final TQItem item) {
         // If it owns a hint, display it first
         if (item instanceof TipManager.TipOwner) {
-            TipManager.getInstance().display(this, ((TipManager.TipOwner) item).getTip(), () ->
-                    showContextDialog(item));
+            //noinspection ConstantConditions
+            TipManager.getInstance().display(getContext(),
+                                             ((TipManager.TipOwner) item).getTip(), () ->
+                                                     showContextDialog(item));
         } else {
             showContextDialog(item);
         }
@@ -102,8 +119,9 @@ public abstract class BaseAdminActivity
         // allow the parent Activity to add menu options
         addContextMenuItems(menuItems, item);
         // allow the selected item to add menu options
-        item.addContextMenuItems(this, menuItems, mBookDao);
-        ContextDialogItem.showContextDialog(this, menuItems);
+        //noinspection ConstantConditions
+        item.addContextMenuItems(getContext(), menuItems, mBookDao);
+        ContextDialogItem.showContextDialog(getContext(), menuItems);
     }
 
     protected void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
@@ -116,20 +134,22 @@ public abstract class BaseAdminActivity
      */
     @Override
     @CallSuper
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         refreshData();
     }
 
-    protected void refreshData() {
-        if (mListAdapter.getCursor().requery()) {
+    void refreshData() {
+        final Cursor cursor = mListAdapter.getCursor();
+        if (cursor.requery()) {
+//            Log.d(TAG,"requery called, count=" + cursor.getCount());
             mListAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     @CallSuper
-    protected void onDestroy() {
+    public void onDestroy() {
         if (mListAdapter.getCursor() != null) {
             mListAdapter.getCursor().close();
         }

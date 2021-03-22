@@ -39,10 +39,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncGoodreadsBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TasksAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TaskAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -52,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
  */
 @Keep
 public class GoodreadsSyncFragment
-        extends Fragment {
+        extends BaseFragment {
 
     public static final String TAG = "GoodreadsSyncFragment";
 
@@ -80,6 +82,7 @@ public class GoodreadsSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setTitle(R.string.action_synchronize);
 
         mVm = new ViewModelProvider(this).get(GoodreadsSyncViewModel.class);
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
@@ -158,7 +161,9 @@ public class GoodreadsSyncFragment
 
         if (itemId == R.id.MENU_GOODREADS_TASKS) {
             // Start the activity that shows the active GoodReads tasks
-            startActivity(new Intent(getContext(), TasksAdminActivity.class));
+            startActivity(new Intent(getContext(), FragmentHostActivity.class)
+                                  .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                            TaskAdminFragment.TAG));
             return true;
 
         } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
