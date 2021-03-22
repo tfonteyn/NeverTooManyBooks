@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
  */
 public class EditTocEntryDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";

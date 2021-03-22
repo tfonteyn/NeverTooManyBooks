@@ -41,7 +41,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Edit the list of Series of a Book.
  */
 public class EditBookSeriesListDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookSeriesListDlg";
@@ -330,7 +330,7 @@ public class EditBookSeriesListDialogFragment
      * Must be a public static class to be properly recreated from instance state.
      */
     public static class EditSeriesForBookDialogFragment
-            extends BaseDialogFragment {
+            extends FFBaseDialogFragment {
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")

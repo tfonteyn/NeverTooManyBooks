@@ -41,14 +41,14 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Bookshelf}.
  */
 public class EditBookshelfDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";

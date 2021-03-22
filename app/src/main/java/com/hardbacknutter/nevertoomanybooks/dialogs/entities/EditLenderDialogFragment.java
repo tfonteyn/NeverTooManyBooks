@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * This is done to minimize trips to the database.
  */
 public class EditLenderDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";

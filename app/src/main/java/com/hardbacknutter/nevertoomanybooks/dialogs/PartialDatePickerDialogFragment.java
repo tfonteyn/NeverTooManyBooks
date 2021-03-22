@@ -32,7 +32,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -63,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * A final validity check is done when trying to accept the date.
  */
 public class PartialDatePickerDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "PartialDatePickerDialog";
@@ -173,8 +172,7 @@ public class PartialDatePickerDialogFragment
         // Ensure components match current Locale order
         reorderPickers(view);
 
-        final Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit);
+        mDialogToolbar.setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit);
 
         final NumberPicker yearPicker = view.findViewById(R.id.year);
         // 0: 'not set'

@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * -> a small white space is seen on the right of the AppBarLayout
  * -> layout inspector shows that AppBarLayout=360dp.. BUT CoordinatorLayout==367dp  ???
  */
-public abstract class BaseDialogFragment
+public abstract class FFBaseDialogFragment
         extends DialogFragment {
 
     // SnackBar:
@@ -81,7 +81,8 @@ public abstract class BaseDialogFragment
     private static final int USE_DEFAULT = -1;
     @Nullable
     private View mButtonPanel;
-    private Toolbar mToolbar;
+    /** The <strong>Dialog</strong> toolbar. Not to be confused with the Activity's ActionBar! */
+    Toolbar mDialogToolbar;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean mFullscreen;
     private boolean mForceFullscreen;
@@ -101,7 +102,7 @@ public abstract class BaseDialogFragment
      *
      * @param contentLayoutId to use
      */
-    protected BaseDialogFragment(@LayoutRes final int contentLayoutId) {
+    protected FFBaseDialogFragment(@LayoutRes final int contentLayoutId) {
         super(contentLayoutId);
     }
 
@@ -193,7 +194,7 @@ public abstract class BaseDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
+        mDialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
 
         // dialogs that are set as full-screen ONLY will not have a button bar.
         mButtonPanel = view.findViewById(R.id.buttonPanel);
@@ -230,8 +231,8 @@ public abstract class BaseDialogFragment
      */
     private void hookupButtons() {
 
-        mToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        mToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+        mDialogToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+        mDialogToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
         // Show or hide the button panel depending on the dialog being fullscreen or not.
         if (mFullscreen) {
@@ -241,7 +242,8 @@ public abstract class BaseDialogFragment
 
             // Hook-up the toolbar 'confirm' button with the menu title
             // and the default menu listener.
-            final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            final MenuItem menuItem =
+                    mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
                 final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
@@ -256,7 +258,8 @@ public abstract class BaseDialogFragment
                 mButtonPanel.setVisibility(View.VISIBLE);
                 // Toolbar confirmation menu item is mapped to the ok button.
                 // The menu item is hidden.
-                final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                final MenuItem menuItem =
+                        mDialogToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
                 if (menuItem != null) {
                     menuItem.setVisible(false);
                     // the ok-button is a simple button on the button panel.
@@ -271,11 +274,10 @@ public abstract class BaseDialogFragment
                 // Toolbar navigation icon is mapped to the cancel button. Both are visible.
                 final Button cancelBtn = mButtonPanel.findViewById(R.id.btn_cancel);
                 if (cancelBtn != null) {
-                    // If the toolbar nav button has a description,
-                    // use it for the 'cancel' button text.
-                    final CharSequence cancelText = mToolbar.getNavigationContentDescription();
-                    if (cancelText != null) {
-                        cancelBtn.setText(cancelText);
+                    // If the nav button has a description, use it for the 'cancel' button.
+                    final CharSequence text = mDialogToolbar.getNavigationContentDescription();
+                    if (text != null) {
+                        cancelBtn.setText(text);
                     }
                     cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
                 }

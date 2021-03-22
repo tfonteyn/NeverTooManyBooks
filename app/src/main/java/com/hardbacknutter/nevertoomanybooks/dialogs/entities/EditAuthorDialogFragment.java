@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Author}.
  */
 public class EditAuthorDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";

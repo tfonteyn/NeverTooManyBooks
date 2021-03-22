@@ -45,7 +45,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Maybe TODO: cannot set author type when creating but only when editing existing author.
  */
 public class EditBookAuthorListDialogFragment
-        extends BaseDialogFragment {
+        extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
     private static final String TAG = "EditBookAuthorListDlg";
@@ -356,7 +356,7 @@ public class EditBookAuthorListDialogFragment
      * Must be a public static class to be properly recreated from instance state.
      */
     public static class EditAuthorForBookDialogFragment
-            extends BaseDialogFragment {
+            extends FFBaseDialogFragment {
 
         /** Fragment/Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
