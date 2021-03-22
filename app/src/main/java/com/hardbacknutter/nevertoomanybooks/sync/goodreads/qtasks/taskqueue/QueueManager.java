@@ -79,7 +79,7 @@ public final class QueueManager {
         sInstance = this;
 
         // This is for testing when we don't have a looper
-        final Looper looper = Looper.myLooper();
+        final Looper looper = Looper.getMainLooper();
         if (looper != null) {
             mHandler = new Handler(looper);
         } else {
