@@ -337,15 +337,13 @@ class AmazonXmlHandler
             final String fileSpec = mSearchEngine
                     .saveImage(mCoverUrl, mBookData.getString(DBKeys.KEY_ISBN), 0, null);
             if (fileSpec != null) {
-                ArrayList<String> imageList =
-                        mBookData.getStringArrayList(
-                                SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0]);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
+                ArrayList<String> list = mBookData.getStringArrayList(
+                        SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
+                if (list == null) {
+                    list = new ArrayList<>();
                 }
-                imageList.add(fileSpec);
-                mBookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
-                                             imageList);
+                list.add(fileSpec);
+                mBookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
         if (!mAuthors.isEmpty()) {

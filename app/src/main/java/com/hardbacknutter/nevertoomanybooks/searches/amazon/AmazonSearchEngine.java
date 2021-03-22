@@ -596,10 +596,9 @@ public class AmazonSearchEngine
 
         if (fetchThumbnail[0]) {
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-            final ArrayList<String> imageList = parseCovers(document, isbn, 0);
-            if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
-                                            imageList);
+            final ArrayList<String> list = parseCovers(document, isbn, 0);
+            if (!list.isEmpty()) {
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
     }

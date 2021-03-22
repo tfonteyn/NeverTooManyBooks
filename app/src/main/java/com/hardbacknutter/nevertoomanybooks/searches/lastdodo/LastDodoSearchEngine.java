@@ -314,23 +314,29 @@ public class LastDodoSearchEngine
 
         if (fetchThumbnail[0] || fetchThumbnail[1]) {
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-            final Element images = document.getElementById("images_container");
-            if (images != null) {
-                final Elements aas = images.select("a");
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    if (isCancelled()) {
-                        return;
-                    }
-                    if (fetchThumbnail[cIdx] && aas.size() > cIdx) {
-                        final String url = aas.get(cIdx).attr("href");
-                        final String fileSpec = saveImage(url, isbn, cIdx, null);
-                        if (fileSpec != null) {
-                            final ArrayList<String> imageList = new ArrayList<>();
-                            imageList.add(fileSpec);
-                            bookData.putStringArrayList(
-                                    SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx],
-                                    imageList);
-                        }
+            parseCovers(document, isbn, fetchThumbnail, bookData);
+        }
+    }
+
+    private void parseCovers(@NonNull final Document document,
+                             @Nullable final String isbn,
+                             @NonNull final boolean[] fetchThumbnail,
+                             @NonNull final Bundle bookData) {
+        final Element images = document.getElementById("images_container");
+        if (images != null) {
+            final Elements aas = images.select("a");
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                if (isCancelled()) {
+                    return;
+                }
+                if (fetchThumbnail[cIdx] && aas.size() > cIdx) {
+                    final String url = aas.get(cIdx).attr("href");
+                    final String fileSpec = saveImage(url, isbn, cIdx, null);
+                    if (fileSpec != null) {
+                        final ArrayList<String> list = new ArrayList<>();
+                        list.add(fileSpec);
+                        bookData.putStringArrayList(
+                                SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
                     }
                 }
             }

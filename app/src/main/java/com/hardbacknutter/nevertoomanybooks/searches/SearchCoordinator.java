@@ -98,7 +98,7 @@ public class SearchCoordinator
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    public static final String[] BKEY_DOWNLOADED_FILE_SPEC_ARRAY = new String[]{
+    public static final String[] BKEY_FILE_SPEC_ARRAY = new String[]{
             TAG + ":fileSpec_array:0",
             TAG + ":fileSpec_array:1"
     };
@@ -806,8 +806,8 @@ public class SearchCoordinator
                        || Book.BKEY_SERIES_LIST.equals(key)
                        || Book.BKEY_PUBLISHER_LIST.equals(key)
                        || Book.BKEY_TOC_LIST.equals(key)
-                       || BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0].equals(key)
-                       || BKEY_DOWNLOADED_FILE_SPEC_ARRAY[1].equals(key)) {
+                       || BKEY_FILE_SPEC_ARRAY[0].equals(key)
+                       || BKEY_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);
 
             } else {
@@ -1180,9 +1180,8 @@ public class SearchCoordinator
     public static class CoverFilter {
 
         /**
-         * Filter the {@link #BKEY_DOWNLOADED_FILE_SPEC_ARRAY} present, selecting only
-         * the best image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
-         * <p>
+         * Filter the {@link #BKEY_FILE_SPEC_ARRAY} present, selecting only the best
+         * image for each index, and store those in {@link Book#BKEY_TMP_FILE_SPEC}.
          * This may result in removing ALL images if none are found suitable.
          *
          * @param bookData to filter
@@ -1190,8 +1189,9 @@ public class SearchCoordinator
         @AnyThread
         public void filter(@NonNull final Bundle bookData) {
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final ArrayList<String> imageList = bookData
-                        .getStringArrayList(BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
+                final ArrayList<String> imageList =
+                        bookData.getStringArrayList(BKEY_FILE_SPEC_ARRAY[cIdx]);
+
                 if (imageList != null && !imageList.isEmpty()) {
                     // ALWAYS call even if we only have 1 image...
                     // We want to remove bad ones if needed.
@@ -1200,7 +1200,7 @@ public class SearchCoordinator
                         bookData.putString(Book.BKEY_TMP_FILE_SPEC[cIdx], coverName);
                     }
                 }
-                bookData.remove(BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
+                bookData.remove(BKEY_FILE_SPEC_ARRAY[cIdx]);
             }
         }
 

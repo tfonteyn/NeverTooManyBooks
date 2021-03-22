@@ -501,8 +501,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date");
         if (!s.isEmpty()) {
-            final LocalDateTime date =
-                    DateParser.getInstance(getContext()).parse(s, getLocale());
+            final LocalDateTime date = DateParser.getInstance(getContext()).parse(s, getLocale());
             if (date != null) {
                 bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -529,10 +528,9 @@ public class OpenLibrarySearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
-            if (!imageList.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[0],
-                                            imageList);
+            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
+            if (!list.isEmpty()) {
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
 
@@ -633,7 +631,7 @@ public class OpenLibrarySearchEngine
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx) {
 
-        final ArrayList<String> imageList = new ArrayList<>();
+        final ArrayList<String> list = new ArrayList<>();
 
         // get the largest cover image available.
         final JSONObject o = element.optJSONObject("cover");
@@ -653,11 +651,11 @@ public class OpenLibrarySearchEngine
             if (!coverUrl.isEmpty()) {
                 final String fileSpec = saveImage(coverUrl, validIsbn, cIdx, size);
                 if (fileSpec != null) {
-                    imageList.add(fileSpec);
+                    list.add(fileSpec);
                 }
             }
         }
 
-        return imageList;
+        return list;
     }
 }

@@ -536,7 +536,7 @@ public interface SearchEngine {
                                                              @IntRange(from = 0, to = 1)
                                                              final int cIdx) {
 
-            final ArrayList<String> imageList = new ArrayList<>();
+            final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverImageByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
             if (supportsMultipleCoverSizes()) {
                 if (fileSpec == null) {
@@ -548,9 +548,9 @@ public interface SearchEngine {
                 }
             }
             if (fileSpec != null) {
-                imageList.add(fileSpec);
+                list.add(fileSpec);
             }
-            return imageList;
+            return list;
         }
 
         /**
@@ -570,8 +570,8 @@ public interface SearchEngine {
         @SuppressWarnings("unused")
         @WorkerThread
         @Nullable
-        default String searchCoverImageByIsbnFallback(@NonNull final String isbn,
-                                                      @IntRange(from = 0, to = 1) final int cIdx) {
+        default String searchCoverByIsbnFallback(@NonNull final String isbn,
+                                                 @IntRange(from = 0, to = 1) final int cIdx) {
 
             final boolean[] fetchThumbnail = new boolean[2];
             fetchThumbnail[cIdx] = true;
@@ -602,12 +602,12 @@ public interface SearchEngine {
                     return null;
                 }
 
-                final ArrayList<String> imageList = bookData
-                        .getStringArrayList(
-                                SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx]);
-                if (imageList != null && !imageList.isEmpty()) {
+                final ArrayList<String> list = bookData.getStringArrayList(
+                        SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx]);
+
+                if (list != null && !list.isEmpty()) {
                     // let the system resolve any path variations
-                    return new File(imageList.get(0)).getAbsolutePath();
+                    return new File(list.get(0)).getAbsolutePath();
                 }
 
             } catch (@NonNull final IOException | GeneralParsingException e) {

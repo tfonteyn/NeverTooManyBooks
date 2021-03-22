@@ -520,17 +520,13 @@ public class StripInfoSearchEngine
                               @NonNull final Bundle bookData) {
 
         final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-        // parse
         final String url = parseCover(document, cIdx);
         if (url != null) {
-            // get
             final String fileSpec = saveCover(isbn, cIdx, url);
             if (fileSpec != null && !fileSpec.isEmpty()) {
-                // store
-                final ArrayList<String> imageList = new ArrayList<>();
-                imageList.add(fileSpec);
-                bookData.putStringArrayList(
-                        SearchCoordinator.BKEY_DOWNLOADED_FILE_SPEC_ARRAY[cIdx], imageList);
+                final ArrayList<String> list = new ArrayList<>();
+                list.add(fileSpec);
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[cIdx], list);
             }
         }
     }
