@@ -273,11 +273,6 @@ public class CollectionImporter {
                 final long myId = Long.parseLong(mine.val());
 
                 cData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, bookId);
-                cData.putLong(StripInfoSearchEngine.SiteField.COLLECTION_ID, myId);
-                // Obviously ALL books here are in the collection,
-                // but the Bundle will be passed on and might get processed together with
-                // books NOT in the collection, so it's mandatory to set it here.
-                cData.putBoolean(StripInfoSearchEngine.SiteField.IN_COLLECTION, true);
 
                 String tmpStr;
                 int tmpInt;
@@ -304,39 +299,53 @@ public class CollectionImporter {
                     cData.putString(DBKeys.KEY_DATE_ACQUIRED, tmpStr);
                 }
 
-                tmpInt = mJSoupHelper.getInt(row, "score-" + myId);
-                if (tmpInt > 0) {
-                    // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
-                    cData.putFloat(DBKeys.KEY_RATING,
-                                   MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
-                }
-                tmpInt = mJSoupHelper.getInt(row, "druk-" + myId);
-                if (tmpInt == 1) {
-                    cData.putInt(DBKeys.KEY_EDITION_BITMASK, Book.Edition.FIRST);
-                }
-                tmpInt = mJSoupHelper.getInt(row, "aantal-" + myId);
-                if (tmpInt > 0) {
-                    cData.putInt(StripInfoSearchEngine.SiteField.AMOUNT, tmpInt);
-                }
-
-                if (mJSoupHelper.getBoolean(row, "gelezen-" + myId)) {
-                    cData.putBoolean(DBKeys.KEY_READ, true);
-                }
-                if (mJSoupHelper.getBoolean(row, "bezit-" + myId)) {
-                    cData.putBoolean(StripInfoSearchEngine.SiteField.OWNED, true);
-                }
-                if (mJSoupHelper.getBoolean(row, "wishlist-" + myId)) {
-                    final ArrayList<Bookshelf> list = new ArrayList<>();
-                    list.add(mWishListBookshelf);
-                    cData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
-                }
-
                 // '0' is an acceptable value that should be stored.
                 final Double tmpDbl = mJSoupHelper.getDoubleOrNull(row, "prijs-" + myId);
                 if (tmpDbl != null) {
                     cData.putDouble(DBKeys.KEY_PRICE_PAID, tmpDbl);
                     cData.putString(DBKeys.KEY_PRICE_PAID_CURRENCY, Money.EUR);
                 }
+
+                tmpInt = mJSoupHelper.getInt(row, "score-" + myId);
+                if (tmpInt > 0) {
+                    // site is int 1..10; convert to float 0.5 .. 5 (and clamp because paranoia)
+                    cData.putFloat(DBKeys.KEY_RATING,
+                                   MathUtils.clamp(((float) tmpInt) / 2, 0.5f, 5f));
+                }
+
+                tmpInt = mJSoupHelper.getInt(row, "druk-" + myId);
+                if (tmpInt == 1) {
+                    cData.putInt(DBKeys.KEY_EDITION_BITMASK, Book.Edition.FIRST);
+                }
+
+                if (mJSoupHelper.getBoolean(row, "gelezen-" + myId)) {
+                    cData.putBoolean(DBKeys.KEY_READ, true);
+                }
+
+                if (mJSoupHelper.getBoolean(row, "wishlist-" + myId)) {
+                    if (mWishListBookshelf != null) {
+                        final ArrayList<Bookshelf> list = new ArrayList<>();
+                        list.add(mWishListBookshelf);
+                        cData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+                    }
+                }
+
+                if (mJSoupHelper.getBoolean(row, "bezit-" + myId)) {
+                    cData.putBoolean(StripInfoSearchEngine.SiteField.OWNED, true);
+                }
+
+                tmpInt = mJSoupHelper.getInt(row, "aantal-" + myId);
+                if (tmpInt > 0) {
+                    cData.putInt(StripInfoSearchEngine.SiteField.AMOUNT, tmpInt);
+                }
+
+                // Not sure we'll need/use this...
+                cData.putLong(StripInfoSearchEngine.SiteField.COLLECTION_ID, myId);
+
+                // Obviously ALL books here are in the collection,
+                // but the Bundle will be passed on and might get processed together with
+                // books NOT in the collection, so it's mandatory to set it here.
+                cData.putBoolean(StripInfoSearchEngine.SiteField.IN_COLLECTION, true);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
