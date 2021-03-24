@@ -70,7 +70,6 @@ public class GoodreadsManager {
     public static final String BASE_URL = "https://www.goodreads.com";
     public static final Locale SITE_LOCALE = Locale.US;
 
-    public static final int THROTTLER_DELAY_MS = 1_000;
     public static final int CONNECTION_TIMEOUT_MS = 10_000;
     public static final int READ_TIMEOUT_MS = 10_000;
 
@@ -227,13 +226,14 @@ public class GoodreadsManager {
         long grBookId;
         Bundle grBookData = null;
 
+        final boolean[] fetchCovers = {false, false};
+
         // See if the book already has a Goodreads id and if it is valid.
         try {
             grBookId = bookData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK);
             if (grBookId > 0) {
                 // Get the book details to make sure we have a valid book ID
-                final boolean[] fetchThumbnails = {false, false};
-                grBookData = getBookById(grBookId, fetchThumbnails, new Bundle());
+                grBookData = getBookById(grBookId, fetchCovers, new Bundle());
             }
         } catch (@NonNull final HttpNotFoundException ignore) {
             grBookId = 0;
@@ -251,8 +251,7 @@ public class GoodreadsManager {
             }
 
             // Get the book details using ISBN
-            final boolean[] fetchThumbnails = {false, false};
-            grBookData = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
+            grBookData = getBookByIsbn(isbn.asText(), fetchCovers, new Bundle());
             grBookId = grBookData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
@@ -377,9 +376,9 @@ public class GoodreadsManager {
     /**
      * Wrapper to search for a book.
      *
-     * @param grBookId       Goodreads book id to get
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param grBookId    Goodreads book id to get
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return Bundle of Goodreads book data
      *
@@ -387,9 +386,9 @@ public class GoodreadsManager {
      */
     @NonNull
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
-                               @NonNull final boolean[] fetchThumbnail,
+                               @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+    throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
@@ -398,14 +397,14 @@ public class GoodreadsManager {
         if (mShowBookByIdApiHandler == null) {
             mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mAppContext, mGoodreadsAuth);
         }
-        return mShowBookByIdApiHandler.searchByExternalId(grBookId, fetchThumbnail, bookData);
+        return mShowBookByIdApiHandler.searchByExternalId(grBookId, fetchCovers, bookData);
     }
 
     /**
      * Wrapper to search for a book.
      *
      * @param validIsbn      ISBN to use, must be valid
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return Bundle with Goodreads book data
@@ -414,14 +413,14 @@ public class GoodreadsManager {
      */
     @NonNull
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
-                                 @NonNull final boolean[] fetchThumbnail,
+                                 @NonNull final boolean[] fetchCovers,
                                  @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+    throws GeneralParsingException, IOException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
         }
-        return mShowBookByIsbnApiHandler.searchByIsbn(validIsbn, fetchThumbnail, bookData);
+        return mShowBookByIsbnApiHandler.searchByIsbn(validIsbn, fetchCovers, bookData);
     }
 
 
