@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public class JSoupBase
                             @NonNull final String charsetName,
                             @NonNull final String locationHeader,
                             @NonNull final String filename,
-                            final boolean[] fetchThumbnails) {
+                            final boolean[] fetchCovers) {
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
@@ -51,7 +51,7 @@ public class JSoupBase
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            searchEngine.parse(document, fetchThumbnails, mRawData);
+            searchEngine.parse(document, fetchCovers, mRawData);
 
             assertFalse(mRawData.isEmpty());
 

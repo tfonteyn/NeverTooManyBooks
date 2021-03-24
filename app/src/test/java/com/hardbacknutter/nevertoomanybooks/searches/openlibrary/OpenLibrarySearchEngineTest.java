@@ -70,8 +70,7 @@ class OpenLibrarySearchEngineTest
             assertNotNull(is);
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);
-            final boolean[] fetchThumbnails = {false, false};
-            mSearchEngine.handleResponse(json, fetchThumbnails, mRawData);
+            mSearchEngine.handleResponse(json, new boolean[]{false, false}, mRawData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);

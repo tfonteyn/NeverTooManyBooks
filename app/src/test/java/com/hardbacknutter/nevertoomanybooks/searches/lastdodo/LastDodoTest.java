@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class LastDodoTest
         extends JSoupBase {
 
+    public static final String UTF_8 = "UTF-8";
     private LastDodoSearchEngine mSearchEngine;
 
     @BeforeEach
@@ -59,7 +60,7 @@ class LastDodoTest
                                       + "hauteville-house/7323911-de-37ste-parallel";
         final String filename = "/lastdodo/7323911-de-37ste-parallel.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("De 37ste parallel", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("9789463064385", mRawData.getString(DBKeys.KEY_ISBN));

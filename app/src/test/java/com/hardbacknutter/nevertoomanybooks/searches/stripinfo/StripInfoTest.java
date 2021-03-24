@@ -58,6 +58,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class StripInfoTest
         extends JSoupBase {
 
+    public static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine mSearchEngine;
 
     @BeforeEach
@@ -74,8 +75,7 @@ class StripInfoTest
                                       + "/336348_Hauteville_House_14_De_37ste_parallel";
         final String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{true, true});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{true, true});
 
         assertEquals("De 37ste parallel", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("9789463064385", mRawData.getString(DBKeys.KEY_ISBN));
@@ -141,8 +141,7 @@ class StripInfoTest
         final String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
                                 + "_De_boom_van_de_twee_lentes.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{true, true});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{true, true});
 
         assertEquals("De boom van de twee lentes", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("905581315X", mRawData.getString(DBKeys.KEY_ISBN));
@@ -206,8 +205,7 @@ class StripInfoTest
                                       + "_1_Het_huis_van_verboden_geneugten";
         final String filename = "/stripinfo/181604_mat_cover.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{true, false});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{true, false});
 
         assertEquals("Het huis van verboden geneugten",
                      mRawData.getString(DBKeys.KEY_TITLE));
@@ -266,8 +264,7 @@ class StripInfoTest
                                       + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         final String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("De integrale 5", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("9789055819485", mRawData.getString(DBKeys.KEY_ISBN));
@@ -325,8 +322,7 @@ class StripInfoTest
                                       + "17030_Comanche_1_Red_Dust";
         final String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Red Dust", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("1972", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
@@ -381,8 +377,7 @@ class StripInfoTest
                                       + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         final String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
-        loadData(mSearchEngine, "UTF-8", locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Spoken in de grot", mRawData.getString(DBKeys.KEY_TITLE));
         assertEquals("1977", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
@@ -444,11 +439,9 @@ class StripInfoTest
         assertNotNull(document);
         assertTrue(document.hasText());
 
-        final boolean[] fetchThumbnails = {false, false};
-
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         try {
-            mSearchEngine.parseMultiResult(document, fetchThumbnails, mRawData);
+            mSearchEngine.parseMultiResult(document, new boolean[]{false, false}, mRawData);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
