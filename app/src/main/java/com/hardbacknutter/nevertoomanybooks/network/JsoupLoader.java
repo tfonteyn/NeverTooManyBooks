@@ -59,7 +59,7 @@ public class JsoupLoader {
 
     /** The user agent to send. Call {@link #setUserAgent(String)} to override. */
     @Nullable
-    private String mUserAgent = HttpConstants.USER_AGENT_VALUE;
+    private String mUserAgent = HttpUtils.USER_AGENT_VALUE;
 
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
@@ -137,7 +137,7 @@ public class JsoupLoader {
 
             try (TerminatorConnection con = conProvider.apply(mDocRequestUrl)
                                                        .orElseThrow(IOException::new)) {
-                mDoc = handleConnection(con);
+                mDoc = doGet(con);
                 return mDoc;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
@@ -185,7 +185,7 @@ public class JsoupLoader {
         return null;
     }
 
-    private Document handleConnection(@NonNull final TerminatorConnection con)
+    private Document doGet(@NonNull final TerminatorConnection con)
             throws IOException {
         // Don't retry if the initial connection fails...
         // We use our own retry mechanism here.
@@ -193,10 +193,10 @@ public class JsoupLoader {
 
         // added due to https://github.com/square/okhttp/issues/1517
         // it's a server issue, this is a workaround.
-        con.setRequestProperty(HttpConstants.CONNECTION, HttpConstants.CONNECTION_CLOSE);
+        con.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
 
         if (mUserAgent != null) {
-            con.setRequestProperty(HttpConstants.USER_AGENT, mUserAgent);
+            con.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
         }
 
         // GO!
@@ -206,12 +206,12 @@ public class JsoupLoader {
             Logger.d(TAG, "loadDocument",
                      "AFTER open"
                      + "\ncon.getURL=" + con.getURL()
-                     + "\nlocation  =" + con.getHeaderField(HttpConstants.LOCATION));
+                     + "\nlocation  =" + con.getHeaderField(HttpUtils.LOCATION));
         }
 
         // the original url will change after a redirect.
         // We need the actual url for further processing.
-        String locationHeader = con.getHeaderField(HttpConstants.LOCATION);
+        String locationHeader = con.getHeaderField(HttpUtils.LOCATION);
         if (locationHeader == null || locationHeader.isEmpty()) {
             //noinspection ConstantConditions
             locationHeader = con.getURL().toString();
