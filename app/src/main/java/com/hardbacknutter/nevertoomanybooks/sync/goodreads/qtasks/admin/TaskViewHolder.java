@@ -78,19 +78,19 @@ public class TaskViewHolder
         String statusText;
         switch (statusCode) {
             case TQTask.COMPLETED:
-                statusText = context.getString(R.string.gr_tq_completed);
+                statusText = context.getString(R.string.lbl_completed);
                 retryInfoView.setVisibility(View.GONE);
                 retryButton.setVisibility(View.GONE);
                 break;
 
             case TQTask.FAILED:
-                statusText = context.getString(R.string.gr_tq_failed);
+                statusText = context.getString(R.string.lbl_failed);
                 retryInfoView.setVisibility(View.GONE);
                 retryButton.setVisibility(View.VISIBLE);
                 break;
 
             case TQTask.QUEUED:
-                statusText = context.getString(R.string.gr_tq_queued);
+                statusText = context.getString(R.string.lbl_queued);
                 retryInfoView.setText(context.getString(
                         R.string.gr_tq_retry_x_of_y_next_at_z, task.getRetries(),
                         task.getRetryLimit(),

@@ -143,10 +143,10 @@
     <string name="gr_title_sync_with_goodreads">Συγχρονισμός με το Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Εκκαθάριση παλιών events</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Εκκαθάριση παλιών εργασιών</string>
-    <string name="gr_tq_completed">Ολοκληρώθηκαν</string>
+    <string name="lbl_completed">Ολοκληρώθηκαν</string>
     <string name="gr_tq_events_recorded">(%1$d καταγραφόμενα συμβάντα)</string>
     <string name="gr_tq_export_task_is_already_queued">Μια εργασία εξαγωγής βρίσκεται ήδη στην ουρά και πρέπει να ολοκληρωθεί πριν μια νέα εργασία να μπορεί να ξεκινήσει</string>
-    <string name="gr_tq_failed">Απέτυχαν</string>
+    <string name="lbl_failed">Απέτυχαν</string>
     <string name="gr_tq_generic_task_info">Αναγνωριστικό εργασίας %1$d, αναρτημένο στο %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Μια εργασία εισαγωγής βρίσκεται ήδη στην ουρά και πρέπει να ολοκληρωθεί πριν μια νέα εργασία να μπορεί να ξεκινήσει</string>
     <string name="gr_tq_last_error_e">Τελευταίο σφάλμα: %1$s</string>
@@ -154,7 +154,7 @@
     <string name="gr_tq_menu_delete_event">Διαγραφή event</string>
     <string name="gr_tq_menu_delete_task">Διαγραφή Εργασίας</string>
     <string name="gr_tq_occurred_at">(συνέβη στο %1$s)</string>
-    <string name="gr_tq_queued">Σε σειρά</string>
+    <string name="lbl_queued">Σε σειρά</string>
     <string name="X_gr_tq_requested_task_is_already_queued">Η εργασία που ζητήθηκε βρίσκεται ήδη στην ουρά</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Επανάληψη %1$d από %2$d επόμενο σε %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Εμφάνιση events…</string>

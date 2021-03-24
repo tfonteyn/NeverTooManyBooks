@@ -102,7 +102,7 @@ public class GrStatus {
         // so just leaving this as a switch.
         switch (errorCode) {
             case SUCCESS:
-                return context.getString(R.string.gr_tq_completed);
+                return context.getString(R.string.lbl_completed);
             case CANCELLED:
                 return context.getString(R.string.cancelled);
 
@@ -118,7 +118,7 @@ public class GrStatus {
             case SUCCESS_AUTHORIZATION_REQUESTED:
                 //TEST: might need a SUCCESS_AUTHORIZATION_REQUESTED message
                 // not sure if this will be seen though
-                return context.getString(R.string.gr_tq_completed);
+                return context.getString(R.string.lbl_completed);
 
             case FAILED_CREDENTIALS:
                 return context.getString(R.string.error_site_authentication_failed,

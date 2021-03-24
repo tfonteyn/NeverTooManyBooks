@@ -161,10 +161,10 @@
     <string name="gr_title_sync_with_goodreads">Mit Goodreads synchronisieren</string>
     <string name="gr_tq_btn_cleanup_old_events">Alte Ereignisse bereinigen</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Alte Aufgaben bereinigen</string>
-    <string name="gr_tq_completed">Abgeschlossen</string>
+    <string name="lbl_completed">Abgeschlossen</string>
     <string name="gr_tq_events_recorded">(%1$d Ereignisse aufgezeichnet)</string>
     <string name="gr_tq_export_task_is_already_queued">Eine Exportaufgabe ist bereits eingereiht und muss vor der Ausführung dieser Aufgabe abgeschlossen werden</string>
-    <string name="gr_tq_failed">Fehlerhaft</string>
+    <string name="lbl_failed">Fehlerhaft</string>
     <string name="gr_tq_generic_task_info">Aufgaben-ID %1$d, Warteschlange um %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Eine Importaufgabe ist bereits eingereiht und muss vor der Ausführung dieser Aufgabe abgeschlossen werden</string>
     <string name="gr_tq_last_error_e">Letzter Fehler: %1$s</string>
@@ -172,7 +172,7 @@
     <string name="gr_tq_menu_delete_event">Ereignis löschen</string>
     <string name="gr_tq_menu_delete_task">Aufgabe löschen</string>
     <string name="gr_tq_occurred_at">(ist bei %1$s aufgetreten)</string>
-    <string name="gr_tq_queued">Eingereiht</string>
+    <string name="lbl_queued">Eingereiht</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Wiederholung %1$d von %2$d nächste um %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Ereignisse anzeigen…</string>
     <string name="gr_tq_task_has_been_queued">Aufgabe wurde im Hintergrund eingereiht</string>

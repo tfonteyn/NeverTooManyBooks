@@ -139,10 +139,10 @@
     <string name="gr_title_sync_with_goodreads">Синхронизировать с Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Очистить старые события</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Очистить старые задачи</string>
-    <string name="gr_tq_completed">Завершено</string>
+    <string name="lbl_completed">Завершено</string>
     <string name="gr_tq_events_recorded">(Записано %1$d событий)</string>
     <string name="gr_tq_export_task_is_already_queued">Задача экспортирования уже в очереди и должна завершиться до того, как может начаться эта задача</string>
-    <string name="gr_tq_failed">Неудача</string>
+    <string name="lbl_failed">Неудача</string>
     <string name="gr_tq_generic_task_info">Идентификатор задачи %1$d поставлен в очередь на %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Задача импортирования уже в очереди и должна завершиться до того, как может начаться эта задача</string>
     <string name="gr_tq_last_error_e">Последняя ошибка: %1$s</string>
@@ -150,7 +150,7 @@
     <string name="gr_tq_menu_delete_event">Удалить событие</string>
     <string name="gr_tq_menu_delete_task">Удалить задачу</string>
     <string name="gr_tq_occurred_at">(случилось в %1$s)</string>
-    <string name="gr_tq_queued">В очереди</string>
+    <string name="lbl_queued">В очереди</string>
     <string name="X_gr_tq_requested_task_is_already_queued">Запрошенная задача уже в очереди</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Повторить %1$d из %2$d следующий к %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Показать события…</string>

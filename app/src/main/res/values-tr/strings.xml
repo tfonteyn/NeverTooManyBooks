@@ -142,10 +142,10 @@
     <string name="gr_title_sync_with_goodreads">Goodreads ile eşitle</string>
     <string name="gr_tq_btn_cleanup_old_events">Eski olayları temizle</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Eski görevleri temizle</string>
-    <string name="gr_tq_completed">Tamamlandı</string>
+    <string name="lbl_completed">Tamamlandı</string>
     <string name="gr_tq_events_recorded">(%1$d etkinlik kaydedildi)</string>
     <string name="gr_tq_export_task_is_already_queued">Bir dışa aktarma görevi kuyrukta bekliyor ve bu görev başlayabilmesi için önce bitirilmesi gerek</string>
-    <string name="gr_tq_failed">Başarısız</string>
+    <string name="lbl_failed">Başarısız</string>
     <string name="gr_tq_generic_task_info">%1$d görev kimliği, %2$s sırada</string>
     <string name="gr_tq_import_task_is_already_queued">Bir içe aktarma görevi kuyrukta bekliyor ve bu görev başlayabilmesi için önce bitirilmesi gerek</string>
     <string name="gr_tq_last_error_e">Son hata: %1$s</string>
@@ -153,7 +153,7 @@
     <string name="gr_tq_menu_delete_event">Olayı sil</string>
     <string name="gr_tq_menu_delete_task">Görevi sil</string>
     <string name="gr_tq_occurred_at">(%1$s içinde oluştu)</string>
-    <string name="gr_tq_queued">Kuyrukta</string>
+    <string name="lbl_queued">Kuyrukta</string>
     <string name="X_gr_tq_requested_task_is_already_queued">İstenen görev kuyrukta bekliyor</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Yeniden dene: %1$d (Toplam %2$d), sonraki: %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Olayları göster…</string>

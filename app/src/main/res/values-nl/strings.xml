@@ -159,10 +159,10 @@
     <string name="gr_title_sync_with_goodreads">Synchroniseer met Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Opschonen oude gebeurtenissen</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Opschonen oude taken</string>
-    <string name="gr_tq_completed">Gereed</string>
+    <string name="lbl_completed">Gereed</string>
     <string name="gr_tq_events_recorded">(%1$d gebeurtenissen opgenomen)</string>
     <string name="gr_tq_export_task_is_already_queued">Een exporttaak staat al in de wachtrij en moet eerst beëindigd worden voordat deze taak uitgevoerd kan worden.</string>
-    <string name="gr_tq_failed">Mislukt</string>
+    <string name="lbl_failed">Mislukt</string>
     <string name="gr_tq_generic_task_info">Taak ID %1$d, In wachtrij geplaatst op %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Een importtaak staat al in de wachtrij en moet eerst beëindigd wordenvoordat deze taak uitgevoerd kan worden.</string>
     <string name="gr_tq_last_error_e">Laatste fout: %1$s</string>
@@ -170,7 +170,7 @@
     <string name="gr_tq_menu_delete_event">Verwijder gebeurtenis</string>
     <string name="gr_tq_menu_delete_task">Verwijder taak</string>
     <string name="gr_tq_occurred_at">(opgetreden op %1$s)</string>
-    <string name="gr_tq_queued">In de wachtrij</string>
+    <string name="lbl_queued">In de wachtrij</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Probeer %1$d van %2$d opnieuw op %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Toon gebeurtenissen…</string>
     <string name="gr_tq_task_has_been_queued">Taak is in de wachtrij gezet</string>

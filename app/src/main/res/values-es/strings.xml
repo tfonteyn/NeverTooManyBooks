@@ -144,10 +144,10 @@
     <string name="gr_title_sync_with_goodreads">Sincronizar con Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Eliminar eventos antiguos</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Eliminar tareas antiguas</string>
-    <string name="gr_tq_completed">Completado</string>
+    <string name="lbl_completed">Completado</string>
     <string name="gr_tq_events_recorded">(%1$d eventos registrados)</string>
     <string name="gr_tq_export_task_is_already_queued">Ya hay una tarea de exportación pendiente, y debe completarse antes de que se pueda lanzar de nuevo</string>
-    <string name="gr_tq_failed">Fallido</string>
+    <string name="lbl_failed">Fallido</string>
     <string name="gr_tq_generic_task_info">ID de tarea %1$d, En cola en %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Ya hay una tarea de importación pendiente, y debe completarse antes de que se pueda lanzar de nuevo</string>
     <string name="gr_tq_last_error_e">Último error: %1$s</string>
@@ -155,7 +155,7 @@
     <string name="gr_tq_menu_delete_event">Eliminar Evento</string>
     <string name="gr_tq_menu_delete_task">Eliminar Tarea</string>
     <string name="gr_tq_occurred_at">(ocurrido en %1$s)</string>
-    <string name="gr_tq_queued">En cola</string>
+    <string name="lbl_queued">En cola</string>
     <string name="X_gr_tq_requested_task_is_already_queued">La tarea solicitada ya está en la cola</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Reintento %1$d de %2$d, el próximo a las %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Mostrar eventos…</string>

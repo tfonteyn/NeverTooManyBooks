@@ -619,9 +619,6 @@
     <string name="gr_tq_task_has_been_queued">Task has been queued</string>
     <string name="gr_tq_export_task_is_already_queued">An export task is already queued and must complete before this task can run</string>
     <string name="gr_tq_import_task_is_already_queued">An import task is already queued and must complete before this task can run</string>
-    <string name="gr_tq_completed">Completed</string>
-    <string name="gr_tq_failed">Failed</string>
-    <string name="gr_tq_queued">Queued</string>
     <string name="gr_tq_show_events_ellipsis">Show events…</string>
     <string name="gr_tq_retry_x_of_y_next_at_z" tools:ignore="PluralsCandidate">Retry %1$d of %2$d next at %3$s</string>
     <string name="gr_tq_occurred_at">(occurred at %1$s)</string>
@@ -1371,6 +1368,10 @@
 
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
+
+    <string name="lbl_completed">Completed</string>
+    <string name="lbl_failed">Failed</string>
+    <string name="lbl_queued">Queued</string>
 
     <!-- [VERIFIED] -->
     <string name="username">Username</string>

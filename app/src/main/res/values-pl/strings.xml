@@ -139,10 +139,10 @@
     <string name="gr_title_sync_with_goodreads">Synchronizuj z Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Oczyszczanie starych wydarzeń</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Oczyść stare zadania</string>
-    <string name="gr_tq_completed">Zakończony</string>
+    <string name="lbl_completed">Zakończony</string>
     <string name="gr_tq_events_recorded">(Zarejestrowano wydarzenia %1$d)</string>
     <string name="gr_tq_export_task_is_already_queued">Zadanie eksportu jest już w kolejce i musi zostać zakończone, zanim to zadanie będzie można uruchomić</string>
-    <string name="gr_tq_failed">Nie powiodło się</string>
+    <string name="lbl_failed">Nie powiodło się</string>
     <string name="gr_tq_generic_task_info">Identyfikator zadania %1$d, umieszczony w kolejce przy %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Zadanie importowania jest już w kolejce i musi zostać zakończone, zanim to zadanie będzie mogło zostać uruchomione</string>
     <string name="gr_tq_last_error_e">Ostatni błąd: %1$s</string>
@@ -150,7 +150,7 @@
     <string name="gr_tq_menu_delete_event">Usuń wydarzenie</string>
     <string name="gr_tq_menu_delete_task">Usuń zadanie</string>
     <string name="gr_tq_occurred_at">(wystąpił przy %1$s)</string>
-    <string name="gr_tq_queued">W kolejce</string>
+    <string name="lbl_queued">W kolejce</string>
     <string name="X_gr_tq_requested_task_is_already_queued">Żądane zadanie jest już w kolejce</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Spróbuj ponownie %1$d z %2$d dalej w %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Pokaż wydarzenia…</string>

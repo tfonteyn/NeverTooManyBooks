@@ -143,10 +143,10 @@
     <string name="gr_title_sync_with_goodreads">Sincronizza con Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Cancella eventi trascorsi</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Cancella operazioni precedenti</string>
-    <string name="gr_tq_completed">Completato</string>
+    <string name="lbl_completed">Completato</string>
     <string name="gr_tq_events_recorded">(%1$d eventi registrati)</string>
     <string name="gr_tq_export_task_is_already_queued">Un\'attività di esportazione è già in coda e deve essere completata prima di eseguire quest\'attività</string>
-    <string name="gr_tq_failed">Errore</string>
+    <string name="lbl_failed">Errore</string>
     <string name="gr_tq_generic_task_info">ID attività %1$d, in coda a %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Un\'attività di importazione è già in coda e deve essere completata prima di eseguire quest\'attività</string>
     <string name="gr_tq_last_error_e">Ultimo Errore: %1$s</string>
@@ -154,7 +154,7 @@
     <string name="gr_tq_menu_delete_event">Cancella evento</string>
     <string name="gr_tq_menu_delete_task">Cancella operazione</string>
     <string name="gr_tq_occurred_at">(si è verificata a %1$s)</string>
-    <string name="gr_tq_queued">In coda</string>
+    <string name="lbl_queued">In coda</string>
     <string name="X_gr_tq_requested_task_is_already_queued">L\'attività richiesta è già inserita in coda</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Riprova %1$d di %2$d di nuovo alle %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Mostra eventi…</string>

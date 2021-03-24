@@ -163,10 +163,10 @@
     <string name="gr_title_sync_with_goodreads">Synchroniser avec Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Nettoyer les anciens événements</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Nettoyer les anciennes tâches</string>
-    <string name="gr_tq_completed">Terminé</string>
+    <string name="lbl_completed">Terminé</string>
     <string name="gr_tq_events_recorded">(%1$d événements enregistrés)</string>
     <string name="gr_tq_export_task_is_already_queued">Un export est déjà en cours et doit être terminé avant que cette tâche ne démarre.</string>
-    <string name="gr_tq_failed">Échoué</string>
+    <string name="lbl_failed">Échoué</string>
     <string name="gr_tq_generic_task_info">ID de tâche %1$d, en file d\'attente à %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Un import est déjà en cours et doit être terminé avant que cette tâche ne démarre.</string>
     <string name="gr_tq_last_error_e">Dernière erreur : %1$s</string>
@@ -174,7 +174,7 @@
     <string name="gr_tq_menu_delete_event">Supprimer l\'événement</string>
     <string name="gr_tq_menu_delete_task">Supprimer la tâche</string>
     <string name="gr_tq_occurred_at">(S\'est produit à %1$s)</string>
-    <string name="gr_tq_queued">En file d\'attente</string>
+    <string name="lbl_queued">En file d\'attente</string>
     <string name="gr_tq_retry_x_of_y_next_at_z">Essai %1$d de %2$d, suivant à %3$s</string>
     <string name="gr_tq_show_events_ellipsis">Montrer les événement…</string>
     <string name="gr_tq_task_has_been_queued">La tâche a été placée en file d\'attente.</string>
