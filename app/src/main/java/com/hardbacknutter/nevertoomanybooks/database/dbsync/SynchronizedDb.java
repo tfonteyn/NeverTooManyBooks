@@ -543,7 +543,7 @@ public class SynchronizedDb
      *
      * <strong>MUST</strong> be called from a 'finally' block.
      *
-     * @param txLock Lock returned from BeginTransaction().
+     * @param txLock Lock returned from {@link #beginTransaction(boolean)}.
      */
     public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
         if (txLock == null) {

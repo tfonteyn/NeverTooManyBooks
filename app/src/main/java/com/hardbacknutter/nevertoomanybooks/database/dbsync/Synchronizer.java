@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,8 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Implementation of a Readers/Writer lock that is fully reentrant.
  * <p>
- * Because SQLite throws exception on locking conflicts, this class can be used to serialize
+ * URGENT: is this still true ? Because SQLite throws exception on locking conflicts,
+ * this class can be used to serialize
  * WRITE access while allowing concurrent read access.
  * <p>
  * Each logical database should have its own {@link Synchronizer}
