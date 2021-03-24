@@ -89,14 +89,14 @@ public class IsfdbGetBookTask
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
-        final boolean[] fetchThumbnails = {false, false};
+        final boolean[] fetchCovers = {false, false};
         if (mEdition != null) {
             final Bundle bookData = new Bundle();
-            searchEngine.fetchByEdition(mEdition, fetchThumbnails, bookData);
+            searchEngine.fetchByEdition(mEdition, fetchCovers, bookData);
             return bookData;
 
         } else if (mIsfdbId != 0) {
-            return searchEngine.searchByExternalId(String.valueOf(mIsfdbId), fetchThumbnails);
+            return searchEngine.searchByExternalId(String.valueOf(mIsfdbId), fetchCovers);
 
         } else {
             throw new IllegalStateException("how did we get here?");

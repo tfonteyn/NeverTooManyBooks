@@ -250,7 +250,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -258,7 +258,7 @@ public class IsfdbSearchEngine
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
-            parse(document, fetchThumbnail, bookData);
+            parse(document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -266,14 +266,14 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
 
         final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
         if (!editions.isEmpty()) {
-            fetchByEdition(editions.get(0), fetchThumbnail, bookData);
+            fetchByEdition(editions.get(0), fetchCovers, bookData);
         }
         return bookData;
     }
@@ -285,7 +285,7 @@ public class IsfdbSearchEngine
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
-                         @NonNull final boolean[] fetchThumbnail)
+                         @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
@@ -333,7 +333,7 @@ public class IsfdbSearchEngine
         if (!args.isEmpty()) {
             final List<Edition> editions = fetchEditions(url + args);
             if (!editions.isEmpty()) {
-                fetchByEdition(editions.get(0), fetchThumbnail, bookData);
+                fetchByEdition(editions.get(0), fetchCovers, bookData);
             }
         }
         return bookData;
@@ -548,10 +548,10 @@ public class IsfdbSearchEngine
      */
     @Override
     public void parse(@NonNull final Document document,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws IOException {
-        super.parse(document, fetchThumbnail, bookData);
+        super.parse(document, fetchCovers, bookData);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
@@ -748,8 +748,7 @@ public class IsfdbSearchEngine
 
         // ISFDB does not offer the books language on the main page (although they store
         // it in their database).
-        //ENHANCE: the site is adding language to the data.. revisit.
-        // For now, default to a localised 'English" as ISFDB is after all (I presume) 95% english
+        //ENHANCE: the site is adding language to the data.. revisit. For now, default to English
         bookData.putString(DBKeys.KEY_LANGUAGE, "eng");
 
         final ArrayList<TocEntry> toc = parseToc(document);
@@ -806,7 +805,7 @@ public class IsfdbSearchEngine
             return;
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
@@ -1173,21 +1172,21 @@ public class IsfdbSearchEngine
     /**
      * Fetch a book.
      *
-     * @param edition        to get
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param edition     to get
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @throws IOException on failure
      */
     @WorkerThread
     void fetchByEdition(@NonNull final Edition edition,
-                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
-            throws IOException {
+    throws IOException {
 
         final Document document = loadDocumentByEdition(edition);
         if (document != null && !isCancelled()) {
-            parse(document, fetchThumbnail, bookData);
+            parse(document, fetchCovers, bookData);
         }
     }
 
