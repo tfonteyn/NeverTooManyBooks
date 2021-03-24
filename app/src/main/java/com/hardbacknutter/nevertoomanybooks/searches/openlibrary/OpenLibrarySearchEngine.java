@@ -63,6 +63,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * <a href="https://openlibrary.org/developers/api">API</a>
  * <p>
  * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
+ * URGENT: 2021-03-21: we should try out jscmd=detail again or try https://openlibrary.org/isbn/
  * <p>
  * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
@@ -70,7 +71,8 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>response format: jscmd=data:<br>
  *          Does not return all the info that is known to be present.
  *          (use the website itself to look up an isbn)
- *          Example: "physical_format": "Paperback" is NOT part of the response.</li>
+ *          Example: "physical_format": "Paperback" is NOT part of the response;
+ *          Example: language info is missing</li>
  *      <li>response format: jscmd=detail:<br>
  *          The docs state: "It is advised to use jscmd=data instead of this as that is
  *          more stable format."
@@ -81,7 +83,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *          Instead isbn's are on the same level as "identifiers" itself.</li>
  * </ul>
  * <ul>Problems:
- *      <li>"data" does not contain all information that the site has.</li>
+ *      <li>"data" does not contain all information that the site has</li>
  *      <li>"details" seems, by their own admission, not to be stable yet.</li>
  *      <li>both: dates are not structured, but {@link DateParser} can work around that.</li>
  *      <li>last update dates on the website & api docs are sometimes from years ago.
@@ -180,13 +182,13 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
-        fetchBook(url, fetchThumbnail, bookData);
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -198,13 +200,13 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
-        fetchBook(url, fetchThumbnail, bookData);
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -249,7 +251,7 @@ public class OpenLibrarySearchEngine
 
 
     private void fetchBook(@NonNull final String url,
-                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
             throws GeneralParsingException, IOException {
         // get and store the result into a string.
@@ -265,7 +267,7 @@ public class OpenLibrarySearchEngine
 
         // json-ify and handle.
         try {
-            handleResponse(new JSONObject(response), fetchThumbnail, bookData);
+            handleResponse(new JSONObject(response), fetchCovers, bookData);
         } catch (@NonNull final JSONException e) {
             throw new GeneralParsingException(e);
         }
@@ -421,14 +423,14 @@ public class OpenLibrarySearchEngine
      * "ISBN:9780980200447"
      *
      * @param jsonObject     the complete book record.
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData       Bundle to update
      *
      * @throws JSONException upon any error
      */
     @VisibleForTesting
     void handleResponse(@NonNull final JSONObject jsonObject,
-                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
             throws JSONException {
 
@@ -440,7 +442,7 @@ public class OpenLibrarySearchEngine
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
                 parse(data[1],
                       jsonObject.getJSONObject(topLevelKey),
-                      fetchThumbnail,
+                      fetchCovers,
                       bookData);
             }
         }
@@ -449,16 +451,16 @@ public class OpenLibrarySearchEngine
     /**
      * Parse the results, and build the bookData bundle.
      *
-     * @param validIsbn      of the book
-     * @param document       JSON result data
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
+     * @param validIsbn   of the book
+     * @param document    JSON result data
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update
      *
      * @throws JSONException upon any error
      */
     private void parse(@NonNull final String validIsbn,
                        @NonNull final JSONObject document,
-                       @NonNull final boolean[] fetchThumbnail,
+                       @NonNull final boolean[] fetchCovers,
                        @NonNull final Bundle bookData)
             throws JSONException {
 
@@ -523,21 +525,6 @@ public class OpenLibrarySearchEngine
             processIdentifiers(element, bookData);
         }
 
-        if (isCancelled()) {
-            return;
-        }
-
-        if (fetchThumbnail[0]) {
-            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
-            if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
-        }
-
-        if (isCancelled()) {
-            return;
-        }
-
         a = document.optJSONArray("publishers");
         if (a != null && !a.isEmpty()) {
             processPublishers(a, bookData);
@@ -560,6 +547,17 @@ public class OpenLibrarySearchEngine
                 if (toc.size() > 1) {
                     bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
                 }
+            }
+        }
+
+        if (isCancelled()) {
+            return;
+        }
+
+        if (fetchCovers[0]) {
+            final ArrayList<String> list = parseCovers(document, validIsbn, 0);
+            if (!list.isEmpty()) {
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
     }
