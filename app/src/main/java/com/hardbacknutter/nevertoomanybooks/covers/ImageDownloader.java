@@ -39,7 +39,7 @@ import javax.net.ssl.SSLContext;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -69,26 +69,28 @@ public class ImageDownloader {
     @Nullable
     private String mAuthHeader;
 
-
     /**
-     * Constructor.
+     * Set the optional SSL context to use instead of the system one.
+     *
+     * @param sslContext (optional) SSL context.
      */
     @AnyThread
-    public ImageDownloader() {
-
+    @NonNull
+    public ImageDownloader setSslContext(@Nullable final SSLContext sslContext) {
+        mSslContext = sslContext;
+        return this;
     }
 
     /**
-     * Constructor.
+     * Set the optional authentication header string.
      *
-     * @param sslContext (optional) SSL context to use instead of the system one.
-     * @param authHeader header string
+     * @param authHeader (optional) header string
      */
     @AnyThread
-    public ImageDownloader(@Nullable final SSLContext sslContext,
-                           @Nullable final String authHeader) {
-        mSslContext = sslContext;
+    @NonNull
+    public ImageDownloader setAuthHeader(@Nullable final String authHeader) {
         mAuthHeader = authHeader;
+        return this;
     }
 
     /**
@@ -190,8 +192,9 @@ public class ImageDownloader {
                        .setReadTimeout(mReadTimeoutInMs)
                        .setThrottler(mThrottler)
                        .setSSLContext(mSslContext);
+
                     if (mAuthHeader != null) {
-                        con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
+                        con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
                     }
 
                     savedFile = FileUtils.copyInputStream(context, con.getInputStream(),
