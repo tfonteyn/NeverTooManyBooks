@@ -65,14 +65,13 @@ public final class SyncProcessor {
     @NonNull
     private final Map<String, FieldSync> mFields;
 
-    private SyncProcessor(@NonNull final String preferencePrefix,
-                          @NonNull final SharedPreferences globalPreferences,
-                          @NonNull final BookDao bookDao,
-                          @NonNull final Map<String, FieldSync> fields) {
-        mPreferencePrefix = preferencePrefix;
-        mGlobalPreferences = globalPreferences;
+    private SyncProcessor(@NonNull final Builder builder,
+                          @NonNull final BookDao bookDao) {
         mBookDao = bookDao;
-        mFields = fields;
+
+        mPreferencePrefix = builder.mPrefPrefix;
+        mGlobalPreferences = builder.mGlobalPref;
+        mFields = builder.mFields;
     }
 
     /**
@@ -450,6 +449,18 @@ public final class SyncProcessor {
         }
 
         /**
+         * Convenience method wrapper for {@link #add(int, String, SyncAction)}.
+         * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
+         *
+         * @param labelId Field label resource id
+         * @param key     Field key
+         */
+        public Builder add(@StringRes final int labelId,
+                           @NonNull final String key) {
+            return add(labelId, key, SyncAction.CopyIfBlank);
+        }
+
+        /**
          * Add a {@link FieldSync} for a <strong>simple</strong> field
          * if it has not been hidden by the user.
          *
@@ -468,18 +479,6 @@ public final class SyncProcessor {
                                                defaultAction, action));
             }
             return this;
-        }
-
-        /**
-         * Convenience method wrapper for {@link #add(int, String, SyncAction)}.
-         * The default SyncAction is always {@link SyncAction#CopyIfBlank}.
-         *
-         * @param labelId Field label resource id
-         * @param key     Field key
-         */
-        public Builder add(@StringRes final int labelId,
-                           @NonNull final String key) {
-            return add(labelId, key, SyncAction.CopyIfBlank);
         }
 
         /**
@@ -506,7 +505,7 @@ public final class SyncProcessor {
 
         @NonNull
         public SyncProcessor build(@NonNull final BookDao bookDao) {
-            return new SyncProcessor(mPrefPrefix, mGlobalPref, bookDao, mFields);
+            return new SyncProcessor(this, bookDao);
         }
     }
 }
