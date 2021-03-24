@@ -110,7 +110,7 @@ public class KbNlSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -140,7 +140,7 @@ public class KbNlSearchEngine
             return bookData;
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final ArrayList<String> list = searchBestCoverImageByIsbn(validIsbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
