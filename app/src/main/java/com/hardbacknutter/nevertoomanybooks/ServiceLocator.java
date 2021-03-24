@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
@@ -64,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LocationDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.MaintenanceDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.PublisherDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.SeriesDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -122,6 +124,8 @@ public final class ServiceLocator {
     private PublisherDao mPublisherDao;
     @Nullable
     private SeriesDao mSeriesDao;
+    @Nullable
+    private StripInfoDao mStripInfoDao;
     @Nullable
     private StyleDao mStyleDao;
     @Nullable
@@ -450,6 +454,21 @@ public final class ServiceLocator {
     @VisibleForTesting
     public void setSeriesDao(@Nullable final SeriesDao seriesDao) {
         mSeriesDao = seriesDao;
+    }
+
+    @NonNull
+    public StripInfoDao getStripInfoDao() {
+        synchronized (this) {
+            if (mStripInfoDao == null) {
+                mStripInfoDao = new StripInfoDaoImpl();
+            }
+        }
+        return mStripInfoDao;
+    }
+
+    @VisibleForTesting
+    public void setStripInfoDao(@Nullable final StripInfoDao stripInfoDao) {
+        mStripInfoDao = stripInfoDao;
     }
 
     @NonNull
