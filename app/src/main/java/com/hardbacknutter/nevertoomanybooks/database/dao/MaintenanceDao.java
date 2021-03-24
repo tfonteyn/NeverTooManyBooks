@@ -23,8 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-public interface MaintenanceDao
-        extends BaseDao {
+public interface MaintenanceDao {
 
     /**
      * Purge anything that is no longer in use.

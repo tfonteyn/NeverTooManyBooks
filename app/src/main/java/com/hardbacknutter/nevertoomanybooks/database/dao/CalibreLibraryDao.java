@@ -29,8 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 
-public interface CalibreLibraryDao
-        extends BaseDao {
+public interface CalibreLibraryDao {
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given row id.

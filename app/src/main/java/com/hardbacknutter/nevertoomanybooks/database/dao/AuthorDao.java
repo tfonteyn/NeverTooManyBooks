@@ -33,8 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public interface AuthorDao
-        extends BaseDao {
+public interface AuthorDao {
 
     /**
      * Get the {@link Author} based on the given id.

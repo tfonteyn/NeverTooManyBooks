@@ -26,8 +26,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
-public interface StyleDao
-        extends BaseDao {
+public interface StyleDao {
 
     /**
      * Get the id of a {@link ListStyle} with matching UUID.

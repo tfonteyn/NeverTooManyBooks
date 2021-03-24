@@ -32,8 +32,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public interface TocEntryDao
-        extends BaseDao {
+public interface TocEntryDao {
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).

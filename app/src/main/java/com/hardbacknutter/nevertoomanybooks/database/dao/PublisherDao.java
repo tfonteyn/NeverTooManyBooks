@@ -31,8 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
-public interface PublisherDao
-        extends BaseDao {
+public interface PublisherDao {
 
     /**
      * Get the {@link Publisher} based on the given id.

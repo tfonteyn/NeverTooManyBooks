@@ -31,8 +31,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
-public interface SeriesDao
-        extends BaseDao {
+public interface SeriesDao {
 
     /**
      * Get the {@link Series} based on the given id.

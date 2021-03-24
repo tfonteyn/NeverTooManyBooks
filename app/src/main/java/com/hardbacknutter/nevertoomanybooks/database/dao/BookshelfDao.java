@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-public interface BookshelfDao
-        extends BaseDao {
+public interface BookshelfDao {
 
     /**
      * Get the {@link Bookshelf} based on the given id.

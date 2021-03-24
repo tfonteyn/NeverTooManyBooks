@@ -23,9 +23,7 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -37,16 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
-public abstract class BaseDaoImpl
-        implements BaseDao {
+public abstract class BaseDaoImpl {
 
     /**
      * In addition to SQLite's default BINARY collator (others: NOCASE and RTRIM),
@@ -103,7 +98,7 @@ public abstract class BaseDaoImpl
 
     /** Used for logging/tracking. */
     @NonNull
-    private final String mInstanceName;
+    protected final String mInstanceName;
 
     /**
      * Constructor.
@@ -114,7 +109,7 @@ public abstract class BaseDaoImpl
         mInstanceName = logTag;
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.d(TAG, "Constructor", mInstanceName);
+            Logger.d(TAG, "Constructor", logTag);
         }
 
         mDb = ServiceLocator.getDb();
@@ -146,45 +141,6 @@ public abstract class BaseDaoImpl
         final String s = ParseUtils.toAscii(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
-    }
-
-    @Override
-    @NonNull
-    public String getInstanceName() {
-        return mInstanceName;
-    }
-
-    @Override
-    @NonNull
-    public File getDatabaseFile() {
-        return mDb.getDatabaseFile();
-    }
-
-    @Override
-    @NonNull
-    public SynchronizedDb getDb() {
-        return mDb;
-    }
-
-    @Override
-    public boolean inTransaction() {
-        return mDb.inTransaction();
-    }
-
-    @Override
-    @NonNull
-    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
-        return mDb.beginTransaction(isUpdate);
-    }
-
-    @Override
-    public void setTransactionSuccessful() {
-        mDb.setTransactionSuccessful();
-    }
-
-    @Override
-    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
-        mDb.endTransaction(txLock);
     }
 
     /**

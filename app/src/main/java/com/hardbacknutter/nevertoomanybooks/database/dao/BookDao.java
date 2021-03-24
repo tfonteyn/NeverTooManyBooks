@@ -2514,7 +2514,7 @@ public class BookDao
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, getInstanceName() + "|close");
+            Log.d(TAG, mInstanceName + "|close");
         }
 
         if (mSqlStatementManager != null) {
@@ -2535,7 +2535,7 @@ public class BookDao
             throws Throwable {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + getInstanceName());
+                Logger.w(TAG, "finalize|" + mInstanceName);
             }
             close();
         }

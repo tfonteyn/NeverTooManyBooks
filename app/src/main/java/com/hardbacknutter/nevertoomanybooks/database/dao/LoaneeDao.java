@@ -27,8 +27,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-public interface LoaneeDao
-        extends BaseDao {
+public interface LoaneeDao {
 
     /**
      * Lend out a book / return a book.

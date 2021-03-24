@@ -26,8 +26,7 @@ import java.util.ArrayList;
 /**
  * Represents a String field 'inline' in a table.
  */
-public interface InlineStringDao
-        extends BaseDao {
+public interface InlineStringDao {
 
     /**
      * Get a unique list of all entries.

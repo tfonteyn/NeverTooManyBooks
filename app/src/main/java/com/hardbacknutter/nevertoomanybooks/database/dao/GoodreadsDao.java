@@ -24,8 +24,7 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-public interface GoodreadsDao
-        extends BaseDao {
+public interface GoodreadsDao {
 
     /**
      * Query to get the relevant columns for searching for a Book on Goodreads.
