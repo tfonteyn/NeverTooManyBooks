@@ -59,18 +59,17 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.AuthUserApiHandle
  */
 public class GoodreadsAuth {
 
-    private static final String BASE_URL = "https://www.goodreads.com";
     /** Log tag. */
     private static final String TAG = "GoodreadsAuth";
     /** Browser url where to send the user to approve access. */
     private static final String AUTHORIZATION_WEBSITE_URL =
-            BASE_URL + "/oauth/authorize?mobile=1";
+            GoodreadsManager.BASE_URL + "/oauth/authorize?mobile=1";
     /** OAuth url to *request* access. */
     private static final String REQUEST_TOKEN_ENDPOINT_URL =
-            BASE_URL + "/oauth/request_token";
+            GoodreadsManager.BASE_URL + "/oauth/request_token";
     /** OAuth url to access. */
     private static final String ACCESS_TOKEN_ENDPOINT_URL =
-            BASE_URL + "/oauth/access_token";
+            GoodreadsManager.BASE_URL + "/oauth/access_token";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "goodreads.";
