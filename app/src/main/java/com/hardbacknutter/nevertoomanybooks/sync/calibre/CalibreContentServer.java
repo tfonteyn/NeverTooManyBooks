@@ -31,7 +31,6 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
@@ -51,7 +50,6 @@ import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -89,10 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -1039,8 +1034,11 @@ public class CalibreContentServer {
                          @NonNull final String coverUrl) {
         try {
             if (mImageDownloader == null) {
-                // no timeouts, we're assuming private home network.
-                mImageDownloader = new ImageDownloader(mSslContext, mAuthHeader);
+                mImageDownloader = new ImageDownloader()
+                        .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
+                        .setReadTimeout(READ_TIMEOUT_IN_MS)
+                        .setAuthHeader(mAuthHeader)
+                        .setSslContext(mSslContext);
             }
             final File tmpFile = mImageDownloader
                     .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
@@ -1090,13 +1088,7 @@ public class CalibreContentServer {
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
         final Uri destUri = destFile.getUri();
 
-        try (TerminatorConnection con = new TerminatorConnection(url)) {
-            con.setSSLContext(mSslContext);
-            if (mAuthHeader != null) {
-                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
-            }
-            checkResponseCode(con.getRequest(), R.string.site_calibre);
-
+        try (TerminatorConnection con = doGet(url)) {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
                     try (InputStream is = con.getInputStream();
@@ -1116,6 +1108,23 @@ public class CalibreContentServer {
         } else {
             throw new FileNotFoundException("No error, but not found?");
         }
+    }
+
+    @NonNull
+    private TerminatorConnection doGet(@NonNull final String url)
+            throws IOException {
+
+        final TerminatorConnection con = new TerminatorConnection(url)
+                .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
+                .setReadTimeout(READ_TIMEOUT_IN_MS)
+                .setSSLContext(mSslContext);
+
+        if (mAuthHeader != null) {
+            con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
+        }
+
+        HttpUtils.checkResponseCode(con.getRequest(), R.string.site_calibre);
+        return con;
     }
 
     /**
@@ -1143,14 +1152,14 @@ public class CalibreContentServer {
         final String url = mServerUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        request.setRequestMethod(HttpConstants.POST);
-        request.setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON);
+        request.setRequestMethod(HttpUtils.POST);
+        request.setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON);
         request.setDoOutput(true);
         if (mSslContext != null) {
             ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
         }
         if (mAuthHeader != null) {
-            request.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
+            request.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
         }
 
         // explicit connect for clarity
@@ -1164,7 +1173,7 @@ public class CalibreContentServer {
         }
 
         try {
-            checkResponseCode(request, R.string.site_calibre);
+            HttpUtils.checkResponseCode(request, R.string.site_calibre);
         } finally {
             request.disconnect();
         }
@@ -1261,15 +1270,7 @@ public class CalibreContentServer {
                          final int buffer)
             throws IOException {
 
-        try (TerminatorConnection con = new TerminatorConnection(mServerUri + path)) {
-            con.setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
-               .setReadTimeout(READ_TIMEOUT_IN_MS)
-               .setSSLContext(mSslContext);
-            if (mAuthHeader != null) {
-                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
-            }
-            checkResponseCode(con.getRequest(), R.string.site_calibre);
-
+        try (TerminatorConnection con = doGet(mServerUri + path)) {
             try (InputStream is = con.getInputStream();
                  InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
                  BufferedReader reader = new BufferedReader(isr, buffer)) {
@@ -1327,50 +1328,6 @@ public class CalibreContentServer {
             // we are (have to) assuming that the server CA is loaded
             // in the Android system keystore.
             return null;
-        }
-    }
-
-    /**
-     * Implicitly connect (if not already done so) and check the response code.
-     *
-     * @param request   to check
-     * @param siteResId site identifier
-     *
-     * @throws CredentialsException  on login failure
-     * @throws HttpNotFoundException the URL was not found
-     * @throws HttpStatusException   on other HTTP failures
-     * @throws IOException           on other failures
-     */
-    private void checkResponseCode(@NonNull final HttpURLConnection request,
-                                   @SuppressWarnings("SameParameterValue")
-                                   @StringRes final int siteResId)
-            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {
-        // Make sure the server was happy.
-        final int responseCode = request.getResponseCode();
-        switch (responseCode) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                break;
-
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                throw new CredentialsException(siteResId,
-                                               request.getResponseMessage(),
-                                               request.getURL());
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                throw new HttpNotFoundException(siteResId,
-                                                request.getResponseMessage(),
-                                                request.getURL());
-
-            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
-                // for easier reporting issues to the user, map a 408 to an STE
-                throw new SocketTimeoutException("408 " + request.getResponseMessage());
-
-            default:
-                throw new HttpStatusException(siteResId,
-                                              responseCode,
-                                              request.getResponseMessage(),
-                                              request.getURL());
         }
     }
 }
