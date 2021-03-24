@@ -152,7 +152,7 @@ public class SearchCoordinator
     private boolean mIsCancelled;
     /** Whether of not to fetch thumbnails. */
     @Nullable
-    private boolean[] mFetchThumbnail;
+    private boolean[] mFetchCover;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForExactCode;
     /** Original ISBN text for search. */
@@ -309,7 +309,7 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                mFetchThumbnail = new boolean[]{
+                mFetchCover = new boolean[]{
                         DBKeys.isUsed(global, DBKeys.COVER_IS_USED[0]),
                         DBKeys.isUsed(global, DBKeys.COVER_IS_USED[1])
                 };
@@ -349,10 +349,10 @@ public class SearchCoordinator
     /**
      * Indicate we want a thumbnail.
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param fetchCovers Set to {@code true} if we want to get covers
      */
-    protected void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
-        mFetchThumbnail = fetchThumbnail;
+    protected void setFetchCover(@Nullable final boolean[] fetchCovers) {
+        mFetchCover = fetchCovers;
     }
 
     /**
@@ -648,7 +648,7 @@ public class SearchCoordinator
         final SearchTask task = new SearchTask(searchEngine, mSearchTaskListener);
         task.setExecutor(ASyncExecutor.MAIN);
 
-        task.setFetchThumbnail(mFetchThumbnail);
+        task.setFetchCovers(mFetchCover);
 
         if (externalId != null && !externalId.isEmpty()
             && (searchEngine instanceof SearchEngine.ByExternalId)) {
