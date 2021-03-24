@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -264,16 +263,6 @@ public interface SearchEngine {
     }
 
     /**
-     * Get the throttler for regulating network access.
-     *
-     * @return {@code null} no Throttler by default. Override as needed.
-     */
-    @Nullable
-    default Throttler getThrottler() {
-        return null;
-    }
-
-    /**
      * Convenience method to create a connection using the engines specific network configuration.
      *
      * @param url to connect to
@@ -292,7 +281,7 @@ public interface SearchEngine {
         return new TerminatorConnection(url)
                 .setConnectTimeout(config.getConnectTimeoutInMs())
                 .setReadTimeout(config.getReadTimeoutInMs())
-                .setThrottler(getThrottler());
+                .setThrottler(config.getThrottler());
     }
 
     /**
@@ -319,7 +308,7 @@ public interface SearchEngine {
         final ImageDownloader imageDownloader = new ImageDownloader()
                 .setConnectTimeout(config.getConnectTimeoutInMs())
                 .setReadTimeout(config.getReadTimeoutInMs())
-                .setThrottler(getThrottler());
+                .setThrottler(config.getThrottler());
 
         try {
             final File tmpFile = imageDownloader
@@ -365,9 +354,9 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param externalId     the external id (as a String) for this particular search site.
-         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-         *                       The array is guaranteed to have at least one element.
+         * @param externalId  the external id (as a String) for this particular search site.
+         * @param fetchCovers Set to {@code true} if we want to get covers
+         *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -376,8 +365,8 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
-                                  @NonNull boolean[] fetchThumbnail)
-                throws GeneralParsingException, IOException;
+                                  @NonNull boolean[] fetchCovers)
+        throws GeneralParsingException, IOException;
     }
 
     /** Optional. Every engine should really implement this. */
@@ -388,7 +377,7 @@ public interface SearchEngine {
          * Called by the {@link SearchCoordinator#search}.
          *
          * @param validIsbn      to search for, <strong>will</strong> be valid.
-         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         * @param fetchCovers Set to {@code true} if we want to get covers
          *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -398,8 +387,8 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
-                            @NonNull boolean[] fetchThumbnail)
-                throws GeneralParsingException, IOException;
+                            @NonNull boolean[] fetchCovers)
+        throws GeneralParsingException, IOException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -431,7 +420,7 @@ public interface SearchEngine {
          * Called by the {@link SearchCoordinator#search}.
          *
          * @param barcode        to search for, <strong>will</strong> be valid.
-         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         * @param fetchCovers Set to {@code true} if we want to get covers
          *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -441,8 +430,8 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
-                               @NonNull boolean[] fetchThumbnail)
-                throws IOException;
+                               @NonNull boolean[] fetchCovers)
+        throws IOException;
     }
 
     /**
@@ -465,7 +454,7 @@ public interface SearchEngine {
          * @param publisher      optional and in addition to author/title.
          *                       i.e. author and/or title must be valid;
          *                       only then the publisher is taken into account.
-         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         * @param fetchCovers Set to {@code true} if we want to get covers
          *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -478,8 +467,8 @@ public interface SearchEngine {
                       @Nullable String author,
                       @Nullable String title,
                       @Nullable String publisher,
-                      @NonNull boolean[] fetchThumbnail)
-                throws GeneralParsingException, IOException;
+                      @NonNull boolean[] fetchCovers)
+        throws GeneralParsingException, IOException;
     }
 
     /** Optional. */
@@ -557,7 +546,7 @@ public interface SearchEngine {
          * Helper method you can call from {@link #searchCoverImageByIsbn} if needed.
          * See the Goodreads SearchEngine for an example.
          * <p>
-         * A search for the book is done, with the 'fetchThumbnail' flag set to true.
+         * A search for the book is done, with the 'fetchCovers' flag set to true.
          * Any {@link IOException} thrown are ignored and {@code null} returned instead.
          * <p>
          * Do NOT use if the site does not support returning images during searches.
@@ -573,8 +562,8 @@ public interface SearchEngine {
         default String searchCoverByIsbnFallback(@NonNull final String isbn,
                                                  @IntRange(from = 0, to = 1) final int cIdx) {
 
-            final boolean[] fetchThumbnail = new boolean[2];
-            fetchThumbnail[cIdx] = true;
+            final boolean[] fetchCovers = new boolean[2];
+            fetchCovers[cIdx] = true;
 
             try {
                 final Bundle bookData;
@@ -582,20 +571,20 @@ public interface SearchEngine {
                 if (ISBN.isValidIsbn(isbn)
                     && this instanceof SearchEngine.ByIsbn) {
                     bookData = ((SearchEngine.ByIsbn) this)
-                            .searchByIsbn(isbn, fetchThumbnail);
+                            .searchByIsbn(isbn, fetchCovers);
 
                     // If we have a generic barcode, ...
                 } else if (ISBN.isValid(isbn)
                            && this instanceof SearchEngine.ByBarcode) {
                     bookData = ((SearchEngine.ByBarcode) this)
-                            .searchByBarcode(isbn, fetchThumbnail);
+                            .searchByBarcode(isbn, fetchCovers);
 
                     // otherwise we pass a non-empty (but invalid) code on regardless.
                     // if the engine supports text mode.
                 } else if (!isbn.isEmpty()
                            && this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
-                            .search(isbn, "", "", "", fetchThumbnail);
+                            .search(isbn, "", "", "", fetchCovers);
 
                 } else {
                     // don't throw here; this is a fallback method allowed to fail.

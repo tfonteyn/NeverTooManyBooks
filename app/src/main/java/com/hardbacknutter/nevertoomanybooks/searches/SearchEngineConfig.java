@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 
 /**
  * Immutable configuration data for a {@link SearchEngine}.
@@ -70,6 +71,13 @@ public final class SearchEngineConfig {
 
     private final int mReadTimeoutMs;
 
+    /**
+     * This is a reference to the <strong>static</strong> object created in the SearchEngine
+     * implementation class.
+     */
+    @Nullable
+    private final Throttler mStaticThrottler;
+
     /** {@link SearchEngine.CoverByIsbn} only. */
     private final boolean mSupportsMultipleCoverSizes;
 
@@ -108,6 +116,7 @@ public final class SearchEngineConfig {
 
         mConnectTimeoutMs = builder.mConnectTimeoutMs;
         mReadTimeoutMs = builder.mReadTimeoutMs;
+        mStaticThrottler = builder.mStaticThrottler;
 
         mSupportsMultipleCoverSizes = builder.mSupportsMultipleCoverSizes;
         mFilenameSuffix = builder.mFilenameSuffix != null ? builder.mFilenameSuffix : "";
@@ -201,6 +210,18 @@ public final class SearchEngineConfig {
     }
 
     /**
+     * Get the throttler for regulating network access.
+     * <p>
+     * The <strong>static</strong> Throttler is created in the SearchEngine implementation class.
+     *
+     * @return throttler to use, or {@code null} for none.
+     */
+    @Nullable
+    public Throttler getThrottler() {
+        return mStaticThrottler;
+    }
+
+    /**
      * {@link SearchEngine.CoverByIsbn} only.
      * <p>
      * A site can support a single (default) or multiple sizes.
@@ -225,6 +246,7 @@ public final class SearchEngineConfig {
                + ", mDomainMenuId=" + mDomainMenuId
                + ", mConnectTimeoutMs=" + mConnectTimeoutMs
                + ", mReadTimeoutMs=" + mReadTimeoutMs
+               + ", mStaticThrottler=" + mStaticThrottler
                + ", mSupportsMultipleCoverSizes=" + mSupportsMultipleCoverSizes
                + ", mFilenameSuffix=`" + mFilenameSuffix + '`'
                + '}';
@@ -269,6 +291,9 @@ public final class SearchEngineConfig {
 
         private int mReadTimeoutMs = TEN_SECONDS;
 
+        @Nullable
+        private Throttler mStaticThrottler;
+
         /** {@link SearchEngine.CoverByIsbn} only. */
         private boolean mSupportsMultipleCoverSizes;
 
@@ -299,6 +324,12 @@ public final class SearchEngineConfig {
                                   @NonNull final String lang) {
             mCountry = country;
             mLang = lang;
+            return this;
+        }
+
+        @NonNull
+        public Builder setStaticThrottler(@Nullable final Throttler staticThrottler) {
+            mStaticThrottler = staticThrottler;
             return this;
         }
 

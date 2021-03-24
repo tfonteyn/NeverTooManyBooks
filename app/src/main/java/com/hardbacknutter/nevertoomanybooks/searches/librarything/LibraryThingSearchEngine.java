@@ -108,8 +108,8 @@ public class LibraryThingSearchEngine
     private static final String COVER_BY_ISBN_URL =
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
-    /** Can only send requests at a throttled speed. */
-    private static final Throttler THROTTLER = new Throttler();
+    /** LibraryThing usage rules: only send one request a second. */
+    private static final Throttler THROTTLER = new Throttler(1_000);
 
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
@@ -136,6 +136,7 @@ public class LibraryThingSearchEngine
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
 
+                .setStaticThrottler(THROTTLER)
                 .build();
     }
 
@@ -177,12 +178,6 @@ public class LibraryThingSearchEngine
         return hasKey();
     }
 
-    @NonNull
-    @Override
-    public Throttler getThrottler() {
-        return THROTTLER;
-    }
-
     @Override
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
@@ -211,7 +206,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -223,7 +218,7 @@ public class LibraryThingSearchEngine
             return bookData;
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final String isbnStr = bookData.getString(DBKeys.KEY_ISBN);
             if (isbnStr != null && !isbnStr.isEmpty()) {
                 final ArrayList<String> list = searchBestCoverImageByIsbn(isbnStr, 0);
@@ -244,7 +239,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -257,7 +252,7 @@ public class LibraryThingSearchEngine
             return bookData;
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final ArrayList<String> list = searchBestCoverImageByIsbn(validIsbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);

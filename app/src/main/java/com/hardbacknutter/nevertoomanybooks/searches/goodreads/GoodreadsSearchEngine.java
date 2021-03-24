@@ -60,9 +60,8 @@ public class GoodreadsSearchEngine
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
-    /** Can only send requests at a throttled speed. */
-    @NonNull
-    public static final Throttler THROTTLER = new Throttler();
+    /** GoodReads usage rules: only send one request a second. */
+    public static final Throttler THROTTLER = new Throttler(1_000);
 
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
@@ -100,6 +99,8 @@ public class GoodreadsSearchEngine
 
                 .setConnectTimeoutMs(GoodreadsManager.CONNECTION_TIMEOUT_MS)
                 .setReadTimeoutMs(GoodreadsManager.READ_TIMEOUT_MS)
+
+                .setStaticThrottler(THROTTLER)
                 .build();
     }
 
@@ -115,13 +116,6 @@ public class GoodreadsSearchEngine
         return !mGoodreadsAuth.getDevKey().isEmpty()
                && mGoodreadsAuth.hasCredentials();
     }
-
-    @Nullable
-    @Override
-    public Throttler getThrottler() {
-        return THROTTLER;
-    }
-
 
     @Override
     public boolean promptToRegister(@NonNull final Context context,
@@ -146,7 +140,7 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -156,7 +150,7 @@ public class GoodreadsSearchEngine
                 mByIdApi = new ShowBookByIdApiHandler(getContext(), mGoodreadsAuth);
             }
             final long grBookId = Long.parseLong(externalId);
-            return mByIdApi.searchByExternalId(grBookId, fetchThumbnail, bookData);
+            return mByIdApi.searchByExternalId(grBookId, fetchCovers, bookData);
 
         } catch (@NonNull final HttpNotFoundException | NumberFormatException e) {
             // ignore
@@ -167,7 +161,7 @@ public class GoodreadsSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -176,7 +170,7 @@ public class GoodreadsSearchEngine
             if (mByIsbnApi == null) {
                 mByIsbnApi = new ShowBookByIsbnApiHandler(getContext(), mGoodreadsAuth);
             }
-            return mByIsbnApi.searchByIsbn(validIsbn, fetchThumbnail, bookData);
+            return mByIsbnApi.searchByIsbn(validIsbn, fetchCovers, bookData);
 
         } catch (@NonNull final HttpNotFoundException ignore) {
             // ignore
@@ -198,7 +192,7 @@ public class GoodreadsSearchEngine
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         @NonNull final boolean[] fetchThumbnail)
+                         @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -216,7 +210,7 @@ public class GoodreadsSearchEngine
                         mByIdApi = new ShowBookByIdApiHandler(getContext(),
                                                               mGoodreadsAuth);
                     }
-                    return mByIdApi.searchByExternalId(grIdList.get(0), fetchThumbnail, bookData);
+                    return mByIdApi.searchByExternalId(grIdList.get(0), fetchCovers, bookData);
                 }
             } catch (@NonNull final HttpNotFoundException ignore) {
                 // ignore

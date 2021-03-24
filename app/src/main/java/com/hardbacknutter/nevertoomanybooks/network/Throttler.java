@@ -33,27 +33,11 @@ import androidx.annotation.NonNull;
  */
 public class Throttler {
 
-    //    /** Log tag. */
-//    private static final String TAG = "Throttler";
+    /** Thread delay time. */
+    private final int mDelayInMillis;
 
-    /**
-     * Stores the last time a request was made to avoid breaking site usage rules.
-     * Only modify this value from inside a synchronized (LAST_REQUEST_TIME_LOCK)
-     */
+    /** Stores the last time a request was made to avoid breaking site usage rules. */
     private long mLastRequestTime;
-
-    /** Default thread delay time; 1 second as per LibraryThing/GoodReads. */
-    private int mDelayInMillis = 1_000;
-
-    /**
-     * Constructor.
-     * <p>
-     * IMPORTANT: Must be a static member variable to be meaningful.
-     * <p>
-     * Uses the default delay of 1 second.
-     */
-    public Throttler() {
-    }
 
     /**
      * Constructor.
@@ -62,7 +46,6 @@ public class Throttler {
      *
      * @param delayInMillis the delay time between requests.
      */
-    @SuppressWarnings("unused")
     public Throttler(final int delayInMillis) {
         mDelayInMillis = delayInMillis;
     }
@@ -99,5 +82,14 @@ public class Throttler {
             } catch (@NonNull final InterruptedException ignore) {
             }
         }
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Throttler{"
+               + "mDelayInMillis=" + mDelayInMillis
+               + ", mLastRequestTime=" + mLastRequestTime
+               + '}';
     }
 }
