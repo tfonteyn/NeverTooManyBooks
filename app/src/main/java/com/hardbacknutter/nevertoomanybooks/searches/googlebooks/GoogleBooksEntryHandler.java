@@ -162,9 +162,6 @@ class GoogleBooksEntryHandler
     /** Log tag. */
     private static final String TAG = "GoogleBooksEntryHandler";
 
-    /* XML tags/attrs we look for. */
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "GB";
     /**
      * Contains a direct link to this entry.
      * <id>http://www.google.com/books/feeds/volumes/IVnpNAAACAAJ</id>
@@ -219,9 +216,9 @@ class GoogleBooksEntryHandler
     private static final String SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL
             = "http://schemas.google.com/books/2008/thumbnail";
 
-    /** flag if we should fetch a thumbnail. */
+    /** Whether to fetch covers. */
     @NonNull
-    private final boolean[] mFetchThumbnail;
+    private final boolean[] mFetchCovers;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -248,15 +245,15 @@ class GoogleBooksEntryHandler
     /**
      * Constructor.
      *
-     * @param searchEngine   to use
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param searchEngine to use
+     * @param fetchCovers  Set to {@code true} if we want to get covers
+     * @param bookData     Bundle to update <em>(passed in to allow mocking)</em>
      */
     GoogleBooksEntryHandler(@NonNull final SearchEngine searchEngine,
-                            @NonNull final boolean[] fetchThumbnail,
+                            @NonNull final boolean[] fetchCovers,
                             @NonNull final Bundle bookData) {
         mSearchEngine = searchEngine;
-        mFetchThumbnail = fetchThumbnail;
+        mFetchCovers = fetchCovers;
         mBookData = bookData;
 
         mLocale = mSearchEngine.getLocale();
@@ -288,7 +285,7 @@ class GoogleBooksEntryHandler
             throws SAXException {
 
         // the url is an attribute of the xml element; not the content
-        if (mFetchThumbnail[0] && XML_LINK.equalsIgnoreCase(localName)) {
+        if (mFetchCovers[0] && XML_LINK.equalsIgnoreCase(localName)) {
 
             if (SCHEMAS_GOOGLE_COM_BOOKS_2008_THUMBNAIL.equals(attributes.getValue("", "rel"))) {
                 // This url comes back as http, and we must use https... so replace it.

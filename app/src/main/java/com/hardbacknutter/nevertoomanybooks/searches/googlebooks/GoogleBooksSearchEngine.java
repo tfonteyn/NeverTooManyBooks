@@ -87,20 +87,21 @@ public class GoogleBooksSearchEngine
                                               R.string.site_google_books,
                                               "googlebooks",
                                               "https://books.google.com")
+                .setFilenameSuffix("GB")
                 .build();
     }
 
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        fetchBook(url, fetchThumbnail, bookData);
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -111,7 +112,7 @@ public class GoogleBooksSearchEngine
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         @NonNull final boolean[] fetchThumbnail)
+                         @NonNull final boolean[] fetchCovers)
             throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
@@ -124,7 +125,7 @@ public class GoogleBooksSearchEngine
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            fetchBook(url, fetchThumbnail, bookData);
+            fetchBook(url, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -132,17 +133,17 @@ public class GoogleBooksSearchEngine
     /**
      * Fetch a book by url.
      *
-     * @param url            to fetch
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     *                       The array is guaranteed to have at least one element.
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param url         to fetch
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @throws IOException on failure
      */
     private void fetchBook(@NonNull final String url,
-                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+    throws GeneralParsingException, IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -163,7 +164,7 @@ public class GoogleBooksSearchEngine
 
             // The entry handler takes care of an individual book ('entry')
             final GoogleBooksEntryHandler handler =
-                    new GoogleBooksEntryHandler(this, fetchThumbnail, bookData);
+                    new GoogleBooksEntryHandler(this, fetchCovers, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 final String oneBookUrl = urlList.get(0);
