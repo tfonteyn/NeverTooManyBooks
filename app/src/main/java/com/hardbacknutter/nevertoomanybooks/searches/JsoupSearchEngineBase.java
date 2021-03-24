@@ -125,9 +125,9 @@ public abstract class JsoupSearchEngineBase
      * Implementations <strong>must</strong> call this super first
      * to ensure cached data is purged.
      *
-     * @param document       to parse
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update
      *
      * @throws IOException on failure
      */
@@ -135,9 +135,9 @@ public abstract class JsoupSearchEngineBase
     @WorkerThread
     @CallSuper
     public void parse(@NonNull final Document document,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException {
+    throws IOException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.
         // But this way is more future oriented... maybe we'll need/can share more logic/data
