@@ -249,9 +249,9 @@ class AmazonXmlHandler
     private static final String XML_AMOUNT = "Amount";
     @NonNull
     protected final SearchEngine mSearchEngine;
-    /** flag if we should fetch a thumbnail. */
+    /** Whether to fetch covers. */
     @NonNull
-    private final boolean[] mFetchThumbnail;
+    private final boolean[] mFetchCovers;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -309,14 +309,14 @@ class AmazonXmlHandler
     /**
      * Constructor.
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      */
     AmazonXmlHandler(@NonNull final SearchEngine searchEngine,
-                     @NonNull final boolean[] fetchThumbnail,
+                     @NonNull final boolean[] fetchCovers,
                      @NonNull final Bundle bookData) {
         mSearchEngine = searchEngine;
-        mFetchThumbnail = fetchThumbnail;
+        mFetchCovers = fetchCovers;
         mBookData = bookData;
     }
 
@@ -332,7 +332,7 @@ class AmazonXmlHandler
     @Override
     @CallSuper
     public void endDocument() {
-        if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
+        if (mFetchCovers[0] && !mCoverUrl.isEmpty()) {
 
             final String fileSpec = mSearchEngine
                     .saveImage(mCoverUrl, mBookData.getString(DBKeys.KEY_ISBN), 0, null);

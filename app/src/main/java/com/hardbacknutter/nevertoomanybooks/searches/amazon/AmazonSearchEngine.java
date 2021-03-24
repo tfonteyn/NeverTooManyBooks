@@ -334,7 +334,7 @@ public class AmazonSearchEngine
     @NonNull
 //    @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -342,7 +342,7 @@ public class AmazonSearchEngine
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
-            parse(document, fetchThumbnail, bookData);
+            parse(document, fetchCovers, bookData);
         }
 
         return bookData;
@@ -351,14 +351,14 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
-            return searchByExternalId(tmp.asText(ISBN.TYPE_ISBN10), fetchThumbnail);
+            return searchByExternalId(tmp.asText(ISBN.TYPE_ISBN10), fetchCovers);
         } else {
-            return searchByExternalId(validIsbn, fetchThumbnail);
+            return searchByExternalId(validIsbn, fetchCovers);
         }
     }
 
@@ -386,10 +386,10 @@ public class AmazonSearchEngine
     @Override
     @VisibleForTesting
     public void parse(@NonNull final Document document,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws IOException {
-        super.parse(document, fetchThumbnail, bookData);
+        super.parse(document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(document.location().split("/")[2]);
 
@@ -594,7 +594,7 @@ public class AmazonSearchEngine
             return;
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
