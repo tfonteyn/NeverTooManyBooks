@@ -73,7 +73,7 @@ public class DBCleaner
      */
     public DBCleaner() {
         mBookDao = new BookDao(TAG);
-        mDb = mBookDao.getDb();
+        mDb = ServiceLocator.getDb();
     }
 
     /**
