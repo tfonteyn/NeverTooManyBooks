@@ -175,12 +175,13 @@ public final class TerminatorConnection
      *
      * @param sslContext (optional) SSL context to use instead of the system one.
      */
-    public void setSSLContext(@Nullable final SSLContext sslContext) {
+    public TerminatorConnection setSSLContext(@Nullable final SSLContext sslContext) {
         Objects.requireNonNull(mRequest, "mRequest");
 
         if (sslContext != null) {
             ((HttpsURLConnection) mRequest).setSSLSocketFactory(sslContext.getSocketFactory());
         }
+        return this;
     }
 
     /** Get the underlying connection/request object. <strong>use with care</strong>. */
