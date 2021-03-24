@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -58,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -222,6 +224,8 @@ public class CsvRecordReader
         // Count the nr of books in between progress updates.
         int delta = 0;
 
+        final SynchronizedDb db = ServiceLocator.getDb();
+
         Synchronizer.SyncLock txLock = null;
         try {
             // not perfect, but good enough
@@ -232,12 +236,12 @@ public class CsvRecordReader
             // Iterate through each imported row or until cancelled
             while (row < books.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
-                if (mBookDao.inTransaction() && txRowCount > 10) {
-                    mBookDao.setTransactionSuccessful();
-                    mBookDao.endTransaction(txLock);
+                if (db.inTransaction() && txRowCount > 10) {
+                    db.setTransactionSuccessful();
+                    db.endTransaction(txLock);
                 }
-                if (!mBookDao.inTransaction()) {
-                    txLock = mBookDao.beginTransaction(true);
+                if (!db.inTransaction()) {
+                    txLock = db.beginTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;
@@ -301,9 +305,9 @@ public class CsvRecordReader
                 }
             }
         } finally {
-            if (mBookDao.inTransaction()) {
-                mBookDao.setTransactionSuccessful();
-                mBookDao.endTransaction(txLock);
+            if (db.inTransaction()) {
+                db.setTransactionSuccessful();
+                db.endTransaction(txLock);
             }
         }
 

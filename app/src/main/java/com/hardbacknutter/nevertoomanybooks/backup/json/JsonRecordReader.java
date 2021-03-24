@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -317,17 +318,19 @@ public class JsonRecordReader
             progressListener.setMaxPos(books.length());
         }
 
+        final SynchronizedDb db = ServiceLocator.getDb();
+
         Synchronizer.SyncLock txLock = null;
         try {
             // Iterate through each imported element
             for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
                 // every 10 inserted, we commit the transaction
-                if (mBookDao.inTransaction() && txRowCount > 10) {
-                    mBookDao.setTransactionSuccessful();
-                    mBookDao.endTransaction(txLock);
+                if (db.inTransaction() && txRowCount > 10) {
+                    db.setTransactionSuccessful();
+                    db.endTransaction(txLock);
                 }
-                if (!mBookDao.inTransaction()) {
-                    txLock = mBookDao.beginTransaction(true);
+                if (!db.inTransaction()) {
+                    txLock = db.beginTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;
@@ -375,9 +378,9 @@ public class JsonRecordReader
                 }
             }
         } finally {
-            if (mBookDao.inTransaction()) {
-                mBookDao.setTransactionSuccessful();
-                mBookDao.endTransaction(txLock);
+            if (db.inTransaction()) {
+                db.setTransactionSuccessful();
+                db.endTransaction(txLock);
             }
         }
         // minus 1 to compensate for the last increment

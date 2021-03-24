@@ -87,7 +87,8 @@ public class CsvArchiveReader
         // Importing CSV which we didn't create can be dangerous.
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
-        FileUtils.copyWithBackup(mBookDao.getDatabaseFile(),
+
+        FileUtils.copyWithBackup(ServiceLocator.getDb().getDatabaseFile(),
                                  AppDir.Upgrades.getFile(context, DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
