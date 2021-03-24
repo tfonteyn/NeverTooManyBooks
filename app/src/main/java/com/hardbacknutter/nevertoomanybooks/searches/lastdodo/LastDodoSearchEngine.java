@@ -100,7 +100,7 @@ public class LastDodoSearchEngine
 
     @NonNull
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -108,7 +108,7 @@ public class LastDodoSearchEngine
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
-            parse(document, fetchThumbnail, bookData);
+            parse(document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -116,7 +116,7 @@ public class LastDodoSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -125,7 +125,7 @@ public class LastDodoSearchEngine
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(document, fetchThumbnail, bookData);
+            parseMultiResult(document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -135,15 +135,15 @@ public class LastDodoSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
      *
-     * @param document       to parse
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update
      *
      * @throws IOException on failure
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Document document,
-                                  @NonNull final boolean[] fetchThumbnail,
+                                  @NonNull final boolean[] fetchCovers,
                                   @NonNull final Bundle bookData)
             throws IOException {
 
@@ -154,7 +154,7 @@ public class LastDodoSearchEngine
             if (urlElement != null) {
                 final Document redirected = loadDocument(urlElement.attr("href"));
                 if (redirected != null && !isCancelled()) {
-                    parse(redirected, fetchThumbnail, bookData);
+                    parse(redirected, fetchCovers, bookData);
                 }
             }
         }
@@ -163,10 +163,10 @@ public class LastDodoSearchEngine
     @Override
     @VisibleForTesting
     public void parse(@NonNull final Document document,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws IOException {
-        super.parse(document, fetchThumbnail, bookData);
+        super.parse(document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
@@ -308,19 +308,24 @@ public class LastDodoSearchEngine
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
+        // It's extremely unlikely, but should the language be missing, add dutch.
+        if (!bookData.containsKey(DBKeys.KEY_LANGUAGE)) {
+            bookData.putString(DBKeys.KEY_LANGUAGE, "nld");
+        }
+
         if (isCancelled()) {
             return;
         }
 
-        if (fetchThumbnail[0] || fetchThumbnail[1]) {
+        if (fetchCovers[0] || fetchCovers[1]) {
             final String isbn = bookData.getString(DBKeys.KEY_ISBN);
-            parseCovers(document, isbn, fetchThumbnail, bookData);
+            parseCovers(document, isbn, fetchCovers, bookData);
         }
     }
 
     private void parseCovers(@NonNull final Document document,
                              @Nullable final String isbn,
-                             @NonNull final boolean[] fetchThumbnail,
+                             @NonNull final boolean[] fetchCovers,
                              @NonNull final Bundle bookData) {
         final Element images = document.getElementById("images_container");
         if (images != null) {
@@ -329,7 +334,7 @@ public class LastDodoSearchEngine
                 if (isCancelled()) {
                     return;
                 }
-                if (fetchThumbnail[cIdx] && aas.size() > cIdx) {
+                if (fetchCovers[cIdx] && aas.size() > cIdx) {
                     final String url = aas.get(cIdx).attr("href");
                     final String fileSpec = saveImage(url, isbn, cIdx, null);
                     if (fileSpec != null) {
