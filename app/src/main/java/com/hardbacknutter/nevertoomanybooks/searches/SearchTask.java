@@ -60,9 +60,9 @@ public class SearchTask
 
     @NonNull
     private final SearchEngine mSearchEngine;
-    /** whether to fetch thumbnails. */
+    /** Whether to fetch covers. */
     @Nullable
-    private boolean[] mFetchThumbnail;
+    private boolean[] mFetchCovers;
     /** What criteria to search by. */
     @By
     private int mBy;
@@ -157,13 +157,13 @@ public class SearchTask
     /**
      * Set/reset the criteria.
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param fetchCovers Set to {@code true} if we want to get covers
      */
-    void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
-        if (fetchThumbnail == null || fetchThumbnail.length == 0) {
-            mFetchThumbnail = new boolean[2];
+    void setFetchCovers(@Nullable final boolean[] fetchCovers) {
+        if (fetchCovers == null || fetchCovers.length == 0) {
+            mFetchCovers = new boolean[2];
         } else {
-            mFetchThumbnail = fetchThumbnail;
+            mFetchCovers = fetchCovers;
         }
     }
 
@@ -181,9 +181,9 @@ public class SearchTask
         // can we reach the site at all ?
         NetworkUtils.ping(mSearchEngine.getSiteUrl());
 
-        // sanity check, see #setFetchThumbnail
-        if (mFetchThumbnail == null) {
-            mFetchThumbnail = new boolean[2];
+        // sanity check, see #setFetchCovers
+        if (mFetchCovers == null) {
+            mFetchCovers = new boolean[2];
         }
 
         final Bundle bookData;
@@ -191,24 +191,24 @@ public class SearchTask
             case BY_EXTERNAL_ID:
                 SanityCheck.requireValue(mExternalId, "mExternalId");
                 bookData = ((SearchEngine.ByExternalId) mSearchEngine)
-                        .searchByExternalId(mExternalId, mFetchThumbnail);
+                        .searchByExternalId(mExternalId, mFetchCovers);
                 break;
 
             case BY_ISBN:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(mIsbnStr, mFetchThumbnail);
+                        .searchByIsbn(mIsbnStr, mFetchCovers);
                 break;
 
             case BY_BARCODE:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                        .searchByBarcode(mIsbnStr, mFetchThumbnail);
+                        .searchByBarcode(mIsbnStr, mFetchCovers);
                 break;
 
             case BY_TEXT:
                 bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+                        .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchCovers);
                 break;
 
             default:
