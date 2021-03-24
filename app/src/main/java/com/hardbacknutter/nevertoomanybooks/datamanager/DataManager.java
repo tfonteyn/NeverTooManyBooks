@@ -205,6 +205,8 @@ public class DataManager
 
     /**
      * Store a Object value. The object will be cast to one of the supported types.
+     * <p>
+     * An ArrayList is only supported with Parcelable content.
      *
      * @param key   Key of data object
      * @param value to store
