@@ -117,9 +117,7 @@ public final class ApiUtils {
         try {
             final File tmpFile = imageDownloader.createTmpFile(
                     context, GoodreadsManager.FILENAME_SUFFIX,
-                    String.valueOf(goodreadsData.getLong(
-                            DBKeys.KEY_ESID_GOODREADS_BOOK)),
-                    0, size);
+                    String.valueOf(goodreadsData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK)), 0, size);
 
             final File file = imageDownloader.fetch(context, url, tmpFile);
             if (file != null) {

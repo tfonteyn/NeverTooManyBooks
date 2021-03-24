@@ -299,9 +299,9 @@ public abstract class ShowBookApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param url            url to get
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param url         url to get
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return the Bundle of book data.
      *
@@ -309,9 +309,9 @@ public abstract class ShowBookApiHandler
      */
     @NonNull
     Bundle searchBook(@NonNull final String url,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+    throws GeneralParsingException, IOException {
 
         mBookData = bookData;
 
@@ -422,7 +422,7 @@ public abstract class ShowBookApiHandler
             SearchEngineBase.checkForSeriesNameInTitle(mBookData);
         }
 
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             final String fileSpec = ApiUtils.handleThumbnail(mAppContext,
                                                              mBookData,
                                                              SiteField.LARGE_IMAGE_URL,

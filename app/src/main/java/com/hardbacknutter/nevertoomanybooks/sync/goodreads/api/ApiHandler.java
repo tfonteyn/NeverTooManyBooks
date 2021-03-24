@@ -48,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -76,7 +76,7 @@ public abstract class ApiHandler {
     @NonNull
     final Context mAppContext;
     @NonNull
-    private final SearchEngineConfig mConfig;
+    private final SearchEngineConfig mSEConfig;
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ public abstract class ApiHandler {
         mAppContext = appContext;
         mGrAuth = grAuth;
 
-        mConfig = SearchEngineRegistry.getInstance().getByEngineId(SearchSites.GOODREADS);
+        mSEConfig = SearchEngineRegistry.getInstance().getByEngineId(SearchSites.GOODREADS);
     }
 
     /**
@@ -126,8 +126,8 @@ public abstract class ApiHandler {
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
-        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
-        request.setReadTimeout(mConfig.getReadTimeoutInMs());
+        request.setConnectTimeout(mSEConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mSEConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signGetRequest(request);
@@ -162,10 +162,10 @@ public abstract class ApiHandler {
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        request.setRequestMethod(HttpConstants.POST);
+        request.setRequestMethod(HttpUtils.POST);
         request.setDoOutput(true);
-        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
-        request.setReadTimeout(mConfig.getReadTimeoutInMs());
+        request.setConnectTimeout(mSEConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mSEConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signPostRequest(request, parameterMap);
@@ -283,8 +283,8 @@ public abstract class ApiHandler {
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
-        request.setReadTimeout(mConfig.getReadTimeoutInMs());
+        request.setConnectTimeout(mSEConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mSEConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signGetRequest(request);
@@ -292,7 +292,7 @@ public abstract class ApiHandler {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
-
+        // explicit connect for clarity
         request.connect();
 
         try {

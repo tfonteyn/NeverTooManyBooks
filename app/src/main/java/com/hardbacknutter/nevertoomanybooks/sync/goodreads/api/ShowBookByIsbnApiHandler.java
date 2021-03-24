@@ -61,9 +61,9 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param validIsbn      ISBN to use, must be valid
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param validIsbn   ISBN to use, must be valid
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return the Bundle of book data.
      *
@@ -71,12 +71,12 @@ public class ShowBookByIsbnApiHandler
      */
     @NonNull
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail,
+                               @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+    throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
-        return searchBook(url, fetchThumbnail, bookData);
+        return searchBook(url, fetchCovers, bookData);
     }
 
     /**
