@@ -25,4 +25,6 @@
             android:layout_gravity="center_horizontal"
          This is based on 4WVGA 4.0" -->
     <dimen name="screen_min_width">520dp</dimen>
+
+    <dimen name="large_menu_button_info">420dp</dimen>
 </resources>

@@ -20,7 +20,8 @@
   -->
 
 <!--
-    Screens 'just' larger than this.
+    Screens 'just' larger than the Pixel2.
+
     Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
     port: w411dp h659dp
     land: w683dp h387dp
