@@ -744,6 +744,14 @@
         <item name="iconPadding">12dp</item>
     </style>
 
+    <!-- The added padding/stroke items are copied from: "Widget.MaterialComponents.Button.OutlinedButton" -->
+    <style name="Button.Menu.Outlined">
+        <item name="android:paddingLeft">@dimen/mtrl_btn_padding_left</item>
+        <item name="android:paddingRight">@dimen/mtrl_btn_padding_right</item>
+        <item name="strokeColor">@color/mtrl_btn_stroke_color_selector</item>
+        <item name="strokeWidth">@dimen/mtrl_btn_stroke_size</item>
+    </style>
+
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
     <style name="Button.Action.Submit" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">wrap_content</item>
