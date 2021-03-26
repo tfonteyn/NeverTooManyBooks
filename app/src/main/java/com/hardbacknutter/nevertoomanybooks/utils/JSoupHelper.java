@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -152,7 +153,7 @@ public class JSoupHelper {
      *
      * @param element to parse
      *
-     * @return map
+     * @return unmodifiableMap
      */
     @NonNull
     public Map<String, String[]> getStyleMap(@NonNull final Element element) {
@@ -165,6 +166,6 @@ public class JSoupHelper {
         for (int i = 0; i < list.length; i += 2) {
             keymaps.put(list[i].trim(), list[i + 1].trim().split(" "));
         }
-        return keymaps;
+        return Collections.unmodifiableMap(keymaps);
     }
 }

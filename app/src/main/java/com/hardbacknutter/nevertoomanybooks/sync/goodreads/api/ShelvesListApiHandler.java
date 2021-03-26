@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,14 @@ public class ShelvesListApiHandler
         buildFilters();
     }
 
+    /**
+     * Get the list of Goodreads book shelves from the site.
+     *
+     * @return unmodifiableMap
+     *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
+     */
     @NonNull
     public Map<String, GoodreadsShelf> getAll()
             throws GeneralParsingException, IOException {
@@ -95,7 +104,8 @@ public class ShelvesListApiHandler
 
             page++;
         }
-        return map;
+
+        return Collections.unmodifiableMap(map);
     }
 
     /**
@@ -105,7 +115,8 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @NonNull
     private Bundle get(final int page)
