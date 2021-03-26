@@ -322,6 +322,7 @@
     <string name="legacy_record">Przestarzały zapis #%1$d</string>
     <string name="list_and">i</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Ten program wykorzystuje serwis LibraryThing jako żródło informacji o książkach, ich seriach, okładkach. W tym celu powinienieś zarejestrować się (darmowo) w LibraryThing i uzyskać klucz deweloperski LibraryThing (również darmowo).</string>
     <string name="lt_key_is_correct">Twój klucz deweloperski LibraryThing jest poprawny.</string>
     <string name="lt_key_is_incorrect">Weryfikacja klucza deweloperskiego LibraryThing się nie powiodła - jest niepoprawny lub nie masz połączenia z siecią</string>
@@ -418,6 +419,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: Utworzono %2$d, zaktualizowano %3$d</string>
+    <string name="lbl_updated">Zaktualizowano</string>
     <string name="progress_msg_optimizing">Optymalizacja bazy danych</string>
     <string name="progress_msg_please_wait">Zaczekaj…</string>
     <string name="progress_msg_rebuilding_search_index">Przebudowywanie indeksu wyszukiwania…</string>

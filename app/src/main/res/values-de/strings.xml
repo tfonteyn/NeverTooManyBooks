@@ -369,6 +369,7 @@
     <string name="legacy_record">Veralteter Datensatz #%1$d</string>
     <string name="list_and">und</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Buchumschläge. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
     <string name="lt_key_is_correct">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
     <string name="lt_key_is_incorrect">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
@@ -655,6 +656,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d Buchumschläge verarbeitet\n(%2$d/%3$d fehlen)</string>
     <string name="X_progress_msg_n_covers_processed">%1$d Buchumschläge verarbeitet</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
+    <string name="lbl_updated">Aktualisiert</string>
     <string name="X_software">Software</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_use_default_setting">Standardeinstellungen verwenden</string>

@@ -327,6 +327,7 @@
     <string name="legacy_record">Registro obsoleto #%1$d</string>
     <string name="list_and">y</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Está aplicación utiliza LibraryThing como fuente de información sobre series de libros, así como para portadas alternativas. Para poder utilizar estas opciones necesita estar registrado en LibraryThing (gratis) y solicitar una clave de desarrollador de LibraryThing (también gratuita).</string>
     <string name="lt_key_is_correct">Su clave de desarrollador de LibraryThing es válida.</string>
     <string name="lt_key_is_incorrect">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
@@ -423,6 +424,8 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creados, %3$d actualizados</string>
+    <string name="lbl_updated">Actualizados</string>
+
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_please_wait">Espera…</string>
     <string name="progress_msg_rebuilding_search_index">Reconstruyendo índices…</string>

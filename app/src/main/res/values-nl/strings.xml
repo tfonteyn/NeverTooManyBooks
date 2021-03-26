@@ -367,6 +367,7 @@
     <string name="legacy_record">Verouderd record #%1$d</string>
     <string name="list_and">en</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Deze applicatie wordt verbeterd door het gebruik van LibraryThing als informatiebron voor boeken en alternatieve afbeeldingen. Om deze functies te kunnen gebruiken moet je bij LibraryThing (gratis) registreren en om een ontwikkelaarssleutel vragen (ook gratis).</string>
     <string name="lt_key_is_correct">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
     <string name="lt_key_is_incorrect">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
@@ -653,6 +654,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d afbeeldingen verwerkt\n(%2$d/%3$d missend)</string>
     <string name="X_progress_msg_n_covers_processed">%1$d afbeeldingen verwerkt</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d toegevoegd, %3$d bijgewerkt</string>
+    <string name="lbl_updated">Bijgewerkt</string>
     <string name="X_software">Software</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>

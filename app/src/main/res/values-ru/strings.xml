@@ -320,6 +320,7 @@
     <string name="legacy_record">Устаревшая запись #%1$d</string>
     <string name="list_and">и</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Это приложение может использовать LibraryThing (бесплатно) в качестве источника информации как для серий так и об альтернативных обложках. Чтобы использовать эту возможность, Вам нужно зарегистрироваться на LibraryThing и запросить ключ разработчика. Всё бесплатно.</string>
     <string name="lt_key_is_correct">Ваш ключ разработика LibraryThing действителен.</string>
     <string name="lt_key_is_incorrect">Ваш ключ разработчика LibraryThing не действителен или не возможно установить соединение, чтобы его проверить.</string>
@@ -416,6 +417,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана (%2$d/%3$d отсутствует, %4$d пропущена)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
+    <string name="lbl_updated">Oбновлено</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_please_wait">Подождите…</string>
     <string name="progress_msg_rebuilding_search_index">Перестроение индексов поиска…</string>

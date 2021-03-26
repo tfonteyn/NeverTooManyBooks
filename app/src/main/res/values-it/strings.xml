@@ -324,6 +324,7 @@
     <string name="legacy_record">Record obsoleto #%1$d</string>
     <string name="list_and">e</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Questa applicazione utilizza LibraryThing come fonte ulteriore di informazioni sulle serie dei libri e per reperire copertine alternative. Per utilizzare LibraryThing è necessario essere registrati (è gratuita) e richiedere la chiave sviluppatore LibraryThing (anch\'essa gratuita).</string>
     <string name="lt_key_is_correct">Chiave sviluppatore LibraryThing valida.</string>
     <string name="lt_key_is_incorrect">Chiave sviluppatore LibraryThing errata, o impossibile connettersi alla rete per verificarla.</string>
@@ -420,6 +421,8 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creati, %3$d aggiornati</string>
+    <string name="lbl_updated">Aggiornati</string>
+
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
     <string name="progress_msg_please_wait">Attendere prego…</string>
     <string name="progress_msg_rebuilding_search_index">Ricostruzione indice di ricerca…</string>

@@ -371,6 +371,7 @@
     <string name="legacy_record">Dossier obsolète #%1$d</string>
     <string name="list_and">et</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Le fonctionnement de cette application est amélioré par l\'utilisation de LibraryThing comme source d\'information sur les séries ou comme alternative pour les couvertures. Pour bénéficier de ces fonctionnalités, vous devez vous enregistrer auprès de LibraryThing (gratuit) et demander une clé développeur LibraryThing (gratuit).</string>
     <string name="lt_key_is_correct">Votre clé de développeur LibraryThing est valable.</string>
     <string name="lt_key_is_incorrect">Votre clé de développeur LibraryThing est incorrecte ou nous n\'avons pas pu nous connecter au réseau pour la vérifier.</string>
@@ -657,6 +658,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
     <string name="X_progress_msg_n_covers_processed">%1$d couvertures traitées</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d ajoutés, %3$d mis à jour</string>
+    <string name="lbl_updated">Mis à jour</string>
     <string name="X_software">Logiciel</string>
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>

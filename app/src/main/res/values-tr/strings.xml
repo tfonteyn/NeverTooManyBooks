@@ -326,6 +326,7 @@
     <string name="legacy_record">Eski kayıt #%1$d</string>
     <string name="list_and">and</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">>Bu uygulama kitap serileri hakkında bilgi almak ve ek kapakları indirmek üzere LibraryThing\'den yararlanır. Bu özellikleri kullanmak için LibraryThing\'e kayıt olmanız (ücretsiz) ve LibraryThing geliştirici anahtarı almanız gerekmektedir (yine ücretsiz).</string>
     <string name="lt_key_is_correct">LibraryThing geliştirici anahtarınız geçerli.</string>
     <string name="lt_key_is_incorrect">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
@@ -422,6 +423,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi (%2$d/%3$d bulunamadı, %4$d atlandı)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d oluşturuldu, %3$d güncellendi</string>
+    <string name="lbl_updated">Güncellendi</string>
     <string name="progress_msg_optimizing">Veritabanları eniyileniyor…</string>
     <string name="progress_msg_please_wait">Lütfen bekleyin…</string>
     <string name="progress_msg_rebuilding_search_index">Arama dizini yeniden oluşturuluyor…</string>

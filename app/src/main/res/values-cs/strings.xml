@@ -324,6 +324,7 @@
     <string name="legacy_record">Zastaralý záznam #%1$d</string>
     <string name="list_and">a</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Tato aplikace může využít LibraryThing jako další zdroj informací o knihách. K využití této funkce je nutná Vaše registrace na LibraryThing (zdarma) a rovněž získání vývojářského klíče od LibraryThing (také zdarma).</string>
     <string name="lt_key_is_correct">Váš vývojářský klíč LibraryThing je platný.</string>
     <string name="lt_key_is_incorrect">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
@@ -420,6 +421,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d (chybí %2$d/%3$d, %4$d přeskočeno)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
+    <string name="lbl_updated">Aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím čekejte…</string>
     <string name="progress_msg_rebuilding_search_index">Obnovování indexu pro vyhledávání…</string>

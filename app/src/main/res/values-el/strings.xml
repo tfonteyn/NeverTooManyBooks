@@ -327,6 +327,7 @@
     <string name="legacy_record">Ανεξέλεγκτη εγγραφή #%1$d</string>
     <string name="list_and">και</string>
     <string name="list_element">• %s</string>
+    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
     <string name="lt_info">Αυτή η εφαρμογή ενισχύεται με τη χρήστη του LibraryThing σαν πηγή πληροφοριών για σειρές βιβλίων καθώς και ενναλλακτικών εξωφύλλων. Για πρόσβαση σε αυτές τις λειτουργίες απαιτείται εγγραφή στο LibraryThing (δωρεάν) και απόκτηση κλειδιού developer(επίσης δωρεάν).</string>
     <string name="lt_key_is_correct">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
     <string name="lt_key_is_incorrect">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
@@ -423,6 +424,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
+    <string name="lbl_updated">ενημερώθηκαν</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_please_wait">Περιμένετε…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
