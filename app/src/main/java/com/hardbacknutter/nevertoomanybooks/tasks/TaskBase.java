@@ -37,6 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+/**
+ * Common base for MutableLiveData / TaskListener driven tasks.
+ *
+ * @param <Result> the type of the result of the background computation.
+ */
 abstract class TaskBase<Result>
         implements Canceller, ProgressListener {
 
@@ -54,7 +59,7 @@ abstract class TaskBase<Result>
 
     /** State of this task. */
     @NonNull
-    private Status mStatus = Status.Idle;
+    private Status mStatus = Status.Created;
     /** Use {@link #setExecutor(Executor)} to override. */
     @NonNull
     private Executor mExecutor = ASyncExecutor.SERIAL;
@@ -110,7 +115,7 @@ abstract class TaskBase<Result>
     @UiThread
     protected boolean execute() {
         synchronized (this) {
-            if (mStatus != Status.Idle && mStatus != Status.Finished) {
+            if (mStatus != Status.Created && mStatus != Status.Finished) {
                 throw new IllegalStateException("task already running");
             }
 
@@ -229,11 +234,14 @@ abstract class TaskBase<Result>
 
     /**
      * Indicates the current status of the task.
-     * Idle -> Pending -> Running -> Finished.
      * <p>
-     * A task is {@link Status#Idle} when it has never been queued.
+     * Created -> Pending -> Running -> Finished.
+     * <p>
+     * Finished -> Pending -> Running -> Finished.
+     * <p>
+     * A task is {@link Status#Created} when it has never been queued.
      */
     public enum Status {
-        Idle, Pending, Running, Finished
+        Created, Pending, Running, Finished
     }
 }
