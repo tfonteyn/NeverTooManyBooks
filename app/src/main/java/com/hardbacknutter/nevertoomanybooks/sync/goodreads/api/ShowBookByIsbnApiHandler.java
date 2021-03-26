@@ -67,7 +67,8 @@ public class ShowBookByIsbnApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws IOException on other failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on other failures
      */
     @NonNull
     public Bundle searchByIsbn(@NonNull final String validIsbn,
@@ -87,6 +88,7 @@ public class ShowBookByIsbnApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on other failures
      */
     @Nullable

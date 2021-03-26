@@ -66,8 +66,11 @@ public abstract class LTask<Result>
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    @WorkerThread
+    /**
+     * Can be called from the task implementation to report progress.
+     */
     @Override
+    @WorkerThread
     public void publishProgress(@NonNull final ProgressMessage message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
@@ -80,6 +83,13 @@ public abstract class LTask<Result>
         });
     }
 
+    /**
+     * Called when the task successfully finishes.
+     *
+     * @param message with results
+     */
+    @Override
+    @WorkerThread
     protected void onFinished(@NonNull final FinishedMessage<Result> message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
@@ -92,6 +102,13 @@ public abstract class LTask<Result>
         });
     }
 
+    /**
+     * Called when the task was cancelled.
+     *
+     * @param message with (partial) results.
+     */
+    @Override
+    @WorkerThread
     protected void onCancelled(@NonNull final FinishedMessage<Result> message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
@@ -107,6 +124,11 @@ public abstract class LTask<Result>
         });
     }
 
+    /**
+     * Called when the task fails with an Exception.
+     */
+    @Override
+    @WorkerThread
     protected void onFailure(@NonNull final Exception e) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {

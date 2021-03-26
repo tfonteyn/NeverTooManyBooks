@@ -71,7 +71,8 @@ class OwnedBookCreateApiHandler
      *
      * @return the Goodreads book ID
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
@@ -99,6 +100,7 @@ class OwnedBookCreateApiHandler
      * @param grBookId     Goodreads book id
      * @param dateAcquired (optional)
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void create(final long grBookId,

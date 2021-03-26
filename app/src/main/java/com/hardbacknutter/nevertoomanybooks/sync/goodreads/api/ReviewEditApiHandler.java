@@ -87,6 +87,7 @@ public class ReviewEditApiHandler
      *                        //@param privateNotes (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void update(final long reviewId,

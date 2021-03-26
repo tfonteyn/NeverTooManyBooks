@@ -109,7 +109,8 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     public long add(final long grBookId,
                     @NonNull final Collection<String> shelfNames)
@@ -134,6 +135,7 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public long add(final long grBookId,
@@ -156,6 +158,7 @@ public class AddBookToShelfApiHandler
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void remove(final long grBookId,
@@ -174,6 +177,7 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     private long send(final long grBookId,

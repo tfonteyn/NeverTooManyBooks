@@ -25,6 +25,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -100,12 +101,14 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
-    protected void executeGet(@NonNull final String url,
-                              @Nullable final Map<String, String> parameterMap,
-                              final boolean requiresSignature,
-                              @Nullable final DefaultHandler requestHandler)
+    @WorkerThread
+    void executeGet(@NonNull final String url,
+                    @Nullable final Map<String, String> parameterMap,
+                    final boolean requiresSignature,
+                    @Nullable final DefaultHandler requestHandler)
             throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
@@ -149,8 +152,10 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
+    @WorkerThread
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
@@ -207,6 +212,7 @@ public abstract class ApiHandler {
      * @throws HttpStatusException   on other HTTP failures
      * @throws IOException           on other failures
      */
+    @WorkerThread
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException,
@@ -274,6 +280,7 @@ public abstract class ApiHandler {
      * @throws IOException           on other failures
      */
     @NonNull
+    @WorkerThread
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
             throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {

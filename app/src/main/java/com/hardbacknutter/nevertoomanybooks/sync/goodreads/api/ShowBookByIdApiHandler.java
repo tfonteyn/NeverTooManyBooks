@@ -65,7 +65,8 @@ public class ShowBookByIdApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws IOException on other failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on other failures
      */
     @NonNull
     public Bundle searchByExternalId(final long grBookId,

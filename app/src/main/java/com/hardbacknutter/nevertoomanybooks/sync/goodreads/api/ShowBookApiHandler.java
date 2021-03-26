@@ -277,7 +277,8 @@ public abstract class ShowBookApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @Nullable
     String searchCoverImage(@NonNull final String url,
@@ -305,6 +306,7 @@ public abstract class ShowBookApiHandler
      *
      * @return the Bundle of book data.
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     @NonNull

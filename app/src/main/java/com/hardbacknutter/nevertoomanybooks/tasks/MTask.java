@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -57,7 +58,7 @@ public abstract class MTask<Result>
     }
 
     /**
-     * Called when the task successfully finishes.
+     * Observable to receive success.
      *
      * @return the {@link Result} which can be considered to be complete and correct.
      */
@@ -66,12 +67,19 @@ public abstract class MTask<Result>
         return mFinishedObservable;
     }
 
+    /**
+     * Called when the task successfully finishes.
+     *
+     * @param message with results
+     */
+    @Override
+    @WorkerThread
     protected void onFinished(@NonNull final FinishedMessage<Result> message) {
         mFinishedObservable.postValue(message);
     }
 
     /**
-     * Called when the task was cancelled.
+     * Observable to receive cancellation.
      *
      * @return the {@link Result}. It will depend on the implementation how
      * complete/correct (if at all) this result is.
@@ -81,12 +89,19 @@ public abstract class MTask<Result>
         return mCancelObservable;
     }
 
+    /**
+     * Called when the task was cancelled.
+     *
+     * @param message with (partial) results.
+     */
+    @Override
+    @WorkerThread
     protected void onCancelled(@NonNull final FinishedMessage<Result> message) {
         mCancelObservable.postValue(message);
     }
 
     /**
-     * Called when the task fails with an Exception.
+     * Observable to receive failure.
      *
      * @return the result is the Exception
      */
@@ -95,12 +110,17 @@ public abstract class MTask<Result>
         return mFailureObservable;
     }
 
+    /**
+     * Called when the task fails with an Exception.
+     */
+    @Override
+    @WorkerThread
     protected void onFailure(@NonNull final Exception e) {
         mFailureObservable.postValue(new FinishedMessage<>(getTaskId(), e));
     }
 
     /**
-     * Forwards progress messages for the client to display.
+     * Observable to receive progress.
      *
      * @return a {@link ProgressMessage} with the progress counter, a text message, ...
      */
@@ -109,7 +129,11 @@ public abstract class MTask<Result>
         return mProgressObservable;
     }
 
+    /**
+     * Can be called from the task implementation to report progress.
+     */
     @Override
+    @WorkerThread
     public void publishProgress(@NonNull final ProgressMessage message) {
         mProgressObservable.postValue(message);
     }

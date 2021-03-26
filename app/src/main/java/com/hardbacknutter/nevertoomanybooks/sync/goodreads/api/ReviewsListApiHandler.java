@@ -116,6 +116,7 @@ public class ReviewsListApiHandler
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     @NonNull
