@@ -23,30 +23,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncProcessor;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
-public class StripinfoSyncViewModel
+public class StripInfoSyncViewModel
         extends ViewModel {
 
     private static final String TAG = "CollectionImporterVM";
-    private static final String SYNC_PROCESSOR_PREFIX = "stripinfo.fields.update.";
+    private static final String SYNC_PROCESSOR_PREFIX = StripInfoAuth.PREF_KEY + ".fields.update.";
 
-    private final CollectionImporterTask mCollectionImporterTask = new CollectionImporterTask();
+    private final ImportCollectionTask mImportCollectionTask = new ImportCollectionTask();
+    private final ImportQueuedBooksTask mImportQueuedBooksTask = new ImportQueuedBooksTask();
 
     private BookDao mBookDao;
 
@@ -54,7 +57,7 @@ public class StripinfoSyncViewModel
 
     @Override
     protected void onCleared() {
-        mCollectionImporterTask.cancel(true);
+        mImportCollectionTask.cancel(true);
 
         if (mBookDao != null) {
             mBookDao.close();
@@ -74,12 +77,14 @@ public class StripinfoSyncViewModel
         if (mBookDao == null) {
             mBookDao = new BookDao(TAG);
 
-            //ENHANCE: make these user configurable.
-            mSyncProcessor = new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+            //ENHANCE: make these user configurable. The simple fields are CopyIfBlank
+            mSyncProcessor = new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
                     .add(R.string.site_stripinfo_be, DBKeys.KEY_ESID_STRIP_INFO_BE)
 
                     .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
+                    .addRelatedField(DBKeys.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
                     .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
+                    .addRelatedField(DBKeys.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
                     // the wishlist
                     .addList(R.string.lbl_bookshelves, DBKeys.KEY_FK_BOOKSHELF,
@@ -92,43 +97,72 @@ public class StripinfoSyncViewModel
                     .add(R.string.lbl_read, DBKeys.KEY_READ)
 
                     .add(R.string.lbl_price_paid, DBKeys.KEY_PRICE_PAID)
+                    .addRelatedField(DBKeys.KEY_PRICE_PAID_CURRENCY, DBKeys.KEY_PRICE_PAID)
                     .build(mBookDao);
-
-            mSyncProcessor.addRelatedField(R.string.lbl_currency, DBKeys.KEY_PRICE_PAID_CURRENCY,
-                                           DBKeys.KEY_PRICE_PAID);
-
-            mSyncProcessor.addRelatedField(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0],
-                                           Book.BKEY_TMP_FILE_SPEC[0]);
-            mSyncProcessor.addRelatedField(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1],
-                                           Book.BKEY_TMP_FILE_SPEC[1]);
         }
     }
 
+    int getNrOfQueuedBooks() {
+        return ServiceLocator.getInstance().getStripInfoDao().countQueued();
+    }
+
     void fetchCollection() {
-        mCollectionImporterTask.fetch(mSyncProcessor);
+        mImportCollectionTask.fetch(mSyncProcessor);
+    }
+
+    void fetchQueuedBooks() {
+        //ENHANCE: make fetchCovers user configurable.
+        mImportQueuedBooksTask.fetch(new boolean[]{true, true});
+    }
+
+
+    @NonNull
+    LiveData<ProgressMessage> onImportCollectionProgress() {
+        return mImportCollectionTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
-        return mCollectionImporterTask.onProgressUpdate();
+    LiveData<FinishedMessage<ImportCollectionTask.Outcome>> onImportCollectionFinished() {
+        return mImportCollectionTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<List<Long>>> onImportCancelled() {
-        return mCollectionImporterTask.onCancelled();
+    LiveData<FinishedMessage<ImportCollectionTask.Outcome>> onImportCollectionCancelled() {
+        return mImportCollectionTask.onCancelled();
     }
+
+
+    @NonNull
+    LiveData<ProgressMessage> onImportQueueProgress() {
+        return mImportQueuedBooksTask.onProgressUpdate();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ArrayList<Long>>> onImportQueueFinished() {
+        return mImportQueuedBooksTask.onFinished();
+    }
+
+    @NonNull
+    LiveData<FinishedMessage<ArrayList<Long>>> onImportQueueCancelled() {
+        return mImportQueuedBooksTask.onCancelled();
+    }
+
 
     @NonNull
     LiveData<FinishedMessage<Exception>> onImportFailure() {
-        return mCollectionImporterTask.onFailure();
+        return mImportCollectionTask.onFailure();
     }
 
-    @NonNull
-    LiveData<FinishedMessage<List<Long>>> onImportFinished() {
-        return mCollectionImporterTask.onFinished();
-    }
+    void linkTaskWithDialog(@IdRes final int taskId,
+                            @NonNull final ProgressDialogFragment dialog) {
+        if (taskId == mImportCollectionTask.getTaskId()) {
+            dialog.setCanceller(mImportCollectionTask);
 
-    public void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
-        dialog.setCanceller(mCollectionImporterTask);
+        } else if (taskId == mImportQueuedBooksTask.getTaskId()) {
+            dialog.setCanceller(mImportQueuedBooksTask);
+
+        } else {
+            throw new IllegalArgumentException("taskId=" + taskId);
+        }
     }
 }

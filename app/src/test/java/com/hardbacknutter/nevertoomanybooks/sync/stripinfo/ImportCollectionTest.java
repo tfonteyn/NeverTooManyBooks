@@ -53,11 +53,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class CollectionImporterTest
+class ImportCollectionTest
         extends JSoupBase {
 
     private final ProgressListener mLogger =
-            new TestProgressListener("CollectionImporterTest");
+            new TestProgressListener("ImportCollectionTest");
 
     @Test
     void parseCollectionPage() {
@@ -71,7 +71,7 @@ class CollectionImporterTest
         final String filename = "/stripinfo/collection.html";
 
         final Bookshelf wishList = new Bookshelf("wishListBS", UUID.randomUUID().toString());
-        final CollectionImporter ic = new CollectionImporter(userId, wishList);
+        final ImportCollection ic = new ImportCollection(userId, wishList);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -101,7 +101,7 @@ class CollectionImporterTest
 
             assertEquals(1, b0.getInt(StripInfoSearchEngine.SiteField.AMOUNT));
             assertTrue(b0.getBoolean(StripInfoSearchEngine.SiteField.OWNED));
-            assertTrue(b0.getBoolean(StripInfoSearchEngine.SiteField.IN_COLLECTION));
+            assertEquals(5408, b0.getLong(StripInfoSearchEngine.SiteField.COLLECTION_ID));
 
         } catch (@NonNull final IOException e) {
             fail(e);
@@ -119,7 +119,7 @@ class CollectionImporterTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/1000";
         final String filename = "/stripinfo/collection-last-page.html";
 
-        final CollectionImporter ic = new CollectionImporter(userId, null);
+        final ImportCollection ic = new ImportCollection(userId, null);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -141,9 +141,9 @@ class CollectionImporterTest
     }
 
     @NonNull
-    private List<Bundle> parseHere(final CollectionImporter ic,
-                                   final Document document) {
-        final List<Bundle> collection = new ArrayList<>();
+    private List<Bundle> parseHere(@NonNull final ImportCollection ic,
+                                   @NonNull final Document document) {
+
         final Element root = document.getElementById("collectionContent");
         assertNotNull(root);
 
@@ -151,23 +151,17 @@ class CollectionImporterTest
         assertNotNull(last);
         assertEquals(3, Integer.parseInt(last.text()));
 
+        final List<Bundle> collection = new ArrayList<>();
 
         final Elements rows = root.select("div.collectionRow");
         assertFalse(rows.isEmpty());
 
         for (final Element row : rows) {
-            final String idAttr = row.id();
-            if (!idAttr.isEmpty() && idAttr.startsWith(CollectionImporter.ROW_ID_ATTR)) {
-                // ok, we should have a book.
-                final Bundle cData = BundleMock.create();
+            final Bundle cData = BundleMock.create();
 
-                ic.parseRow(row, idAttr, cData);
-
-                System.out.println(cData);
-
-                if (!cData.isEmpty()) {
-                    collection.add(cData);
-                }
+            ic.parseRow(row, cData);
+            if (!cData.isEmpty()) {
+                collection.add(cData);
             }
         }
         return collection;

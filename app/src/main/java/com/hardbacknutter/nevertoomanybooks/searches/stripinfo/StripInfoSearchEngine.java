@@ -39,7 +39,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,18 +51,22 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionParser;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -77,56 +80,50 @@ public class StripInfoSearchEngine
         implements SearchEngine.ByExternalId,
                    SearchEngine.ByBarcode {
 
+    /**
+     * There are no specific usage rules (that I found) but as a courtesy/precaution,
+     * we're only going to send one request a second.
+     */
+    public static final Throttler THROTTLER = new Throttler(1_000);
+
     /** Log tag. */
     private static final String TAG = "StripInfoSearchEngine";
-
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";
-
     /** Param 1: external book ID; really a 'long'. */
     private static final String BY_EXTERNAL_ID = "/reeks/strip/%1$s";
-
     /** Param 1: ISBN. */
     private static final String BY_ISBN = "/zoek/zoek?zoekstring=%1$s";
-
     /** The description contains h4 tags which we remove to make the text shorter. */
     private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
     private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
-
     /**
      * When a multi-result page is returned, its title will start with this text.
      * (dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
-
     /** The site specific 'no cover' image. Correct 2019-12-19. */
     private static final int NO_COVER_FILE_LEN = 15779;
-
     /** The site specific 'no cover' image. Correct 2019-12-19. */
     private static final byte[] NO_COVER_MD5 = {
             (byte) 0xa1, (byte) 0x30, (byte) 0x43, (byte) 0x10,
             (byte) 0x09, (byte) 0x16, (byte) 0xd8, (byte) 0x93,
             (byte) 0xe4, (byte) 0xb5, (byte) 0x32, (byte) 0xcf,
             (byte) 0x3d, (byte) 0x7d, (byte) 0xa9, (byte) 0x37};
-
     /** The site specific 'mature' image. Correct 2019-12-19. */
     private static final int MATURE_FILE_LEN = 21578;
-
     /** The site specific 'mature' image. Correct 2019-12-19. */
     private static final byte[] MATURE_COVER_MD5 = {
             (byte) 0x22, (byte) 0x78, (byte) 0x58, (byte) 0x89,
             (byte) 0x8b, (byte) 0xba, (byte) 0x3e, (byte) 0xee,
             (byte) 0x4a, (byte) 0x65, (byte) 0x68, (byte) 0xc9,
             (byte) 0x46, (byte) 0x54, (byte) 0x59, (byte) 0x4b};
-
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
-
     /** Delegate common Element handling. */
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
-
     @Nullable
-    private StripinfoLoginHelper mLoginHelper;
+    private StripInfoAuth mLoginHelper;
     @Nullable
     private Bookshelf mWishListBookshelf;
 
@@ -144,8 +141,8 @@ public class StripInfoSearchEngine
         return new SearchEngineConfig.Builder(StripInfoSearchEngine.class,
                                               SearchSites.STRIP_INFO_BE,
                                               R.string.site_stripinfo_be,
-                                              "stripinfo",
-                                              "https://stripinfo.be")
+                                              StripInfoAuth.PREF_KEY,
+                                              "https://www.stripinfo.be")
                 .setCountry("BE", "nl")
                 .setFilenameSuffix("SI")
 
@@ -155,6 +152,7 @@ public class StripInfoSearchEngine
 
                 .setConnectTimeoutMs(7_000)
                 .setReadTimeoutMs(60_000)
+                .setStaticThrottler(THROTTLER)
                 .build();
     }
 
@@ -164,7 +162,9 @@ public class StripInfoSearchEngine
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
-    public void setLoginHelper(@NonNull final StripinfoLoginHelper loginHelper) {
+    public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
+        SanityCheck.requireValue(loginHelper.getUserId(), "no userid?");
+
         mLoginHelper = loginHelper;
     }
 
@@ -174,11 +174,9 @@ public class StripInfoSearchEngine
             throws IOException {
 
         if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            if (StripinfoLoginHelper.isLoginToSearch(getContext())) {
+            if (StripInfoAuth.isLoginToSearch(getContext())) {
                 if (mLoginHelper == null) {
-                    mLoginHelper = new StripinfoLoginHelper();
-                }
-                if (mLoginHelper.getUserId() == null) {
+                    mLoginHelper = new StripInfoAuth(getSiteUrl());
                     mLoginHelper.login();
                 }
 
@@ -193,7 +191,7 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchThumbnail)
+                                     @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -201,7 +199,7 @@ public class StripInfoSearchEngine
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
-            parse(document, fetchThumbnail, bookData);
+            parse(document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -214,7 +212,7 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchThumbnail)
+                               @NonNull final boolean[] fetchCovers)
             throws IOException {
 
         final Bundle bookData = new Bundle();
@@ -223,9 +221,9 @@ public class StripInfoSearchEngine
         final Document document = loadDocument(url);
         if (document != null && !isCancelled()) {
             if (isMultiResult(document)) {
-                parseMultiResult(document, fetchThumbnail, bookData);
+                parseMultiResult(document, fetchCovers, bookData);
             } else {
-                parse(document, fetchThumbnail, bookData);
+                parse(document, fetchCovers, bookData);
             }
         }
         return bookData;
@@ -234,10 +232,10 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Bundle searchByBarcode(@NonNull final String barcode,
-                                  @NonNull final boolean[] fetchThumbnail)
+                                  @NonNull final boolean[] fetchCovers)
             throws IOException {
         // the search url is the same
-        return searchByIsbn(barcode, fetchThumbnail);
+        return searchByIsbn(barcode, fetchCovers);
     }
 
     private boolean isMultiResult(@NonNull final Document document) {
@@ -248,18 +246,18 @@ public class StripInfoSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
      *
-     * @param document       to parse
-     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData       Bundle to update
+     * @param document    to parse
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update
      *
      * @throws IOException on failure
      */
     @WorkerThread
     @VisibleForTesting
     void parseMultiResult(@NonNull final Document document,
-                          @NonNull final boolean[] fetchThumbnail,
+                          @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
-            throws IOException {
+    throws IOException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -274,7 +272,7 @@ public class StripInfoSearchEngine
                 if (redirected != null && !isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {
-                        parse(redirected, fetchThumbnail, bookData);
+                        parse(redirected, fetchCovers, bookData);
                     }
                 }
                 return;
@@ -296,10 +294,10 @@ public class StripInfoSearchEngine
 
     @Override
     public void parse(@NonNull final Document document,
-                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException {
-        super.parse(document, fetchThumbnail, bookData);
+    throws IOException {
+        super.parse(document, fetchCovers, bookData);
 
         // extracted from the page header.
         final String primarySeriesTitle = processPrimarySeriesTitle(document);
@@ -365,8 +363,7 @@ public class StripInfoSearchEngine
                                 break;
 
                             case "Jaar":
-                                i += processText(td, DBKeys.KEY_BOOK_DATE_PUBLISHED,
-                                                 bookData);
+                                i += processText(td, DBKeys.KEY_BOOK_DATE_PUBLISHED, bookData);
                                 break;
 
                             case "Pagina's":
@@ -473,6 +470,11 @@ public class StripInfoSearchEngine
             bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
 
+        // It's extremely unlikely, but should the language be missing, add dutch.
+        if (!bookData.containsKey(DBKeys.KEY_LANGUAGE)) {
+            bookData.putString(DBKeys.KEY_LANGUAGE, "nld");
+        }
+
         if (isCancelled()) {
             return;
         }
@@ -492,7 +494,7 @@ public class StripInfoSearchEngine
         }
 
         // front cover
-        if (fetchThumbnail[0]) {
+        if (fetchCovers[0]) {
             processCover(document, 0, bookData);
         }
 
@@ -501,7 +503,7 @@ public class StripInfoSearchEngine
         }
 
         // back cover
-        if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
+        if (fetchCovers.length > 1 && fetchCovers[1]) {
             processCover(document, 1, bookData);
         }
     }
@@ -945,22 +947,6 @@ public class StripInfoSearchEngine
 
     /**
      * Parse the userdata.
-     * <p>
-     * ENHANCE: side ajax panel has:
-     * <form method="POST" action="ajax_collectie.php">
-     * <input type="text" name="score" id="score" placeholder="Score" value="3.00" />
-     * <input type="text" name="aankoopDatum" id="aankoopDatum" value="01/05/1992" />
-     * <input type="text" name="aankoopPrijs" id="aankoopPrijs" value="30.00" />
-     * <input type="text" name="druk" id="druk" value="20" />
-     * <input type="text" name="aantal" id="aantal" value="1" />
-     * <input type="text" name="locatie" id="locatie" value="thuis" />
-     * <textarea name="opmerking" id="opmerking">testing</textarea>
-     * <input type="hidden" name="stripId" id="stripId" value="153809" />
-     * <input type="hidden" name="stripCollectieId" id="stripCollectieId" value="2544201" />
-     * <input type="hidden" name="mode" id="mode" value="form" />
-     * <input type="submit" name="save" id="save" value="Aanpassingen opslaan" />
-     * <input type="hidden" name="frmName" id="frmName" value="collDetail" />
-     * </form>
      *
      * @param document   root element
      * @param bookData   Bundle to update
@@ -970,44 +956,21 @@ public class StripInfoSearchEngine
                                  @NonNull final Bundle bookData,
                                  final long externalId) {
 
-        if (mJSoupHelper.getBoolean(document, "stripCollectieGelezen-" + externalId)) {
-            bookData.putBoolean(DBKeys.KEY_READ, true);
-        }
+        final long collectieId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
+        if (collectieId > 0) {
+            try {
+                final CollectionParser form = new CollectionFormParser(externalId, collectieId);
+                form.setWishListBookshelf(mWishListBookshelf);
+                form.parse(document, bookData);
 
-        if (mJSoupHelper.getBoolean(document, "stripCollectieInWishlist-" + externalId)) {
-            if (mWishListBookshelf != null) {
-                final ArrayList<Bookshelf> list = new ArrayList<>();
-                list.add(mWishListBookshelf);
-                bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+            } catch (@NonNull final IOException e) {
+                if (BuildConfig.DEBUG) {
+                    Logger.d(TAG, "getCollectionDocument", e,
+                             "stripId=" + externalId
+                             + "|collectieId=" + collectieId);
+                }
             }
         }
-
-        // The site has a concept of "I own this book" and "I have this book in my collection"
-
-        // Owning a book
-        if (mJSoupHelper.getBoolean(document, "stripCollectieInBezit-" + externalId)) {
-            bookData.putBoolean(SiteField.OWNED, true);
-        }
-
-        // In my collection: these are books where the user made SOME note/flag/...
-        // i.e. a book the user has 'touched' and is remembered on the site
-        // until they remove it from the collection.
-        // An 'owned' books is automatically part of the collection,
-        // but a book in the collection can be 'owned', 'not owned', 'wanted', 'remark added', ...
-        //
-        // The actual data can only be retrieved by an additional HTTP call, see method doc.
-        final Element showIfInCollection = document
-                .getElementById("showIfInCollection-" + externalId);
-        if (showIfInCollection != null) {
-            final Map<String, String[]> styleMap = mJSoupHelper.getStyleMap(showIfInCollection);
-            final String[] display = styleMap.get("display");
-            if ((display != null && display.length > 0
-                 && "block".equalsIgnoreCase(display[0]))) {
-                bookData.putBoolean(SiteField.IN_COLLECTION, true);
-            }
-        }
-
-        // other user data is ONLY read when importing a collection
     }
 
     /**
@@ -1044,18 +1007,18 @@ public class StripInfoSearchEngine
         /** String - The barcode (e.g. the EAN code) is not always an ISBN. */
         public static final String BARCODE = "__barcode";
 
-        /** boolean. */
-        public static final String OWNED = "__owned";
-        /** boolean. */
-        public static final String IN_COLLECTION = "__in_collection";
         /**
-         * long. Not sure we really need this.
-         * This is the website id for storing OUR details about the book.
+         * long - This is the website id for storing OUR details about the book.
+         * Not sure we really need this. But we use it also as != 0 --> in collection.
          */
         public static final String COLLECTION_ID = "__collection_id";
 
+        /** boolean. */
+        public static final String OWNED = "__owned";
+
         /** int. The number of copies of this book. */
         public static final String AMOUNT = "__amount";
+        public static final String FRONT_COVER_URL = "__front_cover_url";
 
         private SiteField() {
         }

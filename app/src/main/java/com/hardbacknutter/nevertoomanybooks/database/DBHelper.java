@@ -71,6 +71,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_ID;
@@ -105,7 +106,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 15;
+    public static final int DATABASE_VERSION = 16;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -800,10 +801,9 @@ public class DBHelper
                              .remove("calibre.last.sync.date")
                              .apply();
         }
-
-        //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
-        // More specifically: the recreateAndReload routine can only be used ONCE per table.
-        // We'll need to keep previous table definitions as BC used to do.
+        if (oldVersion < 16) {
+            TBL_STRIPINFO_COLLECTION_TO_IMPORT.create(db, true);
+        }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. change DOM_UTC_LAST_SYNC_DATE_GOODREADS -> See note in the DBDefinitions class.

@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragm
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TaskAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncFragment;
 
 /**
  * Hosting activity for generic fragments <strong>without</strong>
@@ -67,12 +67,11 @@ public class FragmentHostActivity
 
         sMap.put(CalibreSyncFragment.TAG, CalibreSyncFragment.class);
         sMap.put(GoodreadsSyncFragment.TAG, GoodreadsSyncFragment.class);
-        sMap.put(StripinfoSyncFragment.TAG, StripinfoSyncFragment.class);
+        sMap.put(StripInfoSyncFragment.TAG, StripInfoSyncFragment.class);
 
         sMap.put(AboutFragment.TAG, AboutFragment.class);
 
         sMap.put(TaskAdminFragment.TAG, TaskAdminFragment.class);
-
     }
 
     @Override

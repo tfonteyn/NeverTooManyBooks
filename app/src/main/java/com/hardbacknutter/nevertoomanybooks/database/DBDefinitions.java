@@ -80,6 +80,7 @@ public final class DBDefinitions {
      * TBL_PUBLISHERS,
      * TBL_BOOKS,
      * TBL_TOC_ENTRIES,
+     * <p>
      * link tables
      * TBL_BOOK_BOOKSHELF,
      * TBL_BOOK_AUTHOR,
@@ -92,7 +93,11 @@ public final class DBDefinitions {
      * TBL_CALIBRE_LIBRARIES,
      * <p>
      * permanent booklist management tables
-     * TBL_BOOK_LIST_NODE_STATE)
+     * TBL_BOOK_LIST_NODE_STATE: storage of the expanded/collapsed status of the book list tree.
+     * <p>
+     * TBL_STRIPINFO_COLLECTION_TO_IMPORT: stores external id's for new books to import
+     * from this site. Used as a means to split the relatively fast process of getting
+     * the collection data (fast) and as a next step importing new books (slow).
      */
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
     /** Basic table definition. */
@@ -134,6 +139,8 @@ public final class DBDefinitions {
 
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
+
+    public static final TableDefinition TBL_STRIPINFO_COLLECTION_TO_IMPORT;
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
@@ -449,6 +456,8 @@ public final class DBDefinitions {
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
                 .setAlias("bl_ns");
 
+        TBL_STRIPINFO_COLLECTION_TO_IMPORT = new TableDefinition("stripinfo_to_import")
+                .setAlias("si_ti");
 
         /* ======================================================================================
          *  Primary and Foreign Key definitions
@@ -1355,7 +1364,18 @@ public final class DBDefinitions {
                 .addIndex("BOOKSHELF_STYLE", false,
                           DOM_FK_BOOKSHELF,
                           DOM_FK_STYLE);
-        ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
+        ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
+                       TBL_BOOK_LIST_NODE_STATE);
+
+        TBL_STRIPINFO_COLLECTION_TO_IMPORT
+                .addDomains(DOM_PK_ID,
+                            DOM_ESID_STRIP_INFO_BE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKeys.KEY_ESID_STRIP_INFO_BE, true,
+                          DOM_ESID_STRIP_INFO_BE);
+        ALL_TABLES.put(TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName(),
+                       TBL_STRIPINFO_COLLECTION_TO_IMPORT);
+
     }
 
     static {

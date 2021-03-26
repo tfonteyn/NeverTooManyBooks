@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncFragment;
 
 public class StripInfoSyncContract
         extends ActivityResultContract<Void, Bundle> {
@@ -44,7 +44,7 @@ public class StripInfoSyncContract
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StripinfoSyncFragment.TAG);
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StripInfoSyncFragment.TAG);
     }
 
     @Override

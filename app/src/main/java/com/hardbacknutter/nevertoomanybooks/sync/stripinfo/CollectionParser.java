@@ -17,23 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.dao;
+package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
+
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.List;
+import java.io.IOException;
 
-public interface StripInfoDao {
+import org.jsoup.nodes.Element;
 
-    void insert(@NonNull List<Long> list);
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-    @NonNull
-    List<Long> getAll();
+public interface CollectionParser {
 
-    void deleteAll();
+    void setWishListBookshelf(@Nullable Bookshelf wishListBookshelf);
 
-    @SuppressWarnings("UnusedReturnValue")
-    boolean deleteOne(long externalId);
-
-    int countQueued();
+    void parse(@NonNull Element root,
+               @NonNull Bundle bookData)
+            throws IOException;
 }

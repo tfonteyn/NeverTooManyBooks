@@ -22,6 +22,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screen_border"
@@ -35,14 +36,47 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <Button
-        android:id="@+id/btn_import"
-        style="@style/Button.Menu"
-        android:text="@string/action_import"
-        app:icon="@drawable/ic_baseline_cloud_download_24"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:id="@+id/inf_get_updated_books"
+        style="@style/Text.Body.Small"
+        android:layout_width="@dimen/large_menu_button_info"
+        android:layout_marginTop="24dp"
+        android:text="@string/txt_import_collection"
+        app:layout_constraintStart_toStartOf="@id/btn_get_updated_books"
         app:layout_constraintTop_toBottomOf="@id/header"
         />
 
+    <Button
+        android:id="@+id/btn_get_updated_books"
+        style="@style/Button.Menu.Outlined"
+        android:text="@string/btn_import_collection"
+        app:icon="@drawable/ic_baseline_cloud_download_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/inf_get_updated_books"
+        />
+
+    <TextView
+        android:id="@+id/books_queued"
+        style="@style/Text.Body.Small"
+        android:layout_width="@dimen/large_menu_button_info"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/btn_get_queued_books"
+        app:layout_constraintTop_toBottomOf="@id/btn_get_updated_books"
+        tools:ignore="SelectableText"
+        tools:text="@string/txt_x_books_queued"
+        tools:visibility="visible"
+        />
+
+    <Button
+        android:id="@+id/btn_get_queued_books"
+        style="@style/Button.Menu.Outlined"
+        android:text="@string/btn_import_new_books"
+        android:visibility="gone"
+        app:icon="@drawable/ic_baseline_cloud_download_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/books_queued"
+        tools:visibility="visible"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

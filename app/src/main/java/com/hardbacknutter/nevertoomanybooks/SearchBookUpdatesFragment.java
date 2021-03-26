@@ -49,10 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromIntern
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.FieldSync;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -177,19 +177,19 @@ public class SearchBookUpdatesFragment
      * Display the list of fields.
      */
     private void populateFields() {
-        for (final FieldSync fieldSync : mVm.getFieldSyncList()) {
+        for (final SyncField syncField : mVm.getFieldSyncList()) {
             final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
                     .inflate(getLayoutInflater(), mVb.fieldList, false);
 
-            rowVb.field.setText(fieldSync.getFieldLabelId());
+            rowVb.field.setText(syncField.getFieldLabelId());
 
-            rowVb.cbxUsage.setChecked(fieldSync.isWanted());
-            rowVb.cbxUsage.setText(fieldSync.getActionLabelId());
-            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, fieldSync);
+            rowVb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
+            rowVb.cbxUsage.setText(syncField.getActionLabelId());
+            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, syncField);
             rowVb.cbxUsage.setOnClickListener(v -> {
-                final FieldSync fs = (FieldSync) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
+                final SyncField fs = (SyncField) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
                 fs.nextState();
-                rowVb.cbxUsage.setChecked(fs.isWanted());
+                rowVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
                 rowVb.cbxUsage.setText(fs.getActionLabelId());
             });
 
@@ -244,8 +244,8 @@ public class SearchBookUpdatesFragment
             final View view = mVb.fieldList.getChildAt(i);
             final CompoundButton cb = view.findViewById(R.id.cbx_usage);
             if (cb != null) {
-                final FieldSync fieldSync = (FieldSync) cb.getTag(R.id.TAG_FIELD_USAGE);
-                if (fieldSync.isWanted()) {
+                final SyncField syncField = (SyncField) cb.getTag(R.id.TAG_FIELD_USAGE);
+                if (syncField.getAction() != SyncAction.Skip) {
                     return true;
                 }
             }
@@ -361,8 +361,7 @@ public class SearchBookUpdatesFragment
                 mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             }
 
-            // hook the task up.
-            mProgressDialog.setCanceller(mVm);
+            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
         }
 
         mProgressDialog.onProgress(message);

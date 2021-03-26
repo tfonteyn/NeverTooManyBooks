@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.syncing;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -53,103 +55,103 @@ public final class SyncProcessor {
 
     private static final String TAG = "SyncProcessor";
 
-    @NonNull
-    private final String mPreferencePrefix;
-
-    @NonNull
-    private final SharedPreferences mGlobalPreferences;
-
     /** Database Access. */
-    private final BookDao mBookDao;
-
     @NonNull
-    private final Map<String, FieldSync> mFields;
+    private final BookDao mBookDao;
+    @NonNull
+    private final Map<String, SyncField> mFields;
 
-    private SyncProcessor(@NonNull final Builder builder,
-                          @NonNull final BookDao bookDao) {
+    private SyncProcessor(@NonNull final BookDao bookDao,
+                          @NonNull final Map<String, SyncField> fields) {
         mBookDao = bookDao;
-
-        mPreferencePrefix = builder.mPrefPrefix;
-        mGlobalPreferences = builder.mGlobalPref;
-        mFields = builder.mFields;
+        mFields = fields;
     }
 
     /**
      * Filter the fields we want versus the fields we actually need for the given book data.
+     * <p>
+     * This method is normally called <strong>before</strong> a website is contacted,
+     * as (theoretically) it allows the code to download more or less data depending on
+     * the fields wanted. Prime example is of course the cover images.
      *
      * @param context Current context
      * @param book    to filter
      *
-     * @return the filtered FieldSync map
+     * @return the filtered SyncField unmodifiableMap
      */
     @NonNull
-    public Map<String, FieldSync> filter(@NonNull final Context context,
+    public Map<String, SyncField> filter(@NonNull final Context context,
                                          @NonNull final Book book) {
 
-        final Map<String, FieldSync> filteredMap = new LinkedHashMap<>();
+        final Map<String, SyncField> filteredMap = new LinkedHashMap<>();
 
-        for (final FieldSync field : mFields.values()) {
+        for (final SyncField field : mFields.values()) {
             switch (field.getAction()) {
                 case Skip:
                     // duh...
                     break;
 
                 case Append:
-                case Overwrite:
+                case Overwrite: {
                     // Append + Overwrite: we always need to get the data
                     filteredMap.put(field.key, field);
                     break;
-
-                case CopyIfBlank:
-                    // Handle special cases first, 'default:' for the rest
-                    if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        // - If it's a thumbnail, then see if it's missing or empty.
-                        final File file = book.getUuidCoverFile(context, 0);
-                        if (file == null || file.length() == 0) {
-                            filteredMap.put(field.key, field);
-                        }
-
-                    } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        // - If it's a thumbnail, then see if it's missing or empty.
-                        final File file = book.getUuidCoverFile(context, 1);
-                        if (file == null || file.length() == 0) {
-                            filteredMap.put(field.key, field);
-                        }
-
-                    } else {
-                        switch (field.key) {
-                            // We should never have a book without authors, but be paranoid
-                            case Book.BKEY_AUTHOR_LIST:
-                            case Book.BKEY_SERIES_LIST:
-                            case Book.BKEY_PUBLISHER_LIST:
-                            case Book.BKEY_TOC_LIST:
-                                if (book.contains(field.key)) {
-                                    final ArrayList<Parcelable> list =
-                                            book.getParcelableArrayList(field.key);
-                                    if (list.isEmpty()) {
-                                        filteredMap.put(field.key, field);
-                                    }
+                }
+                case CopyIfBlank: {
+                    switch (field.key) {
+                        // We should never have a book without authors, but be paranoid
+                        case Book.BKEY_AUTHOR_LIST:
+                        case Book.BKEY_SERIES_LIST:
+                        case Book.BKEY_PUBLISHER_LIST:
+                        case Book.BKEY_TOC_LIST:
+                        case Book.BKEY_BOOKSHELF_LIST:
+                            if (book.contains(field.key)) {
+                                final ArrayList<Parcelable> list =
+                                        book.getParcelableArrayList(field.key);
+                                if (list.isEmpty()) {
+                                    filteredMap.put(field.key, field);
                                 }
-                                break;
+                            }
+                            break;
 
-                            default:
+                        default:
+                            // If it's a cover...
+                            if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
+                                // check if it's missing or empty.
+                                final File file = book.getUuidCoverFile(context, 0);
+                                if (file == null || file.length() == 0) {
+                                    filteredMap.put(field.key, field);
+                                }
+
+                            } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
+                                // check if it's missing or empty.
+                                final File file = book.getUuidCoverFile(context, 1);
+                                if (file == null || file.length() == 0) {
+                                    filteredMap.put(field.key, field);
+                                }
+
+                            } else {
+                                // all other fields can be 'empty string' tested
                                 // If the original was blank, add to list
                                 final String value = book.getString(field.key);
                                 if (value.isEmpty()) {
                                     filteredMap.put(field.key, field);
                                 }
-                                break;
-                        }
+
+                            }
+                            break;
                     }
-                    break;
+                }
             }
         }
 
-        return filteredMap;
+        return Collections.unmodifiableMap(filteredMap);
     }
 
     /**
      * Process the search-result data for one book.
+     * <p>
+     * This method should be called <strong>after</strong> we got the info/covers from the website.
      *
      * @param context      Current context
      * @param bookId       to use for updating the database.
@@ -158,16 +160,16 @@ public final class SyncProcessor {
      * @param fieldsWanted The (subset) of fields relevant to the current book.
      * @param incoming     the data to merge with the book
      */
-    public void processOne(@NonNull final Context context,
-                           final long bookId,
-                           @NonNull final Book book,
-                           @NonNull final Map<String, FieldSync> fieldsWanted,
-                           @NonNull final Bundle incoming) {
+    public void process(@NonNull final Context context,
+                        final long bookId,
+                        @NonNull final Book book,
+                        @NonNull final Map<String, SyncField> fieldsWanted,
+                        @NonNull final Bundle incoming) {
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
         for (final String key : incoming.keySet()) {
-            final FieldSync fieldSync = fieldsWanted.get(key);
-            if (fieldSync == null || !fieldSync.isWanted()) {
+            final SyncField field = fieldsWanted.get(key);
+            if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
         }
@@ -185,9 +187,9 @@ public final class SyncProcessor {
                 .forEach(field -> {
                     // Handle thumbnail specially
                     if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        processCoverField(context, book, incoming, field.getAction(), 0);
+                        processCover(context, book, incoming, 0);
                     } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        processCoverField(context, book, incoming, field.getAction(), 1);
+                        processCover(context, book, incoming, 1);
                     } else {
                         switch (field.getAction()) {
                             case CopyIfBlank:
@@ -198,7 +200,7 @@ public final class SyncProcessor {
                                 break;
 
                             case Append:
-                                processListField(context, book, bookLocale, field.key, incoming);
+                                processList(context, book, bookLocale, incoming, field.key);
                                 break;
 
                             case Overwrite:
@@ -234,7 +236,7 @@ public final class SyncProcessor {
     }
 
     /**
-     * Check if we already have this field in the original data.
+     * Check if we already have this field (with content) in the original data.
      *
      * @param key to test for
      *
@@ -247,6 +249,7 @@ public final class SyncProcessor {
             case Book.BKEY_SERIES_LIST:
             case Book.BKEY_PUBLISHER_LIST:
             case Book.BKEY_TOC_LIST:
+            case Book.BKEY_BOOKSHELF_LIST:
                 if (book.contains(key)) {
                     if (!book.getParcelableArrayList(key).isEmpty()) {
                         return true;
@@ -255,7 +258,6 @@ public final class SyncProcessor {
                 break;
 
             default:
-                // If the original was non-blank, erase from list
                 final Object o = book.get(key);
                 if (o != null) {
                     final String value = o.toString().trim();
@@ -269,44 +271,25 @@ public final class SyncProcessor {
         return false;
     }
 
-    private void processCoverField(@NonNull final Context context,
-                                   @NonNull final Book book,
-                                   @NonNull final Bundle incoming,
-                                   @NonNull final SyncAction syncAction,
-                                   @IntRange(from = 0, to = 1) final int cIdx) {
-        boolean copyImage = false;
-        // check if we already have an image, and what we should do with the new image
-        switch (syncAction) {
-            case CopyIfBlank:
-                final File file = book.getUuidCoverFile(context, cIdx);
-                copyImage = file == null || file.length() == 0;
-                break;
+    private void processCover(@NonNull final Context context,
+                              @NonNull final Book book,
+                              @NonNull final Bundle incoming,
+                              @IntRange(from = 0, to = 1) final int cIdx) {
 
-            case Overwrite:
-                copyImage = true;
-                break;
+        final String fileSpec = incoming.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        if (fileSpec != null) {
+            final File downloadedFile = new File(fileSpec);
+            try {
+                final File destination = book.getUuidCoverFileOrNew(context, cIdx);
+                FileUtils.rename(downloadedFile, destination);
 
-            case Skip:
-            case Append:
-                break;
-        }
-
-        if (copyImage) {
-            final String fileSpec = incoming.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
-            if (fileSpec != null) {
-                final File downloadedFile = new File(fileSpec);
-                try {
-                    final File destination = book.getUuidCoverFileOrNew(context, cIdx);
-                    FileUtils.rename(downloadedFile, destination);
-
-                } catch (@NonNull final IOException e) {
-                    final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
-                    Logger.error(context, TAG, e,
-                                 "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
-                }
+            } catch (@NonNull final IOException e) {
+                final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+                Logger.error(context, TAG, e,
+                             "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
             }
-            incoming.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
         }
+        incoming.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
     }
 
     /**
@@ -314,14 +297,14 @@ public final class SyncProcessor {
      *
      * @param context    Current context
      * @param bookLocale to use
-     * @param key        for data
      * @param incoming   Bundle to update
+     * @param key        into the incoming data
      */
-    private void processListField(@NonNull final Context context,
-                                  @NonNull final Book book,
-                                  @NonNull final Locale bookLocale,
-                                  @NonNull final String key,
-                                  @NonNull final Bundle incoming) {
+    private void processList(@NonNull final Context context,
+                             @NonNull final Book book,
+                             @NonNull final Locale bookLocale,
+                             @NonNull final Bundle incoming,
+                             @NonNull final String key) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = incoming.getParcelableArrayList(key);
@@ -355,98 +338,94 @@ public final class SyncProcessor {
                 }
                 break;
             }
+            case Book.BKEY_BOOKSHELF_LIST: {
+                final ArrayList<Bookshelf> list = incoming.getParcelableArrayList(key);
+                if (list != null && !list.isEmpty()) {
+                    list.addAll(book.getParcelableArrayList(key));
+                    Bookshelf.pruneList(list);
+                }
+                break;
+            }
             default:
+                // We currently don't 'append' String fields
                 throw new IllegalArgumentException(key);
         }
     }
 
-    @NonNull
-    public Collection<FieldSync> getFieldSyncList() {
-        return mFields.values();
-    }
-
-    @Nullable
-    public SyncAction getSyncAction(@NonNull final String key) {
-        final FieldSync fieldSync = mFields.get(key);
-        if (fieldSync != null) {
-            return fieldSync.getAction();
-        }
-        return null;
-    }
-
-    /**
-     * Update the {@link FieldSync} for the given key.
-     * Does nothing if the field was not actually added before.
-     *
-     * @param key        field to update
-     * @param syncAction to set
-     */
-    public void setSyncAction(@NonNull final String key,
-                              @NonNull final SyncAction syncAction) {
-        final FieldSync fieldSync = mFields.get(key);
-        if (fieldSync != null) {
-            fieldSync.setAction(syncAction);
-        }
-    }
-
-
-    /**
-     * Add any related fields with the same setting.
-     * <p>
-     * We enforce a name (string id), although it's never displayed, for sanity/debug sake.
-     *
-     * @param labelId    Field label resource id (not used)
-     * @param key        the field to check
-     * @param relatedKey to add if the primary field is present
-     */
-    public void addRelatedField(@StringRes final int labelId,
-                                @NonNull final String key,
-                                @NonNull final String relatedKey) {
-        final FieldSync fieldSync = mFields.get(key);
-        if (fieldSync != null && fieldSync.isWanted()) {
-            mFields.put(relatedKey, fieldSync.createRelatedField(relatedKey, labelId));
-        }
-    }
-
-    public boolean isOverwrite(@NonNull final String key) {
-        final FieldSync fieldSync = mFields.get(key);
-        return fieldSync != null && fieldSync.getAction() == SyncAction.Overwrite;
-    }
-
-    /**
-     * Write current settings to the user preferences.
-     */
-    public void writePreferences() {
-        final SharedPreferences.Editor ed = mGlobalPreferences.edit();
-        for (final FieldSync fieldSync : mFields.values()) {
-            fieldSync.getAction().write(ed, mPreferencePrefix + fieldSync.key);
-        }
-        ed.apply();
-    }
-
-    /**
-     * Reset current usage back to defaults, and write to preferences.
-     */
-    public void resetPreferences() {
-        for (final FieldSync fieldSync : mFields.values()) {
-            fieldSync.setDefaultAction();
-        }
-        writePreferences();
-    }
-
-    public static class Builder {
+    public static class Config {
 
         @NonNull
-        private final String mPrefPrefix;
-
+        private final String mPreferencePrefix;
+        @NonNull
         private final SharedPreferences mGlobalPref;
-        @NonNull
-        private final Map<String, FieldSync> mFields = new LinkedHashMap<>();
 
-        public Builder(@NonNull final String preferencePrefix) {
-            mPrefPrefix = preferencePrefix;
+        private final Map<String, SyncField> mFields = new LinkedHashMap<>();
+        private final Map<String, String> mRelatedFields = new LinkedHashMap<>();
+
+        public Config(@NonNull final String preferencePrefix) {
+            mPreferencePrefix = preferencePrefix;
             mGlobalPref = ServiceLocator.getGlobalPreferences();
         }
+
+        /**
+         * Write current settings to the user preferences.
+         */
+        public void writePreferences() {
+
+            final SharedPreferences.Editor ed = mGlobalPref.edit();
+            for (final SyncField syncField : mFields.values()) {
+                syncField.getAction().write(ed, mPreferencePrefix + syncField.key);
+            }
+            ed.apply();
+        }
+
+        /**
+         * Reset current usage back to defaults, and write to preferences.
+         */
+        public void resetPreferences() {
+
+            for (final SyncField syncField : mFields.values()) {
+                syncField.setDefaultAction();
+            }
+            writePreferences();
+        }
+
+        @NonNull
+        public Collection<SyncField> getFieldSyncList() {
+            return mFields.values();
+        }
+
+        /**
+         * Get the {@link SyncAction} for the given key.
+         *
+         * @param key field to get
+         *
+         * @return syncAction, or {@code null} if not found
+         */
+        @Nullable
+        public SyncAction getSyncAction(@NonNull final String key) {
+            final SyncField syncField = mFields.get(key);
+            if (syncField != null) {
+                return syncField.getAction();
+            }
+            return null;
+        }
+
+        /**
+         * Update the {@link SyncAction} for the given key.
+         * Does nothing if the field was not actually added before.
+         *
+         * @param key        field to update
+         * @param syncAction to set
+         */
+        public void setSyncAction(@NonNull final String key,
+                                  @NonNull final SyncAction syncAction) {
+            final SyncField syncField = mFields.get(key);
+            if (syncField != null) {
+                syncField.setAction(syncAction);
+            }
+        }
+
 
         /**
          * Convenience method wrapper for {@link #add(int, String, SyncAction)}.
@@ -454,35 +433,39 @@ public final class SyncProcessor {
          *
          * @param labelId Field label resource id
          * @param key     Field key
+         *
+         * @return {@code this} (for chaining)
          */
-        public Builder add(@StringRes final int labelId,
-                           @NonNull final String key) {
+        public Config add(@StringRes final int labelId,
+                          @NonNull final String key) {
             return add(labelId, key, SyncAction.CopyIfBlank);
         }
 
         /**
-         * Add a {@link FieldSync} for a <strong>simple</strong> field
+         * Add a {@link SyncField} for a <strong>simple</strong> field
          * if it has not been hidden by the user.
          *
          * @param labelId       Field label resource id
          * @param key           Field key
          * @param defaultAction default Usage for this field
+         *
+         * @return {@code this} (for chaining)
          */
-        public Builder add(@StringRes final int labelId,
-                           @NonNull final String key,
-                           @NonNull final SyncAction defaultAction) {
+        public Config add(@StringRes final int labelId,
+                          @NonNull final String key,
+                          @NonNull final SyncAction defaultAction) {
 
             if (DBKeys.isUsed(mGlobalPref, key)) {
                 final SyncAction action = SyncAction
-                        .read(mGlobalPref, mPrefPrefix + key, defaultAction);
-                mFields.put(key, new FieldSync(key, labelId, false,
+                        .read(mGlobalPref, mPreferencePrefix + key, defaultAction);
+                mFields.put(key, new SyncField(key, labelId, false,
                                                defaultAction, action));
             }
             return this;
         }
 
         /**
-         * Add a {@link FieldSync} for a <strong>list</strong> field
+         * Add a {@link SyncField} for a <strong>list</strong> field
          * if it has not been hidden by the user.
          * <p>
          * The default SyncAction is always {@link SyncAction#Append}.
@@ -490,22 +473,48 @@ public final class SyncProcessor {
          * @param labelId Field label resource id
          * @param prefKey Field name to use for preferences.
          * @param key     Field key
+         *
+         * @return {@code this} (for chaining)
          */
-        public Builder addList(@StringRes final int labelId,
-                               @NonNull final String prefKey,
-                               @NonNull final String key) {
+        public Config addList(@StringRes final int labelId,
+                              @NonNull final String prefKey,
+                              @NonNull final String key) {
 
             if (DBKeys.isUsed(mGlobalPref, prefKey)) {
-                final SyncAction action =
-                        SyncAction.read(mGlobalPref, mPrefPrefix + key, SyncAction.Append);
-                mFields.put(key, new FieldSync(key, labelId, true, SyncAction.Append, action));
+                final SyncAction action = SyncAction
+                        .read(mGlobalPref, mPreferencePrefix + key, SyncAction.Append);
+                mFields.put(key, new SyncField(key, labelId, true,
+                                               SyncAction.Append, action));
             }
+            return this;
+        }
+
+        /**
+         * Add any related fields with the same setting.
+         *
+         * @param key        the field to check
+         * @param relatedKey to add if the primary field is present
+         *
+         * @return {@code this} (for chaining)
+         */
+        public Config addRelatedField(@NonNull final String key,
+                                      @NonNull final String relatedKey) {
+            // Don't check on key being present in mFields here. We'll do that at usage time.
+            //This allows out-of-order adding.
+            mRelatedFields.put(key, relatedKey);
             return this;
         }
 
         @NonNull
         public SyncProcessor build(@NonNull final BookDao bookDao) {
-            return new SyncProcessor(this, bookDao);
+            for (final Map.Entry<String, String> entry : mRelatedFields.entrySet()) {
+                final SyncField syncField = mFields.get(entry.getKey());
+                if (syncField != null && (syncField.getAction() != SyncAction.Skip)) {
+                    final String relatedKey = entry.getValue();
+                    mFields.put(relatedKey, syncField.createRelatedField(relatedKey));
+                }
+            }
+            return new SyncProcessor(bookDao, mFields);
         }
     }
 }

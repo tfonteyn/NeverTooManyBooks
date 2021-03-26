@@ -47,15 +47,20 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.network.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.org.json.JSONObject;
 
-public class StripinfoLoginHelper {
+/**
+ * Handles all authentication for stripinfo.be access.
+ */
+public class StripInfoAuth {
 
     /** Preferences prefix. */
-    private static final String PREF_KEY = "stripinfo";
+    public static final String PREF_KEY = "stripinfo";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
@@ -69,9 +74,9 @@ public class StripinfoLoginHelper {
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
 
     /** Log tag. */
-    private static final String TAG = "StripinfoLoginHelper";
+    private static final String TAG = "StripInfoAuth";
 
-    private static final String STRIPINFO_BE_USER_LOGIN = "https://www.stripinfo.be/user/login";
+    private static final String USER_LOGIN_URL = "/user/login";
 
     /**
      * si_userdata={"userid":"66","password":"blah","settings":{"acceptCookies":true}};
@@ -79,13 +84,22 @@ public class StripinfoLoginHelper {
      */
     private static final String COOKIE_SI_USERDATA = "si_userdata";
     private static final String COOKIE_DOMAIN = "stripinfo.be";
+    @NonNull
+    private final String mSiteUrl;
 
-    @Nullable
-    private HttpCookie mUserDataCookie;
+    @NonNull
+    private final CookieManager mCookieManager;
 
     /** Parsed from the Cookie. */
     @Nullable
     private String mUserId;
+
+    public StripInfoAuth(@NonNull final String siteUrl) {
+        mSiteUrl = siteUrl;
+
+        // Setup BEFORE doing first request!
+        mCookieManager = ServiceLocator.getInstance().getCookieManager();
+    }
 
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.
@@ -117,12 +131,14 @@ public class StripinfoLoginHelper {
      * Initialises the global {@link CookieManager} and performs a login
      * using the stored credentials.
      *
-     * @return {@code true} for success
+     * @return the valid user id
      *
-     * @throws IOException on any failure
+     * @throws CredentialsException on login failure
+     * @throws IOException          on any other failure
      */
-    public boolean login()
+    public String login()
             throws IOException {
+        mUserId = null;
 
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         final String username = global.getString(PK_HOST_USER, "");
@@ -131,14 +147,14 @@ public class StripinfoLoginHelper {
         // Sanity check
         //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
-            return false;
+            throw new CredentialsException(R.string.site_stripinfo_be, "", null);
         }
 
-        final CookieManager cookieManager = ServiceLocator.getInstance().getCookieManager();
+        StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        final HttpURLConnection request = (HttpURLConnection) new URL(
-                STRIPINFO_BE_USER_LOGIN).openConnection();
-        request.setRequestMethod(HttpConstants.POST);
+        final HttpURLConnection request = (HttpURLConnection)
+                new URL(mSiteUrl + USER_LOGIN_URL).openConnection();
+        request.setRequestMethod(HttpUtils.POST);
         request.setDoOutput(true);
 
         final StringJoiner postBody = new StringJoiner("&");
@@ -166,19 +182,19 @@ public class StripinfoLoginHelper {
         }
 
         // The presence of the cookie gives us the real status.
-        final Optional<HttpCookie> optional =
-                cookieManager.getCookieStore().getCookies()
-                             .stream()
-                             .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                                          && COOKIE_SI_USERDATA.equals(c.getName()))
-                             .findFirst();
+        final Optional<HttpCookie> optional = mCookieManager
+                .getCookieStore().getCookies()
+                .stream()
+                .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
+                             && COOKIE_SI_USERDATA.equals(c.getName()))
+                .findFirst();
+
         request.disconnect();
 
         if (optional.isPresent()) {
-            // preserve the Cookie as-is for future access
-            mUserDataCookie = optional.get();
+            final HttpCookie cookie = optional.get();
             try {
-                final String cookieValue = URLDecoder.decode(mUserDataCookie.getValue(), "UTF-8");
+                final String cookieValue = URLDecoder.decode(cookie.getValue(), "UTF-8");
                 // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
                 final JSONObject jsonCookie = new JSONObject(cookieValue);
                 final String userId = jsonCookie.optString("userid");
@@ -186,24 +202,18 @@ public class StripinfoLoginHelper {
                     mUserId = userId;
                     // store as String. We don't need to know it's a number.
                     global.edit().putString(PK_HOST_USER_ID, mUserId).apply();
-                    return true;
+                    return mUserId;
                 }
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.e(TAG, e, "cookie.getValue()=" + mUserDataCookie.getValue());
+                Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
             }
         }
         mUserId = null;
-        return false;
-    }
-
-    @Nullable
-    public HttpCookie getUserDataCookie() {
-        return mUserDataCookie;
+        throw new CredentialsException(R.string.site_stripinfo_be, "", null);
     }
 
     /**
      * The user id for the <strong>current</strong> session.
-     * Only valid if {@link #login} was successful.
      * <p>
      * In the website html sometimes referred to as "member".
      *
@@ -216,6 +226,8 @@ public class StripinfoLoginHelper {
 
     /**
      * Get the mapped bookshelf where to put "wanted" books on.
+     * <p>
+     * Dev. note: this does not really belong in this class...
      *
      * @param context Current context
      *

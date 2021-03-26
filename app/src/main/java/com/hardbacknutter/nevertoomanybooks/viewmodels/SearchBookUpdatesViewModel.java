@@ -44,16 +44,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.FieldSync;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction;
-import com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-
-import static com.hardbacknutter.nevertoomanybooks.fields.syncing.SyncAction.Overwrite;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -61,34 +59,47 @@ public class SearchBookUpdatesViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+
+    /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
 
     private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
     private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
+
     /**
      * Current and original book data.
      * The object gets cleared and reused for each iteration of the loop.
      */
     private final Book mCurrentBook = new Book();
-    /** which fields to update and how. */
+
+    /** The configuration on which fields to update and how. */
+    private SyncProcessor.Config mSyncConfig;
+    /** The final configuration build from {@link #mSyncConfig}, ready to start processing. */
+    @Nullable
     private SyncProcessor mSyncProcessor;
+
     /** Database Access. */
     private BookDao mBookDao;
+
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIdList;
+
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
+
     /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
     private boolean mIsCancelled;
+
+
+    /** The (subset) of fields relevant to the current book. */
+    private Map<String, SyncField> mCurrentFieldsWanted;
     /** Tracks the current book ID. */
     private long mCurrentBookId;
-    /** The (subset) of fields relevant to the current book. */
-    private Map<String, FieldSync> mCurrentFieldsWanted;
+    private Cursor mCurrentCursor;
 
     private int mCurrentProgressCounter;
     private int mCurrentCursorCount;
-    private Cursor mCurrentCursor;
 
     /** Observable. */
     @NonNull
@@ -133,58 +144,65 @@ public class SearchBookUpdatesViewModel
                 mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
             }
 
-            mSyncProcessor = createSyncProcessor();
+            mSyncConfig = createSyncProcessorBuilder();
         }
     }
 
     /**
      * Entries are displayed in the order they are added here.
      */
-    private SyncProcessor createSyncProcessor() {
-        final SyncProcessor.Builder builder = new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
-                .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
-                .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
+    private SyncProcessor.Config createSyncProcessorBuilder() {
+        final SyncProcessor.Config config =
+                new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
+                        // DBKeys.PREFS_IS_USED_COVER is the SharedPreference key indicating
+                        // the Action needed for this field.
+                        // The actual file names are in the Book.BKEY_TMP_FILE_SPEC array.
+                        .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
+                        .addRelatedField(DBKeys.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
 
-                .add(R.string.lbl_title, DBKeys.KEY_TITLE)
-                .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
+                        .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
+                        .addRelatedField(DBKeys.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
-                .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-                .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
-                         Book.BKEY_SERIES_LIST)
+                        .add(R.string.lbl_title, DBKeys.KEY_TITLE)
+                        .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
 
-                .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
+                        .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+                        .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
+                                 Book.BKEY_SERIES_LIST)
 
-                .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
-                         Book.BKEY_TOC_LIST)
+                        .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
 
-                .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
-                         Book.BKEY_PUBLISHER_LIST)
-                .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
-                .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
-                .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
+                        .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
+                                 Book.BKEY_TOC_LIST)
 
-                // list price has related DBDefinitions.KEY_PRICE_LISTED
-                .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
+                        .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
+                                 Book.BKEY_PUBLISHER_LIST)
+                        .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
+                        .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
+                        .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
 
-                .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
-                .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
-                .add(R.string.lbl_color, DBKeys.KEY_COLOR)
-                .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
-                .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
+                        .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
+                        .addRelatedField(DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY)
 
-        for (final SearchEngineConfig config : SearchEngineRegistry.getInstance().getAll()) {
-            final Domain domain = config.getExternalIdDomain();
+                        .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
+                        .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
+                        .add(R.string.lbl_color, DBKeys.KEY_COLOR)
+                        .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
+                        .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
+
+        for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
+            final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                builder.add(config.getLabelId(), domain.getName(), Overwrite);
+                config.add(seConfig.getLabelId(), domain.getName(), SyncAction.Overwrite);
             }
         }
 
-        return builder.build(mBookDao);
+        return config;
     }
 
     @NonNull
-    public Collection<FieldSync> getFieldSyncList() {
-        return mSyncProcessor.getFieldSyncList();
+    public Collection<SyncField> getFieldSyncList() {
+        return mSyncConfig.getFieldSyncList();
     }
 
     /**
@@ -200,7 +218,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return mSyncProcessor.isOverwrite(DBKeys.COVER_IS_USED[0]);
+        return mSyncConfig.getSyncAction(DBKeys.COVER_IS_USED[0]) == SyncAction.Overwrite;
     }
 
     /**
@@ -210,8 +228,8 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     public void setCoverSyncAction(@NonNull final SyncAction action) {
-        mSyncProcessor.setSyncAction(DBKeys.COVER_IS_USED[0], action);
-        mSyncProcessor.setSyncAction(DBKeys.COVER_IS_USED[1], action);
+        mSyncConfig.setSyncAction(DBKeys.COVER_IS_USED[0], action);
+        mSyncConfig.setSyncAction(DBKeys.COVER_IS_USED[1], action);
     }
 
     /**
@@ -229,14 +247,14 @@ public class SearchBookUpdatesViewModel
      * Write current settings to the user preferences.
      */
     public void writePreferences() {
-        mSyncProcessor.writePreferences();
+        mSyncConfig.writePreferences();
     }
 
     /**
      * Reset current usage back to defaults, and write to preferences.
      */
     public void resetPreferences() {
-        mSyncProcessor.resetPreferences();
+        mSyncConfig.resetPreferences();
     }
 
     /**
@@ -248,18 +266,7 @@ public class SearchBookUpdatesViewModel
      */
     public boolean startSearch(@NonNull final Context context) {
 
-        // if we do the 'list-price' field, we'll also want its currency.
-        mSyncProcessor.addRelatedField(R.string.lbl_currency, DBKeys.KEY_PRICE_LISTED,
-                                       DBKeys.KEY_PRICE_LISTED_CURRENCY);
-
-        // if covers are wanted, get the actual file names
-        // Reminder:
-        // DBKeys.PREFS_IS_USED_COVER is the SharedPreference key indicating the Action!
-        // The data itself is the Book.BKEY_TMP_FILE_SPEC array.
-        mSyncProcessor.addRelatedField(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0],
-                                       Book.BKEY_TMP_FILE_SPEC[0]);
-        mSyncProcessor.addRelatedField(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1],
-                                       Book.BKEY_TMP_FILE_SPEC[1]);
+        mSyncProcessor = mSyncConfig.build(mBookDao);
 
         mCurrentProgressCounter = 0;
 
@@ -288,7 +295,6 @@ public class SearchBookUpdatesViewModel
      * @return {@code true} if a search was started.
      */
     private boolean nextBook(@NonNull final Context context) {
-
         try {
             final int idCol = mCurrentCursor.getColumnIndex(DBKeys.KEY_PK_ID);
 
@@ -304,6 +310,7 @@ public class SearchBookUpdatesViewModel
                 mCurrentBook.load(mCurrentBookId, mCurrentCursor, mBookDao);
 
                 // Check which fields this book needs.
+                //noinspection ConstantConditions
                 mCurrentFieldsWanted = mSyncProcessor.filter(context, mCurrentBook);
 
                 final String title = mCurrentBook.getString(DBKeys.KEY_TITLE);
@@ -358,12 +365,12 @@ public class SearchBookUpdatesViewModel
                         }
 
                         // optional: whether this is used will depend on SearchEngine/Preferences
-                        final boolean[] thumbs = new boolean[2];
+                        final boolean[] fetchCovers = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            thumbs[cIdx] = mCurrentFieldsWanted
+                            fetchCovers[cIdx] = mCurrentFieldsWanted
                                     .containsKey(Book.BKEY_TMP_FILE_SPEC[cIdx]);
                         }
-                        setFetchThumbnail(thumbs);
+                        setFetchCover(fetchCovers);
 
                         // Start searching
                         if (search()) {
@@ -404,8 +411,9 @@ public class SearchBookUpdatesViewModel
                               @Nullable final Bundle bookData) {
 
         if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
-            mSyncProcessor.processOne(context, mCurrentBookId, mCurrentBook,
-                                      mCurrentFieldsWanted, bookData);
+            //noinspection ConstantConditions
+            mSyncProcessor.process(context, mCurrentBookId, mCurrentBook,
+                                   mCurrentFieldsWanted, bookData);
         }
 
         //update the counter, another one done.

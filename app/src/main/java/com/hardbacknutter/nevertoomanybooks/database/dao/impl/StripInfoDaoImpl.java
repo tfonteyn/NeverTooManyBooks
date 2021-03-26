@@ -41,17 +41,20 @@ public class StripInfoDaoImpl
     private static final String SQL_DELETE =
             DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName();
 
-    private static final String SQL_DELETE_ONE = SQL_DELETE
-                                                 + _WHERE_ + DBKeys.KEY_ESID_STRIP_INFO_BE + "=?";
+    private static final String SQL_DELETE_ONE =
+            SQL_DELETE + _WHERE_ + DBKeys.KEY_ESID_STRIP_INFO_BE + "=?";
 
     private static final String SQL_INSERT =
             INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName()
-            + " (" + DBKeys.KEY_ESID_STRIP_INFO_BE + ") VALUES (?)";
+            + " (" + DBKeys.KEY_ESID_STRIP_INFO_BE + ") VALUES (?,?,?)";
 
     private static final String SQL_GET_ALL =
             SELECT_ + DBKeys.KEY_ESID_STRIP_INFO_BE
             + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName()
             + _ORDER_BY_ + DBKeys.KEY_PK_ID;
+
+    private static final String SQL_COUNT_ALL =
+            SELECT_COUNT_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName();
 
     /**
      * Constructor.
@@ -61,7 +64,7 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    public void insert(@NonNull final List<Long> externalIdList) {
+    public void insert(@NonNull final List<Long> list) {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -73,7 +76,7 @@ public class StripInfoDaoImpl
             mDb.execSQL(SQL_DELETE);
 
             try (SynchronizedStatement stmt = mDb.compileStatement(SQL_INSERT)) {
-                for (final long externalId : externalIdList) {
+                for (final Long externalId : list) {
                     stmt.bindLong(1, externalId);
                     stmt.executeInsert();
                 }
@@ -96,8 +99,15 @@ public class StripInfoDaoImpl
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
+            return list;
         }
-        return list;
+    }
+
+    @Override
+    public int countQueued() {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_ALL)) {
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
     }
 
     @Override

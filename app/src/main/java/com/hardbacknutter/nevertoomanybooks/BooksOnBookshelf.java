@@ -127,7 +127,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
@@ -629,7 +629,7 @@ public class BooksOnBookshelf
         getNavigationMenuItem(R.id.nav_sync).setVisible(
                 CalibreContentServer.isSyncEnabled(global)
                 || GoodreadsManager.isSyncEnabled(global)
-                || StripinfoLoginHelper.isSyncEnabled(global));
+                || StripInfoAuth.isSyncEnabled(global));
     }
 
     /**
@@ -1253,7 +1253,7 @@ public class BooksOnBookshelf
                 .setIcon(R.drawable.ic_goodreads);
         }
 
-        if (StripinfoLoginHelper.isSyncEnabled(global)) {
+        if (StripInfoAuth.isSyncEnabled(global)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
                 .setIcon(R.drawable.ic_stripinfo);
         }

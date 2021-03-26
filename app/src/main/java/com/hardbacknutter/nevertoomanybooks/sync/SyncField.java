@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.syncing;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -26,7 +26,7 @@ import androidx.annotation.StringRes;
  * How to handle a data field when updating the entity it belongs to.
  * e.g. skip it, overwrite the value, etc...
  */
-public final class FieldSync {
+public final class SyncField {
 
     @NonNull
     public final String key;
@@ -39,7 +39,7 @@ public final class FieldSync {
     @NonNull
     private final SyncAction mDefaultAction;
 
-    /** Is the field capable of appending extra data. */
+    /** Is the field capable of appending extra data. It can be a true List, or i.e a String. */
     private final boolean mCanAppend;
 
     /** how to use this field. */
@@ -55,7 +55,7 @@ public final class FieldSync {
      * @param defaultAction default action
      * @param action        initial action
      */
-    FieldSync(@NonNull final String key,
+    SyncField(@NonNull final String key,
               @StringRes final int labelId,
               final boolean canAppend,
               @NonNull final SyncAction defaultAction,
@@ -70,14 +70,12 @@ public final class FieldSync {
     /**
      * Constructor for a related field depending on this field.
      *
-     * @param key     Field key
-     * @param labelId Field label resource id
+     * @param key Field key
      *
-     * @return a FieldSync record for the given field.
+     * @return a SyncField record for the given field.
      */
-    FieldSync createRelatedField(@NonNull final String key,
-                                 @StringRes final int labelId) {
-        return new FieldSync(key, labelId, mCanAppend, mDefaultAction, mSyncAction);
+    SyncField createRelatedField(@NonNull final String key) {
+        return new SyncField(key, mLabelId, mCanAppend, mDefaultAction, mSyncAction);
     }
 
     @NonNull
@@ -89,12 +87,8 @@ public final class FieldSync {
         mSyncAction = syncAction;
     }
 
-    public void setDefaultAction() {
+    void setDefaultAction() {
         mSyncAction = mDefaultAction;
-    }
-
-    public boolean isWanted() {
-        return mSyncAction != SyncAction.Skip;
     }
 
     /**
@@ -130,7 +124,7 @@ public final class FieldSync {
     @Override
     @NonNull
     public String toString() {
-        return "FieldSync{"
+        return "SyncField{"
                + "fieldId=`" + key + '`'
                + ", mCanAppend=" + mCanAppend
                + ", mNameStringId=" + mLabelId

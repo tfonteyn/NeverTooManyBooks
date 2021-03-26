@@ -29,7 +29,9 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripinfoLoginHelper;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 
@@ -88,7 +90,14 @@ public class StripInfoBePreferencesViewModel
         @Override
         protected Boolean doWork(@NonNull final Context context)
                 throws IOException {
-            return new StripinfoLoginHelper().login();
+            final String url = SearchEngineRegistry
+                    .getInstance()
+                    .getByEngineId(SearchSites.STRIP_INFO_BE)
+                    .getSiteUrl();
+
+            new StripInfoAuth(url).login();
+
+            return true;
         }
     }
 }
