@@ -338,8 +338,7 @@ public class CalibreHandler {
                 mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
             }
 
-            // hook the task up.
-            mVm.connectProgressDialog(mProgressDialog);
+            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
         }
 
         mProgressDialog.onProgress(message);

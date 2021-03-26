@@ -31,6 +31,7 @@ import android.util.SparseArray;
 import android.util.SparseLongArray;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -1175,6 +1177,12 @@ public class SearchCoordinator
         return new ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
                                    progressMax, progressCount, null
         );
+    }
+
+    public void linkTaskWithDialog(@IdRes final int taskId,
+                                   @NonNull final ProgressDialogFragment dialog) {
+        // reminder: this object, the SearchCoordinator is a pseudo task
+        dialog.setCanceller(this);
     }
 
     public static class CoverFilter {

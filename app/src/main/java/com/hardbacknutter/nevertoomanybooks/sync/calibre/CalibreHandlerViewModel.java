@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.net.Uri;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -66,7 +67,13 @@ public class CalibreHandlerViewModel
         return mSingleFileDownloadTask.download(book, folder);
     }
 
-    void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
-        dialog.setCanceller(mSingleFileDownloadTask);
+    void linkTaskWithDialog(@IdRes final int taskId,
+                            @NonNull final ProgressDialogFragment dialog) {
+        if (taskId == mSingleFileDownloadTask.getTaskId()) {
+            dialog.setCanceller(mSingleFileDownloadTask);
+
+        } else {
+            throw new IllegalArgumentException("taskId=" + taskId);
+        }
     }
 }

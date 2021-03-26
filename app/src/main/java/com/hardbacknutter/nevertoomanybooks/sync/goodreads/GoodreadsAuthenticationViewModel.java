@@ -27,7 +27,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.AuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -50,6 +49,7 @@ public class GoodreadsAuthenticationViewModel
 
     private final AuthTask mAuthTask = new AuthTask(mTaskListener);
 
+
     @NonNull
     public LiveData<FinishedMessage<GrStatus>> onFinished() {
         return mFinished;
@@ -70,6 +70,7 @@ public class GoodreadsAuthenticationViewModel
         return mProgress;
     }
 
+
     void promptForAuthentication(@NonNull final Context context) {
         mAuthTask.authorize(context);
     }
@@ -78,10 +79,11 @@ public class GoodreadsAuthenticationViewModel
         mAuthTask.authenticate();
     }
 
-    void connectProgressDialog(@IdRes final int taskId,
-                               @NonNull final ProgressDialogFragment dialog) {
-        if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
+    void linkTaskWithDialog(@IdRes final int taskId,
+                            @NonNull final ProgressDialogFragment dialog) {
+        if (taskId == mAuthTask.getTaskId()) {
             dialog.setCanceller(mAuthTask);
+
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
@@ -142,7 +143,13 @@ public class ExportViewModel
         mArchiveWriterTask.start(mExportHelper);
     }
 
-    void connectProgressDialog(@NonNull final ProgressDialogFragment dialog) {
-        dialog.setCanceller(mArchiveWriterTask);
+    void linkTaskWithDialog(@IdRes final int taskId,
+                            @NonNull final ProgressDialogFragment dialog) {
+        if (taskId == mArchiveWriterTask.getTaskId()) {
+            dialog.setCanceller(mArchiveWriterTask);
+
+        } else {
+            throw new IllegalArgumentException("taskId=" + taskId);
+        }
     }
 }

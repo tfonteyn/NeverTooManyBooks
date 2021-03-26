@@ -431,7 +431,8 @@ public class ImportFragment
 
             @Nullable
             final CalibreLibrary selectedLibrary = mVm
-                    .getImportHelper().getExtraArgs()
+                    .getImportHelper()
+                    .getExtraArgs()
                     .getParcelable(CalibreContentServer.BKEY_LIBRARY);
             if (selectedLibrary != null) {
                 onCalibreLibrarySelected(selectedLibrary);
@@ -589,9 +590,8 @@ public class ImportFragment
             return report;
         }
 
+        @StringRes
         final int fs;
-        final Collection<String> msgList = new ArrayList<>();
-
         if (failed > 10) {
             // keep it sensible, list maximum 10 lines.
             failed = 10;
@@ -600,16 +600,17 @@ public class ImportFragment
             fs = R.string.warning_import_failed__for_lines_some;
         }
 
+        final Collection<String> itemList = new ArrayList<>();
         for (int i = 0; i < failed; i++) {
-            msgList.add(getString(R.string.a_bracket_b_bracket,
-                                  String.valueOf(result.failedLinesNr.get(i)),
-                                  result.failedLinesMessage.get(i)));
+            itemList.add(getString(R.string.a_bracket_b_bracket,
+                                   String.valueOf(result.failedLinesNr.get(i)),
+                                   result.failedLinesMessage.get(i)));
         }
 
-        return report + "\n" + getString(
-                fs, msgList.stream()
-                           .map(s -> getString(R.string.list_element, s))
-                           .collect(Collectors.joining("\n")));
+        return report + "\n" + getString(fs, itemList
+                .stream()
+                .map(s -> getString(R.string.list_element, s))
+                .collect(Collectors.joining("\n")));
     }
 
     protected void onProgress(@NonNull final ProgressMessage message) {
@@ -625,8 +626,7 @@ public class ImportFragment
                 mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             }
 
-            // hook the task up.
-            mVm.connectProgressDialog(mProgressDialog);
+            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
         }
 
         mProgressDialog.onProgress(message);

@@ -193,8 +193,7 @@ public abstract class SearchBookBaseFragment
                 mProgressDialog.show(fm, ProgressDialogFragment.TAG);
             }
 
-            // hook the task up.
-            mProgressDialog.setCanceller(mCoordinator);
+            mCoordinator.linkTaskWithDialog(message.taskId, mProgressDialog);
         }
 
         mProgressDialog.onProgress(message);
