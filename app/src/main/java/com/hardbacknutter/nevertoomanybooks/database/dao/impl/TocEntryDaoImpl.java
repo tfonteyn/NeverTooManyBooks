@@ -122,8 +122,8 @@ public class TocEntryDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, BaseDaoImpl.encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
-            stmt.bindString(3, BaseDaoImpl.encodeOrderByColumn(obTitle, tocLocale));
+            stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
+            stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }

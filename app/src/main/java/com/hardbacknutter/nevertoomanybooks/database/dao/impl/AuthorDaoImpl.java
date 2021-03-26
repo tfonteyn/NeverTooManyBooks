@@ -70,22 +70,6 @@ public class AuthorDaoImpl
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR) + "=?"
             + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOKSHELF) + "=?";
 
-    /** name only. */
-    private static final String SELECT_ALL_FAMILY_NAMES =
-            SELECT_DISTINCT_
-            + DBKeys.KEY_AUTHOR_FAMILY_NAME
-            + ',' + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB
-            + _FROM_ + TBL_AUTHORS.getName()
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
-
-    /** name only. */
-    private static final String SELECT_ALL_GIVEN_NAMES =
-            SELECT_DISTINCT_
-            + DBKeys.KEY_AUTHOR_GIVEN_NAMES
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB
-            + _FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /** {@link Author}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_AUTHORS.getName();
@@ -103,7 +87,7 @@ public class AuthorDaoImpl
             + _WHERE_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
             + _AND_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
 
-    private static final String COUNT_ALL = "SELECT COUNT(*) FROM " + TBL_AUTHORS.getName();
+    private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
 
     /** Count the number of {@link Book}'s by an {@link Author}. */
     private static final String COUNT_BOOKS =
@@ -171,23 +155,26 @@ public class AuthorDaoImpl
             + "||' '||" + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME)
             + _END;
 
-    /** name only. */
+    /** {@link #getNames(String)} : 'Family name' in column 0. */
+    private static final String SELECT_ALL_FAMILY_NAMES =
+            SELECT_DISTINCT_ + DBKeys.KEY_AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
+            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
+
+    /** {@link #getNames(String)} : 'Given name' in column 0. */
+    private static final String SELECT_ALL_GIVEN_NAMES =
+            SELECT_DISTINCT_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES + _FROM_ + TBL_AUTHORS.getName()
+            + _WHERE_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
+            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+    /** {@link #getNames(String)} : 'Display name' in column 0. */
     private static final String SELECT_ALL_NAMES_FORMATTED =
-            SELECT_
-            + getDisplayAuthor(false) + _AS_ + DBKeys.KEY_AUTHOR_FORMATTED
-            + ',' + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB
-            + _FROM_ + TBL_AUTHORS.ref()
+            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST + _FROM_ + TBL_AUTHORS.ref()
             + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
-    /** name only. */
+    /** {@link #getNames(String)} : 'Display name' in column 0. */
     private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
-            SELECT_
-            + getDisplayAuthor(true) + _AS_ + DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST
-            + ',' + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB
-            + _FROM_ + TBL_AUTHORS.ref()
+            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST + _FROM_ + TBL_AUTHORS.ref()
             + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
@@ -267,10 +254,8 @@ public class AuthorDaoImpl
         }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, BaseDaoImpl
-                    .encodeOrderByColumn(author.getFamilyName(), authorLocale));
-            stmt.bindString(2, BaseDaoImpl
-                    .encodeOrderByColumn(author.getGivenNames(), authorLocale));
+            stmt.bindString(1, encodeOrderByColumn(author.getFamilyName(), authorLocale));
+            stmt.bindString(2, encodeOrderByColumn(author.getGivenNames(), authorLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -280,16 +265,16 @@ public class AuthorDaoImpl
     public ArrayList<String> getNames(@NonNull final String key) {
         switch (key) {
             case DBKeys.KEY_AUTHOR_FAMILY_NAME:
-                return getColumnAsList(SELECT_ALL_FAMILY_NAMES, key);
+                return getColumnAsStringArrayList(SELECT_ALL_FAMILY_NAMES);
 
             case DBKeys.KEY_AUTHOR_GIVEN_NAMES:
-                return getColumnAsList(SELECT_ALL_GIVEN_NAMES, key);
+                return getColumnAsStringArrayList(SELECT_ALL_GIVEN_NAMES);
 
             case DBKeys.KEY_AUTHOR_FORMATTED:
-                return getColumnAsList(SELECT_ALL_NAMES_FORMATTED, key);
+                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED);
 
             case DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST:
-                return getColumnAsList(SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST, key);
+                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
 
             default:
                 throw new IllegalArgumentException(key);
@@ -417,11 +402,9 @@ public class AuthorDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, author.getFamilyName());
-            stmt.bindString(2, BaseDaoImpl
-                    .encodeOrderByColumn(author.getFamilyName(), authorLocale));
+            stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(3, author.getGivenNames());
-            stmt.bindString(4, BaseDaoImpl
-                    .encodeOrderByColumn(author.getGivenNames(), authorLocale));
+            stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), authorLocale));
             stmt.bindBoolean(5, author.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -441,10 +424,10 @@ public class AuthorDaoImpl
         final ContentValues cv = new ContentValues();
         cv.put(DBKeys.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
         cv.put(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB,
-               BaseDaoImpl.encodeOrderByColumn(author.getFamilyName(), authorLocale));
+               encodeOrderByColumn(author.getFamilyName(), authorLocale));
         cv.put(DBKeys.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
         cv.put(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB,
-               BaseDaoImpl.encodeOrderByColumn(author.getGivenNames(), authorLocale));
+               encodeOrderByColumn(author.getGivenNames(), authorLocale));
         cv.put(DBKeys.KEY_AUTHOR_IS_COMPLETE, author.isComplete());
 
         return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKeys.KEY_PK_ID + "=?",

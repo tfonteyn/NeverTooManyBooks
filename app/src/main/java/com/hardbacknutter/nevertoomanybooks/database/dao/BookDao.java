@@ -1517,13 +1517,13 @@ public class BookDao
         if (isbnList.size() == 1) {
             // optimize for single book
             return getBookCursor(TBL_BOOKS.dot(KEY_ISBN) + "=?",
-                                 new String[]{BaseDaoImpl.encodeString(isbnList.get(0))},
+                                 new String[]{encodeString(isbnList.get(0))},
                                  null);
         } else {
             return getBookCursor(TBL_BOOKS.dot(KEY_ISBN)
                                  + " IN ("
                                  + isbnList.stream()
-                                           .map(s -> '\'' + BaseDaoImpl.encodeString(s) + '\'')
+                                           .map(s -> '\'' + encodeString(s) + '\'')
                                            .collect(Collectors.joining(","))
                                  + ')',
                                  null,
@@ -1538,9 +1538,7 @@ public class BookDao
      */
     @NonNull
     public ArrayList<String> getBookUuidList() {
-        try (Cursor cursor = mDb.rawQuery(Sql.Select.ALL_BOOK_UUID, null)) {
-            return getFirstColumnAsList(cursor);
-        }
+        return getColumnAsStringArrayList(Sql.Select.ALL_BOOK_UUID);
     }
 
     /**
@@ -1563,17 +1561,15 @@ public class BookDao
         final String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS.getName()
                            + _ORDER_BY_ + column + _COLLATION;
 
-        try (Cursor cursor = mDb.rawQuery(sql, null)) {
-            final ArrayList<String> list = getFirstColumnAsList(cursor);
-            if (list.isEmpty()) {
-                // sure, this is very crude and discriminating.
-                // But it will only ever be used *once* per currency column
-                list.add(Money.EUR);
-                list.add(Money.GBP);
-                list.add(Money.USD);
-            }
-            return list;
+        final ArrayList<String> list = getColumnAsStringArrayList(sql);
+        if (list.isEmpty()) {
+            // sure, this is very crude and discriminating.
+            // But it will only ever be used *once* per currency column
+            list.add(Money.EUR);
+            list.add(Money.GBP);
+            list.add(Money.USD);
         }
+        return list;
     }
 
     /**
@@ -1747,7 +1743,7 @@ public class BookDao
                 + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + KEY_FK_BOOK
                 + ") WHERE mp > 1";
 
-        final ArrayList<Long> bookIds = getIdList(sql);
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "repositionAuthor|" + TBL_BOOK_AUTHOR.getName()
@@ -1821,7 +1817,7 @@ public class BookDao
                 + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + KEY_FK_BOOK
                 + ") WHERE mp > 1";
 
-        final ArrayList<Long> bookIds = getIdList(sql);
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "repositionSeries|" + TBL_BOOK_SERIES.getName()
@@ -1894,7 +1890,7 @@ public class BookDao
                            + " FROM " + TBL_BOOK_PUBLISHER.getName() + " GROUP BY " + KEY_FK_BOOK
                            + ") WHERE mp > 1";
 
-        final ArrayList<Long> bookIds = getIdList(sql);
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "repositionPublishers|" + TBL_BOOK_PUBLISHER.getName()
@@ -1972,7 +1968,7 @@ public class BookDao
                 + " FROM " + TBL_BOOK_TOC_ENTRIES.getName() + " GROUP BY " + KEY_FK_BOOK
                 + ") WHERE mp > 1";
 
-        final ArrayList<Long> bookIds = getIdList(sql);
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
         if (!bookIds.isEmpty()) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "repositionTocEntries|" + TBL_BOOK_TOC_ENTRIES.getName()
@@ -2560,11 +2556,11 @@ public class BookDao
 
             /** Count all {@link Book}'s. */
             static final String BOOKS =
-                    "SELECT COUNT(*) FROM " + TBL_BOOKS.getName();
+                    SELECT_COUNT_FROM_ + TBL_BOOKS.getName();
 
             /** Check if a {@link Book} exists. */
             static final String BOOK_EXISTS =
-                    "SELECT COUNT(*) FROM " + TBL_BOOKS.getName() + _WHERE_ + KEY_PK_ID + "=?";
+                    SELECT_COUNT_FROM_ + TBL_BOOKS.getName() + _WHERE_ + KEY_PK_ID + "=?";
         }
 
         /**

@@ -219,7 +219,7 @@ public class MaintenanceDaoImpl
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
-            cv.put(domainName, BaseDaoImpl.encodeOrderByColumn(rebuildObTitle, locale));
+            cv.put(domainName, encodeOrderByColumn(rebuildObTitle, locale));
             return 0 < mDb.update(table.getName(), cv, DBKeys.KEY_PK_ID + "=?",
                                   new String[]{String.valueOf(id)});
         }

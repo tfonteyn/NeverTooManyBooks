@@ -55,6 +55,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_UTC_DATETIME;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.TBL_IMAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl.SELECT_COUNT_FROM_;
 
 /**
  * DB Helper for Covers DB.
@@ -85,7 +86,7 @@ public class CoverCacheDaoImpl
             "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE.getName()
             + " WHERE " + CKEY_CACHE_ID + "=?";
 
-    private static final String SQL_COUNT = "SELECT COUNT(*) FROM " + TBL_IMAGE.getName();
+    private static final String SQL_COUNT = SELECT_COUNT_FROM_ + TBL_IMAGE.getName();
 
     /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;

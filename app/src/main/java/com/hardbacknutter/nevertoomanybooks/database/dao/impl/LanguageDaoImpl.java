@@ -66,9 +66,7 @@ public class LanguageDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
-            return getFirstColumnAsList(cursor);
-        }
+        return getColumnAsStringArrayList(SELECT_ALL);
     }
 
     @Override

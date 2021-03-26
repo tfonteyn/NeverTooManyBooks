@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -62,9 +60,7 @@ public class GenreDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
-            return getFirstColumnAsList(cursor);
-        }
+        return getColumnAsStringArrayList(SELECT_ALL);
     }
 
     @Override

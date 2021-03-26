@@ -102,7 +102,7 @@ public class SeriesDaoImpl
             + " LIMIT 1";
 
     private static final String COUNT_ALL =
-            "SELECT COUNT(*) FROM " + TBL_SERIES.getName();
+            SELECT_COUNT_FROM_ + TBL_SERIES.getName();
 
     /** Count the number of {@link Book}'s in a {@link Series}. */
     private static final String COUNT_BOOKS =
@@ -161,8 +161,8 @@ public class SeriesDaoImpl
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, BaseDaoImpl.encodeOrderByColumn(series.getTitle(), seriesLocale));
-            stmt.bindString(2, BaseDaoImpl.encodeOrderByColumn(obTitle, seriesLocale));
+            stmt.bindString(1, encodeOrderByColumn(series.getTitle(), seriesLocale));
+            stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -170,7 +170,7 @@ public class SeriesDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getNames() {
-        return getColumnAsList(SELECT_ALL_NAMES, DBKeys.KEY_SERIES_TITLE);
+        return getColumnAsStringArrayList(SELECT_ALL_NAMES);
     }
 
     @Override
@@ -291,7 +291,7 @@ public class SeriesDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, BaseDaoImpl.encodeOrderByColumn(obTitle, seriesLocale));
+            stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -311,7 +311,7 @@ public class SeriesDaoImpl
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKeys.KEY_SERIES_TITLE, series.getTitle());
-        cv.put(DBKeys.KEY_SERIES_TITLE_OB, BaseDaoImpl.encodeOrderByColumn(obTitle, seriesLocale));
+        cv.put(DBKeys.KEY_SERIES_TITLE_OB, encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(DBKeys.KEY_SERIES_IS_COMPLETE, series.isComplete());
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKeys.KEY_PK_ID + "=?",

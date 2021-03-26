@@ -60,6 +60,7 @@ public abstract class BaseDaoImpl {
     protected static final String DELETE_FROM_ = "DELETE FROM ";
     protected static final String INSERT_INTO_ = "INSERT INTO ";
 
+    protected static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     protected static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     protected static final String SELECT_ = "SELECT ";
     protected static final String _AS_ = " AS ";
@@ -144,6 +145,24 @@ public abstract class BaseDaoImpl {
     }
 
     /**
+     * Encode a LocalDateTime. Used to transform Java-ISO to SQL-ISO datetime format.
+     * <p>
+     * Main/only function for now: replace the 'T' character with a ' '
+     * so it matches the "current_timestamp" function in SQLite.
+     * We should just create a formatter which uses a ' '
+     *
+     * @param dateTime to encode
+     *
+     * @return sqlite date time as a string
+     */
+    @NonNull
+    protected String encodeDate(@NonNull final LocalDateTime dateTime) {
+        // We should just create a formatter which uses a ' '...
+        final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return T.matcher(date).replaceFirst(" ");
+    }
+
+    /**
      * By exception in the base DAO to allow all dao instances to
      * update the 'last updated' of the given book.
      * This method should only be called from places where only the book id is available.
@@ -164,7 +183,8 @@ public abstract class BaseDaoImpl {
     /**
      * By exception in the base DAO to allow all dao instances to
      * update the 'last updated' of the given book.
-     * If successful, the book itself will also be updated with the current date-time.
+     * If successful, the book itself will also be updated with
+     * the current date-time (which will be very slightly 'later' then what we store).
      *
      * @param book to update
      *
@@ -184,57 +204,32 @@ public abstract class BaseDaoImpl {
     }
 
     /**
-     * Takes the ResultSet from a Cursor, and fetches column 0 as a String into an ArrayList.
-     * Skips {@code null} and {@code ""} entries.
+     * Execute the given SQL, and fetches column 0 as an ArrayList<String>.
      *
-     * @param cursor cursor
+     * @param sql to execute
      *
-     * @return List of values (case sensitive)
+     * @return List of values
      */
     @NonNull
-    protected ArrayList<String> getFirstColumnAsList(@NonNull final Cursor cursor) {
+    protected ArrayList<String> getColumnAsStringArrayList(@NonNull final String sql) {
         final ArrayList<String> list = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            final String name = cursor.getString(0);
-            if (name != null && !name.isEmpty()) {
-                list.add(name);
+        try (Cursor cursor = mDb.rawQuery(sql, null)) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getString(0));
             }
         }
         return list;
     }
 
     /**
-     * Fills an array with the specified (String) column from the passed SQL.
-     *
-     * @param sql        SQL to execute
-     * @param columnName Column to fetch
-     *
-     * @return List of *all* values
-     *
-     * @see #getFirstColumnAsList
-     */
-    @NonNull
-    ArrayList<String> getColumnAsList(@NonNull final String sql,
-                                      @NonNull final String columnName) {
-        final ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(sql, null)) {
-            final int column = cursor.getColumnIndexOrThrow(columnName);
-            while (cursor.moveToNext()) {
-                list.add(cursor.getString(column));
-            }
-            return list;
-        }
-    }
-
-    /**
-     * Fills an array with the first column (index==0, type==long) from the passed SQL.
+     * Execute the given SQL, and fetches column 0 as an ArrayList<Long>.
      *
      * @param sql SQL to execute
      *
-     * @return List of *all* values
+     * @return List of values
      */
     @NonNull
-    protected ArrayList<Long> getIdList(@NonNull final String sql) {
+    protected ArrayList<Long> getColumnAsLongArrayList(@NonNull final String sql) {
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = mDb.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
@@ -242,23 +237,5 @@ public abstract class BaseDaoImpl {
             }
             return list;
         }
-    }
-
-    /**
-     * Encode a LocalDateTime. Used to transform Java-ISO to SQL-ISO datetime format.
-     * <p>
-     * Main/only function for now: replace the 'T' character with a ' '
-     * so it matches the "current_timestamp" function in SQLite.
-     * We should just create a formatter which uses a ' '
-     *
-     * @param dateTime to encode
-     *
-     * @return sqlite date time as a string
-     */
-    @NonNull
-    protected String encodeDate(@NonNull final LocalDateTime dateTime) {
-        // We should just create a formatter which uses a ' '...
-        final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        return T.matcher(date).replaceFirst(" ");
     }
 }

@@ -92,7 +92,7 @@ public class PublisherDaoImpl
             + _OR_ + DBKeys.KEY_PUBLISHER_NAME_OB + "=?" + _COLLATION;
 
     private static final String COUNT_ALL =
-            "SELECT COUNT(*) FROM " + TBL_PUBLISHERS.getName();
+            SELECT_COUNT_FROM_ + TBL_PUBLISHERS.getName();
 
     /** Count the number of {@link Book}'s by an {@link Publisher}. */
     private static final String COUNT_BOOKS =
@@ -153,9 +153,8 @@ public class PublisherDaoImpl
         final String obName = publisher.reorderTitleForSorting(context, publisherLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, BaseDaoImpl
-                    .encodeOrderByColumn(publisher.getName(), publisherLocale));
-            stmt.bindString(2, BaseDaoImpl.encodeOrderByColumn(obName, publisherLocale));
+            stmt.bindString(1, encodeOrderByColumn(publisher.getName(), publisherLocale));
+            stmt.bindString(2, encodeOrderByColumn(obName, publisherLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -163,9 +162,7 @@ public class PublisherDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getNames() {
-        try (Cursor cursor = mDb.rawQuery(SELECT_ALL_NAMES, null)) {
-            return getFirstColumnAsList(cursor);
-        }
+        return getColumnAsStringArrayList(SELECT_ALL_NAMES);
     }
 
     @Override
@@ -267,7 +264,7 @@ public class PublisherDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, BaseDaoImpl.encodeOrderByColumn(obTitle, publisherLocale));
+            stmt.bindString(2, encodeOrderByColumn(obTitle, publisherLocale));
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 publisher.setId(iId);
@@ -287,8 +284,7 @@ public class PublisherDaoImpl
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKeys.KEY_PUBLISHER_NAME, publisher.getName());
-        cv.put(DBKeys.KEY_PUBLISHER_NAME_OB,
-               BaseDaoImpl.encodeOrderByColumn(obTitle, publisherLocale));
+        cv.put(DBKeys.KEY_PUBLISHER_NAME_OB, encodeOrderByColumn(obTitle, publisherLocale));
 
         return 0 < mDb.update(TBL_PUBLISHERS.getName(), cv, DBKeys.KEY_PK_ID + "=?",
                               new String[]{String.valueOf(publisher.getId())});

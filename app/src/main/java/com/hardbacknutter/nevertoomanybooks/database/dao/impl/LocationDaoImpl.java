@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -39,14 +37,14 @@ public class LocationDaoImpl
     private static final String TAG = "LocationDaoImpl";
 
     /** name only. */
-    private static final String LOCATIONS =
+    private static final String SELECT_ALL =
             SELECT_DISTINCT_ + DBKeys.KEY_LOCATION
             + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
             + _WHERE_ + DBKeys.KEY_LOCATION + "<> ''"
             + _ORDER_BY_ + DBKeys.KEY_LOCATION + _COLLATION;
 
     /** Global rename. */
-    private static final String LOCATION =
+    private static final String RENAME =
             UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
             + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
             + ',' + DBKeys.KEY_LOCATION + "=?"
@@ -62,9 +60,7 @@ public class LocationDaoImpl
     @Override
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mDb.rawQuery(LOCATIONS, null)) {
-            return getFirstColumnAsList(cursor);
-        }
+        return getColumnAsStringArrayList(SELECT_ALL);
     }
 
     @Override
@@ -73,7 +69,7 @@ public class LocationDaoImpl
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mDb.compileStatement(LOCATION)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(RENAME)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
