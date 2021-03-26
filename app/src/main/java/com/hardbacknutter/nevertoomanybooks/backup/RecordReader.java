@@ -48,7 +48,8 @@ public interface RecordReader
      *
      * @return the archive info
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     @Nullable
     default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
@@ -66,8 +67,9 @@ public interface RecordReader
      *
      * @return {@link ImportResults}
      *
-     * @throws IOException     on failure
-     * @throws ImportException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
+     * @throws ImportException         on failure
      */
     @NonNull
     ImportResults read(@NonNull Context context,

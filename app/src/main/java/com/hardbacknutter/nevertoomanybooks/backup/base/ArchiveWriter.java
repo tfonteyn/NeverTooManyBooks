@@ -53,7 +53,8 @@ public interface ArchiveWriter
      *
      * @return the export results summary
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     @WorkerThread
     @NonNull

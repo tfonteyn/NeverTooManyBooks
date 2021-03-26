@@ -204,6 +204,7 @@ public class GoodreadsManager {
      *
      * @return Disposition of book
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     @WorkerThread
@@ -382,7 +383,8 @@ public class GoodreadsManager {
      *
      * @return Bundle of Goodreads book data
      *
-     * @throws IOException on failures
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @NonNull
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
@@ -409,6 +411,7 @@ public class GoodreadsManager {
      *
      * @return Bundle with Goodreads book data
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     @NonNull
@@ -430,6 +433,7 @@ public class GoodreadsManager {
      *
      * @return the Goodreads shelves
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     @NonNull
@@ -452,6 +456,7 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     private long addBookToShelf(final long grBookId,
@@ -473,6 +478,7 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     private long addBookToShelf(final long grBookId,
@@ -491,6 +497,7 @@ public class GoodreadsManager {
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     private void removeBookFromShelf(final long grBookId,

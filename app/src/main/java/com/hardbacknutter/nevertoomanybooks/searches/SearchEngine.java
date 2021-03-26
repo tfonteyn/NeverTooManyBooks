@@ -360,13 +360,14 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws IOException on other failures
+         * @throws GeneralParsingException on a decoding/parsing of data issue
+         * @throws IOException             on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
                                   @NonNull boolean[] fetchCovers)
-        throws GeneralParsingException, IOException;
+                throws GeneralParsingException, IOException;
     }
 
     /** Optional. Every engine should really implement this. */
@@ -376,19 +377,20 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param validIsbn      to search for, <strong>will</strong> be valid.
+         * @param validIsbn   to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                       The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws IOException on other failures
+         * @throws GeneralParsingException on a decoding/parsing of data issue
+         * @throws IOException             on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchCovers)
-        throws GeneralParsingException, IOException;
+                throws GeneralParsingException, IOException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -419,9 +421,9 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param barcode        to search for, <strong>will</strong> be valid.
+         * @param barcode     to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                       The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -431,7 +433,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
                                @NonNull boolean[] fetchCovers)
-        throws IOException;
+                throws IOException;
     }
 
     /**
@@ -448,18 +450,19 @@ public interface SearchEngine {
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
-         * @param code           isbn, barcode or generic code to search for
-         * @param author         to search for
-         * @param title          to search for
-         * @param publisher      optional and in addition to author/title.
-         *                       i.e. author and/or title must be valid;
-         *                       only then the publisher is taken into account.
+         * @param code        isbn, barcode or generic code to search for
+         * @param author      to search for
+         * @param title       to search for
+         * @param publisher   optional and in addition to author/title.
+         *                    i.e. author and/or title must be valid;
+         *                    only then the publisher is taken into account.
          * @param fetchCovers Set to {@code true} if we want to get covers
-         *                       The array is guaranteed to have at least one element.
+         *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws IOException on other failures
+         * @throws GeneralParsingException on a decoding/parsing of data issue
+         * @throws IOException             on other failures
          */
         @WorkerThread
         @NonNull
@@ -468,7 +471,7 @@ public interface SearchEngine {
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchCovers)
-        throws GeneralParsingException, IOException;
+                throws GeneralParsingException, IOException;
     }
 
     /** Optional. */
@@ -619,7 +622,8 @@ public interface SearchEngine {
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
          *
-         * @throws IOException on other failures
+         * @throws GeneralParsingException on a decoding/parsing of data issue
+         * @throws IOException             on other failures
          */
         @WorkerThread
         @NonNull

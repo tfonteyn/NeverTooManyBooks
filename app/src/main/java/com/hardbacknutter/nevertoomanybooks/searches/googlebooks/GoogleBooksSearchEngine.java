@@ -138,7 +138,8 @@ public class GoogleBooksSearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,

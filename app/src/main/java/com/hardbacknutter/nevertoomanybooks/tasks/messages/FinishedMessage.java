@@ -24,14 +24,13 @@ import androidx.annotation.Nullable;
 
 /**
  * Value class holding Result data.
+ *
+ * @param <Result> type of the payload
  */
 public class FinishedMessage<Result>
         implements LiveDataEvent {
 
     public static final String MISSING_TASK_RESULTS = "message.result";
-
-    /** {@link LiveDataEvent}. */
-    private boolean mHasBeenHandled;
 
     public final int taskId;
 
@@ -41,6 +40,9 @@ public class FinishedMessage<Result>
      */
     @Nullable
     public final Result result;
+
+    /** {@link LiveDataEvent}. */
+    private boolean mHasBeenHandled;
 
     public FinishedMessage(final int taskId,
                            @Nullable final Result result) {

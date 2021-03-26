@@ -117,7 +117,8 @@ public abstract class ArchiveWriterAbstract
      * @param context          Current context
      * @param progressListener to send progress updates to
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     @NonNull
     @Override
@@ -238,7 +239,8 @@ public abstract class ArchiveWriterAbstract
      *
      * @return the temporary books file
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
@@ -275,7 +277,8 @@ public abstract class ArchiveWriterAbstract
      * @param context current context
      * @param data    to add to the header bundle
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
@@ -306,7 +309,8 @@ public abstract class ArchiveWriterAbstract
      * @param encoding         for the record
      * @param progressListener Listener to receive progress information.
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     private void writeRecord(@NonNull final Context context,
                              @NonNull final RecordType recordType,

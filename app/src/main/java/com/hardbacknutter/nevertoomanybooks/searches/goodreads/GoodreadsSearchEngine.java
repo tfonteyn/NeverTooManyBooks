@@ -184,6 +184,9 @@ public class GoodreadsSearchEngine
      * The search will in fact search/find a list of 'works' but we only return the first one.
      *
      * @return first book found, or an empty bundle if none found.
+     *
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on other failures
      */
     @NonNull
     @Override

@@ -45,7 +45,8 @@ public interface RecordWriter
      * @param writer   Writer to write to
      * @param metaData the bundle of information to write
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     @WorkerThread
     default void writeMetaData(@NonNull final Writer writer,
@@ -65,7 +66,8 @@ public interface RecordWriter
      *
      * @return {@link ExportResults}
      *
-     * @throws IOException on failure
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failure
      */
     @WorkerThread
     @NonNull

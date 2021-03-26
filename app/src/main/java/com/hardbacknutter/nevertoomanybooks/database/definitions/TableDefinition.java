@@ -738,6 +738,10 @@ public class TableDefinition {
     }
 
     /**
+     * URGENT: the use of recreateAndReload is dangerous right now and can break updates.
+     * More specifically: the recreateAndReload routine can only be used ONCE per table.
+     * We'll need to keep previous table definitions as BC used to do.
+     * <p>
      * Alter the physical table in the database.
      * Takes care of newly added (based on TableDefinition),
      * removes obsolete, and renames columns. The latter based on a list/map passed in.
