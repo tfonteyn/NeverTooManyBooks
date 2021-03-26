@@ -115,36 +115,34 @@ public class BookTest {
         mPublisherList.clear();
         mTocEntryList.clear();
 
-        try (BookDao bookDao = new BookDao("setup")) {
+        final SynchronizedDb db = ServiceLocator.getDb();
+        Constants.deleteTocs(db);
+        Constants.deleteBooks(db);
+        Constants.deleteAuthors(db);
+        Constants.deletePublishers(db);
 
-            final SynchronizedDb db = bookDao.getDb();
-            Constants.deleteTocs(db);
-            Constants.deleteBooks(db);
-            Constants.deleteAuthors(db);
-            Constants.deletePublishers(db);
 
-            mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
-            mBookshelfList.clear();
-            mBookshelfList.add(mBookshelf[0]);
+        mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
+        mBookshelfList.clear();
+        mBookshelfList.add(mBookshelf[0]);
 
-            mAuthor[0] = Author.from(AuthorFullName(0));
-            mAuthor[1] = Author.from(AuthorFullName(1));
+        mAuthor[0] = Author.from(AuthorFullName(0));
+        mAuthor[1] = Author.from(AuthorFullName(1));
 
-            // insert author[0] but do NOT insert author[1]
-            mAuthorId[0] = serviceLocator.getAuthorDao().insert(context, mAuthor[0]);
-            mAuthorList.clear();
-            mAuthorList.add(mAuthor[0]);
+        // insert author[0] but do NOT insert author[1]
+        mAuthorId[0] = serviceLocator.getAuthorDao().insert(context, mAuthor[0]);
+        mAuthorList.clear();
+        mAuthorList.add(mAuthor[0]);
 
-            mPublisher[0] = Publisher.from(Constants.PUBLISHER + "0");
-            mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+        mPublisher[0] = Publisher.from(Constants.PUBLISHER + "0");
+        mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
 
-            // insert publisher[0] but do NOT publisher author[1]
+        // insert publisher[0] but do NOT publisher author[1]
 
-            mPublisherId[0] = serviceLocator.getPublisherDao().insert(context, mPublisher[0],
-                                                                      Locale.getDefault());
-            mPublisherList.clear();
-            mPublisherList.add(mPublisher[0]);
-        }
+        mPublisherId[0] = serviceLocator.getPublisherDao().insert(context, mPublisher[0],
+                                                                  Locale.getDefault());
+        mPublisherList.clear();
+        mPublisherList.add(mPublisher[0]);
 
         initCacheDirectory(context);
         final File[] files = initPicturesDirectory(context);

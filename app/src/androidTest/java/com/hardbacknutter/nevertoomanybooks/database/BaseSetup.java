@@ -92,14 +92,13 @@ public abstract class BaseSetup {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         ServiceLocator.create(context);
 
+        final SynchronizedDb db = ServiceLocator.getDb();
+        Constants.deleteTocs(db);
+        Constants.deleteBooks(db);
+        Constants.deleteAuthors(db);
+        Constants.deletePublishers(db);
+
         try (BookDao bookDao = new BookDao("setup")) {
-
-            final SynchronizedDb db = bookDao.getDb();
-            Constants.deleteTocs(db);
-            Constants.deleteBooks(db);
-            Constants.deleteAuthors(db);
-            Constants.deletePublishers(db);
-
             // all books will sit on the same shelf for now
             //Constants.deleteBookshelves(db);
             bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
