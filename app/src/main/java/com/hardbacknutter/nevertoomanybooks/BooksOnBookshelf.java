@@ -59,7 +59,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -98,6 +97,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -199,17 +199,16 @@ public class BooksOnBookshelf
     /** Bring up the synchronization options. */
     private final ActivityResultLauncher<Void> mStripInfoSyncLauncher =
             registerForActivityResult(new StripInfoSyncContract(), data -> {});
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
-            registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
+            registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditFinished);
@@ -290,6 +289,12 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu mFabMenu;
+    /** View Binding. */
+    private BooksonbookshelfBinding mVb;
+    /** List layout manager. */
+    private LinearLayoutManager mLayoutManager;
     /**
      * Accept the result from the dialog.
      */
@@ -302,16 +307,6 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
-    /** Encapsulates the FAB button/menu. */
-    private FabMenu mFabMenu;
-
-    /** View Binding. */
-    private BooksonbookshelfBinding mVb;
-
-    /** List layout manager. */
-    private LinearLayoutManager mLayoutManager;
-
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -340,7 +335,6 @@ public class BooksOnBookshelf
                         final boolean isChanged = id != mVm.getCurrentBookshelf().getId();
                         if (isChanged) {
                             saveListPosition();
-                            // make the new shelf the current and rebuild
                             mVm.setCurrentBookshelf(parent.getContext(), id);
                             buildBookList();
                         }
@@ -365,7 +359,6 @@ public class BooksOnBookshelf
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
                     mVm.resetPreferredListRebuildMode();
-                    // and do a rebuild
                     buildBookList();
                 }
             };
@@ -417,7 +410,7 @@ public class BooksOnBookshelf
 
                     } else {
                         // it's a level, expand/collapse.
-                        setNode(rowData, BooklistNode.NEXT_STATE_TOGGLE, 1);
+                        setNodeState(rowData, BooklistNode.NEXT_STATE_TOGGLE, 1);
                     }
                 }
 
@@ -487,19 +480,19 @@ public class BooksOnBookshelf
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        onCreateFragmentResultListeners();
-        onCreateViewModel();
-        onCreateDelegates();
+        createFragmentResultListeners();
+        createViewModel();
+        createDelegates();
 
-        onCreateBookshelfSpinner();
-        onCreateBooklist(global);
+        createBookshelfSpinner();
+        createBooklist(global);
 
         // Initialise adapter without a cursor. We'll recreate it with a cursor when
         // we're ready to display the book-list.
         // If we don't create it here then some Android internals cause problems.
-        onCreateAdapter(null);
+        createListAdapter(false);
 
-        onCreateFabMenu(global);
+        createFabMenu(global);
         updateSyncMenuVisibility(global);
 
         // Popup the search widget when the user starts to type.
@@ -513,7 +506,7 @@ public class BooksOnBookshelf
         }
     }
 
-    private void onCreateFragmentResultListeners() {
+    private void createFragmentResultListeners() {
         final FragmentManager fm = getSupportFragmentManager();
 
         fm.setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
@@ -526,7 +519,7 @@ public class BooksOnBookshelf
         }
     }
 
-    private void onCreateViewModel() {
+    private void createViewModel() {
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mVm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         mVm.init(this, getIntent().getExtras());
@@ -535,7 +528,7 @@ public class BooksOnBookshelf
         mVm.onFinished().observe(this, this::onBuildFinished);
     }
 
-    private void onCreateDelegates() {
+    private void createDelegates() {
         try {
             mCalibreHandler = new CalibreHandler(this);
             mCalibreHandler.onViewCreated(this, mVb.getRoot());
@@ -547,7 +540,7 @@ public class BooksOnBookshelf
         mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
     }
 
-    private void onCreateBooklist(@NonNull final SharedPreferences global) {
+    private void createBooklist(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
@@ -577,31 +570,44 @@ public class BooksOnBookshelf
      * Not setting an adapter at all in {@link #onCreate} is not a solution either...
      * crashes assured! Also see {@link #buildBookList}.
      *
-     * @param cursor to use, or {@code null} for initial creation.
+     * @param display set to {@code false} for initial creation!
+     *
+     * @return the item count of the list adapter.
      */
-    public void onCreateAdapter(@Nullable final Cursor cursor) {
-
-        final HeaderAdapter headerAdapter = new HeaderAdapter();
+    @IntRange(from = 0)
+    public int createListAdapter(final boolean display) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Log.d(TAG, "createListAdapter|display=" + display, new Throwable());
+        }
 
         mAdapter = new BooklistAdapter(this);
-        if (cursor != null) {
+        if (display) {
+            // make the list view visible!
+            mVb.list.setVisibility(View.VISIBLE);
+            // install single and long-click listeners
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
-            mAdapter.setCursor(this, cursor, mVm.getCurrentStyle(this));
+            // hookup the cursor
+            mAdapter.setCursor(this, mVm.getNewListCursor(), mVm.getCurrentStyle(this));
+
+            // Combine the adapters for the list header and the actual list
+            final ConcatAdapter concatAdapter = new ConcatAdapter(
+                    new ConcatAdapter.Config.Builder()
+                            .setIsolateViewTypes(true)
+                            .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
+                            .build(),
+                    new HeaderAdapter(), mAdapter);
+
+            mVb.list.setAdapter(concatAdapter);
+            return mAdapter.getItemCount();
+
+        } else {
+            mVb.list.setVisibility(View.GONE);
+            //mVb.list.setAdapter(headerAdapter);
+            return 0;
         }
-        // No, we do NOT have a fixed size for each row
-        //mVb.list.setHasFixedSize(false);
-
-        final ConcatAdapter concatAdapter = new ConcatAdapter(
-                new ConcatAdapter.Config.Builder()
-                        .setIsolateViewTypes(true)
-                        .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
-                        .build(),
-                headerAdapter, mAdapter);
-
-        mVb.list.setAdapter(concatAdapter);
     }
 
-    private void onCreateBookshelfSpinner() {
+    private void createBookshelfSpinner() {
         // remove the default title to make space for the spinner.
         setTitle("");
 
@@ -614,7 +620,7 @@ public class BooksOnBookshelf
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
     }
 
-    private void onCreateFabMenu(@NonNull final SharedPreferences global) {
+    private void createFabMenu(@NonNull final SharedPreferences global) {
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         // mVb.fab4SearchExternalId
@@ -905,11 +911,11 @@ public class BooksOnBookshelf
 
         // Next handle the real context menus.
 
-        final Cursor cursor = mAdapter.getCursor();
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
         // Paranoia: if the user can click it, then this move should be fine.
+        final Cursor cursor = mAdapter.getCursor();
         if (!cursor.moveToPosition(position)) {
             return false;
         }
@@ -1157,17 +1163,15 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
-            setNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
-                    mVm.getCurrentStyle(this).getGroups().size());
+            setNodeState(rowData, BooklistNode.NEXT_STATE_EXPANDED,
+                         mVm.getCurrentStyle(this).getGroups().size());
             return true;
 
         } else if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
             final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
             final BooklistNode node = mVm.getNextBookWithoutCover(this, nodeRowId);
             if (node != null) {
-                final List<BooklistNode> target = new ArrayList<>();
-                target.add(node);
-                displayList(target);
+                displayList(node);
             }
             return true;
         }
@@ -1555,7 +1559,7 @@ public class BooksOnBookshelf
             mVm.onBuildCancelled(message);
 
             if (mVm.isListLoaded()) {
-                displayList(null);
+                displayList();
             } else {
                 recoverAfterFailedBuild();
             }
@@ -1573,7 +1577,7 @@ public class BooksOnBookshelf
             mVm.onBuildFailed(message);
 
             if (mVm.isListLoaded()) {
-                displayList(null);
+                displayList();
             } else {
                 recoverAfterFailedBuild();
             }
@@ -1593,17 +1597,35 @@ public class BooksOnBookshelf
         throw new IllegalStateException("Style=" + style);
     }
 
-    private void setNode(@NonNull final DataHolder rowData,
-                         @BooklistNode.NextState final int nextState,
-                         final int relativeChildLevel) {
+    /**
+     * Expand/Collapse the given position.
+     *
+     * @param rowData            for the book/level at the given position
+     * @param nextState          the required next state of this node
+     * @param relativeChildLevel how many child levels below the node should be modified likewise
+     */
+    private void setNodeState(@NonNull final DataHolder rowData,
+                              @BooklistNode.NextState final int nextState,
+                              final int relativeChildLevel) {
         saveListPosition();
         final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-        mVm.setNode(nodeRowId, nextState, relativeChildLevel);
-        displayList(null);
+        final BooklistNode node = mVm.setNode(nodeRowId, nextState, relativeChildLevel);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+            dbgDumpPositions("setNodeState", node.getListPosition());
+        }
+        displayList(node);
     }
 
     /**
-     * Expand/Collapse the current position in the list.
+     * Expand/Collapse the entire list <strong>starting</strong> from the given level.
+     * <p>
+     * This is called from the options menu:
+     * <ul>
+     *     <li>Preferred level</li>
+     *     <li>expand all</li>
+     *     <li>collapse all</li>
+     * </ul>
      *
      * @param topLevel the desired top-level which must be kept visible
      * @param expand   desired state
@@ -1611,16 +1633,19 @@ public class BooksOnBookshelf
     private void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                 final boolean expand) {
         // It is possible that the list will be empty, if so, ignore
-        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
+        if (mAdapter.getItemCount() > 0) {
             saveListPosition();
-            // set new states
             mVm.expandAllNodes(topLevel, expand);
-            displayList(null);
+            displayList();
         }
     }
 
     /**
-     * Preserve the list position for the CURRENT bookshelf/style combination.
+     * Preserve the top of the list position for the CURRENT bookshelf/style combination.
+     * <ol>
+     *     <li>The row number at the top of the screen.</li>
+     *     <li>The pixel offset of that row from the top of the screen.</li>
+     * </ol>
      * <p>
      * TODO: https://guides.codepath.com/android/Handling-Configuration-Changes#recyclerview
      * but we'd still need to do some manual stuff to keep the position in between
@@ -1628,21 +1653,65 @@ public class BooksOnBookshelf
      */
     void saveListPosition() {
         if (!isDestroyed()) {
-            final int position = mLayoutManager.findFirstVisibleItemPosition();
-            if (position == RecyclerView.NO_POSITION) {
+            final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
+            if (firstVisiblePos == RecyclerView.NO_POSITION) {
                 return;
             }
+            final int topViewOffset = getTopViewOffset();
+            mVm.saveListPosition(this, firstVisiblePos, topViewOffset);
+        }
+    }
 
-            // The number of pixels offset for the first visible row.
-            final int topViewOffset;
-            final View topView = mVb.list.getChildAt(0);
-            if (topView != null) {
-                topViewOffset = topView.getTop();
-            } else {
-                topViewOffset = 0;
-            }
+    /**
+     * The number of pixels offset for the first visible row, negative values are ok.
+     *
+     * @return pixels
+     */
+    private int getTopViewOffset() {
+        final View topView = mVb.list.getChildAt(0);
+        return topView != null ? topView.getTop() : 0;
+    }
 
-            mVm.saveListPosition(this, position, topViewOffset);
+    @SuppressLint("LogConditional")
+    private void dbgDumpPositions(@NonNull final String method,
+                                  final int pos) {
+        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
+        final int savedPosition = bookshelf.getFirstVisibleItemPosition();
+        final int savedOffset = bookshelf.getTopViewOffset();
+
+        Log.d(TAG, String.format("%-30s"
+                                 + " |savedPosition= %4d |firstVisiblePos= %4d"
+                                 + " |savedOffset= %4d |offset= %4d"
+                                 + " |lastVisiblePos= %4d"
+                                 + " |pos= %4d",
+                                 method,
+                                 savedPosition, mLayoutManager.findFirstVisibleItemPosition(),
+                                 savedOffset, getTopViewOffset(),
+                                 mLayoutManager.findLastVisibleItemPosition(),
+                                 pos
+                                ));
+    }
+
+
+    /**
+     * Display the list based on the given cursor, and update the list headers.
+     */
+    private void displayList() {
+        if (createListAdapter(true) > 0) {
+            mVb.list.post(this::scrollToSavedListPosition);
+        }
+    }
+
+    /**
+     * Display the list based on the given cursor, and update the list headers.
+     * Try to scroll to the desired node.
+     *
+     * @param node to show
+     */
+    private void displayList(@NonNull final BooklistNode node) {
+        if (createListAdapter(true) > 0) {
+            scrollToSavedListPosition();
+            mVb.list.post(() -> scrollTo(node));
         }
     }
 
@@ -1653,129 +1722,141 @@ public class BooksOnBookshelf
      * @param targetNodes (optional) to re-position to
      */
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "displayList|called from:", new Throwable());
-        }
+        if (createListAdapter(true) > 0) {
+            scrollToSavedListPosition();
 
-        mVb.list.setVisibility(View.VISIBLE);
-        onCreateAdapter(mVm.getNewListCursor());
-        scrollToSavedPosition(targetNodes);
-    }
+            if (targetNodes != null) {
+                if (targetNodes.size() == 1) {
+                    mVb.list.post(() -> scrollTo(targetNodes.get(0)));
 
-    /**
-     * Scroll to the saved position for the current Bookshelf.
-     * Optionally re-position to the desired target node(s).
-     *
-     * @param targetNodes (optional) to re-position to
-     */
-    private void scrollToSavedPosition(@Nullable final List<BooklistNode> targetNodes) {
-        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
-        int position = bookshelf.getTopItemPosition();
-
-        if (position >= mAdapter.getItemCount()) {
-            // the list is shorter than it used to be, just scroll to the end
-            mLayoutManager.scrollToPosition(position);
-
-        } else if (position != RecyclerView.NO_POSITION) {
-            // sanity check
-            if (position < 0) {
-                position = 0;
+                } else if (targetNodes.size() > 1) {
+                    mVb.list.post(() -> scrollTo(findBestNode(targetNodes)));
+                }
             }
-            mLayoutManager.scrollToPositionWithOffset(position, bookshelf.getTopViewOffset());
-        }
-
-        // Note that an above scroll position change will not be reflected
-        // until the next layout call hence we need to post any additional scroll
-        if (targetNodes != null) {
-            mVb.list.post(() -> scrollTo(targetNodes));
-        } else {
-            // we're at the final position
-            mVb.list.post(this::saveListPosition);
         }
     }
 
     /**
-     * Scroll to the 'best' position in the given list of targets.
+     * Find the node which is physically closest to the current visible position.
      *
-     * @param targetNodes list of rows of which we want one to be visible to the user.
+     * @param targetNodes to select from
+     *
+     * @return 'best' node
      */
-    private void scrollTo(@NonNull final List<BooklistNode> targetNodes) {
-        // sanity check
-        if (targetNodes.isEmpty()) {
-            return;
-        }
+    @NonNull
+    private BooklistNode findBestNode(@NonNull final List<BooklistNode> targetNodes) {
+        // Position of the row in the (vertical) center of the screen
+        final int center = (mLayoutManager.findLastVisibleItemPosition()
+                            + mLayoutManager.findFirstVisibleItemPosition())
+                           / 2;
 
-        final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-        if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {
-            // empty list
-            return;
-        }
-
-        final int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
-        final int middle = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
-
-        // Get the first 'target' and make it 'best candidate'
         BooklistNode best = targetNodes.get(0);
-        // distance from currently visible middle row
-        int distance = Math.abs(best.getListPosition() - middle);
+        // distance from currently visible center row
+        int distance = Math.abs(best.getListPosition() - center);
 
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetNodes.size(); i++) {
             final BooklistNode node = targetNodes.get(i);
-            final int newDist = Math.abs(node.getListPosition() - middle);
+            final int newDist = Math.abs(node.getListPosition() - center);
             if (newDist < distance) {
                 distance = newDist;
                 best = node;
             }
         }
+        return best;
+    }
 
-        scrollTo(best);
+    /**
+     * Scroll the list to the position saved in {@link #saveListPosition}.
+     * Saves the potentially changed position after the scrolling is done.
+     * <p>
+     * If this call will be followed by a call to {@link #scrollTo(BooklistNode)}, then it
+     * can be called as-is {@code scrollToSavedListPosition();}
+     * <p>
+     * If this is the last call when displaying the list, then it
+     * <strong>must</strong> be called using {@code v.post(this::scrollToSavedListPosition);}
+     */
+    private void scrollToSavedListPosition() {
+        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
+        int savedPosition = bookshelf.getFirstVisibleItemPosition();
+        // sanity check
+        if (savedPosition < 0) {
+            savedPosition = 0;
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+            dbgDumpPositions("scrollToSavedListPosition", -666);
+        }
+
+        if (savedPosition >= mAdapter.getItemCount()) {
+            // the list is shorter than it used to be, just scroll to the end
+            mLayoutManager.scrollToPosition(savedPosition);
+        } else {
+            mLayoutManager.scrollToPositionWithOffset(savedPosition, bookshelf.getTopViewOffset());
+        }
+
+        mVb.list.post(this::saveListPosition);
     }
 
     /**
      * Scroll the given node into user view.
      *
+     * <strong>Must</strong> be called using {@code v.post(() -> scrollTo(node));}
+     *
      * @param node to scroll to
      */
     private void scrollTo(@NonNull final BooklistNode node) {
-
-        final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-        if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {
-            // empty list
+        final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
+        // sanity check, we should never get here
+        if (firstVisiblePos == RecyclerView.NO_POSITION) {
+            Logger.warn(this, TAG, "scrollTo: firstVisiblePos == NO_POSITION");
             return;
         }
 
         // If the node is not in view, or at the edge, scroll it into view.
-        final int pos = node.getListPosition();
-        if (pos <= firstVisibleItemPosition) {
-            // We always scroll up 1 more than needed for comfort.
-            mLayoutManager.scrollToPosition(pos - 1);
-            mVb.list.post(this::saveListPosition);
+        final int positionWanted = node.getListPosition();
 
-        } else if (pos >= mLayoutManager.findLastVisibleItemPosition()) {
-            // first scroll to the requested position
-            mLayoutManager.scrollToPosition(pos);
-            mVb.list.post(() -> {
-                if (node.isExpanded()) {
-                    int position = node.getListPosition();
-                    // if we are at the bottom of the screen,
-                    if (position == mLayoutManager.findLastCompletelyVisibleItemPosition()) {
-                        // and it's not displaying a book,
-                        if (mAdapter.getItemViewType(position) != BooklistGroup.BOOK) {
-                            // scroll an additional line to make it clear this line was expanded.
-                            position += 1;
-                        }
-                        // scroll 1 line extra, i.e. 1 or 2 lines extra to the requested position
-                        mLayoutManager.scrollToPosition(position + 1);
-                        mVb.list.post(this::saveListPosition);
-                        return;
-                    }
-                }
-
-                // we're at the final position
-                saveListPosition();
-            });
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+            dbgDumpPositions("scrollTo(node)", positionWanted);
         }
+
+        final int lastVisiblePos = mLayoutManager.findLastVisibleItemPosition();
+
+        // Dev notes...
+        // The recycler list will in fact extent at the top/bottom beyond the screen edge
+        // It does this due to the CoordinatorLayout with the AppBar behaviour config.
+        // We can't simply add some padding to the RV (i.e. ?attr/actionBarSize)
+        // as that would initially show a good result, but as soon as we scroll
+        // would show up as a blank bit at the bottom.
+        // Other people have the same issue:
+        // https://stackoverflow.com/questions/38073272
+        //
+        // findLastVisibleItemPosition will find the CORRECT position...
+        // ... except that it will be outside/below the screen by some 2-4 lines
+        // and hence in practice NOT visible. Same to a lesser extent for the top.
+        //
+        // The logic/math here for the top of the screen works well.
+        // Handling the bottom is harder. It works good enough, but not perfect.
+        // It depends on then fact if you just scrolled the page up or down, and then
+        // expanded or collapsed the last row. There are more combinations... to many.
+        if (positionWanted < firstVisiblePos) {
+            mLayoutManager.scrollToPosition(positionWanted + 1);
+
+        } else if (positionWanted == lastVisiblePos - 2) {
+            mLayoutManager.scrollToPosition(positionWanted + 2);
+
+        } else if (positionWanted > lastVisiblePos - 2) {
+            if (node.isExpanded()
+                && mAdapter.getItemViewType(positionWanted) != BooklistGroup.BOOK) {
+                // If the bottom line is expanded, and not a book, scroll an additional line
+                mLayoutManager.scrollToPosition(positionWanted + 3);
+            } else {
+                mLayoutManager.scrollToPosition(positionWanted + 2);
+            }
+        } // else don't scroll at all
+
+        // ALWAYS save, even if we don't explicitly scroll here. We might have scrolled before.
+        mVb.list.post(this::saveListPosition);
     }
 
     /**

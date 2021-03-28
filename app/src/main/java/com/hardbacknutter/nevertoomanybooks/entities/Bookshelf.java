@@ -25,6 +25,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -320,16 +321,20 @@ public class Bookshelf
 
     /**
      * Get the stored position to use for re-displaying this bookshelf's booklist.
+     * Normally in the range 0..x, but can theoretically be {@link RecyclerView#NO_POSITION} !
      *
      * @return value for {@link LinearLayoutManager#scrollToPosition(int)}
      * or {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
-    public int getTopItemPosition() {
+    @IntRange(from = RecyclerView.NO_POSITION)
+    public int getFirstVisibleItemPosition() {
         return mTopItemPosition;
     }
 
     /**
      * Get the stored position to use for re-displaying this bookshelf's booklist.
+     * Due to CoordinatorLayout behaviour, the returned value
+     * <strong>can be negative, this is NORMAL</strong>
      *
      * @return value for {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
@@ -341,12 +346,12 @@ public class Bookshelf
      * Store the current position of the booklist displaying this bookshelf.
      *
      * @param context       Current context
-     * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition}
+     * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition()}
      * @param topViewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
      */
-    public void setTopListPosition(@NonNull final Context context,
-                                   final int position,
-                                   final int topViewOffset) {
+    public void setFirstVisibleItemPosition(@NonNull final Context context,
+                                            final int position,
+                                            final int topViewOffset) {
         mTopItemPosition = position;
         mTopViewOffset = topViewOffset;
 

@@ -174,7 +174,7 @@ public class BookshelfDaoImpl
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, bookshelf.getName());
             stmt.bindLong(2, styleId);
-            stmt.bindLong(3, bookshelf.getTopItemPosition());
+            stmt.bindLong(3, bookshelf.getFirstVisibleItemPosition());
             stmt.bindLong(4, bookshelf.getTopViewOffset());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -193,7 +193,7 @@ public class BookshelfDaoImpl
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKeys.KEY_BOOKSHELF_NAME, bookshelf.getName());
-        cv.put(DBKeys.KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getTopItemPosition());
+        cv.put(DBKeys.KEY_BOOKSHELF_BL_TOP_POS, bookshelf.getFirstVisibleItemPosition());
         cv.put(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET, bookshelf.getTopViewOffset());
 
         cv.put(DBKeys.KEY_FK_STYLE, styleId);

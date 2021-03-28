@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import androidx.activity.result.contract.ActivityResultContract;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -55,15 +53,20 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean BOB_THE_BUILDER_TIMERS = false;
 
-    /** {@link BooksOnBookshelfViewModel}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
-    /** {@link BooksOnBookshelfViewModel} Expand/Collapsing nodes. */
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao}
+     * Expand/Collapsing nodes.
+     */
     public static final boolean BOB_NODE_STATE = false;
     /**
-     * {@link BooksOnBookshelfViewModel} Display the position and node id.
-     * Adds a View from code.
+     * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter}
+     * {@link BooksOnBookshelf}
+     * Display the position and node id. Adds a View from code.
      */
-    public static final boolean BOB_NODE_ID = false;
+    public static final boolean BOB_NODE_POSITIONS = false;
+
 
     /** track results from {@link ActivityResultContract#parseResult}. */
     public static final boolean ON_ACTIVITY_RESULT = false;
@@ -76,7 +79,7 @@ public final class DEBUG_SWITCHES {
     /** all things network related. */
     public static final boolean NETWORK = false;
 
-    /** {@link JsoupLoader}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.network.JsoupLoader}. */
     public static final boolean JSOUP = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */

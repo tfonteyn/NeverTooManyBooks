@@ -352,7 +352,7 @@ public class BooksOnBookshelfViewModel
                                  final int topViewOffset) {
         if (mListHasBeenLoaded) {
             Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            mBookshelf.setTopListPosition(context, position, topViewOffset);
+            mBookshelf.setFirstVisibleItemPosition(context, position, topViewOffset);
         }
     }
 
@@ -519,8 +519,7 @@ public class BooksOnBookshelfViewModel
     @Nullable
     public String getHeaderBookCount(@NonNull final Context context) {
         final ListStyle style = getCurrentStyle(context);
-        if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT)) {
-            //noinspection ConstantConditions
+        if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT) && mBooklist != null) {
             final int totalBooks = mBooklist.countBooks();
             final int distinctBooks = mBooklist.countDistinctBooks();
             if (distinctBooks != totalBooks) {

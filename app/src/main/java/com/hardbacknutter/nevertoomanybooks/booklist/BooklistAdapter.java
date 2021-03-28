@@ -28,6 +28,9 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -246,7 +249,7 @@ public class BooklistAdapter
 
     @Override
     public int getItemCount() {
-        return mCursor != null ? mCursor.getCount() : -1;
+        return mCursor != null ? mCursor.getCount() : 0;
     }
 
     /**
@@ -986,11 +989,12 @@ public class BooklistAdapter
                 mCoverView.setVisibility(View.GONE);
             }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_ID) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 // add a text view to display the "position/rowId" for a book
                 mDbgRowIdView = new TextView(context);
                 mDbgRowIdView.setId(View.generateViewId());
                 mDbgRowIdView.setTextColor(Color.BLUE);
+                mDbgRowIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
 
                 final LinearLayout parentLayout = itemView.findViewById(R.id.icon_sidebar);
                 mDbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
@@ -1129,12 +1133,10 @@ public class BooklistAdapter
                 showOrHide(mBookshelvesView, rowData.getString(DBKeys.KEY_BOOKSHELF_NAME_CSV));
             }
 
-            if (BuildConfig.DEBUG /* always */) {
-                // will only exist if DEBUG_SWITCHES.BOB_NODE_ID was set
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 if (mDbgRowIdView != null) {
-                    final String txt =
-                            "" + position + '\n'
-                            + rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+                    final String txt = "" + position + '/'
+                                       + rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
                     mDbgRowIdView.setText(txt);
                 }
             }
@@ -1341,6 +1343,18 @@ public class BooklistAdapter
                 final int rowId = rowData.getInt(DBKeys.KEY_PK_ID);
                 final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
                 itemView.setBackgroundColor(cursor.getDbgRowColor(rowId));
+            }
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+                final String dbgText = " " + position + '/'
+                                       + rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+
+                final CharSequence text = mTextView.getText();
+                final SpannableString dbg = new SpannableString(text + dbgText);
+                dbg.setSpan(new ForegroundColorSpan(Color.BLUE), text.length(), dbg.length(), 0);
+                dbg.setSpan(new RelativeSizeSpan(0.7f), text.length(), dbg.length(), 0);
+
+                mTextView.setText(dbg);
             }
         }
 
