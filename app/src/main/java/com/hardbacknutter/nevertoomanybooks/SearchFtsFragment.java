@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBi
 
 /**
  * FIXME: open screen, click in field -> keyb up * now rotate screen... logcat msg
- * https://stackoverflow.com/questions/8122625/getextractedtext-on-inactive-inputconnection-warning-on-android#15732554
+ * https://stackoverflow.com/questions/8122625#15732554
  *
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
