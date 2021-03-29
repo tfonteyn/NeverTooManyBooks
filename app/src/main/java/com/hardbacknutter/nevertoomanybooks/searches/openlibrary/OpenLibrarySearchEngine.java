@@ -60,19 +60,29 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * <a href="https://openlibrary.org/developers/api">API</a>
+ * <a href="https://openlibrary.org/dev/docs/api/books">API</a>
  * <p>
- * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
- * URGENT: 2021-03-21: we should try out jscmd=detail again or try https://openlibrary.org/isbn/
- * <p>
+ * TLDR: works, but data not complete or not stable (maybe I am to harsh though)
+ * <ol>
+ *     <li>The Works API (by Work ID)</li>
+ *     <li>The Editions API (by Edition ID)</li>
+ *     <li>The ISBN API (by ISBN)
+ *          <br>Pro: non-english books have a language tag embedded
+ *          <br>Con: No Authors embedded (links instead), no covers (id's, but no sizes),
+ *              key/values different from api 4 (below)
+ *     </li>
+ *     <li>The Books API (generic) - what we use; see below</li>
+ * </ol>
+ *
  * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
- * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
+ * Allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
  *      <li>response format: jscmd=data:<br>
  *          Does not return all the info that is known to be present.
  *          (use the website itself to look up an isbn)
  *          Example: "physical_format": "Paperback" is NOT part of the response;
- *          Example: language info is missing</li>
+ *          Example: language info is missing
+ *      </li>
  *      <li>response format: jscmd=detail:<br>
  *          The docs state: "It is advised to use jscmd=data instead of this as that is
  *          more stable format."
@@ -80,7 +90,9 @@ import com.hardbacknutter.org.json.JSONObject;
  *          additional fields. Some fields have a different schema: "identifiers" with
  *          "data" has sub object with all identifiers (including isbn).
  *          But "identifiers" with "detail" has no isbn's.
- *          Instead isbn's are on the same level as "identifiers" itself.</li>
+ *          Instead isbn's are on the same level as "identifiers" itself.<br>
+ *          PRO: contains language and series tags!
+ *      </li>
  * </ul>
  * <ul>Problems:
  *      <li>"data" does not contain all information that the site has</li>
@@ -464,6 +476,10 @@ public class OpenLibrarySearchEngine
                        @NonNull final Bundle bookData)
             throws JSONException {
 
+        // store the isbn; we might override it later on though (e.g. isbn 13v10)
+        // not sure if this is needed though. Need more data.
+        bookData.putString(DBKeys.KEY_ISBN, validIsbn);
+
         JSONObject element;
         JSONArray a;
         String s;
@@ -473,6 +489,8 @@ public class OpenLibrarySearchEngine
         if (!s.isEmpty()) {
             bookData.putString(DBKeys.KEY_TITLE, s);
         }
+
+        // s = document.optString("subtitle");
 
         final ArrayList<Author> authors = new ArrayList<>();
         a = document.optJSONArray("authors");
@@ -489,16 +507,24 @@ public class OpenLibrarySearchEngine
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authors);
         }
 
-        // store the isbn; we might override it later on though (e.g. isbn 13v10)
-        // not sure if this is needed though. Need more data.
-        bookData.putString(DBKeys.KEY_ISBN, validIsbn);
+        // s = jsonObject.optString("pagination");
+        // if (!s.isEmpty()) {
+        //     bookData.putString(DBDefinitions.KEY_PAGES, s);
+        // } else {
+        i = document.optInt("number_of_pages");
+        if (i > 0) {
+            bookData.putString(DBKeys.KEY_PAGES, String.valueOf(i));
+        }
+        // }
 
-        // everything below is optional.
+        element = document.optJSONObject("identifiers");
+        if (element != null) {
+            processIdentifiers(element, bookData);
+        }
 
-        // "notes" is a specific (set of) remarks on this particular edition of the book.
-        s = document.optString("notes");
-        if (!s.isEmpty()) {
-            bookData.putString(DBKeys.KEY_DESCRIPTION, s);
+        a = document.optJSONArray("publishers");
+        if (a != null && !a.isEmpty()) {
+            processPublishers(a, bookData);
         }
 
         s = document.optString("publish_date");
@@ -510,25 +536,20 @@ public class OpenLibrarySearchEngine
             }
         }
 
-//        s = jsonObject.optString("pagination");
-//        if (!s.isEmpty()) {
-//            bookData.putString(DBDefinitions.KEY_PAGES, s);
-//        } else {
-        i = document.optInt("number_of_pages");
-        if (i > 0) {
-            bookData.putString(DBKeys.KEY_PAGES, String.valueOf(i));
-        }
-//        }
+        // "subjects": [
+        //            {
+        //                "name": "History",
+        //                "url": "https://openlibrary.org/subjects/history"
+        //            },
+        // could be used for genres... but the subject list for a single book can be very large
 
-        element = document.optJSONObject("identifiers");
-        if (element != null) {
-            processIdentifiers(element, bookData);
+
+        // "notes" is a specific (set of) remarks on this particular edition of the book.
+        s = document.optString("notes");
+        if (!s.isEmpty()) {
+            bookData.putString(DBKeys.KEY_DESCRIPTION, s);
         }
 
-        a = document.optJSONArray("publishers");
-        if (a != null && !a.isEmpty()) {
-            processPublishers(a, bookData);
-        }
 
         // always use the first author only for TOC entries.
         a = document.optJSONArray("table_of_contents");
