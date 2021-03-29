@@ -203,6 +203,7 @@ public class BooksOnBookshelf
     @Nullable
     private CalibreHandler mCalibreHandler;
     /** Multi-type adapter to manage list connection to cursor. */
+    @Nullable
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
@@ -580,10 +581,8 @@ public class BooksOnBookshelf
             Log.d(TAG, "createListAdapter|display=" + display, new Throwable());
         }
 
-        mAdapter = new BooklistAdapter(this);
         if (display) {
-            // make the list view visible!
-            mVb.list.setVisibility(View.VISIBLE);
+            mAdapter = new BooklistAdapter(this);
             // install single and long-click listeners
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
             // hookup the cursor
@@ -598,11 +597,14 @@ public class BooksOnBookshelf
                     new HeaderAdapter(), mAdapter);
 
             mVb.list.setAdapter(concatAdapter);
+
+            // make the list view visible!
+            mVb.list.setVisibility(View.VISIBLE);
+
             return mAdapter.getItemCount();
 
         } else {
             mVb.list.setVisibility(View.GONE);
-            //mVb.list.setAdapter(headerAdapter);
             return 0;
         }
     }
@@ -914,7 +916,8 @@ public class BooksOnBookshelf
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
         // showed it should indeed be done.
-        // Paranoia: if the user can click it, then this move should be fine.
+        // Paranoia: if the user can click it, then this should be fine.
+        Objects.requireNonNull(mAdapter, "mAdapter");
         final Cursor cursor = mAdapter.getCursor();
         if (!cursor.moveToPosition(position)) {
             return false;
@@ -1524,7 +1527,9 @@ public class BooksOnBookshelf
             // force the adapter to stop displaying by disabling its cursor.
             // DO NOT REMOVE THE ADAPTER FROM FROM THE VIEW;
             // i.e. do NOT call mVb.list.setAdapter(null)... crashes assured when doing so.
-            mAdapter.clearCursor();
+            if (mAdapter != null) {
+                mAdapter.clearCursor();
+            }
             mVm.buildBookList();
         }
     }
@@ -1633,7 +1638,7 @@ public class BooksOnBookshelf
     private void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                 final boolean expand) {
         // It is possible that the list will be empty, if so, ignore
-        if (mAdapter.getItemCount() > 0) {
+        if (mAdapter != null && mAdapter.getItemCount() > 0) {
             saveListPosition();
             mVm.expandAllNodes(topLevel, expand);
             displayList();
@@ -1777,6 +1782,8 @@ public class BooksOnBookshelf
      * <strong>must</strong> be called using {@code v.post(this::scrollToSavedListPosition);}
      */
     private void scrollToSavedListPosition() {
+        Objects.requireNonNull(mAdapter, "mAdapter");
+
         final Bookshelf bookshelf = mVm.getCurrentBookshelf();
         int savedPosition = bookshelf.getFirstVisibleItemPosition();
         // sanity check
@@ -1806,6 +1813,8 @@ public class BooksOnBookshelf
      * @param node to scroll to
      */
     private void scrollTo(@NonNull final BooklistNode node) {
+        Objects.requireNonNull(mAdapter, "mAdapter");
+
         final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
         // sanity check, we should never get here
         if (firstVisiblePos == RecyclerView.NO_POSITION) {
