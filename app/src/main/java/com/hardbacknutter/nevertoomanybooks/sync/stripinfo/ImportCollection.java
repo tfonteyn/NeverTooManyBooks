@@ -49,6 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
+ * Fetches and parses the user collection list from the site.
+ * This includes visiting each page, and parsing the specific collection data.
+ * These are NOT full-book data sets.
+ *
  * Ratings as suggested by the (dutch) site.
  * 10 - Subliem!
  * 9 - Uitstekend
@@ -115,7 +119,7 @@ public class ImportCollection {
     private final SearchEngineConfig mSEConfig;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param userId            as extracted from the auth Cookie.
      * @param wishListBookshelf mapped bookshelf

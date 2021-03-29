@@ -25,7 +25,7 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
 /**
- * This class and the implementations TRY to mimic a ActivityResultContract.
+ * This class and the implementations TRY to mimic an ActivityResultContract.
  */
 public abstract class FragmentLauncherBase
         implements FragmentResultListener {

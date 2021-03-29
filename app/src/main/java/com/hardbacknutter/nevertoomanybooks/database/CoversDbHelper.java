@@ -124,6 +124,8 @@ public class CoversDbHelper
     public SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
+                // Dev note: don't move this to the constructor, "this" must
+                // be fully constructed before we can pass it to the SynchronizedDb constructor
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
             }
             return mSynchronizedDb;

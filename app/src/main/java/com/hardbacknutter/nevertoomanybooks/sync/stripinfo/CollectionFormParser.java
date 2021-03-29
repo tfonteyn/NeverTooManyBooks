@@ -153,6 +153,8 @@ public class CollectionFormParser
      *
      * @param postBody to send
      *
+     * @return the JSoup parsed Document
+     *
      * @throws IOException on any failure
      */
     @NonNull

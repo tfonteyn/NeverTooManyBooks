@@ -527,14 +527,7 @@ public class SynchronizedDb
      * Wrapper for underlying database method.
      */
     public void setTransactionSuccessful() {
-        // We could pass in the lock and do these checks...
-        //        if (mTxLock == null) {
-        //            throw new TransactionException(TransactionException.NOT_STARTED);
-        //        }
-        //        if (!mTxLock.equals(txLock)) {
-        //            throw new TransactionException(TransactionException.WRONG_LOCK);
-        //        }
-
+        // We could pass in the lock and do the same checks as we do in #endTransaction
         mSqlDb.setTransactionSuccessful();
     }
 
