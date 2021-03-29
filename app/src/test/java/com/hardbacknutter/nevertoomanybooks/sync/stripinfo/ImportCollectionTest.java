@@ -56,6 +56,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 class ImportCollectionTest
         extends JSoupBase {
 
+    private static final String UTF_8 = "UTF-8";
+
+    /**
+     * This user does not exist on the site, it was manually replaced in the sample file
+     * username: NTMBUser
+     */
+    private static final String userId = "666";
+
     private final ProgressListener mLogger =
             new TestProgressListener("ImportCollectionTest");
 
@@ -63,11 +71,7 @@ class ImportCollectionTest
     void parseCollectionPage() {
         setLocale(Locale.FRANCE);
 
-        // This user does not exist on the site, it was manually replaced in the sample file
-        // username: NTMBUser
-        final String userId = "666";
-
-        final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/1000";
+        final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
 
         final Bookshelf wishList = new Bookshelf("wishListBS", UUID.randomUUID().toString());
@@ -76,7 +80,7 @@ class ImportCollectionTest
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            document = Jsoup.parse(is, "UTF-8", locationHeader);
+            document = Jsoup.parse(is, UTF_8, locationHeader);
 
             assertNotNull(document);
             Assertions.assertTrue(document.hasText());
@@ -112,11 +116,8 @@ class ImportCollectionTest
     void parseCollectionLastPage() {
         setLocale(Locale.FRANCE);
 
-        // This user does not exist on the site, it was manually replaced in the sample file
-        // username: NTMBUser
-        final String userId = "666";
-
-        final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/1000";
+        // The "3" == the 3rd page from the collection.
+        final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/0000";
         final String filename = "/stripinfo/collection-last-page.html";
 
         final ImportCollection ic = new ImportCollection(userId, null);
@@ -124,7 +125,7 @@ class ImportCollectionTest
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            document = Jsoup.parse(is, "UTF-8", locationHeader);
+            document = Jsoup.parse(is, UTF_8, locationHeader);
 
             assertNotNull(document);
             assertTrue(document.hasText());

@@ -84,6 +84,9 @@ public class StripInfoAuth {
      */
     private static final String COOKIE_SI_USERDATA = "si_userdata";
     private static final String COOKIE_DOMAIN = "stripinfo.be";
+
+    private static final String UTF_8 = "UTF-8";
+
     @NonNull
     private final String mSiteUrl;
 
@@ -158,8 +161,8 @@ public class StripInfoAuth {
         request.setDoOutput(true);
 
         final StringJoiner postBody = new StringJoiner("&");
-        postBody.add("userName=" + URLEncoder.encode(username, "UTF-8"));
-        postBody.add("passw=" + URLEncoder.encode(password, "UTF-8"));
+        postBody.add("userName=" + URLEncoder.encode(username, UTF_8));
+        postBody.add("passw=" + URLEncoder.encode(password, UTF_8));
         postBody.add("submit=Inloggen");
         postBody.add("frmName=login");
 
@@ -194,7 +197,7 @@ public class StripInfoAuth {
         if (optional.isPresent()) {
             final HttpCookie cookie = optional.get();
             try {
-                final String cookieValue = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                final String cookieValue = URLDecoder.decode(cookie.getValue(), UTF_8);
                 // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
                 final JSONObject jsonCookie = new JSONObject(cookieValue);
                 final String userId = jsonCookie.optString("userid");
