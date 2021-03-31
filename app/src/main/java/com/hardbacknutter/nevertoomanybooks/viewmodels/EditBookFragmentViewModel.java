@@ -514,7 +514,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllLocations() {
         if (mLocations == null) {
-            mLocations = ServiceLocator.getInstance().getLocationDaoDao().getList();
+            mLocations = ServiceLocator.getInstance().getLocationDao().getList();
         }
         return mLocations;
     }

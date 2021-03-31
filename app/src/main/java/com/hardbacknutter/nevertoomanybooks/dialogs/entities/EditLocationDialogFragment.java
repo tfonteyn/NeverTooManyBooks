@@ -67,12 +67,12 @@ public class EditLocationDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        return ServiceLocator.getInstance().getLocationDaoDao().getList();
+        return ServiceLocator.getInstance().getLocationDao().getList();
     }
 
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        ServiceLocator.getInstance().getLocationDaoDao().rename(originalText, currentText);
+        ServiceLocator.getInstance().getLocationDao().rename(originalText, currentText);
     }
 }

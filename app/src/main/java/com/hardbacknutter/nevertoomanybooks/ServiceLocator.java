@@ -177,10 +177,12 @@ public final class ServiceLocator {
     }
 
 
+    // Does not really belong in the ServiceLocator...
     public static boolean isCollationCaseSensitive() {
         return sInstance.getDBHelper().isCollationCaseSensitive();
     }
 
+    // Does not really belong in the ServiceLocator...
     static void deleteDatabases(@NonNull final Context context) {
         sInstance.getDBHelper().deleteDatabase(context);
         sInstance.getCoversDbHelper().deleteDatabase(context);
@@ -397,7 +399,7 @@ public final class ServiceLocator {
     }
 
     @NonNull
-    public LocationDao getLocationDaoDao() {
+    public LocationDao getLocationDao() {
         synchronized (this) {
             if (mLocationDao == null) {
                 mLocationDao = new LocationDaoImpl();
