@@ -54,8 +54,8 @@
         style="@style/BoB.Header.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"
-        tools:text="the optional search text"
         tools:ignore="SelectableText"
+        tools:text="the optional search text"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
