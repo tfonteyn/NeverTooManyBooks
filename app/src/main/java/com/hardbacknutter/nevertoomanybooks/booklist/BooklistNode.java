@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -51,13 +50,8 @@ public class BooklistNode {
     private boolean mIsExpanded;
     private boolean mIsVisible;
 
-    /**
-     * Will be calculated/set if the list changed.
-     * {@code row.listPosition = BooklistNodeDao#getListPosition(row.rowId); }
-     * <p>
-     * (it's an Integer, so we can detect when it's not set at all which would be a bug)
-     */
-    private Integer mListPosition;
+    /** The position in the {@link BooklistAdapter}. Will be calculated/set if the list changed. */
+    private int mAdapterPosition = -1;
 
     /**
      * Constructor. Intended to be used with loops without creating new objects over and over.
@@ -157,12 +151,25 @@ public class BooklistNode {
         }
     }
 
-    public int getListPosition() {
-        return Objects.requireNonNull(mListPosition, "mListPosition");
+    /**
+     * The position in the {@link BooklistAdapter}.
+     *
+     * @return 0..x
+     */
+    public int getAdapterPosition() {
+        if (mAdapterPosition < 0) {
+            throw new IllegalStateException("position not set");
+        }
+        return mAdapterPosition;
     }
 
-    void setListPosition(final int listPosition) {
-        mListPosition = listPosition;
+    /**
+     * The position in the {@link BooklistAdapter}.
+     *
+     * @param position to use
+     */
+    void setAdapterPosition(final int position) {
+        mAdapterPosition = position;
     }
 
     @Override
@@ -174,7 +181,7 @@ public class BooklistNode {
                + ", mLevel=" + mLevel
                + ", mIsExpanded=" + mIsExpanded
                + ", mIsVisible=" + mIsVisible
-               + ", mListPosition=" + mListPosition
+               + ", mAdapterPosition=" + mAdapterPosition
                + '}';
     }
 

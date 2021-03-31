@@ -343,16 +343,16 @@ public class BooksOnBookshelfViewModel
      * Save current position information in the preferences.
      * We do this to preserve this data across application shutdown/startup.
      *
-     * @param context       Current context
-     * @param position      adapter list position; i.e. first visible position in the list
-     * @param topViewOffset offset in pixels for the first visible position in the list
+     * @param context    Current context
+     * @param position   adapter list position; i.e. first visible position in the list
+     * @param viewOffset offset in pixels for the first visible position in the list
      */
     public void saveListPosition(@NonNull final Context context,
                                  final int position,
-                                 final int topViewOffset) {
+                                 final int viewOffset) {
         if (mListHasBeenLoaded) {
             Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            mBookshelf.setFirstVisibleItemPosition(context, position, topViewOffset);
+            mBookshelf.setFirstVisibleItemPosition(context, position, viewOffset);
         }
     }
 

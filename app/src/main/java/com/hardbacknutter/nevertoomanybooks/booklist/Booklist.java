@@ -425,7 +425,6 @@ public class Booklist
     private void findAndSetListPosition(@NonNull final BooklistNode node) {
         // We need to count the visible rows between the start of the list,
         // and the given row, to determine the ACTUAL row we want.
-        // Remember that a position == rowId -1
         final int count;
         try (SynchronizedStatement stmt = mDb.compileStatement(
                 SELECT_COUNT_FROM_ + mListTable.getName()
@@ -444,7 +443,7 @@ public class Booklist
             pos = count > 0 ? count - 1 : 0;
         }
 
-        node.setListPosition(pos);
+        node.setAdapterPosition(pos);
     }
 
     /**

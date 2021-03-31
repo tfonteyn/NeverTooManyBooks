@@ -105,13 +105,13 @@ public class Bookshelf
      * Saved adapter position of top row.
      * See {@link BooksOnBookshelf}#displayList}
      */
-    private int mTopItemPosition = RecyclerView.NO_POSITION;
+    private int mFirstVisibleItemPosition = RecyclerView.NO_POSITION;
 
     /**
      * Saved view offset of top row.
      * See {@link BooksOnBookshelf}#displayList}
      */
-    private int mTopViewOffset;
+    private int mFirstVisibleViewOffset;
 
     /**
      * Constructor without ID.
@@ -150,8 +150,8 @@ public class Bookshelf
         mName = rowData.getString(DBKeys.KEY_BOOKSHELF_NAME);
         mStyleUuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
 
-        mTopItemPosition = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_POS);
-        mTopViewOffset = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET);
+        mFirstVisibleItemPosition = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_POS);
+        mFirstVisibleViewOffset = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET);
     }
 
     /**
@@ -166,8 +166,8 @@ public class Bookshelf
         //noinspection ConstantConditions
         mStyleUuid = in.readString();
 
-        mTopItemPosition = in.readInt();
-        mTopViewOffset = in.readInt();
+        mFirstVisibleItemPosition = in.readInt();
+        mFirstVisibleViewOffset = in.readInt();
     }
 
     /**
@@ -328,32 +328,32 @@ public class Bookshelf
      */
     @IntRange(from = RecyclerView.NO_POSITION)
     public int getFirstVisibleItemPosition() {
-        return mTopItemPosition;
+        return mFirstVisibleItemPosition;
     }
 
     /**
      * Get the stored position to use for re-displaying this bookshelf's booklist.
      * Due to CoordinatorLayout behaviour, the returned value
-     * <strong>can be negative, this is NORMAL</strong>
+     * <strong>can be negative, this is NORMAL</strong>.
      *
      * @return value for {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
-    public int getTopViewOffset() {
-        return mTopViewOffset;
+    public int getFirstVisibleItemViewOffset() {
+        return mFirstVisibleViewOffset;
     }
 
     /**
      * Store the current position of the booklist displaying this bookshelf.
      *
-     * @param context       Current context
-     * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition()}
-     * @param topViewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
+     * @param context    Current context
+     * @param position   Value of {@link LinearLayoutManager#findFirstVisibleItemPosition()}
+     * @param viewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
      */
     public void setFirstVisibleItemPosition(@NonNull final Context context,
                                             final int position,
-                                            final int topViewOffset) {
-        mTopItemPosition = position;
-        mTopViewOffset = topViewOffset;
+                                            final int viewOffset) {
+        mFirstVisibleItemPosition = position;
+        mFirstVisibleViewOffset = viewOffset;
 
         ServiceLocator.getInstance().getBookshelfDao().update(context, this);
     }
@@ -395,8 +395,8 @@ public class Bookshelf
         dest.writeString(mName);
         dest.writeString(mStyleUuid);
 
-        dest.writeInt(mTopItemPosition);
-        dest.writeInt(mTopViewOffset);
+        dest.writeInt(mFirstVisibleItemPosition);
+        dest.writeInt(mFirstVisibleViewOffset);
     }
 
     /**
@@ -483,8 +483,8 @@ public class Bookshelf
         return "Bookshelf{"
                + "mId=" + mId
                + ", mName=`" + mName + '`'
-               + ", mTopItemPosition=" + mTopItemPosition
-               + ", mTopViewOffset=" + mTopViewOffset
+               + ", mFirstVisibleItemPosition=" + mFirstVisibleItemPosition
+               + ", mFirstVisibleViewOffset=" + mFirstVisibleViewOffset
                + ", mStyleUuid=" + mStyleUuid
                + '}';
     }
