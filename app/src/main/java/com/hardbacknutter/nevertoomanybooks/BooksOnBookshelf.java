@@ -97,7 +97,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -1613,12 +1612,10 @@ public class BooksOnBookshelf
                               @BooklistNode.NextState final int nextState,
                               final int relativeChildLevel) {
         saveListPosition();
+
         final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
         final BooklistNode node = mVm.setNode(nodeRowId, nextState, relativeChildLevel);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            dbgDumpPositions("setNodeState", node.getListPosition());
-        }
         displayList(node);
     }
 
@@ -1646,97 +1643,49 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Preserve the top of the list position for the CURRENT bookshelf/style combination.
-     * <ol>
-     *     <li>The row number at the top of the screen.</li>
-     *     <li>The pixel offset of that row from the top of the screen.</li>
-     * </ol>
-     * <p>
-     * TODO: https://guides.codepath.com/android/Handling-Configuration-Changes#recyclerview
-     * but we'd still need to do some manual stuff to keep the position in between
-     * app restarts.
-     */
-    void saveListPosition() {
-        if (!isDestroyed()) {
-            final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
-            if (firstVisiblePos == RecyclerView.NO_POSITION) {
-                return;
-            }
-            final int topViewOffset = getTopViewOffset();
-            mVm.saveListPosition(this, firstVisiblePos, topViewOffset);
-        }
-    }
-
-    /**
-     * The number of pixels offset for the first visible row, negative values are ok.
-     *
-     * @return pixels
-     */
-    private int getTopViewOffset() {
-        final View topView = mVb.list.getChildAt(0);
-        return topView != null ? topView.getTop() : 0;
-    }
-
-    @SuppressLint("LogConditional")
-    private void dbgDumpPositions(@NonNull final String method,
-                                  final int pos) {
-        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
-        final int savedPosition = bookshelf.getFirstVisibleItemPosition();
-        final int savedOffset = bookshelf.getTopViewOffset();
-
-        Log.d(TAG, String.format("%-30s"
-                                 + " |savedPosition= %4d |firstVisiblePos= %4d"
-                                 + " |savedOffset= %4d |offset= %4d"
-                                 + " |lastVisiblePos= %4d"
-                                 + " |pos= %4d",
-                                 method,
-                                 savedPosition, mLayoutManager.findFirstVisibleItemPosition(),
-                                 savedOffset, getTopViewOffset(),
-                                 mLayoutManager.findLastVisibleItemPosition(),
-                                 pos
-                                ));
-    }
-
-
-    /**
-     * Display the list based on the given cursor, and update the list headers.
+     * Display the list based on the given cursor, and scroll to the last saved position.
      */
     private void displayList() {
         if (createListAdapter(true) > 0) {
-            mVb.list.post(this::scrollToSavedListPosition);
+            mVb.list.post(() -> scrollToSavedPosition(true));
         }
     }
 
     /**
-     * Display the list based on the given cursor, and update the list headers.
-     * Try to scroll to the desired node.
+     * Display the list based on the given cursor, and scroll to the desired node.
      *
      * @param node to show
      */
     private void displayList(@NonNull final BooklistNode node) {
         if (createListAdapter(true) > 0) {
-            scrollToSavedListPosition();
-            mVb.list.post(() -> scrollTo(node));
+            mVb.list.post(() -> {
+                scrollToSavedPosition(false);
+                mVb.list.post(() -> scrollTo(node));
+            });
         }
     }
 
     /**
-     * Display the list based on the given cursor, and update the list headers.
-     * Optionally re-position to the desired target node(s).
+     * Display the list based on the given cursor, and either scroll to the desired
+     * target node(s) or, if none, to the last saved position.
      *
      * @param targetNodes (optional) to re-position to
      */
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
         if (createListAdapter(true) > 0) {
-            scrollToSavedListPosition();
-
             if (targetNodes != null) {
-                if (targetNodes.size() == 1) {
-                    mVb.list.post(() -> scrollTo(targetNodes.get(0)));
-
-                } else if (targetNodes.size() > 1) {
-                    mVb.list.post(() -> scrollTo(findBestNode(targetNodes)));
-                }
+                mVb.list.post(() -> {
+                    scrollToSavedPosition(false);
+                    final BooklistNode node;
+                    if (targetNodes.size() == 1) {
+                        node = targetNodes.get(0);
+                    } else {
+                        node = findBestNode(targetNodes);
+                    }
+                    mVb.list.post(() -> scrollTo(node));
+                });
+            } else {
+                mVb.list.post(() -> scrollToSavedPosition(true));
             }
         }
     }
@@ -1752,17 +1701,16 @@ public class BooksOnBookshelf
     private BooklistNode findBestNode(@NonNull final List<BooklistNode> targetNodes) {
         // Position of the row in the (vertical) center of the screen
         final int center = (mLayoutManager.findLastVisibleItemPosition()
-                            + mLayoutManager.findFirstVisibleItemPosition())
-                           / 2;
+                            + mLayoutManager.findFirstVisibleItemPosition()) / 2;
 
         BooklistNode best = targetNodes.get(0);
         // distance from currently visible center row
-        int distance = Math.abs(best.getListPosition() - center);
+        int distance = Math.abs(best.getAdapterPosition() - center);
 
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetNodes.size(); i++) {
             final BooklistNode node = targetNodes.get(i);
-            final int newDist = Math.abs(node.getListPosition() - center);
+            final int newDist = Math.abs(node.getAdapterPosition() - center);
             if (newDist < distance) {
                 distance = newDist;
                 best = node;
@@ -1772,43 +1720,80 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Preserve the {@link LinearLayoutManager#findFirstVisibleItemPosition()}
+     * for the CURRENT bookshelf/style combination.
+     * <ol>
+     *     <li>The row number at the top of the screen.</li>
+     *     <li>The pixel offset of that row from the top of the screen.</li>
+     * </ol>
+     * <p>
+     */
+    private void saveListPosition() {
+        if (!isDestroyed()) {
+            final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
+            if (firstVisiblePos == RecyclerView.NO_POSITION) {
+                return;
+            }
+            mVm.saveListPosition(this, firstVisiblePos, getViewOffset());
+        }
+    }
+
+    /**
+     * Get the number of pixels offset for the first visible View, can be negative.
+     *
+     * @return pixels
+     */
+    private int getViewOffset() {
+        // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
+        final View topView = mVb.list.getChildAt(0);
+        if (topView == null) {
+            return 0;
+
+        } else {
+            // currently our padding is 0, but this is future-proof
+            final int paddingTop = mVb.list.getPaddingTop();
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                    topView.getLayoutParams();
+            return topView.getTop() - lp.topMargin - paddingTop;
+        }
+    }
+
+    /**
      * Scroll the list to the position saved in {@link #saveListPosition}.
      * Saves the potentially changed position after the scrolling is done.
-     * <p>
-     * If this call will be followed by a call to {@link #scrollTo(BooklistNode)}, then it
-     * can be called as-is {@code scrollToSavedListPosition();}
-     * <p>
-     * If this is the last call when displaying the list, then it
-     * <strong>must</strong> be called using {@code v.post(this::scrollToSavedListPosition);}
+     *
+     * @param save {@code true} if we should save the final position
      */
-    private void scrollToSavedListPosition() {
+    private void scrollToSavedPosition(final boolean save) {
         Objects.requireNonNull(mAdapter, "mAdapter");
-
-        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
-        int savedPosition = bookshelf.getFirstVisibleItemPosition();
-        // sanity check
-        if (savedPosition < 0) {
-            savedPosition = 0;
-        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
             dbgDumpPositions("scrollToSavedListPosition", -666);
         }
 
-        if (savedPosition >= mAdapter.getItemCount()) {
-            // the list is shorter than it used to be, just scroll to the end
-            mLayoutManager.scrollToPosition(savedPosition);
-        } else {
-            mLayoutManager.scrollToPositionWithOffset(savedPosition, bookshelf.getTopViewOffset());
-        }
+        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
+        final int position = bookshelf.getFirstVisibleItemPosition();
 
-        mVb.list.post(this::saveListPosition);
+        // sanity check
+        if (position < 0) {
+            mLayoutManager.scrollToPositionWithOffset(0, 0);
+
+        } else if (position >= mAdapter.getItemCount()) {
+            // the list is shorter than it used to be, just scroll to the end
+            mLayoutManager.scrollToPosition(position);
+
+        } else {
+            mLayoutManager.scrollToPositionWithOffset(position,
+                                                      bookshelf.getFirstVisibleItemViewOffset());
+        }
+        // after layout, save the final position
+        if (save) {
+            mVb.list.post(this::saveListPosition);
+        }
     }
 
     /**
      * Scroll the given node into user view.
-     *
-     * <strong>Must</strong> be called using {@code v.post(() -> scrollTo(node));}
      *
      * @param node to scroll to
      */
@@ -1818,18 +1803,18 @@ public class BooksOnBookshelf
         final int firstVisiblePos = mLayoutManager.findFirstVisibleItemPosition();
         // sanity check, we should never get here
         if (firstVisiblePos == RecyclerView.NO_POSITION) {
-            Logger.warn(this, TAG, "scrollTo: firstVisiblePos == NO_POSITION");
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "scrollTo: empty list");
+            }
             return;
         }
 
-        // If the node is not in view, or at the edge, scroll it into view.
-        final int positionWanted = node.getListPosition();
+        // The mLayoutManager has the header at position 0, and the booklist rows starting at 1
+        final int layoutPositionWanted = 1 + node.getAdapterPosition();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
-            dbgDumpPositions("scrollTo(node)", positionWanted);
+            dbgDumpPositions("*", layoutPositionWanted);
         }
-
-        final int lastVisiblePos = mLayoutManager.findLastVisibleItemPosition();
 
         // Dev notes...
         // The recycler list will in fact extent at the top/bottom beyond the screen edge
@@ -1846,26 +1831,53 @@ public class BooksOnBookshelf
         //
         // The logic/math here for the top of the screen works well.
         // Handling the bottom is harder. It works good enough, but not perfect.
-        // It depends on then fact if you just scrolled the page up or down, and then
+        // It depends on the fact if you just scrolled the page up or down, and then
         // expanded or collapsed the last row. There are more combinations... to many.
-        if (positionWanted < firstVisiblePos) {
-            mLayoutManager.scrollToPosition(positionWanted + 1);
+        final int lastVisiblePos = mLayoutManager.findLastVisibleItemPosition();
 
-        } else if (positionWanted == lastVisiblePos - 2) {
-            mLayoutManager.scrollToPosition(positionWanted + 2);
-
-        } else if (positionWanted > lastVisiblePos - 2) {
-            if (node.isExpanded()
-                && mAdapter.getItemViewType(positionWanted) != BooklistGroup.BOOK) {
-                // If the bottom line is expanded, and not a book, scroll an additional line
-                mLayoutManager.scrollToPosition(positionWanted + 3);
-            } else {
-                mLayoutManager.scrollToPosition(positionWanted + 2);
+        // If the node is not in view, or at the edge, scroll it into view.
+        if (layoutPositionWanted <= firstVisiblePos) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+                dbgDumpPositions("<= firstVisiblePos", layoutPositionWanted);
             }
-        } // else don't scroll at all
+            mLayoutManager.scrollToPosition(layoutPositionWanted);
 
-        // ALWAYS save, even if we don't explicitly scroll here. We might have scrolled before.
+        } else if (layoutPositionWanted <= lastVisiblePos) {
+            if (node.isExpanded()) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+                    dbgDumpPositions("< expanded", layoutPositionWanted);
+                }
+                mLayoutManager.scrollToPosition(layoutPositionWanted + 1);
+
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+                    dbgDumpPositions("< collapsed", layoutPositionWanted);
+                }
+                mLayoutManager.scrollToPosition(layoutPositionWanted);
+            }
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
+                dbgDumpPositions("> beyond bottom", layoutPositionWanted);
+            }
+            mLayoutManager.scrollToPosition(layoutPositionWanted);
+
+        }
+
+        // after layout, save the final position
         mVb.list.post(this::saveListPosition);
+    }
+
+    @SuppressLint("LogConditional")
+    private void dbgDumpPositions(@NonNull final String method,
+                                  final int pos) {
+        Log.d(method, String.format(" |savedPosition= %4d"
+                                    + " |firstVisiblePos= %4d"
+                                    + " |lastVisiblePos= %4d"
+                                    + " |pos= %4d",
+                                    mVm.getCurrentBookshelf().getFirstVisibleItemPosition(),
+                                    mLayoutManager.findFirstVisibleItemPosition(),
+                                    mLayoutManager.findLastVisibleItemPosition(),
+                                    pos));
     }
 
     /**
