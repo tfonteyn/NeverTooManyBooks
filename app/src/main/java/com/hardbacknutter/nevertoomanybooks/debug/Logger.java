@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -41,7 +40,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -89,13 +87,11 @@ public final class Logger {
      * <p>
      * Use sparingly, writing to the log is expensive.
      *
-     * @param context Current context
-     * @param tag     log tag
-     * @param e       cause
-     * @param params  to concat
+     * @param tag    log tag
+     * @param e      cause
+     * @param params to concat
      */
-    public static void error(@NonNull final Context context,
-                             @NonNull final String tag,
+    public static void error(@NonNull final String tag,
                              @NonNull final Throwable e,
                              @Nullable final Object... params) {
         final String msg;
@@ -104,17 +100,11 @@ public final class Logger {
         } else {
             msg = "";
         }
-        writeToLog(context, tag, ERROR, msg, e);
+        writeToLog(tag, ERROR, msg, e);
 
         if (BuildConfig.DEBUG /* always */) {
-            e(tag, e, msg);
+            e(tag, msg, e);
         }
-    }
-
-    public static void error(@NonNull final String tag,
-                             @NonNull final Throwable e,
-                             @Nullable final Object... params) {
-        error(ServiceLocator.getAppContext(), tag, e, params);
     }
 
     /**
@@ -125,24 +115,18 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
      *
-     * @param context Current context
      * @param tag     log tag
      * @param params  to concat
      */
-    public static void warn(@NonNull final Context context,
-                            @NonNull final String tag,
+    public static void warn(@NonNull final String tag,
                             @NonNull final Object... params) {
+
         final String msg = concat(params);
-        writeToLog(context, tag, WARN, msg, null);
+        writeToLog(tag, WARN, msg, null);
 
         if (BuildConfig.DEBUG /* always */) {
             w(tag, msg);
         }
-    }
-
-    public static void warn(@NonNull final String tag,
-                            @NonNull final Object... params) {
-        warn(ServiceLocator.getAppContext(), tag, params);
     }
 
     /**
@@ -173,14 +157,12 @@ public final class Logger {
     /**
      * This is an expensive call... file open+close... BOOOO!
      *
-     * @param context Current context
      * @param tag     log tag
      * @param type    warn,error,...
      * @param message to write
      * @param e       optional Throwable
      */
-    private static void writeToLog(@NonNull final Context context,
-                                   @NonNull final String tag,
+    private static void writeToLog(@NonNull final String tag,
                                    @NonNull final String type,
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
@@ -201,7 +183,7 @@ public final class Logger {
                                + '|' + tag + '|' + type + '|' + message + exMsg;
 
         try {
-            final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+            final File logFile = new File(AppDir.Log.getDir(), ERROR_LOG_FILE);
             //noinspection ImplicitDefaultCharsetUsage
             try (FileWriter fw = new FileWriter(logFile, true);
                  PrintWriter out = new PrintWriter(fw)) {
@@ -250,7 +232,7 @@ public final class Logger {
             }
             d(tag, method, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
-            d(tag, e, "dumping failed: ");
+            d(tag, "dumping failed: ", e);
         }
     }
 
@@ -305,12 +287,11 @@ public final class Logger {
     /**
      * Cycle the log each time the app is started; preserve previous if non-empty.
      *
-     * @param context Current context
      */
-    public static void cycleLogs(@NonNull final Context context) {
+    public static void cycleLogs() {
         File logFile = null;
         try {
-            logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+            logFile = new File(AppDir.Log.getDir(), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 final File backup = new File(logFile.getPath() + ".bak");
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
@@ -322,8 +303,36 @@ public final class Logger {
         FileUtils.delete(logFile);
     }
 
+
+    /** JUnit aware wrapper for {@link Log#w(String, String)}. */
+    public static void w(@NonNull final String tag,
+                         @NonNull final String msg) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest) {
+                System.out.println("JUnit|WARN|" + tag + "|" + msg);
+            } else {
+                Log.w(tag, msg);
+            }
+        }
+    }
+
+    /** JUnit aware wrapper for {@link Log#e(String, String, Throwable)}. */
+    public static void e(@NonNull final String tag,
+                         @NonNull final String msg,
+                         @Nullable final Throwable e) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest) {
+                System.out.println("JUnit|ERROR|" + tag + "|" + msg
+                                   + (e != null ? "|" + e.getMessage() : "")
+                                   + "\n" + getStackTraceString(e));
+            } else {
+                Log.e(tag, msg, e);
+            }
+        }
+    }
+
     /**
-     * JUnit aware wrapper for {@link Log#d}.
+     * JUnit aware wrapper for {@link Log#d(String, String)} with an extra 'method' parameter.
      *
      * @param tag    Used to identify the source of a log message.  It usually identifies
      *               the class or activity where the log call occurs.
@@ -335,7 +344,7 @@ public final class Logger {
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag
+                System.out.println("JUnit|DEBUG|" + tag
                                    + "|" + method
                                    + "|" + msg);
             } else {
@@ -344,62 +353,17 @@ public final class Logger {
         }
     }
 
-    /** JUnit aware wrapper for {@link Log#d}. */
+    /** JUnit aware wrapper for {@link Log#d(String, String, Throwable)}. */
     public static void d(@NonNull final String tag,
-                         @NonNull final String method,
-                         @NonNull final Throwable e,
-                         @NonNull final String msg) {
+                         @NonNull final String msg,
+                         @NonNull final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag
-                                   + "|" + method
-                                   + "|" + msg
-                                   + "|" + e.getMessage()
-                                   + "\n" + getStackTraceString(e));
-            } else {
-                Log.d(tag, method + "|" + msg, e);
-            }
-        }
-    }
-
-    /** JUnit aware wrapper for {@link Log#d}. */
-    public static void d(@NonNull final String tag,
-                         @NonNull final Throwable e,
-                         @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag
-                                   + "|" + msg
+                System.out.println("JUnit|DEBUG|" + tag + "|" + msg
                                    + "|" + e.getMessage()
                                    + "\n" + getStackTraceString(e));
             } else {
                 Log.d(tag, msg, e);
-            }
-        }
-    }
-
-    /** JUnit aware wrapper for {@link Log#e}. */
-    public static void e(@NonNull final String tag,
-                         @Nullable final Throwable e,
-                         @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
-                System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
-                                   + "\n" + getStackTraceString(e));
-            } else {
-                Log.e(tag, msg, e);
-            }
-        }
-    }
-
-    /** JUnit aware wrapper for {@link Log#w}. */
-    public static void w(@NonNull final String tag,
-                         @NonNull final String msg) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
-                System.out.println("isJUnitTest|WARN|" + tag + "|" + msg);
-            } else {
-                Log.w(tag, msg);
             }
         }
     }
