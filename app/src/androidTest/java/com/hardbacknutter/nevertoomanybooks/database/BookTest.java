@@ -25,7 +25,6 @@ import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -105,8 +104,7 @@ public class BookTest {
     public void setup()
             throws IOException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
@@ -219,7 +217,7 @@ public class BookTest {
     public void book()
             throws DaoWriteException, IOException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         try (BookDao bookDao = new BookDao("book")) {
 
@@ -250,7 +248,7 @@ public class BookTest {
             authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             authors.add(mAuthor[1]);
 
-            book.setCover(context, bookDao, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(bookDao, 1, new File(AppDir.Cache.getDir(), Constants.COVER[1]));
 
             assertEquals(mExternalCacheDir.getAbsolutePath()
                          + File.separatorChar + Constants.COVER[1],
@@ -283,12 +281,12 @@ public class BookTest {
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            cover = book.getCoverFile(context, 0);
+            cover = book.getCoverFile(0);
             assertNotNull(cover);
             assertEquals(mOriginalImageSize[0], cover.length());
             assertEquals(uuid + EXT_JPG, cover.getName());
 
-            cover = book.getCoverFile(context, 1);
+            cover = book.getCoverFile(1);
             assertNotNull(cover);
             assertEquals(mOriginalImageSize[1], cover.length());
             assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
@@ -314,7 +312,7 @@ public class BookTest {
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertTrue(cover.exists());
 
-            book.setCover(context, bookDao, 1, null);
+            book.setCover(bookDao, 1, null);
 
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -323,7 +321,7 @@ public class BookTest {
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertFalse(cover.exists());
 
-            cover = book.getCoverFile(context, 1);
+            cover = book.getCoverFile(1);
             assertNull(cover);
 
             /*
@@ -333,7 +331,7 @@ public class BookTest {
             assertNotNull(files);
             prepareCover(files, 1);
 
-            book.setCover(context, bookDao, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(bookDao, 1, new File(AppDir.Cache.getDir(), Constants.COVER[1]));
 
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -341,7 +339,7 @@ public class BookTest {
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertTrue(cover.exists());
 
-            cover = book.getCoverFile(context, 1);
+            cover = book.getCoverFile(1);
             assertNotNull(cover);
             assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
             assertTrue(cover.exists());
@@ -351,7 +349,7 @@ public class BookTest {
     @Test
     public void showBookVM()
             throws DaoWriteException, ExternalStorageException {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         try (BookDao bookDao = new BookDao("ShowBookViewModel-prep")) {
             mBook[0] = prepareAndInsertBook(context, bookDao);
             mBookId[0] = mBook[0].getId();
@@ -390,7 +388,7 @@ public class BookTest {
         book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
         book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublisherList);
 
-        book.setCover(context, db, 0, AppDir.Cache.getFile(context, Constants.COVER[0]));
+        book.setCover(db, 0, new File(AppDir.Cache.getDir(), Constants.COVER[0]));
 
         assertEquals(mExternalCacheDir.getAbsolutePath()
                      + File.separatorChar + Constants.COVER[0],
@@ -437,7 +435,7 @@ public class BookTest {
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        final File cover = book.getCoverFile(context, 0);
+        final File cover = book.getCoverFile(0);
         assertNotNull(cover);
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());

@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.zip;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.security.cert.CertificateException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -53,6 +53,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@MediumTest
 public class ZipArchiveWriterTest {
 
     private static final String TAG = "ZipArchiveWriterTest";
@@ -62,23 +63,22 @@ public class ZipArchiveWriterTest {
 
     @Before
     public void count() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         try (BookDao bookDao = new BookDao(TAG)) {
             mBookInDb = bookDao.countBooks();
-
-            mNrOfStyles = StyleUtils.getStyles(context, true).size();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
+        mNrOfStyles = ServiceLocator.getInstance().getStyles().getStyles(context, true).size();
     }
 
     @Test
     public void write()
             throws ImportException, InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + ".zip");
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final File file = new File(AppDir.Log.getDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 

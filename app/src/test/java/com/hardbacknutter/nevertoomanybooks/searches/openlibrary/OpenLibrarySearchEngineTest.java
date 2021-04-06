@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,7 +55,7 @@ class OpenLibrarySearchEngineTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (OpenLibrarySearchEngine) Site.Type.Data
-                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine(new MockCaller());
+                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine(new MockCanceller());
     }
 
     @Test

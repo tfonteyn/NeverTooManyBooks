@@ -29,22 +29,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.UUID;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +53,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 class ImportCollectionTest
         extends JSoupBase {
@@ -67,6 +70,22 @@ class ImportCollectionTest
     private final ProgressListener mLogger =
             new TestProgressListener("ImportCollectionTest");
 
+    private final Bookshelf mOwnedBookshelf = new Bookshelf(
+            "owned", BuiltinStyle.DEFAULT_UUID);
+    private final Bookshelf mWishlistBookshelf = new Bookshelf(
+            "wishlist", BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
+    @Mock
+    SyncConfig mSyncConfig;
+
+    @Override
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        when(mSyncConfig.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
+        when(mSyncConfig.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
+    }
+
     @Test
     void parseCollectionPage() {
         setLocale(Locale.FRANCE);
@@ -74,8 +93,7 @@ class ImportCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
 
-        final Bookshelf wishList = new Bookshelf("wishListBS", UUID.randomUUID().toString());
-        final ImportCollection ic = new ImportCollection(userId, wishList);
+        final ImportCollection ic = new ImportCollection(mContext, mSyncConfig, userId);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -91,7 +109,7 @@ class ImportCollectionTest
 
             assertEquals(25, collection.size());
 
-            assertEquals(5, collection
+            assertEquals(24, collection
                     .stream()
                     .map(b -> b.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST))
                     .filter(Objects::nonNull)
@@ -99,13 +117,15 @@ class ImportCollectionTest
 
             final Bundle b0 = collection.get(0);
             assertEquals(5435, b0.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE));
+            assertEquals(5408, b0.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID));
+
             assertEquals(45f, b0.getDouble(DBKeys.KEY_PRICE_PAID));
             assertEquals("EUR", b0.getString(DBKeys.KEY_PRICE_PAID_CURRENCY));
             assertEquals("2021-03-10", b0.getString(DBKeys.KEY_DATE_ACQUIRED));
 
-            assertEquals(1, b0.getInt(StripInfoSearchEngine.SiteField.AMOUNT));
-            assertTrue(b0.getBoolean(StripInfoSearchEngine.SiteField.OWNED));
-            assertEquals(5408, b0.getLong(StripInfoSearchEngine.SiteField.COLLECTION_ID));
+            assertEquals(1, b0.getInt(DBKeys.KEY_STRIP_INFO_BE_AMOUNT));
+            assertTrue(b0.getBoolean(DBKeys.KEY_STRIP_INFO_BE_OWNED));
+            assertTrue(b0.getBoolean(DBKeys.KEY_STRIP_INFO_BE_WANTED));
 
         } catch (@NonNull final IOException e) {
             fail(e);
@@ -120,7 +140,7 @@ class ImportCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/0000";
         final String filename = "/stripinfo/collection-last-page.html";
 
-        final ImportCollection ic = new ImportCollection(userId, null);
+        final ImportCollection ic = new ImportCollection(mContext, mSyncConfig, userId);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {

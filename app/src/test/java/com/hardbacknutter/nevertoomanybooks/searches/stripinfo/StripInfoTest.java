@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -58,14 +58,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 class StripInfoTest
         extends JSoupBase {
 
-    public static final String UTF_8 = "UTF-8";
+    private static final String UTF_8 = "UTF-8";
     private StripInfoSearchEngine mSearchEngine;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
         mSearchEngine = (StripInfoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(new MockCaller());
+                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(new MockCanceller());
     }
 
     @Test

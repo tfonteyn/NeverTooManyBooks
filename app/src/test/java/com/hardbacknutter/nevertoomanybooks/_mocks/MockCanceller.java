@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,30 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
+package com.hardbacknutter.nevertoomanybooks._mocks;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
+public class MockCanceller
+        implements Canceller {
 
-import static org.junit.Assert.assertEquals;
-
-public class FiltersTest {
-
-    private StylePersistenceLayer mLayerMock;
-
-    @Before
-    public void setupMock() {
-        mLayerMock = new StylePersistenceLayerBundle();
+    @Override
+    public boolean cancel(final boolean mayInterruptIfRunning) {
+        return false;
     }
 
-    @Test
-    public void cc() {
-        final Filters f1 = new Filters(false, mLayerMock);
-
-        final Filters f2 = new Filters(false, mLayerMock, f1);
-        assertEquals(f1, f2);
+    @Override
+    public boolean isCancelled() {
+        return false;
     }
 }

@@ -19,41 +19,28 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.Context;
-
-import androidx.test.platform.app.InstrumentationRegistry;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class SearchSitesTest {
 
-    private SearchEngineRegistry mEngineRegistry;
-
-    @Before
-    public void setup() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
-        SearchEngineRegistry.create(context);
-        mEngineRegistry = SearchEngineRegistry.getInstance();
-    }
+    private static final String TAG = "SearchSitesTest";
 
     @Test
     public void dumpEngines() {
-        final Collection<SearchEngineConfig> all = mEngineRegistry.getAll();
+        final Collection<SearchEngineConfig> all = SearchEngineRegistry.getInstance().getAll();
         for (final SearchEngineConfig config : all) {
             assertNotNull(config);
-            System.out.println("\n" + config);
+            Log.d(TAG, "\n" + config);
         }
     }
 
@@ -61,16 +48,16 @@ public class SearchSitesTest {
     public void dumpSites() {
         for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
-            System.out.println("\n------------------------------------------\n\n" + type);
+            Log.d(TAG, "\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
                 final SearchEngineConfig config =
-                        mEngineRegistry.getByEngineId(site.engineId);
+                        SearchEngineRegistry.getInstance().getByEngineId(site.engineId);
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine();
                 assertNotNull(searchEngine);
 
-                System.out.println("\n" + config + "\n\n" + site + "\n\n" + searchEngine);
+                Log.d(TAG, "\n" + config + "\n\n" + site + "\n\n" + searchEngine);
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,21 +21,25 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class BooklistGroupTest
-        extends BooklistGroupTestBase {
+public class BooklistGroupTest {
 
     @Test
     public void cc() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final BuiltinStyle s1 = getStyle(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
+        assertNotNull(s1);
+
         final BooklistGroup g1 = new BooklistGroup(BooklistGroup.COLOR, false, s1);
 
         final BooklistGroup g2 = new BooklistGroup(false, s1, g1);

@@ -19,46 +19,44 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
-import android.content.Context;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BooleanFilterTest {
+public class NotEmptyFilterTest
+        extends Base {
 
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+    void cc() {
 
-        final BooleanFilter p1 = new BooleanFilter(
-                false, mLayerMock, R.string.lbl_read,
-                Filters.PK_FILTER_READ,
-                new DomainExpression(DBDefinitions.DOM_BOOK_READ,
-                                     DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
-        p1.set(true);
+        final NotEmptyFilter p1 = new NotEmptyFilter(
+                false, mLayerMock, R.string.lbl_isbn,
+                Filters.PK_FILTER_ISBN,
+                new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
+                                     DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_ISBN)));
+        p1.set(1);
 
-        final BooleanFilter p2 = p1.clone(false, mLayerMock);
+        final NotEmptyFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
         assertEquals(1, (int) p2.getValue());
-        assertTrue(p2.isActive(context));
+        assertTrue(p2.isActive(mContext));
     }
 }

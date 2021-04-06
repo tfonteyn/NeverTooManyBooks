@@ -22,8 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.os.Parcel;
 
-import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@SmallTest
+@MediumTest
 public class SeriesTest {
 
     @Test
@@ -60,8 +59,7 @@ public class SeriesTest {
 
     @Test
     public void pruneSeries01List() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 

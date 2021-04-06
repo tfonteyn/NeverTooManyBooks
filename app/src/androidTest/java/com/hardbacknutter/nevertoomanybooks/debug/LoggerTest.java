@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.content.Context;
-
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.SmallTest;
 
 import java.io.File;
 import java.util.List;
@@ -34,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SmallTest
 public class LoggerTest {
 
     private int msgNr;
@@ -41,24 +40,25 @@ public class LoggerTest {
     @Test
     public void cycleLogs()
             throws ExternalStorageException {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        AppDir.Log.purge(context, true, null);
+        AppDir.Log.purge(true, null);
 
         List<File> files;
 
-        files = AppDir.Log.collectFiles(context, null);
+        files = AppDir.Log.collectFiles(null);
         assertTrue(files.isEmpty());
 
         for (int i = 0; i < 6; i++) {
-            Logger.warn(context, "loop=" + i, "message " + (msgNr++));
-            Logger.warn(context, "loop=" + i, "message " + (msgNr++));
-            Logger.cycleLogs(context);
+            final Object[] params1 = new Object[]{"message " + (msgNr++)};
+            Logger.warn("loop=" + i, params1);
+            final Object[] params = new Object[]{"message " + (msgNr++)};
+            Logger.warn("loop=" + i, params);
+            Logger.cycleLogs();
         }
 
-        files = AppDir.Log.collectFiles(context, null);
+        files = AppDir.Log.collectFiles(null);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
-        Logger.warn(context, "final", files.toString());
+        Logger.warn("final", files.toString());
     }
 }

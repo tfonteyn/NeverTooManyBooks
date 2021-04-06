@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,20 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks._mocks;
+package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
-public class MockCaller
-        implements Canceller {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    @Override
-    public boolean cancel(final boolean mayInterruptIfRunning) {
-        return false;
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TextScaleTest
+        extends Base {
+
+    private StylePersistenceLayer mLayerMock;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        mLayerMock = new StylePersistenceLayerBundle();
     }
 
-    @Override
-    public boolean isCancelled() {
-        return false;
+    @Test
+    void cc() {
+        final TextScale t1 = new TextScale(false, mLayerMock);
+
+        final TextScale t2 = new TextScale(false, mLayerMock, t1);
+        assertEquals(t1, t2);
     }
 }

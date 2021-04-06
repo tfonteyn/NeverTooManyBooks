@@ -22,9 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Test;
+
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,18 +36,13 @@ public class UserStyleTest {
 
     @Test
     public void clone01() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final BuiltinStyle s1;
-        s1 = (BuiltinStyle) StyleUtils.getStyle(context, StyleUtils.BuiltinStyles
-                // This style has:
-                // BooklistGroup.AUTHOR
-                // BooklistGroup.SERIES
-                // Filters.PK_FILTER_READ: false
-                .UNREAD_AUTHOR_THEN_SERIES_UUID);
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
 
         assertNotNull(s1);
 
-        // clone a BuiltinStyles
+        // clone a BuiltinStyle
         final UserStyle s2 = s1.clone(context);
         compare(context, s1, s2);
         // clone a UserStyle

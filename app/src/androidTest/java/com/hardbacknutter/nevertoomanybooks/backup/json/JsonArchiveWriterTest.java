@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +32,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -44,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -56,6 +56,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+@MediumTest
 public class JsonArchiveWriterTest {
 
     private static final String TAG = "JsonArchiveWriterTest";
@@ -65,15 +66,14 @@ public class JsonArchiveWriterTest {
 
     @Before
     public void count() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         try (BookDao bookDao = new BookDao(TAG)) {
             mBookInDb = bookDao.countBooks();
-
-            mNrOfStyles = StyleUtils.getStyles(context, true).size();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
+        mNrOfStyles = ServiceLocator.getInstance().getStyles().getStyles(context, true).size();
     }
 
     // Disabled. The JsonArchiveWriter is currently hardcoded NOT to write styles.
@@ -82,8 +82,8 @@ public class JsonArchiveWriterTest {
             throws ImportException, InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + "-styles.json");
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final File file = new File(AppDir.Log.getDir(), TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
@@ -126,8 +126,8 @@ public class JsonArchiveWriterTest {
                    InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + "-books.json");
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final File file = new File(AppDir.Log.getDir(), TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
@@ -165,7 +165,7 @@ public class JsonArchiveWriterTest {
         final long modifiedBookId = ids.get(5);
 
         try (BookDao bookDao = new BookDao(TAG)) {
-            bookDao.deleteBook(context, deletedBookId);
+            bookDao.deleteBook(deletedBookId);
 
             final Book book = Book.from(modifiedBookId, bookDao);
             book.putString(DBKeys.KEY_PRIVATE_NOTES,

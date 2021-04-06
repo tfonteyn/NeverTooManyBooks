@@ -23,7 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +38,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -61,6 +62,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+@MediumTest
 public class CsvArchiveWriterTest {
 
     private static final String TAG = "CsvArchiveWriterTest";
@@ -83,8 +85,8 @@ public class CsvArchiveWriterTest {
                    InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + ".csv");
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final File file = new File(AppDir.Log.getDir(), TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
@@ -127,7 +129,7 @@ public class CsvArchiveWriterTest {
         final long modifiedBookId = ids.get(5);
 
         try (BookDao bookDao = new BookDao(TAG)) {
-            bookDao.deleteBook(context, deletedBookId);
+            bookDao.deleteBook(deletedBookId);
 
             final Book book = Book.from(modifiedBookId, bookDao);
             book.putString(DBKeys.KEY_PRIVATE_NOTES,

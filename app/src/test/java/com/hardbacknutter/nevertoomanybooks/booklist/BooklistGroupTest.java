@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,22 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class BooklistGroupTest {
-
-    @BeforeAll
-    static void startUp() {
-        Logger.isJUnitTest = true;
-    }
+class BooklistGroupTest
+        extends Base {
 
     @Test
     void duplicates() {

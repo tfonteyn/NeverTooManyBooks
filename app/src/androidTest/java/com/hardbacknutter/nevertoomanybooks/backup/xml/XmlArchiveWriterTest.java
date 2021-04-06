@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.xml;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.security.cert.CertificateException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+@MediumTest
 public class XmlArchiveWriterTest {
 
     private static final String TAG = "XmlArchiveWriterTest";
@@ -64,8 +66,8 @@ public class XmlArchiveWriterTest {
     public void write()
             throws IOException, GeneralParsingException, CertificateException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + ".xml");
+        final Context context = ServiceLocator.getLocalizedAppContext();
+        final File file = new File(AppDir.Log.getDir(), TAG + ".xml");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 

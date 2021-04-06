@@ -139,7 +139,7 @@ public class Base {
                 .when(mContext).getString(anyInt());
 
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
-        when(mResources.getConfiguration().getLocales()).thenReturn(mLocaleList);
+        when(mConfiguration.getLocales()).thenReturn(mLocaleList);
 
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 

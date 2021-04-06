@@ -21,8 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +36,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 //URGENT: test 1 does not use toc id's (and passes) + test 2/3 uses id's (and fails)
-@SmallTest
+@MediumTest
 public class TocEntryTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 
     @Test
     public void pruneTocEntries01() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
@@ -96,8 +94,7 @@ public class TocEntryTest {
 
     @Test
     public void pruneTocEntries02() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
@@ -144,8 +141,7 @@ public class TocEntryTest {
 
     @Test
     public void pruneTocEntries03() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 

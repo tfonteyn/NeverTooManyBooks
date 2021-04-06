@@ -22,8 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.os.Parcel;
 
-import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.filters.MediumTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@SmallTest
+@MediumTest
 public class PublisherTest {
 
     private static final String SOME_PUBLISHER = "Some publisher";
@@ -63,8 +62,7 @@ public class PublisherTest {
 
     @Test
     public void prunePublisherNames01() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
@@ -113,8 +111,7 @@ public class PublisherTest {
 
     @Test
     public void prunePublisherNames02() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
@@ -168,8 +165,7 @@ public class PublisherTest {
 
     @Test
     public void prunePublisherNames03() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 

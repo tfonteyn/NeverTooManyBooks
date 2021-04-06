@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,27 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
-public class TextScaleTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class PBitmaskTest
+        extends Base {
+
+    private static final int MASK = 255;
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final TextScale t1 = new TextScale(false, mLayerMock);
+    void cc() {
+        final PBitmask p1 = new PBitmask(false, mLayerMock, "no.p1", 0, MASK);
+        p1.set(123);
 
-        final TextScale t2 = new TextScale(false, mLayerMock, t1);
-        assertEquals(t1, t2);
+        final PBitmask p2 = new PBitmask(false, mLayerMock, p1);
+        assertEquals(p1, p2);
+        assertEquals(123, (int) p2.getValue());
     }
 }

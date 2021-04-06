@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -49,7 +49,7 @@ class AmazonHtmlHandlerTest
     public void setUp() {
         super.setUp();
         mSearchEngine = (AmazonSearchEngine) Site.Type.Data
-                .getSite(SearchSites.AMAZON).getSearchEngine(new MockCaller());
+                .getSite(SearchSites.AMAZON).getSearchEngine(new MockCanceller());
     }
 
     @Test

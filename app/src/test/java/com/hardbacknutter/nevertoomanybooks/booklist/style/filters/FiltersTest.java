@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,33 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
-public class PBooleanTest {
+public class FiltersTest
+        extends Base {
 
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final PBoolean p1 = new PBoolean(false, mLayerMock, "no.p1");
-        p1.set(true);
+    void cc() {
+        final Filters f1 = new Filters(false, mLayerMock);
 
-        final PBoolean p2 = new PBoolean(false, mLayerMock, p1);
-        assertEquals(p1, p2);
-        assertEquals(true, p2.getValue());
+        final Filters f2 = new Filters(false, mLayerMock, f1);
+        assertEquals(f1, f2);
     }
 }

@@ -19,50 +19,44 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
-import android.content.Context;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BitmaskFilterTest {
+class BooleanFilterTest
+        extends Base {
 
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final BitmaskFilter p1 = new BitmaskFilter(
-                false, mLayerMock, R.string.lbl_edition,
-                Filters.PK_FILTER_EDITION_BITMASK,
-                new DomainExpression(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                                     DBDefinitions.TBL_BOOKS
-                                             .dot(DBKeys.KEY_EDITION_BITMASK)),
-                Book.Edition.BITMASK_ALL);
+    void cc() {
 
-        p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);
-        assertTrue(p1.isActive(context));
+        final BooleanFilter p1 = new BooleanFilter(
+                false, mLayerMock, R.string.lbl_read,
+                Filters.PK_FILTER_READ,
+                new DomainExpression(DBDefinitions.DOM_BOOK_READ,
+                                     DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
+        p1.set(true);
 
-        final BitmaskFilter p2 = p1.clone(false, mLayerMock);
+        final BooleanFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
-        assertEquals(Book.Edition.SIGNED | Book.Edition.LIMITED, (int) p2.getValue());
-        assertTrue(p2.isActive(context));
+        assertEquals(1, (int) p2.getValue());
+        assertTrue(p2.isActive(mContext));
     }
 }

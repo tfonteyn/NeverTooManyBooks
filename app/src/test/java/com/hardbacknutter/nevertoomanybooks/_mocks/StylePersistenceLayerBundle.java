@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style;
+package com.hardbacknutter.nevertoomanybooks._mocks;
 
 import android.os.Bundle;
 
@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 public class StylePersistenceLayerBundle
         implements StylePersistenceLayer {

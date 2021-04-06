@@ -19,38 +19,36 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
-import android.content.Context;
-
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import java.util.ArrayList;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class IntListFilterTest {
+public class IntListFilterTest
+        extends Base {
 
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+    void cc() {
         final IntListFilter p1 = new IntListFilter(
                 false, mLayerMock, R.string.lbl_bookshelves,
                 Filters.PK_FILTER_BOOKSHELVES,
@@ -61,11 +59,11 @@ public class IntListFilterTest {
         value.add(1);
         value.add(13);
         p1.set(value);
-        assertTrue(p1.isActive(context));
+        assertTrue(p1.isActive(mContext));
 
         final IntListFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
         assertEquals(p1.getValue(), p2.getValue());
-        assertTrue(p2.isActive(context));
+        assertTrue(p2.isActive(mContext));
     }
 }

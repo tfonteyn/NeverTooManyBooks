@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 
-import androidx.test.platform.app.InstrumentationRegistry;
-
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -89,8 +87,7 @@ public abstract class BaseSetup {
     public void setup()
             throws DaoWriteException {
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        ServiceLocator.create(context);
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final SynchronizedDb db = ServiceLocator.getDb();
         Constants.deleteTocs(db);

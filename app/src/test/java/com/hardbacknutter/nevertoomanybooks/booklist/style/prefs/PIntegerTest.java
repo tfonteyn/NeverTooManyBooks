@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,30 +19,32 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PBitmaskTest {
+public class PIntegerTest
+        extends Base {
 
-    private static final int MASK = 255;
     private StylePersistenceLayer mLayerMock;
 
-    @Before
-    public void setupMock() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 
     @Test
-    public void cc() {
-        final PBitmask p1 = new PBitmask(false, mLayerMock, "no.p1", 0, MASK);
+    void cc() {
+        final PInteger p1 = new PInteger(false, mLayerMock, "no.p1", 0);
         p1.set(123);
 
-        final PBitmask p2 = new PBitmask(false, mLayerMock, p1);
+        final PInteger p2 = new PInteger(false, mLayerMock, p1);
         assertEquals(p1, p2);
         assertEquals(123, (int) p2.getValue());
     }

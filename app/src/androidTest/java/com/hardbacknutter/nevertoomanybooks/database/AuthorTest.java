@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import android.content.Context;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,7 +57,7 @@ public class AuthorTest
     public void crud() {
         boolean updateOk;
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         author[0] = Author.from(AuthorFullName(0));
@@ -102,7 +101,7 @@ public class AuthorTest
         long existingId;
         final Author tmpAuthor;
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         // rename an author
@@ -165,7 +164,7 @@ public class AuthorTest
         final long idBefore;
         long existingId;
 
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final Context context = ServiceLocator.getLocalizedAppContext();
         try (BookDao bookDao = new BookDao("renameAuthorWithTocs")) {
             final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
