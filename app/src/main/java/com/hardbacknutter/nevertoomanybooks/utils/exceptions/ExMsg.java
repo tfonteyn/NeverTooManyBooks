@@ -20,22 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
 import android.content.Context;
-import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -89,46 +80,50 @@ public final class ExMsg {
                                  @Nullable final Throwable e) {
         String msg = null;
 
-        // One of ours ? use the embedded localised message
+        // Use the embedded localised message if possible
         if (e instanceof LocalizedException) {
             msg = ((LocalizedException) e).getLocalizedMessage(context);
 
-        } else if (e instanceof FileNotFoundException) {
-            msg = context.getString(R.string.httpErrorFile);
-
         } else if (e instanceof JSONException) {
-            msg = context.getString(R.string.error_unknown_long);
-
-        } else if (e instanceof android.database.SQLException
-                   || e instanceof java.sql.SQLException) {
             msg = context.getString(R.string.error_unknown_long);
 
         } else if (e instanceof DaoWriteException) {
             msg = context.getString(R.string.error_storage_not_writable);
 
-        } else if (e instanceof SocketTimeoutException) {
+        } else if (e instanceof java.io.FileNotFoundException) {
+            msg = context.getString(R.string.httpErrorFile);
+
+        } else if (e instanceof java.util.zip.ZipException) {
+            // a ZipException is very generic, we'd need to look at the actual text.
+            msg = context.getString(R.string.error_import_archive_invalid);
+
+        } else if (e instanceof android.database.SQLException
+                   || e instanceof java.sql.SQLException) {
+            msg = context.getString(R.string.error_unknown_long);
+
+        } else if (e instanceof java.net.SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);
 
-        } else if (e instanceof MalformedURLException) {
+        } else if (e instanceof java.net.MalformedURLException) {
             msg = context.getString(R.string.error_search_failed_network);
 
-        } else if (e instanceof UnknownHostException) {
+        } else if (e instanceof java.net.UnknownHostException) {
             msg = context.getString(R.string.error_search_failed_network);
 
-        } else if (e instanceof CertificateEncodingException) {
+        } else if (e instanceof java.security.cert.CertificateEncodingException) {
             msg = context.getString(R.string.error_certificate_invalid);
 
-        } else if (e instanceof CertificateException) {
+        } else if (e instanceof java.security.cert.CertificateException) {
             // There was something wrong with certificates/key on OUR end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);
 
-        } else if (e instanceof SSLException) {
+        } else if (e instanceof javax.net.ssl.SSLException) {
             // TODO: give user detailed message
             // There was something wrong with certificates/key on the REMOTE end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);
 
-        } else if (e instanceof ErrnoException) {
-            final int errno = ((ErrnoException) e).errno;
+        } else if (e instanceof android.system.ErrnoException) {
+            final int errno = ((android.system.ErrnoException) e).errno;
             // write failed: ENOSPC (No space left on device)
             if (errno == OsConstants.ENOSPC) {
                 msg = context.getString(R.string.error_storage_no_space_left);
