@@ -100,9 +100,9 @@ public class StripInfoSyncViewModel
                     .addRelatedField(DBKeys.KEY_PRICE_PAID_CURRENCY, DBKeys.KEY_PRICE_PAID)
 
                     // The site specific keys
-                    .add(R.string.owned, DBKeys.KEY_STRIP_INFO_BE_OWNED)
+                    .add(R.string.lbl_owned, DBKeys.KEY_STRIP_INFO_BE_OWNED)
                     .add(R.string.lbl_wishlist, DBKeys.KEY_STRIP_INFO_BE_WANTED)
-                    .add(R.string.lbl_amount, DBKeys.KEY_STRIP_INFO_BE_AMOUNT)
+                    .add(R.string.lbl_number, DBKeys.KEY_STRIP_INFO_BE_AMOUNT)
                     .add(R.string.site_stripinfo_be, DBKeys.KEY_STRIP_INFO_BE_COLL_ID)
 
                     .build();

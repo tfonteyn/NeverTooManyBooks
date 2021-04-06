@@ -598,7 +598,7 @@ public class ImportFragment
             failed = 10;
             fs = R.string.warning_import_failed_for_lines_lots;
         } else {
-            fs = R.string.warning_import_failed__for_lines_some;
+            fs = R.string.warning_import_failed_for_lines_some;
         }
 
         final Collection<String> itemList = new ArrayList<>();
