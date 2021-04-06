@@ -41,7 +41,6 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,15 +54,10 @@ public final class SyncProcessor {
 
     private static final String TAG = "SyncProcessor";
 
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     @NonNull
     private final Map<String, SyncField> mFields;
 
-    private SyncProcessor(@NonNull final BookDao bookDao,
-                          @NonNull final Map<String, SyncField> fields) {
-        mBookDao = bookDao;
+    private SyncProcessor(@NonNull final Map<String, SyncField> fields) {
         mFields = fields;
     }
 
@@ -74,14 +68,12 @@ public final class SyncProcessor {
      * as (theoretically) it allows the code to download more or less data depending on
      * the fields wanted. Prime example is of course the cover images.
      *
-     * @param context Current context
      * @param book    to filter
      *
      * @return the filtered SyncField unmodifiableMap
      */
     @NonNull
-    public Map<String, SyncField> filter(@NonNull final Context context,
-                                         @NonNull final Book book) {
+    public Map<String, SyncField> filter(@NonNull final Book book) {
 
         final Map<String, SyncField> filteredMap = new LinkedHashMap<>();
 
@@ -118,14 +110,14 @@ public final class SyncProcessor {
                             // If it's a cover...
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                                 // check if it's missing or empty.
-                                final File file = book.getUuidCoverFile(context, 0);
+                                final File file = book.getUuidCoverFile(0);
                                 if (file == null || file.length() == 0) {
                                     filteredMap.put(field.key, field);
                                 }
 
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                                 // check if it's missing or empty.
-                                final File file = book.getUuidCoverFile(context, 1);
+                                final File file = book.getUuidCoverFile(1);
                                 if (file == null || file.length() == 0) {
                                     filteredMap.put(field.key, field);
                                 }
@@ -159,12 +151,18 @@ public final class SyncProcessor {
      * @param book         the local book
      * @param fieldsWanted The (subset) of fields relevant to the current book.
      * @param incoming     the data to merge with the book
+     *
+     * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
+     * The book id will always be set.
+     * It can be passed to {@link BookDao#update(Context, Book, int)}
      */
-    public void process(@NonNull final Context context,
+    @Nullable
+    public Book process(@NonNull final Context context,
                         final long bookId,
                         @NonNull final Book book,
                         @NonNull final Map<String, SyncField> fieldsWanted,
                         @NonNull final Bundle incoming) {
+
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
         for (final String key : incoming.keySet()) {
@@ -179,7 +177,7 @@ public final class SyncProcessor {
 
         final Locale bookLocale = book.getLocale(context);
 
-        // For each field, process it according the usage.
+        // For each field, process it according the SyncAction set.
         fieldsWanted
                 .values()
                 .stream()
@@ -187,9 +185,9 @@ public final class SyncProcessor {
                 .forEach(field -> {
                     // Handle thumbnail specially
                     if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        processCover(context, book, incoming, 0);
+                        processCover(book, incoming, 0);
                     } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        processCover(context, book, incoming, 1);
+                        processCover(book, incoming, 1);
                     } else {
                         switch (field.getAction()) {
                             case CopyIfBlank:
@@ -226,13 +224,10 @@ public final class SyncProcessor {
             // we want to commit to the existing book.
             final Book delta = Book.from(incoming);
             delta.putLong(DBKeys.KEY_PK_ID, bookId);
-            try {
-                mBookDao.update(context, delta, 0);
-            } catch (@NonNull final DaoWriteException e) {
-                // ignore, but log it.
-                Logger.error(context, TAG, e);
-            }
+            return delta;
         }
+
+        return null;
     }
 
     /**
@@ -271,8 +266,7 @@ public final class SyncProcessor {
         return false;
     }
 
-    private void processCover(@NonNull final Context context,
-                              @NonNull final Book book,
+    private void processCover(@NonNull final Book book,
                               @NonNull final Bundle incoming,
                               @IntRange(from = 0, to = 1) final int cIdx) {
 
@@ -280,13 +274,12 @@ public final class SyncProcessor {
         if (fileSpec != null) {
             final File downloadedFile = new File(fileSpec);
             try {
-                final File destination = book.getUuidCoverFileOrNew(context, cIdx);
+                final File destination = book.getUuidCoverFileOrNew(cIdx);
                 FileUtils.rename(downloadedFile, destination);
 
             } catch (@NonNull final IOException e) {
                 final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
-                Logger.error(context, TAG, e,
-                             "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
+                Logger.error(TAG, e, "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
             }
         }
         incoming.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
@@ -380,7 +373,7 @@ public final class SyncProcessor {
         }
 
         /**
-         * Reset current usage back to defaults, and write to preferences.
+         * Reset current action back to defaults, and write to preferences.
          */
         public void resetPreferences() {
 
@@ -506,7 +499,7 @@ public final class SyncProcessor {
         }
 
         @NonNull
-        public SyncProcessor build(@NonNull final BookDao bookDao) {
+        public SyncProcessor build() {
             for (final Map.Entry<String, String> entry : mRelatedFields.entrySet()) {
                 final SyncField syncField = mFields.get(entry.getKey());
                 if (syncField != null && (syncField.getAction() != SyncAction.Skip)) {
@@ -514,7 +507,7 @@ public final class SyncProcessor {
                     mFields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }
             }
-            return new SyncProcessor(bookDao, mFields);
+            return new SyncProcessor(mFields);
         }
     }
 }
