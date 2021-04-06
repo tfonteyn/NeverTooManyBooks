@@ -65,8 +65,12 @@ public class ImportQueuedBooksTask
     /** Whether to fetch covers. */
     private boolean[] mFetchCovers;
 
-    ImportQueuedBooksTask() {
+    @NonNull
+    private final BookDao mBookDao;
+
+    ImportQueuedBooksTask(@NonNull final BookDao bookDao) {
         super(R.id.TASK_ID_IMPORT, TAG);
+        mBookDao = bookDao;
     }
 
     /**
@@ -101,45 +105,42 @@ public class ImportQueuedBooksTask
 
         final StripInfoDao stripInfoDao = ServiceLocator.getInstance().getStripInfoDao();
 
-        final List<Long> all = stripInfoDao.getAll();
+        final List<Long> all = stripInfoDao.getQueuedBooks();
 
         setIndeterminate(false);
         setMaxPos(all.size());
         publishProgress(0, context.getString(R.string.progress_msg_searching));
 
-        try (BookDao bookDao = new BookDao(TAG)) {
-            for (final long externalId : all) {
-                if (!isCancelled()) {
+        for (final long externalId : all) {
+            if (!isCancelled()) {
+                try {
+                    final Bundle bookData = mSearchEngine
+                            .searchByExternalId(String.valueOf(externalId), mFetchCovers);
+
+                    final Book book = Book.from(bookData);
+                    book.ensureBookshelf(context);
+
+                    Synchronizer.SyncLock txLock = null;
                     try {
-                        final Bundle bookData = mSearchEngine
-                                .searchByExternalId(String.valueOf(externalId), mFetchCovers);
-
-                        final Book book = Book.from(bookData);
-                        book.ensureBookshelf(context);
-
-                        Synchronizer.SyncLock txLock = null;
-                        try {
-                            txLock = db.beginTransaction(true);
-                            bookDao.insert(context, book, 0);
-                            stripInfoDao.deleteOne(externalId);
-                            db.setTransactionSuccessful();
-                        } finally {
-                            if (txLock != null) {
-                                db.endTransaction(txLock);
-                            }
+                        txLock = db.beginTransaction(true);
+                        mBookDao.insert(context, book, 0);
+                        stripInfoDao.deleteOne(externalId);
+                        db.setTransactionSuccessful();
+                    } finally {
+                        if (txLock != null) {
+                            db.endTransaction(txLock);
                         }
-                        final long id = book.getId();
-                        if (id > 0) {
-                            booksAdded.add(id);
-                            publishProgress(1, book.getTitle());
-                        }
-                    } catch (@NonNull final IOException | DaoWriteException ignore) {
-                        // ignore, just move to next book
                     }
+                    final long id = book.getId();
+                    if (id > 0) {
+                        booksAdded.add(id);
+                        publishProgress(1, book.getTitle());
+                    }
+                } catch (@NonNull final IOException | DaoWriteException ignore) {
+                    // ignore, just move to next book
                 }
             }
         }
-
         return booksAdded;
     }
 }

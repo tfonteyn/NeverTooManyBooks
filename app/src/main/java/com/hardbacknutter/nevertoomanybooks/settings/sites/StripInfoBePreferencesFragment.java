@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
@@ -107,8 +108,6 @@ public class StripInfoBePreferencesFragment
             }
         });
 
-        final ListPreference wb = findPreference(StripInfoAuth.PK_WISHLIST_BOOKSHELF);
-
         final ArrayList<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
         final CharSequence[] entries = new CharSequence[all.size()];
         final CharSequence[] entryValues = new CharSequence[all.size()];
@@ -121,22 +120,33 @@ public class StripInfoBePreferencesFragment
         }
 
         //noinspection ConstantConditions
-        wb.setEntries(entries);
-        wb.setEntryValues(entryValues);
-        wb.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+        final String defValue = String.valueOf(
+                Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
+                         .getId());
 
+        initBookshelfMapperPref(SyncConfig.PK_BOOKSHELF_OWNED, defValue, entries, entryValues);
+        initBookshelfMapperPref(SyncConfig.PK_BOOKSHELF_WISHLIST, defValue, entries, entryValues);
+    }
+
+    private void initBookshelfMapperPref(@NonNull final CharSequence key,
+                                         @NonNull final String defValue,
+                                         @NonNull final CharSequence[] entries,
+                                         @NonNull final CharSequence[] entryValues) {
+
+        final ListPreference p = findPreference(key);
         //noinspection ConstantConditions
-        final Bookshelf defBookshelf = Bookshelf
-                .getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT);
-        final String defValue = String.valueOf(defBookshelf.getId());
-        // The setDefaultValue is only done for sanity sake
-        wb.setDefaultValue(defValue);
+        p.setEntries(entries);
+        p.setEntryValues(entryValues);
+        p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        p.setDefaultValue(defValue);
+
         // The ListPreference has an issue that the initial value is set during the inflation
         // step. At that time, the default value is ONLY available from xml.
         // Internally it will then use this to set the value.
         // Workaround: if the pref has no value, set it ourselves.
-        if (wb.getValue() == null) {
-            wb.setValue(defValue);
+        if (p.getValue() == null) {
+            p.setValue(defValue);
         }
     }
 

@@ -23,6 +23,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -40,7 +42,6 @@ import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
@@ -52,20 +53,19 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * Fetches and parses the user collection list from the site.
  * This includes visiting each page, and parsing the specific collection data.
  * These are NOT full-book data sets.
- *
- * Ratings as suggested by the (dutch) site.
- * 10 - Subliem!
- * 9 - Uitstekend
- * 8 - Zeer goed
- * 7 - Bovengemiddeld
- * 6 - Goed, maar niet bijzonder
- * 5 - Matig
- * 4 - Zwak
- * 3 - Zeer zwak
- * 2 - Bijzonder zwak
- * 1 - Waarom is deze strip ooit gemaakt?
  */
-public class ImportCollection {
+class ImportCollection {
+
+    private static final String TAG = "ImportCollection";
+
+    /**
+     * The collection page only provides a link to the front cover.
+     * The back cover (identifier) can only be read from the main book page.
+     * IMPORTANT: we *always* parse for the cover, but *ONLY* store the url
+     * in a private key. The caller should determine if the cover is actually wanted
+     * (and download it) when the collection data is being processed!
+     */
+    static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
 
     private static final String ROW_ID_ATTR = "showIfInCollection-";
     private static final int ROW_ID_ATTR_LEN = ROW_ID_ATTR.length();
@@ -81,8 +81,6 @@ public class ImportCollection {
      * The suffix "_search-" is always added by the site form; so we add it as well.
      */
     private static final String URL_MY_BOOKS = "/userCollection/index/%1$s/0/%2$d/%3$s_search-";
-    /** A full page contains 25 rows. */
-    private static final int MAX_PAGE_SIZE = 25;
 
     /**
      * Filters.
@@ -112,47 +110,34 @@ public class ImportCollection {
     /** Internal id from the website; used in the auth Cookie and links. */
     @NonNull
     private final String mUserId;
-
-    @Nullable
-    private final Bookshelf mWishListBookshelf;
-
+    @NonNull
     private final SearchEngineConfig mSEConfig;
+    @NonNull
+    private final RowParser mRowParser;
+
+    private final Function<String, Optional<TerminatorConnection>> mConCreator;
+
+    private int mCurrentPage;
+    private int mMaxPages = -1;
 
     /**
      * Constructor.
      *
-     * @param userId            as extracted from the auth Cookie.
-     * @param wishListBookshelf mapped bookshelf
+     * @param context Current context
+     * @param userId  as extracted from the auth Cookie.
      */
-    ImportCollection(@NonNull final String userId,
-                     @Nullable final Bookshelf wishListBookshelf) {
+    @AnyThread
+    ImportCollection(@NonNull final Context context,
+                     @NonNull final SyncConfig config,
+                     @NonNull final String userId) {
         mUserId = userId;
-        mWishListBookshelf = wishListBookshelf;
-
         mSEConfig = SearchEngineRegistry.getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
         mJsoupLoader = new JsoupLoader();
-    }
+        mRowParser = new RowParser(context, config);
 
-    /**
-     * @param context          Current context
-     * @param progressListener Progress and cancellation interface
-     *
-     * @return list with book-data Bundles
-     *
-     * @throws IOException on failure
-     */
-    @SuppressLint("DefaultLocale")
-    @WorkerThread
-    @NonNull
-    public ArrayList<Bundle> fetch(@NonNull final Context context,
-                                   @NonNull final ProgressListener progressListener)
-            throws IOException {
-
-        final ArrayList<Bundle> collection = new ArrayList<>();
-
-        final Function<String, Optional<TerminatorConnection>> conCreator = (String u) -> {
+        mConCreator = url -> {
             try {
-                final TerminatorConnection con = new TerminatorConnection(u)
+                final TerminatorConnection con = new TerminatorConnection(url)
                         .setConnectTimeout(mSEConfig.getConnectTimeoutInMs())
                         .setReadTimeout(mSEConfig.getReadTimeoutInMs())
                         .setThrottler(mSEConfig.getThrottler());
@@ -162,59 +147,81 @@ public class ImportCollection {
                 return Optional.empty();
             }
         };
+    }
 
-        Document document;
-        List<Bundle> pageList;
-        int page = 0;
-        int maxPages = -1;
-        do {
-            pageList = null;
-            page++;
-            progressListener.publishProgress(1, context.getString(
-                    R.string.progress_msg_loading_page, page));
+    boolean hasMore() {
+        // haven't started yet, or there are more pages.
+        return mCurrentPage == 0 || mMaxPages > mCurrentPage;
+    }
 
-            final String url = mSEConfig.getSiteUrl()
-                               + String.format(URL_MY_BOOKS, mUserId, page, mFlags);
-            try {
-                document = mJsoupLoader.loadDocument(context, url, conCreator);
+    /**
+     * Fetch a single page, with up to 25 books. Use {@link #hasMore()} to loop.
+     *
+     * @param context          Current context
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return list with book-data Bundles
+     *
+     * @throws IOException on failure
+     */
+    @SuppressLint("DefaultLocale")
+    @WorkerThread
+    @Nullable
+    List<Bundle> fetchPage(@NonNull final Context context,
+                           @NonNull final ProgressListener progressListener)
+            throws IOException {
 
-            } catch (@NonNull final FileNotFoundException e1) {
-                document = null;
-            }
+        mCurrentPage++;
+        if (!hasMore()) {
+            throw new IOException("Can't fetch more pages");
+        }
 
-            if (document != null) {
-                final Element root = document.getElementById("collectionContent");
-                if (root != null) {
-                    if (page == 1) {
-                        final Element last = root.select("div.pagination > a").last();
-                        if (last != null) {
-                            try {
-                                maxPages = Integer.parseInt(last.text());
-                                progressListener.setMaxPos(maxPages);
-                                progressListener.setIndeterminate(false);
-                                progressListener.publishProgress(0, null);
+        progressListener.publishProgress(1, context.getString(
+                R.string.progress_msg_loading_page, mCurrentPage));
 
-                            } catch (@NonNull final NumberFormatException e) {
-                                // ignore; we'll just stay indeterminate
-                            }
-                        }
-                    }
+        final String url = mSEConfig.getSiteUrl()
+                           + String.format(URL_MY_BOOKS, mUserId, mCurrentPage, mFlags);
 
-                    pageList = parsePage(root);
-                    collection.addAll(pageList);
+        final Document currentDocument;
+        try {
+            currentDocument = mJsoupLoader.loadDocument(url, mConCreator);
+
+        } catch (@NonNull final FileNotFoundException e1) {
+            return null;
+        }
+
+        if (currentDocument != null) {
+            final Element root = currentDocument.getElementById("collectionContent");
+            if (root != null) {
+                if (mCurrentPage == 1) {
+                    parseMaxPages(root, progressListener);
                 }
+                return parsePage(root);
             }
+        }
 
-        } while (
-            // any error ?
-                document != null && pageList != null
-                // If we have a page number (we should), is this the last page?
-                && !(maxPages > 0 && maxPages == page)
-                // fail safe: if we don't have a page number, but if the user
-                // has an exact multitude of 25 books, we'll fetch one page to many.
-                && pageList.size() == MAX_PAGE_SIZE);
+        return null;
+    }
 
-        return collection;
+    private void parseMaxPages(@NonNull final Element root,
+                               @NonNull final ProgressListener progressListener)
+            throws IOException {
+        final Element last = root.select("div.pagination > a").last();
+        if (last != null) {
+            try {
+                mMaxPages = Integer.parseInt(last.text());
+                // If the last page has less then 25 books, this is to high... oh well...
+                progressListener.setMaxPos(mMaxPages * 25);
+                progressListener.setIndeterminate(false);
+                progressListener.publishProgress(0, null);
+                return;
+
+            } catch (@NonNull final NumberFormatException e) {
+                throw new IOException("Unable to read page number", e);
+            }
+        }
+
+        throw new IOException("No page numbers");
     }
 
     /**
@@ -225,6 +232,7 @@ public class ImportCollection {
      * @return list with book data bundles for the page; can be empty
      */
     @NonNull
+    @AnyThread
     private List<Bundle> parsePage(@NonNull final Element root) {
         final List<Bundle> collection = new ArrayList<>();
 
@@ -241,6 +249,7 @@ public class ImportCollection {
     }
 
     @VisibleForTesting
+    @AnyThread
     void parseRow(@NonNull final Element row,
                   @NonNull final Bundle cData) {
         final String idAttr = row.id();
@@ -254,14 +263,60 @@ public class ImportCollection {
 
                     cData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, externalId);
 
-                    final CollectionParser form = new CollectionRowParser(externalId, collectionId);
-                    form.setWishListBookshelf(mWishListBookshelf);
-                    form.parse(row, cData);
+                    final Element coverElement =
+                            row.selectFirst("figure.stripThumbInnerWrapper > img");
+                    if (coverElement != null) {
+                        final String src = coverElement.attr("src");
+                        if (!src.isEmpty()) {
+                            cData.putString(BKEY_FRONT_COVER_URL, src);
+                        }
+                    }
+
+                    mRowParser.parse(row, cData, collectionId);
                 }
-            } catch (@NonNull final NumberFormatException | IOException ignore) {
+            } catch (@NonNull final NumberFormatException ignore) {
                 // Make sure we don't return partial data
                 cData.clear();
             }
+        }
+    }
+
+    private static class RowParser
+            extends CollectionBaseParser {
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
+        @AnyThread
+        RowParser(@NonNull final Context context,
+                  @NonNull final SyncConfig config) {
+            super(context, config);
+        }
+
+        @AnyThread
+        public void parse(@NonNull final Element root,
+                          @NonNull final Bundle destBundle,
+                          @IntRange(from = 1) final long collectionId) {
+
+            mIdOwned = "bezit-" + collectionId;
+            mIdRead = "gelezen-" + collectionId;
+            mIdWanted = "wishlist-" + collectionId;
+
+            mIdLocation = "locatie-" + collectionId;
+            mIdNotes = "opmerking-" + collectionId;
+            mIdDateAcquired = "aankoopdatum-" + collectionId;
+            mIdRating = "score-" + collectionId;
+            mIdEdition = "druk-" + collectionId;
+            mIdPricePaid = "prijs-" + collectionId;
+            mIdAmount = "aantal-" + collectionId;
+
+            parseFlags(root, destBundle);
+            parseDetails(root, destBundle);
+
+            // Add as last one in case of errors thrown
+            destBundle.putLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID, collectionId);
         }
     }
 }

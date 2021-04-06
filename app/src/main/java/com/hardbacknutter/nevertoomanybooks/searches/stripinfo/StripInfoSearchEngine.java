@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -64,9 +63,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionParser;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionForm;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -124,8 +123,8 @@ public class StripInfoSearchEngine
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
     @Nullable
     private StripInfoAuth mLoginHelper;
-    @Nullable
-    private Bookshelf mWishListBookshelf;
+
+    private CollectionForm mCollectionForm;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -173,16 +172,14 @@ public class StripInfoSearchEngine
     public Document loadDocument(@NonNull final String url)
             throws IOException {
 
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            if (StripInfoAuth.isLoginToSearch(getContext())) {
-                if (mLoginHelper == null) {
-                    mLoginHelper = new StripInfoAuth(getSiteUrl());
-                    mLoginHelper.login();
-                }
-
-                // set every time we load a doc; the user could have changed the preferences.
-                mWishListBookshelf = mLoginHelper.getWishListBookshelf(getContext());
+        if (StripInfoAuth.isLoginToSearch()) {
+            if (mLoginHelper == null) {
+                mLoginHelper = new StripInfoAuth(getSiteUrl());
+                mLoginHelper.login();
             }
+
+            // Recreate every time we load a doc; the user could have changed the preferences.
+            mCollectionForm = new CollectionForm(getContext(), new SyncConfig());
         }
 
         return super.loadDocument(url);
@@ -257,7 +254,7 @@ public class StripInfoSearchEngine
     void parseMultiResult(@NonNull final Document document,
                           @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
-    throws IOException {
+            throws IOException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -296,7 +293,7 @@ public class StripInfoSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-    throws IOException {
+            throws IOException {
         super.parse(document, fetchCovers, bookData);
 
         // extracted from the page header.
@@ -425,7 +422,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, e, "row=" + row);
+                    Logger.d(TAG, "row=" + row, e);
                 }
             }
         }
@@ -436,11 +433,9 @@ public class StripInfoSearchEngine
             processDescription(item, bookData);
         }
 
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            // are we logged in ? Then look for any user data.
-            if (mLoginHelper != null && mLoginHelper.getUserId() != null) {
-                processUserdata(document, bookData, externalId);
-            }
+        // are we logged in ? Then look for any user data.
+        if (mLoginHelper != null && mLoginHelper.getUserId() != null) {
+            processUserdata(document, bookData, externalId);
         }
 
         // post-process all found data.
@@ -674,8 +669,7 @@ public class StripInfoSearchEngine
                                 if (!mAuthors.isEmpty()) {
                                     author = mAuthors.get(0);
                                 } else {
-                                    author = Author.createUnknownAuthor(
-                                            getContext());
+                                    author = Author.createUnknownAuthor(getContext());
                                 }
                                 final TocEntry tocEntry = new TocEntry(author, title, null);
                                 toc.add(tocEntry);
@@ -956,18 +950,15 @@ public class StripInfoSearchEngine
                                  @NonNull final Bundle bookData,
                                  final long externalId) {
 
-        final long collectieId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
-        if (collectieId > 0) {
+        final long collectionId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
+        if (collectionId > 0) {
             try {
-                final CollectionParser form = new CollectionFormParser(externalId, collectieId);
-                form.setWishListBookshelf(mWishListBookshelf);
-                form.parse(document, bookData);
+                mCollectionForm.parse(document, bookData, externalId, collectionId);
 
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.d(TAG, "getCollectionDocument", e,
-                             "stripId=" + externalId
-                             + "|collectieId=" + collectieId);
+                    Logger.d(TAG, "stripId=" + externalId
+                                  + "|collectieId=" + collectionId, e);
                 }
             }
         }
@@ -1006,19 +997,6 @@ public class StripInfoSearchEngine
 
         /** String - The barcode (e.g. the EAN code) is not always an ISBN. */
         public static final String BARCODE = "__barcode";
-
-        /**
-         * long - This is the website id for storing OUR details about the book.
-         * Not sure we really need this. But we use it also as != 0 --> in collection.
-         */
-        public static final String COLLECTION_ID = "__collection_id";
-
-        /** boolean. */
-        public static final String OWNED = "__owned";
-
-        /** int. The number of copies of this book. */
-        public static final String AMOUNT = "__amount";
-        public static final String FRONT_COVER_URL = "__front_cover_url";
 
         private SiteField() {
         }

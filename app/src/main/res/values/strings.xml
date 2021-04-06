@@ -892,10 +892,13 @@
     <string name="lbl_importing">Importing…</string>
     <!-- Dialog import all options. (to many txt's, needs pruning) -->
     <string name="lbl_import_options">Select what will be imported.</string>
+
     <string name="lbl_import_books_option_new_only">New books only</string>
     <string name="txt_import_books_option_new_only">Import only new books. Any updates to existing books will be ignored.</string>
+
     <string name="lbl_import_books_option_new_and_updated">New and updated books</string>
     <string name="txt_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
+
     <string name="lbl_import_books_option_all">All books</string>
     <string name="txt_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
     <string name="txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
@@ -1723,14 +1726,22 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="lbl_login_to_search">Login to search</string>
-    <string name="lbl_strip_info_wishlist_bookshelf">Wishlist mapped bookshelf</string>
     <string name="lbl_wishlist">Wishlist</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
-    <string name="txt_import_collection">Download the complete collection, updating existing books and queue new books for import in a second step. Any previously queued but nor imported new books will be re-queued.</string>
+    <string name="lbl_amount">Amount</string>
+    <string name="owned">Owned</string>
+    <string name="lbl_created">Created</string>
+
+
     <string name="btn_import_collection">Import collection</string>
     <string name="btn_import_new_books">Import new books</string>
-    <string name="txt_x_books_queued">There are %d new books queued for import</string>
-    <string name="confirm_strip_info_import_queued_books">Do you want to import the queued books? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
+    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>
+
+    <string name="txt_import_collection">Download the complete collection, updating existing books and queue new books for import in a second step.</string>
+
+    <string name="txt_x_books_queued">There are %d new books queued for import</string>
 
 </resources>

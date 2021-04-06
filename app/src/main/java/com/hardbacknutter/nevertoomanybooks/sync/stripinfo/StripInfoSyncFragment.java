@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -99,23 +100,14 @@ public class StripInfoSyncFragment
         mVm.onImportCollectionCancelled().observe(getViewLifecycleOwner(),
                                                   this::onImportCollectionCancelled);
 
-        mVm.onImportQueueProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onImportQueueFinished().observe(getViewLifecycleOwner(),
-                                            this::onImportQueueFinished);
-        mVm.onImportQueueCancelled().observe(getViewLifecycleOwner(),
-                                             this::onImportQueueCancelled);
-
-        mVb.btnGetUpdatedBooks.setOnClickListener(v -> mVm.fetchCollection());
-
-        mVb.btnGetQueuedBooks.setOnClickListener(v -> new MaterialAlertDialogBuilder(getContext())
+        mVb.btnImport.setOnClickListener(v -> new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_import_books)
-                .setMessage(R.string.confirm_strip_info_import_queued_books)
+                .setMessage(R.string.confirm_strip_info_import_collection)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_go, (d, w) -> mVm.fetchQueuedBooks())
+                .setPositiveButton(R.string.action_go, (d, w) -> mVm.startImport())
                 .create()
                 .show());
-        updateQueuedBooks(mVm.getNrOfQueuedBooks());
     }
 
     @Override
@@ -150,18 +142,6 @@ public class StripInfoSyncFragment
           .replace(R.id.main_fragment, fragment, StripInfoBePreferencesFragment.TAG)
           .commit();
     }
-
-    private void updateQueuedBooks(final int size) {
-        if (size > 0) {
-            mVb.booksQueued.setText(getString(R.string.txt_x_books_queued, size));
-            mVb.booksQueued.setVisibility(View.VISIBLE);
-            mVb.btnGetQueuedBooks.setVisibility(View.VISIBLE);
-        } else {
-            mVb.booksQueued.setVisibility(View.GONE);
-            mVb.btnGetQueuedBooks.setVisibility(View.GONE);
-        }
-    }
-
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
@@ -217,7 +197,6 @@ public class StripInfoSyncFragment
                 R.string.error_storage_not_writable));
     }
 
-
     private void onImportCollectionFinished(
             @NonNull final FinishedMessage<ImportCollectionTask.Outcome> message) {
         closeProgressDialog();
@@ -248,80 +227,31 @@ public class StripInfoSyncFragment
 
     private void onImportCollectionFinished(@StringRes final int titleId,
                                             @NonNull final ImportCollectionTask.Outcome result) {
-        updateQueuedBooks(result.queued.size());
 
-        //noinspection ConstantConditions
-        final MaterialAlertDialogBuilder dialogBuilder =
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_baseline_info_24)
-                        .setTitle(titleId);
+        final List<String> items = new ArrayList<>();
 
-        String msg = getString(R.string.name_colon_value,
-                               getString(R.string.lbl_updated),
-                               String.valueOf(result.updated.size()));
-
-        if (result.queued.isEmpty()) {
-            dialogBuilder.setPositiveButton(R.string.action_done, (d, w) -> {
-                //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK);
-                getActivity().finish();
-            });
-
-        } else {
-            msg += "\n" + getString(R.string.list_element,
-                                    getString(R.string.name_colon_value,
-                                              getString(R.string.lbl_queued),
-                                              String.valueOf(result.queued.size())))
-                   + "\n\n" + getString(R.string.confirm_strip_info_import_queued_books);
-
-            dialogBuilder.setPositiveButton(R.string.action_go, (d, w) -> mVm.fetchQueuedBooks());
-            dialogBuilder.setNegativeButton(R.string.action_not_now, (d, w) -> d.dismiss());
+        if (!result.created.isEmpty()) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_created),
+                                String.valueOf(result.created.size())));
         }
 
-        dialogBuilder.setMessage(msg)
-                     .create()
-                     .show();
-    }
-
-    private void onImportQueueCancelled(@NonNull final FinishedMessage<ArrayList<Long>> message) {
-        closeProgressDialog();
-
-        if (message.isNewEvent()) {
-            if (message.result != null) {
-                onImportQueueFinished(R.string.progress_end_import_partially_complete,
-                                      message.result);
-            } else {
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                        .show();
-                //noinspection ConstantConditions
-                getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
-            }
+        if (!result.updated.isEmpty()) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_updated),
+                                String.valueOf(result.updated.size())));
         }
-    }
 
-    private void onImportQueueFinished(@NonNull final FinishedMessage<ArrayList<Long>> message) {
-        closeProgressDialog();
-
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-
-            onImportQueueFinished(R.string.progress_end_import_complete, message.result);
-        }
-    }
-
-    private void onImportQueueFinished(@StringRes final int titleId,
-                                       @NonNull final List<Long> result) {
-        updateQueuedBooks(mVm.getNrOfQueuedBooks());
-
-        final String msg = getString(R.string.list_element_name_colon_value,
-                                     getString(R.string.lbl_books),
-                                     String.valueOf(result.size()));
+        final String itemList = items
+                .stream()
+                .map(s -> getString(R.string.list_element, s))
+                .collect(Collectors.joining("\n"));
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(titleId)
-                .setMessage(msg)
+                .setMessage(itemList)
                 .setPositiveButton(R.string.action_done, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK);

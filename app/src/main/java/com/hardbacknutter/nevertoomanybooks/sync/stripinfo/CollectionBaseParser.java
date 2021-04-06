@@ -19,8 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
@@ -32,74 +34,77 @@ import org.jsoup.nodes.Element;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
-// The site has a concept of "I own this book" and "I have this book in my collection"
-// In my collection: these are books where the user made SOME note/flag/...
-// i.e. a book the user has 'touched' and is remembered on the site
-// until they remove it from the collection.
-// An 'owned' books is automatically part of the collection,
-// but a book in the collection can be 'owned', 'not owned', 'wanted', 'remark added', ...
-//
-public abstract class CollectionBaseParser
-        implements CollectionParser {
+/**
+ * The site has a concept of "I own this book" and "I have this book in my collection"
+ * In my collection: these are books where the user made SOME note/flag/...
+ * i.e. a book the user has 'touched' and is remembered on the site
+ * until they remove it from the collection.
+ * An 'owned' books is automatically part of the collection,
+ * but a book in the collection can be 'owned', 'not owned', 'wanted', 'remark added', ...
+ * <p>
+ * Note: due to the form id fields containing the book and/or collection id in their name,
+ * we create a new object for each book. Wasteful, but almost unavoidable.
+ */
+abstract class CollectionBaseParser {
 
-    protected final long mExternalId;
-    protected final long mCollectionId;
     /** Delegate common Element handling. */
-    protected final JSoupHelper mJSoupHelper = new JSoupHelper();
-    protected String mIdOwned;
-    protected String mIdRead;
-    protected String mIdWanted;
-    protected String mIdLocation;
-    protected String mIdNotes;
-    protected String mIdDateAcquired;
-    protected String mIdRating;
-    protected String mIdEdition;
-    protected String mIdPricePaid;
-    protected String mIdAmount;
+    final JSoupHelper mJSoupHelper = new JSoupHelper();
     @Nullable
-    private Bookshelf mWishListBookshelf;
+    final Bookshelf mWishListBookshelf;
+    @Nullable
+    private final Bookshelf mOwnedBooksBookshelf;
+    String mIdOwned;
+    String mIdRead;
+    String mIdWanted;
+    String mIdLocation;
+    String mIdNotes;
+    String mIdDateAcquired;
+    String mIdRating;
+    String mIdEdition;
+    String mIdPricePaid;
+    String mIdAmount;
 
-    /**
-     * Constructor.
-     *
-     * @param externalId   the book id from the web site
-     * @param collectionId the user specific book id from the web site
-     */
-    CollectionBaseParser(final long externalId,
-                         final long collectionId) {
-        mExternalId = externalId;
-        mCollectionId = collectionId;
+    @AnyThread
+    CollectionBaseParser(@NonNull final Context context,
+                         @NonNull final SyncConfig config) {
+
+        mOwnedBooksBookshelf = config.getOwnedBooksBookshelf(context);
+        mWishListBookshelf = config.getWishListBookshelf(context);
     }
 
-    @Override
-    public void setWishListBookshelf(@Nullable final Bookshelf wishListBookshelf) {
-        mWishListBookshelf = wishListBookshelf;
-    }
-
+    @AnyThread
     void parseFlags(@NonNull final Element root,
                     @NonNull final Bundle destBundle) {
-
-        if (mJSoupHelper.getBoolean(root, mIdOwned)) {
-            destBundle.putBoolean(StripInfoSearchEngine.SiteField.OWNED, true);
-        }
 
         if (mJSoupHelper.getBoolean(root, mIdRead)) {
             destBundle.putBoolean(DBKeys.KEY_READ, true);
         }
 
-        if (mJSoupHelper.getBoolean(root, mIdWanted)) {
-            if (mWishListBookshelf != null) {
-                final ArrayList<Bookshelf> list = new ArrayList<>();
-                list.add(mWishListBookshelf);
-                destBundle.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, list);
+        final ArrayList<Bookshelf> bookshelves = new ArrayList<>();
+
+        if (mJSoupHelper.getBoolean(root, mIdOwned)) {
+            destBundle.putBoolean(DBKeys.KEY_STRIP_INFO_BE_OWNED, true);
+            if (mOwnedBooksBookshelf != null) {
+                bookshelves.add(mOwnedBooksBookshelf);
             }
+        }
+
+        if (mJSoupHelper.getBoolean(root, mIdWanted)) {
+            destBundle.putBoolean(DBKeys.KEY_STRIP_INFO_BE_WANTED, true);
+            if (mWishListBookshelf != null) {
+                bookshelves.add(mWishListBookshelf);
+            }
+        }
+
+        if (!bookshelves.isEmpty()) {
+            destBundle.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
         }
     }
 
+    @AnyThread
     void parseDetails(@NonNull final Element root,
                       @NonNull final Bundle destBundle) {
         String tmpStr;
@@ -143,15 +148,12 @@ public abstract class CollectionBaseParser
 
         tmpInt = mJSoupHelper.getInt(root, mIdEdition);
         if (tmpInt == 1) {
-            destBundle.putInt(DBKeys.KEY_EDITION_BITMASK, Book.Edition.FIRST);
+            destBundle.putLong(DBKeys.KEY_EDITION_BITMASK, Book.Edition.FIRST);
         }
 
         tmpInt = mJSoupHelper.getInt(root, mIdAmount);
         if (tmpInt > 0) {
-            destBundle.putInt(StripInfoSearchEngine.SiteField.AMOUNT, tmpInt);
+            destBundle.putInt(DBKeys.KEY_STRIP_INFO_BE_AMOUNT, tmpInt);
         }
-
-        // Add as last one in case of errors thrown
-        destBundle.putLong(StripInfoSearchEngine.SiteField.COLLECTION_ID, mCollectionId);
     }
 }

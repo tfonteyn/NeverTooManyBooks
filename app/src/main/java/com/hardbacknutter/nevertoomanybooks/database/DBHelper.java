@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -71,7 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_ID;
@@ -316,12 +315,12 @@ public class DBHelper
                 + ',' + KEY_STYLE_UUID
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = StyleUtils.BuiltinStyles.MAX_ID; id < 0; id++) {
+            for (int id = BuiltinStyle.MAX_ID; id < 0; id++) {
                 // remember, the id is negative -1..
                 stmt.bindLong(1, id);
                 // menu position, initially just as defined but with a positive number
                 stmt.bindLong(2, -id);
-                stmt.bindString(3, StyleUtils.BuiltinStyles.getUuidById(-id));
+                stmt.bindString(3, BuiltinStyle.getUuidById(-id));
 
                 // after inserting '-1' our debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
@@ -350,7 +349,7 @@ public class DBHelper
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + context.getString(R.string.bookshelf_all_books)
-                   + "'," + ListStyle.DEFAULT_STYLE_ID
+                   + "'," + BuiltinStyle.DEFAULT_ID
                    + ')');
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
@@ -361,7 +360,7 @@ public class DBHelper
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
                    + ",'" + context.getString(R.string.bookshelf_my_books)
-                   + "'," + ListStyle.DEFAULT_STYLE_ID
+                   + "'," + BuiltinStyle.DEFAULT_ID
                    + ')');
     }
 
@@ -639,22 +638,21 @@ public class DBHelper
         if (oldVersion != newVersion) {
             final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
-                final File destFile = AppDir.Upgrades.getFile(context, backup);
+                final File destFile = new File(AppDir.Upgrades.getDir(), backup);
                 // rename the existing file if there is one
                 if (destFile.exists()) {
                     final File destination = new File(destFile.getPath() + ".bak");
                     try {
                         FileUtils.rename(destFile, destination);
                     } catch (@NonNull final IOException e) {
-                        Logger.error(context, TAG, e,
-                                     "failed to rename source=" + destFile
-                                     + " TO destination=" + destination, e);
+                        Logger.error(TAG, e, "failed to rename source=" + destFile
+                                             + " TO destination=" + destination, e);
                     }
                 }
                 // and create a new copy
                 FileUtils.copy(new File(db.getPath()), destFile);
             } catch (@NonNull final IOException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
             }
         }
 
@@ -804,7 +802,7 @@ public class DBHelper
                              .apply();
         }
         if (oldVersion < 16) {
-            TBL_STRIPINFO_COLLECTION_TO_IMPORT.create(db, true);
+            TBL_STRIPINFO_COLLECTION.create(db, true);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

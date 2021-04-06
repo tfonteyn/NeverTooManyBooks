@@ -26,11 +26,17 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOK;
 
 public class StripInfoDaoImpl
         extends BaseDaoImpl
@@ -38,23 +44,25 @@ public class StripInfoDaoImpl
 
     private static final String TAG = "StripInfoDaoImpl";
 
-    private static final String SQL_DELETE =
-            DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName();
-
-    private static final String SQL_DELETE_ONE =
-            SQL_DELETE + _WHERE_ + DBKeys.KEY_ESID_STRIP_INFO_BE + "=?";
-
-    private static final String SQL_INSERT =
-            INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName()
+    private static final String SQL_INSERT_QUEUED =
+            INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
             + " (" + DBKeys.KEY_ESID_STRIP_INFO_BE + ") VALUES (?,?,?)";
 
-    private static final String SQL_GET_ALL =
+    private static final String SQL_COUNT_QUEUED =
+            SELECT_COUNT_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName();
+
+    private static final String SQL_GET_QUEUED =
             SELECT_ + DBKeys.KEY_ESID_STRIP_INFO_BE
-            + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName()
+            + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
             + _ORDER_BY_ + DBKeys.KEY_PK_ID;
 
-    private static final String SQL_COUNT_ALL =
-            SELECT_COUNT_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName();
+    private static final String SQL_DELETE_QUEUED =
+            DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName();
+
+
+    private static final String SQL_DELETE_ONE =
+            SQL_DELETE_QUEUED + _WHERE_ + DBKeys.KEY_ESID_STRIP_INFO_BE + "=?";
+
 
     /**
      * Constructor.
@@ -63,8 +71,38 @@ public class StripInfoDaoImpl
         super(TAG);
     }
 
+
     @Override
-    public void insert(@NonNull final List<Long> list) {
+    public void updateOrInsert(@NonNull final Book book) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (!mDb.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+    }
+
+    @Override
+    public int countQueuedBooks() {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_QUEUED)) {
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    @Override
+    @NonNull
+    public List<Long> getQueuedBooks() {
+        final List<Long> list = new ArrayList<>();
+        try (Cursor cursor = mDb.rawQuery(SQL_GET_QUEUED, null)) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+            return list;
+        }
+    }
+
+    @Override
+    public void setQueuedBooks(@NonNull final List<Long> list) {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -73,9 +111,9 @@ public class StripInfoDaoImpl
             }
 
             // simply clear all
-            mDb.execSQL(SQL_DELETE);
+            mDb.execSQL(SQL_DELETE_QUEUED);
 
-            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_INSERT)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_INSERT_QUEUED)) {
                 for (final Long externalId : list) {
                     stmt.bindLong(1, externalId);
                     stmt.executeInsert();
@@ -92,23 +130,10 @@ public class StripInfoDaoImpl
     }
 
     @Override
-    @NonNull
-    public List<Long> getAll() {
-        final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SQL_GET_ALL, null)) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-            return list;
-        }
+    public void deleteQueued() {
+        mDb.execSQL(SQL_DELETE_QUEUED);
     }
 
-    @Override
-    public int countQueued() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_ALL)) {
-            return (int) stmt.simpleQueryForLongOrZero();
-        }
-    }
 
     @Override
     public boolean deleteOne(final long externalId) {
@@ -118,8 +143,9 @@ public class StripInfoDaoImpl
         }
     }
 
-    @Override
-    public void deleteAll() {
-        mDb.execSQL(SQL_DELETE);
+    public void delete(@NonNull final Book book) {
+        mDb.delete(TBL_STRIPINFO_COLLECTION.getName(), KEY_FK_BOOK + "=?",
+                   new String[]{String.valueOf(book.getId())});
     }
+
 }

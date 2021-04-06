@@ -23,17 +23,23 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+
 public interface StripInfoDao {
 
-    void insert(@NonNull List<Long> list);
-
     @NonNull
-    List<Long> getAll();
+    List<Long> getQueuedBooks();
 
-    void deleteAll();
+    void setQueuedBooks(@NonNull List<Long> list);
+
+    int countQueuedBooks();
+
+
+    void deleteQueued();
 
     @SuppressWarnings("UnusedReturnValue")
     boolean deleteOne(long externalId);
 
-    int countQueued();
+
+    void updateOrInsert(@NonNull Book book);
 }

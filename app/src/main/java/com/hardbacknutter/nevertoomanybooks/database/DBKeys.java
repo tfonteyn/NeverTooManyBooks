@@ -63,7 +63,6 @@ public final class DBKeys {
      */
     /** External Site id. - Long. */
     public static final String KEY_ESID_GOODREADS_BOOK = "goodreads_book_id";
-    public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
     /** External Site id. - Long. */
     public static final String KEY_ESID_ISFDB = "isfdb_book_id";
     /** External Site id. - Long. */
@@ -85,6 +84,28 @@ public final class DBKeys {
     public static final String KEY_ESID_OCLC = "oclc_book_id";
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
     public static final String KEY_ESID_LCCN = "lccn_book_id";
+
+
+    /**
+     * {@link DBDefinitions#TBL_BOOKS}.
+     * Goodreads synchronization.
+     * <p>
+     * UTC DateTime stamp.
+     */
+    public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
+
+    /**
+     * {@link DBDefinitions#TBL_BOOKS}.
+     * Stripinfo.be synchronization.
+     * <p>
+     * The "CollectieId"; a secondary id used by the website for all books flagged
+     * as being in the users collection.
+     */
+    public static final String KEY_STRIP_INFO_BE_COLL_ID = "si_coll_id";
+    public static final String KEY_STRIP_INFO_BE_OWNED = "si_coll_owned";
+    public static final String KEY_STRIP_INFO_BE_WANTED = "si_coll_wanted";
+    public static final String KEY_STRIP_INFO_BE_AMOUNT = "si_coll_amount";
+    public static final String KEY_STRIP_INFO_BE_LAST_SYNC_DATE = "si_coll_last_sync";
 
     /*
      * ======================================================================================
@@ -156,6 +177,7 @@ public final class DBKeys {
     /** {@link DBDefinitions#TBL_BOOKS}. */
     public static final String KEY_UTC_ADDED = "date_added";
     public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
+
     public static final String KEY_STYLE_UUID = "uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ISBN = "isbn";

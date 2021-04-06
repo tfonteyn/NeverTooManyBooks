@@ -19,13 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,15 +41,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
@@ -64,8 +60,6 @@ public class StripInfoAuth {
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
-    /** The {@link Bookshelf} to which the wishlist is mapped. */
-    public static final String PK_WISHLIST_BOOKSHELF = PREF_KEY + ".wishlist.bookshelf";
     /** Whether to show any sync menus at all. */
     private static final String PK_ENABLED = PREF_KEY + ".enabled";
 
@@ -113,21 +107,26 @@ public class StripInfoAuth {
      */
     @AnyThread
     public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
-        return global.getBoolean(PK_ENABLED, true);
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            return global.getBoolean(PK_ENABLED, true);
+        } else {
+            return false;
+        }
     }
 
     /**
      * Check whether the user should be logged in to the website during a <strong>search</strong>.
      * This is independent from synchronization actions (where obviously login is always required).
      *
-     * @param context Current context
-     *
      * @return {@code true} if we should perform a login
      */
     @AnyThread
-    public static boolean isLoginToSearch(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PK_LOGIN_TO_SEARCH, false);
+    public static boolean isLoginToSearch() {
+        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
+            return ServiceLocator.getGlobalPreferences().getBoolean(PK_LOGIN_TO_SEARCH, false);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -177,12 +176,7 @@ public class StripInfoAuth {
         }
 
         // the server always sends a 200 OK, but do a sanity check
-        final int responseCode = request.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new HttpStatusException(R.string.site_stripinfo_be,
-                                          responseCode, request.getResponseMessage(),
-                                          request.getURL());
-        }
+        HttpUtils.checkResponseCode(request, R.string.site_stripinfo_be);
 
         // The presence of the cookie gives us the real status.
         final Optional<HttpCookie> optional = mCookieManager
@@ -208,7 +202,7 @@ public class StripInfoAuth {
                     return mUserId;
                 }
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.e(TAG, e, "cookie.getValue()=" + cookie.getValue());
+                Logger.e(TAG, "cookie.getValue()=" + cookie.getValue(), e);
             }
         }
         mUserId = null;
@@ -225,21 +219,5 @@ public class StripInfoAuth {
     @Nullable
     public String getUserId() {
         return mUserId;
-    }
-
-    /**
-     * Get the mapped bookshelf where to put "wanted" books on.
-     * <p>
-     * Dev. note: this does not really belong in this class...
-     *
-     * @param context Current context
-     *
-     * @return Bookshelf, or {@code null} if not configured.
-     */
-    @Nullable
-    public Bookshelf getWishListBookshelf(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final int id = ParseUtils.getIntListPref(global, PK_WISHLIST_BOOKSHELF, Bookshelf.DEFAULT);
-        return Bookshelf.getBookshelf(context, id);
     }
 }

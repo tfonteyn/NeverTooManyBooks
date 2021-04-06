@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
@@ -36,10 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
@@ -65,21 +67,37 @@ public class ImportCollectionTask
 
     private static final String TAG = "ImportCollectionTask";
 
+    /** existing books. */
+    private final ArrayList<Long> mUpdated = new ArrayList<>();
+    /** any new books. */
+    private final ArrayList<Long> mAdded = new ArrayList<>();
+
     private StripInfoSearchEngine mSearchEngine;
+    @NonNull
+    private final BookDao mBookDao;
+    /** Which fields and how to process them for existing books. */
     private SyncProcessor mSyncProcessor;
+    /** How to fetch covers for new books. */
+    private boolean[] mCoversForNewBooks;
 
     @UiThread
-    ImportCollectionTask() {
+    ImportCollectionTask(@NonNull final BookDao bookDao) {
         super(R.id.TASK_ID_IMPORT, TAG);
+        mBookDao = bookDao;
     }
 
     @UiThread
-    void fetch(@NonNull final SyncProcessor syncProcessor) {
+    void startImport(@NonNull final SyncProcessor syncProcessor,
+                     @NonNull final boolean[] coversForNewBooks) {
         mSearchEngine = (StripInfoSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
         mSearchEngine.setCaller(this);
 
         mSyncProcessor = syncProcessor;
+        mCoversForNewBooks = coversForNewBooks;
+
+        mUpdated.clear();
+        mAdded.clear();
         execute();
     }
 
@@ -87,12 +105,7 @@ public class ImportCollectionTask
     @Override
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context)
-            throws IOException {
-
-        // existing books are updated as we get them
-        final ArrayList<Long> updated = new ArrayList<>();
-        // any new books will be handled in a second pass.
-        final ArrayList<Long> queued = new ArrayList<>();
+            throws IOException, DaoWriteException {
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_connecting));
@@ -103,87 +116,114 @@ public class ImportCollectionTask
 
         final SynchronizedDb db = ServiceLocator.getDb();
 
-        // Step 1: get the collection.
-        final Bookshelf wishListBookshelf = loginHelper.getWishListBookshelf(context);
-        final ImportCollection ic = new ImportCollection(userId, wishListBookshelf);
-        final List<Bundle> all = ic.fetch(context, this);
+        final ImportCollection ic = new ImportCollection(context, new SyncConfig(), userId);
 
-        setIndeterminate(false);
-        setMaxPos(all.size());
-        publishProgress(0, context.getString(R.string.progress_msg_searching));
+        while (ic.hasMore() && !isCancelled()) {
+            final List<Bundle> page = ic.fetchPage(context, this);
+            if (page != null && !page.isEmpty()) {
+                // We're committing by page.
+                Synchronizer.SyncLock txLock = null;
+                try {
+                    txLock = db.beginTransaction(true);
 
-        Synchronizer.SyncLock txLock = null;
-        try (BookDao bookDao = new BookDao(TAG)) {
-            txLock = db.beginTransaction(true);
+                    processPage(context, page);
 
-            // Step 2: update the local book or queue new books.
-            for (final Bundle cData : all) {
-                if (!isCancelled()) {
-                    final long externalId = cData.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
-                    // lookup locally using the externalId column.
-                    try (Cursor cursor = bookDao.fetchBooksByKey(
-                            DBKeys.KEY_ESID_STRIP_INFO_BE, externalId)) {
+                    db.setTransactionSuccessful();
+                } finally {
+                    if (txLock != null) {
+                        db.endTransaction(txLock);
+                    }
+                }
+            }
+        }
 
-                        if (cursor.moveToFirst()) {
-                            final Book book = Book.from(cursor, bookDao);
+        if (!isCancelled()) {
+            // always done, even if queued is empty as we need to delete any previous queued books
+            ServiceLocator.getInstance().getStripInfoDao().setQueuedBooks(mAdded);
+        }
 
-                            final Map<String, SyncField> fieldsWanted =
-                                    mSyncProcessor.filter(context, book);
-                            final boolean[] coversWanted = new boolean[]{
-                                    fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
-                                    fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
+        return new Outcome(mUpdated, mAdded);
+    }
 
-                            if (coversWanted[1]) {
-                                // The back cover is not available on the collection page
-                                // Do a full download.
-                                final Bundle bookData = mSearchEngine.searchByExternalId(
-                                        String.valueOf(externalId), coversWanted);
+    private void processPage(@NonNull final Context context,
+                             @NonNull final List<Bundle> page)
+            throws IOException, DaoWriteException {
 
-                                // Merge the *bookData*, and update the database
-                                mSyncProcessor.process(context, book.getId(), book,
-                                                       fieldsWanted, bookData);
-                            } else {
-                                // we don't need the back cover, maybe the front cover
-                                if (coversWanted[0]) {
-                                    downloadFrontCover(externalId, cData);
-                                }
-                                // Merge the *collection* data, and update the database
-                                mSyncProcessor.process(context, book.getId(), book,
-                                                       fieldsWanted, cData);
+        for (final Bundle cData : page) {
+            if (!isCancelled()) {
+                final long externalId = cData
+                        .getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+                // lookup locally using the externalId column.
+                try (Cursor cursor = mBookDao.fetchBooksByKey(
+                        DBKeys.KEY_ESID_STRIP_INFO_BE, externalId)) {
+
+                    if (cursor.moveToFirst()) {
+                        // The full local data
+                        final Book book = Book.from(cursor, mBookDao);
+                        // The delta values we'll be updating
+                        final Book delta;
+
+                        final Map<String, SyncField> fieldsWanted =
+                                mSyncProcessor.filter(book);
+                        final boolean[] coversWanted = new boolean[]{
+                                fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
+                                fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
+
+                        if (coversWanted[1]) {
+                            // The back cover is not available on the collection page
+                            // Do a full download.
+                            final Bundle bookData = mSearchEngine
+                                    .searchByExternalId(String.valueOf(externalId), coversWanted);
+
+                            // Extract the delta from the *bookData*
+                            delta = mSyncProcessor.process(context, book.getId(), book,
+                                                           fieldsWanted, bookData);
+                        } else {
+                            // we don't need the back cover, but maybe the front cover
+                            if (coversWanted[0]) {
+                                downloadFrontCover(externalId, cData);
                             }
 
-                            updated.add(book.getId());
-                            publishProgress(1, book.getTitle());
+                            // Extract the delta from the *collection* data
+                            delta = mSyncProcessor.process(context, book.getId(), book,
+                                                           fieldsWanted, cData);
+                        }
 
-                        } else {
-                            // It's a new book
-                            queued.add(externalId);
-                            publishProgress(1, "");
+                        if (delta != null) {
+                            try {
+                                mBookDao.update(context, delta, 0);
+                            } catch (@NonNull final DaoWriteException e) {
+                                // ignore, but log it.
+                                Logger.error(TAG, e);
+                            }
+                        }
+
+                        mUpdated.add(book.getId());
+                        publishProgress(1, book.getTitle());
+
+                    } else {
+                        // It's a new book, do a full download.
+                        final Bundle bookData = mSearchEngine
+                                .searchByExternalId(String.valueOf(externalId), mCoversForNewBooks);
+
+                        final Book book = Book.from(bookData);
+                        book.ensureBookshelf(context);
+
+                        final long id = mBookDao.insert(context, book, 0);
+                        if (id > 0) {
+                            mAdded.add(id);
+                            publishProgress(1, book.getTitle());
                         }
                     }
                 }
             }
-
-            // Step 3: store the queued books.
-            if (!isCancelled()) {
-                // always done, even if empty as we need to delete any previously queued
-                ServiceLocator.getInstance().getStripInfoDao().insert(queued);
-            }
-
-            db.setTransactionSuccessful();
-        } finally {
-            if (txLock != null) {
-                db.endTransaction(txLock);
-            }
         }
-
-        return new Outcome(updated, queued);
     }
 
     @WorkerThread
-    private void downloadFrontCover(final long externalId,
+    private void downloadFrontCover(@IntRange(from = 1) final long externalId,
                                     @NonNull final Bundle cData) {
-        final String url = cData.getString(StripInfoSearchEngine.SiteField.FRONT_COVER_URL);
+        final String url = cData.getString(ImportCollection.BKEY_FRONT_COVER_URL);
         if (url != null) {
             final String fileSpec = mSearchEngine
                     .saveImage(url, String.valueOf(externalId), 0, null);
@@ -198,12 +238,12 @@ public class ImportCollectionTask
         @NonNull
         final ArrayList<Long> updated;
         @NonNull
-        final ArrayList<Long> queued;
+        final ArrayList<Long> created;
 
         Outcome(@NonNull final ArrayList<Long> updated,
-                @NonNull final ArrayList<Long> queued) {
+                @NonNull final ArrayList<Long> created) {
             this.updated = updated;
-            this.queued = queued;
+            this.created = created;
         }
     }
 }

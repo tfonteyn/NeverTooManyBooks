@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -100,13 +101,14 @@ public final class DBDefinitions {
      * the collection data (fast) and as a next step importing new books (slow).
      */
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
-    /** Basic table definition. */
-    public static final TableDefinition TBL_BOOKSHELF;
 
     /* ======================================================================================
      * Basic table definitions with type & alias set.
      * All these should be added to {@link #ALL_TABLES}.
      * ====================================================================================== */
+
+    /** Basic table definition. */
+    public static final TableDefinition TBL_BOOKSHELF;
     /** Basic table definition. */
     public static final TableDefinition TBL_AUTHORS;
     /** Basic table definition. */
@@ -129,18 +131,19 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_LOANEE;
     /** link table. */
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
+
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
+    /** Keeps track of nodes in the list across application restarts. */
+    public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
 
-    /** A bridge to a Calibre database. Partially imported date. */
+    /** A bridge to a Calibre database. Partially imported data. */
     public static final TableDefinition TBL_CALIBRE_BOOKS;
     public static final TableDefinition TBL_CALIBRE_LIBRARIES;
     public static final TableDefinition TBL_CALIBRE_VIRTUAL_LIBRARIES;
 
-    /** Keeps track of nodes in the list across application restarts. */
-    public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
-
-    public static final TableDefinition TBL_STRIPINFO_COLLECTION_TO_IMPORT;
+    /** A bridge to the stripinfo.be site. Site specific imported data. */
+    public static final TableDefinition TBL_STRIPINFO_COLLECTION;
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
@@ -165,7 +168,7 @@ public final class DBDefinitions {
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
-     * {@link ListStyle#DEFAULT_STYLE_ID}
+     * {@link BuiltinStyle#DEFAULT_ID}
      */
     public static final Domain DOM_FK_STYLE;
 
@@ -326,6 +329,16 @@ public final class DBDefinitions {
     /** {@link #TBL_CALIBRE_BOOKS}. */
     public static final Domain DOM_CALIBRE_BOOK_MAIN_FORMAT;
 
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_COLLECTION_ID;
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_OWNED;
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_WANTED;
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_AMOUNT;
+    /** {@link #TBL_STRIPINFO_COLLECTION}. */
+    public static final Domain DOM_STRIP_INFO_BE_LAST_SYNC_DATE;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -456,8 +469,8 @@ public final class DBDefinitions {
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
                 .setAlias("bl_ns");
 
-        TBL_STRIPINFO_COLLECTION_TO_IMPORT = new TableDefinition("stripinfo_to_import")
-                .setAlias("si_ti");
+        TBL_STRIPINFO_COLLECTION = new TableDefinition("stripinfo_collection")
+                .setAlias("si_c");
 
         /* ======================================================================================
          *  Primary and Foreign Key definitions
@@ -505,7 +518,7 @@ public final class DBDefinitions {
         DOM_FK_STYLE =
                 new Domain.Builder(DBKeys.KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(ListStyle.DEFAULT_STYLE_ID)
+                        .withDefault(BuiltinStyle.DEFAULT_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
                         .build();
 
@@ -827,27 +840,10 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
-        //NEWTHINGS: adding a new search engine: optional: add external id / specific DOM
+        //NEWTHINGS: adding a new search engine: optional: add external id domain
         DOM_ESID_GOODREADS_BOOK =
                 new Domain.Builder(DBKeys.KEY_ESID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER)
                         .build();
-
-        DOM_UTC_LAST_SYNC_DATE_GOODREADS =
-                new Domain.Builder(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
-                                   ColumnInfo.TYPE_DATETIME)
-                        .notNull()
-                        // The default of 0000-00-00 is not needed.
-                        .withDefault("'0000-00-00'")
-                        .build();
-
-        // It SHOULD be:
-        //      new Domain.Builder(DBKeys.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
-        //                         ColumnInfo.TYPE_DATETIME)
-        //              .notNull()
-        //              .withDefaultEmptyString()
-        //              .build();
-        // As modifying the schema requires copying the entire books table,
-        // we just leave it as is for now until we have a more urgent need to recreate that table.
 
         DOM_ESID_ISFDB =
                 new Domain.Builder(DBKeys.KEY_ESID_ISFDB, ColumnInfo.TYPE_INTEGER)
@@ -867,6 +863,61 @@ public final class DBDefinitions {
 
         DOM_ESID_LAST_DODO_NL =
                 new Domain.Builder(DBKeys.KEY_ESID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER)
+                        .build();
+
+        //NEWTHINGS: adding a new search engine: optional: add specific/extra domains.
+
+        /* ======================================================================================
+         *  Goodreads synchronization domains
+         * ====================================================================================== */
+
+        DOM_UTC_LAST_SYNC_DATE_GOODREADS =
+                new Domain.Builder(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
+                                   ColumnInfo.TYPE_DATETIME)
+                        .notNull()
+                        // The default of 0000-00-00 is not needed.
+                        .withDefault("'0000-00-00'")
+                        .build();
+
+        // It SHOULD be:
+        //      new Domain.Builder(DBKeys.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
+        //                         ColumnInfo.TYPE_DATETIME)
+        //              .notNull()
+        //              .withDefaultEmptyString()
+        //              .build();
+        // As modifying the schema requires copying the entire books table,
+        // we just leave it as is for now until we have a more urgent need to recreate that table.
+
+        /* ======================================================================================
+         *  StripInfo.be synchronization domains
+         * ====================================================================================== */
+        DOM_STRIP_INFO_BE_COLLECTION_ID =
+                new Domain.Builder(DBKeys.KEY_STRIP_INFO_BE_COLL_ID, ColumnInfo.TYPE_INTEGER)
+                        .build();
+
+        DOM_STRIP_INFO_BE_OWNED =
+                new Domain.Builder(DBKeys.KEY_STRIP_INFO_BE_OWNED, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
+        DOM_STRIP_INFO_BE_WANTED =
+                new Domain.Builder(DBKeys.KEY_STRIP_INFO_BE_WANTED, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
+        DOM_STRIP_INFO_BE_AMOUNT =
+                new Domain.Builder(DBKeys.KEY_STRIP_INFO_BE_AMOUNT, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
+        DOM_STRIP_INFO_BE_LAST_SYNC_DATE =
+                new Domain.Builder(DBKeys.KEY_STRIP_INFO_BE_LAST_SYNC_DATE,
+                                   ColumnInfo.TYPE_DATETIME)
+                        .notNull()
+                        .withDefaultEmptyString()
                         .build();
 
         /* ======================================================================================
@@ -1317,6 +1368,7 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_FK_BOOK)
                 .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
+                // false: leave it open to have multiple calibre books (i.e. different formats)
                 .addIndex(DBKeys.KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
@@ -1367,14 +1419,20 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
                        TBL_BOOK_LIST_NODE_STATE);
 
-        TBL_STRIPINFO_COLLECTION_TO_IMPORT
-                .addDomains(DOM_PK_ID,
-                            DOM_ESID_STRIP_INFO_BE)
-                .setPrimaryKey(DOM_PK_ID)
+        TBL_STRIPINFO_COLLECTION
+                .addDomains(DOM_FK_BOOK,
+                            DOM_ESID_STRIP_INFO_BE,
+                            DOM_STRIP_INFO_BE_COLLECTION_ID,
+                            DOM_STRIP_INFO_BE_OWNED,
+                            DOM_STRIP_INFO_BE_WANTED,
+                            DOM_STRIP_INFO_BE_AMOUNT,
+                            DOM_STRIP_INFO_BE_LAST_SYNC_DATE)
+                .setPrimaryKey(DOM_FK_BOOK)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
                 .addIndex(DBKeys.KEY_ESID_STRIP_INFO_BE, true,
                           DOM_ESID_STRIP_INFO_BE);
-        ALL_TABLES.put(TBL_STRIPINFO_COLLECTION_TO_IMPORT.getName(),
-                       TBL_STRIPINFO_COLLECTION_TO_IMPORT);
+        ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
+                       TBL_STRIPINFO_COLLECTION);
 
     }
 
