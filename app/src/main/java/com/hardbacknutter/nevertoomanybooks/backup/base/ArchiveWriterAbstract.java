@@ -352,7 +352,7 @@ public abstract class ArchiveWriterAbstract
         for (final String filename : mResults.getCoverFileNames()) {
             // We're using jpg, png.. don't bother compressing.
             // Compressing might actually make some image files bigger!
-            putFile(filename, AppDir.Covers.getFile(context, filename), false);
+            putFile(filename, new File(AppDir.Covers.getDir(), filename), false);
             exported++;
 
             delta++;

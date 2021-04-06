@@ -203,15 +203,13 @@ public class GoodreadsSearchEngine
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             try {
                 if (mSearchApi == null) {
-                    mSearchApi = new SearchBookApiHandler(getContext(),
-                                                          mGoodreadsAuth);
+                    mSearchApi = new SearchBookApiHandler(getContext(), mGoodreadsAuth);
                 }
                 final List<Long> grIdList = mSearchApi.searchBookIds(author + ' ' + title);
                 // return the first one found
                 if (!grIdList.isEmpty()) {
                     if (mByIdApi == null) {
-                        mByIdApi = new ShowBookByIdApiHandler(getContext(),
-                                                              mGoodreadsAuth);
+                        mByIdApi = new ShowBookByIdApiHandler(getContext(), mGoodreadsAuth);
                     }
                     return mByIdApi.searchByExternalId(grIdList.get(0), fetchCovers, bookData);
                 }

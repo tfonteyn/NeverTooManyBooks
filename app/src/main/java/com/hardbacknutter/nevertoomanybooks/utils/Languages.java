@@ -377,7 +377,7 @@ public final class Languages {
      * Create all cache files. This method is called during startup
      * from {@link BuildLanguageMappingsTask}.
      *
-     * @param context a localized application context
+     * @param context Current context
      */
     public void createLanguageMappingCache(@NonNull final Context context) {
         // the one the user is using our app in (can be different from the system one)
@@ -422,8 +422,8 @@ public final class Languages {
      */
     @NonNull
     private SharedPreferences getCacheFile() {
-        return ServiceLocator.getAppContext()
-                             .getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
+        return ServiceLocator.getAppContext().getSharedPreferences(LANGUAGE_MAP,
+                                                                   Context.MODE_PRIVATE);
     }
 
     /**

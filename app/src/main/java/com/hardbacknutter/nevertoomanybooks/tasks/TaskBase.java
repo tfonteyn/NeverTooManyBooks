@@ -136,7 +136,7 @@ abstract class TaskBase<Result>
                     onFinished(message);
                 }
             } catch (@NonNull final Exception e) {
-                Logger.error(context, mTaskName, e);
+                Logger.error(mTaskName, e);
                 onFailure(e);
             }
 
@@ -149,7 +149,7 @@ abstract class TaskBase<Result>
     /**
      * The actual 'work' method.
      *
-     * @param context a localized application context
+     * @param context The localised Application context
      *
      * @return task result
      *

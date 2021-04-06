@@ -89,9 +89,11 @@ public class GoodreadsManager {
     private static final String PK_LAST_BOOK_SEND = PREF_KEY + ".last.send.id";
     /** last time we synced with Goodreads. */
     private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
-    @NonNull
-    private final Context mAppContext;
 
+    /** A localized context. */
+    @NonNull
+    private final Context mContext;
+    @NonNull
     private final GoodreadsDao mGoodreadsDao;
 
     /** Authentication handler. */
@@ -122,13 +124,13 @@ public class GoodreadsManager {
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      */
     @WorkerThread
-    public GoodreadsManager(@NonNull final Context appContext,
+    public GoodreadsManager(@NonNull final Context context,
                             @NonNull final GoodreadsAuth grAuth) {
-        mAppContext = appContext;
+        mContext = context;
         mGoodreadsAuth = grAuth;
         mGoodreadsDao = ServiceLocator.getInstance().getGoodreadsDao();
     }
@@ -175,9 +177,14 @@ public class GoodreadsManager {
                       .apply();
     }
 
+    /**
+     * Get a localized context.
+     *
+     * @return context
+     */
     @NonNull
-    public Context getAppContext() {
-        return mAppContext;
+    public Context getContext() {
+        return mContext;
     }
 
     @NonNull
@@ -205,7 +212,7 @@ public class GoodreadsManager {
      * @return Disposition of book
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     @WorkerThread
     @GrStatus.Status
@@ -273,7 +280,7 @@ public class GoodreadsManager {
         final Collection<String> shelves = new ArrayList<>();
         final Collection<String> canonicalShelves = new ArrayList<>();
 
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(mAppContext);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(mContext);
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
@@ -361,7 +368,7 @@ public class GoodreadsManager {
 
         // Finally update the remaining review details.
         if (mReviewEditApiHandler == null) {
-            mReviewEditApiHandler = new ReviewEditApiHandler(mAppContext, mGoodreadsAuth);
+            mReviewEditApiHandler = new ReviewEditApiHandler(mContext, mGoodreadsAuth);
         }
         mReviewEditApiHandler.update(reviewId,
                                      bookData.getBoolean(DBKeys.KEY_READ),
@@ -390,14 +397,14 @@ public class GoodreadsManager {
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-    throws GeneralParsingException, IOException {
+            throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
         }
 
         if (mShowBookByIdApiHandler == null) {
-            mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mAppContext, mGoodreadsAuth);
+            mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mContext, mGoodreadsAuth);
         }
         return mShowBookByIdApiHandler.searchByExternalId(grBookId, fetchCovers, bookData);
     }
@@ -405,23 +412,23 @@ public class GoodreadsManager {
     /**
      * Wrapper to search for a book.
      *
-     * @param validIsbn      ISBN to use, must be valid
+     * @param validIsbn   ISBN to use, must be valid
      * @param fetchCovers Set to {@code true} if we want to get covers
-     * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
      * @return Bundle with Goodreads book data
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     @NonNull
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Bundle bookData)
-    throws GeneralParsingException, IOException {
+            throws GeneralParsingException, IOException {
 
         if (mShowBookByIsbnApiHandler == null) {
-            mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
+            mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mContext, mGoodreadsAuth);
         }
         return mShowBookByIsbnApiHandler.searchByIsbn(validIsbn, fetchCovers, bookData);
     }
@@ -434,7 +441,7 @@ public class GoodreadsManager {
      * @return the Goodreads shelves
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     @NonNull
     private GoodreadsShelves getShelves()
@@ -442,7 +449,7 @@ public class GoodreadsManager {
 
         if (mShelvesList == null) {
             final ShelvesListApiHandler handler =
-                    new ShelvesListApiHandler(mAppContext, mGoodreadsAuth);
+                    new ShelvesListApiHandler(mContext, mGoodreadsAuth);
             mShelvesList = new GoodreadsShelves(handler.getAll());
         }
         return mShelvesList;
@@ -457,7 +464,7 @@ public class GoodreadsManager {
      * @return reviewId
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
@@ -465,7 +472,7 @@ public class GoodreadsManager {
             throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
         }
         return mAddBookToShelfApiHandler.add(grBookId, shelfName);
     }
@@ -479,14 +486,14 @@ public class GoodreadsManager {
      * @return reviewId
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @NonNull final Collection<String> shelfNames)
             throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
         }
         return mAddBookToShelfApiHandler.add(grBookId, shelfNames);
     }
@@ -498,14 +505,14 @@ public class GoodreadsManager {
      * @param shelfName GoodReads shelf name
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
             throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
-            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
+            mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
         }
         mAddBookToShelfApiHandler.remove(grBookId, shelfName);
     }
@@ -525,7 +532,7 @@ public class GoodreadsManager {
             throws IOException {
 
         if (mIsbnToIdApiHandler == null) {
-            mIsbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGoodreadsAuth);
+            mIsbnToIdApiHandler = new IsbnToIdApiHandler(mContext, mGoodreadsAuth);
         }
         return mIsbnToIdApiHandler.isbnToId(isbn);
     }

@@ -95,10 +95,10 @@ public class UserStyle
      * The id and uuid are passed in to allow testing,
      * see {@link #clone(Context)}.
      *
-     * @param context      Current context
-     * @param style        to clone
-     * @param id           for the new style
-     * @param uuid         for the new style
+     * @param context Current context
+     * @param style   to clone
+     * @param id      for the new style
+     * @param uuid    for the new style
      */
     protected UserStyle(@NonNull final Context context,
                         @NonNull final BooklistStyle style,
@@ -143,8 +143,8 @@ public class UserStyle
         return new UserStyle(context);
     }
 
-    static UserStyle createFromDatabase(@NonNull final Context context,
-                                        @NonNull final DataHolder dataHolder) {
+    public static UserStyle createFromDatabase(@NonNull final Context context,
+                                               @NonNull final DataHolder dataHolder) {
         return new UserStyle(context, dataHolder);
     }
 
@@ -153,14 +153,14 @@ public class UserStyle
         return new UserStyle(context, uuid);
     }
 
-    public void setName(@NonNull final String name) {
-        mPersistenceLayer.setString(PK_STYLE_NAME, name);
-    }
-
     @NonNull
     public String getName() {
         //noinspection ConstantConditions
         return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+    }
+
+    public void setName(@NonNull final String name) {
+        mPersistenceLayer.setString(PK_STYLE_NAME, name);
     }
 
     @Override

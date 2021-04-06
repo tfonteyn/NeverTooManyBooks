@@ -50,7 +50,7 @@ public class TopLevelItemDecoration
      * Creates a divider {@link RecyclerView.ItemDecoration} that can be used with a
      * {@link LinearLayoutManager}.
      *
-     * @param context Current context, it will be used to access resources.
+     * @param context Current context@param context\s+[^c ]
      */
     public TopLevelItemDecoration(@NonNull final Context context) {
         final TypedArray ta = context.getTheme().obtainStyledAttributes(ATTRS);

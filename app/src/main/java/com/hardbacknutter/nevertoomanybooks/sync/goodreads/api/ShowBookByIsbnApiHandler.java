@@ -47,15 +47,15 @@ public class ShowBookByIsbnApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public ShowBookByIsbnApiHandler(@NonNull final Context appContext,
+    public ShowBookByIsbnApiHandler(@NonNull final Context context,
                                     @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
+        super(context, grAuth);
     }
 
     /**
@@ -74,7 +74,7 @@ public class ShowBookByIsbnApiHandler
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-    throws GeneralParsingException, IOException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchBook(url, fetchCovers, bookData);
@@ -89,7 +89,7 @@ public class ShowBookByIsbnApiHandler
      * @return fileSpec, or {@code null} if no image found.
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on other failures
+     * @throws IOException             on other failures
      */
     @Nullable
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,

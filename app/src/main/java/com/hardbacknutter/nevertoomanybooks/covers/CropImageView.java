@@ -128,7 +128,7 @@ public class CropImageView
     /**
      * Constructor used by the xml inflater.
      *
-     * @param context will be the hosting {@link CropImageActivity}
+     * @param context This will be the hosting {@link CropImageActivity}
      */
     public CropImageView(@NonNull final Context context,
                          @Nullable final AttributeSet attrs) {

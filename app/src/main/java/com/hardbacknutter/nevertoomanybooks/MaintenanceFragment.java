@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -110,7 +109,7 @@ public class MaintenanceFragment
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_DELETE_ALL) {
                 // show the button, it's red...
                 //URGENT: re-enable once the #onDeleteAll functionality is complete
-//                mVb.btnDebugSqShell.setVisibility(View.VISIBLE);
+//                mVb.btnDebugClearDb.setVisibility(View.VISIBLE);
             }
         });
 
@@ -127,7 +126,7 @@ public class MaintenanceFragment
                 bookUuidList = bookDao.getBookUuidList();
             }
 
-            final long bytes = AppDir.purge(context, bookUuidList, false);
+            final long bytes = AppDir.purge(bookUuidList, false);
             final String msg = getString(R.string.txt_cleanup_files,
                                          FileUtils.formatFileSize(context, bytes),
                                          getString(R.string.lbl_send_debug));
@@ -138,7 +137,7 @@ public class MaintenanceFragment
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) ->
-                            AppDir.purge(context, bookUuidList, true))
+                            AppDir.purge(bookUuidList, true))
                     .create()
                     .show();
         });
@@ -240,7 +239,7 @@ public class MaintenanceFragment
         }
         sb.append("\n\n");
 
-        Logger.warn(getContext(), TAG, sb.toString());
+        Logger.warn(TAG, sb.toString());
     }
 
     private void onDeleteAll() {
@@ -254,14 +253,14 @@ public class MaintenanceFragment
             //qm.stop();
 
             //FIXME: delete all style xml files
-            StyleUtils.clearCache();
+            ServiceLocator.getInstance().getStyles().clearCache();
 
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
             ServiceLocator.deleteDatabases(context);
 
-            AppDir.deleteAllContent(context);
+            AppDir.deleteAllContent();
 
             // Exit the app
             //noinspection ConstantConditions

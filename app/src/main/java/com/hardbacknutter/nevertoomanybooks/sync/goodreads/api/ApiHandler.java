@@ -70,24 +70,22 @@ public abstract class ApiHandler {
     /** Log tag. */
     private static final String TAG = "ApiHandler";
 
-    /** log error string. */
-    private static final String ERROR_UNEXPECTED_RESPONSE_CODE = "Unexpected response code: ";
     @NonNull
     protected final GoodreadsAuth mGrAuth;
     @NonNull
-    final Context mAppContext;
+    final Context mContext;
     @NonNull
     private final SearchEngineConfig mSEConfig;
 
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      */
-    protected ApiHandler(@NonNull final Context appContext,
+    protected ApiHandler(@NonNull final Context context,
                          @NonNull final GoodreadsAuth grAuth) {
-        mAppContext = appContext;
+        mContext = context;
         mGrAuth = grAuth;
 
         mSEConfig = SearchEngineRegistry.getInstance().getByEngineId(SearchSites.GOODREADS);
@@ -219,48 +217,24 @@ public abstract class ApiHandler {
                    GeneralParsingException {
 
         try {
-            final int responseCode = request.getResponseCode();
+            HttpUtils.checkResponseCode(request, R.string.site_goodreads);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
-                Log.d(TAG, "execute"
-                           + "|" + request.getURL()
-                           + "|" + ERROR_UNEXPECTED_RESPONSE_CODE
-                           + responseCode + '/' + request.getResponseMessage());
+            try (InputStream is = request.getInputStream()) {
+                final SAXParserFactory factory = SAXParserFactory.newInstance();
+                final SAXParser parser = factory.newSAXParser();
+                parser.parse(is, requestHandler);
             }
 
-            switch (responseCode) {
-                case HttpURLConnection.HTTP_OK:
-                case HttpURLConnection.HTTP_CREATED:
-                    try (InputStream is = request.getInputStream()) {
-                        final SAXParserFactory factory = SAXParserFactory.newInstance();
-                        final SAXParser parser = factory.newSAXParser();
-                        parser.parse(is, requestHandler);
-
-                    } catch (@NonNull final ParserConfigurationException | SAXException e) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "parseResponse", e);
-                        }
-                        throw new GeneralParsingException(e);
-                    }
-                    break;
-
-                case HttpURLConnection.HTTP_UNAUTHORIZED:
-                    GoodreadsAuth.invalidateCredentials();
-                    throw new CredentialsException(R.string.site_goodreads,
-                                                   request.getResponseMessage(),
-                                                   request.getURL());
-
-                case HttpURLConnection.HTTP_NOT_FOUND:
-                    throw new HttpNotFoundException(R.string.site_goodreads,
-                                                    request.getResponseMessage(),
-                                                    request.getURL());
-
-                default:
-                    throw new HttpStatusException(R.string.site_goodreads,
-                                                  request.getResponseCode(),
-                                                  request.getResponseMessage(),
-                                                  request.getURL());
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "parseResponse", e);
             }
+            throw new GeneralParsingException(e);
+
+        } catch (@NonNull final CredentialsException e) {
+            GoodreadsAuth.invalidateCredentials();
+            throw e;
+
         } finally {
             request.disconnect();
         }
@@ -303,47 +277,26 @@ public abstract class ApiHandler {
         request.connect();
 
         try {
-            final int responseCode = request.getResponseCode();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
-                Log.d(TAG, "execute"
-                           + "|" + request.getURL()
-                           + "|" + ERROR_UNEXPECTED_RESPONSE_CODE
-                           + responseCode + '/' + request.getResponseMessage());
-            }
-            switch (responseCode) {
-                case HttpURLConnection.HTTP_OK:
-                case HttpURLConnection.HTTP_CREATED:
-                    // Read the request into a single String.
-                    final StringBuilder content = new StringBuilder();
-                    final InputStream is = request.getInputStream();
-                    if (is != null) {
-                        while (true) {
-                            final int i = is.read();
-                            if (i == -1) {
-                                break;
-                            }
-                            content.append((char) i);
-                        }
+            HttpUtils.checkResponseCode(request, R.string.site_goodreads);
+
+            // Read the response into a single String.
+            final StringBuilder content = new StringBuilder();
+            final InputStream is = request.getInputStream();
+            if (is != null) {
+                while (true) {
+                    final int i = is.read();
+                    if (i == -1) {
+                        break;
                     }
-                    return content.toString();
-
-                case HttpURLConnection.HTTP_UNAUTHORIZED:
-                    GoodreadsAuth.invalidateCredentials();
-                    throw new CredentialsException(R.string.site_goodreads,
-                                                   request.getResponseMessage(),
-                                                   request.getURL());
-
-                case HttpURLConnection.HTTP_NOT_FOUND:
-                    throw new HttpNotFoundException(R.string.site_goodreads,
-                                                    request.getResponseMessage(),
-                                                    request.getURL());
-
-                default:
-                    throw new HttpStatusException(R.string.site_goodreads,
-                                                  request.getResponseCode(),
-                                                  request.getResponseMessage(),
-                                                  request.getURL());
+                    content.append((char) i);
+                }
             }
+            return content.toString();
+
+        } catch (@NonNull final CredentialsException e) {
+            GoodreadsAuth.invalidateCredentials();
+            throw e;
+
         } finally {
             request.disconnect();
         }

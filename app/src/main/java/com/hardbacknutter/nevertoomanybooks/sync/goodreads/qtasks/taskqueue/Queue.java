@@ -133,7 +133,7 @@ class Queue
                 }
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
         } finally {
             try {
                 // Just in case (the queue manager does check the queue before doing the delete).
@@ -159,7 +159,7 @@ class Queue
             mQueueManager.notifyTaskChange();
 
             if (task instanceof BaseTQTask) {
-                success = ((BaseTQTask) task).run(context, mQueueManager);
+                success = ((BaseTQTask) task).doWork(context, mQueueManager);
             } else {
                 // Either extend Task, or override QueueManager.runTask()
                 throw new IllegalStateException("Can not handle tasks that are not BaseTQTask");
@@ -171,7 +171,7 @@ class Queue
             if (task.getLastException() == null) {
                 task.setLastException(e);
             }
-            Logger.error(context, TAG, e, "Error running task " + task.getId());
+            Logger.error(TAG, e, "Error running task " + task.getId());
         }
 
         // Update the related database record to process the task correctly.

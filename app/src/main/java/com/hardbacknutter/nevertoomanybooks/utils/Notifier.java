@@ -19,233 +19,104 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
-import androidx.core.app.NotificationCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+public interface Notifier
+        extends AppLocale.OnLocaleChangedListener {
 
-public final class Notifier
-        implements AppLocale.OnLocaleChangedListener {
+    /** Notification id. */
+    int ID_GENERIC = 0;
+    int ID_GOODREADS = 1;
 
-    public static final int ID_GENERIC = 0;
-    public static final int ID_GOODREADS = 1;
+    /** RequestCode. For now, we always use 0. */
+    int RC_DEFAULT = 0;
 
     /** IMPORTANCE_HIGH. */
-    private static final String CHANNEL_ERROR = "Error";
+    String CHANNEL_ERROR = "Error";
     /** IMPORTANCE_DEFAULT. */
-    private static final String CHANNEL_WARN = "Warning";
+    String CHANNEL_WARNING = "Warning";
     /** IMPORTANCE_LOW. */
-    private static final String CHANNEL_INFO = "Info";
-
-    /** Singleton. */
-    private static Notifier sInstance;
+    String CHANNEL_INFO = "Info";
 
     /**
-     * Constructor. Use {@link #getInstance(Context)}.
+     * Convenience wrapper which uses some sensible defaults for a generic error.
      *
      * @param context Current context
+     * @param intent  to use for the {@link PendingIntent}
+     * @param message to show
      */
-    private Notifier(@NonNull final Context context) {
-        //Notification channels should only be created for devices running Android 26
-        if (Build.VERSION.SDK_INT >= 26) {
-            final NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            notificationManager.createNotificationChannel(
-                    new NotificationChannel(CHANNEL_ERROR,
-                                            context.getString(R.string.notification_channel_error),
-                                            NotificationManager.IMPORTANCE_HIGH));
-
-            notificationManager.createNotificationChannel(
-                    new NotificationChannel(CHANNEL_WARN,
-                                            context.getString(R.string.notification_channel_warn),
-                                            NotificationManager.IMPORTANCE_DEFAULT));
-
-            notificationManager.createNotificationChannel(
-                    new NotificationChannel(CHANNEL_INFO,
-                                            context.getString(R.string.notification_channel_info),
-                                            NotificationManager.IMPORTANCE_LOW));
-        }
+    default void sendError(@NonNull final Context context,
+                           @NonNull final Intent intent,
+                           @NonNull final CharSequence message) {
+        send(context, ID_GENERIC, CHANNEL_ERROR, intent, RC_DEFAULT, false,
+             android.R.string.dialog_alert_title, message);
     }
 
-    /**
-     * Get/create the singleton instance.
-     *
-     * @param context Current context
-     *
-     * @return instance
-     */
-    @NonNull
-    public static Notifier getInstance(@NonNull final Context context) {
-        synchronized (DateParser.class) {
-            if (sInstance == null) {
-                sInstance = new Notifier(context);
-                AppLocale.getInstance().registerOnLocaleChangedListener(sInstance);
-            }
-            return sInstance;
-        }
+    default void sendError(@NonNull final Context context,
+                           @Notifier.NotificationId final int id,
+                           @NonNull final Intent intent,
+                           final boolean withParentStack,
+                           @StringRes final int titleId,
+                           @NonNull final CharSequence message) {
+        send(context, id, CHANNEL_ERROR, intent, RC_DEFAULT, withParentStack, titleId, message);
     }
 
-    /**
-     * Create a PendingIntent to take the user to this Activity.
-     *
-     * @param context Current context
-     *
-     * @return PendingIntent
-     */
-    @NonNull
-    public static PendingIntent createPendingIntent(
-            @NonNull final Context context,
-            @NonNull final Class<? extends Activity> activityClass) {
-        final Intent notifyIntent = new Intent(context, activityClass);
-
-        //TODO: review https://developer.android.com/training/notify-user/build-notification
-        // Sets the Activity to start in a new, empty task
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        return PendingIntent.getActivity(context, 0, notifyIntent,
-                                         PendingIntent.FLAG_UPDATE_CURRENT);
+    default void sendWarning(@NonNull final Context context,
+                             @Notifier.NotificationId final int id,
+                             @NonNull final Intent intent,
+                             final boolean withParentStack,
+                             @StringRes final int titleId,
+                             @NonNull final CharSequence message) {
+        send(context, id, CHANNEL_WARNING, intent, RC_DEFAULT, withParentStack, titleId, message);
     }
 
-    /**
-     * Create a PendingIntent to take the user to this Activity.
-     *
-     * @param context Current context
-     *
-     * @return PendingIntent
-     */
-    @NonNull
-    public static PendingIntent createPendingIntentWithParentStack(
-            @NonNull final Context context,
-            @NonNull final Class<? extends Activity> activityClass) {
-        final Intent notifyIntent = new Intent(context, activityClass);
-
-        // Create the TaskStackBuilder and add the intent, which inflates the back stack
-        final TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntentWithParentStack(notifyIntent);
-        // Get the PendingIntent containing the entire back stack
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
-    /**
-     * Send an info notification.
-     *
-     * @param context       Current context
-     * @param id            notification id
-     * @param pendingIntent to use
-     * @param titleId       string resource for the notification title
-     * @param message       for the notification
-     */
-    public void sendInfo(@NonNull final Context context,
-                         @NotificationId final int id,
-                         @NonNull final PendingIntent pendingIntent,
-                         @StringRes final int titleId,
-                         @NonNull final CharSequence message) {
-        final Notification notification = new NotificationCompat.Builder(context, CHANNEL_INFO)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setSmallIcon(R.drawable.ic_baseline_info_24)
-                .setContentTitle(context.getString(titleId))
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        final NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification);
-    }
-
-    /**
-     * Send an warning notification.
-     *
-     * @param context       Current context
-     * @param id            notification id
-     * @param pendingIntent to use
-     * @param titleId       string resource for the notification title
-     * @param message       for the notification
-     */
-    public void sendWarn(@NonNull final Context context,
-                         @NotificationId final int id,
-                         @NonNull final PendingIntent pendingIntent,
-                         @StringRes final int titleId,
-                         @NonNull final CharSequence message) {
-        final Notification notification = new NotificationCompat.Builder(context, CHANNEL_WARN)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setSmallIcon(R.drawable.ic_baseline_warning_24)
-                .setContentTitle(context.getString(titleId))
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        final NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification);
-    }
-
-    /**
-     * Send an error notification.
-     *
-     * @param context       Current context
-     * @param id            notification id
-     * @param pendingIntent to use
-     * @param titleId       string resource for the notification title
-     * @param message       for the notification
-     */
-    public void sendError(@NonNull final Context context,
-                          @NotificationId final int id,
-                          @NonNull final PendingIntent pendingIntent,
+    default void sendInfo(@NonNull final Context context,
+                          @Notifier.NotificationId final int id,
+                          @NonNull final Intent intent,
+                          final boolean withParentStack,
                           @StringRes final int titleId,
                           @NonNull final CharSequence message) {
-        final Notification notification = new NotificationCompat.Builder(context, CHANNEL_ERROR)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.ic_baseline_error_24)
-                .setContentTitle(context.getString(titleId))
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        final NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification);
+        send(context, id, CHANNEL_INFO, intent, RC_DEFAULT, withParentStack, titleId, message);
     }
 
-    @Override
-    public void onLocaleChanged(@NonNull final Context context) {
-
-        //  When the locale changes, update the NotificationManager channel names.
-        if (Build.VERSION.SDK_INT >= 26) {
-            final NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.getNotificationChannel(CHANNEL_ERROR)
-                               .setName(context.getString(R.string.notification_channel_error));
-            notificationManager.getNotificationChannel(CHANNEL_WARN)
-                               .setName(context.getString(R.string.notification_channel_warn));
-            notificationManager.getNotificationChannel(CHANNEL_INFO)
-                               .setName(context.getString(R.string.notification_channel_info));
-        }
-    }
+    /**
+     * Send a notification.
+     *
+     * @param context Current context
+     * @param id      notification id
+     * @param channel to use
+     * @param intent  to use for the {@link PendingIntent}
+     * @param titleId string resource for the notification title
+     * @param message to show
+     */
+    void send(@NonNull Context context,
+              @Notifier.NotificationId int id,
+              @Notifier.Channel String channel,
+              @NonNull Intent intent,
+              int requestCode,
+              boolean withParentStack,
+              @StringRes int titleId,
+              @NonNull CharSequence message);
 
     @IntDef({ID_GENERIC, ID_GOODREADS})
     @Retention(RetentionPolicy.SOURCE)
     @interface NotificationId {
+
+    }
+
+    @StringDef({CHANNEL_ERROR, CHANNEL_WARNING, CHANNEL_INFO})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Channel {
 
     }
 }

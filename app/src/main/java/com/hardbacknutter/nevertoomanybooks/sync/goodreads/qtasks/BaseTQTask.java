@@ -67,10 +67,10 @@ public abstract class BaseTQTask
     /**
      * Run the task.
      *
-     * @param context a localized application context
+     * @param context The localised Application context
      *
      * @return {@code false} to requeue, {@code true} for success
      */
-    public abstract boolean run(@NonNull final Context context,
-                                @NonNull QueueManager queueManager);
+    public abstract boolean doWork(@NonNull final Context context,
+                                   @NonNull QueueManager queueManager);
 }

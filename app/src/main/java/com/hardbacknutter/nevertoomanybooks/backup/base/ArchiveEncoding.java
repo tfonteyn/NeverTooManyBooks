@@ -197,7 +197,7 @@ public enum ArchiveEncoding
         } catch (@NonNull final IOException e) {
             // log in debug, but otherwise skip to extension detection
             if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "getEncoding", e, "uri=" + uri.toString());
+                Logger.d(TAG, "uri=" + uri.toString(), e);
             }
         }
 

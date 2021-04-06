@@ -68,7 +68,7 @@ public class CoverRecordReader
 
                 try {
                     // see if we have this file already
-                    File dstFile = AppDir.Covers.getFile(context, record.getName());
+                    File dstFile = new File(AppDir.Covers.getDir(), record.getName());
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
@@ -102,7 +102,7 @@ public class CoverRecordReader
                     // Don't close this stream; Also; this comes from a zip/tar archive
                     // which will give us a buffered stream; do not buffer twice.
                     final InputStream is = record.getInputStream();
-                    dstFile = FileUtils.copyInputStream(context, is, dstFile);
+                    dstFile = FileUtils.copyInputStream(is, dstFile);
 
                     if (ImageUtils.isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored

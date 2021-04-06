@@ -48,7 +48,7 @@ public interface TQItem
      * 'menuItems' parameter with one {@link ContextDialogItem} per operation that can be
      * performed on this object.
      *
-     * @param context   that can be used to get String resources for the menus
+     * @param context   Current context
      * @param menuItems menu collection to fill
      * @param bookDao   Database Access
      */

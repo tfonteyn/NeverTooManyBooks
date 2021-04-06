@@ -268,14 +268,15 @@ public class BookCoder {
     @NonNull
     private String encode(@Nullable final String source) {
 
-        try {
-            if (source == null || "null".equalsIgnoreCase(source) || source.trim().isEmpty()) {
-                return EMPTY_QUOTED_STRING;
-            }
+        if (source == null || "null".equalsIgnoreCase(source) || source.trim().isEmpty()) {
+            return EMPTY_QUOTED_STRING;
+        }
 
-            final StringBuilder sb = new StringBuilder("\"");
-            final int endPos = source.length() - 1;
-            int pos = 0;
+        final StringBuilder sb = new StringBuilder("\"");
+        final int endPos = source.length() - 1;
+        int pos = 0;
+
+        try {
             while (pos <= endPos) {
                 final char c = source.charAt(pos);
                 switch (c) {
@@ -302,10 +303,10 @@ public class BookCoder {
                         break;
                 }
                 pos++;
-
             }
             return sb.append('"').toString();
-        } catch (@NonNull final NullPointerException e) {
+
+        } catch (@NonNull final Exception e) {
             return EMPTY_QUOTED_STRING;
         }
     }

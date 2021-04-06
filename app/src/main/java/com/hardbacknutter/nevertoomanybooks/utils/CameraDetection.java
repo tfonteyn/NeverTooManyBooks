@@ -69,7 +69,7 @@ public final class CameraDetection {
                 map.put(cameraId, cc.get(CameraCharacteristics.LENS_FACING));
             }
         } catch (@NonNull final CameraAccessException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
         }
 
         return map;

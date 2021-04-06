@@ -385,7 +385,7 @@ public class SynchronizedStatement
             throws Throwable {
         if (!mCloseWasCalled && mStatement != null) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mStatement.toString());
+                Logger.w(TAG, "finalize|mStatement=" + mStatement.toString());
             }
             mStatement.close();
         }

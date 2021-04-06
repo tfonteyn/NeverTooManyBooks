@@ -101,7 +101,7 @@ public class TextViewAccessor<T>
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
                     // Also see {@link SearchCoordinator#accumulateStringData}
-                    Logger.error(view.getContext(), TAG, e, value);
+                    Logger.error(TAG, e, value);
                 }
             }
 

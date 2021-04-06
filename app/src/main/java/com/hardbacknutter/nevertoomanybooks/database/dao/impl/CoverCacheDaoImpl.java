@@ -165,7 +165,7 @@ public class CoverCacheDaoImpl
                            final int maxWidth,
                            final int maxHeight) {
         try {
-            final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+            final File file = Book.getUuidCoverFile(uuid, cIdx);
             if (file != null) {
                 final long lm = file.lastModified();
                 if (lm > 0) {
@@ -188,7 +188,7 @@ public class CoverCacheDaoImpl
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
         }
         return null;
     }

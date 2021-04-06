@@ -19,8 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks;
 
-import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -76,7 +77,7 @@ public class SendBooksGrTask
     }
 
     /**
-     * Perform the main task. Called from within {@link BaseTQTask#run}
+     * Perform the main task. Called from within {@link BaseTQTask#doWork}
      * <p>
      * Deals with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
@@ -131,18 +132,16 @@ public class SendBooksGrTask
         // store the last book id we updated; used to reduce future (needless) checks.
         grManager.putLastBookIdSend(lastBookSend);
 
-        final Context appContext = grManager.getAppContext();
-
-        final PendingIntent pendingIntent =
-                Notifier.createPendingIntent(appContext, BooksOnBookshelf.class);
-        Notifier.getInstance(appContext)
-                .sendInfo(appContext, Notifier.ID_GOODREADS, pendingIntent,
-                          R.string.gr_send_to_goodreads,
-                          appContext.getString(R.string.gr_info_send_all_books_results,
-                                               mCount,
-                                               getNumberOfBooksSent(),
-                                               getNumberOfBooksWithoutIsbn(),
-                                               getNumberOfBooksNotFound()));
+        final Context context = grManager.getContext();
+        final Intent intent = new Intent(context, BooksOnBookshelf.class);
+        ServiceLocator.getInstance().getNotifier()
+                      .sendInfo(context, Notifier.ID_GOODREADS, intent, false,
+                                R.string.gr_send_to_goodreads,
+                                context.getString(R.string.gr_info_send_all_books_results,
+                                                  mCount,
+                                                  getNumberOfBooksSent(),
+                                                  getNumberOfBooksWithoutIsbn(),
+                                                  getNumberOfBooksNotFound()));
         return true;
     }
 

@@ -186,7 +186,7 @@ public class StartupViewModel
     public void init(@NonNull final Context context) {
         if (mIsFirstStart) {
             // from here on, we have access to our log file
-            Logger.cycleLogs(context);
+            Logger.cycleLogs();
 
             // prepare the maintenance flags and counters.
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
@@ -246,7 +246,7 @@ public class StartupViewModel
             ServiceLocator.getDb();
 
         } catch (@NonNull final Exception e) {
-            Logger.error(context, TAG, e, "startTasks");
+            Logger.error(TAG, e, "startTasks");
             mFailure.setValue(new FinishedMessage<>(R.id.TASK_ID_STARTUP_COORDINATOR, e));
             return;
         }

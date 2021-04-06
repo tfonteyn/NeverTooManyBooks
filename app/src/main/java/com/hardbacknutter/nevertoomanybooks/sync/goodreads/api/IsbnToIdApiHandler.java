@@ -45,16 +45,16 @@ public class IsbnToIdApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public IsbnToIdApiHandler(@NonNull final Context appContext,
+    public IsbnToIdApiHandler(@NonNull final Context context,
                               @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
-        mGrAuth.hasValidCredentialsOrThrow(appContext);
+        super(context, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(context);
     }
 
     /**

@@ -145,7 +145,7 @@ public class EditTextAccessor<T>
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(view.getContext(), TAG, e, value);
+                    Logger.error(TAG, e, value);
                 }
             }
 

@@ -176,7 +176,7 @@ public class CalibreContentServerWriter
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
                     if (mDeleteLocalBook) {
-                        bookDao.delete(context, book);
+                        bookDao.delete(book);
                     } else {
                         // keep the book but remove the calibre data for it
                         bookDao.deleteBookCalibreData(book);
@@ -184,7 +184,7 @@ public class CalibreContentServerWriter
                     }
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
-                    Logger.error(context, TAG, e, "bookId=" + book.getId());
+                    Logger.error(TAG, e, "bookId=" + book.getId());
                 }
 
                 delta++;
@@ -225,15 +225,14 @@ public class CalibreContentServerWriter
             // is our data newer then the server data ?
             final LocalDateTime localTime = book.getLastUpdateUtcDate(context);
             if (localTime != null && localTime.isAfter(remoteTime)) {
-                final JSONObject changes = collectChanges(context, library, calibreBook, book);
+                final JSONObject changes = collectChanges(library, calibreBook, book);
                 mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
                 mResults.addBook(book.getId());
             }
         }
     }
 
-    private JSONObject collectChanges(@NonNull final Context context,
-                                      @NonNull final CalibreLibrary library,
+    private JSONObject collectChanges(@NonNull final CalibreLibrary library,
                                       @NonNull final JSONObject calibreBook,
                                       @NonNull final Book localBook)
             throws JSONException, IOException {
@@ -329,7 +328,7 @@ public class CalibreContentServerWriter
         }
 
         if (mDoCovers) {
-            final File coverFile = localBook.getCoverFile(context, 0);
+            final File coverFile = localBook.getCoverFile(0);
             if (coverFile != null) {
                 final byte[] bFile = new byte[(int) coverFile.length()];
                 try (FileInputStream is = new FileInputStream(coverFile)) {

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -38,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
@@ -68,7 +68,8 @@ public class GoodreadsAuthorizationActivity
             ASyncExecutor.SERIAL.execute(() -> {
                 Thread.currentThread().setName(TAG);
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                final Context context = ServiceLocator.getAppContext();
+                final Context context =
+                        AppLocale.getInstance().apply(ServiceLocator.getAppContext());
 
                 boolean res = false;
                 Exception ex = null;
@@ -81,46 +82,44 @@ public class GoodreadsAuthorizationActivity
                 // need 'final' to post()
                 final boolean result = res;
                 final Exception exception = ex;
-                mHandler.post(() -> {
-                    if (result) {
-                        final PendingIntent pendingIntent =
-                                Notifier.createPendingIntent(context, BooksOnBookshelf.class);
-
-                        Notifier.getInstance(context)
-                                .sendInfo(context, Notifier.ID_GOODREADS, pendingIntent,
-                                          R.string.info_authorized,
-                                          context.getString(
-                                                  R.string.info_site_authorization_successful,
-                                                  context.getString(R.string.site_goodreads)));
-
-                    } else {
-                        final String msg;
-                        if (exception != null) {
-                            msg = context.getString(R.string.error_site_authorization_failed,
-                                                    context.getString(R.string.site_goodreads))
-                                  + ' '
-                                  + context.getString(R.string.error_if_the_problem_persists,
-                                                      context.getString(R.string.lbl_send_debug));
-                        } else {
-                            msg = context.getString(R.string.error_site_authentication_failed,
-                                                    context.getString(R.string.site_goodreads));
-                        }
-
-                        final PendingIntent pendingIntent =
-                                Notifier.createPendingIntentWithParentStack(
-                                        context, GoodreadsRegistrationActivity.class);
-
-                        Notifier.getInstance(context)
-                                .sendError(context, Notifier.ID_GOODREADS, pendingIntent,
-                                           R.string.info_not_authorized,
-                                           msg);
-                    }
-                });
+                mHandler.post(() -> allDone(context, result, exception));
             });
         }
 
         // Bring our app back to the top
         startActivity(new Intent(this, BooksOnBookshelf.class));
         finish();
+    }
+
+    private void allDone(@NonNull final Context context,
+                         final boolean result,
+                         @Nullable final Exception exception) {
+
+        final Notifier notifier = ServiceLocator.getInstance().getNotifier();
+        final String siteName = context.getString(R.string.site_goodreads);
+
+        if (result) {
+            final String msg = context.getString(
+                    R.string.info_site_authorization_successful, siteName);
+            final Intent intent = new Intent(context, BooksOnBookshelf.class);
+            notifier.sendInfo(context, Notifier.ID_GOODREADS, intent, false,
+                              R.string.info_authorized, msg);
+
+        } else if (exception != null) {
+            final String msg = context.getString(
+                    R.string.error_site_authorization_failed, siteName) + ' '
+                               + context.getString(R.string.error_if_the_problem_persists,
+                                                   context.getString(R.string.lbl_send_debug));
+
+            final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
+            notifier.sendError(context, Notifier.ID_GOODREADS, intent, true,
+                               R.string.info_not_authorized, msg);
+        } else {
+            final String msg = context.getString(
+                    R.string.error_site_authentication_failed, siteName);
+            final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
+            notifier.sendError(context, Notifier.ID_GOODREADS, intent, true,
+                               R.string.info_not_authorized, msg);
+        }
     }
 }

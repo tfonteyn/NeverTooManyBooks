@@ -58,16 +58,16 @@ public class ShelvesListApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public ShelvesListApiHandler(@NonNull final Context appContext,
+    public ShelvesListApiHandler(@NonNull final Context context,
                                  @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
-        mGrAuth.hasValidCredentialsOrThrow(appContext);
+        super(context, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(context);
 
         buildFilters();
     }

@@ -90,8 +90,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
@@ -933,7 +933,7 @@ public class BooksOnBookshelf
             final String title = rowData.getString(DBKeys.KEY_TITLE);
             final List<Author> authors = mVm.getAuthorsByBookId(bookId);
             StandardDialogs.deleteBook(this, title, authors, () -> {
-                if (mVm.deleteBook(this, bookId)) {
+                if (mVm.deleteBook(bookId)) {
                     onBookChange(RowChangeListener.BOOK_DELETED, bookId);
                 }
             });
@@ -1171,7 +1171,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
             final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
-            final BooklistNode node = mVm.getNextBookWithoutCover(this, nodeRowId);
+            final BooklistNode node = mVm.getNextBookWithoutCover(nodeRowId);
             if (node != null) {
                 displayList(node);
             }
@@ -1426,7 +1426,7 @@ public class BooksOnBookshelf
         if (importResults != null) {
             if (importResults.styles > 0) {
                 // Force a refresh of the cached styles
-                StyleUtils.clearCache();
+                ServiceLocator.getInstance().getStyles().clearCache();
             }
             if (importResults.preferences > 0) {
                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1596,7 +1596,7 @@ public class BooksOnBookshelf
         // was changed...
         final ListStyle style = mVm.getCurrentStyle(this);
         // so we reset the style to recover.. and restarting the app will work.
-        mVm.onStyleChanged(this, StyleUtils.BuiltinStyles.DEFAULT_STYLE_UUID);
+        mVm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
         // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
         throw new IllegalStateException("Style=" + style);
     }

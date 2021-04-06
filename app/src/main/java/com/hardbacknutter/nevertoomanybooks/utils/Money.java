@@ -303,4 +303,87 @@ public class Money
     public String toString() {
         return Double.toString(mValue);
     }
+
+    /**
+     * Convert from a pre-euro currencies (List complete 2021-01-01)
+     * <p>
+     * Values in euro, or without currency are returned as-is in euro.
+     * <p>
+     * Non (pre)-euro currency values are returned as-is.
+     * The caller should check on the return value <strong>actually being euro</strong>.
+     *
+     * @return EURO value as a new Money object.
+     */
+    public Money toEuro() {
+        if (EUR.equals(mCurrency) || mCurrency == null || mCurrency.isEmpty()) {
+            return new Money(mValue, EUR);
+        }
+
+        switch (mCurrency) {
+            case "BEF":
+            case "LUF":
+                return new Money(mValue / 40.3399, EUR);
+
+            case "NLD":
+                return new Money(mValue / 2.20371, EUR);
+
+            case "FRF":
+            case "MCF":
+                return new Money(mValue / 6.55957, EUR);
+
+            case "DEM":
+                return new Money(mValue / 1.95583, EUR);
+
+            case "IEP":
+                return new Money(mValue / 0.787564, EUR);
+
+            case "ITL":
+                return new Money(mValue / 1.93627, EUR);
+
+            case "GRD":
+                return new Money(mValue / 340.75, EUR);
+
+            case "ESP":
+                return new Money(mValue / 166.386, EUR);
+
+            case "PTE":
+                return new Money(mValue / 200.482, EUR);
+
+            case "ATS":
+                return new Money(mValue / 13.7603, EUR);
+
+            case "CYP":
+                return new Money(mValue / 0.585274, EUR);
+
+            case "EEK":
+                return new Money(mValue / 15.6466, EUR);
+
+            case "FIM":
+                return new Money(mValue / 5.94573, EUR);
+
+            case "LVL":
+                return new Money(mValue / 0.702804, EUR);
+
+            case "LTL":
+                return new Money(mValue / 3.45280, EUR);
+
+            case "MTL":
+                return new Money(mValue / 0.429300, EUR);
+
+            case "SML":
+                return new Money(mValue / 1936.27, EUR);
+
+            case "SKK":
+                return new Money(mValue / 30.1260, EUR);
+
+            case "SIT":
+                return new Money(mValue / 239.640, EUR);
+
+            case "VAL":
+                return new Money(mValue / 1936.27, EUR);
+
+            default:
+                return new Money(mValue, mCurrency);
+        }
+    }
 }

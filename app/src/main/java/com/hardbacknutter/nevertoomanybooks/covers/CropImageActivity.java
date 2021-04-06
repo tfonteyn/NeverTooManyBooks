@@ -118,7 +118,7 @@ public class CropImageActivity
             Snackbar.make(mVb.coverImage0, R.string.error_storage_not_accessible,
                           Snackbar.LENGTH_LONG).show();
         } else {
-            final long freeSpace = AppDir.Root.getFreeSpace(this);
+            final long freeSpace = AppDir.Root.getFreeSpace();
             // make an educated guess how many pics we can store.
             if (freeSpace >= 0 && freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
                 Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
@@ -169,7 +169,7 @@ public class CropImageActivity
                     setResult(Activity.RESULT_OK, new Intent().setData(mDestinationUri));
                 }
             } catch (@NonNull final IOException e) {
-                Logger.error(this, TAG, e);
+                Logger.error(TAG, e);
                 bitmap = null;
             }
         }

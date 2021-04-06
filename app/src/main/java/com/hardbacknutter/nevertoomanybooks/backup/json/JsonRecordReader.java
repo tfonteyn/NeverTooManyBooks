@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -250,11 +250,12 @@ public class JsonRecordReader
             throws JSONException {
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
+            final Styles styles = ServiceLocator.getInstance().getStyles();
             //noinspection SimplifyStreamApiCallChains
             new ListStyleCoder(context)
                     .decode(jsonRoot)
                     .stream()
-                    .forEach(StyleUtils::updateOrInsert);
+                    .forEach(styles::updateOrInsert);
             mResults.styles = jsonRoot.length();
         }
     }
@@ -283,7 +284,7 @@ public class JsonRecordReader
                     mResults.certificates++;
                 } catch (@NonNull final CertificateEncodingException e) {
                     // log but don't quit
-                    Logger.error(context, TAG, e);
+                    Logger.error(TAG, e);
                 }
             }
         }
@@ -352,12 +353,11 @@ public class JsonRecordReader
                             context.getString(R.string.error_import_csv_line, row));
                     mResults.failedLinesNr.add(row);
 
-                    Logger.warn(context, TAG, "e=" + e.getMessage(),
-                                ERROR_IMPORT_FAILED_AT_ROW + row);
+                    Logger.warn(TAG, "e=" + e.getMessage(), ERROR_IMPORT_FAILED_AT_ROW + row);
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                         // logging with the full exception is VERY HEAVY
-                        Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                        Logger.error(TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                     }
                 }
 

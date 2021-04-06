@@ -110,7 +110,7 @@ public abstract class JsoupSearchEngineBase
                 }
             };
 
-            return mJsoupLoader.loadDocument(getContext(), url, conCreator);
+            return mJsoupLoader.loadDocument(url, conCreator);
 
         } catch (@NonNull final FileNotFoundException e) {
             // we couldn't load the page

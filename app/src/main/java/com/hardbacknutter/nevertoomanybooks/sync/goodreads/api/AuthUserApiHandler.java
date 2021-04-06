@@ -55,12 +55,12 @@ public class AuthUserApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      */
-    public AuthUserApiHandler(@NonNull final Context appContext,
+    public AuthUserApiHandler(@NonNull final Context context,
                               @NonNull final GoodreadsAuth grAuth) {
-        super(appContext, grAuth);
+        super(context, grAuth);
         // don't ...if (!apiHandler.hasValidCredentials()) {
 
         buildFilters();

@@ -68,7 +68,7 @@ public class ZipArchiveWriter
         super(helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(
-                helper.createOutputStream(context), RecordWriter.BUFFER_SIZE));
+                helper.createOutputStream(), RecordWriter.BUFFER_SIZE));
     }
 
     @NonNull

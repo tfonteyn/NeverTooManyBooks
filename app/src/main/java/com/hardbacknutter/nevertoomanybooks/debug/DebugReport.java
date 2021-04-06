@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -100,22 +101,23 @@ public final class DebugReport {
 
         try {
             // Copy the database from the internal protected area to the cache area.
-            final File dbFile = AppDir.Cache.getFile(
-                    context,
+            final String fileName =
                     DB_EXPORT_FILE_PREFIX
                     + '-' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                    + ".db");
+                    + ".db";
+            final File dbFile = new File(AppDir.Cache.getDir(), fileName);
             dbFile.deleteOnExit();
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
 
             // Find all files of interest to send
             final Collection<File> files = new ArrayList<>();
 
-            files.addAll(AppDir.Log.collectFiles(context, null));
-            files.addAll(AppDir.Upgrades.collectFiles(context, null));
+            files.addAll(AppDir.Log.collectFiles(null));
+            files.addAll(AppDir.Upgrades.collectFiles(null));
 
-            files.addAll(AppDir.Cache.collectFiles(context, file ->
-                    file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));
+            files.addAll(AppDir.Cache.collectFiles(file ->
+                                                           file.getName()
+                                                               .startsWith(DB_EXPORT_FILE_PREFIX)));
 
             // Build the attachment list
             final ArrayList<Uri> uriList = files
@@ -141,8 +143,8 @@ public final class DebugReport {
             context.startActivity(intent);
             return true;
 
-        } catch (@NonNull final NullPointerException | IOException e) {
-            Logger.error(context, TAG, e);
+        } catch (@NonNull final NullPointerException | ActivityNotFoundException | IOException e) {
+            Logger.error(TAG, e);
             return false;
         }
     }

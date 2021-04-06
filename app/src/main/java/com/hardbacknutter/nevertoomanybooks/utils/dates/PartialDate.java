@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -167,7 +167,7 @@ public class PartialDate
                 // } catch (@NonNull final DateTimeParseException e) {
             } catch (@NonNull final RuntimeException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "parse", e, "dateStr=" + dateStr);
+                    Logger.d(TAG, "dateStr=" + dateStr, e);
                 }
             }
         }

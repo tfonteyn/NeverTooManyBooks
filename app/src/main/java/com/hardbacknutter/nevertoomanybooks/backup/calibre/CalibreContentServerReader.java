@@ -365,7 +365,7 @@ public class CalibreContentServerReader
 
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             mResults.booksSkipped++;
         }
     }
@@ -524,8 +524,8 @@ public class CalibreContentServerReader
             if (!calibreBook.isNull(CalibreBook.COVER)) {
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
-                    final File file = mServer.getCover(context, calibreBookId, coverUrl);
-                    localBook.setCover(context, mBookDao, 0, file);
+                    final File file = mServer.getCover(calibreBookId, coverUrl);
+                    localBook.setCover(mBookDao, 0, file);
                 }
             }
         }

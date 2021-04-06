@@ -64,7 +64,7 @@ public class RebuildFtsTask
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try (BookDao bookDao = new BookDao(TAG)) {
-            bookDao.ftsRebuild(context);
+            bookDao.ftsRebuild();
             return true;
 
         } finally {

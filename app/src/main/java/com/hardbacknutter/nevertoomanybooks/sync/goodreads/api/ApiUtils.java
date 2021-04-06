@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.api;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -78,7 +77,6 @@ public final class ApiUtils {
     /**
      * Extract an image url from the bundle, fetch and save it.
      *
-     * @param context          Current context
      * @param goodreadsData    to read the url from
      * @param keyLargeImageUrl key for a large image
      * @param keySmallImageUrl key for a small image
@@ -86,8 +84,7 @@ public final class ApiUtils {
      * @return fileSpec, or {@code null} if no image found.
      */
     @Nullable
-    public static String handleThumbnail(@NonNull final Context context,
-                                         @NonNull final Bundle goodreadsData,
+    public static String handleThumbnail(@NonNull final Bundle goodreadsData,
                                          @NonNull final String keyLargeImageUrl,
                                          @NonNull final String keySmallImageUrl) {
         // first check what the "best" image is that we have.
@@ -116,10 +113,10 @@ public final class ApiUtils {
 
         try {
             final File tmpFile = imageDownloader.createTmpFile(
-                    context, GoodreadsManager.FILENAME_SUFFIX,
+                    GoodreadsManager.FILENAME_SUFFIX,
                     String.valueOf(goodreadsData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK)), 0, size);
 
-            final File file = imageDownloader.fetch(context, url, tmpFile);
+            final File file = imageDownloader.fetch(url, tmpFile);
             if (file != null) {
                 return file.getAbsolutePath();
             }

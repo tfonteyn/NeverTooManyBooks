@@ -143,7 +143,7 @@ public class SearchBookUpdatesFragment
         // The full list was processed
         mVm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
         // Something really bad happened and we're aborting
-        mVm.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
+        mVm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
         // The FAB lives in the activity.
         //noinspection ConstantConditions
@@ -322,7 +322,7 @@ public class SearchBookUpdatesFragment
         getActivity().finish();
     }
 
-    private void onCatastrophe(@NonNull final FinishedMessage<Exception> message) {
+    private void onAbort(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
 
         String msg = null;

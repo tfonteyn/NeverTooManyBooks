@@ -285,7 +285,7 @@ public class SearchCoordinator
     /**
      * Pseudo constructor.
      *
-     * @param context Localized context
+     * @param context Current context
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
@@ -705,7 +705,7 @@ public class SearchCoordinator
      * by working directly with engine-id and SearchEngines... DON'T
      * Read class docs for {@link SearchSites} and {@link Site.Type#getDataSitesByReliability}.
      *
-     * @param context Localized context
+     * @param context Current context
      */
     private void accumulateResults(@NonNull final Context context) {
         // This list will be the actual order of the result we apply, based on the
@@ -1069,7 +1069,7 @@ public class SearchCoordinator
      * Called when all is said and done. Collects all individual website errors (if any)
      * into a single user-formatted message.
      *
-     * @param context Localized context
+     * @param context Current context
      *
      * @return the error message
      */
@@ -1108,7 +1108,7 @@ public class SearchCoordinator
      * <p>
      * Dev Note: the return value should preferable fit on a single line
      *
-     * @param context    Localized context
+     * @param context    Current context
      * @param engineName the site where the error happened
      * @param e          Exception to process
      *

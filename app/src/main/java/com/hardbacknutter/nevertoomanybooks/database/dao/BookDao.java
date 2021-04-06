@@ -366,10 +366,10 @@ public class BookDao
             insertBookLinks(context, book, flags);
 
             // and populate the search suggestions table
-            ftsInsert(context, newBookId);
+            ftsInsert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
-            if (!book.storeCovers(context)) {
+            if (!book.storeCovers()) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_STORING_COVERS + book);
@@ -448,9 +448,9 @@ public class BookDao
 
                 insertBookLinks(context, book, flags);
 
-                ftsUpdate(context, book.getId());
+                ftsUpdate(book.getId());
 
-                if (!book.storeCovers(context)) {
+                if (!book.storeCovers()) {
                     throw new DaoWriteException(ERROR_STORING_COVERS + book);
                 }
 
@@ -607,14 +607,12 @@ public class BookDao
     /**
      * Delete the given book (and its covers).
      *
-     * @param context Current context
-     * @param book    to delete
+     * @param book to delete
      *
      * @return {@code true} if a row was deleted
      */
-    public boolean delete(@NonNull final Context context,
-                          @NonNull final Book book) {
-        final boolean success = deleteBook(context, book.getId());
+    public boolean delete(@NonNull final Book book) {
+        final boolean success = deleteBook(book.getId());
         if (success) {
             book.setId(0);
             book.remove(KEY_BOOK_UUID);
@@ -625,13 +623,11 @@ public class BookDao
     /**
      * Delete the given book (and its covers).
      *
-     * @param context Current context
-     * @param bookId  of the book.
+     * @param bookId of the book.
      *
      * @return {@code true} if a row was deleted
      */
-    public boolean deleteBook(@NonNull final Context context,
-                              @IntRange(from = 1) final long bookId) {
+    public boolean deleteBook(@IntRange(from = 1) final long bookId) {
 
         final String uuid = getBookUuid(bookId);
         // sanity check
@@ -660,7 +656,7 @@ public class BookDao
                 if (!uuid.isEmpty()) {
                     // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        FileUtils.delete(Book.getUuidCoverFile(context, uuid, cIdx));
+                        FileUtils.delete(Book.getUuidCoverFile(uuid, cIdx));
                     }
                     // and from the cache.
                     if (ImageUtils.isImageCachingEnabled()) {
@@ -672,7 +668,7 @@ public class BookDao
                 mDb.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e, "Failed to delete book");
+            Logger.error(TAG, e, "Failed to delete book");
 
         } finally {
             if (txLock != null) {
@@ -755,8 +751,8 @@ public class BookDao
         }
 
         if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
-            // Calibre library will be inserted if new, but not updated
-            insertBookCalibreData(context, book);
+            // Calibre libraries will be inserted if new, but not updated
+            insertBookCalibreData(book);
         }
     }
 
@@ -1109,13 +1105,11 @@ public class BookDao
      * Create the link between {@link Book} and {@link CalibreLibrary}.
      * New libraries are added, existing ones are NOT updated.
      *
-     * @param context Current context
-     * @param book    A collection with the columns to be set. May contain extra data.
+     * @param book A collection with the columns to be set. May contain extra data.
      *
      * @throws DaoWriteException on failure
      */
-    private void insertBookCalibreData(@NonNull final Context context,
-                                       @NonNull final Book book)
+    private void insertBookCalibreData(@NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -1126,6 +1120,7 @@ public class BookDao
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookCalibreData(book);
+
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
@@ -1145,15 +1140,15 @@ public class BookDao
                 // It did have a library id, but that library does not exist.
                 // Theoretically this should never happen... flw
                 // log and bail out.
-                Logger.warn(context, TAG, "calibre library invalid for book="
-                                          + book.getId());
+                Logger.warn(TAG, "calibre library invalid for book="
+                                 + book.getId());
                 return;
             }
         } else {
             // should never be the case... flw
             // log and bail out.
-            Logger.warn(context, TAG, "calibre library invalid for book="
-                                      + book.getId());
+            Logger.warn(TAG, "calibre library invalid for book="
+                             + book.getId());
             return;
         }
 
@@ -1179,23 +1174,6 @@ public class BookDao
     public void deleteBookCalibreData(@NonNull final Book book) {
         mDb.delete(TBL_CALIBRE_BOOKS.getName(), KEY_FK_BOOK + "=?",
                    new String[]{String.valueOf(book.getId())});
-    }
-
-    /**
-     * Delete the link between TocEntry's and the given Book.
-     * Note that the actual TocEntry's are NOT deleted here.
-     *
-     * @param bookId id of the book
-     */
-    private void deleteBookTocEntryByBookId(@IntRange(from = 1) final long bookId) {
-        final SynchronizedStatement stmt = mSqlStatementManager.get(
-                STMT_DELETE_BOOK_TOC_ENTRIES, () -> Sql.Delete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
-
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
-            stmt.bindLong(1, bookId);
-            stmt.executeUpdateDelete();
-        }
     }
 
     /**
@@ -1333,6 +1311,24 @@ public class BookDao
     }
 
     /**
+     * Delete the link between TocEntry's and the given Book.
+     * Note that the actual TocEntry's are NOT deleted here.
+     *
+     * @param bookId id of the book
+     */
+    private void deleteBookTocEntryByBookId(@IntRange(from = 1) final long bookId) {
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_DELETE_BOOK_TOC_ENTRIES, () -> Sql.Delete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
+
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
+        synchronized (stmt) {
+            stmt.bindLong(1, bookId);
+            stmt.executeUpdateDelete();
+        }
+    }
+
+
+    /**
      * Count all books.
      *
      * @return number of books
@@ -1402,6 +1398,15 @@ public class BookDao
                              TBL_BOOKS.dot(KEY_PK_ID));
     }
 
+    /**
+     * Return an Cursor with all Books for the given external book ID.
+     * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
+     *
+     * @param key        to use
+     * @param externalId to retrieve
+     *
+     * @return A Book Cursor with 0..n rows; ordered by book id
+     */
     @NonNull
     public TypedCursor fetchBooksByKey(@NonNull final String key,
                                        final long externalId) {
@@ -1766,7 +1771,7 @@ public class BookDao
                     mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
 
             } finally {
                 if (txLock != null) {
@@ -1840,7 +1845,7 @@ public class BookDao
                     mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
             } finally {
                 if (txLock != null) {
                     mDb.endTransaction(txLock);
@@ -1913,7 +1918,7 @@ public class BookDao
                     mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
 
             } finally {
                 if (txLock != null) {
@@ -1991,7 +1996,7 @@ public class BookDao
                     mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
 
             } finally {
                 if (txLock != null) {
@@ -2241,13 +2246,11 @@ public class BookDao
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context Current context
-     * @param bookId  the book to add to FTS
+     * @param bookId the book to add to FTS
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
-    private void ftsInsert(@NonNull final Context context,
-                           @IntRange(from = 1) final long bookId) {
+    private void ftsInsert(@IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!mDb.inTransaction()) {
@@ -2265,7 +2268,7 @@ public class BookDao
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -2274,13 +2277,11 @@ public class BookDao
      * <p>
      * <strong>Transaction:</strong> required
      *
-     * @param context Application context
-     * @param bookId  the book id
+     * @param bookId the book id
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
-    private void ftsUpdate(@NonNull final Context context,
-                           @IntRange(from = 1) final long bookId) {
+    private void ftsUpdate(@IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
             if (!mDb.inTransaction()) {
@@ -2298,7 +2299,7 @@ public class BookDao
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -2435,10 +2436,8 @@ public class BookDao
     /**
      * Rebuild the entire FTS database.
      * This can take several seconds with many books or a slow device.
-     *
-     * @param context Current context
      */
-    public void ftsRebuild(@NonNull final Context context) {
+    public void ftsRebuild() {
 
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
@@ -2469,7 +2468,7 @@ public class BookDao
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             gotError = true;
             mDb.drop(tmpTableName);
 
@@ -2510,7 +2509,7 @@ public class BookDao
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|close");
+            Logger.d(TAG, "close", mInstanceName);
         }
 
         if (mSqlStatementManager != null) {
@@ -3165,6 +3164,9 @@ public class BookDao
     private static class SqlStatementManager
             implements AutoCloseable {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        private static final String TAG = "SqlStatementManager";
+
         /**
          * Note: the key is a String instead of an int, so we don't have to make sure integers
          * are unique across different classes using the same SqlStatementManager.
@@ -3232,7 +3234,7 @@ public class BookDao
                 throws Throwable {
             if (!mStatements.isEmpty()) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.w(TAG, "finalize");
+                    Logger.w(TAG, "finalize|mStatements=" + mStatements);
                 }
                 close();
             }

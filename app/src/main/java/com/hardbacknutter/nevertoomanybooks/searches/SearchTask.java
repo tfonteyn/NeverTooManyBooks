@@ -97,6 +97,7 @@ public class SearchTask
     SearchTask(@NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
         super(searchEngine.getId(), TAG + ' ' + searchEngine.getName(), taskListener);
+
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
 

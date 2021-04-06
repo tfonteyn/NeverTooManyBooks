@@ -73,9 +73,6 @@ public interface ListStyle {
      */
     int MENU_POSITION_NOT_PREFERRED = 1000;
 
-    /** default style when none is set yet. */
-    int DEFAULT_STYLE_ID = StyleUtils.BuiltinStyles.AUTHOR_THEN_SERIES_ID;
-
     /**
      * A ListStyle <strong>UUID</strong>.
      * <p>

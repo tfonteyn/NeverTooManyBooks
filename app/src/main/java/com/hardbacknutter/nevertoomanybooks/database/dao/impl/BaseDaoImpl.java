@@ -93,7 +93,7 @@ public abstract class BaseDaoImpl {
     /** See {@link #encodeString}. */
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
 
-    /** Reference to the singleton. */
+    /** Reference to the <strong>singleton</strong> which makes it safe to store/share here. */
     @NonNull
     protected final SynchronizedDb mDb;
 
@@ -110,7 +110,7 @@ public abstract class BaseDaoImpl {
         mInstanceName = logTag;
 
         if (BuildConfig.DEBUG /* always */) {
-            Logger.d(TAG, "Constructor", logTag);
+            Logger.d(TAG, "Constructor", mInstanceName);
         }
 
         mDb = ServiceLocator.getDb();

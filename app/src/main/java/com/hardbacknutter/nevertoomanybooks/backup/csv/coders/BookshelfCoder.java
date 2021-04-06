@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
@@ -54,7 +54,7 @@ public class BookshelfCoder
      * @param context Current context
      */
     BookshelfCoder(@NonNull final Context context) {
-        mDefaultStyle = StyleUtils.getDefault(context);
+        mDefaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
     }
 
     /**

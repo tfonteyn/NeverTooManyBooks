@@ -203,7 +203,7 @@ public class EditSeriesDialogFragment
                                     // return the series who 'lost' it's books
                                     BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
                         } catch (@NonNull final DaoWriteException e) {
-                            Logger.error(context, TAG, e);
+                            Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
                         }
                     })

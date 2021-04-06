@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
@@ -123,7 +122,8 @@ public class EditBookshelvesViewModel
 
     @NonNull
     public Bookshelf createNewBookshelf(@NonNull final Context context) {
-        return new Bookshelf("", StyleUtils.getDefault(context));
+        return new Bookshelf("", ServiceLocator.getInstance().getStyles()
+                                               .getDefault(context));
     }
 
     public void deleteBookshelf(final int position) {

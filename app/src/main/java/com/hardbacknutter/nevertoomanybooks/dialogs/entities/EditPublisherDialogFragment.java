@@ -197,7 +197,7 @@ public class EditPublisherDialogFragment
                                     BooksOnBookshelf.RowChangeListener.PUBLISHER,
                                     mPublisher.getId());
                         } catch (@NonNull final DaoWriteException e) {
-                            Logger.error(context, TAG, e);
+                            Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
                         }
                     })

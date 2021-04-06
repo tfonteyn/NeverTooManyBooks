@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,7 +90,7 @@ public class CsvArchiveReader
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
 
         FileUtils.copyWithBackup(ServiceLocator.getDb().getDatabaseFile(),
-                                 AppDir.Upgrades.getFile(context, DB_BACKUP_NAME),
+                                 new File(AppDir.Upgrades.getDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
         @Nullable

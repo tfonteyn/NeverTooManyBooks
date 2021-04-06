@@ -62,7 +62,7 @@ public final class MultiSelectListPreferenceSummaryProvider
 
             } else {
                 // This re-surfaces sometimes after a careless dev. change.
-                Logger.error(preference.getContext(), TAG, new Throwable(),
+                Logger.error(TAG, new Throwable(),
                              "MultiSelectListPreference:"
                              + "\n s=" + s
                              + "\n key=" + preference.getKey()

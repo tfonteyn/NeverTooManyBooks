@@ -197,7 +197,7 @@ public class AmazonSearchEngine
     /**
      * Start an intent to search for an author and/or series on the Amazon website.
      *
-     * @param context Application context
+     * @param context Current context
      * @param author  to search for
      * @param series  to search for
      */
@@ -218,7 +218,7 @@ public class AmazonSearchEngine
                 try {
                     fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
                 } catch (@NonNull final UnsupportedEncodingException e) {
-                    Logger.error(context, TAG, e, "Unable to add author to URL");
+                    Logger.error(TAG, e, "Unable to add author to URL");
                 }
             }
         }
@@ -228,7 +228,7 @@ public class AmazonSearchEngine
                 try {
                     fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
                 } catch (@NonNull final UnsupportedEncodingException e) {
-                    Logger.error(context, TAG, e, "Unable to add series to URL");
+                    Logger.error(TAG, e, "Unable to add series to URL");
                 }
             }
         }
@@ -318,8 +318,7 @@ public class AmazonSearchEngine
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                final Locale locale = AppLocale.getInstance().getLocale(
-                        getContext(), root);
+                final Locale locale = AppLocale.getInstance().getLocale(getContext(), root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale", "locale=" + locale);
                 }

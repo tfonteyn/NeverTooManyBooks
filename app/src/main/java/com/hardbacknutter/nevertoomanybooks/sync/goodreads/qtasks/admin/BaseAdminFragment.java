@@ -107,8 +107,8 @@ public abstract class BaseAdminFragment
         if (item instanceof TipManager.TipOwner) {
             //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(),
-                                             ((TipManager.TipOwner) item).getTip(), () ->
-                                                     showContextDialog(item));
+                                             ((TipManager.TipOwner) item).getTip(),
+                                             () -> showContextDialog(item));
         } else {
             showContextDialog(item);
         }

@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -154,8 +153,8 @@ public class ImportGrTask
     }
 
     @Override
-    public boolean run(@NonNull final Context context,
-                       @NonNull final QueueManager queueManager) {
+    public boolean doWork(@NonNull final Context context,
+                          @NonNull final QueueManager queueManager) {
         try (BookDao bookDao = new BookDao(TAG)) {
             // Import part of the sync
             final boolean ok = importReviews(context, bookDao, queueManager);
@@ -336,7 +335,7 @@ public class ImportGrTask
                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                         } catch (@NonNull final DaoWriteException e) {
                             // ignore, but log it.
-                            Logger.error(context, TAG, e);
+                            Logger.error(TAG, e);
                         }
                     }
                 }
@@ -348,7 +347,7 @@ public class ImportGrTask
 
                 } catch (@NonNull final DaoWriteException e) {
                     // ignore, but log it.
-                    Logger.error(context, TAG, e);
+                    Logger.error(TAG, e);
                 }
             }
         } finally {
@@ -544,7 +543,9 @@ public class ImportGrTask
             for (final Bundle shelfData : grShelves) {
                 final String name = mapShelf(userLocale, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
-                    bookshelfList.add(new Bookshelf(name, StyleUtils.getDefault(context)));
+                    bookshelfList.add(new Bookshelf(
+                            name, ServiceLocator.getInstance().getStyles()
+                                                .getDefault(context)));
                 }
             }
             Bookshelf.pruneList(bookshelfList);
@@ -557,12 +558,12 @@ public class ImportGrTask
             Review.copyDateIfValid(goodreadsData, Review.ADDED,
                                    delta, DBKeys.KEY_UTC_ADDED);
 
-            final String fileSpec = ApiUtils.handleThumbnail(context,
-                                                             goodreadsData,
-                                                             Review.LARGE_IMAGE_URL,
-                                                             Review.SMALL_IMAGE_URL);
+            final String fileSpec = ApiUtils.handleThumbnail(
+                    goodreadsData,
+                    Review.LARGE_IMAGE_URL,
+                    Review.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                delta.setCover(context, bookDao, 0, new File(fileSpec));
+                delta.setCover(bookDao, 0, new File(fileSpec));
             }
         }
 

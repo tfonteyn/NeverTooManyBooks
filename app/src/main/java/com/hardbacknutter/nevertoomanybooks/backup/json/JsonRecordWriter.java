@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
@@ -49,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
@@ -120,7 +120,8 @@ public class JsonRecordWriter
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
-                final List<ListStyle> styles = StyleUtils.getStyles(context, true);
+                final List<ListStyle> styles =
+                        ServiceLocator.getInstance().getStyles().getStyles(context, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
@@ -178,7 +179,7 @@ public class JsonRecordWriter
 
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                final File cover = book.getUuidCoverFile(context, cIdx);
+                                final File cover = book.getUuidCoverFile(cIdx);
                                 if (cover != null && cover.exists()) {
                                     results.addCover(cover.getName());
                                 }

@@ -504,7 +504,7 @@ public class BooklistAdapter
                                           .getQuantityString(R.plurals.n_stars, i, i);
                         }
                     } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(context, TAG, e);
+                        Logger.error(TAG, e);
                     }
                     return text;
                 }
@@ -1026,7 +1026,7 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            final File file = Book.getUuidCoverFile(coverView.getContext(), uuid, 0);
+            final File file = Book.getUuidCoverFile(uuid, 0);
             if (file != null && file.exists()) {
                 final FragmentActivity activity = (FragmentActivity) coverView.getContext();
                 ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
@@ -1070,7 +1070,7 @@ public class BooklistAdapter
             }
 
             if (mInUse.edition) {
-                final boolean isSet = (rowData.getInt(DBKeys.KEY_EDITION_BITMASK)
+                final boolean isSet = (rowData.getLong(DBKeys.KEY_EDITION_BITMASK)
                                        & Book.Edition.FIRST) != 0;
                 mEditionIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
@@ -1220,7 +1220,7 @@ public class BooklistAdapter
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
-            final File file = Book.getUuidCoverFile(context, uuid, 0);
+            final File file = Book.getUuidCoverFile(uuid, 0);
             // Check if the file exists; if it does not...
             if (file == null || !file.exists()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!

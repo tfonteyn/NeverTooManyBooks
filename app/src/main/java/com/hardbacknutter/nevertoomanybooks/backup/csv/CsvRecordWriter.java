@@ -112,7 +112,7 @@ public class CsvRecordWriter
 
                     if (collectCoverFilenames) {
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            final File cover = book.getUuidCoverFile(context, cIdx);
+                            final File cover = book.getUuidCoverFile(cIdx);
                             if (cover != null && cover.exists()) {
                                 results.addCover(cover.getName());
                             }

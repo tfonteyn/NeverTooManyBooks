@@ -94,7 +94,7 @@ public final class FileUtils {
                 file.delete();
             } catch (@NonNull final /* SecurityException */ RuntimeException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.e(TAG, e, "delete|file=" + file);
+                    Logger.e(TAG, "delete|file=" + file, e);
                 }
             }
         }
@@ -117,9 +117,9 @@ public final class FileUtils {
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.e(TAG, new Throwable(),
-                         "renameOrThrow|source==destination=="
-                         + source.getAbsolutePath());
+                Logger.e(TAG, "renameOrThrow|source==destination=="
+                              + source.getAbsolutePath(), new Throwable()
+                        );
             }
             return;
         }
@@ -144,7 +144,6 @@ public final class FileUtils {
      * We first write to a temporary file, so an existing 'out' file is not destroyed
      * if the stream somehow fails.
      *
-     * @param context  Current context
      * @param is       InputStream to read
      * @param destFile File to write to
      *
@@ -154,15 +153,14 @@ public final class FileUtils {
      * @throws IOException           on failure
      */
     @NonNull
-    public static File copyInputStream(@NonNull final Context context,
-                                       @Nullable final InputStream is,
+    public static File copyInputStream(@Nullable final InputStream is,
                                        @NonNull final File destFile)
             throws IOException {
         if (is == null) {
             throw new FileNotFoundException("is was NULL");
         }
 
-        final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
+        final File tmpFile = new File(AppDir.Cache.getDir(), System.nanoTime() + ".jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
@@ -208,7 +206,7 @@ public final class FileUtils {
     /**
      * Export the source File to the destination Uri.
      *
-     * @param context Application context
+     * @param context Current context
      * @param source  File
      * @param destUri Uri
      *

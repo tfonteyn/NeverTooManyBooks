@@ -171,16 +171,14 @@ public class ExportHelper {
      * When writing is done (success <strong>and</strong> failure),
      * {@link #onSuccess} / {@link #onError} must be called as needed.
      *
-     * @param context Current context
-     *
      * @return OutputStream
      *
      * @throws FileNotFoundException on ...
      */
     @NonNull
-    public OutputStream createOutputStream(@NonNull final Context context)
+    public OutputStream createOutputStream()
             throws FileNotFoundException, ExternalStorageException {
-        return new FileOutputStream(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+        return new FileOutputStream(new File(AppDir.Cache.getDir(), TEMP_FILE_NAME));
     }
 
     /**
@@ -196,7 +194,7 @@ public class ExportHelper {
 
         if (getEncoding().isFile()) {
             // The output file is now properly closed, export it to the user Uri
-            final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
+            final File tmpOutput = new File(AppDir.Cache.getDir(), TEMP_FILE_NAME);
 
             try (InputStream is = new FileInputStream(tmpOutput);
                  OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
@@ -212,13 +210,11 @@ public class ExportHelper {
 
     /**
      * Should be called after a failed write.
-     *
-     * @param context Current context
      */
-    public void onError(@NonNull final Context context) {
+    public void onError() {
         // cleanup
         try {
-            FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+            FileUtils.delete(new File(AppDir.Cache.getDir(), TEMP_FILE_NAME));
         } catch (@NonNull final ExternalStorageException ignore) {
             // ignore
         }

@@ -333,7 +333,7 @@ public class ShowBookFragment
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(context, title, authors, () -> {
-                mVm.deleteBook(context, mVb.pager.getCurrentItem());
+                mVm.deleteBook(mVb.pager.getCurrentItem());
 
                 //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());

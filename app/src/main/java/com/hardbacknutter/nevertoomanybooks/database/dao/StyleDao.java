@@ -19,11 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao;
 
-import android.database.Cursor;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Map;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 public interface StyleDao {
@@ -38,15 +42,24 @@ public interface StyleDao {
     long getStyleIdByUuid(@NonNull String uuid);
 
     /**
-     * Get a cursor over the Styles table.
+     * Get the user-defined Styles.
      *
-     * @param userDefined {@code true} to get the User defined styles,
-     *                    {@code false} to get the builtin styles
+     * @param context Current context
      *
-     * @return cursor
+     * @return an ordered Map of styles
      */
     @NonNull
-    Cursor fetchStyles(boolean userDefined);
+    Map<String, UserStyle> getUserStyles(@NonNull Context context);
+
+    /**
+     * Get the builtin Styles.
+     *
+     * @param context Current context
+     *
+     * @return an ordered Map of styles
+     */
+    @NonNull
+    Map<String, BuiltinStyle> getBuiltinStyles(@NonNull Context context);
 
     /**
      * Create a new {@link ListStyle}.

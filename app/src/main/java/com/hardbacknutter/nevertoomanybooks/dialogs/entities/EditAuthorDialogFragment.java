@@ -221,7 +221,7 @@ public class EditAuthorDialogFragment
                                     // return the author who 'lost' their books
                                     BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
                         } catch (@NonNull final DaoWriteException e) {
-                            Logger.error(context, TAG, e);
+                            Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
                         }
                     })

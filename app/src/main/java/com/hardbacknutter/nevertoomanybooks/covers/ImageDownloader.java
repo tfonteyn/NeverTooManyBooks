@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.util.Base64;
 
 import androidx.annotation.AnyThread;
@@ -129,7 +128,6 @@ public class ImageDownloader {
     /**
      * Create a temporary file.
      *
-     * @param context current context
      * @param source  of the image (normally a SearchEngine specific code)
      * @param bookId  (optional) either the native id, or the isbn
      * @param cIdx    0..n image index
@@ -140,8 +138,7 @@ public class ImageDownloader {
      */
     @AnyThread
     @NonNull
-    public File createTmpFile(@NonNull final Context context,
-                              @NonNull final String source,
+    public File createTmpFile(@NonNull final String source,
                               @Nullable final String bookId,
                               @IntRange(from = 0, to = 1) final int cIdx,
                               @Nullable final ImageFileInfo.Size size)
@@ -155,14 +152,13 @@ public class ImageDownloader {
                                 + "_" + (size != null ? size : "")
                                 + ".jpg";
 
-        return AppDir.Cache.getFile(context, filename);
+        return new File(AppDir.Cache.getDir(), filename);
     }
 
     /**
      * Given a URL, get an image and save to the given file.
      * Must be called from a background task.
      *
-     * @param context     Application context
      * @param url         Image file URL
      * @param destination file to write to
      *
@@ -170,8 +166,7 @@ public class ImageDownloader {
      */
     @Nullable
     @WorkerThread
-    public File fetch(@NonNull final Context context,
-                      @NonNull final String url,
+    public File fetch(@NonNull final String url,
                       @NonNull final File destination) {
         @Nullable
         final File savedFile;
@@ -197,7 +192,7 @@ public class ImageDownloader {
                         con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
                     }
 
-                    savedFile = FileUtils.copyInputStream(context, con.getInputStream(),
+                    savedFile = FileUtils.copyInputStream(con.getInputStream(),
                                                           destination);
                 }
             }
@@ -205,7 +200,7 @@ public class ImageDownloader {
             FileUtils.delete(destination);
 
             if ((BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) || Logger.isJUnitTest) {
-                Logger.d(TAG, "saveImage", "|e=" + e.getLocalizedMessage());
+                Logger.d(TAG, "saveImage", e);
 
                 // When running as a JUnit test, the file.renameTo done during the
                 // FileUtils.copyInputStream operation will fail.

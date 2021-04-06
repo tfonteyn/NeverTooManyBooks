@@ -79,7 +79,7 @@ public class CalibrePreferencesViewModel
         /**
          * Make a test connection.
          *
-         * @param context a localised application context
+         * @param context The localised Application context
          *
          * @return {@code true} on success
          *

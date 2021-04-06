@@ -72,6 +72,7 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public static SearchEngineRegistry getInstance() {
+        // do not lazy initialize here. We want the SearchEngineRegistry running at startup.
         return Objects.requireNonNull(sInstance, "SearchEngineRegistry not created");
     }
 

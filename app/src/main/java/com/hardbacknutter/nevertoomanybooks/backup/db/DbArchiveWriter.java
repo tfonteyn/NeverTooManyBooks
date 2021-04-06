@@ -73,7 +73,7 @@ public class DbArchiveWriter
             throws IOException {
 
         try (OutputStream os = new BufferedOutputStream(
-                mHelper.createOutputStream(context), BUFFER_SIZE);
+                mHelper.createOutputStream(), BUFFER_SIZE);
              InputStream is = new BufferedInputStream(new FileInputStream(
                      DBHelper.getDatabasePath(context)), BUFFER_SIZE)) {
             FileUtils.copy(is, os);

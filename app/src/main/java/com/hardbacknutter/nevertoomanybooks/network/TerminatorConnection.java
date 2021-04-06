@@ -115,7 +115,7 @@ public final class TerminatorConnection
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.e(TAG, e, "url=" + urlStr);
+                Logger.e(TAG, "url=" + urlStr, e);
             }
             throw e;
         }
@@ -183,6 +183,27 @@ public final class TerminatorConnection
         }
         return this;
     }
+
+    /**
+     * Override the default retry count {@link #NR_OF_TRIES}.
+     *
+     * @param retryCount to use, should be {@code 0} for no retries.
+     */
+    public void setRetryCount(@IntRange(from = 0) final int retryCount) {
+        mNrOfTries = retryCount + 1;
+    }
+
+    /** wrapper to {@link HttpURLConnection}. */
+    public void setInstanceFollowRedirects(final boolean followRedirects) {
+        Objects.requireNonNull(mRequest, "mRequest").setInstanceFollowRedirects(followRedirects);
+    }
+
+    /** wrapper to {@link HttpURLConnection}. */
+    public void setRequestProperty(@NonNull final String key,
+                                   @NonNull final String value) {
+        Objects.requireNonNull(mRequest, "mRequest").setRequestProperty(key, value);
+    }
+
 
     /** Get the underlying connection/request object. <strong>use with care</strong>. */
     @NonNull
@@ -283,25 +304,6 @@ public final class TerminatorConnection
         throw new IOException("Giving up");
     }
 
-    /**
-     * Override the default retry count {@link #NR_OF_TRIES}.
-     *
-     * @param retryCount to use, should be {@code 0} for no retries.
-     */
-    public void setRetryCount(@IntRange(from = 0) final int retryCount) {
-        mNrOfTries = retryCount + 1;
-    }
-
-    /** wrapper to {@link HttpURLConnection}. */
-    public void setInstanceFollowRedirects(final boolean followRedirects) {
-        Objects.requireNonNull(mRequest, "mRequest").setInstanceFollowRedirects(followRedirects);
-    }
-
-    /** wrapper to {@link HttpURLConnection}. */
-    public void setRequestProperty(@NonNull final String key,
-                                   @NonNull final String value) {
-        Objects.requireNonNull(mRequest, "mRequest").setRequestProperty(key, value);
-    }
 
     /** wrapper to {@link HttpURLConnection}. */
     @Nullable
@@ -351,7 +353,7 @@ public final class TerminatorConnection
             throws Throwable {
         if (mRequest != null && !mCloseWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mRequest.getURL().toString());
+                Logger.w(TAG, "finalize|mRequest.getURL()=" + mRequest.getURL().toString());
             }
             close();
         }

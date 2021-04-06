@@ -38,6 +38,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -109,7 +110,7 @@ public class SearchBookUpdatesViewModel
 
     /** Observable. */
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onCatastrophe() {
+    public LiveData<FinishedMessage<Exception>> onAbort() {
         return mListFailed;
     }
 
@@ -266,7 +267,7 @@ public class SearchBookUpdatesViewModel
      */
     public boolean startSearch(@NonNull final Context context) {
 
-        mSyncProcessor = mSyncConfig.build(mBookDao);
+        mSyncProcessor = mSyncConfig.build();
 
         mCurrentProgressCounter = 0;
 
@@ -311,7 +312,7 @@ public class SearchBookUpdatesViewModel
 
                 // Check which fields this book needs.
                 //noinspection ConstantConditions
-                mCurrentFieldsWanted = mSyncProcessor.filter(context, mCurrentBook);
+                mCurrentFieldsWanted = mSyncProcessor.filter(mCurrentBook);
 
                 final String title = mCurrentBook.getString(DBKeys.KEY_TITLE);
 
@@ -412,8 +413,16 @@ public class SearchBookUpdatesViewModel
 
         if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
             //noinspection ConstantConditions
-            mSyncProcessor.process(context, mCurrentBookId, mCurrentBook,
-                                   mCurrentFieldsWanted, bookData);
+            final Book delta = mSyncProcessor.process(context, mCurrentBookId, mCurrentBook,
+                                                      mCurrentFieldsWanted, bookData);
+            if (delta != null) {
+                try {
+                    mBookDao.update(context, delta, 0);
+                } catch (@NonNull final DaoWriteException e) {
+                    // ignore, but log it.
+                    Logger.error(TAG, e);
+                }
+            }
         }
 
         //update the counter, another one done.

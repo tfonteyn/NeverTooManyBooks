@@ -246,7 +246,7 @@ public class GoodreadsAuth {
     /**
      * Convenience wrapper.
      *
-     * @param context Application context
+     * @param context Current context
      *
      * @throws CredentialsException if there are no valid credentials available
      */
@@ -268,7 +268,7 @@ public class GoodreadsAuth {
      * Developer reminder: do NOT throw Exceptions from here; fail with returning {@code false}.
      * (unless we don't have a developer key installed)
      *
-     * @param context Application context
+     * @param context Current context
      *
      * @return {@code true} if the credentials have been validated with the website.
      *
@@ -362,7 +362,7 @@ public class GoodreadsAuth {
      * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
-     * @param context Application context
+     * @param context Current context
      *
      * @return {@code true} on success
      *

@@ -94,7 +94,7 @@ public class TransFormTask
         if (bitmap != null) {
             final int angle = calculateRotationAngle();
             if (angle != 0) {
-                bitmap = rotate(context, bitmap, angle);
+                bitmap = rotate(bitmap, angle);
             }
         }
 
@@ -122,16 +122,14 @@ public class TransFormTask
     /**
      * Rotate the given bitmap.
      *
-     * @param context Current context
-     * @param source  bitmap to rotate
-     * @param angle   rotate by the specified amount
+     * @param source bitmap to rotate
+     * @param angle  rotate by the specified amount
      *
      * @return the rotated bitmap OR the source bitmap if the rotation fails for any reason.
      */
     @NonNull
     @WorkerThread
-    private Bitmap rotate(@NonNull final Context context,
-                          @NonNull final Bitmap source,
+    private Bitmap rotate(@NonNull final Bitmap source,
                           final int angle) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "rotate angle=" + angle);
@@ -149,7 +147,7 @@ public class TransFormTask
             }
         } catch (@NonNull final OutOfMemoryError e) {
             // this is likely to fail if we're out of memory, but let's try at least
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
         }
 
         return source;

@@ -138,18 +138,28 @@ public final class SearchSites {
         registry.add(AmazonSearchEngine.createConfig())
                 .add(GoodreadsSearchEngine.createConfig())
                 .add(IsfdbSearchEngine.createConfig())
-                .add(KbNlSearchEngine.createConfig())
-                .add(OpenLibrarySearchEngine.createConfig())
-                .add(StripInfoSearchEngine.createConfig());
+                .add(OpenLibrarySearchEngine.createConfig());
 
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
             registry.add(GoogleBooksSearchEngine.createConfig());
         }
+
+        if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+            registry.add(LibraryThingSearchEngine.createConfig());
+        }
+
+
+        // Dutch.
+        if (BuildConfig.ENABLE_KB_NL) {
+            registry.add(KbNlSearchEngine.createConfig());
+        }
+        // Dutch.
         if (BuildConfig.ENABLE_LAST_DODO) {
             registry.add(LastDodoSearchEngine.createConfig());
         }
-        if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            registry.add(LibraryThingSearchEngine.createConfig());
+        // Dutch.
+        if (BuildConfig.ENABLE_STRIP_INFO) {
+            registry.add(StripInfoSearchEngine.createConfig());
         }
     }
 
@@ -196,9 +206,13 @@ public final class SearchSites {
                 type.addSite(ISFDB);
 
                 // Dutch.
-                type.addSite(STRIP_INFO_BE, enableIfDutch);
+                if (BuildConfig.ENABLE_STRIP_INFO) {
+                    type.addSite(STRIP_INFO_BE, enableIfDutch);
+                }
                 // Dutch.
-                type.addSite(KB_NL, enableIfDutch);
+                if (BuildConfig.ENABLE_KB_NL) {
+                    type.addSite(KB_NL, enableIfDutch);
+                }
                 // Dutch.
                 if (BuildConfig.ENABLE_LAST_DODO) {
                     type.addSite(LAST_DODO, enableIfDutch);
@@ -218,7 +232,9 @@ public final class SearchSites {
                 type.addSite(ISFDB);
 
                 // Dutch.
-                type.addSite(KB_NL, enableIfDutch);
+                if (BuildConfig.ENABLE_KB_NL) {
+                    type.addSite(KB_NL, enableIfDutch);
+                }
 
                 if (BuildConfig.ENABLE_LIBRARY_THING) {
                     // Disabled by default as this site lacks many covers.

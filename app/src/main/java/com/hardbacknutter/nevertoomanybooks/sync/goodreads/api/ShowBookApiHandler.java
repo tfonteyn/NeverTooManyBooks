@@ -239,27 +239,27 @@ public abstract class ShowBookApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    ShowBookApiHandler(@NonNull final Context appContext,
+    ShowBookApiHandler(@NonNull final Context context,
                        @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
+        super(context, grAuth);
 
         if (sGenreExclusions.isEmpty()) {
             sGenreExclusions.addAll(Arrays.asList(
-                    appContext.getResources().getStringArray(R.array.goodreads_genre_exclusions)));
+                    context.getResources().getStringArray(R.array.goodreads_genre_exclusions)));
         }
 
-        mGrAuth.hasValidCredentialsOrThrow(appContext);
+        mGrAuth.hasValidCredentialsOrThrow(context);
 
-        mEBookString = appContext.getString(R.string.book_format_ebook);
+        mEBookString = context.getString(R.string.book_format_ebook);
 
         // Ideally we should use the Book locale
-        mBookLocale = AppLocale.getInstance().getUserLocale(appContext);
+        mBookLocale = AppLocale.getInstance().getUserLocale(context);
 
         buildFilters();
     }
@@ -291,10 +291,10 @@ public abstract class ShowBookApiHandler
         final DefaultHandler handler = new XmlResponseParser(mCoverFilter);
         executeGet(url, null, true, handler);
 
-        return ApiUtils.handleThumbnail(mAppContext,
-                                        mBookData,
-                                        SiteField.LARGE_IMAGE_URL,
-                                        SiteField.SMALL_IMAGE_URL);
+        return ApiUtils.handleThumbnail(
+                mBookData,
+                SiteField.LARGE_IMAGE_URL,
+                SiteField.SMALL_IMAGE_URL);
     }
 
     /**
@@ -307,13 +307,13 @@ public abstract class ShowBookApiHandler
      * @return the Bundle of book data.
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws IOException             on failures
      */
     @NonNull
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-    throws GeneralParsingException, IOException {
+            throws GeneralParsingException, IOException {
 
         mBookData = bookData;
 
@@ -370,7 +370,7 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBKeys.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBKeys.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
-                final Locale userLocale = AppLocale.getInstance().getUserLocale(mAppContext);
+                final Locale userLocale = AppLocale.getInstance().getUserLocale(mContext);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
                 source = Languages.getInstance().getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
@@ -425,10 +425,10 @@ public abstract class ShowBookApiHandler
         }
 
         if (fetchCovers[0]) {
-            final String fileSpec = ApiUtils.handleThumbnail(mAppContext,
-                                                             mBookData,
-                                                             SiteField.LARGE_IMAGE_URL,
-                                                             SiteField.SMALL_IMAGE_URL);
+            final String fileSpec = ApiUtils.handleThumbnail(
+                    mBookData,
+                    SiteField.LARGE_IMAGE_URL,
+                    SiteField.SMALL_IMAGE_URL);
             if (fileSpec != null) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);

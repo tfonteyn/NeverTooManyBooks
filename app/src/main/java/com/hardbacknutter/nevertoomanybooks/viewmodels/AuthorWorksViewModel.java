@@ -155,7 +155,7 @@ public class AuthorWorksViewModel
                                     .delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
-            success = mBookDao.deleteBook(context, work.getId());
+            success = mBookDao.deleteBook(work.getId());
             if (success) {
                 mDataModified = true;
             }

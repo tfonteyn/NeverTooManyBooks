@@ -138,7 +138,7 @@ public class SendOneBookTask
             return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
 
         } catch (@NonNull final IOException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             return new GrStatus(GrStatus.FAILED_IO_EXCEPTION, e);
         }
     }

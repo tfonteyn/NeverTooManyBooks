@@ -256,7 +256,7 @@ public class CoverHandler {
     public void onBindView(@NonNull final ImageView view,
                            @NonNull final Book book) {
         // dev warning: in NO circumstances keep a reference to either the view or book!
-        final File file = book.getCoverFile(view.getContext(), mCIdx);
+        final File file = book.getCoverFile(mCIdx);
         if (file != null) {
             mImageLoader.loadAndDisplay(view, file, null);
             view.setBackground(null);
@@ -272,7 +272,7 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         view.setOnClickListener(v -> {
             // Allow zooming by clicking on the image;
-            final File file = mBookSupplier.get().getCoverFile(v.getContext(), mCIdx);
+            final File file = mBookSupplier.get().getCoverFile(mCIdx);
             if (file != null) {
                 ZoomedImageDialogFragment.launch(fm, file);
             }
@@ -296,7 +296,7 @@ public class CoverHandler {
         new MenuInflater(context).inflate(R.menu.image, menu);
 
         final String title;
-        final File uuidCoverFile = book.getCoverFile(context, mCIdx);
+        final File uuidCoverFile = book.getCoverFile(mCIdx);
         if (uuidCoverFile != null) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
@@ -341,7 +341,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
 
         if (itemId == R.id.MENU_DELETE) {
-            book.setCover(context, mBookDao, mCIdx, null);
+            book.setCover(mBookDao, mCIdx, null);
             mCoverHandlerHost.refresh(mCIdx);
             return true;
 
@@ -370,9 +370,9 @@ public class CoverHandler {
             try {
                 mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                         // source
-                        book.createTempCoverFile(context, mCIdx),
+                        book.createTempCoverFile(mCIdx),
                         // destination
-                        getTempFile(context)));
+                        getTempFile()));
 
             } catch (@NonNull final ExternalStorageException e) {
                 StandardDialogs.showError(context, e);
@@ -383,7 +383,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_EDIT) {
             try {
-                editPicture(context, book.createTempCoverFile(context, mCIdx));
+                editPicture(context, book.createTempCoverFile(mCIdx));
 
             } catch (@NonNull final ExternalStorageException e) {
                 StandardDialogs.showError(context, e);
@@ -458,9 +458,9 @@ public class CoverHandler {
 
         final File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            mBookSupplier.get().setCover(mView.getContext(), mBookDao, mCIdx, srcFile);
+            mBookSupplier.get().setCover(mBookDao, mCIdx, srcFile);
         } else {
-            mBookSupplier.get().setCover(mView.getContext(), mBookDao, mCIdx, null);
+            mBookSupplier.get().setCover(mBookDao, mCIdx, null);
         }
 
         mCoverHandlerHost.refresh(mCIdx);
@@ -476,7 +476,7 @@ public class CoverHandler {
                              @NonNull final File srcFile)
             throws ExternalStorageException {
 
-        final File dstFile = getTempFile(context);
+        final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
         //TODO: we really should revoke the permissions afterwards
@@ -539,7 +539,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
         if (activityResult.getResultCode() == Activity.RESULT_OK) {
             try {
-                final File file = getTempFile(context);
+                final File file = getTempFile();
                 if (file.exists()) {
                     showProgress();
                     mVm.execute(new TransFormTask.Transformation(file).setScale(true));
@@ -550,7 +550,7 @@ public class CoverHandler {
             }
         }
 
-        removeTempFile(context);
+        removeTempFile();
     }
 
     /**
@@ -564,7 +564,7 @@ public class CoverHandler {
             final Context context = mView.getContext();
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
-                final File file = FileUtils.copyInputStream(context, is, getTempFile(context));
+                final File file = FileUtils.copyInputStream(is, getTempFile());
 
                 showProgress();
                 mVm.execute(new TransFormTask.Transformation(file).setScale(true));
@@ -594,7 +594,7 @@ public class CoverHandler {
             == PackageManager.PERMISSION_GRANTED) {
 
             try {
-                final File dstFile = getTempFile(context);
+                final File dstFile = getTempFile();
                 FileUtils.delete(dstFile);
                 final Uri uri = GenericFileProvider.createUri(context, dstFile);
                 mTakePictureLauncher.launch(uri);
@@ -613,7 +613,7 @@ public class CoverHandler {
             final Context context = mView.getContext();
             File file = null;
             try {
-                file = getTempFile(context);
+                file = getTempFile();
             } catch (@NonNull final ExternalStorageException e) {
                 StandardDialogs.showError(context, e);
             }
@@ -659,7 +659,7 @@ public class CoverHandler {
     private void startRotation(final int angle) {
         final Context context = mView.getContext();
         try {
-            final File srcFile = mBookSupplier.get().createTempCoverFile(context, mCIdx);
+            final File srcFile = mBookSupplier.get().createTempCoverFile(mCIdx);
             showProgress();
             mVm.execute(new TransFormTask.Transformation(srcFile).setRotation(angle));
 
@@ -688,7 +688,7 @@ public class CoverHandler {
                 switch (result.getReturnCode()) {
                     case ACTION_CROP:
                         mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
-                                result.getFile(), getTempFile(context)));
+                                result.getFile(), getTempFile()));
                         return;
 
                     case ACTION_EDIT:
@@ -697,7 +697,7 @@ public class CoverHandler {
 
                     case ACTION_DONE:
                     default:
-                        mBookSupplier.get().setCover(context, mBookDao, mCIdx, result.getFile());
+                        mBookSupplier.get().setCover(mBookDao, mCIdx, result.getFile());
                         // must use a post to force the View to update.
                         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
                         return;
@@ -708,7 +708,7 @@ public class CoverHandler {
         }
 
         // transformation failed
-        mBookSupplier.get().setCover(context, mBookDao, mCIdx, null);
+        mBookSupplier.get().setCover(mBookDao, mCIdx, null);
         // must use a post to force the View to update.
         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
     }
@@ -716,24 +716,20 @@ public class CoverHandler {
     /**
      * Get the temporary file.
      *
-     * @param context Current context
-     *
      * @return file
      */
     @NonNull
-    private File getTempFile(@NonNull final Context context)
+    private File getTempFile()
             throws ExternalStorageException {
-        return AppDir.Cache.getFile(context, TAG + "_" + mCIdx + ".jpg");
+        return new File(AppDir.Cache.getDir(), TAG + "_" + mCIdx + ".jpg");
     }
 
     /**
      * remove any orphaned file.
-     *
-     * @param context Current context
      */
-    private void removeTempFile(@NonNull final Context context) {
+    private void removeTempFile() {
         try {
-            FileUtils.delete(getTempFile(context));
+            FileUtils.delete(getTempFile());
         } catch (@NonNull final ExternalStorageException ignore) {
             // ignore
         }

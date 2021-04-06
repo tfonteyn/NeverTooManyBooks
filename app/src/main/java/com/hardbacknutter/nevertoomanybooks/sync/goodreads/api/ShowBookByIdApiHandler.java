@@ -45,15 +45,15 @@ public class ShowBookByIdApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public ShowBookByIdApiHandler(@NonNull final Context appContext,
+    public ShowBookByIdApiHandler(@NonNull final Context context,
                                   @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
+        super(context, grAuth);
     }
 
     /**
@@ -72,7 +72,7 @@ public class ShowBookByIdApiHandler
     public Bundle searchByExternalId(final long grBookId,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Bundle bookData)
-    throws GeneralParsingException, IOException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ID, grBookId, mGrAuth.getDevKey());
         return searchBook(url, fetchCovers, bookData);

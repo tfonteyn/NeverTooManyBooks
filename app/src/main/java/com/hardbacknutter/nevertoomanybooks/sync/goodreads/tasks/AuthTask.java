@@ -109,7 +109,7 @@ public class AuthTask
             return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_REQUESTED);
 
         } catch (@NonNull final IOException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             return new GrStatus(GrStatus.FAILED_IO_EXCEPTION, e);
 
         } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {

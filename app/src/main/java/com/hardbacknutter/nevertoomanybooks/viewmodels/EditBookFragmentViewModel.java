@@ -44,7 +44,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -170,7 +169,8 @@ public class EditBookFragmentViewModel
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
                 if (styleUuid != null) {
-                    mStyle = StyleUtils.getStyleOrDefault(context, styleUuid);
+                    mStyle = ServiceLocator.getInstance().getStyles()
+                                           .getStyleOrDefault(context, styleUuid);
                 }
 
                 // 1. Do we have a bundle? e.g. after an internet search
@@ -657,8 +657,8 @@ public class EditBookFragmentViewModel
             pruneAuthors(context);
             return true;
         }
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 
@@ -674,8 +674,8 @@ public class EditBookFragmentViewModel
             return true;
         }
 
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 
@@ -694,8 +694,8 @@ public class EditBookFragmentViewModel
             return true;
         }
 
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 
@@ -711,8 +711,8 @@ public class EditBookFragmentViewModel
             mBook.refreshSeriesList(context);
             return true;
         }
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 
@@ -732,8 +732,8 @@ public class EditBookFragmentViewModel
             prunePublishers(context);
             return true;
         }
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 
@@ -749,8 +749,8 @@ public class EditBookFragmentViewModel
             mBook.refreshPublishersList(context);
             return true;
         }
-        Logger.error(context, TAG, new Throwable(), "Could not update",
-                     "original=" + original, "modified=" + modified);
+        Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
+                     "modified=" + modified);
         return false;
     }
 

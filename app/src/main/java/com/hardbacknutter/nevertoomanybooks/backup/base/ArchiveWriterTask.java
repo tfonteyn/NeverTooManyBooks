@@ -79,13 +79,13 @@ public class ArchiveWriterTask
             // when the user cancels, so only throw when this is not the case
             if (!isCancelled()) {
                 // it's a real exception, cleanup and let the caller handle it.
-                mHelper.onError(context);
+                mHelper.onError();
                 throw e;
             }
         }
 
         if (isCancelled()) {
-            mHelper.onError(context);
+            mHelper.onError();
             return new ExportResults();
         } else {
             mHelper.onSuccess(context);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -246,14 +246,16 @@ public final class XmlUtils {
      */
     @NonNull
     private static String encode(@Nullable final String data) {
-        try {
-            if (data == null || data.trim().isEmpty() || "null".equalsIgnoreCase(data)) {
-                return "";
-            }
 
-            final StringBuilder sb = new StringBuilder();
-            final int endPos = data.length() - 1;
-            int pos = 0;
+        if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        final int endPos = data.length() - 1;
+        int pos = 0;
+
+        try {
             while (pos <= endPos) {
                 final char c = data.charAt(pos);
                 switch (c) {
@@ -290,10 +292,10 @@ public final class XmlUtils {
                         break;
                 }
                 pos++;
-
             }
             return sb.toString();
-        } catch (@NonNull final NullPointerException e) {
+
+        } catch (@NonNull final Exception e) {
             return "\"\"";
         }
     }

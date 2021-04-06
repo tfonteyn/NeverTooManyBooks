@@ -301,20 +301,17 @@ public interface SearchEngine {
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
 
-        final Context context = getContext();
-
         final SearchEngineConfig config = getConfig();
 
-        final ImageDownloader imageDownloader = new ImageDownloader()
+        final ImageDownloader loader = new ImageDownloader()
                 .setConnectTimeout(config.getConnectTimeoutInMs())
                 .setReadTimeout(config.getReadTimeoutInMs())
                 .setThrottler(config.getThrottler());
 
         try {
-            final File tmpFile = imageDownloader
-                    .createTmpFile(context, config.getFilenameSuffix(), bookId, cIdx, size);
-
-            final File file = imageDownloader.fetch(context, url, tmpFile);
+            final File tmpFile = loader.createTmpFile(config.getFilenameSuffix(),
+                                                      bookId, cIdx, size);
+            final File file = loader.fetch(url, tmpFile);
             if (file != null) {
                 return file.getAbsolutePath();
             }

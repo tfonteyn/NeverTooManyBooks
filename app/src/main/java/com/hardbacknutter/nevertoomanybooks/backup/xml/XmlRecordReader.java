@@ -58,14 +58,16 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -108,8 +110,7 @@ public class XmlRecordReader
     /** Log tag. */
     private static final String TAG = "XmlRecordReader";
 
-    private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD =
-            "Unable to process XML record ";
+    private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
     @Nullable
     private final Locale mUserLocale;
@@ -793,6 +794,9 @@ public class XmlRecordReader
         @NonNull
         private final Context mContext;
 
+        @NonNull
+        private final Styles mStyles;
+
         private ListStyle mStyle;
 
         /**
@@ -813,6 +817,7 @@ public class XmlRecordReader
          */
         StylesReader(@NonNull final Context context) {
             mContext = context;
+            mStyles = ServiceLocator.getInstance().getStyles();
         }
 
         int getStylesRead() {
@@ -850,9 +855,9 @@ public class XmlRecordReader
 
             SanityCheck.requireValue(uuid, "uuid");
 
-            if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
+            if (BuiltinStyle.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
-                mStyle = StyleUtils.getStyle(mContext, uuid);
+                mStyle = mStyles.getStyle(mContext, uuid);
                 // We do NOT read preferences for known builtin styles
                 mStylePrefs = null;
 
@@ -922,7 +927,7 @@ public class XmlRecordReader
                 }
             }
 
-            StyleUtils.updateOrInsert(mStyle);
+            mStyles.updateOrInsert(mStyle);
 
             mStylesRead++;
         }

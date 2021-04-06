@@ -31,10 +31,10 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
@@ -70,6 +70,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
+import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
 
 /**
  * The use and definition of DAO in this project has a long history.
@@ -78,25 +81,37 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
  * inject mock doa's for now.
  * <p>
  * This class is the next step as we can mock Context/db/dao classes before running a test.
- * <p>
- * TODO: {@link BookDao} which cannot be a singleton.
  */
 public final class ServiceLocator {
 
     /** Singleton. */
     private static ServiceLocator sInstance;
 
+    /** Either the real Application Context, or the injected context when running in unit tests. */
     @NonNull
     private final Context mAppContext;
 
-    @Nullable
-    private CookieManager mCookieManager;
-
+    /** NOT an interface. Cannot be injected. */
     @Nullable
     private DBHelper mDBHelper;
+
+    /** NOT an interface. Cannot be injected. */
     @Nullable
     private CoversDbHelper mCoversDbHelper;
 
+    /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
+    @Nullable
+    private Styles mStyles;
+
+
+    /** NOT an interface but CAN be injected for testing. */
+    @Nullable
+    private CookieManager mCookieManager;
+
+
+    /** Interfaces. */
+    @Nullable
+    private Notifier mNotifier;
 
     @Nullable
     private AuthorDao mAuthorDao;
@@ -106,6 +121,8 @@ public final class ServiceLocator {
     private CalibreLibraryDao mCalibreLibraryDao;
     @Nullable
     private ColorDao mColorDao;
+    @Nullable
+    private CoverCacheDao mCoverCacheDao;
     @Nullable
     private FormatDao mFormatDao;
     @Nullable
@@ -132,9 +149,6 @@ public final class ServiceLocator {
     private TocEntryDao mTocEntryDao;
 
 
-    @Nullable
-    private CoverCacheDao mCoverCacheDao;
-
     /**
      * Private constructor.
      *
@@ -145,13 +159,22 @@ public final class ServiceLocator {
     }
 
     /**
-     * Get the Application Context <strong>using the device Locale</strong>.
+     * Get the Application Context <strong>with the device Locale</strong>.
      *
-     * @return app context
+     * @return raw Application Context
      */
     @NonNull
     public static Context getAppContext() {
         return sInstance.mAppContext;
+    }
+
+    /**
+     * Get a <strong>new</strong>> localized Application Context
+     *
+     * @return Application Context using the user preferred Locale
+     */
+    public static Context getLocalizedAppContext() {
+        return AppLocale.getInstance().apply(sInstance.mAppContext);
     }
 
     public static SharedPreferences getGlobalPreferences() {
@@ -161,7 +184,7 @@ public final class ServiceLocator {
     /**
      * Public constructor.
      *
-     * @param context application or test context.
+     * @param context <strong>Application</strong> or <strong>test</strong> context.
      */
     public static void create(@NonNull final Context context) {
         synchronized (ServiceLocator.class) {
@@ -176,7 +199,6 @@ public final class ServiceLocator {
         return sInstance;
     }
 
-
     // Does not really belong in the ServiceLocator...
     public static boolean isCollationCaseSensitive() {
         return sInstance.getDBHelper().isCollationCaseSensitive();
@@ -189,7 +211,6 @@ public final class ServiceLocator {
 
         context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
     }
-
 
     /**
      * Main entry point for clients to get the main database.
@@ -209,7 +230,6 @@ public final class ServiceLocator {
         return sInstance.getCoversDbHelper().getDb();
     }
 
-
     @NonNull
     private DBHelper getDBHelper() {
         synchronized (this) {
@@ -218,11 +238,6 @@ public final class ServiceLocator {
             }
         }
         return mDBHelper;
-    }
-
-    @VisibleForTesting
-    public void setDBHelper(@Nullable final DBHelper openHelper) {
-        mDBHelper = openHelper;
     }
 
     @NonNull
@@ -234,12 +249,6 @@ public final class ServiceLocator {
         }
         return mCoversDbHelper;
     }
-
-    @VisibleForTesting
-    public void setCoversDbHelper(@Nullable final CoversDbHelper openHelper) {
-        mCoversDbHelper = openHelper;
-    }
-
 
     /**
      * Client must call this <strong>before</strong> doing its first request (lazy init).
@@ -260,6 +269,39 @@ public final class ServiceLocator {
     @VisibleForTesting
     public void setCookieManager(@Nullable final CookieManager cookieManager) {
         mCookieManager = cookieManager;
+        CookieHandler.setDefault(mCookieManager);
+    }
+
+    @NonNull
+    public Styles getStyles() {
+        synchronized (this) {
+            if (mStyles == null) {
+                mStyles = new Styles();
+            }
+        }
+        return mStyles;
+    }
+
+    @NonNull
+    public Notifier getNotifier() {
+        synchronized (this) {
+            if (mNotifier == null) {
+                mNotifier = new NotifierImpl();
+                AppLocale.getInstance().registerOnLocaleChangedListener(mNotifier);
+            }
+        }
+        return mNotifier;
+    }
+
+    @VisibleForTesting
+    public void setNotifier(@Nullable final Notifier notifier) {
+        if (mNotifier != null) {
+            AppLocale.getInstance().unregisterOnLocaleChangedListener(mNotifier);
+        }
+        mNotifier = notifier;
+        if (mNotifier != null) {
+            AppLocale.getInstance().registerOnLocaleChangedListener(mNotifier);
+        }
     }
 
     @NonNull
@@ -473,6 +515,11 @@ public final class ServiceLocator {
         mStripInfoDao = stripInfoDao;
     }
 
+    /**
+     * You probably want to use {@link #getStyles()} instead.
+     *
+     * @return singleton
+     */
     @NonNull
     public StyleDao getStyleDao() {
         synchronized (this) {

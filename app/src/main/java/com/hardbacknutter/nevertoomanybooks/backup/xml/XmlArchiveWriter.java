@@ -99,7 +99,7 @@ public class XmlArchiveWriter
 
             final ExportResults results;
 
-            try (OutputStream os = mHelper.createOutputStream(context);
+            try (OutputStream os = mHelper.createOutputStream();
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new XmlRecordWriter(null)) {

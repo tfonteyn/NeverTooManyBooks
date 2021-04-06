@@ -19,12 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
+import android.util.Base64;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 public final class HttpUtils {
 
@@ -61,6 +64,13 @@ public final class HttpUtils {
     public static final String LOCATION = "location";
 
     private HttpUtils() {
+    }
+
+    @NonNull
+    public static String createBasicAuthHeader(@NonNull final String username,
+                                               @NonNull final String password) {
+        return "Basic " + Base64.encodeToString(
+                (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
     }
 
     /**

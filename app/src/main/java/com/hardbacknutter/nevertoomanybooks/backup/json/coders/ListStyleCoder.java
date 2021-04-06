@@ -24,10 +24,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -96,9 +97,11 @@ public class ListStyleCoder
 
         final String uuid = data.getString(DBKeys.KEY_STYLE_UUID);
 
-        if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
-            final ListStyle style = Objects
-                    .requireNonNull(StyleUtils.getStyle(mContext, uuid));
+        final Styles styles = ServiceLocator.getInstance().getStyles();
+
+        if (BuiltinStyle.isBuiltin(uuid)) {
+            final ListStyle style = styles.getStyle(mContext, uuid);
+            //noinspection ConstantConditions
             style.setPreferred(data.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED));
             style.setMenuPosition(data.getInt(DBKeys.KEY_STYLE_MENU_POSITION));
             return style;

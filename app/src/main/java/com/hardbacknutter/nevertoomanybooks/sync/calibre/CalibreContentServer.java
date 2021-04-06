@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
-import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
@@ -252,8 +251,8 @@ public class CalibreContentServer {
         //noinspection ConstantConditions
         if (!username.isEmpty()) {
             final String password = global.getString(PK_HOST_PASS, "");
-            mAuthHeader = "Basic " + Base64.encodeToString(
-                    (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
+            //noinspection ConstantConditions
+            mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
         } else {
             mAuthHeader = null;
         }
@@ -311,7 +310,7 @@ public class CalibreContentServer {
                   .putString(PK_LOCAL_FOLDER_URI, uri.toString())
                   .apply();
         } catch (@NonNull final SecurityException e) {
-            Logger.error(context, TAG, e, "uri=" + uri.toString());
+            Logger.error(TAG, e, "uri=" + uri.toString());
             throw e;
         }
     }
@@ -1029,8 +1028,7 @@ public class CalibreContentServer {
 
     @WorkerThread
     @Nullable
-    public File getCover(@NonNull final Context context,
-                         final int calibreId,
+    public File getCover(final int calibreId,
                          @NonNull final String coverUrl) {
         try {
             if (mImageDownloader == null) {
@@ -1041,8 +1039,8 @@ public class CalibreContentServer {
                         .setSslContext(mSslContext);
             }
             final File tmpFile = mImageDownloader
-                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
-            return mImageDownloader.fetch(context, mServerUri + coverUrl, tmpFile);
+                    .createTmpFile(TAG, String.valueOf(calibreId), 0, null);
+            return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
 
         } catch (@NonNull final ExternalStorageException ignore) {
             // a fail here is never critical, we're ignoring any

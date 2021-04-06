@@ -28,13 +28,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 
 public class PreferredStylesViewModel
@@ -48,7 +48,9 @@ public class PreferredStylesViewModel
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
     /** The *in-memory* list of styles. */
-    private ArrayList<ListStyle> mStyleList;
+    private List<ListStyle> mStyleList;
+
+    private Styles mStyles;
 
     /**
      * Pseudo constructor.
@@ -58,8 +60,10 @@ public class PreferredStylesViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (mStyleList == null) {
-            mStyleList = StyleUtils.getStyles(context, true);
+        if (mStyles == null) {
+            mStyles = ServiceLocator.getInstance().getStyles();
+
+            mStyleList = mStyles.getStyles(context, true);
 
             mInitialStyleUuid = Objects.requireNonNull(
                     args.getString(ListStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
@@ -90,7 +94,7 @@ public class PreferredStylesViewModel
     }
 
     @NonNull
-    ArrayList<ListStyle> getList() {
+    List<ListStyle> getList() {
         return mStyleList;
     }
 
@@ -126,7 +130,7 @@ public class PreferredStylesViewModel
             mStyleList.add(0, style);
             style.setPreferred(true);
             // save the preferred state
-            StyleUtils.update(style);
+            mStyles.update(style);
             editedRow = 0;
 
         } else {
@@ -153,11 +157,11 @@ public class PreferredStylesViewModel
 
                         // Make the new one preferred and update it
                         style.setPreferred(true);
-                        StyleUtils.update(style);
+                        mStyles.update(style);
 
                         // And demote the original and update it
                         origStyle.setPreferred(false);
-                        StyleUtils.update(origStyle);
+                        mStyles.update(origStyle);
 
                         mStyleList.add(origStyle);
 
@@ -173,7 +177,7 @@ public class PreferredStylesViewModel
 
         // Not sure if this check is really needed... or already covered above
         // if the style was cloned from a builtin style,
-        if (StyleUtils.BuiltinStyles.isBuiltin(templateUuid)) {
+        if (BuiltinStyle.isBuiltin(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
             mStyleList.stream()
@@ -182,7 +186,7 @@ public class PreferredStylesViewModel
                       .ifPresent(s -> {
                           // demote the preferred state and update it
                           s.setPreferred(false);
-                          StyleUtils.update(s);
+                          mStyles.update(s);
                       });
         }
 
@@ -192,7 +196,7 @@ public class PreferredStylesViewModel
     @Nullable
     ListStyle getStyle(@NonNull final Context context,
                        @NonNull final String uuid) {
-        return StyleUtils.getStyle(context, uuid);
+        return mStyles.getStyle(context, uuid);
     }
 
     /**
@@ -201,7 +205,7 @@ public class PreferredStylesViewModel
      * @param style to update
      */
     void updateStyle(@NonNull final ListStyle style) {
-        StyleUtils.update(style);
+        mStyles.update(style);
     }
 
     /**
@@ -212,7 +216,7 @@ public class PreferredStylesViewModel
      */
     void deleteStyle(@NonNull final Context context,
                      @NonNull final ListStyle style) {
-        StyleUtils.delete(context, style);
+        mStyles.delete(context, style);
         mStyleList.remove(style);
     }
 
@@ -220,7 +224,7 @@ public class PreferredStylesViewModel
      * Save the preferred style menu list.
      */
     void updateMenuOrder() {
-        StyleUtils.updateMenuOrder(mStyleList);
+        mStyles.updateMenuOrder(mStyleList);
     }
 
     /**
@@ -229,6 +233,6 @@ public class PreferredStylesViewModel
      * @param styleId to purge
      */
     void purgeBLNS(final long styleId) {
-        ServiceLocator.getInstance().getStyleDao().purgeNodeStatesByStyle(styleId);
+        mStyles.purgeNodeStatesByStyle(styleId);
     }
 }

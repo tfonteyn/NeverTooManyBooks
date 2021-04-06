@@ -97,7 +97,7 @@ public class DBCleanerTask
             modified += bookDao.repositionPublishers(context);
             modified += bookDao.repositionTocEntries(context);
             if (modified > 0) {
-                Logger.warn(context, TAG, "bookDao.reposition modified=" + modified);
+                Logger.warn(TAG, "bookDao.reposition modified=" + modified);
             }
             return true;
 

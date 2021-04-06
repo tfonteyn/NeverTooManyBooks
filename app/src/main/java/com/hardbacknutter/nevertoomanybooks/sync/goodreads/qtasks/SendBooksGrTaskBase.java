@@ -80,8 +80,8 @@ public abstract class SendBooksGrTaskBase
     }
 
     @Override
-    public boolean run(@NonNull final Context context,
-                       @NonNull final QueueManager queueManager) {
+    public boolean doWork(@NonNull final Context context,
+                          @NonNull final QueueManager queueManager) {
         try {
             // can we reach the site at all ?
             NetworkUtils.ping(GoodreadsManager.BASE_URL);
@@ -142,7 +142,7 @@ public abstract class SendBooksGrTaskBase
             } else if (status == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
                 // not a success, but don't try again until the user acts on the stored event
                 mNoIsbn++;
-                storeEvent(new GrNoIsbnEvent(grManager.getAppContext(), bookId));
+                storeEvent(new GrNoIsbnEvent(grManager.getContext(), bookId));
                 return true;
             }
             // any other status is a non fatal error
@@ -152,7 +152,7 @@ public abstract class SendBooksGrTaskBase
 
         } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
-            storeEvent(new GrNoMatchEvent(grManager.getAppContext(), bookId));
+            storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
             mNotFound++;
             // not a success, but don't try again until the user acts on the stored event
             return true;

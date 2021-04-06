@@ -324,10 +324,10 @@ public class CsvRecordReader
 
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Logger.w(TAG, "Import failed at row " + row + ", e=" + e.getMessage());
+                Logger.w(TAG, "Import failed at row " + row + "|e=" + e.getMessage());
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                Logger.e(TAG, e, "Import failed at row " + row);
+                Logger.e(TAG, "Import failed at row " + row, e);
             }
         }
     }

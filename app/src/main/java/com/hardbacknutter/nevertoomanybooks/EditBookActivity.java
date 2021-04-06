@@ -234,7 +234,7 @@ public class EditBookActivity
             setResultsAndFinish();
 
         } catch (@NonNull final DaoWriteException e) {
-            Logger.error(this, TAG, e);
+            Logger.error(TAG, e);
             StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }
     }

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -582,7 +583,7 @@ public class ExportFragment
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
                                 // deduct built-in styles (remember: MAX_ID is negative)
-                                String.valueOf(result.styles + StyleUtils.BuiltinStyles.MAX_ID)));
+                                String.valueOf(result.styles + BuiltinStyle.MAX_ID)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
@@ -622,9 +623,8 @@ public class ExportFragment
             //noinspection ConstantConditions
             getActivity().finish();
 
-        } catch (@NonNull final NullPointerException e) {
-            //noinspection ConstantConditions
-            Logger.error(getContext(), TAG, e);
+        } catch (@NonNull final ActivityNotFoundException e) {
+            Logger.error(TAG, e);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_error_24)

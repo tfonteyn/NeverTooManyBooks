@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -100,7 +98,6 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param context     Current context
      * @param url         to fetch
      * @param conProvider a provider that constructs a fully configured TerminatorConnection
      *
@@ -110,12 +107,10 @@ public class JsoupLoader {
      */
     @WorkerThread
     @Nullable
-    public Document loadDocument(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @NonNull
-                                 final Function<String, Optional<TerminatorConnection>> conProvider)
+    public Document loadDocument(@NonNull final String url,
+                                 @NonNull final
+                                 Function<String, Optional<TerminatorConnection>> conProvider)
             throws IOException {
-
 
         // are we requesting the same url again ?
         if (mDoc != null && url.equals(mDocRequestUrl)) {
@@ -162,9 +157,9 @@ public class JsoupLoader {
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader.loadPage
 
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
-                Logger.warn(context, TAG, "loadDocument"
-                                          + "|e=" + e.getLocalizedMessage()
-                                          + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
+                Logger.warn(TAG, "loadDocument"
+                                 + "|e=" + e.getLocalizedMessage()
+                                 + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
                 // we'll retry.
                 attempts--;
                 if (attempts == 0) {

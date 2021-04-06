@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -307,13 +306,11 @@ public class BooksOnBookshelfViewModel
      */
     public void onStyleEdited(@NonNull final Context context,
                               @NonNull final String uuid) {
-
-        @Nullable
-        final ListStyle style = StyleUtils.getStyle(context, uuid);
-        // Sanity check. The uuid SHOULD be valid, and hence the style SHOULD be found
-        if (style != null) {
-            onStyleChanged(context, style.getUuid());
-        }
+        // The uuid/style SHOULD be valid as we just edited finished editing it.
+        final ListStyle style = ServiceLocator.getInstance().getStyles()
+                                              .getStyle(context, uuid);
+        //noinspection ConstantConditions
+        changeStyle(context, style);
     }
 
     /**
@@ -325,19 +322,30 @@ public class BooksOnBookshelfViewModel
      */
     public void onStyleChanged(@NonNull final Context context,
                                @NonNull final String uuid) {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-
         // Always validate first
-        final ListStyle style = StyleUtils.getStyleOrDefault(context, uuid);
+        final ListStyle style = ServiceLocator.getInstance().getStyles()
+                                              .getStyleOrDefault(context, uuid);
+        changeStyle(context, style);
+    }
+
+    /**
+     * Called after <strong>a style was changed/edited</strong>.
+     * The style <strong>MUST</strong> be valid. No checks are done!
+     *
+     * @param context Current context
+     * @param style   the style to apply
+     */
+    private void changeStyle(@NonNull final Context context,
+                             @NonNull final ListStyle style) {
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        StyleUtils.setDefault(global, style.getUuid());
+        ServiceLocator.getInstance().getStyles().setDefault(global, style.getUuid());
         // save the new bookshelf/style combination
         mBookshelf.setAsPreferred(global);
         mBookshelf.setStyle(context, style);
     }
-
 
     /**
      * Save current position information in the preferences.
@@ -475,10 +483,9 @@ public class BooksOnBookshelfViewModel
     }
 
     @Nullable
-    public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
-                                                final long rowId) {
+    public BooklistNode getNextBookWithoutCover(final long rowId) {
         Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.getNextBookWithoutCover(context, rowId);
+        return mBooklist.getNextBookWithoutCover(rowId);
     }
 
     @Nullable
@@ -744,14 +751,12 @@ public class BooksOnBookshelfViewModel
     /**
      * Delete the given Book.
      *
-     * @param context Current context
-     * @param bookId  to delete
+     * @param bookId to delete
      *
      * @return {@code true} on a successful delete
      */
-    public boolean deleteBook(@NonNull final Context context,
-                              @IntRange(from = 1) final long bookId) {
-        return mBookDao.deleteBook(context, bookId);
+    public boolean deleteBook(@IntRange(from = 1) final long bookId) {
+        return mBookDao.deleteBook(bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")

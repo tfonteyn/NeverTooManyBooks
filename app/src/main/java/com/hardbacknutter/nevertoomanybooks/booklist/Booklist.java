@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -525,8 +524,7 @@ public class Booklist
     }
 
     @Nullable
-    public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
-                                                final long rowId) {
+    public BooklistNode getNextBookWithoutCover(final long rowId) {
 
         if (mSqlGetNextBookWithoutCover == null) {
             mSqlGetNextBookWithoutCover =
@@ -545,7 +543,7 @@ public class Booklist
             while (cursor.moveToNext()) {
                 node.from(cursor);
                 final String uuid = cursor.getString(BooklistNode.COLS);
-                final File file = Book.getUuidCoverFile(context, uuid, 0);
+                final File file = Book.getUuidCoverFile(uuid, 0);
                 if (file == null || !file.exists()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);

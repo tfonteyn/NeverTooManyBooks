@@ -56,10 +56,11 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
@@ -524,7 +525,7 @@ public class ImportFragment
 
         if (result.styles > 0) {
             //noinspection ConstantConditions
-            StyleUtils.updateMenuOrder(getContext());
+            ServiceLocator.getInstance().getStyles().updateMenuOrder(getContext());
         }
 
         //noinspection ConstantConditions
@@ -571,7 +572,7 @@ public class ImportFragment
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
                                 // deduct built-in styles (remember: MAX_ID is negative)
-                                String.valueOf(result.styles + StyleUtils.BuiltinStyles.MAX_ID)));
+                                String.valueOf(result.styles + BuiltinStyle.MAX_ID)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));

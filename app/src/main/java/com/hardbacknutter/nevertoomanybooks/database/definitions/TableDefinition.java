@@ -419,8 +419,6 @@ public class TableDefinition {
 
     /**
      * Set the primary key domains.
-     * <p>
-     * Do not use this on a table which already has a standard column PK _id
      *
      * @param domains List of domains in PK
      *

@@ -92,7 +92,7 @@ public class SearchEditionsTask
             } catch (@NonNull final IOException | GeneralParsingException | RuntimeException e) {
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
-                Logger.error(context, TAG, e);
+                Logger.error(TAG, e);
             }
         }
         return isbnList;

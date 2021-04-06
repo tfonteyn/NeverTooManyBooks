@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -127,7 +126,8 @@ public class ShowBookViewModel
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             if (styleUuid != null) {
-                mStyle = StyleUtils.getStyleOrDefault(context, styleUuid);
+                mStyle = ServiceLocator.getInstance().getStyles()
+                                       .getStyleOrDefault(context, styleUuid);
             }
 
             // the list is optional
@@ -238,17 +238,15 @@ public class ShowBookViewModel
     /**
      * Delete the current book.
      *
-     * @param context  Current context
      * @param position pager position to get the book for
      *
      * @return {@code false} on any failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean deleteBook(@NonNull final Context context,
-                              @IntRange(from = 1) final int position) {
+    public boolean deleteBook(@IntRange(from = 1) final int position) {
         final Book book = getBookAtPosition(position);
 
-        if (mBookDao.delete(context, book)) {
+        if (mBookDao.delete(book)) {
             //noinspection ConstantConditions
             mCurrentBook = null;
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);

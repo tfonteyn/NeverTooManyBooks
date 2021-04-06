@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
-import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
@@ -78,7 +76,9 @@ public class StartupActivity
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
-        super.attachBaseContext(AppLocale.getInstance().apply(base));
+        // apply the user-preferred Locale before onCreate is called.
+        final Context localizedContext = AppLocale.getInstance().apply(base);
+        super.attachBaseContext(localizedContext);
 
         // create self-reference for DBHelper callbacks.
         sStartupActivity = new WeakReference<>(this);
@@ -102,7 +102,10 @@ public class StartupActivity
         // can't function without access to custom directories
         final String msg = AppDir.init(this);
         if (msg != null) {
-            showFatalErrorAndFinish(msg);
+            // Let's hope the user fixes the issue... clicking the notification will restart us.
+            final Intent intent = new Intent(this, StartupActivity.class);
+            ServiceLocator.getInstance().getNotifier().sendError(this, intent, msg);
+            finish();
             return;
         }
 
@@ -119,10 +122,20 @@ public class StartupActivity
                 mVb.progressMessage.setText(message.text));
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());
+
         // any error, notify the user and die.
         mVm.onFailure().observe(this, e -> {
             if (e.result != null) {
-                showFatalErrorAndFinish(e.result.getLocalizedMessage());
+                // We'll TRY to start the maintenance fragment which gives access
+                // to debug options
+                final Intent intent = new Intent(this, FragmentHostActivity.class)
+                        .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, MaintenanceFragment.TAG);
+
+                final CharSequence message = e.result.getLocalizedMessage();
+                ServiceLocator.getInstance().getNotifier()
+                              .sendError(this, intent,
+                                         message != null ? message : "");
+                finish();
             }
         });
 
@@ -133,7 +146,6 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage() {
-
         switch (mVm.getNextStartupStage()) {
             case 1:
                 startTasks();
@@ -205,21 +217,5 @@ public class StartupActivity
      */
     public void onProgress(@StringRes final int messageId) {
         mVb.progressMessage.setText(messageId);
-    }
-
-    /**
-     * Use a Notification to tell the user this is a good time to panic.
-     * TODO: add email button to the notification, as the user cannot access the About screen
-     *
-     * @param message to show
-     */
-    public void showFatalErrorAndFinish(@Nullable final CharSequence message) {
-        final PendingIntent pendingIntent = Notifier
-                .createPendingIntent(this, StartupActivity.class);
-        Notifier.getInstance(this)
-                .sendError(this, Notifier.ID_GENERIC, pendingIntent,
-                           R.string.error_unknown,
-                           message != null ? message : "");
-        finish();
     }
 }

@@ -67,7 +67,7 @@ public class OptimizeDbTask
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         // Cleanup the cache. Out of precaution we only trash jpg files
-        AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
+        AppDir.Cache.purge(true, file -> file.getName().endsWith(".jpg"));
 
         ServiceLocator.getDb().optimize();
 

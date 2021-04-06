@@ -71,6 +71,7 @@ public class FragmentHostActivity
 
         sMap.put(AboutFragment.TAG, AboutFragment.class);
 
+        sMap.put(MaintenanceFragment.TAG, MaintenanceFragment.class);
         sMap.put(TaskAdminFragment.TAG, TaskAdminFragment.class);
     }
 

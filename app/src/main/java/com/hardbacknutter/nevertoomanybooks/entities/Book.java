@@ -247,21 +247,19 @@ public class Book
     /**
      * return the cover for the given uuid. We'll attempt to find a jpg or a png.
      *
-     * @param context Current context
-     * @param uuid    UUID of the book
-     * @param cIdx    0..n image index
+     * @param uuid UUID of the book
+     * @param cIdx 0..n image index
      *
      * @return The File object for existing files, or {@code null}
      *
-     * @see #getUuidCoverFileOrNew(Context, int)
+     * @see #getUuidCoverFileOrNew(int)
      */
     @Nullable
-    public static File getUuidCoverFile(@NonNull final Context context,
-                                        @NonNull final String uuid,
+    public static File getUuidCoverFile(@NonNull final String uuid,
                                         @IntRange(from = 0, to = 1) final int cIdx) {
         final File coverDir;
         try {
-            coverDir = AppDir.Covers.get(context);
+            coverDir = AppDir.Covers.getDir();
         } catch (@NonNull final ExternalStorageException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getUuidCoverFile", e);
@@ -371,10 +369,8 @@ public class Book
         // KEY_DATE_LAST_UPDATED
         // KEY_BOOK_GOODREADS_LAST_SYNC_DATE
 
-        bookData.putString(DBKeys.KEY_TITLE,
-                           getString(DBKeys.KEY_TITLE));
-        bookData.putString(DBKeys.KEY_ISBN,
-                           getString(DBKeys.KEY_ISBN));
+        bookData.putString(DBKeys.KEY_TITLE, getString(DBKeys.KEY_TITLE));
+        bookData.putString(DBKeys.KEY_ISBN, getString(DBKeys.KEY_ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));
@@ -386,10 +382,8 @@ public class Book
                                         getParcelableArrayList(BKEY_TOC_LIST));
 
         // publication data
-        bookData.putString(DBKeys.KEY_PRINT_RUN,
-                           getString(DBKeys.KEY_PRINT_RUN));
-        bookData.putLong(DBKeys.KEY_TOC_BITMASK,
-                         getLong(DBKeys.KEY_TOC_BITMASK));
+        bookData.putString(DBKeys.KEY_PRINT_RUN, getString(DBKeys.KEY_PRINT_RUN));
+        bookData.putLong(DBKeys.KEY_TOC_BITMASK, getLong(DBKeys.KEY_TOC_BITMASK));
         bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
                            getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
         bookData.putDouble(DBKeys.KEY_PRICE_LISTED,
@@ -398,53 +392,36 @@ public class Book
                            getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
         bookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION,
                            getString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
-        bookData.putString(DBKeys.KEY_FORMAT,
-                           getString(DBKeys.KEY_FORMAT));
-        bookData.putString(DBKeys.KEY_COLOR,
-                           getString(DBKeys.KEY_COLOR));
-        bookData.putString(DBKeys.KEY_GENRE,
-                           getString(DBKeys.KEY_GENRE));
-        bookData.putString(DBKeys.KEY_LANGUAGE,
-                           getString(DBKeys.KEY_LANGUAGE));
-        bookData.putString(DBKeys.KEY_PAGES,
-                           getString(DBKeys.KEY_PAGES));
+
+        bookData.putString(DBKeys.KEY_FORMAT, getString(DBKeys.KEY_FORMAT));
+        bookData.putString(DBKeys.KEY_COLOR, getString(DBKeys.KEY_COLOR));
+        bookData.putString(DBKeys.KEY_GENRE, getString(DBKeys.KEY_GENRE));
+        bookData.putString(DBKeys.KEY_LANGUAGE, getString(DBKeys.KEY_LANGUAGE));
+        bookData.putString(DBKeys.KEY_PAGES, getString(DBKeys.KEY_PAGES));
         // common blurb
-        bookData.putString(DBKeys.KEY_DESCRIPTION,
-                           getString(DBKeys.KEY_DESCRIPTION));
+        bookData.putString(DBKeys.KEY_DESCRIPTION, getString(DBKeys.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(DBKeys.KEY_EDITION_BITMASK,
-                         getLong(DBKeys.KEY_EDITION_BITMASK));
+        bookData.putLong(DBKeys.KEY_EDITION_BITMASK, getLong(DBKeys.KEY_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKeys.KEY_SIGNED,
-                         getLong(DBKeys.KEY_SIGNED));
+        bookData.putLong(DBKeys.KEY_SIGNED, getLong(DBKeys.KEY_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKeys.KEY_READ,
-                         getLong(DBKeys.KEY_READ));
+        bookData.putLong(DBKeys.KEY_READ, getLong(DBKeys.KEY_READ));
 
-        bookData.putDouble(DBKeys.KEY_RATING,
-                           getDouble(DBKeys.KEY_RATING));
+        bookData.putDouble(DBKeys.KEY_RATING, getDouble(DBKeys.KEY_RATING));
+        bookData.putString(DBKeys.KEY_PRIVATE_NOTES, getString(DBKeys.KEY_PRIVATE_NOTES));
 
-        bookData.putString(DBKeys.KEY_PRIVATE_NOTES,
-                           getString(DBKeys.KEY_PRIVATE_NOTES));
+        bookData.putInt(DBKeys.KEY_BOOK_CONDITION, getInt(DBKeys.KEY_BOOK_CONDITION));
+        bookData.putInt(DBKeys.KEY_BOOK_CONDITION_COVER, getInt(DBKeys.KEY_BOOK_CONDITION_COVER));
 
-        bookData.putInt(DBKeys.KEY_BOOK_CONDITION,
-                        getInt(DBKeys.KEY_BOOK_CONDITION));
-        bookData.putInt(DBKeys.KEY_BOOK_CONDITION_COVER,
-                        getInt(DBKeys.KEY_BOOK_CONDITION_COVER));
-
-        bookData.putString(DBKeys.KEY_READ_START,
-                           getString(DBKeys.KEY_READ_START));
-        bookData.putString(DBKeys.KEY_READ_END,
-                           getString(DBKeys.KEY_READ_END));
-        bookData.putString(DBKeys.KEY_DATE_ACQUIRED,
-                           getString(DBKeys.KEY_DATE_ACQUIRED));
-        bookData.putDouble(DBKeys.KEY_PRICE_PAID,
-                           getDouble(DBKeys.KEY_PRICE_PAID));
+        bookData.putString(DBKeys.KEY_READ_START, getString(DBKeys.KEY_READ_START));
+        bookData.putString(DBKeys.KEY_READ_END, getString(DBKeys.KEY_READ_END));
+        bookData.putString(DBKeys.KEY_DATE_ACQUIRED, getString(DBKeys.KEY_DATE_ACQUIRED));
+        bookData.putDouble(DBKeys.KEY_PRICE_PAID, getDouble(DBKeys.KEY_PRICE_PAID));
         bookData.putString(DBKeys.KEY_PRICE_PAID_CURRENCY,
                            getString(DBKeys.KEY_PRICE_PAID_CURRENCY));
 
@@ -469,19 +446,17 @@ public class Book
      * <p>
      * The index only gets appended to the name if it's > 0.
      *
-     * @param context Current context
-     * @param cIdx    0..n image index
+     * @param cIdx 0..n image index
      *
      * @return The File object for existing files, or a new jpg placeholder.
      *
      * @throws ExternalStorageException if the Shared Storage media is not available
-     * @see #getUuidCoverFile(Context, int)
+     * @see #getUuidCoverFile(int)
      */
     @NonNull
-    public File getUuidCoverFileOrNew(@NonNull final Context context,
-                                      @IntRange(from = 0, to = 1) final int cIdx)
+    public File getUuidCoverFileOrNew(@IntRange(from = 0, to = 1) final int cIdx)
             throws ExternalStorageException {
-        final File coverDir = AppDir.Covers.get(context);
+        final File coverDir = AppDir.Covers.getDir();
 
         final String uuid = getString(DBKeys.KEY_BOOK_UUID);
 
@@ -507,11 +482,10 @@ public class Book
     }
 
     @Nullable
-    public File getUuidCoverFile(@NonNull final Context context,
-                                 @IntRange(from = 0, to = 1) final int cIdx) {
+    public File getUuidCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
         final String uuid = getString(DBKeys.KEY_BOOK_UUID);
-        return getUuidCoverFile(context, uuid, cIdx);
+        return getUuidCoverFile(uuid, cIdx);
     }
 
     @Override
@@ -537,8 +511,7 @@ public class Book
      */
     @Nullable
     public LocalDateTime getLastUpdateUtcDate(@NonNull final Context context) {
-        return DateParser.getInstance(context)
-                         .parseISO(getString(DBKeys.KEY_UTC_LAST_UPDATED));
+        return DateParser.getInstance(context).parseISO(getString(DBKeys.KEY_UTC_LAST_UPDATED));
     }
 
     /**
@@ -914,8 +887,8 @@ public class Book
 
         // make sure we only store valid bits
         if (contains(DBKeys.KEY_EDITION_BITMASK)) {
-            final int editions = getInt(DBKeys.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
-            putInt(DBKeys.KEY_EDITION_BITMASK, editions);
+            final long editions = getLong(DBKeys.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
+            putLong(DBKeys.KEY_EDITION_BITMASK, editions);
         }
 
         // cleanup/build all price related fields
@@ -1062,10 +1035,9 @@ public class Book
                        remove(key);
 
                        if (BuildConfig.DEBUG /* always */) {
-                           Logger.d(TAG, "preprocessExternalIds",
-                                    "NumberFormatException"
-                                    + "|name=" + key
-                                    + "|value=`" + o + '`');
+                           Logger.d(TAG, "preprocessExternalIds", "NumberFormatException"
+                                                                  + "|name=" + key
+                                                                  + "|value=`" + o + '`');
                        }
                    }
                });
@@ -1144,14 +1116,12 @@ public class Book
     /**
      * Get the <strong>current</strong> cover file for this book.
      *
-     * @param context Current context
-     * @param cIdx    0..n image index
+     * @param cIdx 0..n image index
      *
      * @return a guaranteed existing File, or {@code null}
      */
     @Nullable
-    public File getCoverFile(@NonNull final Context context,
-                             @IntRange(from = 0, to = 1) final int cIdx) {
+    public File getCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
         File coverFile = null;
 
@@ -1176,7 +1146,7 @@ public class Book
                 }
 
                 try {
-                    final File coverDir = AppDir.Covers.get(context);
+                    final File coverDir = AppDir.Covers.getDir();
                     // should be / try jpg first
                     coverFile = new File(coverDir, name + ".jpg");
                     if (!coverFile.exists()) {
@@ -1195,10 +1165,11 @@ public class Book
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d(TAG, new Throwable("getCoverFile"),
-                     "bookId=" + getId()
-                     + "|cIdx=" + cIdx
-                     + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath()));
+            Logger.d(TAG, "bookId=" + getId()
+                          + "|cIdx=" + cIdx
+                          + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath()),
+                     new Throwable("getCoverFile")
+                    );
         }
         return coverFile;
     }
@@ -1210,34 +1181,33 @@ public class Book
      * <p>
      * Location: {@link AppDir#Cache}
      *
-     * @param context Current context
-     * @param cIdx    0..n image index
+     * @param cIdx 0..n image index
      *
      * @return the File
      *
      * @throws IOException on failure to make a copy of the permanent file
      */
     @NonNull
-    public File createTempCoverFile(@NonNull final Context context,
-                                    @IntRange(from = 0, to = 1) final int cIdx)
+    public File createTempCoverFile(@IntRange(from = 0, to = 1) final int cIdx)
             throws IOException {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC in this method.
-        final File coverFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
+        final File coverFile = new File(AppDir.Cache.getDir(), System.nanoTime() + ".jpg");
 
-        final File uuidFile = getCoverFile(context, cIdx);
+        final File uuidFile = getCoverFile(cIdx);
         if (uuidFile != null && uuidFile.exists()) {
             // We have a permanent file, copy it into the temp location
             FileUtils.copy(uuidFile, coverFile);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Logger.d(TAG, new Throwable("createTempCoverFile"),
-                     "bookId=" + getId()
-                     + "|cIdx=" + cIdx
-                     + "|exists=" + coverFile.exists()
-                     + "|file=" + coverFile.getAbsolutePath());
+            Logger.d(TAG, "bookId=" + getId()
+                          + "|cIdx=" + cIdx
+                          + "|exists=" + coverFile.exists()
+                          + "|file=" + coverFile.getAbsolutePath(),
+                     new Throwable("createTempCoverFile")
+                    );
         }
         return coverFile;
     }
@@ -1245,7 +1215,6 @@ public class Book
     /**
      * Update the book cover with the given file.
      *
-     * @param context Current context
      * @param bookDao Database Access
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
@@ -1254,8 +1223,7 @@ public class Book
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
-    public File setCover(@NonNull final Context context,
-                         @NonNull final BookDao bookDao,
+    public File setCover(@NonNull final BookDao bookDao,
                          @IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file) {
 
@@ -1265,22 +1233,22 @@ public class Book
 
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, new Throwable("setCover"),
-                             "editing"
-                             + "|bookId=" + getId()
-                             + "|cIdx=" + cIdx
-                             + "|file=" + file.getAbsolutePath());
+                    Logger.d(TAG, "editing"
+                                  + "|bookId=" + getId()
+                                  + "|cIdx=" + cIdx
+                                  + "|file=" + file.getAbsolutePath(), new Throwable("setCover")
+                            );
                 }
                 // #storeCovers will do the actual storing
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, new Throwable("setCover"),
-                             "editing"
-                             + "|bookId=" + getId()
-                             + "|cIdx=" + cIdx
-                             + "|deleting");
+                    Logger.d(TAG, "editing"
+                                  + "|bookId=" + getId()
+                                  + "|cIdx=" + cIdx
+                                  + "|deleting", new Throwable("setCover")
+                            );
                 }
                 // explicitly set to "" to let #storeCovers do the delete
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
@@ -1305,45 +1273,44 @@ public class Book
                     // No further action needed as we have the cover "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Logger.d(TAG, new Throwable("setCover"),
-                                 "readOnly"
-                                 + "|bookId=" + getId()
-                                 + "|cIdx=" + cIdx
-                                 + "|uuid, in-place");
+                        Logger.d(TAG, "readOnly"
+                                      + "|bookId=" + getId()
+                                      + "|cIdx=" + cIdx
+                                      + "|uuid, in-place", new Throwable("setCover")
+                                );
                     }
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Logger.d(TAG, new Throwable("setCover"),
-                                 "readOnly"
-                                 + "|bookId=" + getId()
-                                 + "|cIdx=" + cIdx
-                                 + "|will rename="
-                                 + file.getAbsolutePath());
+                        Logger.d(TAG, "readOnly"
+                                      + "|bookId=" + getId()
+                                      + "|cIdx=" + cIdx
+                                      + "|will rename="
+                                      + file.getAbsolutePath(), new Throwable("setCover")
+                                );
                     }
 
 
                     try {
                         // Rename the temp file to the uuid permanent file name
-                        destination = getUuidCoverFileOrNew(context, cIdx);
+                        destination = getUuidCoverFileOrNew(cIdx);
                         FileUtils.rename(file, destination);
 
                     } catch (@NonNull final IOException e) {
-                        Logger.error(context, TAG, e,
-                                     "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
+                        Logger.error(TAG, e, "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
                         return null;
                     }
                 }
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, new Throwable("setCover")
-                            , "readOnly"
-                              + "|bookId=" + getId()
-                              + "|cIdx=" + cIdx
-                              + "|deleting");
+                    Logger.d(TAG, "readOnly"
+                                  + "|bookId=" + getId()
+                                  + "|cIdx=" + cIdx
+                                  + "|deleting", new Throwable("setCover")
+                            );
                 }
 
-                FileUtils.delete(getUuidCoverFile(context, cIdx));
+                FileUtils.delete(getUuidCoverFile(cIdx));
                 if (ImageUtils.isImageCachingEnabled()) {
                     // We delete *all* files related to this book from the cache.
                     ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
@@ -1360,12 +1327,10 @@ public class Book
      * Called during {@link BookDao#insert(Context, Book, int)}
      * and {@link BookDao#update(Context, Book, int)}.
      *
-     * @param context Current context
-     *
      * @return {@code false} on failure
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean storeCovers(@NonNull final Context context) {
+    public boolean storeCovers() {
 
         final String uuid = getString(DBKeys.KEY_BOOK_UUID);
 
@@ -1385,7 +1350,7 @@ public class Book
 
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    FileUtils.delete(getUuidCoverFile(context, cIdx));
+                    FileUtils.delete(getUuidCoverFile(cIdx));
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled()) {
@@ -1395,11 +1360,10 @@ public class Book
                     // Rename the temp file to the uuid permanent file name
                     final File file = new File(fileSpec);
                     try {
-                        final File destination = getUuidCoverFileOrNew(context, cIdx);
+                        final File destination = getUuidCoverFileOrNew(cIdx);
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
-                        Logger.error(context, TAG, e,
-                                     "storeCovers|bookId=" + getId() + "|cIdx=" + cIdx);
+                        Logger.error(TAG, e, "storeCovers|bookId=" + getId() + "|cIdx=" + cIdx);
                         return false;
                     }
                 }

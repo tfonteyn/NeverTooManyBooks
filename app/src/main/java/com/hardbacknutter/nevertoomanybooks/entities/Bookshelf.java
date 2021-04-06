@@ -28,7 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -126,12 +124,11 @@ public class Bookshelf
     }
 
     /**
-     * For testing only.
+     * Constructor without ID.
      *
      * @param name      for the Bookshelf
      * @param styleUuid the UUID of the style to apply to this shelf
      */
-    @VisibleForTesting
     public Bookshelf(@NonNull final String name,
                      @NonNull final String styleUuid) {
         mName = name.trim();
@@ -205,14 +202,16 @@ public class Bookshelf
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          final long id) {
         if (id == ALL_BOOKS) {
-            final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_all_books), StyleUtils.getDefault(context));
+            final Bookshelf bookshelf = new Bookshelf(
+                    context.getString(R.string.bookshelf_all_books),
+                    ServiceLocator.getInstance().getStyles().getDefault(context));
             bookshelf.setId(ALL_BOOKS);
             return bookshelf;
 
         } else if (id == DEFAULT) {
-            final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_my_books), StyleUtils.getDefault(context));
+            final Bookshelf bookshelf = new Bookshelf(
+                    context.getString(R.string.bookshelf_my_books),
+                    ServiceLocator.getInstance().getStyles().getDefault(context));
             bookshelf.setId(DEFAULT);
             return bookshelf;
 
@@ -313,7 +312,8 @@ public class Bookshelf
     public ListStyle getStyle(@NonNull final Context context) {
 
         // Always validate first
-        final ListStyle style = StyleUtils.getStyleOrDefault(context, mStyleUuid);
+        final ListStyle style = ServiceLocator.getInstance().getStyles()
+                                              .getStyleOrDefault(context, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;

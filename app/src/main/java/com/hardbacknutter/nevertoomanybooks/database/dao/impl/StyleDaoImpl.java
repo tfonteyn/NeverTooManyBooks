@@ -20,16 +20,23 @@
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -43,6 +50,15 @@ public class StyleDaoImpl
     /** {@link ListStyle} all columns. */
     private static final String SELECT_STYLES =
             "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
+
+    /**
+     * We order by the id, i.e. in the order the styles were created.
+     * This is only done to get a reproducible and consistent order.
+     */
+    private static final String SELECT_STYLES_BY_TYPE =
+            SELECT_STYLES
+            + _WHERE_ + DBKeys.KEY_STYLE_IS_BUILTIN + "=?"
+            + _ORDER_BY_ + DBKeys.KEY_PK_ID;
 
     private static final String DELETE_BOOK_LIST_NODE_STATE_BY_STYLE =
             DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
@@ -74,7 +90,6 @@ public class StyleDaoImpl
 
     @Override
     public long getStyleIdByUuid(@NonNull final String uuid) {
-
         try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
@@ -83,15 +98,36 @@ public class StyleDaoImpl
 
     @Override
     @NonNull
-    public Cursor fetchStyles(final boolean userDefined) {
+    public Map<String, UserStyle> getUserStyles(@NonNull final Context context) {
+        final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-        // We order by the id, i.e. in the order the styles were created.
-        // This is only done to get a reproducible and consistent order.
-        final String sql = SELECT_STYLES
-                           + _WHERE_ + DBKeys.KEY_STYLE_IS_BUILTIN + "=?"
-                           + _ORDER_BY_ + DBKeys.KEY_PK_ID;
+        try (Cursor cursor = mDb.rawQuery(SELECT_STYLES_BY_TYPE,
+                                          new String[]{String.valueOf(0)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final UserStyle style = UserStyle.createFromDatabase(context, rowData);
+                map.put(style.getUuid(), style);
+            }
+        }
 
-        return mDb.rawQuery(sql, new String[]{String.valueOf(userDefined ? 0 : 1)});
+        return map;
+    }
+
+    @Override
+    @NonNull
+    public Map<String, BuiltinStyle> getBuiltinStyles(@NonNull final Context context) {
+        final Map<String, BuiltinStyle> map = new LinkedHashMap<>();
+
+        try (Cursor cursor = mDb.rawQuery(SELECT_STYLES_BY_TYPE,
+                                          new String[]{String.valueOf(1)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final BuiltinStyle style = BuiltinStyle.createFromDatabase(context, rowData);
+                map.put(style.getUuid(), style);
+            }
+        }
+
+        return map;
     }
 
     @Override

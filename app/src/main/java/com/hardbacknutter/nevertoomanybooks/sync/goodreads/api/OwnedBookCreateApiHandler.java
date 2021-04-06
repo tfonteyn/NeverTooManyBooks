@@ -50,16 +50,16 @@ class OwnedBookCreateApiHandler
     /**
      * Constructor.
      *
-     * @param appContext Application context
-     * @param grAuth     Authentication handler
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public OwnedBookCreateApiHandler(@NonNull final Context appContext,
+    public OwnedBookCreateApiHandler(@NonNull final Context context,
                                      @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(appContext, grAuth);
-        mGrAuth.hasValidCredentialsOrThrow(appContext);
+        super(context, grAuth);
+        mGrAuth.hasValidCredentialsOrThrow(context);
 
         // buildFilters();
     }
@@ -78,7 +78,7 @@ class OwnedBookCreateApiHandler
                        @Nullable final String dateAcquired)
             throws GeneralParsingException, IOException {
 
-        final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGrAuth);
+        final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mContext, mGrAuth);
         final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
         create(grBookId, dateAcquired);
         return grBookId;
