@@ -39,6 +39,7 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.org.json.JSONException;
@@ -53,7 +54,7 @@ public final class ExMsg {
      * <p>
      * Dev Note: the return value should preferable fit on a single line
      *
-     * @param context Localized context
+     * @param context Current context
      * @param tag     the tag from the caller object
      * @param e       Throwable to process
      *
@@ -81,6 +82,7 @@ public final class ExMsg {
         return msg;
     }
 
+    //FIXME: review some of these error message and improve them
     @Nullable
     private static String getMsg(@NonNull final Context context,
                                  @NonNull final String tag,
@@ -100,6 +102,9 @@ public final class ExMsg {
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
             msg = context.getString(R.string.error_unknown_long);
+
+        } else if (e instanceof DaoWriteException) {
+            msg = context.getString(R.string.error_storage_not_writable);
 
         } else if (e instanceof SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);
@@ -130,7 +135,7 @@ public final class ExMsg {
             } else {
                 msg = Os.strerror(errno);
                 // write to logfile for future reporting enhancements.
-                Logger.warn(context, tag, "errno=" + errno);
+                Logger.warn(tag, "errno=" + errno);
             }
         }
 
