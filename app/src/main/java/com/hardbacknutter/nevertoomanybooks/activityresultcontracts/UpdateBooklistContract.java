@@ -43,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class UpdateBooklistContract
         extends ActivityResultContract<UpdateBooklistContract.Input, Bundle> {
 
+    private static final String TAG = "UpdateBooklistContract";
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
@@ -62,8 +64,7 @@ public class UpdateBooklistContract
     public Bundle parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(SearchBookUpdatesFragment.TAG, "parseResult",
-                     "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
