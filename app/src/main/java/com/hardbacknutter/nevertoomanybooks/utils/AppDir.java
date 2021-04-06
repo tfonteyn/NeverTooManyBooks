@@ -37,6 +37,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -72,26 +73,24 @@ public enum AppDir {
     /**
      * Count size + (optional) Cleanup any purgeable files.
      *
-     * @param context      Current context
      * @param bookUuidList a list of book uuid to check for orphaned covers
      * @param reallyDelete {@code true} to actually delete files,
      *                     {@code false} to only sum file sizes in bytes
      *
      * @return the total size in bytes of purgeable/purged files.
      */
-    public static long purge(@NonNull final Context context,
-                             @NonNull final Collection<String> bookUuidList,
+    public static long purge(@NonNull final Collection<String> bookUuidList,
                              final boolean reallyDelete) {
         long totalSize = 0;
 
         try {
             // just trash these dirs
-            totalSize += Cache.purge(context, reallyDelete, null);
-            totalSize += Log.purge(context, reallyDelete, null);
-            totalSize += Upgrades.purge(context, reallyDelete, null);
+            totalSize += Cache.purge(reallyDelete, null);
+            totalSize += Log.purge(reallyDelete, null);
+            totalSize += Upgrades.purge(reallyDelete, null);
 
             // check for orphaned cover files
-            totalSize += Covers.purge(context, reallyDelete, file -> {
+            totalSize += Covers.purge(reallyDelete, file -> {
                 if (file.getName().length() > UUID_LEN) {
                     // not in the list? then we can purge it
                     return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
@@ -102,7 +101,7 @@ public enum AppDir {
 
         } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             return 0;
         }
 
@@ -127,12 +126,12 @@ public enum AppDir {
 
         try {
             // check we can get our root.
-            Root.get(context);
+            Root.getDir();
 
             // create sub directories if needed
             final AppDir[] appDirs = {Log, Upgrades};
             for (final AppDir appDir : appDirs) {
-                final File dir = appDir.get(context);
+                final File dir = appDir.getDir();
                 if (!(dir.isDirectory() || dir.mkdirs())) {
                     return context.getString(R.string.error_storage_not_writable);
                 }
@@ -140,7 +139,7 @@ public enum AppDir {
 
             // Prevent thumbnails showing up in the device Image Gallery.
             //noinspection ResultOfMethodCallIgnored
-            Covers.getFile(context, MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
+            new File(Covers.getDir(), MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
 
             return null;
 
@@ -149,37 +148,35 @@ public enum AppDir {
             return e.getLocalizedMessage(context);
 
         } catch (@NonNull final IOException | SecurityException e) {
-            Logger.error(context, TAG, e, "init failed");
+            Logger.error(TAG, e, "init failed");
             return context.getString(R.string.error_storage_not_writable);
         }
     }
 
     /**
      * Delete <strong>ALL</strong> files in our private directories.
-     *
-     * @param context Current context
      */
-    public static void deleteAllContent(@NonNull final Context context)
+    public static void deleteAllContent()
             throws ExternalStorageException {
 
         File[] files;
 
-        files = Upgrades.get(context).listFiles();
+        files = Upgrades.getDir().listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = Cache.get(context).listFiles();
+        files = Cache.getDir().listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = Covers.get(context).listFiles();
+        files = Covers.getDir().listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = Log.get(context).listFiles();
+        files = Log.getDir().listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
@@ -204,39 +201,38 @@ public enum AppDir {
      * </pre>
      * These can be ignored. The other "ensured" path will be returned for use as normal. flw...
      *
-     * @param context Current context
-     *
      * @return Directory (File) object
      *
      * @throws ExternalStorageException if the Shared Storage media is not available
      */
     @NonNull
-    public File get(@NonNull final Context context)
+    public File getDir()
             throws ExternalStorageException {
 
         if (mDir != null && mDir.exists()) {
             return mDir;
         }
+        final Context appContext = ServiceLocator.getAppContext();
 
         switch (this) {
             case Covers:
-                mDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                mDir = appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                 break;
 
             case Root:
-                mDir = context.getExternalFilesDir(null);
+                mDir = appContext.getExternalFilesDir(null);
                 break;
 
             case Upgrades:
-                mDir = new File(context.getExternalFilesDir(null), UPGRADES_SUB_DIR);
+                mDir = new File(appContext.getExternalFilesDir(null), UPGRADES_SUB_DIR);
                 break;
 
             case Log:
-                mDir = new File(context.getExternalFilesDir(null), LOG_SUB_DIR);
+                mDir = new File(appContext.getExternalFilesDir(null), LOG_SUB_DIR);
                 break;
 
             case Cache:
-                mDir = context.getExternalCacheDir();
+                mDir = appContext.getExternalCacheDir();
                 break;
         }
 
@@ -247,36 +243,17 @@ public enum AppDir {
     }
 
     /**
-     * Get a file with the given name in this directory.
-     *
-     * @param context Current context
-     * @param name    file name
-     *
-     * @return Directory (File) object
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     */
-    @NonNull
-    public File getFile(@NonNull final Context context,
-                        @NonNull final String name)
-            throws ExternalStorageException {
-        return new File(get(context), name);
-    }
-
-    /**
      * Get the space free in this directory.
-     *
-     * @param context Current context
      *
      * @return Space in bytes free or {@link #ERROR_CANNOT_STAT} on error
      */
-    public long getFreeSpace(@NonNull final Context context) {
+    public long getFreeSpace() {
         try {
-            final StatFs stat = new StatFs(get(context).getPath());
+            final StatFs stat = new StatFs(getDir().getPath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
 
         } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             return ERROR_CANNOT_STAT;
         }
     }
@@ -285,20 +262,18 @@ public enum AppDir {
      * Purge applicable files for this directory.
      * Recursively visits sub directories.
      *
-     * @param context      Current context
      * @param reallyDelete {@code true} to actually delete files,
      *                     {@code false} to only sum file sizes in bytes
      * @param filter       (optional) to apply; {@code null} for all files.
      *
      * @return number of bytes (potentially) deleted
      */
-    public long purge(@NonNull final Context context,
-                      final boolean reallyDelete,
+    public long purge(final boolean reallyDelete,
                       @Nullable final FileFilter filter) {
 
         long totalSize = 0;
         try {
-            for (final File file : collectFiles(get(context), filter)) {
+            for (final File file : collectFiles(getDir(), filter)) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "purge", this + "|" + file.getName());
                 }
@@ -318,21 +293,19 @@ public enum AppDir {
      * Collect applicable files for this directory.
      * Recursively visits sub directories.
      *
-     * @param context Current context
-     * @param filter  (optional) to apply; {@code null} for all files.
+     * @param filter (optional) to apply; {@code null} for all files.
      *
      * @return list of files
      */
     @NonNull
-    public List<File> collectFiles(@NonNull final Context context,
-                                   @Nullable final FileFilter filter)
+    public List<File> collectFiles(@Nullable final FileFilter filter)
             throws ExternalStorageException {
         try {
-            return collectFiles(get(context), filter);
+            return collectFiles(getDir(), filter);
 
         } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
-            Logger.error(context, TAG, e);
+            Logger.error(TAG, e);
             // just return an empty list
             return new ArrayList<>();
         }
