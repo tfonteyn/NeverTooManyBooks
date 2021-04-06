@@ -188,6 +188,8 @@
     <string name="error_no_image_editor">No image editor found.</string>
     <string name="error_email_failed">Failed to send the email.</string>
 
+    <string name="error_import_archive_invalid">The archive file is corrupt or otherwise invalid.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
@@ -204,14 +206,14 @@
 
 
     <!-- Importing a book list partially failed with less than 10 lines failing -->
-    <string name="warning_import_failed__for_lines_some">Parsing failed for lines \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_some">Parsing failed for lines \n%1$s\n</string>
     <!-- Importing a book list partially failed with more than 10 lines failing.
          Only 10 line numbers will be listed -->
     <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
 
     <!-- Explanatory note associated with import options not available with older archives. -->
-    <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
+    <string name="warning_import_archive_version_to_old">This option is not supported for older archive versions.</string>
 
 
     <!-- a lookup for a specific book failed (this was not a search). -->
@@ -1449,6 +1451,15 @@
     <!-- menu item. -->
     <string name="btn_just_this_shelf">This shelf only</string>
 
+    <string name="lbl_wishlist">Wishlist</string>
+
+    <!-- The number (how many) of books. -->
+    <string name="lbl_number">Number</string>
+    <!-- "I own this book"; or "the number of books I own" -->
+    <string name="lbl_owned">Owned</string>
+
+    <string name="lbl_created">Created</string>
+
 
     <!-- Single book cover - Short label. -->
     <string name="lbl_cover_front">Cover</string>
@@ -1726,14 +1737,8 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="lbl_login_to_search">Login to search</string>
-    <string name="lbl_wishlist">Wishlist</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-
-    <string name="lbl_amount">Amount</string>
-    <string name="owned">Owned</string>
-    <string name="lbl_created">Created</string>
-
 
     <string name="btn_import_collection">Import collection</string>
     <string name="btn_import_new_books">Import new books</string>

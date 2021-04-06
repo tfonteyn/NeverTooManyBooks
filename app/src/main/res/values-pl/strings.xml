@@ -578,8 +578,8 @@
     <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne!</string>
     <string name="warning_import_csv">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="warning_import_failed_for_lines_lots">Analiza nie powiodła się dla linii \n%1$s\n i innych.</string>
-    <string name="warning_import_failed__for_lines_some">Analiza nie powiodła się dla linii \n%1$s\n</string>
-    <string name="warning_import_old_archive">Ta opcja nie jest obsługiwana w starszych wersjach archiwum.</string>
+    <string name="warning_import_failed_for_lines_some">Analiza nie powiodła się dla linii \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Ta opcja nie jest obsługiwana w starszych wersjach archiwum.</string>
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_no_editions">Brak wydań</string>
     <string name="warning_no_isbn_stored_for_book">Nie zapisano numeru ISBN dla książki</string>
@@ -722,4 +722,10 @@
     <string name="lbl_virtual_libraries">Biblioteki wirtualne w tej bibliotece</string>
     <string name="menu_set_download_folder">Ustaw folder pobierania</string>
     <string name="error_upgrade_not_supported">Aktualizacja z wersji starszych niż %1$s nie jest obsługiwana.</string>
+    <string name="error_import_archive_invalid">Plik archiwum jest uszkodzony lub z innego powodu nieprawidłowy.</string>
+    <string name="progress_msg_loading_page">Ładowanie strony %1$d…</string>
+    <string name="lbl_number">Numer</string>
+    <string name="lbl_owned">Posiadane</string>
+    <string name="lbl_created">Utworzono</string>
+    <string name="lbl_wishlist">Lista życzeń</string>
 </resources>

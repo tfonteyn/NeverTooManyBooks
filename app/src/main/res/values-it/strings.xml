@@ -585,8 +585,8 @@
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
     <string name="warning_import_csv">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="warning_import_failed_for_lines_lots">Analisi non riuscita per le righe \n%1$s\n e altre.</string>
-    <string name="warning_import_failed__for_lines_some">Analisi non riuscita per le righe \n%1$s\n</string>
-    <string name="warning_import_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
+    <string name="warning_import_failed_for_lines_some">Analisi non riuscita per le righe \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
     <string name="warning_no_isbn_stored_for_book">Codice ISBN non memorizzato</string>
@@ -728,4 +728,10 @@
     <string name="lbl_virtual_libraries">Biblioteche virtuali in questa libreria</string>
     <string name="menu_set_download_folder">Imposta la cartella di download</string>
     <string name="error_upgrade_not_supported">L\'aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
+    <string name="error_import_archive_invalid">Il file di archivio è danneggiato o altrimenti non valido.</string>
+    <string name="progress_msg_loading_page">Caricamento pagina %1$d…</string>
+    <string name="lbl_number">Numero</string>
+    <string name="lbl_created">Creazione</string>
+    <string name="lbl_owned">Di proprietà</string>
+    <string name="lbl_wishlist">Lista dei desideri</string>
 </resources>

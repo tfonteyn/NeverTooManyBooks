@@ -587,8 +587,8 @@
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
     <string name="warning_import_csv">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
     <string name="warning_import_failed_for_lines_lots">El análisis falló para las líneas \n%1$s\n y otras.</string>
-    <string name="warning_import_failed__for_lines_some">El análisis falló para las líneas \n%1$s\n</string>
-    <string name="warning_import_old_archive">Esta opción no está soportada para versiones de archivo antiguas.</string>
+    <string name="warning_import_failed_for_lines_some">El análisis falló para las líneas \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Esta opción no está soportada para versiones de archivo antiguas.</string>
     <string name="warning_import_csv_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
     <string name="warning_no_editions">No hay información adicional de edición disponible</string>
     <string name="warning_no_isbn_stored_for_book">No se ha guardado ISBN para el libro</string>
@@ -729,4 +729,10 @@
     <string name="lbl_virtual_libraries">Bibliotecas virtuales en esta biblioteca</string>
     <string name="menu_set_download_folder">Establecer la carpeta de descarga</string>
     <string name="error_upgrade_not_supported">No se admite la actualización desde versiones anteriores a la %1$s.</string>
+    <string name="error_import_archive_invalid">El archivo de almacenamiento está dañado o no es válido.</string>
+    <string name="progress_msg_loading_page">Cargando página %1$d…</string>
+    <string name="lbl_number">Número</string>
+    <string name="lbl_owned">Propios</string>
+    <string name="lbl_created">Creado</string>
+    <string name="lbl_wishlist">Lista de deseos</string>
 </resources>

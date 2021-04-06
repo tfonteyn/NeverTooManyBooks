@@ -580,8 +580,8 @@
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a další.</string>
-    <string name="warning_import_failed__for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
-    <string name="warning_import_old_archive">Tato volba není podporována u starších verzí archivu.</string>
+    <string name="warning_import_failed_for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Tato volba není podporována u starších verzí archivu.</string>
     <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
@@ -725,4 +725,10 @@
     <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
     <string name="menu_set_download_folder">Nastavte složku pro stahování</string>
     <string name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
+    <string name="error_import_archive_invalid">Archivní soubor je poškozený nebo jinak neplatný.</string>
+    <string name="progress_msg_loading_page">Načítání stránky %1$d…</string>
+    <string name="lbl_number">Číslo</string>
+    <string name="lbl_owned">Vlastněno</string>
+    <string name="lbl_created">Vytvořeno</string>
+    <string name="lbl_wishlist">Seznam přání</string>
 </resources>

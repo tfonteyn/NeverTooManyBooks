@@ -586,8 +586,8 @@
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
     <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
-    <string name="warning_import_failed__for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
-    <string name="warning_import_old_archive">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
+    <string name="warning_import_failed_for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="warning_no_isbn_stored_for_book">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
@@ -729,4 +729,10 @@
     <string name="lbl_virtual_libraries">Εικονικές βιβλιοθήκες σε αυτήν τη βιβλιοθήκη</string>
     <string name="menu_set_download_folder">Ορίστε το φάκελο λήψης</string>
     <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
+    <string name="error_import_archive_invalid">Το αρχείο αρχειοθέτησης είναι κατεστραμμένο ή με άλλο τρόπο άκυρο.</string>
+    <string name="progress_msg_loading_page">Φόρτωση σελίδας %1$d…</string>
+    <string name="lbl_number">Αριθμός</string>
+    <string name="lbl_owned">Ιδιοκτησία</string>
+    <string name="lbl_created">Δημιουργήθηκε</string>
+    <string name="lbl_wishlist">Επιθυμητά</string>
 </resources>

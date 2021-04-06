@@ -582,8 +582,8 @@
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
-    <string name="warning_import_failed__for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
-    <string name="warning_import_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
+    <string name="warning_import_failed_for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
+    <string name="warning_import_archive_version_to_old">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="warning_no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
@@ -724,4 +724,10 @@
     <string name="lbl_virtual_libraries">Bu kitaplıktaki sanal kitaplıklar</string>
     <string name="menu_set_download_folder">İndirme klasörünü ayarlayın</string>
     <string name="error_upgrade_not_supported">%1$s\'ten daha eski sürümlerden yükseltme desteklenmez.</string>
+    <string name="progress_msg_loading_page">Yükleme sayfa %1$d…</string>
+    <string name="error_import_archive_invalid">Arşiv dosyası bozuk veya başka bir şekilde geçersiz.</string>
+    <string name="lbl_number">Numarası</string>
+    <string name="lbl_created">Oluşturuldu</string>
+    <string name="lbl_owned">Sahip olunan</string>
+    <string name="lbl_wishlist">İstek Listesi</string>
 </resources>

@@ -601,8 +601,8 @@
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast!</string>
     <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
     <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels \n%1$s\n en andere.</string>
-    <string name="warning_import_failed__for_lines_some">Parsering is mislukt voor regels \n%1$s\n</string>
-    <string name="warning_import_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
+    <string name="warning_import_failed_for_lines_some">Parsering is mislukt voor regels \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
@@ -726,4 +726,10 @@
     <string name="lbl_virtual_libraries">Virtuele bibliotheken in deze bibliotheek</string>
     <string name="menu_set_download_folder">Stel de downloadmap in</string>
     <string name="error_upgrade_not_supported">Upgraden vanaf versies ouder dan %1$s wordt niet ondersteund.</string>
+    <string name="error_import_archive_invalid">Het archiefbestand is beschadigd of anderszins ongeldig.</string>
+    <string name="progress_msg_loading_page">Pagina %1$d… wordt geladen</string>
+    <string name="lbl_number">Aantal</string>
+    <string name="lbl_created">Aangemaakt</string>
+    <string name="lbl_owned">In bezit</string>
+    <string name="lbl_wishlist">Verlanglijst</string>
 </resources>

@@ -577,8 +577,8 @@
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и других.</string>
-    <string name="warning_import_failed__for_lines_some">Сбой разбора для строк \n%1$s\n</string>
-    <string name="warning_import_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
+    <string name="warning_import_failed_for_lines_some">Сбой разбора для строк \n%1$s\n</string>
+    <string name="warning_import_archive_version_to_old">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="warning_no_isbn_stored_for_book">Нет ISBN хранящегося для книги</string>
@@ -722,4 +722,10 @@
     <string name="lbl_virtual_libraries">Виртуальные библиотеки в этой библиотеке</string>
     <string name="menu_set_download_folder">Установите папку загрузки</string>
     <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
+    <string name="progress_msg_loading_page">Загрузка страницы %1$d…</string>
+    <string name="error_import_archive_invalid">Файл архива поврежден или недействителен.</string>
+    <string name="lbl_number">Номер</string>
+    <string name="lbl_created">Создано</string>
+    <string name="lbl_owned">В собственности</string>
+    <string name="lbl_wishlist">Список желаний</string>
 </resources>
