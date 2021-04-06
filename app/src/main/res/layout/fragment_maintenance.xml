@@ -107,7 +107,7 @@
             style="@style/Button.Menu"
             android:text="@string/debug_dump_prefs"
             android:visibility="gone"
-            app:icon="@drawable/ic_baseline_details_24"
+            app:icon="@drawable/ic_baseline_content_copy_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug_send_mail"
             tools:visibility="visible"
