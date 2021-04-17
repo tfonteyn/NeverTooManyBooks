@@ -139,12 +139,11 @@ public class StripInfoBePreferencesFragment
         p.setEntryValues(entryValues);
         p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        p.setDefaultValue(defValue);
-
         // The ListPreference has an issue that the initial value is set during the inflation
         // step. At that time, the default value is ONLY available from xml.
         // Internally it will then use this to set the value.
-        // Workaround: if the pref has no value, set it ourselves.
+        // Workaround: set the default, and if the pref has no value, set it as well...
+        p.setDefaultValue(defValue);
         if (p.getValue() == null) {
             p.setValue(defValue);
         }
