@@ -19,24 +19,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import android.database.Cursor;
-
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOK;
 
 public class StripInfoDaoImpl
         extends BaseDaoImpl
@@ -44,25 +37,16 @@ public class StripInfoDaoImpl
 
     private static final String TAG = "StripInfoDaoImpl";
 
-    private static final String SQL_INSERT_QUEUED =
-            INSERT_INTO_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
-            + " (" + DBKeys.KEY_ESID_STRIP_INFO_BE + ") VALUES (?,?,?)";
-
-    private static final String SQL_COUNT_QUEUED =
-            SELECT_COUNT_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName();
-
-    private static final String SQL_GET_QUEUED =
-            SELECT_ + DBKeys.KEY_ESID_STRIP_INFO_BE
-            + _FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName()
-            + _ORDER_BY_ + DBKeys.KEY_PK_ID;
-
-    private static final String SQL_DELETE_QUEUED =
-            DELETE_FROM_ + DBDefinitions.TBL_STRIPINFO_COLLECTION.getName();
-
-
-    private static final String SQL_DELETE_ONE =
-            SQL_DELETE_QUEUED + _WHERE_ + DBKeys.KEY_ESID_STRIP_INFO_BE + "=?";
-
+    private static final String INSERT =
+            INSERT_INTO_ + TBL_STRIPINFO_COLLECTION.getName()
+            + '(' + DBKey.FK_BOOK
+            + ',' + DBKey.SID_STRIP_INFO
+            + ',' + DBKey.KEY_STRIP_INFO_COLL_ID
+            + ',' + DBKey.BOOL_STRIP_INFO_OWNED
+            + ',' + DBKey.BOOL_STRIP_INFO_WANTED
+            + ',' + DBKey.KEY_STRIP_INFO_AMOUNT
+            + ',' + DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO
+            + ") VALUES (?,?,?,?,?,?,?)";
 
     /**
      * Constructor.
@@ -71,81 +55,48 @@ public class StripInfoDaoImpl
         super(TAG);
     }
 
-
     @Override
-    public void updateOrInsert(@NonNull final Book book) {
+    public void updateOrInsert(@NonNull final Book book)
+            throws DaoWriteException {
         if (BuildConfig.DEBUG /* always */) {
             if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
+        // Just delete all current data and insert from scratch.
+        delete(book);
+        insert(book);
     }
 
     @Override
-    public int countQueuedBooks() {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_QUEUED)) {
-            return (int) stmt.simpleQueryForLongOrZero();
+    public void insert(@NonNull final Book book)
+            throws DaoWriteException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!book.contains(DBKey.SID_STRIP_INFO)) {
+                throw new IllegalStateException("No StripInfo data");
+            }
         }
-    }
 
-    @Override
-    @NonNull
-    public List<Long> getQueuedBooks() {
-        final List<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SQL_GET_QUEUED, null)) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-            return list;
-        }
-    }
-
-    @Override
-    public void setQueuedBooks(@NonNull final List<Long> list) {
-
-        Synchronizer.SyncLock txLock = null;
-        try {
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
-            }
-
-            // simply clear all
-            mDb.execSQL(SQL_DELETE_QUEUED);
-
-            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_INSERT_QUEUED)) {
-                for (final Long externalId : list) {
-                    stmt.bindLong(1, externalId);
-                    stmt.executeInsert();
-                }
-            }
-            if (txLock != null) {
-                mDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                mDb.endTransaction(txLock);
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+            stmt.bindLong(1, book.getId());
+            stmt.bindLong(2, book.getInt(DBKey.SID_STRIP_INFO));
+            stmt.bindLong(3, book.getInt(DBKey.KEY_STRIP_INFO_COLL_ID));
+            stmt.bindBoolean(4, book.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED));
+            stmt.bindBoolean(5, book.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED));
+            stmt.bindLong(6, book.getInt(DBKey.KEY_STRIP_INFO_AMOUNT));
+            stmt.bindString(7, book.getString(DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO));
+            final long rowId = stmt.executeInsert();
+            if (rowId == -1) {
+                throw new DaoWriteException("StripInfo data insert failed");
             }
         }
     }
 
     @Override
-    public void deleteQueued() {
-        mDb.execSQL(SQL_DELETE_QUEUED);
-    }
-
-
-    @Override
-    public boolean deleteOne(final long externalId) {
-        try (SynchronizedStatement stmt = mDb.compileStatement(SQL_DELETE_ONE)) {
-            stmt.bindLong(1, externalId);
-            return stmt.executeUpdateDelete() == 1;
-        }
-    }
-
     public void delete(@NonNull final Book book) {
-        mDb.delete(TBL_STRIPINFO_COLLECTION.getName(), KEY_FK_BOOK + "=?",
+        mDb.delete(TBL_STRIPINFO_COLLECTION.getName(), DBKey.FK_BOOK + "=?",
                    new String[]{String.valueOf(book.getId())});
     }
-
 }

@@ -26,41 +26,32 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 public class LanguageDaoImpl
-        extends BaseDaoImpl
+        extends InlineStringDaoImpl
         implements LanguageDao {
 
     /** Log tag. */
     private static final String TAG = "LanguageDaoImpl";
 
-    /** Code only. */
+    /** Code only, ordered by last-used. */
     private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKeys.KEY_LANGUAGE
+            SELECT_DISTINCT_ + DBKey.KEY_LANGUAGE
             + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-            + _WHERE_ + DBKeys.KEY_LANGUAGE + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_UTC_LAST_UPDATED + _COLLATION;
-
-    /** Global rename. */
-    private static final String UPDATE =
-            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-            + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
-            + ',' + DBKeys.KEY_LANGUAGE + "=?"
-            + _WHERE_ + DBKeys.KEY_LANGUAGE + "=?";
+            + _WHERE_ + DBKey.KEY_LANGUAGE + "<> ''"
+            + _ORDER_BY_ + DBKey.UTC_DATE_LAST_UPDATED;
 
     /**
      * Constructor.
      */
     public LanguageDaoImpl() {
-        super(TAG);
+        super(TAG, DBKey.KEY_LANGUAGE);
     }
 
     @Override
@@ -86,19 +77,4 @@ public class LanguageDaoImpl
             return new ArrayList<>(set);
         }
     }
-
-    @Override
-    public void rename(@NonNull final String from,
-                       @NonNull final String to) {
-        if (Objects.equals(from, to)) {
-            return;
-        }
-
-        try (SynchronizedStatement stmt = mDb.compileStatement(UPDATE)) {
-            stmt.bindString(1, to);
-            stmt.bindString(2, from);
-            stmt.executeUpdateDelete();
-        }
-    }
-
 }

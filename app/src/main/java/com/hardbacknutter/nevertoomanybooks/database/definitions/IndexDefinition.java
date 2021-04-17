@@ -39,7 +39,7 @@ class IndexDefinition {
     @NonNull
     private final List<Domain> mDomains;
     /** Flag indicating index is unique. */
-    private final boolean mIsUnique;
+    private final boolean mUnique;
     /** suffix to add to the table name. */
     @NonNull
     private final String mNameSuffix;
@@ -58,7 +58,7 @@ class IndexDefinition {
                     final boolean unique,
                     @NonNull final List<Domain> domains) {
         mNameSuffix = nameSuffix;
-        mIsUnique = unique;
+        mUnique = unique;
         mTable = table;
         // take a COPY of the list; but the domains themselves are references only.
         mDomains = new ArrayList<>(domains);
@@ -69,8 +69,8 @@ class IndexDefinition {
      *
      * @return UNIQUE flag.
      */
-    boolean getUnique() {
-        return mIsUnique;
+    boolean isUnique() {
+        return mUnique;
     }
 
     /**
@@ -117,7 +117,7 @@ class IndexDefinition {
     @NonNull
     private String def() {
         final StringBuilder sql = new StringBuilder("CREATE");
-        if (mIsUnique) {
+        if (mUnique) {
             sql.append(" UNIQUE");
         }
         sql.append(" INDEX ").append(mTable.getName()).append("_IDX_").append(mNameSuffix)
@@ -143,7 +143,7 @@ class IndexDefinition {
         return "IndexDefinition{"
                + "mTable=" + mTable
                + ", mDomains=" + mDomains
-               + ", mIsUnique=" + mIsUnique
+               + ", mIsUnique=" + mUnique
                + ", mNameSuffix='" + mNameSuffix + '\''
                + ", def=\n" + def()
                + "\n}";

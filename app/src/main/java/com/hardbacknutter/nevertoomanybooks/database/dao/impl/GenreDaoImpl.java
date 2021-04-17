@@ -19,60 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
 public class GenreDaoImpl
-        extends BaseDaoImpl
+        extends InlineStringDaoImpl
         implements GenreDao {
 
     /** Log tag. */
     private static final String TAG = "GenreDaoImpl";
 
-    /** name only. */
-    private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKeys.KEY_GENRE
-            + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-            + _WHERE_ + DBKeys.KEY_GENRE + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_GENRE + _COLLATION;
-
-    /** Global rename. */
-    private static final String RENAME =
-            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-            + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
-            + ',' + DBKeys.KEY_GENRE + "=?"
-            + _WHERE_ + DBKeys.KEY_GENRE + "=?";
-
     /**
      * Constructor.
      */
     public GenreDaoImpl() {
-        super(TAG);
-    }
-
-    @Override
-    @NonNull
-    public ArrayList<String> getList() {
-        return getColumnAsStringArrayList(SELECT_ALL);
-    }
-
-    @Override
-    public void rename(@NonNull final String from,
-                       @NonNull final String to) {
-        if (Objects.equals(from, to)) {
-            return;
-        }
-        try (SynchronizedStatement stmt = mDb.compileStatement(RENAME)) {
-            stmt.bindString(1, to);
-            stmt.bindString(2, from);
-            stmt.executeUpdateDelete();
-        }
+        super(TAG, DBKey.KEY_GENRE);
     }
 }

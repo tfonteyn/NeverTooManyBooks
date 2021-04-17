@@ -22,14 +22,17 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
-public interface StripInfoDao {
+public interface CalibreDao {
 
     void updateOrInsert(@NonNull Book book)
             throws DaoWriteException;
 
     /**
-     * Store the StripInfo data for the given {@link Book}.
+     * Store the Calibre data for the given {@link Book}.
+     * <p>
+     * New {@link CalibreLibrary} are added, existing ones are NOT updated.
      *
      * @param book to process
      *
@@ -39,7 +42,7 @@ public interface StripInfoDao {
             throws DaoWriteException;
 
     /**
-     * Delete all data related to StripInfo from the database (but leaves them in the book object).
+     * Delete all data related to Calibre from the database (but leaves them in the book object).
      *
      * @param book to process
      */

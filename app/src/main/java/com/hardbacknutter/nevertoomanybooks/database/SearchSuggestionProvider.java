@@ -30,7 +30,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 
 public class SearchSuggestionProvider
         extends ContentProvider {
@@ -42,6 +44,19 @@ public class SearchSuggestionProvider
      * - SearchSuggestionProvider.java/AUTHORITY
      */
     private static final String AUTHORITY = ".SearchSuggestionProvider";
+
+    /** Standard Local-search. */
+    private static final String SEARCH_SUGGESTIONS =
+            // KEY_FTS_BOOKS_PK is the _id into the books table.
+            "SELECT " + DBKey.KEY_FTS_BOOK_ID + " AS " + DBKey.PK_ID
+            + ',' + (TBL_FTS_BOOKS.dot(DBKey.KEY_TITLE)
+                     + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_1)
+            + ',' + (TBL_FTS_BOOKS.dot(DBKey.FTS_AUTHOR_NAME)
+                     + " AS " + SearchManager.SUGGEST_COLUMN_TEXT_2)
+            + ',' + (TBL_FTS_BOOKS.dot(DBKey.KEY_TITLE)
+                     + " AS " + SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+            + " FROM " + TBL_FTS_BOOKS.getName()
+            + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
 
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int URI_MATCH_SUGGEST = 1;
@@ -70,12 +85,12 @@ public class SearchSuggestionProvider
                 return null;
             }
 
-            final String query = BookDao.Sql.Fts.prepareSearchText(selectionArgs[0], null);
+            final String query = FtsDao.prepareSearchText(selectionArgs[0], null);
             // do we have anything to search for?
             if (!query.isEmpty()) {
                 //noinspection UnnecessaryLocalVariable
                 final Cursor cursor = ServiceLocator
-                        .getDb().rawQuery(BookDao.Sql.Fts.SEARCH_SUGGESTIONS, new String[]{query});
+                        .getDb().rawQuery(SEARCH_SUGGESTIONS, new String[]{query});
 
                 //  if (cursor != null) {
                 //      //noinspection ConstantConditions

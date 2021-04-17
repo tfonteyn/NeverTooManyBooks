@@ -37,7 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -72,30 +72,30 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_STRIPINFO_COLLECTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_LIBRARY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_LIBRARY_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_CALIBRE_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_STYLE_IS_PREFERRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_STYLE_MENU_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_STYLE_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_CALIBRE_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.FK_STYLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_STRING_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_LIBRARY_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_CALIBRE_VIRT_LIB_EXPR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_MENU_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_GOODREADS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
 
 /**
  * {@link SQLiteOpenHelper} for the main database.
@@ -108,10 +108,13 @@ public class DBHelper
     public static final int DATABASE_VERSION = 16;
 
     /** NEVER change this name. */
-    private static final String DATABASE_NAME = "nevertoomanybooks.db";
+    public static final String DATABASE_NAME = "nevertoomanybooks.db";
 
     /** Log tag. */
     private static final String TAG = "DBHelper";
+
+    /** The database prepared statement cache size (default 25, max 100). */
+    private static final String PK_STARTUP_DB_STMT_CACHE_SIZE = "db.stmt.cache.size";
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -207,10 +210,6 @@ public class DBHelper
         db.execSQL("analyze");
     }
 
-    public void deleteDatabase(@NonNull final Context context) {
-        context.deleteDatabase(DATABASE_NAME);
-    }
-
     /**
      * Check if the collation we use is case sensitive.
      *
@@ -222,20 +221,36 @@ public class DBHelper
     }
 
     /**
-     * Get/create the Synchronized database.
+     * Create the Synchronized database.
+     * <p>
+     * Called during startup. If needed, this will trigger the creation/upgrade process.
+     *
+     * @param global Global preferences
+     */
+    public void initialiseDb(@NonNull final SharedPreferences global) {
+        synchronized (this) {
+            if (mSynchronizedDb != null) {
+                throw new IllegalStateException("Already initialized");
+            }
+
+            // default 25, see SynchronizedDb javadoc
+            final int stmtCacheSize = global.getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
+
+            // Dev note: don't move this to the constructor, "this" must
+            // be fully constructed before we can pass it to the SynchronizedDb constructor
+            mSynchronizedDb = new SynchronizedDb(sSynchronizer, this,
+                                                 stmtCacheSize);
+        }
+    }
+
+    /**
+     * Get the Synchronized database.
      *
      * @return database connection
      */
     @NonNull
     public SynchronizedDb getDb() {
-        synchronized (this) {
-            if (mSynchronizedDb == null) {
-                // Dev note: don't move this to the constructor, "this" must
-                // be fully constructed before we can pass it to the SynchronizedDb constructor
-                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
-            }
-            return mSynchronizedDb;
-        }
+        return Objects.requireNonNull(mSynchronizedDb, "Not initialized");
     }
 
     @Override
@@ -306,11 +321,11 @@ public class DBHelper
     private void prepareStylesTable(@NonNull final SQLiteDatabase db) {
         final String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + KEY_PK_ID
+                + '(' + PK_ID
                 // 1==true
-                + ',' + KEY_STYLE_IS_BUILTIN
+                + ',' + BOOL_STYLE_IS_BUILTIN
                 // 0==false
-                + ',' + KEY_STYLE_IS_PREFERRED
+                + ',' + BOOL_STYLE_IS_PREFERRED
                 + ',' + KEY_STYLE_MENU_POSITION
                 + ',' + KEY_STYLE_UUID
                 + ") VALUES(?,1,0,?,?)";
@@ -343,9 +358,9 @@ public class DBHelper
                                        @NonNull final SQLiteDatabase db) {
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
+                   + '(' + PK_ID
                    + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + KEY_FK_STYLE
+                   + ',' + FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + context.getString(R.string.bookshelf_all_books)
@@ -354,9 +369,9 @@ public class DBHelper
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
+                   + '(' + PK_ID
                    + ',' + KEY_BOOKSHELF_NAME
-                   + ',' + KEY_FK_STYLE
+                   + ',' + FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
                    + ",'" + context.getString(R.string.bookshelf_my_books)
@@ -405,8 +420,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -441,18 +456,18 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
 
-               + " WHERE " + KEY_PK_ID + " IN \n"
+               + " WHERE " + PK_ID + " IN \n"
                // actual books by this Author
-               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ")\n"
+               + "(SELECT " + FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
+               + " WHERE " + FK_AUTHOR + "=OLD." + PK_ID + ")\n"
 
-               + " OR " + KEY_PK_ID + " IN \n"
+               + " OR " + PK_ID + " IN \n"
                // books with entries in anthologies by this Author
-               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
-               + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
-               + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ");\n"
+               + "(SELECT " + FK_BOOK
+               + " FROM " + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_TOC_ENTRIES)
+               + " WHERE " + FK_AUTHOR + "=OLD." + PK_ID + ");\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -467,8 +482,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -483,10 +498,10 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + " IN \n"
-               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
-               + " WHERE " + KEY_FK_SERIES + "=OLD." + KEY_PK_ID + ");\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + " IN \n"
+               + "(SELECT " + FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
+               + " WHERE " + FK_SERIES + "=OLD." + PK_ID + ");\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -501,8 +516,8 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + "=OLD." + FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -517,8 +532,8 @@ public class DBHelper
         body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -533,8 +548,8 @@ public class DBHelper
         body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_UTC_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
+               + "  SET " + UTC_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + PK_ID + "=NEW." + FK_BOOK + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -550,7 +565,7 @@ public class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + KEY_PK_ID + ";\n"
+               + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + PK_ID + ";\n"
                + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -573,9 +588,9 @@ public class DBHelper
         body += eidSb.toString();
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-        body += KEY_UTC_GOODREADS_LAST_SYNC_DATE + "=''";
+        body += UTC_DATE_LAST_SYNC_GOODREADS + "=''";
 
-        body += " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
+        body += " WHERE " + PK_ID + "=NEW." + PK_ID + ";\n"
                 + " END";
 
         db.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -631,7 +646,7 @@ public class DBHelper
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
-            startup.onProgress(R.string.progress_msg_upgrading);
+            startup.onProgress(context.getString(R.string.progress_msg_upgrading));
         }
 
         // take a backup before modifying the database
@@ -688,7 +703,6 @@ public class DBHelper
                     }
                 }
             }
-            global.edit().remove("bookList.style.preferred.order").apply();
         }
         if (oldVersion < 14) {
             TBL_CALIBRE_BOOKS.create(db, true);
@@ -698,12 +712,6 @@ public class DBHelper
                        + " SELECT _id, clb_book_uuid FROM books"
                        + " WHERE clb_book_uuid IS NOT NULL");
             db.execSQL("UPDATE books SET clb_book_uuid=NULL");
-
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit()
-                             .remove("scanner.preferred")
-                             .remove("compat.image.cropper.viewlayertype")
-                             .apply();
         }
         if (oldVersion < 15) {
 
@@ -728,8 +736,8 @@ public class DBHelper
                             + '(' + KEY_CALIBRE_LIBRARY_UUID
                             + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
                             + ',' + KEY_CALIBRE_LIBRARY_NAME
-                            + ',' + KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
-                            + ',' + KEY_FK_BOOKSHELF
+                            + ',' + UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY
+                            + ',' + FK_BOOKSHELF
                             + ") VALUES (?,?,?,?,?)")) {
                         stmt.bindString(1, "");
                         stmt.bindString(2, libraryId);
@@ -755,10 +763,10 @@ public class DBHelper
                     if (libId != null) {
                         try (SQLiteStatement stmt = db.compileStatement(
                                 "INSERT INTO " + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
-                                + '(' + KEY_FK_CALIBRE_LIBRARY
+                                + '(' + FK_CALIBRE_LIBRARY
                                 + ',' + KEY_CALIBRE_LIBRARY_NAME
                                 + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
-                                + ',' + KEY_FK_BOOKSHELF
+                                + ',' + FK_BOOKSHELF
                                 + ") VALUES (?,?,?,?)")) {
                             stmt.bindLong(1, libId);
                             stmt.bindString(2, name);
@@ -782,11 +790,11 @@ public class DBHelper
                     final Long libId = libString2Id.get(libraryId);
                     if (libId != null) {
                         final ContentValues cv = new ContentValues();
-                        cv.put(KEY_FK_BOOK, bookId);
+                        cv.put(FK_BOOK, bookId);
                         cv.put(KEY_CALIBRE_BOOK_ID, clbBookId);
                         cv.put(KEY_CALIBRE_BOOK_UUID, clbUuid);
                         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
-                        cv.put(KEY_FK_CALIBRE_LIBRARY, libId);
+                        cv.put(FK_CALIBRE_LIBRARY, libId);
 
                         db.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
                     }
@@ -795,11 +803,6 @@ public class DBHelper
 
             db.execSQL("DROP TABLE tmp_vl");
             db.execSQL("DROP TABLE tmp_cb");
-
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit()
-                             .remove("calibre.last.sync.date")
-                             .apply();
         }
         if (oldVersion < 16) {
             TBL_STRIPINFO_COLLECTION.create(db, true);
@@ -811,6 +814,9 @@ public class DBHelper
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
+
+
+        removeObsoleteKeys(context);
 
         // Rebuild all indices
         recreateIndices(db);
@@ -831,39 +837,31 @@ public class DBHelper
     }
 
     /**
-     * Not called yet, but this method collects ALL keys which were declared obsolete.
-     * The issue being that some keys will be in backups and re-created.
-     * <p>
-     * pro: good to clean up<br>
-     * con: a handful of obsolete keys is not an issue
+     * This method removes all keys which were declared obsolete.
      *
      * @param context Current context
      */
     private void removeObsoleteKeys(@NonNull final Context context) {
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final Set<String> all = global.getAll().keySet();
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .remove("bookList.style.preferred.order")
 
-        final SharedPreferences.Editor ed = global.edit();
-        for (final String key : all) {
-            if (key.startsWith("search.site")) {
-                ed.remove(key);
-            }
-        }
+                         .remove("booklist.top.rowId")
+                         .remove("booklist.top.row")
+                         .remove("booklist..top.row")
+                         .remove("booklist.top.offset")
+                         .remove("booklist..top.offset")
 
-        ed.remove("bookList.style.preferred.order")
-          .remove("booklist.top.row")
-          .remove("booklist.top.rowId")
-          .remove("booklist.top.offset")
-          .remove("compat.booklist.mode")
-          .remove("compat.image.cropper.viewlayertype")
-          .remove("edit.book.tab.authSer")
-          .remove("edit.book.tab.nativeId")
-          .remove("fields.visibility.bookshelf")
-          .remove("startup.lastVersion")
-          .remove("tmp.edit.book.tab.authSer")
-          .remove("scanner.preferred")
-          .remove("calibre.last.sync.date")
-          .apply();
+                         .remove("calibre.last.sync.date")
+                         .remove("compat.booklist.mode")
+                         .remove("compat.image.cropper.viewlayertype")
+                         .remove("edit.book.tab.authSer")
+                         .remove("edit.book.tab.nativeId")
+                         .remove("fields.visibility.bookshelf")
+                         .remove("scanner.preferred")
+                         .remove("startup.lastVersion")
+                         .remove("tmp.edit.book.tab.authSer")
+                         .apply();
     }
 }

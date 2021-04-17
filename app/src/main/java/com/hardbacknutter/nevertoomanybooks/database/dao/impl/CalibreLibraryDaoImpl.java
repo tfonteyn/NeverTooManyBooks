@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -49,12 +49,12 @@ public class CalibreLibraryDaoImpl
     private static final String TAG = "CalibreLibraryDaoImpl";
 
     private static final String BASE_SELECT_LIB =
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_FK_BOOKSHELF
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_UUID
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_NAME
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.FK_BOOKSHELF
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_UUID
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_STRING_ID
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_NAME
+            + ',' + DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY
             + _FROM_ + TBL_CALIBRE_LIBRARIES.getName();
 
     /**
@@ -62,80 +62,80 @@ public class CalibreLibraryDaoImpl
      * The lookup is by EQUALITY and CASE-SENSITIVE.
      */
     private static final String SELECT_LIBRARY_ID_BY_NAME =
-            SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
-            + _WHERE_ + DBKeys.KEY_CALIBRE_LIBRARY_NAME + "=?" + _COLLATION;
+            SELECT_ + DBKey.PK_ID + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
+            + _WHERE_ + DBKey.KEY_CALIBRE_LIBRARY_NAME + "=?" + _COLLATION;
 
     private static final String SELECT_LIBRARY_BY_UUID =
-            BASE_SELECT_LIB + _WHERE_ + DBKeys.KEY_CALIBRE_LIBRARY_UUID + "=?";
+            BASE_SELECT_LIB + _WHERE_ + DBKey.KEY_CALIBRE_LIBRARY_UUID + "=?";
 
     private static final String SELECT_LIBRARY_BY_STRING_ID =
-            BASE_SELECT_LIB + _WHERE_ + DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID + "=?";
+            BASE_SELECT_LIB + _WHERE_ + DBKey.KEY_CALIBRE_LIBRARY_STRING_ID + "=?";
 
     private static final String SELECT_LIBRARY_BY_ID =
-            BASE_SELECT_LIB + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            BASE_SELECT_LIB + _WHERE_ + DBKey.PK_ID + "=?";
 
     /** The list of all physical Calibre libraries. */
     private static final String SELECT_LIBRARIES =
-            BASE_SELECT_LIB + _ORDER_BY_ + DBKeys.KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
+            BASE_SELECT_LIB + _ORDER_BY_ + DBKey.KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
 
 
     private static final String BASE_SELECT_VLIB =
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_FK_BOOKSHELF
-            + ',' + DBKeys.KEY_FK_CALIBRE_LIBRARY
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_NAME
-            + ',' + DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.FK_BOOKSHELF
+            + ',' + DBKey.FK_CALIBRE_LIBRARY
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_NAME
+            + ',' + DBKey.KEY_CALIBRE_VIRT_LIB_EXPR
             + _FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName();
 
     /** The list of virtual libraries for a specified physical library. */
     private static final String SELECT_VLIBS_BY_LIBRARY_ID =
             BASE_SELECT_VLIB
-            + _WHERE_ + DBKeys.KEY_FK_CALIBRE_LIBRARY + "=?"
-            + _ORDER_BY_ + DBKeys.KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
+            + _WHERE_ + DBKey.FK_CALIBRE_LIBRARY + "=?"
+            + _ORDER_BY_ + DBKey.KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
 
     /** The list of virtual libraries for a specified physical library. */
     private static final String SELECT_VLIB_BY_LIBRARY_ID_AND_NAME =
             BASE_SELECT_VLIB
-            + _WHERE_ + DBKeys.KEY_FK_CALIBRE_LIBRARY + "=?"
-            + _AND_ + DBKeys.KEY_CALIBRE_LIBRARY_NAME + "=?";
+            + _WHERE_ + DBKey.FK_CALIBRE_LIBRARY + "=?"
+            + _AND_ + DBKey.KEY_CALIBRE_LIBRARY_NAME + "=?";
 
 
     private static final String INSERT_LIBRARY =
             INSERT_INTO_ + TBL_CALIBRE_LIBRARIES.getName()
-            + '(' + DBKeys.KEY_CALIBRE_LIBRARY_UUID
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_NAME
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
-            + ',' + DBKeys.KEY_FK_BOOKSHELF
+            + '(' + DBKey.KEY_CALIBRE_LIBRARY_UUID
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_STRING_ID
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_NAME
+            + ',' + DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY
+            + ',' + DBKey.FK_BOOKSHELF
             + ") VALUES (?,?,?,?,?)";
 
     private static final String INSERT_VIRTUAL_LIBRARY =
             INSERT_INTO_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
-            + '(' + DBKeys.KEY_FK_CALIBRE_LIBRARY
-            + ',' + DBKeys.KEY_CALIBRE_LIBRARY_NAME
-            + ',' + DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR
-            + ',' + DBKeys.KEY_FK_BOOKSHELF
+            + '(' + DBKey.FK_CALIBRE_LIBRARY
+            + ',' + DBKey.KEY_CALIBRE_LIBRARY_NAME
+            + ',' + DBKey.KEY_CALIBRE_VIRT_LIB_EXPR
+            + ',' + DBKey.FK_BOOKSHELF
             + ") VALUES (?,?,?,?)";
 
     /** Delete a single {@link CalibreLibrary}. */
     private static final String DELETE_LIBRARY_BY_ID =
             DELETE_FROM_ + TBL_CALIBRE_LIBRARIES.getName()
-            + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            + _WHERE_ + DBKey.PK_ID + "=?";
 
     /** Delete all virtual libs for a given library. */
     private static final String DELETE_VLIBS_BY_LIBRARY_ID =
             DELETE_FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
-            + _WHERE_ + DBKeys.KEY_FK_CALIBRE_LIBRARY + "=?";
+            + _WHERE_ + DBKey.FK_CALIBRE_LIBRARY + "=?";
 
     /** Delete a single {@link CalibreVirtualLibrary}. */
     private static final String DELETE_VLIB_BY_ID =
             DELETE_FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
-            + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            + _WHERE_ + DBKey.PK_ID + "=?";
 
     /** Get the id of a {@link Book} by Calibre UUID. */
     private static final String BY_CALIBRE_UUID =
-            SELECT_ + DBKeys.KEY_FK_BOOK + _FROM_ + TBL_CALIBRE_BOOKS.getName()
-            + _WHERE_ + DBKeys.KEY_CALIBRE_BOOK_UUID + "=?";
+            SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_CALIBRE_BOOKS.getName()
+            + _WHERE_ + DBKey.KEY_CALIBRE_BOOK_UUID + "=?";
 
     /**
      * Constructor.
@@ -148,7 +148,7 @@ public class CalibreLibraryDaoImpl
     private CalibreLibrary loadLibrary(@NonNull final Cursor cursor) {
         if (cursor.moveToNext()) {
             final DataHolder rowData = new CursorRow(cursor);
-            final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKeys.KEY_PK_ID),
+            final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
                                                               rowData);
             library.setVirtualLibraries(getVirtualLibraries(library.getId()));
             return library;
@@ -198,7 +198,7 @@ public class CalibreLibraryDaoImpl
         try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARIES, null)) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKeys.KEY_PK_ID),
+                final CalibreLibrary library = new CalibreLibrary(rowData.getLong(DBKey.PK_ID),
                                                                   rowData);
                 library.setVirtualLibraries(getVirtualLibraries(library.getId()));
                 list.add(library);
@@ -222,7 +222,7 @@ public class CalibreLibraryDaoImpl
                                           new String[]{String.valueOf(libraryId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new CalibreVirtualLibrary(rowData.getLong(DBKeys.KEY_PK_ID), rowData));
+                list.add(new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData));
             }
         }
         return list;
@@ -238,7 +238,7 @@ public class CalibreLibraryDaoImpl
 
             final DataHolder rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new CalibreVirtualLibrary(rowData.getLong(DBKeys.KEY_PK_ID), rowData);
+                return new CalibreVirtualLibrary(rowData.getLong(DBKey.PK_ID), rowData);
             }
         }
         return null;
@@ -248,13 +248,13 @@ public class CalibreLibraryDaoImpl
     public boolean update(@NonNull final CalibreVirtualLibrary library) {
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKeys.KEY_FK_CALIBRE_LIBRARY, library.getLibraryId());
-        cv.put(DBKeys.KEY_CALIBRE_LIBRARY_NAME, library.getName());
-        cv.put(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR, library.getExpr());
-        cv.put(DBKeys.KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
+        cv.put(DBKey.FK_CALIBRE_LIBRARY, library.getLibraryId());
+        cv.put(DBKey.KEY_CALIBRE_LIBRARY_NAME, library.getName());
+        cv.put(DBKey.KEY_CALIBRE_VIRT_LIB_EXPR, library.getExpr());
+        cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
         return 0 < mDb.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                              DBKeys.KEY_PK_ID + "=?",
+                              DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(library.getId())});
     }
 
@@ -315,14 +315,14 @@ public class CalibreLibraryDaoImpl
     public boolean update(@NonNull final CalibreLibrary library) {
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKeys.KEY_CALIBRE_LIBRARY_UUID, library.getUuid());
-        cv.put(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
-        cv.put(DBKeys.KEY_CALIBRE_LIBRARY_NAME, library.getName());
-        cv.put(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE, library.getLastSyncDateAsString());
-        cv.put(DBKeys.KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
+        cv.put(DBKey.KEY_CALIBRE_LIBRARY_UUID, library.getUuid());
+        cv.put(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
+        cv.put(DBKey.KEY_CALIBRE_LIBRARY_NAME, library.getName());
+        cv.put(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY, library.getLastSyncDateAsString());
+        cv.put(DBKey.FK_BOOKSHELF, library.getMappedBookshelfId());
 
         final int rowsAffected = mDb.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
-                                            DBKeys.KEY_PK_ID + "=?",
+                                            DBKey.PK_ID + "=?",
                                             new String[]{String.valueOf(library.getId())});
         if (0 < rowsAffected) {
             // just delete and recreate...

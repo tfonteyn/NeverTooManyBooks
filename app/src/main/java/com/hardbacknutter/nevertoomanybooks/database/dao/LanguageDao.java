@@ -26,14 +26,14 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 public interface LanguageDao
         extends InlineStringDao {
 
     /**
      * Get a unique list of all resolved/localized language names.
-     * The list is ordered by {@link DBKeys#KEY_UTC_LAST_UPDATED}.
+     * The list is ordered by {@link DBKey#UTC_DATE_LAST_UPDATED}.
      *
      * @param context Current context
      *

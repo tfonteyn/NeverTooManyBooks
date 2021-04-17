@@ -41,7 +41,7 @@ public interface GoodreadsDao {
      *
      * @param bookId to retrieve
      *
-     * @return Cursor containing all records, if any
+     * @return Cursor containing a single book, or none
      */
     @NonNull
     Cursor fetchBookForExport(@IntRange(from = 1) long bookId);

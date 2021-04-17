@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -44,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -56,15 +56,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  * TODO: add a loop check for the covers cache database:
  * read all book uuid's and clean the covers.db removing non-existing uuid rows.
  */
-public class DBCleaner
-        implements AutoCloseable {
+public class DBCleaner {
 
     /** Log tag. */
     private static final String TAG = "DBCleaner";
 
     /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     @NonNull
     private final SynchronizedDb mDb;
 
@@ -72,7 +69,6 @@ public class DBCleaner
      * Constructor.
      */
     public DBCleaner() {
-        mBookDao = new BookDao(TAG);
         mDb = ServiceLocator.getDb();
     }
 
@@ -116,13 +112,13 @@ public class DBCleaner
     /**
      * Replace 'T' occurrences with ' '.
      * See package-info docs for
-     * {@link com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser}
+     * {@link FullDateParser}
      */
     public void datetimeFormat() {
         final String[] columns = new String[]{
-                DBKeys.KEY_UTC_LAST_UPDATED,
-                DBKeys.KEY_UTC_ADDED,
-                DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE
+                DBKey.UTC_DATE_LAST_UPDATED,
+                DBKey.UTC_DATE_ADDED,
+                DBKey.UTC_DATE_LAST_SYNC_GOODREADS
         };
 
         final Pattern T = Pattern.compile("T");
@@ -131,7 +127,7 @@ public class DBCleaner
 
         for (final String key : columns) {
             try (Cursor cursor = mDb.rawQuery(
-                    "SELECT " + DBKeys.KEY_PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
+                    "SELECT " + DBKey.PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
                     + " WHERE " + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
                     rows.add(new Pair<>(cursor.getLong(0), cursor.getString(1)));
@@ -145,7 +141,7 @@ public class DBCleaner
             }
             try (SynchronizedStatement stmt = mDb.compileStatement(
                     "UPDATE " + TBL_BOOKS.getName()
-                    + " SET " + key + "=? WHERE " + DBKeys.KEY_PK_ID + "=?")) {
+                    + " SET " + key + "=? WHERE " + DBKey.PK_ID + "=?")) {
 
                 for (final Pair<Long, String> row : rows) {
                     stmt.bindString(1, T.matcher(row.second).replaceFirst(" "));
@@ -233,14 +229,14 @@ public class DBCleaner
      * @param dryRun {@code true} to run the update.
      */
     public void bookBookshelf(final boolean dryRun) {
-        final String select = "SELECT DISTINCT " + DBKeys.KEY_FK_BOOK
+        final String select = "SELECT DISTINCT " + DBKey.FK_BOOK
                               + " FROM " + TBL_BOOK_BOOKSHELF
-                              + " WHERE " + DBKeys.KEY_FK_BOOKSHELF + " IS NULL";
+                              + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
 
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
             final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                               + " WHERE " + DBKeys.KEY_FK_BOOKSHELF + " IS NULL";
+                               + " WHERE " + DBKey.FK_BOOKSHELF + " IS NULL";
             try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -293,10 +289,5 @@ public class DBCleaner
                 }
             }
         }
-    }
-
-    @Override
-    public void close() {
-        mBookDao.close();
     }
 }

@@ -50,12 +50,11 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_CACHE_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_IMAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CKEY_UTC_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.BLOB_IMAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.CACHE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.TBL_IMAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl.SELECT_COUNT_FROM_;
+import static com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper.UTC_DATE_LAST_UPDATED;
 
 /**
  * DB Helper for Covers DB.
@@ -76,22 +75,27 @@ public class CoverCacheDaoImpl
     /** Log tag. */
     private static final String TAG = "CoverCacheDaoImpl";
 
+    private static final String INSERT =
+            "INSERT INTO " + TBL_IMAGE.getName()
+            + '(' + CACHE_ID + ',' + BLOB_IMAGE + ") VALUES (?,?)";
+
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
-            "SELECT " + CKEY_IMAGE + " FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CKEY_CACHE_ID + "=? AND " + CKEY_UTC_DATETIME + ">?";
+            "SELECT " + BLOB_IMAGE + " FROM " + TBL_IMAGE.getName()
+            + " WHERE " + CACHE_ID + "=? AND " + UTC_DATE_LAST_UPDATED + ">?";
 
     /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE.getName()
-            + " WHERE " + CKEY_CACHE_ID + "=?";
+            "SELECT COUNT(" + PK_ID + ") FROM " + TBL_IMAGE.getName()
+            + " WHERE " + CACHE_ID + "=?";
 
-    private static final String SQL_COUNT = SELECT_COUNT_FROM_ + TBL_IMAGE.getName();
+    private static final String SQL_COUNT = "SELECT COUNT(*) FROM " + TBL_IMAGE.getName();
 
     /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
     /** Used to prevent trying to read from the cache while we're writing to it. */
     private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
+
     @NonNull
     private final SynchronizedDb mDb;
 
@@ -140,7 +144,7 @@ public class CoverCacheDaoImpl
     public void delete(@NonNull final String uuid) {
         try {
             // starts with the uuid, remove all sizes and indexes
-            mDb.delete(TBL_IMAGE.getName(), CKEY_CACHE_ID + " LIKE ?",
+            mDb.delete(TBL_IMAGE.getName(), CACHE_ID + " LIKE ?",
                        new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
@@ -226,10 +230,6 @@ public class CoverCacheDaoImpl
 
                     final String cacheId = constructCacheId(uuid, cIdx, width, height);
 
-                    final ContentValues cv = new ContentValues();
-                    cv.put(CKEY_CACHE_ID, cacheId);
-                    cv.put(CKEY_IMAGE, out.toByteArray());
-
                     final boolean exists;
                     try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_ID)) {
                         stmt.bindString(1, cacheId);
@@ -237,13 +237,20 @@ public class CoverCacheDaoImpl
                     }
 
                     if (exists) {
-                        mDb.insert(TBL_IMAGE.getName(), cv);
+                        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+                            stmt.bindString(1, cacheId);
+                            stmt.bindBlob(2, out.toByteArray());
+                            stmt.executeInsert();
+                        }
                     } else {
-                        cv.put(CKEY_UTC_DATETIME, LocalDateTime
+                        final ContentValues cv = new ContentValues();
+                        cv.put(CACHE_ID, cacheId);
+                        cv.put(BLOB_IMAGE, out.toByteArray());
+                        cv.put(UTC_DATE_LAST_UPDATED, LocalDateTime
                                 .now(ZoneOffset.UTC)
                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                         mDb.update(TBL_IMAGE.getName(), cv,
-                                   CKEY_CACHE_ID + "=?", new String[]{cacheId});
+                                   CACHE_ID + "=?", new String[]{cacheId});
                     }
                 }
             } catch (@NonNull final IllegalStateException ignore) {

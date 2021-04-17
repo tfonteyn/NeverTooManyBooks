@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -68,6 +69,16 @@ public interface SeriesDao {
      */
     @NonNull
     ArrayList<String> getNames();
+
+    /**
+     * Get a list of the Series a book belongs to.
+     *
+     * @param bookId of the book
+     *
+     * @return list of Series
+     */
+    @NonNull
+    ArrayList<Series> getSeriesByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get the language (ISO3) code for a {@link Series}.
@@ -227,4 +238,16 @@ public interface SeriesDao {
      * Delete orphaned records.
      */
     void purge();
+
+    /**
+     * Check for books which do not have a {@link Series} at position 1.
+     * For those that don't, read their list, and re-save them.
+     * <p>
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     */
+    int repositionSeries(@NonNull Context context);
 }

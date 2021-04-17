@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
  */
-public class RebuildOrderByTitleColumnsTask
+public class RebuildTitleOrderByColumnTask
         extends LTask<Boolean>
         implements StartupViewModel.StartupTask {
 
@@ -48,8 +48,8 @@ public class RebuildOrderByTitleColumnsTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RebuildOrderByTitleColumnsTask(@NonNull final TaskListener<Boolean> taskListener) {
-        super(R.id.TASK_ID_DB_REBUILD_REORDER_TITLES, TAG, taskListener);
+    public RebuildTitleOrderByColumnTask(@NonNull final TaskListener<Boolean> taskListener) {
+        super(R.id.TASK_ID_DB_REBUILD_TITLE_OB, TAG, taskListener);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RebuildOrderByTitleColumnsTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleOrderByRebuild(false);
+            StartupViewModel.schedule(StartupViewModel.PK_REBUILD_TITLE_OB, false);
         }
     }
 }

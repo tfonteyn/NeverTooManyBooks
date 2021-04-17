@@ -41,13 +41,13 @@ public class CoversDbHelper
         extends SQLiteOpenHelper {
 
     /* Domain definitions. */
-    public static final String CKEY_PK_ID = "_id";
-    public static final String CKEY_CACHE_ID = "key";
-    public static final String CKEY_IMAGE = "image";
-    public static final String CKEY_UTC_DATETIME = "last_update_date";
+    public static final String PK_ID = "_id";
+    public static final String CACHE_ID = "key";
+    public static final String BLOB_IMAGE = "image";
+    public static final String UTC_DATE_LAST_UPDATED = "last_update_date";
 
     /** DB name. */
-    private static final String DATABASE_NAME = "covers.db";
+    public static final String DATABASE_NAME = "covers.db";
 
     /**
      * DB Version.
@@ -58,22 +58,22 @@ public class CoversDbHelper
 
     /** {@link #TBL_IMAGE}. */
     private static final Domain DOM_PK_ID =
-            new Domain.Builder(CKEY_PK_ID, ColumnInfo.TYPE_INTEGER)
+            new Domain.Builder(PK_ID, ColumnInfo.TYPE_INTEGER)
                     .primaryKey()
                     .build();
 
     private static final Domain DOM_CACHE_ID =
-            new Domain.Builder(CKEY_CACHE_ID, ColumnInfo.TYPE_TEXT)
+            new Domain.Builder(CACHE_ID, ColumnInfo.TYPE_TEXT)
                     .notNull()
                     .build();
 
     private static final Domain DOM_IMAGE =
-            new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB)
+            new Domain.Builder(BLOB_IMAGE, ColumnInfo.TYPE_BLOB)
                     .notNull()
                     .build();
 
     private static final Domain DOM_UTC_DATETIME =
-            new Domain.Builder(CKEY_UTC_DATETIME, ColumnInfo.TYPE_DATETIME)
+            new Domain.Builder(UTC_DATE_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
                     .notNull()
                     .withDefaultCurrentTimeStamp()
                     .build();
@@ -93,8 +93,8 @@ public class CoversDbHelper
     /* table indexes. */
     static {
         TBL_IMAGE.addIndex("id", true, DOM_PK_ID)
-                 .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
-                 .addIndex(CKEY_CACHE_ID + "_" + CKEY_UTC_DATETIME,
+                 .addIndex(CACHE_ID, true, DOM_CACHE_ID)
+                 .addIndex(CACHE_ID + "_" + UTC_DATE_LAST_UPDATED,
                            true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 
@@ -109,10 +109,6 @@ public class CoversDbHelper
      */
     public CoversDbHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
-    }
-
-    public void deleteDatabase(@NonNull final Context context) {
-        context.deleteDatabase(DATABASE_NAME);
     }
 
     /**

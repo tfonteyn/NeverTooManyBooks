@@ -30,10 +30,6 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-/**
- * Column info support. This is useful for auto-building queries from maps that have
- * more columns than are in the table.
- */
 public class ColumnInfo {
 
     /*
@@ -67,6 +63,7 @@ public class ColumnInfo {
      * puts them in the {@link StorageClass#Text} bucket.
      */
     public static final String TYPE_DATE = "date";
+    /** Stored as UTC, in SQL-ISO format. */
     public static final String TYPE_DATETIME = "datetime";
 
 

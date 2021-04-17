@@ -29,7 +29,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -50,39 +51,39 @@ public class MaintenanceDaoImpl
     /** Log tag. */
     private static final String TAG = "MaintenanceDaoImpl";
 
-    /** All Series for a rebuild of the {@link DBKeys#KEY_SERIES_TITLE_OB} column. */
+    /** All Series for a rebuild of the {@link DBKey#KEY_SERIES_TITLE_OB} column. */
     private static final String SELECT_SERIES_FOR_ORDER_BY_REBUILD =
             // The index of KEY_PK_ID, KEY_SERIES_TITLE, KEY_SERIES_TITLE_OB is hardcoded
             // Don't change!
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_SERIES_TITLE
-            + ',' + DBKeys.KEY_SERIES_TITLE_OB
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.KEY_SERIES_TITLE
+            + ',' + DBKey.KEY_SERIES_TITLE_OB
             + _FROM_ + TBL_SERIES.getName();
 
-    /** All Publishers for a rebuild of the {@link DBKeys#KEY_PUBLISHER_NAME_OB} column. */
+    /** All Publishers for a rebuild of the {@link DBKey#KEY_PUBLISHER_NAME_OB} column. */
     private static final String SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD =
             // The index of KEY_PK_ID, KEY_PUBLISHER_NAME, KEY_PUBLISHER_NAME_OB is hardcoded
             // Don't change!
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_PUBLISHER_NAME
-            + ',' + DBKeys.KEY_PUBLISHER_NAME_OB
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.KEY_PUBLISHER_NAME
+            + ',' + DBKey.KEY_PUBLISHER_NAME_OB
             + _FROM_ + TBL_PUBLISHERS.getName();
 
-    /** All Book titles for a rebuild of the {@link DBKeys#KEY_TITLE_OB} column. */
+    /** All Book titles for a rebuild of the {@link DBKey#KEY_TITLE_OB} column. */
     private static final String BOOK_TITLES =
             // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_TITLE
-            + ',' + DBKeys.KEY_TITLE_OB
-            + ',' + DBKeys.KEY_LANGUAGE
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.KEY_TITLE
+            + ',' + DBKey.KEY_TITLE_OB
+            + ',' + DBKey.KEY_LANGUAGE
             + _FROM_ + TBL_BOOKS.getName();
 
-    /** All TocEntry titles for a rebuild of the {@link DBKeys#KEY_TITLE_OB} column. */
+    /** All TocEntry titles for a rebuild of the {@link DBKey#KEY_TITLE_OB} column. */
     private static final String TOC_ENTRY_TITLES =
             // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_TITLE
-            + ',' + DBKeys.KEY_TITLE_OB
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.KEY_TITLE
+            + ',' + DBKey.KEY_TITLE_OB
             + _FROM_ + TBL_TOC_ENTRIES.getName();
 
 
@@ -130,7 +131,7 @@ public class MaintenanceDaoImpl
             String language;
             Locale bookLocale;
             try (Cursor cursor = mDb.rawQuery(BOOK_TITLES, null)) {
-                final int langIdx = cursor.getColumnIndex(DBKeys.KEY_LANGUAGE);
+                final int langIdx = cursor.getColumnIndex(DBKey.KEY_LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
                     bookLocale = localeHelper.getLocale(context, language);
@@ -138,7 +139,7 @@ public class MaintenanceDaoImpl
                         bookLocale = localeHelper.getUserLocale(context);
                     }
                     rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
-                                               TBL_BOOKS, DBKeys.KEY_TITLE_OB);
+                                               TBL_BOOKS, DBKey.KEY_TITLE_OB);
                 }
             }
 
@@ -150,14 +151,14 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = mDb.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_SERIES, DBKeys.KEY_SERIES_TITLE_OB);
+                                               TBL_SERIES, DBKey.KEY_SERIES_TITLE_OB);
                 }
             }
 
             try (Cursor cursor = mDb.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_PUBLISHERS, DBKeys.KEY_PUBLISHER_NAME_OB);
+                                               TBL_PUBLISHERS, DBKey.KEY_PUBLISHER_NAME_OB);
                 }
             }
 
@@ -165,7 +166,7 @@ public class MaintenanceDaoImpl
             try (Cursor cursor = mDb.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
-                                               TBL_TOC_ENTRIES, DBKeys.KEY_TITLE_OB);
+                                               TBL_TOC_ENTRIES, DBKey.KEY_TITLE_OB);
                 }
             }
 
@@ -219,8 +220,8 @@ public class MaintenanceDaoImpl
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
-            cv.put(domainName, encodeOrderByColumn(rebuildObTitle, locale));
-            return 0 < mDb.update(table.getName(), cv, DBKeys.KEY_PK_ID + "=?",
+            cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, locale));
+            return 0 < mDb.update(table.getName(), cv, DBKey.PK_ID + "=?",
                                   new String[]{String.valueOf(id)});
         }
 

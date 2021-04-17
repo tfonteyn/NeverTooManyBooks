@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 /**
  * Standard Android class to handle database open/creation/upgrade.
  */
-public class QueueDBHelper
+public class TaskQueueDBHelper
         extends SQLiteOpenHelper {
 
     public static final String KEY_PK_ID = "_id";
@@ -116,7 +116,7 @@ public class QueueDBHelper
      *
      * @param context Current context
      */
-    QueueDBHelper(@NonNull final Context context) {
+    public TaskQueueDBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
     }
 

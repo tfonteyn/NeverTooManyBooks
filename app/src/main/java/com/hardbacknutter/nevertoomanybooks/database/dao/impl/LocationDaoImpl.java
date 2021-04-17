@@ -19,60 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
-import androidx.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
 public class LocationDaoImpl
-        extends BaseDaoImpl
+        extends InlineStringDaoImpl
         implements LocationDao {
 
     /** Log tag. */
     private static final String TAG = "LocationDaoImpl";
 
-    /** name only. */
-    private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKeys.KEY_LOCATION
-            + _FROM_ + DBDefinitions.TBL_BOOKS.getName()
-            + _WHERE_ + DBKeys.KEY_LOCATION + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_LOCATION + _COLLATION;
-
-    /** Global rename. */
-    private static final String RENAME =
-            UPDATE_ + DBDefinitions.TBL_BOOKS.getName()
-            + _SET_ + DBKeys.KEY_UTC_LAST_UPDATED + "=current_timestamp"
-            + ',' + DBKeys.KEY_LOCATION + "=?"
-            + _WHERE_ + DBKeys.KEY_LOCATION + "=?";
-
     /**
      * Constructor.
      */
     public LocationDaoImpl() {
-        super(TAG);
-    }
-
-    @Override
-    @NonNull
-    public ArrayList<String> getList() {
-        return getColumnAsStringArrayList(SELECT_ALL);
-    }
-
-    @Override
-    public void rename(@NonNull final String from,
-                       @NonNull final String to) {
-        if (Objects.equals(from, to)) {
-            return;
-        }
-        try (SynchronizedStatement stmt = mDb.compileStatement(RENAME)) {
-            stmt.bindString(1, to);
-            stmt.bindString(2, from);
-            stmt.executeUpdateDelete();
-        }
+        super(TAG, DBKey.KEY_LOCATION);
     }
 }

@@ -93,6 +93,16 @@ public interface TocEntryDao {
     List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) long id);
 
     /**
+     * Get the list of TocEntry for this book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
+    @NonNull
+    ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) long bookId);
+
+    /**
      * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
      *
      * @param tocId id of the entry (story)
@@ -113,4 +123,15 @@ public interface TocEntryDao {
     boolean delete(@NonNull Context context,
                    @NonNull TocEntry tocEntry);
 
+    /**
+     * Check for books which do not have a {@link TocEntry} at position 1.
+     * For those that don't, read their list, and re-save them.
+     * <p>
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     */
+    int repositionTocEntries(@NonNull Context context);
 }

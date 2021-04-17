@@ -22,23 +22,34 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -46,6 +57,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 public class AuthorDaoImpl
@@ -55,128 +67,169 @@ public class AuthorDaoImpl
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
 
+    static final String DISPLAY_AUTHOR_GIVEN_FIRST =
+            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES) + "=''"
+            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES)
+            + "||' '||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + _END;
     /** All Books (id only!) for a given Author. */
     private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID =
-            SELECT_ + TBL_BOOKS.dotAs(DBKeys.KEY_PK_ID)
-            + _FROM_ + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_BOOKS)
-            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR) + "=?";
-
+            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
+            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS)
+            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
     /** All Books (id only!) for a given Author and Bookshelf. */
     private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
-            SELECT_ + TBL_BOOKS.dotAs(DBKeys.KEY_PK_ID)
-            + _FROM_ + TBL_BOOK_AUTHOR.ref()
-            + TBL_BOOK_AUTHOR.join(TBL_BOOKS)
-            + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
-            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR) + "=?"
-            + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOKSHELF) + "=?";
+            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
+            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
+            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
+            + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
+    /**
+     * All Book titles and their first pub. date, for an Author,
+     * returned as an {@link AuthorWork}.
+     * <p>
+     * ORDER BY clause NOT added here, as this statement is used in a union as well.
+     * <p>
+     * We need KEY_TITLE_OB as it will be used to ORDER BY
+     */
+    private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
+            SELECT_ + "'" + AuthorWork.TYPE_BOOK + "' AS " + DBKey.KEY_TOC_TYPE
+            + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
+                                    DBKey.KEY_TITLE,
+                                    DBKey.KEY_TITLE_OB,
+                                    DBKey.DATE_FIRST_PUBLICATION)
+            + ",1 AS " + DBKey.KEY_BOOK_COUNT
+            + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
 
 
     /** {@link Author}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_AUTHORS.getName();
-
+    /**
+     * All TocEntry's for an Author,
+     * returned as an {@link AuthorWork}.
+     * <p>
+     * ORDER BY clause NOT added here, as this statement is used in a union as well.
+     * <p>
+     * We need KEY_TITLE_OB as it will be used to ORDER BY
+     */
+    private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
+            SELECT_ + "'" + AuthorWork.TYPE_TOC + "' AS " + DBKey.KEY_TOC_TYPE
+            + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
+                                          DBKey.KEY_TITLE,
+                                          DBKey.KEY_TITLE_OB,
+                                          DBKey.DATE_FIRST_PUBLICATION)
+            // count the number of books this TOC entry is present in.
+            + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.KEY_BOOK_COUNT
+            // join with the books, so we can group by toc id, and get the number of books.
+            + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
     /** Get an {@link Author} by the Author id. */
-    private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+    private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
 
+    private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
     /**
      * Get the id of a {@link Author} by name.
      * The lookup is by EQUALITY and CASE-SENSITIVE.
      * Can return more than one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
      */
     private static final String FIND_ID =
-            SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
-            + _AND_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
-
-    private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
-
+            SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
+            + _WHERE_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
+            + _AND_ + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
     /** Count the number of {@link Book}'s by an {@link Author}. */
     private static final String COUNT_BOOKS =
-            "SELECT COUNT(" + DBKeys.KEY_FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR.getName()
-            + _WHERE_ + DBKeys.KEY_FK_AUTHOR + "=?";
-
+            "SELECT COUNT(" + DBKey.FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR.getName()
+            + _WHERE_ + DBKey.FK_AUTHOR + "=?";
     /** Count the number of {@link TocEntry}'s by an {@link Author}. */
     private static final String COUNT_TOC_ENTRIES =
-            "SELECT COUNT(" + DBKeys.KEY_PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
-            + _WHERE_ + DBKeys.KEY_FK_AUTHOR + "=?";
-
+            "SELECT COUNT(" + DBKey.PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
+            + _WHERE_ + DBKey.FK_AUTHOR + "=?";
     private static final String INSERT =
             INSERT_INTO_ + TBL_AUTHORS.getName()
-            + '(' + DBKeys.KEY_AUTHOR_FAMILY_NAME + ',' + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB
-            + ',' + DBKeys.KEY_AUTHOR_IS_COMPLETE
+            + '(' + DBKey.KEY_AUTHOR_FAMILY_NAME + ',' + DBKey.KEY_AUTHOR_FAMILY_NAME_OB
+            + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB
+            + ',' + DBKey.BOOL_AUTHOR_IS_COMPLETE
             + ") VALUES (?,?,?,?,?)";
-
     /** Delete an {@link Author}. */
     private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_AUTHORS.getName() + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
-
-    /**
-     * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
-     */
-    private static final String PURGE =
-            DELETE_FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKeys.KEY_PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKeys.KEY_FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
-            + " AND " + DBKeys.KEY_PK_ID + _NOT_IN_
-            + "(SELECT DISTINCT " + DBKeys.KEY_FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')';
+            DELETE_FROM_ + TBL_AUTHORS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
     private static final String CASE_WHEN_ = "CASE WHEN ";
     private static final String _THEN_ = " THEN ";
     private static final String _ELSE_ = " ELSE ";
     private static final String _END = " END";
+    /**
+     * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
+     */
+    private static final String PURGE =
+            DELETE_FROM_ + TBL_AUTHORS.getName()
+            + _WHERE_ + DBKey.PK_ID + _NOT_IN_
+            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
+            + " AND " + DBKey.PK_ID + _NOT_IN_
+            + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')';
+    private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
+            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES) + "=''"
+            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + "||', '||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES)
+            + _END;
 
     private static final String SORT_AUTHOR_FAMILY_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB)
+            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
+            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME_OB)
 
-            + _ELSE_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB)
-            + "||" + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB)
+            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME_OB)
+            + "||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB)
             + _END;
 
     private static final String SORT_AUTHOR_GIVEN_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB)
+            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
+            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME_OB)
 
-            + _ELSE_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB)
-            + "||" + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB)
-            + _END;
-
-    private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME)
-            + _ELSE_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME)
-            + "||', '||" + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES)
-            + _END;
-
-    private static final String DISPLAY_AUTHOR_GIVEN_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME)
-            + _ELSE_ + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_GIVEN_NAMES)
-            + "||' '||" + TBL_AUTHORS.dot(DBKeys.KEY_AUTHOR_FAMILY_NAME)
+            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB)
+            + "||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME_OB)
             + _END;
 
     /** {@link #getNames(String)} : 'Family name' in column 0. */
     private static final String SELECT_ALL_FAMILY_NAMES =
-            SELECT_DISTINCT_ + DBKeys.KEY_AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
+            SELECT_DISTINCT_ + DBKey.KEY_AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
+            + _ORDER_BY_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION;
 
     /** {@link #getNames(String)} : 'Given name' in column 0. */
     private static final String SELECT_ALL_GIVEN_NAMES =
-            SELECT_DISTINCT_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES + _FROM_ + TBL_AUTHORS.getName()
-            + _WHERE_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+            SELECT_DISTINCT_ + DBKey.KEY_AUTHOR_GIVEN_NAMES + _FROM_ + TBL_AUTHORS.getName()
+            + _WHERE_ + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + "<> ''"
+            + _ORDER_BY_ + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /** {@link #getNames(String)} : 'Display name' in column 0. */
     private static final String SELECT_ALL_NAMES_FORMATTED =
             SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+            + _ORDER_BY_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
+            + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /** {@link #getNames(String)} : 'Display name' in column 0. */
     private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
             SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST + _FROM_ + TBL_AUTHORS.ref()
-            + _ORDER_BY_ + DBKeys.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
-            + ',' + DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+            + _ORDER_BY_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
+            + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+    /** All Authors for a Book; ordered by position, family, given. */
+    private static final String AUTHORS_BY_BOOK_ID =
+            SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
+                                                 DBKey.KEY_AUTHOR_FAMILY_NAME,
+                                                 DBKey.KEY_AUTHOR_FAMILY_NAME_OB,
+                                                 DBKey.KEY_AUTHOR_GIVEN_NAMES,
+                                                 DBKey.KEY_AUTHOR_GIVEN_NAMES_OB,
+                                                 DBKey.BOOL_AUTHOR_IS_COMPLETE)
+            + ',' + DISPLAY_AUTHOR_FAMILY_FIRST + _AS_ + DBKey.KEY_AUTHOR_FORMATTED
+            + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.KEY_BOOK_AUTHOR_POSITION,
+                                          DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)
+
+            + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
+            + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
+            + _ORDER_BY_
+            + TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION)
+            + ',' + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
+            + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /**
      * Constructor.
@@ -254,8 +307,8 @@ public class AuthorDaoImpl
         }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, encodeOrderByColumn(author.getFamilyName(), authorLocale));
-            stmt.bindString(2, encodeOrderByColumn(author.getGivenNames(), authorLocale));
+            stmt.bindString(1, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -264,21 +317,35 @@ public class AuthorDaoImpl
     @NonNull
     public ArrayList<String> getNames(@NonNull final String key) {
         switch (key) {
-            case DBKeys.KEY_AUTHOR_FAMILY_NAME:
+            case DBKey.KEY_AUTHOR_FAMILY_NAME:
                 return getColumnAsStringArrayList(SELECT_ALL_FAMILY_NAMES);
 
-            case DBKeys.KEY_AUTHOR_GIVEN_NAMES:
+            case DBKey.KEY_AUTHOR_GIVEN_NAMES:
                 return getColumnAsStringArrayList(SELECT_ALL_GIVEN_NAMES);
 
-            case DBKeys.KEY_AUTHOR_FORMATTED:
+            case DBKey.KEY_AUTHOR_FORMATTED:
                 return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED);
 
-            case DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST:
+            case DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST:
                 return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
 
             default:
                 throw new IllegalArgumentException(key);
         }
+    }
+
+    @Override
+    @NonNull
+    public ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
+        final ArrayList<Author> list = new ArrayList<>();
+        try (Cursor cursor = mDb.rawQuery(AUTHORS_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new Author(rowData.getLong(DBKey.PK_ID), rowData));
+            }
+        }
+        return list;
     }
 
     @Override
@@ -304,6 +371,101 @@ public class AuthorDaoImpl
                 new String[]{String.valueOf(authorId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Return all the {@link AuthorWork} for the given {@link Author}.
+     *
+     * @param author         to retrieve
+     * @param bookshelfId    limit the list to books on this shelf (pass -1 for all shelves)
+     * @param withTocEntries add the toc entries
+     * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
+     *                       is the book title itself. (makes sense?)
+     *
+     * @return List of {@link AuthorWork} for this {@link Author}
+     */
+    @NonNull
+    public ArrayList<AuthorWork> getAuthorWorks(@NonNull final Author author,
+                                                final long bookshelfId,
+                                                final boolean withTocEntries,
+                                                final boolean withBooks) {
+        // sanity check
+        if (!withTocEntries && !withBooks) {
+            throw new IllegalArgumentException("Must specify what to fetch");
+        }
+
+        final boolean byShelf = bookshelfId != Bookshelf.ALL_BOOKS;
+
+        // rawQuery wants String[] as bind parameters
+        final String authorIdStr = String.valueOf(author.getId());
+        final String bookshelfIdStr = String.valueOf(bookshelfId);
+
+        String sql = "";
+        final List<String> paramList = new ArrayList<>();
+
+        // MUST be toc first, books second; otherwise the GROUP BY is done on the whole
+        // UNION instead of on the toc only; and SqLite rejects () around the sub selects.
+        if (withTocEntries) {
+            sql += SELECT_TOC_ENTRIES_BY_AUTHOR_ID
+                   + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
+                                + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK)
+                                + '=' + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK) + ")"
+                              : "")
+                   + _WHERE_ + TBL_TOC_ENTRIES.dot(DBKey.FK_AUTHOR) + "=?"
+                   + (byShelf ? _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?" : "")
+                   + " GROUP BY " + TBL_TOC_ENTRIES.dot(DBKey.PK_ID);
+            paramList.add(authorIdStr);
+            if (byShelf) {
+                paramList.add(bookshelfIdStr);
+            }
+        }
+
+        if (withBooks && withTocEntries) {
+            sql += " UNION ";
+        }
+
+        if (withBooks) {
+            sql += SELECT_BOOK_TITLES_BY_AUTHOR_ID
+                   + (byShelf ? TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) : "")
+                   + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
+                   + (byShelf ? _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?" : "");
+            paramList.add(authorIdStr);
+            if (byShelf) {
+                paramList.add(bookshelfIdStr);
+            }
+        }
+
+        sql += _ORDER_BY_ + DBKey.KEY_TITLE_OB + _COLLATION;
+
+        final ArrayList<AuthorWork> list = new ArrayList<>();
+        //noinspection ZeroLengthArrayAllocation
+        try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(new String[0]))) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final char type = rowData.getString(DBKey.KEY_TOC_TYPE).charAt(0);
+                switch (type) {
+                    case AuthorWork.TYPE_TOC:
+                        list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
+                                              author,
+                                              rowData.getString(DBKey.KEY_TITLE),
+                                              rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
+                                              rowData.getInt(DBKey.KEY_BOOK_COUNT)));
+                        break;
+
+                    case AuthorWork.TYPE_BOOK:
+                        // Eventually we'll create a Book here...
+                        list.add(new BookAsWork(rowData.getLong(DBKey.PK_ID),
+                                                author,
+                                                rowData.getString(DBKey.KEY_TITLE),
+                                                rowData.getString(DBKey.DATE_FIRST_PUBLICATION)));
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException(String.valueOf(type));
+                }
             }
         }
         return list;
@@ -355,9 +517,9 @@ public class AuthorDaoImpl
     public boolean setComplete(final long authorId,
                                final boolean isComplete) {
         final ContentValues cv = new ContentValues();
-        cv.put(DBKeys.KEY_AUTHOR_IS_COMPLETE, isComplete);
+        cv.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, isComplete);
 
-        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKeys.KEY_PK_ID + "=?",
+        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(authorId)});
     }
 
@@ -402,9 +564,9 @@ public class AuthorDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, author.getFamilyName());
-            stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), authorLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(3, author.getGivenNames());
-            stmt.bindString(4, encodeOrderByColumn(author.getGivenNames(), authorLocale));
+            stmt.bindString(4, SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
             stmt.bindBoolean(5, author.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -422,15 +584,15 @@ public class AuthorDaoImpl
                 author.getLocale(context, AppLocale.getInstance().getUserLocale(context));
 
         final ContentValues cv = new ContentValues();
-        cv.put(DBKeys.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
-        cv.put(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB,
-               encodeOrderByColumn(author.getFamilyName(), authorLocale));
-        cv.put(DBKeys.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
-        cv.put(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB,
-               encodeOrderByColumn(author.getGivenNames(), authorLocale));
-        cv.put(DBKeys.KEY_AUTHOR_IS_COMPLETE, author.isComplete());
+        cv.put(DBKey.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
+        cv.put(DBKey.KEY_AUTHOR_FAMILY_NAME_OB,
+               SqlEncode.orderByColumn(author.getFamilyName(), authorLocale));
+        cv.put(DBKey.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
+        cv.put(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB,
+               SqlEncode.orderByColumn(author.getGivenNames(), authorLocale));
+        cv.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, author.isComplete());
 
-        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKeys.KEY_PK_ID + "=?",
+        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(author.getId())});
     }
 
@@ -447,9 +609,7 @@ public class AuthorDaoImpl
 
         if (rowsAffected > 0) {
             author.setId(0);
-            try (BookDao bookDao = new BookDao(TAG)) {
-                bookDao.repositionAuthor(context);
-            }
+            repositionAuthor(context);
         }
         return rowsAffected == 1;
     }
@@ -468,8 +628,8 @@ public class AuthorDaoImpl
 
             // TOC is easy: just do a mass update
             final ContentValues cv = new ContentValues();
-            cv.put(DBKeys.KEY_FK_AUTHOR, destId);
-            mDb.update(TBL_TOC_ENTRIES.getName(), cv, DBKeys.KEY_FK_AUTHOR + "=?",
+            cv.put(DBKey.FK_AUTHOR, destId);
+            mDb.update(TBL_TOC_ENTRIES.getName(), cv, DBKey.FK_AUTHOR + "=?",
                        new String[]{String.valueOf(source.getId())});
 
             // the books must be done one by one, as we need to prevent duplicate authors
@@ -479,30 +639,30 @@ public class AuthorDaoImpl
             // and we want to replace a1 with a2, we cannot simply do a mass update.
             final Author destination = getById(destId);
 
-            try (BookDao bookDao = new BookDao(TAG)) {
-                for (final long bookId : getBookIds(source.getId())) {
-                    final Book book = Book.from(bookId, bookDao);
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            for (final long bookId : getBookIds(source.getId())) {
+                final Book book = Book.from(bookId, bookDao);
 
-                    final Collection<Author> fromBook =
-                            book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-                    final Collection<Author> destList = new ArrayList<>();
+                final Collection<Author> fromBook =
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+                final Collection<Author> destList = new ArrayList<>();
 
-                    for (final Author item : fromBook) {
-                        if (source.getId() == item.getId()) {
-                            // replace this one.
-                            destList.add(destination);
-                            // We could 'break' here as there should be no duplicates,
-                            // but paranoia...
-                        } else {
-                            // just keep/copy
-                            destList.add(item);
-                        }
+                for (final Author item : fromBook) {
+                    if (source.getId() == item.getId()) {
+                        // replace this one.
+                        destList.add(destination);
+                        // We could 'break' here as there should be no duplicates,
+                        // but paranoia...
+                    } else {
+                        // just keep/copy
+                        destList.add(item);
                     }
-                    // delete old links and store all new links
-                    bookDao.insertBookAuthors(context, bookId, destList, true,
-                                              book.getLocale(context));
                 }
+                // delete old links and store all new links
+                bookDao.insertAuthors(context, bookId, destList, true,
+                                      book.getLocale(context));
             }
+
             // delete the obsolete source.
             delete(context, source);
 
@@ -521,5 +681,56 @@ public class AuthorDaoImpl
         try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
         }
+    }
+
+    // Note that in normal usage we could first get the book id's
+    // that needs updating, and then update only those.
+    // However, that means two statements to execute and overall a longer execution time
+    // as compared to the single stmt approach here.
+    @Override
+    public int repositionAuthor(@NonNull final Context context) {
+        final String sql =
+                "SELECT " + DBKey.FK_BOOK + " FROM "
+                + "(SELECT " + DBKey.FK_BOOK
+                + ", MIN(" + DBKey.KEY_BOOK_AUTHOR_POSITION + ") AS mp"
+                + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + DBKey.FK_BOOK
+                + ") WHERE mp > 1";
+
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
+        if (!bookIds.isEmpty()) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "repositionAuthor|" + TBL_BOOK_AUTHOR.getName()
+                           + ", rows=" + bookIds.size());
+            }
+            // ENHANCE: we really should fetch each book individually
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
+            Synchronizer.SyncLock txLock = null;
+            try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
+                for (final long bookId : bookIds) {
+                    final ArrayList<Author> list = getAuthorsByBookId(bookId);
+                    bookDao.insertAuthors(context, bookId, list, false, bookLocale);
+                }
+                if (txLock != null) {
+                    mDb.setTransactionSuccessful();
+                }
+            } catch (@NonNull final RuntimeException | DaoWriteException e) {
+                Logger.error(TAG, e);
+
+            } finally {
+                if (txLock != null) {
+                    mDb.endTransaction(txLock);
+                }
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "repositionAuthor|done");
+                }
+            }
+        }
+        return bookIds.size();
     }
 }

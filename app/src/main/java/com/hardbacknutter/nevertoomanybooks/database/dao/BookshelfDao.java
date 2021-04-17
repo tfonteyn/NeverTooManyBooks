@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -146,4 +147,14 @@ public interface BookshelfDao {
      * @param bookshelfId to purge
      */
     void purgeNodeStates(long bookshelfId);
+
+    /**
+     * Get a list of all the bookshelves this book is on.
+     *
+     * @param bookId to use
+     *
+     * @return the list
+     */
+    @NonNull
+    ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) long bookId);
 }

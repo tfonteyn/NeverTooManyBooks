@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,11 +36,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
@@ -52,11 +56,14 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreLibraryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.ColorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CoverCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GenreDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GoodreadsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
@@ -69,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
@@ -99,6 +106,10 @@ public final class ServiceLocator {
     @Nullable
     private CoversDbHelper mCoversDbHelper;
 
+    /** NOT an interface. Cannot be injected. */
+    @Nullable
+    private SQLiteOpenHelper mTaskQueueDBHelper;
+
     /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
     @Nullable
     private Styles mStyles;
@@ -116,7 +127,11 @@ public final class ServiceLocator {
     @Nullable
     private AuthorDao mAuthorDao;
     @Nullable
+    private BookDao mBookDao;
+    @Nullable
     private BookshelfDao mBookshelfDao;
+    @Nullable
+    private CalibreDao mCalibreDao;
     @Nullable
     private CalibreLibraryDao mCalibreLibraryDao;
     @Nullable
@@ -125,6 +140,8 @@ public final class ServiceLocator {
     private CoverCacheDao mCoverCacheDao;
     @Nullable
     private FormatDao mFormatDao;
+    @Nullable
+    private FtsDao mFtsDao;
     @Nullable
     private GenreDao mGenreDao;
     @Nullable
@@ -199,30 +216,18 @@ public final class ServiceLocator {
         return sInstance;
     }
 
-    // Does not really belong in the ServiceLocator...
-    public static boolean isCollationCaseSensitive() {
-        return sInstance.getDBHelper().isCollationCaseSensitive();
-    }
-
-    // Does not really belong in the ServiceLocator...
-    static void deleteDatabases(@NonNull final Context context) {
-        sInstance.getDBHelper().deleteDatabase(context);
-        sInstance.getCoversDbHelper().deleteDatabase(context);
-
-        context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
-    }
-
     /**
-     * Main entry point for clients to get the main database.
+     * Main entry point for clients to get the main database. Static for shorter code...
      *
      * @return the database instance
      */
     public static SynchronizedDb getDb() {
-        return sInstance.getDBHelper().getDb();
+        //noinspection ConstantConditions
+        return sInstance.mDBHelper.getDb();
     }
 
     /**
-     * Main entry point for clients to get the covers database.
+     * Main entry point for clients to get the covers database. Static for shorter code...
      *
      * @return the database instance
      */
@@ -230,14 +235,25 @@ public final class ServiceLocator {
         return sInstance.getCoversDbHelper().getDb();
     }
 
-    @NonNull
-    private DBHelper getDBHelper() {
-        synchronized (this) {
-            if (mDBHelper == null) {
-                mDBHelper = new DBHelper(mAppContext);
-            }
-        }
-        return mDBHelper;
+    public boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
+        return mDBHelper.isCollationCaseSensitive();
+    }
+
+    void deleteDatabases(@NonNull final Context context) {
+        context.deleteDatabase(DBHelper.DATABASE_NAME);
+        context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
+        context.deleteDatabase(TaskQueueDBHelper.DATABASE_NAME);
+    }
+
+    /**
+     * Called during startup. This will trigger the creation/upgrade/open process.
+     *
+     * @param global Global preferences
+     */
+    public void initialiseDb(@NonNull final SharedPreferences global) {
+        mDBHelper = new DBHelper(mAppContext);
+        mDBHelper.initialiseDb(global);
     }
 
     @NonNull
@@ -248,6 +264,16 @@ public final class ServiceLocator {
             }
         }
         return mCoversDbHelper;
+    }
+
+    @NonNull
+    public SQLiteOpenHelper getTaskQueueDBHelper() {
+        synchronized (this) {
+            if (mTaskQueueDBHelper == null) {
+                mTaskQueueDBHelper = new TaskQueueDBHelper(mAppContext);
+            }
+        }
+        return mTaskQueueDBHelper;
     }
 
     /**
@@ -315,8 +341,23 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setAuthorDao(@Nullable final AuthorDao authorDao) {
-        mAuthorDao = authorDao;
+    public void setAuthorDao(@Nullable final AuthorDao dao) {
+        mAuthorDao = dao;
+    }
+
+    @NonNull
+    public BookDao getBookDao() {
+        synchronized (this) {
+            if (mBookDao == null) {
+                mBookDao = new BookDaoImpl();
+            }
+        }
+        return mBookDao;
+    }
+
+    @VisibleForTesting
+    public void setBookDao(@Nullable final BookDao dao) {
+        mBookDao = dao;
     }
 
     @NonNull
@@ -330,9 +371,25 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setBookshelfDao(@Nullable final BookshelfDao bookshelfDao) {
-        mBookshelfDao = bookshelfDao;
+    public void setBookshelfDao(@Nullable final BookshelfDao dao) {
+        mBookshelfDao = dao;
     }
+
+    @NonNull
+    public CalibreDao getCalibreDao() {
+        synchronized (this) {
+            if (mCalibreDao == null) {
+                mCalibreDao = new CalibreDaoImpl();
+            }
+        }
+        return mCalibreDao;
+    }
+
+    @VisibleForTesting
+    public void setCalibreDao(@Nullable final CalibreDao dao) {
+        mCalibreDao = dao;
+    }
+
 
     @NonNull
     public CalibreLibraryDao getCalibreLibraryDao() {
@@ -345,8 +402,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setCalibreLibraryDao(@Nullable final CalibreLibraryDao calibreLibraryDao) {
-        mCalibreLibraryDao = calibreLibraryDao;
+    public void setCalibreLibraryDao(@Nullable final CalibreLibraryDao dao) {
+        mCalibreLibraryDao = dao;
     }
 
     @NonNull
@@ -360,8 +417,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setColorDao(@Nullable final ColorDao colorDao) {
-        mColorDao = colorDao;
+    public void setColorDao(@Nullable final ColorDao dao) {
+        mColorDao = dao;
     }
 
     @NonNull
@@ -375,9 +432,25 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setFormatDao(@Nullable final FormatDao formatDao) {
-        mFormatDao = formatDao;
+    public void setFormatDao(@Nullable final FormatDao dao) {
+        mFormatDao = dao;
     }
+
+    @NonNull
+    public FtsDao getFtsDao() {
+        synchronized (this) {
+            if (mFtsDao == null) {
+                mFtsDao = new FtsDaoImpl();
+            }
+        }
+        return mFtsDao;
+    }
+
+    @VisibleForTesting
+    public void setFtsDao(@Nullable final FtsDao dao) {
+        mFtsDao = dao;
+    }
+
 
     @NonNull
     public GenreDao getGenreDao() {
@@ -390,8 +463,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setGenreDao(@Nullable final GenreDao genreDao) {
-        mGenreDao = genreDao;
+    public void setGenreDao(@Nullable final GenreDao dao) {
+        mGenreDao = dao;
     }
 
     @NonNull
@@ -405,8 +478,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setGoodreadsDao(@Nullable final GoodreadsDao goodreadsDao) {
-        mGoodreadsDao = goodreadsDao;
+    public void setGoodreadsDao(@Nullable final GoodreadsDao dao) {
+        mGoodreadsDao = dao;
     }
 
 
@@ -421,8 +494,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setLanguageDao(@Nullable final LanguageDao languageDao) {
-        mLanguageDao = languageDao;
+    public void setLanguageDao(@Nullable final LanguageDao dao) {
+        mLanguageDao = dao;
     }
 
     @NonNull
@@ -436,8 +509,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setLoaneeDao(@Nullable final LoaneeDao loaneeDao) {
-        mLoaneeDao = loaneeDao;
+    public void setLoaneeDao(@Nullable final LoaneeDao dao) {
+        mLoaneeDao = dao;
     }
 
     @NonNull
@@ -451,8 +524,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setLocationDao(@Nullable final LocationDao locationDao) {
-        mLocationDao = locationDao;
+    public void setLocationDao(@Nullable final LocationDao dao) {
+        mLocationDao = dao;
     }
 
     @NonNull
@@ -466,8 +539,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setMaintenanceDao(@Nullable final MaintenanceDao maintenanceDao) {
-        mMaintenanceDao = maintenanceDao;
+    public void setMaintenanceDao(@Nullable final MaintenanceDao dao) {
+        mMaintenanceDao = dao;
     }
 
     @NonNull
@@ -481,8 +554,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setPublisherDao(@Nullable final PublisherDao publisherDao) {
-        mPublisherDao = publisherDao;
+    public void setPublisherDao(@Nullable final PublisherDao dao) {
+        mPublisherDao = dao;
     }
 
     @NonNull
@@ -496,8 +569,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setSeriesDao(@Nullable final SeriesDao seriesDao) {
-        mSeriesDao = seriesDao;
+    public void setSeriesDao(@Nullable final SeriesDao dao) {
+        mSeriesDao = dao;
     }
 
     @NonNull
@@ -511,8 +584,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setStripInfoDao(@Nullable final StripInfoDao stripInfoDao) {
-        mStripInfoDao = stripInfoDao;
+    public void setStripInfoDao(@Nullable final StripInfoDao dao) {
+        mStripInfoDao = dao;
     }
 
     /**
@@ -531,8 +604,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setStyleDao(@Nullable final StyleDao styleDao) {
-        mStyleDao = styleDao;
+    public void setStyleDao(@Nullable final StyleDao dao) {
+        mStyleDao = dao;
     }
 
     @NonNull
@@ -546,8 +619,8 @@ public final class ServiceLocator {
     }
 
     @VisibleForTesting
-    public void setTocEntryDao(@Nullable final TocEntryDao tocEntryDao) {
-        mTocEntryDao = tocEntryDao;
+    public void setTocEntryDao(@Nullable final TocEntryDao dao) {
+        mTocEntryDao = dao;
     }
 
     @NonNull
@@ -560,7 +633,7 @@ public final class ServiceLocator {
         return mCoverCacheDao;
     }
 
-    public void setCoverCacheDao(@Nullable final CoverCacheDao coverCacheDao) {
-        mCoverCacheDao = coverCacheDao;
+    public void setCoverCacheDao(@Nullable final CoverCacheDao dao) {
+        mCoverCacheDao = dao;
     }
 }

@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
-import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
@@ -36,17 +34,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -54,15 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 @SuppressWarnings("FieldNotUsedInToString")
 public class TableDefinition {
 
-//    /** Check if a table exists; either in permanent or temporary storage. */
-//    private static final String TABLE_EXISTS_SQL_BOTH =
-//            "SELECT "
-//            + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
-//            + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
+    private static final String _AS_ = " AS ";
 
     private static final String TABLE_EXISTS_SQL_STANDARD =
             "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?";
-
     private static final String TABLE_EXISTS_SQL_TEMP =
             "SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?";
 
@@ -586,20 +575,6 @@ public class TableDefinition {
     }
 
     /**
-     * Return an aliased table name.
-     * <p>
-     * format: [table-name] AS [table-alias]
-     * <p>
-     * e.g. 'books AS b'.
-     *
-     * @return SQL Fragment
-     */
-    @NonNull
-    public String ref() {
-        return mName + " AS " + getAlias();
-    }
-
-    /**
      * Return an SQL fragment. Use this for columns in the where, join, order, etc... clause.
      * <p>
      * format: [table-alias].[domain-name]
@@ -616,18 +591,65 @@ public class TableDefinition {
     /**
      * Return an SQL fragment. Use this for columns in the select-clause.
      * <p>
-     * format: [table-alias].[domain-name] AS [domain_name]
+     * format: [table-alias].[domain-name] AS [domain_name] [,...]
      * <p>
      * Some SQLite versions make the alias part of the output column name which
      * breaks the easy fetching by pure column name.
      *
-     * @param domain Domain name
+     * @param domainKeys Domain name
      *
      * @return SQL fragment
      */
     @NonNull
-    public String dotAs(@NonNull final String domain) {
-        return getAlias() + '.' + domain + " AS " + domain;
+    public String dotAs(@NonNull final String... domainKeys) {
+        return Arrays.stream(domainKeys)
+                     .map(key -> getAlias() + '.' + key + _AS_ + key)
+                     .collect(Collectors.joining(","));
+    }
+
+    @NonNull
+    public String dotAs(@NonNull final List<Domain> domains) {
+        return domains.stream()
+                      .map(Domain::getName)
+                      .map(key -> getAlias() + '.' + key + _AS_ + key)
+                      .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Return an aliased table name.
+     * <p>
+     * format: [table-name] AS [table-alias]
+     * <p>
+     * e.g. 'books AS b'.
+     *
+     * @return SQL Fragment
+     */
+    @NonNull
+    public String ref() {
+        return mName + _AS_ + getAlias();
+    }
+
+    /**
+     * Staring with the current table, join with the given list of tables one by one.
+     *
+     * @param tables to join
+     *
+     * @return SQL fragment
+     */
+    public String startJoin(@NonNull final TableDefinition... tables) {
+        // optimization
+        if (tables.length == 1) {
+            return ref() + join(tables[0]);
+        }
+
+        final ArrayList<TableDefinition> list = new ArrayList<>(Arrays.asList(tables));
+        list.add(0, this);
+
+        final StringBuilder sb = new StringBuilder(ref());
+        for (int i = 0; i < list.size() - 1; i++) {
+            sb.append(list.get(i).join(list.get(i + 1)));
+        }
+        return sb.toString();
     }
 
     /**
@@ -735,50 +757,51 @@ public class TableDefinition {
         }
     }
 
-    /**
-     * URGENT: the use of recreateAndReload is dangerous right now and can break updates.
-     * More specifically: the recreateAndReload routine can only be used ONCE per table.
-     * We'll need to keep previous table definitions as BC used to do.
-     * <p>
-     * Alter the physical table in the database.
-     * Takes care of newly added (based on TableDefinition),
-     * removes obsolete, and renames columns. The latter based on a list/map passed in.
-     *
-     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
-     *
-     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
-     * SQLite - making_other_kinds_of_table_schema_changes</a>
-     * <p>
-     * The 12 steps in summary:
-     * <ol>
-     *  <li>If foreign key constraints are enabled, disable them using PRAGMA foreign_keys=OFF.</li>
-     *  <li>Create new table</li>
-     *  <li>Copy data</li>
-     *  <li>Drop old table</li>
-     *  <li>Rename new into old</li>
-     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
-     * </ol>
-     *
-     * @param db       Database Access
-     * @param toRename (optional) Map of fields to be renamed
-     * @param toRemove (optional) List of fields to be removed
-     */
-    public void recreateAndReload(@NonNull final SQLiteDatabase db,
-                                  @SuppressWarnings("SameParameterValue")
-                                  @Nullable final Map<String, String> toRename,
-                                  @Nullable final Collection<String> toRemove) {
-
-        final String dstTableName = "copyOf" + mName;
-        // With constraints... sqlite does not allow to add constraints later.
-        // Without indexes.
-        db.execSQL(def(dstTableName, true));
-
-        // This handles re-ordered fields etc.
-        copyTableSafely(db, dstTableName, toRemove, toRename);
-
-        db.execSQL("DROP TABLE " + mName);
-        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + mName);
-    }
+//    /**
+//     * URGENT: the use of recreateAndReload is dangerous right now and can break updates.
+//     * More specifically: the recreateAndReload routine can only be used ONCE per table.
+//     * We'll need to keep previous table definitions as BC used to do.
+//     * <p>
+//     * Alter the physical table in the database.
+//     * Takes care of newly added (based on TableDefinition),
+//     * removes obsolete, and renames columns. The latter based on a list/map passed in.
+//     *
+//     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
+//     *
+//     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
+//     * SQLite - making_other_kinds_of_table_schema_changes</a>
+//     * <p>
+//     * The 12 steps in summary:
+//     * <ol>
+//     *  <li>If foreign key constraints are enabled,
+//     *      disable them using PRAGMA foreign_keys=OFF.</li>
+//     *  <li>Create new table</li>
+//     *  <li>Copy data</li>
+//     *  <li>Drop old table</li>
+//     *  <li>Rename new into old</li>
+//     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
+//     * </ol>
+//     *
+//     * @param db       Database Access
+//     * @param toRename (optional) Map of fields to be renamed
+//     * @param toRemove (optional) List of fields to be removed
+//     */
+//    public void recreateAndReload(@NonNull final SQLiteDatabase db,
+//                                  @SuppressWarnings("SameParameterValue")
+//                                  @Nullable final Map<String, String> toRename,
+//                                  @Nullable final Collection<String> toRemove) {
+//
+//        final String dstTableName = "copyOf" + mName;
+//        // With constraints... sqlite does not allow to add constraints later.
+//        // Without indexes.
+//        db.execSQL(def(dstTableName, true));
+//
+//        // This handles re-ordered fields etc.
+//        copyTableSafely(db, dstTableName, toRemove, toRename);
+//
+//        db.execSQL("DROP TABLE " + mName);
+//        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + mName);
+//    }
 
     /**
      * Provide a safe table copy method that is insulated from risks associated with
@@ -878,46 +901,45 @@ public class TableDefinition {
         return sql.toString();
     }
 
-    /**
-     * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
-     * <p>
-     * Create and populate the 'order by' column.
-     * This method is used/meant for use during upgrades.
-     * <p>
-     * Note this is a lazy approach using the users preferred Locale,
-     * as compared to the DAO code where we take the book's language/Locale into account.
-     * The overhead here would be huge.
-     * If the user has any specific book issue, a simple update of the book will fix it.
-     */
-    @SuppressWarnings("unused")
-    private void addOrderByColumn(@NonNull final Context context,
-                                  @NonNull final SQLiteDatabase db,
-                                  @NonNull final Domain source,
-                                  @NonNull final Domain destination) {
-
-        db.execSQL("ALTER TABLE " + getName()
-                   + " ADD " + destination.getName() + " text NOT NULL default ''");
-
-        final String updateSql =
-                "UPDATE " + getName() + " SET " + destination.getName() + "=?"
-                + " WHERE " + DBKeys.KEY_PK_ID + "=?";
-
-        try (SQLiteStatement update = db.compileStatement(updateSql);
-             Cursor cursor = db.rawQuery(
-                     "SELECT " + DBKeys.KEY_PK_ID
-                     + ',' + source.getName() + " FROM " + getName(),
-                     null)) {
-
-            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-            while (cursor.moveToNext()) {
-                final long id = cursor.getLong(0);
-                final String in = cursor.getString(1);
-                update.bindString(1, BaseDaoImpl.encodeOrderByColumn(in, userLocale));
-                update.bindLong(2, id);
-                update.executeUpdateDelete();
-            }
-        }
-    }
+//    /**
+//     * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
+//     * <p>
+//     * Create and populate the 'order by' column.
+//     * This method is used/meant for use during upgrades.
+//     * <p>
+//     * Note this is a lazy approach using the users preferred Locale,
+//     * as compared to the DAO code where we take the book's language/Locale into account.
+//     * The overhead here would be huge.
+//     * If the user has any specific book issue, a simple update of the book will fix it.
+//     */
+//    private void addOrderByColumn(@NonNull final Context context,
+//                                  @NonNull final SQLiteDatabase db,
+//                                  @NonNull final Domain source,
+//                                  @NonNull final Domain destination) {
+//
+//        db.execSQL("ALTER TABLE " + getName()
+//                   + " ADD " + destination.getName() + " text NOT NULL default ''");
+//
+//        final String updateSql =
+//                "UPDATE " + getName() + " SET " + destination.getName() + "=?"
+//                + " WHERE " + DBKey.PK_ID + "=?";
+//
+//        try (SQLiteStatement update = db.compileStatement(updateSql);
+//             Cursor cursor = db.rawQuery(
+//                     "SELECT " + DBKey.PK_ID
+//                     + ',' + source.getName() + " FROM " + getName(),
+//                     null)) {
+//
+//            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+//            while (cursor.moveToNext()) {
+//                final long id = cursor.getLong(0);
+//                final String in = cursor.getString(1);
+//                update.bindString(1, SqlEncode.orderByColumn(in, userLocale));
+//                update.bindLong(2, id);
+//                update.executeUpdateDelete();
+//            }
+//        }
+//    }
 
     /**
      * Supported/used table types.

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -68,6 +69,16 @@ public interface PublisherDao {
      */
     @NonNull
     ArrayList<String> getNames();
+
+    /**
+     * Get a list of the Publisher for a book.
+     *
+     * @param bookId of the book
+     *
+     * @return list of Publisher
+     */
+    @NonNull
+    ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get a list of book ID's for the given {@link Publisher}.
@@ -205,4 +216,16 @@ public interface PublisherDao {
      * Delete orphaned records.
      */
     void purge();
+
+    /**
+     * Check for books which do not have a {@link Publisher} at position 1.
+     * For those that don't, read their list, and re-save them.
+     * <p>
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     */
+    int repositionPublishers(@NonNull Context context);
 }

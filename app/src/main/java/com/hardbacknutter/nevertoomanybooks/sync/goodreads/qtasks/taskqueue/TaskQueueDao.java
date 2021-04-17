@@ -20,10 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
@@ -33,40 +33,39 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT_UTC_DATETIME;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_QUEUE_ID;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_QUEUE_NAME;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_CATEGORY;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_EXCEPTION;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_FAILURE_REASON;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_ID;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_PRIORITY;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_RETRY_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_TASK_STATUS_CODE;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.TBL_EVENT;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.TBL_QUEUE;
-import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDBHelper.TBL_TASK;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_EVENT;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_EVENT_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_EVENT_UTC_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_QUEUE_ID;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_QUEUE_NAME;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_CATEGORY;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_EXCEPTION;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_FAILURE_REASON;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_ID;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_PRIORITY;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_RETRY_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.KEY_TASK_STATUS_CODE;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.TBL_EVENT;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.TBL_QUEUE;
+import static com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper.TBL_TASK;
 
 /**
  * Database layer. Provides all direct database access.
+ * <p>
+ * All date handling is done using ZoneOffset.UTC.
  */
-class QueueDAO
-        implements AutoCloseable {
+class TaskQueueDao {
 
-    /** Long. */
     private static final String SQL_COUNT_ACTIVE_TASKS =
             "SELECT COUNT(*) FROM " + TBL_TASK
             + " WHERE NOT " + KEY_TASK_STATUS_CODE + " IN ("
@@ -95,7 +94,6 @@ class QueueDAO
     private static final String SQL_FETCH_ALL_QUEUES =
             "SELECT " + KEY_QUEUE_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + KEY_QUEUE_NAME;
 
-    /** Long. */
     private static final String SQL_COUNT_EVENTS =
             "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + "=?";
 
@@ -134,8 +132,8 @@ class QueueDAO
     /** Remove Events attached to old tasks. */
     private static final String SQL_DELETE_OLD_EVENTS_WITH_TASKS =
             "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + " IN ("
-            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK + " WHERE " + KEY_TASK_RETRY_UTC_DATETIME
-            + "<?)";
+            + "SELECT " + KEY_PK_ID + " FROM " + TBL_TASK
+            + " WHERE " + KEY_TASK_RETRY_UTC_DATETIME + "<?)";
 
     /** Remove old tasks. */
     private static final String SQL_DELETE_OLD_TASKS =
@@ -145,19 +143,18 @@ class QueueDAO
     private static final String SQL_DELETE_OLD_EVENTS =
             "DELETE FROM " + TBL_EVENT + " WHERE " + KEY_EVENT_UTC_DATETIME + "<?";
 
+    /** Check for the existence. */
+    private static final String SQL_TASK_EXISTS =
+            "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + KEY_PK_ID + "=?";
+
     @NonNull
-    private final QueueDBHelper mQueueDBHelper;
-    /** List of statements build by this adapter so that they can be removed on close. */
-    private final Collection<SQLiteStatement> mStatements = new ArrayList<>();
-    private SQLiteStatement mCheckTaskExistsStmt;
+    private final SQLiteOpenHelper mQueueDBHelper;
 
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    QueueDAO(@NonNull final Context context) {
-        mQueueDBHelper = new QueueDBHelper(context);
+    TaskQueueDao() {
+        mQueueDBHelper = ServiceLocator.getInstance().getTaskQueueDBHelper();
     }
 
     /**
@@ -239,18 +236,16 @@ class QueueDAO
      * This method will find the highest priority RUNNABLE task, and failing that the
      * next available task.
      *
-     * @param context   Current context
      * @param queueName Name of queue to check
      *
      * @return ScheduledTask object containing details of task or {@code null} for none.
      */
     @Nullable
-    ScheduledTask getNextTask(@NonNull final Context context,
-                              @NonNull final String queueName) {
+    ScheduledTask getNextTask(@NonNull final String queueName) {
 
-        final LocalDateTime currentUtcDateTime = LocalDateTime.now(ZoneOffset.UTC);
+        final LocalDateTime utcNow = LocalDateTime.now(ZoneOffset.UTC);
         final String[] sqlArg = new String[]{
-                queueName, currentUtcDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)};
+                queueName, utcNow.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)};
 
         final SQLiteDatabase db = getDb();
         Cursor cursor = null;
@@ -271,16 +266,17 @@ class QueueDAO
             }
 
             // Determine the number of milliseconds to wait before we should run the task
-            LocalDateTime utcRetryDate = DateParser.getInstance(context).parseISO(
+            LocalDateTime utcRetry = new ISODateParser().parse(
                     cursor.getString(cursor.getColumnIndex(KEY_TASK_RETRY_UTC_DATETIME)));
-            if (utcRetryDate == null) {
-                utcRetryDate = LocalDateTime.now(ZoneOffset.UTC);
+            if (utcRetry == null) {
+                utcRetry = LocalDateTime.now(ZoneOffset.UTC);
             }
 
             final long millisUntilRunnable;
-            if (utcRetryDate.isAfter(currentUtcDateTime)) {
+            if (utcRetry.isAfter(utcNow)) {
                 // set timeUntilRunnable to let caller know the queue is not empty
-                millisUntilRunnable = Duration.between(currentUtcDateTime, utcRetryDate).abs()
+                millisUntilRunnable = Duration.between(utcNow, utcRetry)
+                                              .abs()
                                               .toMillis();
             } else {
                 // No need to wait
@@ -371,21 +367,20 @@ class QueueDAO
      * @param task The task to requeue
      */
     void requeueTask(@NonNull final TQTask task) {
-        if (!task.canRetry()) {
-            setTaskFailed(task, "Retry limit exceeded");
-        } else {
+        if (task.canRetry()) {
             // Compute time Task can next be run
-            final String utcRetryDateTime =
-                    LocalDateTime.now(ZoneOffset.UTC)
-                                 .plusSeconds(task.getRetryDelay())
-                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            final String utcRetry = LocalDateTime.now(ZoneOffset.UTC)
+                                                 .plusSeconds(task.getRetryDelay())
+                                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
             final ContentValues cv = new ContentValues();
-            cv.put(KEY_TASK_RETRY_UTC_DATETIME, utcRetryDateTime);
+            cv.put(KEY_TASK_RETRY_UTC_DATETIME, utcRetry);
             cv.put(KEY_TASK_RETRY_COUNT, task.getRetries() + 1);
             cv.put(KEY_TASK, SerializationUtils.serializeObject(task));
             getDb().update(TBL_TASK, cv, KEY_PK_ID + "=?",
                            new String[]{String.valueOf(task.getId())});
+        } else {
+            setTaskFailed(task, "Retry limit exceeded");
         }
     }
 
@@ -403,18 +398,13 @@ class QueueDAO
                         @SuppressWarnings("TypeMayBeWeakened") @NonNull final TQEvent event) {
         final SQLiteDatabase db = getDb();
 
-        // Construct statements we want
-        if (mCheckTaskExistsStmt == null) {
-            final String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + KEY_PK_ID + "=?";
-            mCheckTaskExistsStmt = db.compileStatement(sql);
-            mStatements.add(mCheckTaskExistsStmt);
-        }
-
+        // Use a transaction to make sure the task is not accidentally deleted between
+        // the time we check for it to exist and the time we insert the new event.
         db.beginTransaction();
-        try {
+        try (SQLiteStatement stmt = db.compileStatement(SQL_TASK_EXISTS)) {
             // Check task exists
-            mCheckTaskExistsStmt.bindLong(1, taskId);
-            final long count = mCheckTaskExistsStmt.simpleQueryForLong();
+            stmt.bindLong(1, taskId);
+            final long count = stmt.simpleQueryForLong();
             if (count > 0) {
                 // Setup parameters for insert
                 final ContentValues cv = new ContentValues();
@@ -598,27 +588,6 @@ class QueueDAO
 
         try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_COMPLETED_TASKS)) {
             stmt.executeUpdateDelete();
-        }
-    }
-
-    /**
-     * Generic function to close the database.
-     */
-    @Override
-    public void close() {
-        try {
-            for (final SQLiteStatement s : mStatements) {
-                try {
-                    s.close();
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore
-                }
-            }
-            mQueueDBHelper.close();
-        } catch (@NonNull final RuntimeException ignore) {
-            // ignore
-        } finally {
-            mStatements.clear();
         }
     }
 

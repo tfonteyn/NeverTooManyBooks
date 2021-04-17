@@ -31,6 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -62,12 +64,14 @@ public class OptimizeDbTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context) {
+    protected Boolean doWork(@NonNull final Context context)
+            throws ExternalStorageException {
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
-        // Cleanup the cache. Out of precaution we only trash jpg files
-        AppDir.Cache.purge(true, file -> file.getName().endsWith(".jpg"));
+        // Cleanup temp files. Out of precaution we only trash jpg files
+
+        FileUtils.deleteFiles(AppDir.Temp.getDir(), file -> file.getName().endsWith(".jpg"));
 
         ServiceLocator.getDb().optimize();
 

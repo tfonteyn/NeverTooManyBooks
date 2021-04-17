@@ -28,9 +28,9 @@ import androidx.annotation.WorkerThread;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -69,9 +69,8 @@ public class DBCleanerTask
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        try (DBCleaner cleaner = new DBCleaner();
-             BookDao bookDao = new BookDao(TAG)) {
-
+        final DBCleaner cleaner = new DBCleaner();
+        try {
             // do a mass update of any languages not yet converted to ISO 639-2 codes
             cleaner.languages(context, userLocale);
 
@@ -90,20 +89,22 @@ public class DBCleanerTask
             // we need to test with bad data
             cleaner.bookBookshelf(true);
 
+            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
             // re-sort positional links - theoretically this should never be needed... flw.
-            int modified = bookDao.repositionAuthor(context);
-            modified += bookDao.repositionSeries(context);
-            modified += bookDao.repositionPublishers(context);
-            modified += bookDao.repositionTocEntries(context);
+            int modified = serviceLocator.getAuthorDao().repositionAuthor(context);
+            modified += serviceLocator.getSeriesDao().repositionSeries(context);
+            modified += serviceLocator.getPublisherDao().repositionPublishers(context);
+            modified += serviceLocator.getTocEntryDao().repositionTocEntries(context);
+
             if (modified > 0) {
-                Logger.warn(TAG, "bookDao.reposition modified=" + modified);
+                Logger.warn(TAG, "reposition modified=" + modified);
             }
             return true;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleMaintenance(false);
+            StartupViewModel.schedule(StartupViewModel.PK_RUN_MAINTENANCE, false);
         }
     }
 }

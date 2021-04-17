@@ -69,7 +69,7 @@ public class RebuildIndexesTask
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleIndexRebuild(false);
+            StartupViewModel.schedule(StartupViewModel.PK_REBUILD_INDEXES, false);
         }
     }
 }

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -30,21 +31,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
 /**
- * Note the insert + update method reside in {@link BookDao} as they are only
+ * Note the insert + update method reside in {@link BookDaoImpl} as they are only
  * ever needed there + as they are always called in a loop, benefit from the caching of statements.
  */
 public class TocEntryDaoImpl
@@ -56,18 +65,42 @@ public class TocEntryDaoImpl
 
     /** All Books (id only) for a given TocEntry. */
     private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
-            SELECT_ + DBKeys.KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
-            + _WHERE_ + DBKeys.KEY_FK_TOC_ENTRY + "=?";
+            SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+            + _WHERE_ + DBKey.FK_TOC_ENTRY + "=?";
 
     /** All Books (id+title (as a pair) only) for a given TocEntry. */
     private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
-            SELECT_ + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + ',' + TBL_BOOKS.dot(DBKeys.KEY_TITLE)
-            + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref() + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS)
-            + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKeys.KEY_FK_TOC_ENTRY) + "=?"
-            + _ORDER_BY_ + TBL_BOOKS.dot(DBKeys.KEY_TITLE_OB);
+            SELECT_ + TBL_BOOKS.dot(DBKey.PK_ID) + ',' + TBL_BOOKS.dot(DBKey.KEY_TITLE)
+            + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
+            + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
+            + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB);
 
     /** {@link TocEntry}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
+
+    /** All TocEntry's for a Book; ordered by position in the book. */
+    private static final String TOC_ENTRIES_BY_BOOK_ID =
+            SELECT_ + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
+                                            DBKey.FK_AUTHOR,
+                                            DBKey.KEY_TITLE,
+                                            DBKey.DATE_FIRST_PUBLICATION)
+            // for convenience, we fetch the Author here
+            + ',' + TBL_AUTHORS.dotAs(DBKey.KEY_AUTHOR_FAMILY_NAME,
+                                      DBKey.KEY_AUTHOR_GIVEN_NAMES,
+                                      DBKey.BOOL_AUTHOR_IS_COMPLETE)
+
+            // count the number of books this TOC entry is present in.
+            + ',' + "(SELECT COUNT(*) FROM " + TBL_BOOK_TOC_ENTRIES.getName()
+            // use the full table name on the left as we need a full table scan
+            + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + DBKey.FK_TOC_ENTRY
+            // but filtered on the results from the main query (i.e. alias on the right).
+            + "=" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.KEY_BOOK_COUNT
+
+            + _FROM_
+            + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES)
+            + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
+            + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_BOOK) + "=?"
+            + _ORDER_BY_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.KEY_BOOK_TOC_ENTRY_POSITION);
 
     /**
      * Get the id of a {@link TocEntry} by Title.
@@ -75,14 +108,14 @@ public class TocEntryDaoImpl
      * Search KEY_TITLE_OB on both "The Title" and "Title, The"
      */
     private static final String FIND_ID =
-            SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
-            + _WHERE_ + DBKeys.KEY_FK_AUTHOR + "=?"
-            + " AND (" + DBKeys.KEY_TITLE_OB + "=? " + _COLLATION
-            + _OR_ + DBKeys.KEY_TITLE_OB + "=?" + _COLLATION + ')';
+            SELECT_ + DBKey.PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
+            + _WHERE_ + DBKey.FK_AUTHOR + "=?"
+            + " AND (" + DBKey.KEY_TITLE_OB + "=? " + _COLLATION
+            + _OR_ + DBKey.KEY_TITLE_OB + "=?" + _COLLATION + ')';
 
     /** Delete a {@link TocEntry}. */
     private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
     /**
      * Constructor.
@@ -122,8 +155,8 @@ public class TocEntryDaoImpl
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
-            stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), tocLocale));
+            stmt.bindString(3, SqlEncode.orderByColumn(obTitle, tocLocale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -142,8 +175,26 @@ public class TocEntryDaoImpl
                                           new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Pair<>(rowData.getLong(DBKeys.KEY_PK_ID),
-                                    rowData.getString(DBKeys.KEY_TITLE)));
+                list.add(new Pair<>(rowData.getLong(DBKey.PK_ID),
+                                    rowData.getString(DBKey.KEY_TITLE)));
+            }
+        }
+        return list;
+    }
+
+    @Override
+    @NonNull
+    public ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) final long bookId) {
+        final ArrayList<TocEntry> list = new ArrayList<>();
+        try (Cursor cursor = mDb.rawQuery(TOC_ENTRIES_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
+                                      new Author(rowData.getLong(DBKey.FK_AUTHOR), rowData),
+                                      rowData.getString(DBKey.KEY_TITLE),
+                                      rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
+                                      rowData.getInt(DBKey.KEY_BOOK_COUNT)));
             }
         }
         return list;
@@ -174,10 +225,56 @@ public class TocEntryDaoImpl
 
         if (rowsAffected > 0) {
             tocEntry.setId(0);
-            try (BookDao bookDao = new BookDao(TAG)) {
-                bookDao.repositionTocEntries(context);
-            }
+            repositionTocEntries(context);
         }
         return rowsAffected == 1;
+    }
+
+    @Override
+    public int repositionTocEntries(@NonNull final Context context) {
+        final String sql =
+                "SELECT " + DBKey.FK_BOOK + " FROM "
+                + "(SELECT " + DBKey.FK_BOOK
+                + ", MIN(" + DBKey.KEY_BOOK_TOC_ENTRY_POSITION + ") AS mp"
+                + " FROM " + TBL_BOOK_TOC_ENTRIES.getName()
+                + " GROUP BY " + DBKey.FK_BOOK
+                + ") WHERE mp > 1";
+
+        final ArrayList<Long> bookIds = getColumnAsLongArrayList(sql);
+        if (!bookIds.isEmpty()) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "repositionTocEntries|" + TBL_BOOK_TOC_ENTRIES.getName()
+                           + ", rows=" + bookIds.size());
+            }
+            // ENHANCE: we really should fetch each book individually
+            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
+            Synchronizer.SyncLock txLock = null;
+            try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
+                for (final long bookId : bookIds) {
+                    final ArrayList<TocEntry> list = getTocEntryByBookId(bookId);
+                    bookDao.insertOrUpdateToc(context, bookId, list, false, bookLocale);
+                }
+                if (txLock != null) {
+                    mDb.setTransactionSuccessful();
+                }
+            } catch (@NonNull final RuntimeException | DaoWriteException e) {
+                Logger.error(TAG, e);
+
+            } finally {
+                if (txLock != null) {
+                    mDb.endTransaction(txLock);
+                }
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "repositionTocEntries|done");
+                }
+            }
+        }
+        return bookIds.size();
     }
 }

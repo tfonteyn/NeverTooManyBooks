@@ -25,7 +25,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
@@ -48,13 +48,13 @@ public class GoodreadsDaoImpl
      * Must be kept in sync with {@link GoodreadsManager#sendOneBook}
      */
     private static final String BASE_SELECT =
-            SELECT_ + DBKeys.KEY_PK_ID
-            + ',' + DBKeys.KEY_ISBN
-            + ',' + DBKeys.KEY_ESID_GOODREADS_BOOK
-            + ',' + DBKeys.KEY_READ
-            + ',' + DBKeys.KEY_READ_START
-            + ',' + DBKeys.KEY_READ_END
-            + ',' + DBKeys.KEY_RATING
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.KEY_ISBN
+            + ',' + DBKey.SID_GOODREADS_BOOK
+            + ',' + DBKey.BOOL_READ
+            + ',' + DBKey.DATE_READ_START
+            + ',' + DBKey.DATE_READ_END
+            + ',' + DBKey.KEY_RATING
             + _FROM_ + TBL_BOOKS.getName();
 
     /**
@@ -65,9 +65,9 @@ public class GoodreadsDaoImpl
      * Send only new/updated books
      */
     private static final String UPDATED_BOOKS =
-            BASE_SELECT + _WHERE_ + DBKeys.KEY_PK_ID + ">?"
-            + _AND_ + DBKeys.KEY_UTC_LAST_UPDATED + '>' + DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE
-            + _ORDER_BY_ + DBKeys.KEY_PK_ID;
+            BASE_SELECT + _WHERE_ + DBKey.PK_ID + ">?"
+            + _AND_ + DBKey.UTC_DATE_LAST_UPDATED + '>' + DBKey.UTC_DATE_LAST_SYNC_GOODREADS
+            + _ORDER_BY_ + DBKey.PK_ID;
 
 
     /**
@@ -75,7 +75,7 @@ public class GoodreadsDaoImpl
      * <p>
      * param KEY_PK_ID of the Book
      */
-    private static final String SINGLE_BOOK = BASE_SELECT + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+    private static final String SINGLE_BOOK = BASE_SELECT + _WHERE_ + DBKey.PK_ID + "=?";
 
     /**
      * Get the needed Book fields for sending to Goodreads.
@@ -84,38 +84,37 @@ public class GoodreadsDaoImpl
      * <p>
      * Send all books.
      */
-    private static final String ALL_BOOKS = BASE_SELECT + _WHERE_ + DBKeys.KEY_PK_ID + ">?"
-                                            + _ORDER_BY_ + DBKeys.KEY_PK_ID;
+    private static final String ALL_BOOKS = BASE_SELECT + _WHERE_ + DBKey.PK_ID + ">?"
+                                            + _ORDER_BY_ + DBKey.PK_ID;
 
     /** A subset of book columns, to be used for searches on Goodreads. */
     private static final String BOOK_COLUMNS_FOR_SEARCH =
-            SELECT_ + TBL_BOOKS.dotAs(DBKeys.KEY_PK_ID)
-            + ',' + TBL_BOOKS.dotAs(DBKeys.KEY_TITLE)
-            + ',' + TBL_BOOKS.dotAs(DBKeys.KEY_ISBN)
-            + ',' + AuthorDaoImpl.getDisplayAuthor(true)
-            + _AS_ + DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST
+            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
+                                      DBKey.KEY_TITLE,
+                                      DBKey.KEY_ISBN)
+            + ',' + AuthorDaoImpl.DISPLAY_AUTHOR_GIVEN_FIRST
+            + _AS_ + DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST
 
-            + _FROM_ + TBL_BOOKS.ref()
-            + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-            + _WHERE_ + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=?";
+            + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR, TBL_AUTHORS)
+            + _WHERE_ + TBL_BOOKS.dot(DBKey.PK_ID) + "=?";
 
     /**
      * Update a single Book's last sync date with Goodreads.
-     * Do NOT update the {@link DBKeys#KEY_UTC_LAST_UPDATED} field.
+     * Do NOT update the {@link DBKey#UTC_DATE_LAST_UPDATED} field.
      */
     private static final String UPDATE_GR_LAST_SYNC_DATE =
             UPDATE_ + TBL_BOOKS.getName()
-            + _SET_ + DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
-            + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            + _SET_ + DBKey.UTC_DATE_LAST_SYNC_GOODREADS + "=current_timestamp"
+            + _WHERE_ + DBKey.PK_ID + "=?";
 
     /**
      * Update a single Book's Goodreads id.
-     * Do NOT update the {@link DBKeys#KEY_UTC_LAST_UPDATED} field.
+     * Do NOT update the {@link DBKey#UTC_DATE_LAST_UPDATED} field.
      */
     private static final String UPDATE_GR_BOOK_ID =
             UPDATE_ + TBL_BOOKS.getName()
-            + _SET_ + DBKeys.KEY_ESID_GOODREADS_BOOK + "=?"
-            + _WHERE_ + DBKeys.KEY_PK_ID + "=?";
+            + _SET_ + DBKey.SID_GOODREADS_BOOK + "=?"
+            + _WHERE_ + DBKey.PK_ID + "=?";
 
     /**
      * Constructor.

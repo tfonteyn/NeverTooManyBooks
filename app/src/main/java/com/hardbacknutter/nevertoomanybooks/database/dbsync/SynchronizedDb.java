@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -98,28 +99,30 @@ public class SynchronizedDb
         mSqlDb = open(sqLiteOpenHelper);
     }
 
-    //    /**
-    //     * Constructor.
-    //     *
-    //     * @param synchronizer      Synchronizer to use
-    //     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
-    //     * @param preparedStmtCache the number or prepared statements to cache.
-    //     *                          The javadoc for setMaxSqlCacheSize says the default is 10,
-    //     *                          but if you follow the source code, you end up in
-    //     *                          android.database.sqlite.SQLiteDatabaseConfiguration
-    //     *                          where the default is in fact 25!
-    //     */
-    //    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-    //                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-    //                          final int preparedStmtCache) {
-    //        this(synchronizer, sqLiteOpenHelper);
-    //
-    //        // only set when bigger than default
-    //        if ((preparedStmtCache > 25)
-    //            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
-    //            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
-    //        }
-    //    }
+    /**
+     * Constructor.
+     * <p>
+     * The javadoc for setMaxSqlCacheSize says the default is 10,
+     * but if you check the source code (verified API 30):
+     * android/database/sqlite/SQLiteDatabaseConfiguration.java: public int maxSqlCacheSize;
+     * the default is in fact 25 as set in the constructor of that class.
+     *
+     * @param synchronizer      Synchronizer to use
+     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
+     * @param preparedStmtCache the number or prepared statements to cache.
+     */
+    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+                          @IntRange(from = 25, to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
+                          final int preparedStmtCache) {
+        this(synchronizer, sqLiteOpenHelper);
+
+        // only set when bigger than the default
+        if ((preparedStmtCache > 25)
+            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
+            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
+        }
+    }
 
     /**
      * DEBUG only.
@@ -213,6 +216,9 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      *
+     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
+     * However, to avoid the overhead, loops should use {@link #rawQuery(String, String[])} instead.
+     *
      * @param table  the table to insert the row into
      * @param values this map contains the initial column values for the
      *               row. The keys should be the column names and the values the
@@ -253,8 +259,8 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <strong>Note:</strong> as far as I can tell, the Statement behind this call is not cached.
-     * So this is fine for single-action inserts, but not for loops (should use a prepared stmt).
+     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
+     * However, to avoid the overhead, loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected
      */
@@ -286,8 +292,8 @@ public class SynchronizedDb
     /**
      * Locking-aware wrapper for underlying database method.
      * <p>
-     * <strong>Note:</strong> as far as I can tell, the Statement behind this call is not cached.
-     * So this is fine for single-action deletes, but not for loops (should use a prepared stmt).
+     * <strong>Note:</strong> SQLite maintains a Statement cache based on sql string matching.
+     * However, to avoid the overhead, loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected if a whereClause is passed in, 0
      * otherwise. To remove all rows and get a count pass "1" as the

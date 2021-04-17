@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -42,28 +42,28 @@ public class LoaneeDaoImpl
 
     /** Get the name of the loanee of a {@link Book} by the Book id. */
     private static final String SELECT_BY_BOOK_ID =
-            SELECT_ + DBKeys.KEY_LOANEE
+            SELECT_ + DBKey.KEY_LOANEE
             + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKeys.KEY_FK_BOOK + "=?";
+            + _WHERE_ + DBKey.FK_BOOK + "=?";
 
     /** name only. */
     private static final String SELECT_ALL =
-            SELECT_DISTINCT_ + DBKeys.KEY_LOANEE
+            SELECT_DISTINCT_ + DBKey.KEY_LOANEE
             + _FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKeys.KEY_LOANEE + "<> ''"
-            + _ORDER_BY_ + DBKeys.KEY_LOANEE + _COLLATION;
+            + _WHERE_ + DBKey.KEY_LOANEE + "<> ''"
+            + _ORDER_BY_ + DBKey.KEY_LOANEE + _COLLATION;
 
     /** Lend a book. */
     private static final String INSERT =
             INSERT_INTO_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + '(' + DBKeys.KEY_FK_BOOK
-            + ',' + DBKeys.KEY_LOANEE
+            + '(' + DBKey.FK_BOOK
+            + ',' + DBKey.KEY_LOANEE
             + ") VALUES(?,?)";
 
     /** Delete the loan of a {@link Book}; i.e. 'return the book'. */
     private static final String DELETE_BY_BOOK_ID =
             DELETE_FROM_ + DBDefinitions.TBL_BOOK_LOANEE.getName()
-            + _WHERE_ + DBKeys.KEY_FK_BOOK + "=?";
+            + _WHERE_ + DBKey.FK_BOOK + "=?";
 
     /**
      * Constructor.
@@ -88,14 +88,14 @@ public class LoaneeDaoImpl
 
         final boolean success = setLoaneeInternal(book.getId(), loanee);
         if (success) {
-            touchBook(book);
+            touch(book);
         }
         return success;
     }
 
     /**
      * Lend out a book / return a book.
-     * The book's {@link DBKeys#KEY_UTC_LAST_UPDATED} <strong>will NOT</strong> be updated.
+     * The book's {@link DBKey#UTC_DATE_LAST_UPDATED} <strong>will NOT</strong> be updated.
      *
      * @param bookId book to lend
      * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
@@ -126,9 +126,9 @@ public class LoaneeDaoImpl
 
             } else if (!loanee.equals(current)) {
                 final ContentValues cv = new ContentValues();
-                cv.put(DBKeys.KEY_LOANEE, loanee);
+                cv.put(DBKey.KEY_LOANEE, loanee);
                 success = 0 < mDb.update(DBDefinitions.TBL_BOOK_LOANEE.getName(), cv,
-                                         DBKeys.KEY_FK_BOOK + "=?",
+                                         DBKey.FK_BOOK + "=?",
                                          new String[]{String.valueOf(bookId)});
             }
         }

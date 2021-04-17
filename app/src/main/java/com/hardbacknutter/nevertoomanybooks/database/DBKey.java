@@ -33,28 +33,28 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
  * Keys used as domain names / Bundle keys.
  */
 @SuppressWarnings("WeakerAccess")
-public final class DBKeys {
+public final class DBKey {
 
     /** Primary key. */
-    public static final String KEY_PK_ID = "_id";
+    public static final String PK_ID = "_id";
     /** Foreign key. */
-    public static final String KEY_FK_BOOK = "book";
+    public static final String FK_BOOK = "book";
     /** Foreign key. */
-    public static final String KEY_FK_AUTHOR = "author";
+    public static final String FK_AUTHOR = "author";
     /** Foreign key. */
-    public static final String KEY_FK_SERIES = "series_id";
+    public static final String FK_SERIES = "series_id";
     /** Foreign key. */
-    public static final String KEY_FK_PUBLISHER = "publisher_id";
+    public static final String FK_PUBLISHER = "publisher_id";
     /** Foreign key. */
-    public static final String KEY_FK_BOOKSHELF = "bookshelf_id";
+    public static final String FK_BOOKSHELF = "bookshelf_id";
     /** Foreign key. */
-    public static final String KEY_FK_TOC_ENTRY = "anthology";
+    public static final String FK_TOC_ENTRY = "anthology";
     /** Foreign key. */
-    public static final String KEY_FK_STYLE = "style";
+    public static final String FK_STYLE = "style";
     /** Foreign key. */
-    public static final String KEY_FK_BL_ROW_ID = "bl_row_id";
+    public static final String FK_BL_ROW_ID = "bl_row_id";
     /** Foreign key. */
-    public static final String KEY_FK_CALIBRE_LIBRARY = "clb_lib_id";
+    public static final String FK_CALIBRE_LIBRARY = "clb_lib_id";
 
     /*
      * ======================================================================================
@@ -62,28 +62,28 @@ public final class DBKeys {
      * ======================================================================================
      */
     /** External Site id. - Long. */
-    public static final String KEY_ESID_GOODREADS_BOOK = "goodreads_book_id";
+    public static final String SID_GOODREADS_BOOK = "goodreads_book_id";
     /** External Site id. - Long. */
-    public static final String KEY_ESID_ISFDB = "isfdb_book_id";
+    public static final String SID_ISFDB = "isfdb_book_id";
     /** External Site id. - Long. */
-    public static final String KEY_ESID_LIBRARY_THING = "lt_book_id";
+    public static final String SID_LIBRARY_THING = "lt_book_id";
     /** External Site id. - String. */
-    public static final String KEY_ESID_OPEN_LIBRARY = "ol_book_id";
+    public static final String SID_OPEN_LIBRARY = "ol_book_id";
     /** External Site id. - Long. */
-    public static final String KEY_ESID_STRIP_INFO_BE = "si_book_id";
+    public static final String SID_STRIP_INFO = "si_book_id";
     /** External Site id. - Long. */
-    public static final String KEY_ESID_LAST_DODO_NL = "ld_book_id";
+    public static final String SID_LAST_DODO_NL = "ld_book_id";
 
     //NEWTHINGS: adding a new search engine: optional: add external id KEY
 
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_ASIN = "asin";
+    public static final String SID_ASIN = "asin";
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_GOOGLE = "google_book_id";
+    public static final String SID_GOOGLE = "google_book_id";
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_OCLC = "oclc_book_id";
+    public static final String SID_OCLC = "oclc_book_id";
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_LCCN = "lccn_book_id";
+    public static final String SID_LCCN = "lccn_book_id";
 
 
     /**
@@ -92,7 +92,7 @@ public final class DBKeys {
      * <p>
      * UTC DateTime stamp.
      */
-    public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
+    public static final String UTC_DATE_LAST_SYNC_GOODREADS = "last_goodreads_sync_date";
 
     /**
      * {@link DBDefinitions#TBL_BOOKS}.
@@ -101,11 +101,11 @@ public final class DBKeys {
      * The "CollectieId"; a secondary id used by the website for all books flagged
      * as being in the users collection.
      */
-    public static final String KEY_STRIP_INFO_BE_COLL_ID = "si_coll_id";
-    public static final String KEY_STRIP_INFO_BE_OWNED = "si_coll_owned";
-    public static final String KEY_STRIP_INFO_BE_WANTED = "si_coll_wanted";
-    public static final String KEY_STRIP_INFO_BE_AMOUNT = "si_coll_amount";
-    public static final String KEY_STRIP_INFO_BE_LAST_SYNC_DATE = "si_coll_last_sync";
+    public static final String KEY_STRIP_INFO_COLL_ID = "si_coll_id";
+    public static final String BOOL_STRIP_INFO_OWNED = "si_coll_owned";
+    public static final String BOOL_STRIP_INFO_WANTED = "si_coll_wanted";
+    public static final String KEY_STRIP_INFO_AMOUNT = "si_coll_amount";
+    public static final String UTC_DATE_LAST_SYNC_STRIP_INFO = "si_coll_last_sync";
 
     /*
      * ======================================================================================
@@ -114,7 +114,7 @@ public final class DBKeys {
      * ======================================================================================
      */
     /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
-    public static final String KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE = "clb_lib_last_sync";
+    public static final String UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY = "clb_lib_last_sync";
     public static final String KEY_CALIBRE_LIBRARY_STRING_ID = "clb_lib_id";
     public static final String KEY_CALIBRE_LIBRARY_UUID = "clb_lib_uuid";
     /**
@@ -145,7 +145,7 @@ public final class DBKeys {
     /** {@link DBDefinitions#TBL_AUTHORS} {@link DBDefinitions#TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
     public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
-    public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
+    public static final String BOOL_AUTHOR_IS_COMPLETE = "author_complete";
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
     public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
@@ -154,7 +154,7 @@ public final class DBKeys {
 
     /** {@link DBDefinitions#TBL_SERIES} {@link DBDefinitions#TBL_BOOK_SERIES} */
     public static final String KEY_SERIES_TITLE = "series_name";
-    public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
+    public static final String BOOL_SERIES_IS_COMPLETE = "series_complete";
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_BOOK_SERIES_POSITION = "series_position";
 
@@ -175,17 +175,17 @@ public final class DBKeys {
 
 
     /** {@link DBDefinitions#TBL_BOOKS}. */
-    public static final String KEY_UTC_ADDED = "date_added";
-    public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
+    public static final String UTC_DATE_ADDED = "date_added";
+    public static final String UTC_DATE_LAST_UPDATED = "last_update_date";
 
     public static final String KEY_STYLE_UUID = "uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ISBN = "isbn";
-    public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
-    public static final String KEY_BOOK_DATE_PUBLISHED = "date_published";
+    public static final String DATE_FIRST_PUBLICATION = "first_publication";
+    public static final String DATE_BOOK_PUBLICATION = "date_published";
     public static final String KEY_PRINT_RUN = "print_run";
-    public static final String KEY_PRICE_LISTED = "list_price";
-    public static final String KEY_PRICE_LISTED_CURRENCY = KEY_PRICE_LISTED + SUFFIX_KEY_CURRENCY;
+    public static final String PRICE_LISTED = "list_price";
+    public static final String PRICE_LISTED_CURRENCY = PRICE_LISTED + SUFFIX_KEY_CURRENCY;
     public static final String KEY_PAGES = "pages";
     public static final String KEY_FORMAT = "format";
     public static final String KEY_COLOR = "color";
@@ -193,19 +193,19 @@ public final class DBKeys {
     public static final String KEY_GENRE = "genre";
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_BOOK_UUID = "book_uuid";
-    public static final String KEY_EDITION_BITMASK = "edition_bm";
-    public static final String KEY_TOC_BITMASK = "anthology";
+    public static final String BITMASK_EDITION = "edition_bm";
+    public static final String BITMASK_TOC = "anthology";
 
 
     /** {@link DBDefinitions#TBL_BOOKS} Personal data. */
-    public static final String KEY_PRICE_PAID = "price_paid";
-    public static final String KEY_PRICE_PAID_CURRENCY = KEY_PRICE_PAID + SUFFIX_KEY_CURRENCY;
-    public static final String KEY_DATE_ACQUIRED = "date_acquired";
+    public static final String PRICE_PAID = "price_paid";
+    public static final String PRICE_PAID_CURRENCY = PRICE_PAID + SUFFIX_KEY_CURRENCY;
+    public static final String DATE_ACQUIRED = "date_acquired";
     public static final String KEY_LOCATION = "location";
-    public static final String KEY_READ = "read";
-    public static final String KEY_READ_START = "read_start";
-    public static final String KEY_READ_END = "read_end";
-    public static final String KEY_SIGNED = "signed";
+    public static final String BOOL_READ = "read";
+    public static final String DATE_READ_START = "read_start";
+    public static final String DATE_READ_END = "read_end";
+    public static final String BOOL_SIGNED = "signed";
     /** A rating goes from 1 to 5 stars, in 0.5 increments; 0 == not set. */
     public static final String KEY_RATING = "rating";
     public static final String KEY_PRIVATE_NOTES = "notes";
@@ -217,8 +217,8 @@ public final class DBKeys {
     public static final String KEY_LOANEE = "loaned_to";
 
     /** {@link DBDefinitions#TBL_BOOKLIST_STYLES}. */
-    public static final String KEY_STYLE_IS_BUILTIN = "builtin";
-    public static final String KEY_STYLE_IS_PREFERRED = "preferred";
+    public static final String BOOL_STYLE_IS_BUILTIN = "builtin";
+    public static final String BOOL_STYLE_IS_PREFERRED = "preferred";
     public static final String KEY_STYLE_MENU_POSITION = "menu_order";
 
     /** Alias. */
@@ -267,9 +267,9 @@ public final class DBKeys {
     /** FTS Primary key. */
     public static final String KEY_FTS_BOOK_ID = "docid";
     /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
-    public static final String KEY_FTS_AUTHOR_NAME = "author_name";
+    public static final String FTS_AUTHOR_NAME = "author_name";
     /** {@link DBDefinitions#TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
-    public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
+    public static final String FTS_TOC_ENTRY_TITLE = "toc_title";
 
 
     /** The "field is used" key for thumbnails. */
@@ -296,7 +296,7 @@ public final class DBKeys {
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
      */
-    private static final String MONEY_KEYS = KEY_PRICE_LISTED + ',' + KEY_PRICE_PAID;
+    private static final String MONEY_KEYS = PRICE_LISTED + ',' + PRICE_PAID;
 
 
     /** Suffix added to a column name to create a specific 'order by' copy of that column. */
@@ -309,14 +309,14 @@ public final class DBKeys {
     public static final String KEY_PUBLISHER_NAME_OB = KEY_PUBLISHER_NAME + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
 
-    private DBKeys() {
+    private DBKey() {
     }
 
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
      * @param global Global preferences
-     * @param dbdKey DBKeys.KEY_x to lookup
+     * @param dbdKey DBKey.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */
@@ -338,27 +338,27 @@ public final class DBKeys {
 
                 KEY_ISBN,
                 KEY_BOOK_AUTHOR_TYPE_BITMASK,
-                KEY_TOC_BITMASK,
+                BITMASK_TOC,
                 KEY_DESCRIPTION,
-                KEY_BOOK_DATE_PUBLISHED,
-                KEY_DATE_FIRST_PUBLICATION,
+                DATE_BOOK_PUBLICATION,
+                DATE_FIRST_PUBLICATION,
                 KEY_FORMAT,
                 KEY_COLOR,
                 KEY_GENRE,
                 KEY_LANGUAGE,
                 KEY_PAGES,
-                KEY_PRICE_LISTED,
+                PRICE_LISTED,
                 KEY_LOANEE,
                 KEY_PRIVATE_NOTES,
                 KEY_BOOK_CONDITION,
                 KEY_BOOK_CONDITION_COVER,
                 KEY_LOCATION,
-                KEY_PRICE_PAID,
-                KEY_READ,
-                KEY_READ_START,
-                KEY_READ_END,
-                KEY_EDITION_BITMASK,
-                KEY_SIGNED,
+                PRICE_PAID,
+                BOOL_READ,
+                DATE_READ_START,
+                DATE_READ_END,
+                BITMASK_EDITION,
+                BOOL_SIGNED,
                 KEY_RATING})
     @Retention(RetentionPolicy.SOURCE)
     private @interface UserSelectedDomain {

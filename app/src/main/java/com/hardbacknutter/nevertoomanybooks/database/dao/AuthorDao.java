@@ -22,14 +22,16 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -71,15 +73,25 @@ public interface AuthorDao {
      * Get a unique list of {@link Author} names in the specified format.
      *
      * @param key type of name wanted, one of
-     *            {@link DBKeys#KEY_AUTHOR_FAMILY_NAME},
-     *            {@link DBKeys#KEY_AUTHOR_GIVEN_NAMES},
-     *            {@link DBKeys#KEY_AUTHOR_FORMATTED},
-     *            {@link DBKeys#KEY_AUTHOR_FORMATTED_GIVEN_FIRST}
+     *            {@link DBKey#KEY_AUTHOR_FAMILY_NAME},
+     *            {@link DBKey#KEY_AUTHOR_GIVEN_NAMES},
+     *            {@link DBKey#KEY_AUTHOR_FORMATTED},
+     *            {@link DBKey#KEY_AUTHOR_FORMATTED_GIVEN_FIRST}
      *
      * @return list of all author names.
      */
     @NonNull
     ArrayList<String> getNames(@NonNull String key);
+
+    /**
+     * Get a list of the authors for a book.
+     *
+     * @param bookId of the book
+     *
+     * @return list of authors
+     */
+    @NonNull
+    ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) long bookId);
 
     /**
      * Get a list of book ID's for the given {@link Author}.
@@ -102,6 +114,23 @@ public interface AuthorDao {
     @NonNull
     ArrayList<Long> getBookIds(long authorId,
                                long bookshelfId);
+
+    /**
+     * Return all the {@link AuthorWork} for the given {@link Author}.
+     *
+     * @param author         to retrieve
+     * @param bookshelfId    limit the list to books on this shelf (pass -1 for all shelves)
+     * @param withTocEntries add the toc entries
+     * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
+     *                       is the book title itself. (makes sense?)
+     *
+     * @return List of {@link AuthorWork} for this {@link Author}
+     */
+    @NonNull
+    ArrayList<AuthorWork> getAuthorWorks(@NonNull Author author,
+                                         long bookshelfId,
+                                         boolean withTocEntries,
+                                         boolean withBooks);
 
     /**
      * Get all Authors; mainly for the purpose of exports.
@@ -237,4 +266,16 @@ public interface AuthorDao {
      * Delete orphaned records.
      */
     void purge();
+
+    /**
+     * Check for books which do not have an {@link Author} at position 1.
+     * For those that don't, read their list, and re-save them.
+     * <p>
+     * <strong>Transaction:</strong> participate, or runs in new.
+     *
+     * @param context Current context
+     *
+     * @return the number of books processed
+     */
+    int repositionAuthor(@NonNull Context context);
 }

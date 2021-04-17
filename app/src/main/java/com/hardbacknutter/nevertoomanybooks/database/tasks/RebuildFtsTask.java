@@ -26,7 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -63,13 +63,13 @@ public class RebuildFtsTask
     protected Boolean doWork(@NonNull final Context context) {
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
-        try (BookDao bookDao = new BookDao(TAG)) {
-            bookDao.ftsRebuild();
+        try {
+            ServiceLocator.getInstance().getFtsDao().rebuild();
             return true;
 
         } finally {
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-            StartupViewModel.scheduleFtsRebuild(false);
+            StartupViewModel.schedule(StartupViewModel.PK_REBUILD_FTS, false);
         }
     }
 }

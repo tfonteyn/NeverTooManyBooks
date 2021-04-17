@@ -154,9 +154,8 @@ public class SynchronizedStatement
      * @param index The 1-based index to the parameter to bind
      * @param value The value to bind, CAN be null, in which case {@link #bindNull} will be used.
      */
-    @SuppressWarnings("unused")
-    void bindBlob(final int index,
-                  @Nullable final byte[] value) {
+    public void bindBlob(final int index,
+                         @Nullable final byte[] value) {
         if (value == null) {
             mStatement.bindNull(index);
         } else {
