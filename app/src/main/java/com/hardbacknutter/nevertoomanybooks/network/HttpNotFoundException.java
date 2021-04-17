@@ -51,7 +51,7 @@ public class HttpNotFoundException
 
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
+    public String getUserMessage(@NonNull final Context context) {
         if (getSiteResId() != 0) {
             return context.getString(R.string.error_network_site_access_failed,
                                      context.getString(getSiteResId()));

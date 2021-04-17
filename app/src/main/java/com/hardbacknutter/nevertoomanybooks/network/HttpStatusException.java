@@ -85,7 +85,7 @@ public class HttpStatusException
 
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
+    public String getUserMessage(@NonNull final Context context) {
         final String msg;
         if (getSiteResId() != 0) {
             msg = context.getString(R.string.error_network_site_access_failed,

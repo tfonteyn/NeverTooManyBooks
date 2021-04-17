@@ -55,7 +55,7 @@ public class CredentialsException
 
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
+    public String getUserMessage(@NonNull final Context context) {
         if (getSiteResId() != 0) {
             return context.getString(R.string.error_site_authentication_failed,
                                      context.getString(getSiteResId()));

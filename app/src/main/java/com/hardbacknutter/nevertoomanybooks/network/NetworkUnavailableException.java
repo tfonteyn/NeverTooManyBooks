@@ -39,7 +39,7 @@ public class NetworkUnavailableException
 
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
+    public String getUserMessage(@NonNull final Context context) {
         return context.getString(R.string.error_network_please_connect);
     }
 }
