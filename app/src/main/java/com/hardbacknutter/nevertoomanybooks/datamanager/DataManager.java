@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
@@ -259,7 +259,7 @@ public class DataManager
      */
     @Nullable
     public Object get(@NonNull final String key) {
-        if (DBKeys.isMoneyKey(key)) {
+        if (DBKey.isMoneyKey(key)) {
             try {
                 return getMoney(key);
             } catch (@NonNull final NumberFormatException ignore) {
@@ -484,7 +484,7 @@ public class DataManager
             throws NumberFormatException {
         if (mRawData.containsKey(key)) {
             return new Money(getDouble(key),
-                             getString(key + DBKeys.SUFFIX_KEY_CURRENCY));
+                             getString(key + DBKey.SUFFIX_KEY_CURRENCY));
         } else {
             return null;
         }
@@ -501,7 +501,7 @@ public class DataManager
                          @NonNull final Money money) {
         mRawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
-            mRawData.putString(key + DBKeys.SUFFIX_KEY_CURRENCY, money.getCurrency());
+            mRawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY, money.getCurrency());
         }
     }
 
@@ -525,43 +525,21 @@ public class DataManager
         return (ArrayList<T>) o;
     }
 
-    @Nullable
-    public <T extends Parcelable> T getParcelable(@NonNull final String key) {
-        return mRawData.getParcelable(key);
-    }
-
-    /**
-     * <strong>Copy</strong> the content of the given list into the
-     * {@link Parcelable} {@link ArrayList} in the collection.
-     * i.e. any code which got a reference to the internal list earlier
-     * will see the updated content.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     * @param <T>   type of objects in the list
-     *
-     * @see #putParcelableArrayList(String, ArrayList)
-     */
-    @SuppressWarnings("TypeMayBeWeakened")
-    public <T extends Parcelable> void putListContent(@NonNull final String key,
-                                                      @NonNull final ArrayList<T> value) {
-        final ArrayList<T> currentList = getParcelableArrayList(key);
-        currentList.clear();
-        currentList.addAll(value);
-    }
-
     /**
      * Store a {@link Parcelable} {@link ArrayList} in the collection.
      *
      * @param key   Key of data object
      * @param value to store
      * @param <T>   type of objects in the list
-     *
-     * @see #putListContent(String, ArrayList)
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
         mRawData.putParcelableArrayList(key, value);
+    }
+
+    @Nullable
+    public <T extends Parcelable> T getParcelable(@NonNull final String key) {
+        return mRawData.getParcelable(key);
     }
 
     /**
