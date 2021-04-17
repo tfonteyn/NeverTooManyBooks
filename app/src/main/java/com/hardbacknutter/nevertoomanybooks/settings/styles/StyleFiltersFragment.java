@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -62,32 +62,32 @@ public class StyleFiltersFragment
 
         preference = findPreference(Filters.PK_FILTER_READ);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_READ));
+        preference.setVisible(DBKey.isUsed(global, DBKey.BOOL_READ));
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_SIGNED);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_SIGNED));
+        preference.setVisible(DBKey.isUsed(global, DBKey.BOOL_SIGNED));
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_TOC_BITMASK);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_TOC_BITMASK));
+        preference.setVisible(DBKey.isUsed(global, DBKey.BITMASK_TOC));
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_LOANEE);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_LOANEE));
+        preference.setVisible(DBKey.isUsed(global, DBKey.KEY_LOANEE));
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_ISBN);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_ISBN));
+        preference.setVisible(DBKey.isUsed(global, DBKey.KEY_ISBN));
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_EDITION_BITMASK);
         //noinspection ConstantConditions
-        preference.setVisible(DBKeys.isUsed(global, DBKeys.KEY_EDITION_BITMASK));
+        preference.setVisible(DBKey.isUsed(global, DBKey.BITMASK_EDITION));
         preference.setSummaryProvider(TriStateMultiSelectListPreference
                                               .SimpleSummaryProvider.getInstance());
 
@@ -98,8 +98,8 @@ public class StyleFiltersFragment
             //noinspection ConstantConditions
             bookshelves.setVisible(true);
 
-            final ArrayList<Bookshelf> list = ServiceLocator.getInstance().getBookshelfDao()
-                                                            .getAll();
+            final ArrayList<Bookshelf> list =
+                    ServiceLocator.getInstance().getBookshelfDao().getAll();
             bookshelves.setEntryValues(
                     list.stream()
                         .map(bookshelf -> String.valueOf(bookshelf.getId()))
