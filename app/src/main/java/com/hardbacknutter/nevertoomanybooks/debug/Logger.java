@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -92,7 +93,7 @@ public final class Logger {
      * @param params to concat
      */
     public static void error(@NonNull final String tag,
-                             @NonNull final Throwable e,
+                             @Nullable final Throwable e,
                              @Nullable final Object... params) {
         final String msg;
         if (params != null) {
@@ -179,7 +180,10 @@ public final class Logger {
         } else {
             exMsg = "";
         }
-        final String fullMsg = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        // UTC based
+        final String fullMsg = LocalDateTime.now(ZoneOffset.UTC)
+                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                + '|' + tag + '|' + type + '|' + message + exMsg;
 
         try {
