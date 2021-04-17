@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.StatFs;
 import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -38,6 +40,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.CRC32;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -67,12 +71,10 @@ public final class FileUtils {
      * 8192 is what Android 10 android.os.FileUtils.copy uses.
      */
     private static final int FILE_COPY_BUFFER_SIZE = 8192;
-
     /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
     private static final int TO_MEGABYTES = 1_000_000;
     /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
     private static final int TO_KILOBYTES = 1_000;
-
     private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
     private static final String ERROR_COULD_NOT_RESOLVE_URI = "Could not resolve uri=";
@@ -157,10 +159,10 @@ public final class FileUtils {
                                        @NonNull final File destFile)
             throws IOException {
         if (is == null) {
-            throw new FileNotFoundException("is was NULL");
+            throw new FileNotFoundException("InputStream was NULL");
         }
 
-        final File tmpFile = new File(AppDir.Cache.getDir(), System.nanoTime() + ".jpg");
+        final File tmpFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
@@ -264,25 +266,6 @@ public final class FileUtils {
     }
 
     /**
-     * Private filesystem only - Copy the source File to the destination File.
-     *
-     * @param source      file
-     * @param destination file
-     *
-     * @throws IOException on failure
-     */
-    public static void copy(@NonNull final File source,
-                            @NonNull final File destination)
-            throws IOException {
-        try (InputStream is = new FileInputStream(source);
-             OutputStream os = new FileOutputStream(destination)) {
-            copy(is, os);
-        } catch (@NonNull final FileNotFoundException ignore) {
-            // ignore
-        }
-    }
-
-    /**
      * Copy the InputStream to the OutputStream.
      * Neither stream is closed here.
      *
@@ -308,6 +291,25 @@ public final class FileUtils {
     }
 
     /**
+     * Private filesystem only - Copy the source File to the destination File.
+     *
+     * @param source      file
+     * @param destination file
+     *
+     * @throws IOException on failure
+     */
+    public static void copy(@NonNull final File source,
+                            @NonNull final File destination)
+            throws IOException {
+        try (InputStream is = new FileInputStream(source);
+             OutputStream os = new FileOutputStream(destination)) {
+            copy(is, os);
+        } catch (@NonNull final FileNotFoundException ignore) {
+            // ignore
+        }
+    }
+
+    /**
      * Channels are FAST... TODO: replace old method with this one.
      * but needs testing, never used it on Android myself
      *
@@ -320,20 +322,9 @@ public final class FileUtils {
     private static void copy2(@NonNull final File source,
                               @NonNull final File destination)
             throws IOException {
-        final FileInputStream is = new FileInputStream(source);
-        final FileOutputStream os = new FileOutputStream(destination);
-        final FileChannel inChannel = is.getChannel();
-        final FileChannel outChannel = os.getChannel();
-
-        try {
+        try (FileChannel inChannel = new FileInputStream(source).getChannel();
+             FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
             inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null) {
-                inChannel.close();
-            }
-            outChannel.close();
-            is.close();
-            os.close();
         }
     }
 
@@ -436,6 +427,105 @@ public final class FileUtils {
             }
         }
         return crc32;
+    }
+
+    /**
+     * Get the space free in this directory.
+     *
+     * @param root directory
+     *
+     * @return number of bytes free
+     *
+     * @throws IOException on failure
+     */
+    public static long getFreeSpace(@NonNull final File root)
+            throws IOException {
+        try {
+            return new StatFs(root.getPath()).getAvailableBytes();
+
+        } catch (@NonNull final IllegalArgumentException e) {
+            Logger.error(TAG, e);
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * Recursively get the space used by this directory.
+     *
+     * @param root   directory
+     * @param filter (optional) to apply; {@code null} for all files.
+     *
+     * @return number of bytes used
+     */
+    public static long getUsedSpace(@NonNull final File root,
+                                    @Nullable final FileFilter filter) {
+        long totalSize = 0;
+        // sanity check
+        if (root.isDirectory()) {
+            //noinspection ConstantConditions
+            for (final File file : root.listFiles(filter)) {
+                if (file.isFile()) {
+                    totalSize += file.length();
+                } else if (file.isDirectory()) {
+                    totalSize += getUsedSpace(file, filter);
+                }
+            }
+        }
+        return totalSize;
+    }
+
+    /**
+     * Recursively delete files.
+     * Does <strong>NOT</strong> delete the directory or any subdirectories.
+     *
+     * @param root   directory
+     * @param filter (optional) to apply; {@code null} for all files.
+     *
+     * @return number of bytes deleted
+     */
+    public static long deleteFiles(@NonNull final File root,
+                                   @Nullable final FileFilter filter) {
+        long totalSize = 0;
+        // sanity check
+        if (root.isDirectory()) {
+            //noinspection ConstantConditions
+            for (final File file : root.listFiles(filter)) {
+                if (file.isFile()) {
+                    totalSize += file.length();
+                    delete(file);
+                } else if (file.isDirectory()) {
+                    totalSize += deleteFiles(file, filter);
+                }
+            }
+        }
+        return totalSize;
+    }
+
+    /**
+     * Recursively collect applicable files for the given directory.
+     *
+     * @param root   directory to collect from
+     * @param filter (optional) to apply; {@code null} for all files.
+     *
+     * @return list of files
+     */
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    public static List<File> collectFiles(@NonNull final File root,
+                                          @Nullable final FileFilter filter) {
+        final List<File> files = new ArrayList<>();
+        // sanity check
+        if (root.isDirectory()) {
+            //noinspection ConstantConditions
+            for (final File file : root.listFiles(filter)) {
+                if (file.isFile()) {
+                    files.add(file);
+                } else if (file.isDirectory()) {
+                    files.addAll(collectFiles(file, filter));
+                }
+            }
+        }
+        return files;
     }
 
     public static class UriInfo {
