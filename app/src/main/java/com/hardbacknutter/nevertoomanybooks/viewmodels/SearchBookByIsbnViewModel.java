@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -81,15 +82,6 @@ public class SearchBookByIsbnViewModel
         return mResultIntent;
     }
 
-    @Override
-    protected void onCleared() {
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
-
-        super.onCleared();
-    }
-
     /**
      * Pseudo constructor.
      *
@@ -97,7 +89,7 @@ public class SearchBookByIsbnViewModel
      */
     public void init(@Nullable final Bundle args) {
         if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+            mBookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
                 mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);
@@ -183,7 +175,7 @@ public class SearchBookByIsbnViewModel
 
     @NonNull
     public ArrayList<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
-        return mBookDao.getBookIdAndTitlesByIsbn(code);
+        return mBookDao.getBookIdAndTitleByIsbn(code);
     }
 
     @Retention(RetentionPolicy.SOURCE)

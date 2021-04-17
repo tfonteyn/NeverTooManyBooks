@@ -34,7 +34,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -46,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 public class AuthorWorksViewModel
         extends ViewModel {
 
-    /** Log tag. */
-    private static final String TAG = "AuthorWorksViewModel";
     /** The list of TOC/Books we're displaying. */
     private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
@@ -65,13 +63,6 @@ public class AuthorWorksViewModel
     /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
     private boolean mDataModified;
 
-    @Override
-    protected void onCleared() {
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
-    }
-
     /**
      * Pseudo constructor.
      *
@@ -82,15 +73,15 @@ public class AuthorWorksViewModel
                      @NonNull final Bundle args) {
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+            mBookDao = ServiceLocator.getInstance().getBookDao();
 
-            final long authorId = args.getLong(DBKeys.KEY_PK_ID, 0);
+            final long authorId = args.getLong(DBKey.PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
             mAuthor = Objects.requireNonNull(
                     ServiceLocator.getInstance().getAuthorDao().getById(authorId),
                     String.valueOf(authorId));
 
-            final long bookshelfId = args.getLong(DBKeys.KEY_FK_BOOKSHELF,
+            final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF,
                                                   Bookshelf.ALL_BOOKS);
             mBookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
             mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
@@ -112,8 +103,10 @@ public class AuthorWorksViewModel
         mWorkList.clear();
         final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
 
-        final ArrayList<AuthorWork> authorWorks = mBookDao
-                .getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks);
+        final ArrayList<AuthorWork> authorWorks =
+                ServiceLocator.getInstance().getAuthorDao()
+                              .getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks);
+
         mWorkList.addAll(authorWorks);
     }
 
@@ -155,7 +148,7 @@ public class AuthorWorksViewModel
                                     .delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
-            success = mBookDao.deleteBook(work.getId());
+            success = mBookDao.delete(work.getId());
             if (success) {
                 mDataModified = true;
             }

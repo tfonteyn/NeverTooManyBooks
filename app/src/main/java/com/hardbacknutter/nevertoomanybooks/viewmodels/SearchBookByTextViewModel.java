@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -97,7 +97,7 @@ public class SearchBookByTextViewModel
         // search sites can copy with the formatted version.
         final ArrayList<String> authors =
                 ServiceLocator.getInstance().getAuthorDao()
-                              .getNames(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                              .getNames(DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (final String s : authors) {

@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -88,14 +88,11 @@ public class ShowBookViewModel
         if (mNavHelper != null) {
             mNavHelper.close();
         }
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
     }
 
     /**
      * <ul>
-     * <li>{@link DBKeys#KEY_PK_ID}  book id</li>
+     * <li>{@link DBKey#PK_ID}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -104,7 +101,7 @@ public class ShowBookViewModel
     public Intent getResultIntent() {
         // always set the *current* book id, so the BoB list can reposition correctly.
         if (mCurrentBook != null) {
-            mResultIntent.putExtra(DBKeys.KEY_PK_ID, mCurrentBook.getId());
+            mResultIntent.putExtra(DBKey.PK_ID, mCurrentBook.getId());
         }
         return mResultIntent;
     }
@@ -118,9 +115,9 @@ public class ShowBookViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+            mBookDao = ServiceLocator.getInstance().getBookDao();
 
-            final long bookId = args.getLong(DBKeys.KEY_PK_ID, 0);
+            final long bookId = args.getLong(DBKey.PK_ID, 0);
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
             mCurrentBook = Book.from(bookId, mBookDao);
 
@@ -214,7 +211,7 @@ public class ShowBookViewModel
      */
     public void deleteLoan(@IntRange(from = 0) final int position) {
         final Book book = getBookAtPosition(position);
-        book.remove(DBKeys.KEY_LOANEE);
+        book.remove(DBKey.KEY_LOANEE);
         ServiceLocator.getInstance().getLoaneeDao().setLoanee(book, null);
     }
 
@@ -227,7 +224,7 @@ public class ShowBookViewModel
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean toggleRead(@IntRange(from = 0) final int position) {
-        if (getBookAtPosition(position).toggleRead(mBookDao)) {
+        if (getBookAtPosition(position).toggleRead()) {
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;
         } else {
@@ -256,11 +253,6 @@ public class ShowBookViewModel
         }
     }
 
-    @NonNull
-    public BookDao getBookDao() {
-        return mBookDao;
-    }
-
     /**
      * Check if this cover should should be shown / is used.
      * <p>
@@ -281,7 +273,7 @@ public class ShowBookViewModel
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBKeys.isUsed(global, DBKeys.COVER_IS_USED[cIdx])) {
+        if (!DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
             return false;
         }
 

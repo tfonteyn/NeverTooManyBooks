@@ -50,8 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -130,10 +132,6 @@ public class BooksOnBookshelfViewModel
             mBooklist.close();
         }
 
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
-
         super.onCleared();
     }
 
@@ -147,7 +145,7 @@ public class BooksOnBookshelfViewModel
                      @Nullable final Bundle args) {
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+            mBookDao = ServiceLocator.getInstance().getBookDao();
 
             // first start of the activity, read from user preference
             mRebuildMode = RebuildBooklist.getPreferredMode();
@@ -409,11 +407,11 @@ public class BooksOnBookshelfViewModel
      */
     public boolean isAvailable(@NonNull final DataHolder rowData) {
         final String loanee;
-        if (rowData.contains(DBKeys.KEY_LOANEE)) {
-            loanee = rowData.getString(DBKeys.KEY_LOANEE);
+        if (rowData.contains(DBKey.KEY_LOANEE)) {
+            loanee = rowData.getString(DBKey.KEY_LOANEE);
         } else {
             loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(
-                    rowData.getLong(DBKeys.KEY_FK_BOOK));
+                    rowData.getLong(DBKey.FK_BOOK));
         }
         return (loanee == null) || loanee.isEmpty();
     }
@@ -567,7 +565,7 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Book getBook(@NonNull final DataHolder rowData) {
-        final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
+        final long bookId = rowData.getLong(DBKey.FK_BOOK);
         if (bookId > 0) {
             return Book.from(bookId, mBookDao);
         }
@@ -583,14 +581,15 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Author getAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBKeys.KEY_FK_AUTHOR)) {
-            final long id = rowData.getLong(DBKeys.KEY_FK_AUTHOR);
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        if (rowData.contains(DBKey.FK_AUTHOR)) {
+            final long id = rowData.getLong(DBKey.FK_AUTHOR);
             if (id > 0) {
-                return ServiceLocator.getInstance().getAuthorDao().getById(id);
+                return authorDao.getById(id);
             }
-        } else if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final List<Author> authors = mBookDao.getAuthorsByBookId(
-                    rowData.getLong(DBKeys.KEY_FK_BOOK));
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            final List<Author> authors = authorDao.getAuthorsByBookId(
+                    rowData.getLong(DBKey.FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0);
             }
@@ -607,15 +606,15 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Series getSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBKeys.KEY_FK_SERIES)) {
-            final long id = rowData.getLong(DBKeys.KEY_FK_SERIES);
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        if (rowData.contains(DBKey.FK_SERIES)) {
+            final long id = rowData.getLong(DBKey.FK_SERIES);
             if (id > 0) {
-                return ServiceLocator.getInstance().getSeriesDao()
-                                     .getById(rowData.getLong(DBKeys.KEY_FK_SERIES));
+                return seriesDao.getById(rowData.getLong(DBKey.FK_SERIES));
             }
-        } else if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final ArrayList<Series> series = mBookDao.getSeriesByBookId(
-                    rowData.getLong(DBKeys.KEY_FK_BOOK));
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            final ArrayList<Series> series = seriesDao.getSeriesByBookId(
+                    rowData.getLong(DBKey.FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0);
             }
@@ -632,7 +631,7 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Publisher getPublisher(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBKeys.KEY_FK_PUBLISHER);
+        final long id = rowData.getLong(DBKey.FK_PUBLISHER);
         if (id > 0) {
             return ServiceLocator.getInstance().getPublisherDao().getById(id);
         }
@@ -648,7 +647,7 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBKeys.KEY_FK_BOOKSHELF);
+        final long id = rowData.getLong(DBKey.FK_BOOKSHELF);
         if (id > 0) {
             return ServiceLocator.getInstance().getBookshelfDao().getById(id);
         }
@@ -657,7 +656,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     public List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
-        return mBookDao.getAuthorsByBookId(bookId);
+        return ServiceLocator.getInstance().getAuthorDao().getAuthorsByBookId(bookId);
     }
 
     @NonNull
@@ -708,7 +707,7 @@ public class BooksOnBookshelfViewModel
 
     public boolean setBookRead(@IntRange(from = 1) final long bookId,
                                final boolean isRead) {
-        return mBookDao.setBookRead(bookId, isRead);
+        return mBookDao.setRead(bookId, isRead);
     }
 
     /**
@@ -756,7 +755,7 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} on a successful delete
      */
     public boolean deleteBook(@IntRange(from = 1) final long bookId) {
-        return mBookDao.deleteBook(bookId);
+        return mBookDao.delete(bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")

@@ -24,16 +24,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,9 +47,8 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -57,7 +59,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 
 public class EditBookFragmentViewModel
         extends ViewModel
@@ -65,6 +70,7 @@ public class EditBookFragmentViewModel
 
     /** Log tag. */
     private static final String TAG = "EditBookFragmentVM";
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
@@ -75,8 +81,7 @@ public class EditBookFragmentViewModel
     private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
-    /** Database Access. */
-    private BookDao mBookDao;
+
     /** <strong>Optionally</strong> passed in via the arguments. */
     @Nullable
     private ListStyle mStyle;
@@ -130,17 +135,11 @@ public class EditBookFragmentViewModel
     /** The currently displayed tab. */
     private int mCurrentTab;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    @Override
-    public void onCleared() {
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
-    }
+    private DateParser mDateParser;
 
     /**
      * <ul>
-     * <li>{@link DBKeys#KEY_PK_ID}  book id</li>
+     * <li>{@link DBKey#PK_ID}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -149,7 +148,7 @@ public class EditBookFragmentViewModel
     public Intent getResultIntent() {
         // always set the *current* book, so the BoB list can reposition correctly.
         if (mBook != null) {
-            mResultIntent.putExtra(DBKeys.KEY_PK_ID, mBook.getId());
+            mResultIntent.putExtra(DBKey.PK_ID, mBook.getId());
         }
         return mResultIntent;
     }
@@ -163,8 +162,8 @@ public class EditBookFragmentViewModel
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
-        if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+        if (mDateParser == null) {
+            mDateParser = new FullDateParser(context);
 
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
@@ -182,9 +181,9 @@ public class EditBookFragmentViewModel
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    final long bookId = args.getLong(DBKeys.KEY_PK_ID, 0);
+                    final long bookId = args.getLong(DBKey.PK_ID, 0);
                     if (bookId > 0) {
-                        mBook = Book.from(bookId, mBookDao);
+                        mBook = Book.from(bookId, ServiceLocator.getInstance().getBookDao());
                     } else {
                         mBook = new Book();
                     }
@@ -225,9 +224,27 @@ public class EditBookFragmentViewModel
         return fields;
     }
 
-    @NonNull
-    public BookDao getBookDao() {
-        return mBookDao;
+    /**
+     * Convert a Field value (String) to an Instant in time.
+     *
+     * @param field       to extract from
+     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
+     *
+     * @return instant
+     */
+    @Nullable
+    public Instant getInstant(@NonNull final Field<String, TextView> field,
+                              final boolean todayIfNone) {
+
+        final LocalDateTime date = mDateParser.parse(field.getAccessor().getValue());
+        if (date == null && !todayIfNone) {
+            return null;
+        }
+
+        if (date != null) {
+            return date.toInstant(ZoneOffset.UTC);
+        }
+        return Instant.now();
     }
 
     /**
@@ -272,9 +289,9 @@ public class EditBookFragmentViewModel
             throws DaoWriteException {
 
         if (mBook.isNew()) {
-            mBookDao.insert(context, mBook, 0);
+            ServiceLocator.getInstance().getBookDao().insert(context, mBook, 0);
         } else {
-            mBookDao.update(context, mBook, 0);
+            ServiceLocator.getInstance().getBookDao().update(context, mBook, 0);
         }
         mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
         mBook.setStage(EntityStage.Stage.Clean);
@@ -317,9 +334,9 @@ public class EditBookFragmentViewModel
      */
     public boolean bookExists() {
         if (mBook.isNew()) {
-            final String isbnStr = mBook.getString(DBKeys.KEY_ISBN);
+            final String isbnStr = mBook.getString(DBKey.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
-                return mBookDao.bookExistsByIsbn(isbnStr);
+                return ServiceLocator.getInstance().getBookDao().bookExistsByIsbn(isbnStr);
             }
         }
 
@@ -363,7 +380,7 @@ public class EditBookFragmentViewModel
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBKeys.isUsed(global, DBKeys.COVER_IS_USED[cIdx])) {
+        if (!DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
             return false;
         }
 
@@ -392,7 +409,7 @@ public class EditBookFragmentViewModel
     public List<String> getAllAuthorNames() {
         if (mAuthorNamesFormatted == null) {
             mAuthorNamesFormatted = ServiceLocator.getInstance().getAuthorDao()
-                                                  .getNames(DBKeys.KEY_AUTHOR_FORMATTED);
+                                                  .getNames(DBKey.KEY_AUTHOR_FORMATTED);
         }
         return mAuthorNamesFormatted;
     }
@@ -406,7 +423,7 @@ public class EditBookFragmentViewModel
     public List<String> getAllAuthorFamilyNames() {
         if (mAuthorFamilyNames == null) {
             mAuthorFamilyNames = ServiceLocator.getInstance().getAuthorDao()
-                                               .getNames(DBKeys.KEY_AUTHOR_FAMILY_NAME);
+                                               .getNames(DBKey.KEY_AUTHOR_FAMILY_NAME);
         }
         return mAuthorFamilyNames;
     }
@@ -420,7 +437,7 @@ public class EditBookFragmentViewModel
     public List<String> getAllAuthorGivenNames() {
         if (mAuthorGivenNames == null) {
             mAuthorGivenNames = ServiceLocator.getInstance().getAuthorDao()
-                                              .getNames(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
+                                              .getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES);
         }
         return mAuthorGivenNames;
     }
@@ -455,7 +472,7 @@ public class EditBookFragmentViewModel
      * Load a language list.
      * <p>
      * Returns a unique list of all languages in the database.
-     * The list is ordered by {@link DBKeys#KEY_UTC_LAST_UPDATED}.
+     * The list is ordered by {@link DBKey#UTC_DATE_LAST_UPDATED}.
      *
      * @return The list of ISO 639-2 codes
      */
@@ -527,8 +544,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mBookDao
-                    .getCurrencyCodes(DBKeys.KEY_PRICE_LISTED_CURRENCY);
+            mListPriceCurrencies = ServiceLocator
+                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_LISTED_CURRENCY);
         }
         return mListPriceCurrencies;
     }
@@ -541,7 +558,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mBookDao.getCurrencyCodes(DBKeys.KEY_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = ServiceLocator
+                    .getInstance().getBookDao().getCurrencyCodes(DBKey.PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }
@@ -597,20 +615,6 @@ public class EditBookFragmentViewModel
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
-
-    public void pruneAuthors(@NonNull final Context context) {
-        mBook.pruneAuthors(context, true);
-    }
-
-    public void pruneSeries(@NonNull final Context context) {
-        mBook.pruneSeries(context, true);
-    }
-
-    public void prunePublishers(@NonNull final Context context) {
-        mBook.prunePublishers(context, true);
-    }
-
-
     @NonNull
     public LiveData<ArrayList<Author>> onAuthorList() {
         return mAuthorList;
@@ -654,7 +658,7 @@ public class EditBookFragmentViewModel
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            pruneAuthors(context);
+            mBook.pruneAuthors(context, true);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -669,7 +673,7 @@ public class EditBookFragmentViewModel
         original.copyFrom(modified, true);
 
         if (ServiceLocator.getInstance().getAuthorDao().update(context, original)) {
-            pruneAuthors(context);
+            mBook.pruneAuthors(context, true);
             mBook.refreshAuthorList(context);
             return true;
         }
@@ -690,7 +694,7 @@ public class EditBookFragmentViewModel
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            pruneSeries(context);
+            mBook.pruneSeries(context, true);
             return true;
         }
 
@@ -707,7 +711,7 @@ public class EditBookFragmentViewModel
 
         if (ServiceLocator.getInstance().getSeriesDao()
                           .update(context, original, mBook.getLocale(context))) {
-            pruneSeries(context);
+            mBook.pruneSeries(context, true);
             mBook.refreshSeriesList(context);
             return true;
         }
@@ -729,7 +733,7 @@ public class EditBookFragmentViewModel
             // That's ok, it will get garbage collected from the database sooner or later.
             list.remove(original);
             list.add(modified);
-            prunePublishers(context);
+            mBook.prunePublishers(context, true);
             return true;
         }
         Logger.error(TAG, new Throwable(), "Could not update", "original=" + original,
@@ -745,7 +749,7 @@ public class EditBookFragmentViewModel
 
         if (ServiceLocator.getInstance().getPublisherDao()
                           .update(context, original, mBook.getLocale(context))) {
-            prunePublishers(context);
+            mBook.prunePublishers(context, true);
             mBook.refreshPublishersList(context);
             return true;
         }

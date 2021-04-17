@@ -36,7 +36,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -120,10 +121,6 @@ public class SearchBookUpdatesViewModel
         if (mCurrentCursor != null) {
             mCurrentCursor.close();
         }
-
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
     }
 
     /**
@@ -138,7 +135,7 @@ public class SearchBookUpdatesViewModel
         super.init(context, args);
 
         if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
+            mBookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
                 //noinspection unchecked
@@ -155,41 +152,41 @@ public class SearchBookUpdatesViewModel
     private SyncProcessor.Config createSyncProcessorBuilder() {
         final SyncProcessor.Config config =
                 new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
-                        // DBKeys.PREFS_IS_USED_COVER is the SharedPreference key indicating
+                        // DBKey.PREFS_IS_USED_COVER is the SharedPreference key indicating
                         // the Action needed for this field.
                         // The actual file names are in the Book.BKEY_TMP_FILE_SPEC array.
-                        .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
-                        .addRelatedField(DBKeys.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
+                        .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
+                        .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
 
-                        .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
-                        .addRelatedField(DBKeys.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+                        .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
+                        .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
-                        .add(R.string.lbl_title, DBKeys.KEY_TITLE)
-                        .add(R.string.lbl_isbn, DBKeys.KEY_ISBN)
+                        .add(R.string.lbl_title, DBKey.KEY_TITLE)
+                        .add(R.string.lbl_isbn, DBKey.KEY_ISBN)
 
-                        .addList(R.string.lbl_authors, DBKeys.KEY_FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
-                        .addList(R.string.lbl_series_multiple, DBKeys.KEY_SERIES_TITLE,
+                        .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+                        .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
                                  Book.BKEY_SERIES_LIST)
 
-                        .add(R.string.lbl_description, DBKeys.KEY_DESCRIPTION)
+                        .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION)
 
-                        .addList(R.string.lbl_table_of_content, DBKeys.KEY_TOC_BITMASK,
+                        .addList(R.string.lbl_table_of_content, DBKey.BITMASK_TOC,
                                  Book.BKEY_TOC_LIST)
 
-                        .addList(R.string.lbl_publishers, DBKeys.KEY_PUBLISHER_NAME,
+                        .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
                                  Book.BKEY_PUBLISHER_LIST)
-                        .add(R.string.lbl_print_run, DBKeys.KEY_PRINT_RUN)
-                        .add(R.string.lbl_date_published, DBKeys.KEY_BOOK_DATE_PUBLISHED)
-                        .add(R.string.lbl_first_publication, DBKeys.KEY_DATE_FIRST_PUBLICATION)
+                        .add(R.string.lbl_print_run, DBKey.KEY_PRINT_RUN)
+                        .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
+                        .add(R.string.lbl_first_publication, DBKey.DATE_FIRST_PUBLICATION)
 
-                        .add(R.string.lbl_price_listed, DBKeys.KEY_PRICE_LISTED)
-                        .addRelatedField(DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY)
+                        .add(R.string.lbl_price_listed, DBKey.PRICE_LISTED)
+                        .addRelatedField(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY)
 
-                        .add(R.string.lbl_pages, DBKeys.KEY_PAGES)
-                        .add(R.string.lbl_format, DBKeys.KEY_FORMAT)
-                        .add(R.string.lbl_color, DBKeys.KEY_COLOR)
-                        .add(R.string.lbl_language, DBKeys.KEY_LANGUAGE)
-                        .add(R.string.lbl_genre, DBKeys.KEY_GENRE);
+                        .add(R.string.lbl_pages, DBKey.KEY_PAGES)
+                        .add(R.string.lbl_format, DBKey.KEY_FORMAT)
+                        .add(R.string.lbl_color, DBKey.KEY_COLOR)
+                        .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
+                        .add(R.string.lbl_genre, DBKey.KEY_GENRE);
 
         for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = seConfig.getExternalIdDomain();
@@ -219,7 +216,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return mSyncConfig.getSyncAction(DBKeys.COVER_IS_USED[0]) == SyncAction.Overwrite;
+        return mSyncConfig.getSyncAction(DBKey.COVER_IS_USED[0]) == SyncAction.Overwrite;
     }
 
     /**
@@ -229,12 +226,12 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     public void setCoverSyncAction(@NonNull final SyncAction action) {
-        mSyncConfig.setSyncAction(DBKeys.COVER_IS_USED[0], action);
-        mSyncConfig.setSyncAction(DBKeys.COVER_IS_USED[1], action);
+        mSyncConfig.setSyncAction(DBKey.COVER_IS_USED[0], action);
+        mSyncConfig.setSyncAction(DBKey.COVER_IS_USED[1], action);
     }
 
     /**
-     * Allows to set the 'lowest' Book id to start from. See {@link BookDao#fetchBooks(long)}
+     * Allows to set the 'lowest' Book id to start from. See {@link BookDao#fetchFromIdOnwards(long)}
      *
      * @param fromBookIdOnwards the lowest book id to start from.
      *                          This allows to fetch a subset of the requested set.
@@ -273,9 +270,9 @@ public class SearchBookUpdatesViewModel
 
         try {
             if (mBookIdList == null || mBookIdList.isEmpty()) {
-                mCurrentCursor = mBookDao.fetchBooks(mFromBookIdOnwards);
+                mCurrentCursor = mBookDao.fetchFromIdOnwards(mFromBookIdOnwards);
             } else {
-                mCurrentCursor = mBookDao.fetchBooks(mBookIdList);
+                mCurrentCursor = mBookDao.fetchById(mBookIdList);
             }
             mCurrentCursorCount = mCurrentCursor.getCount();
 
@@ -297,7 +294,7 @@ public class SearchBookUpdatesViewModel
      */
     private boolean nextBook(@NonNull final Context context) {
         try {
-            final int idCol = mCurrentCursor.getColumnIndex(DBKeys.KEY_PK_ID);
+            final int idCol = mCurrentCursor.getColumnIndex(DBKey.PK_ID);
 
             // loop/skip until we start a search for a book.
             while (mCurrentCursor.moveToNext() && !mIsCancelled) {
@@ -308,20 +305,20 @@ public class SearchBookUpdatesViewModel
                 mCurrentBookId = mCurrentCursor.getLong(idCol);
 
                 // and populate the actual book based on the cursor data
-                mCurrentBook.load(mCurrentBookId, mCurrentCursor, mBookDao);
+                mCurrentBook.load(mCurrentBookId, mCurrentCursor);
 
                 // Check which fields this book needs.
                 //noinspection ConstantConditions
                 mCurrentFieldsWanted = mSyncProcessor.filter(mCurrentBook);
 
-                final String title = mCurrentBook.getString(DBKeys.KEY_TITLE);
+                final String title = mCurrentBook.getString(DBKey.KEY_TITLE);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = mCurrentBook.getString(DBKeys.KEY_ISBN);
+                    final String isbnStr = mCurrentBook.getString(DBKey.KEY_ISBN);
                     if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr, true);
                         canSearch = true;
@@ -471,7 +468,7 @@ public class SearchBookUpdatesViewModel
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {
-                results.putLong(DBKeys.KEY_PK_ID, mBookIdList.get(0));
+                results.putLong(DBKey.PK_ID, mBookIdList.get(0));
             }
         }
 
