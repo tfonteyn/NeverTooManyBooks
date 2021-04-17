@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
-import android.content.Context;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
@@ -33,10 +32,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
 public class CalibreLibrary
         extends LibraryBase {
@@ -98,9 +97,9 @@ public class CalibreLibrary
                           @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryStringId = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID);
-        mUuid = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_UUID);
-        mLastSyncDate = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE);
+        mLibraryStringId = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID);
+        mUuid = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_UUID);
+        mLastSyncDate = rowData.getString(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY);
     }
 
     private CalibreLibrary(@NonNull final Parcel in) {
@@ -154,9 +153,9 @@ public class CalibreLibrary
     }
 
     @Nullable
-    public LocalDateTime getLastSyncDate(@NonNull final Context context) {
+    public LocalDateTime getLastSyncDate() {
         if (!mLastSyncDate.isEmpty()) {
-            return DateParser.getInstance(context).parseISO(mLastSyncDate);
+            return new ISODateParser().parse(mLastSyncDate);
         }
 
         return null;

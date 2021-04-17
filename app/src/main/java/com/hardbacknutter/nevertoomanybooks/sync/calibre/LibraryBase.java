@@ -25,7 +25,7 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -51,8 +51,8 @@ abstract class LibraryBase
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_NAME);
-        mMappedBookshelfId = rowData.getLong(DBKeys.KEY_FK_BOOKSHELF);
+        mName = rowData.getString(DBKey.KEY_CALIBRE_LIBRARY_NAME);
+        mMappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
     }
 
     LibraryBase(@NonNull final Parcel in) {

@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreBook;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -1067,9 +1067,9 @@ public class CalibreContentServer {
             throws IOException {
 
         // Build the URL from where to download the file
-        final int id = book.getInt(DBKeys.KEY_CALIBRE_BOOK_ID);
-        final String format = book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-        final long libraryId = book.getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY);
+        final int id = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
+        final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
         final Optional<CalibreLibrary> calibreLibrary =
                 mLibraries.stream()
@@ -1230,7 +1230,7 @@ public class CalibreContentServer {
         }
         final String fileName = seriesPrefix + book.getTitle();
 
-        final String format = book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
 
         // FIRST check if it exists using the format extension
         DocumentFile bookFile = authorFolder.findFile(fileName + "." + format);

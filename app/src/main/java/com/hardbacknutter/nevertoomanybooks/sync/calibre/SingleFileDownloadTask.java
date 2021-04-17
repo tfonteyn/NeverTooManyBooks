@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.org.json.JSONException;
@@ -58,7 +58,7 @@ class SingleFileDownloadTask
         mFolder = folder;
 
         // sanity check
-        if (mBook.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
+        if (mBook.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             return false;
         }
         return execute();

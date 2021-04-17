@@ -49,7 +49,7 @@ import java.util.Optional;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -163,7 +163,7 @@ public class CalibreHandler {
                             @NonNull final SharedPreferences global) {
 
         final boolean calibre = CalibreContentServer.isSyncEnabled(global)
-                                && !book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID).isEmpty();
+                                && !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
 
         menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
         if (calibre) {
@@ -176,7 +176,7 @@ public class CalibreHandler {
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
                     .setTitle(mView.getContext().getString(
                             R.string.menu_download_ebook_format,
-                            book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)))
+                            book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)))
                     .setVisible(true);
 
                 // don't show

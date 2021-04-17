@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 @SuppressWarnings("WeakerAccess")
 public class Identifier {
@@ -47,30 +47,30 @@ public class Identifier {
     static {
         Identifier identifier;
 
-        identifier = new Identifier(ISBN, DBKeys.KEY_ISBN, false);
+        identifier = new Identifier(ISBN, DBKey.KEY_ISBN, false);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(OPENLIBRARY, DBKeys.KEY_ESID_OPEN_LIBRARY, false);
+        identifier = new Identifier(OPENLIBRARY, DBKey.SID_OPEN_LIBRARY, false);
         MAP.put(identifier.remote, identifier);
 
-        identifier = new Identifier(GOODREADS, DBKeys.KEY_ESID_GOODREADS_BOOK, true);
+        identifier = new Identifier(GOODREADS, DBKey.SID_GOODREADS_BOOK, true);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(ISFDB, DBKeys.KEY_ESID_ISFDB, true);
+        identifier = new Identifier(ISFDB, DBKey.SID_ISFDB, true);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(LIBRARYTHING, DBKeys.KEY_ESID_LIBRARY_THING, true);
+        identifier = new Identifier(LIBRARYTHING, DBKey.SID_LIBRARY_THING, true);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(STRIPINFO, DBKeys.KEY_ESID_STRIP_INFO_BE, true);
+        identifier = new Identifier(STRIPINFO, DBKey.SID_STRIP_INFO, true);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(LASTDODO, DBKeys.KEY_ESID_LAST_DODO_NL, true);
+        identifier = new Identifier(LASTDODO, DBKey.SID_LAST_DODO_NL, true);
         MAP.put(identifier.remote, identifier);
 
         // ENHANCE: Not stored locally for now, but recognised.
-        identifier = new Identifier(AMAZON, DBKeys.KEY_ESID_ASIN, false, false);
+        identifier = new Identifier(AMAZON, DBKey.SID_ASIN, false, false);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(GOOGLE, DBKeys.KEY_ESID_GOOGLE, false, false);
+        identifier = new Identifier(GOOGLE, DBKey.SID_GOOGLE, false, false);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(LCCN, DBKeys.KEY_ESID_LCCN, false, false);
+        identifier = new Identifier(LCCN, DBKey.SID_LCCN, false, false);
         MAP.put(identifier.remote, identifier);
-        identifier = new Identifier(OCLC, DBKeys.KEY_ESID_OCLC, false, false);
+        identifier = new Identifier(OCLC, DBKey.SID_OCLC, false, false);
         MAP.put(identifier.remote, identifier);
     }
 
