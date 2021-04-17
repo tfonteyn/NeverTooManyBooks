@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -336,7 +336,7 @@ public class PartialDatePickerDialogFragment
     /**
      * Parse the input ISO date string into the individual components.
      * <p>
-     * Note we don't use {@link DateParser}
+     * Note we don't use {@link FullDateParser}
      * as we the current implementation always returns full dates.
      * Here, we explicitly need to support partial dates.
      *
