@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -83,11 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public abstract class ArchiveReaderAbstract
         implements ArchiveReader {
 
-    /** Log tag. */
-    private static final String TAG = "ArchiveReaderAbstract";
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
@@ -118,7 +112,6 @@ public abstract class ArchiveReaderAbstract
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(TAG);
         mContentResolver = context.getContentResolver();
 
         mCoversText = context.getString(R.string.lbl_covers);
@@ -167,7 +160,7 @@ public abstract class ArchiveReaderAbstract
             final Optional<RecordEncoding> encoding = record.getEncoding();
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mBookDao, EnumSet.of(RecordType.MetaData))) {
+                        .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
                     mArchiveMetaData = recordReader.readMetaData(record);
                 }
             }
@@ -333,8 +326,7 @@ public abstract class ArchiveReaderAbstract
             // there will be many covers... we're re-using a single RecordReader
             if (encoding.get() == RecordEncoding.Cover) {
                 //noinspection ConstantConditions
-                mResults.add(mCoverReader.read(context, record, mHelper.getOptions(),
-                                               progressListener));
+                mResults.add(mCoverReader.read(context, record, mHelper, progressListener));
                 // send accumulated progress for the total nr of covers
                 final String msg = String.format(mProgressMessage,
                                                  mCoversText,
@@ -346,10 +338,9 @@ public abstract class ArchiveReaderAbstract
             } else {
                 // everything else, keep it clean and create a new reader for each entry.
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mBookDao, mHelper.getImportEntries())) {
+                        .get().createReader(context, mHelper.getImportEntries())) {
 
-                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
-                                                   progressListener));
+                    mResults.add(recordReader.read(context, record, mHelper, progressListener));
                 }
             }
         }
@@ -369,8 +360,6 @@ public abstract class ArchiveReaderAbstract
         if (mCoverReader != null) {
             mCoverReader.close();
         }
-
-        mBookDao.close();
 
         ServiceLocator.getInstance().getMaintenanceDao().purge();
     }

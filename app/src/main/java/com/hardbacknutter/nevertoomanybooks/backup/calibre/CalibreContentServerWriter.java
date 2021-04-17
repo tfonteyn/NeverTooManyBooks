@@ -42,8 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -83,7 +85,8 @@ public class CalibreContentServerWriter
     private final ExportHelper mHelper;
     private final boolean mDoCovers;
     private final boolean mDeleteLocalBook;
-
+    @NonNull
+    private final DateParser mDateParser;
     private ExportResults mResults;
 
     /**
@@ -99,14 +102,14 @@ public class CalibreContentServerWriter
                                       @NonNull final ExportHelper helper)
             throws CertificateException, SSLException {
 
-
-
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
 
         mDoCovers = mHelper.getExporterEntries().contains(RecordType.Cover);
 
         mDeleteLocalBook = mHelper.getExtraArgs().getBoolean(BKEY_DELETE_LOCAL_BOOKS);
+
+        mDateParser = new ISODateParser();
     }
 
     @Override
@@ -137,14 +140,14 @@ public class CalibreContentServerWriter
 
                 final LocalDateTime dateSince;
                 if (mHelper.isIncremental()) {
-                    dateSince = library.getLastSyncDate(context);
+                    dateSince = library.getLastSyncDate();
                 } else {
                     dateSince = null;
                 }
 
                 // sanity check, we only update existing books... no books -> skip library.
                 if (library.getTotalBooks() > 0) {
-                    syncLibrary(context, library, dateSince, progressListener);
+                    syncLibrary(library, dateSince, progressListener);
                 }
                 // always set the sync date!
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
@@ -156,22 +159,23 @@ public class CalibreContentServerWriter
         return mResults;
     }
 
-    private void syncLibrary(@NonNull final Context context,
-                             @NonNull final CalibreLibrary library,
+    private void syncLibrary(@NonNull final CalibreLibrary library,
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (BookDao bookDao = new BookDao(TAG);
-             Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        try (Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;
             long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
 
+            final CalibreDao calibreDao = ServiceLocator.getInstance().getCalibreDao();
+
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final Book book = Book.from(cursor, bookDao);
+                final Book book = Book.from(cursor);
                 try {
-                    syncBook(context, library, book);
+                    syncBook(library, book);
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
@@ -179,7 +183,7 @@ public class CalibreContentServerWriter
                         bookDao.delete(book);
                     } else {
                         // keep the book but remove the calibre data for it
-                        bookDao.deleteBookCalibreData(book);
+                        calibreDao.delete(book);
                         book.setCalibreLibrary(null);
                     }
                 } catch (@NonNull final JSONException e) {
@@ -198,13 +202,12 @@ public class CalibreContentServerWriter
         }
     }
 
-    private void syncBook(@NonNull final Context context,
-                          @NonNull final CalibreLibrary library,
+    private void syncBook(@NonNull final CalibreLibrary library,
                           @NonNull final Book book)
             throws IOException, JSONException {
 
-        final int calibreId = book.getInt(DBKeys.KEY_CALIBRE_BOOK_ID);
-        final String calibreUuid = book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID);
+        final int calibreId = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
+        final String calibreUuid = book.getString(DBKey.KEY_CALIBRE_BOOK_UUID);
 
         // ENHANCE: full sync in one go.
         //  The logic below is TO SLOW as we fetch each book individually
@@ -219,11 +222,12 @@ public class CalibreContentServerWriter
             }
         }
 
-        final LocalDateTime remoteTime = DateParser.getInstance(context).parseISO(dateStr);
+        final LocalDateTime remoteTime = mDateParser.parse(dateStr);
         // sanity check, the remote should always have this date field.
         if (remoteTime != null) {
             // is our data newer then the server data ?
-            final LocalDateTime localTime = book.getLastUpdateUtcDate(context);
+            final LocalDateTime localTime =
+                    mDateParser.parse(book.getString(DBKey.UTC_DATE_LAST_UPDATED));
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject changes = collectChanges(library, calibreBook, book);
                 mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
@@ -241,13 +245,12 @@ public class CalibreContentServerWriter
 
         final JSONObject changes = new JSONObject();
         changes.put(CalibreBook.TITLE, localBook.getTitle());
-        changes.put(CalibreBook.DESCRIPTION,
-                    localBook.getString(DBKeys.KEY_DESCRIPTION));
+        changes.put(CalibreBook.DESCRIPTION, localBook.getString(DBKey.KEY_DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBook.DATE_PUBLISHED,
-                    localBook.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+                    localBook.getString(DBKey.DATE_BOOK_PUBLICATION));
         changes.put(CalibreBook.LAST_MODIFIED,
-                    localBook.getString(DBKeys.KEY_UTC_LAST_UPDATED));
+                    localBook.getString(DBKey.UTC_DATE_LAST_UPDATED));
 
         final JSONArray authors = new JSONArray();
         for (final Author author
@@ -280,10 +283,10 @@ public class CalibreContentServerWriter
             changes.put(CalibreBook.PUBLISHER, "");
         }
 
-        changes.put(CalibreBook.RATING, (int) localBook.getDouble(DBKeys.KEY_RATING));
+        changes.put(CalibreBook.RATING, (int) localBook.getDouble(DBKey.KEY_RATING));
 
         final JSONArray languages = new JSONArray();
-        final String language = localBook.getString(DBKeys.KEY_LANGUAGE);
+        final String language = localBook.getString(DBKey.KEY_LANGUAGE);
         if (!language.isEmpty()) {
             languages.put(language);
         }

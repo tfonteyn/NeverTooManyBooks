@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -152,7 +152,7 @@ public class XmlRecordReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @ImportHelper.Options final int unused,
+                              @NonNull final ImportHelper unused,
                               @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
 
@@ -847,7 +847,7 @@ public class XmlRecordReader
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
 
-            String uuid = tag.attrs.getValue(DBKeys.KEY_STYLE_UUID);
+            String uuid = tag.attrs.getValue(DBKey.KEY_STYLE_UUID);
             if (uuid == null) {
                 // backwards compatibility
                 uuid = tag.name;
@@ -882,7 +882,7 @@ public class XmlRecordReader
             boolean isPreferred;
             try {
                 isPreferred = ParseUtils.parseBoolean(tag.attrs.getValue(
-                        DBKeys.KEY_STYLE_IS_PREFERRED), true);
+                        DBKey.BOOL_STYLE_IS_PREFERRED), true);
             } catch (@NonNull final NumberFormatException ignore) {
                 isPreferred = false;
             }
@@ -890,7 +890,7 @@ public class XmlRecordReader
             int menuPosition;
             try {
                 menuPosition = Integer.parseInt(tag.attrs.getValue(
-                        DBKeys.KEY_STYLE_MENU_POSITION));
+                        DBKey.KEY_STYLE_MENU_POSITION));
             } catch (@NonNull final NumberFormatException ignore) {
                 menuPosition = ListStyle.MENU_POSITION_NOT_PREFERRED;
             }

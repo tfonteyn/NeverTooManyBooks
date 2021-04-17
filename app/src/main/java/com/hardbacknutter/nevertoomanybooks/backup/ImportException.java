@@ -46,7 +46,7 @@ public class ImportException
 
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
+    public String getUserMessage(@NonNull final Context context) {
         //TODO: look at cause and give more details
         return context.getString(R.string.error_import_file_not_supported);
     }

@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -67,9 +67,9 @@ public class ListStyleCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBKeys.KEY_STYLE_UUID, style.getUuid());
-        out.put(DBKeys.KEY_STYLE_IS_PREFERRED, style.isPreferred());
-        out.put(DBKeys.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
+        out.put(DBKey.KEY_STYLE_UUID, style.getUuid());
+        out.put(DBKey.BOOL_STYLE_IS_PREFERRED, style.isPreferred());
+        out.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
         if (style instanceof UserStyle) {
             out.put(STYLE_NAME, ((UserStyle) style).getName());
@@ -95,22 +95,22 @@ public class ListStyleCoder
     public ListStyle decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final String uuid = data.getString(DBKeys.KEY_STYLE_UUID);
+        final String uuid = data.getString(DBKey.KEY_STYLE_UUID);
 
         final Styles styles = ServiceLocator.getInstance().getStyles();
 
         if (BuiltinStyle.isBuiltin(uuid)) {
             final ListStyle style = styles.getStyle(mContext, uuid);
             //noinspection ConstantConditions
-            style.setPreferred(data.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKeys.KEY_STYLE_MENU_POSITION));
+            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
             return style;
 
         } else {
             final UserStyle style = UserStyle.createFromImport(mContext, uuid);
             style.setName(data.getString(STYLE_NAME));
-            style.setPreferred(data.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKeys.KEY_STYLE_MENU_POSITION));
+            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
 
             // any element in the source which we don't know, will simply be ignored.
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);

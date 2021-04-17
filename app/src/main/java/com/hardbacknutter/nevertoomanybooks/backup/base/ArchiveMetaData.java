@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
 /**
  * Class to encapsulate the INFO block from an archive.
@@ -41,8 +41,8 @@ public class ArchiveMetaData {
 
     /** Version of archiver used to write this archive. */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
-    /** Creation Date of archive (in SQL format). */
-    private static final String INFO_CREATION_DATE = "CreateDate";
+    /** Creation LocalDateTime(local zone) of archive; ISO formatted. */
+    private static final String INFO_CREATED_DATE = "CreateDate";
     /** Identifier. */
     private static final String INFO_APP_PACKAGE = "AppPackage";
     /** For reference only. */
@@ -101,7 +101,7 @@ public class ArchiveMetaData {
         metaData.mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
 
         // the actual data the user will care about
-        metaData.mInfo.putString(INFO_CREATION_DATE, LocalDateTime.now().format(
+        metaData.mInfo.putString(INFO_CREATED_DATE, LocalDateTime.now().format(
                 DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         if (data.getBookCount() > 0) {
             metaData.mInfo.putInt(INFO_NUMBER_OF_BOOKS, data.getBookCount());
@@ -125,13 +125,11 @@ public class ArchiveMetaData {
     /**
      * Get the date from the creation-date field.
      *
-     * @param context Current context
-     *
-     * @return date, or {@code null} if none or invalid
+     * @return LocalDateTime(user local at time of creation), or {@code null} if none or invalid
      */
     @Nullable
-    public LocalDateTime getCreationDate(@NonNull final Context context) {
-        return DateParser.getInstance(context).parseISO(mInfo.getString(INFO_CREATION_DATE));
+    public LocalDateTime getCreatedLocalDate() {
+        return new ISODateParser().parse(mInfo.getString(INFO_CREATED_DATE));
     }
 
     /**

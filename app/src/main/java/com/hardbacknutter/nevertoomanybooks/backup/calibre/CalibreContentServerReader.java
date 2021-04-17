@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -49,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -149,7 +148,7 @@ public class CalibreContentServerReader
                                       @NonNull final ImportHelper helper)
             throws CertificateException, SSLException {
 
-        mBookDao = new BookDao(TAG);
+        mBookDao = ServiceLocator.getInstance().getBookDao();
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -232,7 +231,7 @@ public class CalibreContentServerReader
             if (!mHelper.isAllBooks()) {
                 // last_modified:">2021-01-15"
                 // Due to rounding, we might get some books we don't need, but that's ok.
-                final LocalDateTime lastSyncDate = mLibrary.getLastSyncDate(context);
+                final LocalDateTime lastSyncDate = mLibrary.getLastSyncDate();
                 if (lastSyncDate != null) {
                     query = CalibreBook.LAST_MODIFIED + ":%22%3E" + lastSyncDate
                             .format(DateTimeFormatter.ISO_LOCAL_DATE) + "%22";
@@ -317,14 +316,14 @@ public class CalibreContentServerReader
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if the book exists in our database, and fetch it's id.
-            final long bookId = libraryDao.getBookIdFromCalibreUuid(calibreUuid);
-            if (bookId > 0) {
-                final Book book = Book.from(bookId, mBookDao);
+            final long databaseBookId = libraryDao.getBookIdFromCalibreUuid(calibreUuid);
+            if (databaseBookId > 0) {
+                final Book book = Book.from(databaseBookId, mBookDao);
+
                 // UPDATE the existing book (if allowed). Check the sync option FIRST!
-                if ((mDoNewAndUpdatedBooks
-                     && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
-                    ||
-                    mDoAllBooks) {
+                if ((mDoNewAndUpdatedBooks && mBookDao.isImportNewer(databaseBookId, book))
+                    || mDoAllBooks) {
+
                     book.setStage(EntityStage.Stage.Dirty);
                     copyCalibreData(context, calibreBook, book);
 
@@ -334,7 +333,7 @@ public class CalibreContentServerReader
                     mResults.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                         Log.d(TAG, "calibreUuid=" + calibreUuid
-                                   + "|databaseBookId=" + bookId
+                                   + "|databaseBookId=" + databaseBookId
                                    + "|update|" + book.getTitle());
                     }
 
@@ -342,7 +341,7 @@ public class CalibreContentServerReader
                     mResults.booksSkipped++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                         Log.d(TAG, "calibreUuid=" + calibreUuid
-                                   + "|databaseBookId=" + bookId
+                                   + "|databaseBookId=" + databaseBookId
                                    + "|skipped|" + book.getTitle());
                     }
                 }
@@ -350,7 +349,7 @@ public class CalibreContentServerReader
                 final Book book = new Book();
                 book.setStage(EntityStage.Stage.Dirty);
                 // it's an eBook - duh!
-                book.putString(DBKeys.KEY_FORMAT, mEBookString);
+                book.putString(DBKey.KEY_FORMAT, mEBookString);
                 copyCalibreData(context, calibreBook, book);
 
                 final long insId = mBookDao
@@ -385,25 +384,25 @@ public class CalibreContentServerReader
             throws JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
-        localBook.putInt(DBKeys.KEY_CALIBRE_BOOK_ID, calibreBookId);
-        localBook.putString(DBKeys.KEY_CALIBRE_BOOK_UUID,
+        localBook.putInt(DBKey.KEY_CALIBRE_BOOK_ID, calibreBookId);
+        localBook.putString(DBKey.KEY_CALIBRE_BOOK_UUID,
                             calibreBook.getString(CalibreBook.UUID));
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
         // Note we copy the string as-is, and leave the normalisation to the book DAO routines.
         // Reminder: we already checked this date being newer then the local one before we got here
-        localBook.putString(DBKeys.KEY_UTC_LAST_UPDATED,
+        localBook.putString(DBKey.UTC_DATE_LAST_UPDATED,
                             calibreBook.getString(CalibreBook.LAST_MODIFIED));
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBook.TITLE)) {
             // always overwrite
-            localBook.putString(DBKeys.KEY_TITLE, calibreBook.getString(CalibreBook.TITLE));
+            localBook.putString(DBKey.KEY_TITLE, calibreBook.getString(CalibreBook.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
             // always overwrite
-            localBook.putString(DBKeys.KEY_DESCRIPTION,
+            localBook.putString(DBKey.KEY_DESCRIPTION,
                                 calibreBook.getString(CalibreBook.DESCRIPTION));
         }
 
@@ -411,7 +410,7 @@ public class CalibreContentServerReader
             final int rating = calibreBook.getInt(CalibreBook.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
-                localBook.putDouble(DBKeys.KEY_RATING, rating);
+                localBook.putDouble(DBKey.KEY_RATING, rating);
             }
         }
 
@@ -425,7 +424,7 @@ public class CalibreContentServerReader
                 final String lang = languages.optString(0);
                 // don't overwrite the local value with a remote 'not-set' value
                 if (lang != null && !lang.isEmpty()) {
-                    localBook.putString(DBKeys.KEY_LANGUAGE, lang);
+                    localBook.putString(DBKey.KEY_LANGUAGE, lang);
                 }
             }
         }
@@ -513,7 +512,7 @@ public class CalibreContentServerReader
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // Note if there is more then one, we end up with the 'last' one.
-                            localBook.putString(DBKeys.KEY_ESID_ASIN, remotes.optString(key));
+                            localBook.putString(DBKey.SID_ASIN, remotes.optString(key));
                         }
                     }
                 }
@@ -525,7 +524,7 @@ public class CalibreContentServerReader
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
                     final File file = mServer.getCover(calibreBookId, coverUrl);
-                    localBook.setCover(mBookDao, 0, file);
+                    localBook.setCover(0, file);
                 }
             }
         }
@@ -575,7 +574,7 @@ public class CalibreContentServerReader
                 if (it.hasNext()) {
                     final String format = it.next();
                     if (format != null && !format.isEmpty()) {
-                        localBook.putString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
+                        localBook.putString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
                     }
                 }
             }
@@ -635,29 +634,8 @@ public class CalibreContentServerReader
         }
     }
 
-    /**
-     * Check if the incoming book is newer than the stored book data.
-     *
-     * @param context              Current context
-     * @param bookId               the local book id to lookup in our database
-     * @param importLastUpdateDate to check
-     *
-     * @return {@code true} if the imported data is newer then the local data.
-     */
-    private boolean isImportNewer(@NonNull final Context context,
-                                  @IntRange(from = 1) final long bookId,
-                                  @Nullable final LocalDateTime importLastUpdateDate) {
-        if (importLastUpdateDate == null) {
-            return false;
-        }
-
-        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
-        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
-    }
-
     @Override
     public void close() {
-        mBookDao.close();
         ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 }

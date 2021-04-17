@@ -31,13 +31,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -50,9 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  */
 public class XmlArchiveWriter
         implements ArchiveWriter {
-
-    /** Log tag. */
-    private static final String TAG = "XmlArchiveWriter";
 
     /**
      * v4 writes out an XML envelope with two elements inside:<br>
@@ -89,17 +86,15 @@ public class XmlArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
 
-        final int booksToExport;
-        try (BookDao bookDao = new BookDao(TAG)) {
-            booksToExport = bookDao.countBooksForExport(null);
-        }
+        final int booksToExport = ServiceLocator.getInstance().getBookDao()
+                                                .countBooksForExport(null);
 
         if (booksToExport > 0) {
             progressListener.setMaxPos(booksToExport);
 
             final ExportResults results;
 
-            try (OutputStream os = mHelper.createOutputStream();
+            try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new XmlRecordWriter(null)) {

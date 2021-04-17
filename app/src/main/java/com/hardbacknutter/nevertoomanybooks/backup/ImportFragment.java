@@ -45,6 +45,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -69,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ImportFragment
@@ -160,13 +162,13 @@ public class ImportFragment
         mVm.onImportFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        if (!mVm.hasUri()) {
-            // start the import process by asking the user for a Uri
-            mOpenUriLauncher.launch(MIME_TYPES);
-        } else {
-            // or if we already have a uri when called,
+        if (mVm.hasUri()) {
+            // if we already have a uri when called,
             // or e.g. after a screen rotation, just show the screen/options again
             showOptions();
+        } else {
+            // start the import process by asking the user for a Uri
+            mOpenUriLauncher.launch(MIME_TYPES);
         }
     }
 
@@ -398,6 +400,14 @@ public class ImportFragment
         // some stats of what's inside the archive
         final StringJoiner archiveContent = new StringJoiner("\n");
 
+        final LocalDateTime creationDate = metaData.getCreatedLocalDate();
+
+        if (creationDate != null) {
+            //noinspection ConstantConditions
+            archiveContent.add(getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_created),
+                                         DateUtils.toDisplay(getContext(), creationDate)));
+        }
         if (metaData.hasBookCount()) {
             archiveContent.add(getString(R.string.name_colon_value,
                                          getString(R.string.lbl_books),

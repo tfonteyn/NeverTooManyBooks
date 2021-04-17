@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -54,18 +53,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public class CsvArchiveReader
         implements ArchiveReader {
 
-    /** Log tag. */
-    private static final String TAG = "CsvArchiveReader";
-
     private static final String DB_BACKUP_NAME = "DbCsvBackup.db";
     private static final int DB_BACKUP_COPIES = 3;
 
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
 
     /**
      * Constructor.
@@ -74,7 +67,6 @@ public class CsvArchiveReader
      */
     public CsvArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(TAG);
     }
 
     @NonNull
@@ -99,11 +91,11 @@ public class CsvArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (RecordReader recordReader = new CsvRecordReader(context, mBookDao)) {
+        try (RecordReader recordReader = new CsvRecordReader(context)) {
             final ArchiveReaderRecord record = new CsvArchiveRecord(
                     mHelper.getUriInfo(context).getDisplayName(), is);
 
-            return recordReader.read(context, record, mHelper.getOptions(), progressListener);
+            return recordReader.read(context, record, mHelper, progressListener);
         } finally {
             is.close();
         }
@@ -111,7 +103,6 @@ public class CsvArchiveReader
 
     @Override
     public void close() {
-        mBookDao.close();
         ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 

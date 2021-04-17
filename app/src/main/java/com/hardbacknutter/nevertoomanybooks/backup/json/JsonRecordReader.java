@@ -24,9 +24,7 @@ import android.database.sqlite.SQLiteDoneException;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,7 +34,6 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -130,14 +127,12 @@ public class JsonRecordReader
      * Only supports {@link RecordType#Books}.
      *
      * @param context              Current context
-     * @param bookDao              Database Access;
      * @param importEntriesAllowed the record types we're allowed to read
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final BookDao bookDao,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
-        mBookDao = bookDao;
+        mBookDao = ServiceLocator.getInstance().getBookDao();
         mImportEntriesAllowed = importEntriesAllowed;
 
         mBookCoder = new BookCoder(context);
@@ -172,7 +167,7 @@ public class JsonRecordReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @ImportHelper.Options final int options,
+                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
@@ -185,17 +180,8 @@ public class JsonRecordReader
                 // Don't close this stream
                 final InputStream is = record.getInputStream();
                 final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
-
-                // read the entire record into a single String
-                // OutOfMemoryError when the data starts to exceed 8mb (9000+ books)
-//                final String content = reader.lines().collect(Collectors.joining());
-//                if (!content.isEmpty()) {
-
-//                    JSONObject root = new JSONObject(content);
-
-                // 2021-03-01: now using an updated/repacked org.json, version 20201115
-                JSONObject root = new JSONObject(new JSONTokener(reader));
+                // 2021-03-01: using an updated/repacked org.json, version 20201115
+                JSONObject root = new JSONObject(new JSONTokener(isr));
 
                 // Is this a JsonArchiveWriter format ?
                 // Then descend to the container (data) object.
@@ -224,7 +210,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
-                        readBooks(context, root, options, progressListener);
+                        readBooks(context, root, helper, progressListener);
                     }
                 }
 //                }
@@ -292,7 +278,7 @@ public class JsonRecordReader
 
     private void readBooks(@NonNull final Context context,
                            @NonNull final JSONObject root,
-                           @ImportHelper.Options final int options,
+                           @NonNull final ImportHelper helper,
                            @NonNull final ProgressListener progressListener)
             throws JSONException {
 
@@ -300,11 +286,6 @@ public class JsonRecordReader
         if (books == null || books.isEmpty()) {
             return;
         }
-
-        final boolean updatesMustSync =
-                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
-        final boolean updatesMayOverwrite =
-                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
 
         int row = 1;
         // Count the number of rows between committing a transaction
@@ -338,13 +319,12 @@ public class JsonRecordReader
 
                 try {
                     final Book book = mBookCoder.decode(books.getJSONObject(i));
-                    Objects.requireNonNull(book.getString(DBKeys.KEY_BOOK_UUID),
+                    Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID),
                                            "KEY_BOOK_UUID");
 
-                    final long importNumericId = book.getLong(DBKeys.KEY_PK_ID);
-                    book.remove(DBKeys.KEY_PK_ID);
-                    importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
-                                       book, importNumericId);
+                    final long importNumericId = book.getLong(DBKey.PK_ID);
+                    book.remove(DBKey.PK_ID);
+                    importBookWithUuid(context, helper, book, importNumericId);
 
                 } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
@@ -396,27 +376,28 @@ public class JsonRecordReader
      * @throws DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
-                                    final boolean updatesMustSync,
-                                    final boolean updatesMayOverwrite,
+                                    @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
             throws DaoWriteException {
         // Verified to be valid earlier.
-        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mBookDao.getBookIdFromUuid(uuid);
+        final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
         if (databaseBookId > 0) {
             // The book exists in our database (matching UUID).
 
             // Explicitly set the EXISTING id on the book
             // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBKeys.KEY_PK_ID, databaseBookId);
+            book.putLong(DBKey.PK_ID, databaseBookId);
 
-            // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync
-                 && isImportNewer(context, databaseBookId, book.getLastUpdateUtcDate(context)))
-                || updatesMayOverwrite) {
+            // UPDATE the existing book (if allowed).
+            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+            if (updateOption == ImportHelper.Updates.Overwrite
+                ||
+                (updateOption == ImportHelper.Updates.OnlyNewer
+                 && mBookDao.isImportNewer(databaseBookId, book))) {
 
                 mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
                                                | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
@@ -441,7 +422,7 @@ public class JsonRecordReader
 
             // If we have an importBookId, and it does not already exist, we reuse it.
             if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBKeys.KEY_PK_ID, importNumericId);
+                book.putLong(DBKey.PK_ID, importNumericId);
             }
 
             // the Book object will contain:
@@ -459,25 +440,5 @@ public class JsonRecordReader
                            + "|" + book.getTitle());
             }
         }
-    }
-
-    /**
-     * Check if the incoming book is newer than the stored book data.
-     *
-     * @param context              Current context
-     * @param bookId               the local book id to lookup in our database
-     * @param importLastUpdateDate to check
-     *
-     * @return {@code true} if the imported data is newer then the local data.
-     */
-    private boolean isImportNewer(@NonNull final Context context,
-                                  @IntRange(from = 1) final long bookId,
-                                  @Nullable final LocalDateTime importLastUpdateDate) {
-        if (importLastUpdateDate == null) {
-            return false;
-        }
-
-        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
-        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 }

@@ -20,23 +20,27 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 public final class Backup {
+
+    /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
+    public static final String PK_BACKUP_COUNTDOWN = "startup.backupCountdown";
+
+    /** Number of app startup's between offers to backup. */
+    public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
 
     private static final String TAG = "Backup";
 
@@ -47,86 +51,68 @@ public final class Backup {
     }
 
     /**
-     * Store the date of the last full backup and reset the startup prompt-counter.
+     * Store the LocalDateTime(ZoneOffset.UTC) of the last full backup
+     * and reset the startup prompt-counter.
      */
-    public static void setLastFullBackupDate(@Nullable final LocalDateTime dateTime) {
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-        if (dateTime == null) {
-            global.edit()
-                  .remove(PREF_LAST_FULL_BACKUP_DATE)
-                  .putInt(StartupViewModel.PK_STARTUP_BACKUP_COUNTDOWN,
-                          StartupViewModel.STARTUP_BACKUP_COUNTDOWN)
-                  .apply();
-        } else {
-            global.edit()
-                  .putString(PREF_LAST_FULL_BACKUP_DATE, dateTime
-                          .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                  .putInt(StartupViewModel.PK_STARTUP_BACKUP_COUNTDOWN,
-                          StartupViewModel.STARTUP_BACKUP_COUNTDOWN)
-                  .apply();
-        }
+    public static void setLastFullBackupDate() {
+        ServiceLocator.getGlobalPreferences()
+                      .edit()
+                      .putInt(PK_BACKUP_COUNTDOWN, BACKUP_COUNTDOWN_DEFAULT)
+                      .putString(PREF_LAST_FULL_BACKUP_DATE,
+                                 LocalDateTime.now(ZoneOffset.UTC)
+                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                      .apply();
     }
 
     /**
      * Get the last time we made a full backup.
      *
-     * @param context Current context
-     *
-     * @return Date in the UTC timezone.
+     * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
     @Nullable
-    public static LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
-        final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
-                                                   .getString(PREF_LAST_FULL_BACKUP_DATE, null);
-
-        if (lastBackup != null && !lastBackup.isEmpty()) {
-            return DateParser.getInstance(context).parseISO(lastBackup);
-        }
-
-        return null;
+    public static LocalDateTime getLastFullBackupDate() {
+        return getDate(PREF_LAST_FULL_BACKUP_DATE);
     }
 
+
     /**
-     * Store the date of the last full export in the given format.
+     * Store the LocalDateTime(ZoneOffset.UTC) of the last full export in the given encoding.
      */
-    public static void setLastFullExportDate(@NonNull final ArchiveEncoding encoding,
-                                             @Nullable final LocalDateTime dateTime) {
-
-        final String key = PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt();
-
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-        if (dateTime == null) {
-            global.edit().remove(key).apply();
-        } else {
-            global.edit()
-                  .putString(key, dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                  .apply();
-        }
+    public static void setLastFullExportDate(@NonNull final ArchiveEncoding encoding) {
+        ServiceLocator.getGlobalPreferences()
+                      .edit()
+                      .putString(PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt(),
+                                 LocalDateTime.now(ZoneOffset.UTC)
+                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                      .apply();
     }
 
     /**
      * Get the last time we made a full export in the given format.
      *
-     * @param context Current context
-     *
-     * @return Date in the UTC timezone.
+     * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
     @Nullable
-    public static LocalDateTime getLastFullExportDate(@NonNull final Context context,
-                                                      @NonNull final ArchiveEncoding encoding) {
+    public static LocalDateTime getLastFullExportDate(@NonNull final ArchiveEncoding encoding) {
+        return getDate(PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt());
+    }
 
-        final String key = PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt();
-
-        final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
-                                                   .getString(key, null);
-
+    /**
+     * Read the given date key from SharedPreferences.
+     *
+     * @param key to use
+     *
+     * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
+     */
+    @Nullable
+    private static LocalDateTime getDate(@NonNull final String key) {
+        final String lastBackup = ServiceLocator.getGlobalPreferences().getString(key, null);
         if (lastBackup != null && !lastBackup.isEmpty()) {
-            return DateParser.getInstance(context).parseISO(lastBackup);
+            return new ISODateParser().parse(lastBackup);
         }
 
         return null;
     }
-
 
     /**
      * Transform a failure into a user friendly report.

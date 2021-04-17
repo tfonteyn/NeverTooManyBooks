@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -47,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * <p>
  * The {@link #validate(Context)} should detect which database we're dealing with and
  * create the delegate {@link ArchiveReader} and run {@link #validate(Context)} on it.
+ * <p>
+ * The incoming db is copied to the internal cache dir first.
  */
 public class DbArchiveReader
         implements ArchiveReader {
@@ -85,7 +86,7 @@ public class DbArchiveReader
             }
 
             // Copy the file from the uri to a place where we can access it as a database.
-            File tmpDb = new File(AppDir.Cache.getDir(), System.nanoTime() + ".db");
+            File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
             tmpDb = FileUtils.copyInputStream(is, tmpDb);
             mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
                                                           SQLiteDatabase.OPEN_READONLY);

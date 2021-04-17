@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,14 +38,14 @@ public class SeriesCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBKeys.KEY_PK_ID, series.getId());
-        out.put(DBKeys.KEY_SERIES_TITLE, series.getTitle());
+        out.put(DBKey.PK_ID, series.getId());
+        out.put(DBKey.KEY_SERIES_TITLE, series.getTitle());
 
         if (!series.getNumber().isEmpty()) {
-            out.put(DBKeys.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
+            out.put(DBKey.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
         }
         if (series.isComplete()) {
-            out.put(DBKeys.KEY_SERIES_IS_COMPLETE, true);
+            out.put(DBKey.BOOL_SERIES_IS_COMPLETE, true);
         }
         return out;
     }
@@ -55,14 +55,14 @@ public class SeriesCoder
     public Series decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Series series = new Series(data.getString(DBKeys.KEY_SERIES_TITLE));
-        series.setId(data.getLong(DBKeys.KEY_PK_ID));
+        final Series series = new Series(data.getString(DBKey.KEY_SERIES_TITLE));
+        series.setId(data.getLong(DBKey.PK_ID));
 
-        if (data.has(DBKeys.KEY_BOOK_NUM_IN_SERIES)) {
-            series.setNumber(data.getString(DBKeys.KEY_BOOK_NUM_IN_SERIES));
+        if (data.has(DBKey.KEY_BOOK_NUM_IN_SERIES)) {
+            series.setNumber(data.getString(DBKey.KEY_BOOK_NUM_IN_SERIES));
         }
-        if (data.has(DBKeys.KEY_SERIES_IS_COMPLETE)) {
-            series.setComplete(data.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE));
+        if (data.has(DBKey.BOOL_SERIES_IS_COMPLETE)) {
+            series.setComplete(data.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE));
         } else if (data.has("complete")) {
             series.setComplete(data.getBoolean("complete"));
         }

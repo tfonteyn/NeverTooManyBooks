@@ -30,9 +30,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -52,8 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  */
 public class CsvArchiveWriter
         implements ArchiveWriter {
-
-    private static final String TAG = "CsvArchiveWriter";
 
     protected static final int VERSION = 1;
 
@@ -83,22 +80,20 @@ public class CsvArchiveWriter
 
         final LocalDateTime dateSince;
         if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullExportDate(context, ArchiveEncoding.Csv);
+            dateSince = Backup.getLastFullExportDate(ArchiveEncoding.Csv);
         } else {
             dateSince = null;
         }
 
-        final int booksToExport;
-        try (BookDao bookDao = new BookDao(TAG)) {
-            booksToExport = bookDao.countBooksForExport(dateSince);
-        }
+        final int booksToExport = ServiceLocator.getInstance().getBookDao()
+                                                .countBooksForExport(dateSince);
 
         if (booksToExport > 0) {
             progressListener.setMaxPos(booksToExport);
 
             final ExportResults results;
 
-            try (OutputStream os = mHelper.createOutputStream();
+            try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
                  RecordWriter recordWriter = new CsvRecordWriter(dateSince)) {
@@ -109,8 +104,7 @@ public class CsvArchiveWriter
 
             // If the backup was a full backup remember that.
             if (!mHelper.isIncremental()) {
-                Backup.setLastFullExportDate(ArchiveEncoding.Csv,
-                                             LocalDateTime.now(ZoneOffset.UTC));
+                Backup.setLastFullExportDate(ArchiveEncoding.Csv);
             }
             return results;
         } else {

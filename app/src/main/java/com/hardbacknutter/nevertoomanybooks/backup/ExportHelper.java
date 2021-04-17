@@ -45,19 +45,21 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
+/**
+ * Writes to a temporary file in the internal cache first.
+ */
 public class ExportHelper {
 
     /** Log tag. */
     private static final String TAG = "ExportHelper";
-    /** Write to this temp file first. */
-    private static final String TEMP_FILE_NAME = TAG + ".tmp";
     /** What is going to be exported. */
     @NonNull
     private final Set<RecordType> mExportEntries;
+    /** Extra arguments for specific writers. The writer must define them. */
+    private final Bundle mExtraArgs = new Bundle();
     /** Picked by the user; where we write to. */
     @Nullable
     private Uri mUri;
@@ -72,9 +74,6 @@ public class ExportHelper {
      * </ul>
      */
     private boolean mIncremental;
-
-    /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle mExtraArgs = new Bundle();
 
     /**
      * Constructor.
@@ -166,19 +165,25 @@ public class ExportHelper {
         return mExtraArgs;
     }
 
+    private File getTempFile(@NonNull final Context context) {
+        return new File(context.getCacheDir(), TAG + ".tmp");
+    }
+
     /**
      * Create/get the OutputStream to write to.
      * When writing is done (success <strong>and</strong> failure),
      * {@link #onSuccess} / {@link #onError} must be called as needed.
+     *
+     * @param context Current context
      *
      * @return OutputStream
      *
      * @throws FileNotFoundException on ...
      */
     @NonNull
-    public OutputStream createOutputStream()
-            throws FileNotFoundException, ExternalStorageException {
-        return new FileOutputStream(new File(AppDir.Cache.getDir(), TEMP_FILE_NAME));
+    public OutputStream createOutputStream(@NonNull final Context context)
+            throws FileNotFoundException {
+        return new FileOutputStream(getTempFile(context));
     }
 
     /**
@@ -194,7 +199,7 @@ public class ExportHelper {
 
         if (getEncoding().isFile()) {
             // The output file is now properly closed, export it to the user Uri
-            final File tmpOutput = new File(AppDir.Cache.getDir(), TEMP_FILE_NAME);
+            final File tmpOutput = getTempFile(context);
 
             try (InputStream is = new FileInputStream(tmpOutput);
                  OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
@@ -210,14 +215,12 @@ public class ExportHelper {
 
     /**
      * Should be called after a failed write.
+     *
+     * @param context Current context
      */
-    public void onError() {
+    public void onError(@NonNull final Context context) {
         // cleanup
-        try {
-            FileUtils.delete(new File(AppDir.Cache.getDir(), TEMP_FILE_NAME));
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // ignore
-        }
+        FileUtils.delete(getTempFile(context));
     }
 
     void setExportEntry(@NonNull final RecordType entry,

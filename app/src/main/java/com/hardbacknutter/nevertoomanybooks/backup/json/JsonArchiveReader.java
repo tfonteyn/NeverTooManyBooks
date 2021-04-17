@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -54,9 +53,6 @@ public class JsonArchiveReader
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
 
     /**
      * Constructor.
@@ -65,7 +61,6 @@ public class JsonArchiveReader
      */
     public JsonArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(TAG);
     }
 
     @NonNull
@@ -83,13 +78,13 @@ public class JsonArchiveReader
         }
 
         try (RecordReader recordReader = new JsonRecordReader(
-                context, mBookDao, mHelper.getImportEntries())) {
+                context, mHelper.getImportEntries())) {
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     mHelper.getUriInfo(context).getDisplayName(), is);
 
-            return recordReader.read(context, record, mHelper.getOptions(), progressListener);
+            return recordReader.read(context, record, mHelper, progressListener);
         } finally {
             is.close();
         }
@@ -97,7 +92,6 @@ public class JsonArchiveReader
 
     @Override
     public void close() {
-        mBookDao.close();
         ServiceLocator.getInstance().getMaintenanceDao().purge();
     }
 

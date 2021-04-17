@@ -25,7 +25,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -36,7 +35,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -139,12 +137,10 @@ public class CsvRecordReader
      * Only supports {@link RecordType#Books}.
      *
      * @param context Current context
-     * @param bookDao Database Access;
      */
     @AnyThread
-    public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final BookDao bookDao) {
-        mBookDao = bookDao;
+    public CsvRecordReader(@NonNull final Context context) {
+        mBookDao = ServiceLocator.getInstance().getBookDao();
         mBookCoder = new BookCoder(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
@@ -156,7 +152,7 @@ public class CsvRecordReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @ImportHelper.Options final int options,
+                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
@@ -180,7 +176,7 @@ public class CsvRecordReader
                 }
 
                 if (!allLines.isEmpty()) {
-                    readBooks(context, options, allLines, progressListener);
+                    readBooks(context, helper, allLines, progressListener);
                 }
             }
         }
@@ -192,14 +188,10 @@ public class CsvRecordReader
     }
 
     private void readBooks(@NonNull final Context context,
-                           @ImportHelper.Options final int options,
+                           @NonNull final ImportHelper helper,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
             throws ImportException {
-        final boolean updatesMustSync =
-                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
-        final boolean updatesMayOverwrite =
-                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
@@ -211,8 +203,8 @@ public class CsvRecordReader
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
-        if (updatesMustSync) {
-            requireColumnOrThrow(context, csvColumnNamesList, DBKeys.KEY_UTC_LAST_UPDATED);
+        if (helper.getUpdateOption() == ImportHelper.Updates.OnlyNewer) {
+            requireColumnOrThrow(context, csvColumnNamesList, DBKey.UTC_DATE_LAST_UPDATED);
         }
 
         // One book == One row. We start after the headings row.
@@ -265,12 +257,10 @@ public class CsvRecordReader
 
                     // ALWAYS let the UUID trump the ID; we may be importing someone else's list
                     if (hasUuid) {
-                        importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
-                                           book, importNumericId);
+                        importBookWithUuid(context, helper, book, importNumericId);
 
                     } else if (importNumericId > 0) {
-                        importBookWithId(context, updatesMustSync, updatesMayOverwrite,
-                                         book, importNumericId);
+                        importBookWithId(context, helper, book, importNumericId);
 
                     } else {
                         importBook(context, book);
@@ -341,34 +331,35 @@ public class CsvRecordReader
      * @throws DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
-                                    final boolean updatesMustSync,
-                                    final boolean updatesMayOverwrite,
+                                    @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
             throws DaoWriteException {
         // Verified to be valid earlier.
-        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long bookId = mBookDao.getBookIdFromUuid(uuid);
-        if (bookId > 0) {
+        final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
+        if (databaseBookId > 0) {
             // The book exists in our database (matching UUID).
 
             // Explicitly set the EXISTING id on the book
             // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBKeys.KEY_PK_ID, bookId);
+            book.putLong(DBKey.PK_ID, databaseBookId);
 
-            // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync
-                 && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
-                || updatesMayOverwrite) {
+            // UPDATE the existing book (if allowed)
+            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+            if (updateOption == ImportHelper.Updates.Overwrite
+                ||
+                (updateOption == ImportHelper.Updates.OnlyNewer
+                 && mBookDao.isImportNewer(databaseBookId, book))) {
 
                 mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
                                                | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + bookId
+                               + "|databaseBookId=" + databaseBookId
                                + "|update|" + book.getTitle());
                 }
 
@@ -376,7 +367,7 @@ public class CsvRecordReader
                 mResults.booksSkipped++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + bookId
+                               + "|databaseBookId=" + databaseBookId
                                + "|skipped|" + book.getTitle());
                 }
             }
@@ -386,7 +377,7 @@ public class CsvRecordReader
 
             // If we have an importBookId, and it does not already exist, we reuse it.
             if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBKeys.KEY_PK_ID, importNumericId);
+                book.putLong(DBKey.PK_ID, importNumericId);
             }
 
             // the Book object will contain:
@@ -415,13 +406,12 @@ public class CsvRecordReader
      * @throws DaoWriteException on failure
      */
     private void importBookWithId(@NonNull final Context context,
-                                  final boolean updatesMustSync,
-                                  final boolean updatesMayOverwrite,
+                                  @NonNull final ImportHelper helper,
                                   @NonNull final Book book,
                                   final long importNumericId)
             throws DaoWriteException {
         // Add the importNumericId back to the book.
-        book.putLong(DBKeys.KEY_PK_ID, importNumericId);
+        book.putLong(DBKey.PK_ID, importNumericId);
 
         // Is that id already in use ?
         if (!mBookDao.bookExistsById(importNumericId)) {
@@ -443,11 +433,12 @@ public class CsvRecordReader
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
             // Ideally, we should ask the user presenting a choice "keep/overwrite"
+            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+            if (updateOption == ImportHelper.Updates.Overwrite
+                ||
+                (updateOption == ImportHelper.Updates.OnlyNewer
+                 && mBookDao.isImportNewer(importNumericId, book))) {
 
-            // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync
-                 && isImportNewer(context, importNumericId, book.getLastUpdateUtcDate(context)))
-                || updatesMayOverwrite) {
                 mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
                                                | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
@@ -481,26 +472,6 @@ public class CsvRecordReader
     }
 
     /**
-     * Check if the incoming book is newer than the stored book data.
-     *
-     * @param context              Current context
-     * @param bookId               the local book id to lookup in our database
-     * @param importLastUpdateDate to check
-     *
-     * @return {@code true} if the imported data is newer then the local data.
-     */
-    private boolean isImportNewer(@NonNull final Context context,
-                                  @IntRange(from = 1) final long bookId,
-                                  @Nullable final LocalDateTime importLastUpdateDate) {
-        if (importLastUpdateDate == null) {
-            return false;
-        }
-
-        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
-        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
-    }
-
-    /**
      * Process the UUID if present.
      *
      * @param book the book
@@ -512,10 +483,10 @@ public class CsvRecordReader
         final String uuid;
 
         // Get the "book_uuid", and remove from book if null/blank
-        if (book.contains(DBKeys.KEY_BOOK_UUID)) {
-            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        if (book.contains(DBKey.KEY_BOOK_UUID)) {
+            uuid = book.getString(DBKey.KEY_BOOK_UUID);
             if (uuid.isEmpty()) {
-                book.remove(DBKeys.KEY_BOOK_UUID);
+                book.remove(DBKey.KEY_BOOK_UUID);
             }
 
         } else if (book.contains("uuid")) {
@@ -525,7 +496,7 @@ public class CsvRecordReader
             book.remove("uuid");
             // but if we got a UUID from it, store it again, using the correct key
             if (!uuid.isEmpty()) {
-                book.putString(DBKeys.KEY_BOOK_UUID, uuid);
+                book.putString(DBKey.KEY_BOOK_UUID, uuid);
             }
         } else {
             uuid = null;
@@ -544,9 +515,9 @@ public class CsvRecordReader
     private long extractNumericId(@NonNull final Book book) {
         // Do we have a numeric id in the import ?
         // String: see book init, we copied all fields we find in the import file as text.
-        final String idStr = book.getString(DBKeys.KEY_PK_ID);
+        final String idStr = book.getString(DBKey.PK_ID);
         // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
-        book.remove(DBKeys.KEY_PK_ID);
+        book.remove(DBKey.PK_ID);
 
         if (!idStr.isEmpty()) {
             try {

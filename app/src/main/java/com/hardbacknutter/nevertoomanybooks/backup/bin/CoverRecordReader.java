@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.bin;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
@@ -47,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
 public class CoverRecordReader
         implements RecordReader {
 
+    private static final String TAG = "CoverRecordReader";
+
     /** The amount of bits we'll shift the last-modified time. (== divide by 65536) */
     private static final int FILE_LM_PRECISION = 16;
 
@@ -54,7 +58,7 @@ public class CoverRecordReader
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
-                              @ImportHelper.Options final int options,
+                              @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
             throws ExternalStorageException {
 
@@ -72,14 +76,15 @@ public class CoverRecordReader
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
-                        final boolean updatesMustSync =
-                                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
-                        final boolean updatesMayOverwrite =
-                                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
+                        // Are we allowed to overwrite at all ?
+                        if (helper.getUpdateOption() == ImportHelper.Updates.Skip) {
+                            results.coversSkipped++;
+                            return results;
+                        }
 
-                        // If we should sync (and indeed overwrites are allowed),
+                        // If we should only import newer data,
                         // check which is newer, the local file, or the imported file.
-                        if (updatesMustSync && updatesMayOverwrite) {
+                        if (helper.getUpdateOption() == ImportHelper.Updates.OnlyNewer) {
                             // shift 16 bits to get to +- 1 minute precision.
                             // Using pure milliseconds will create far to many false positives
                             final long importFileDate =
@@ -90,12 +95,6 @@ public class CoverRecordReader
                                 results.coversSkipped++;
                                 return results;
                             }
-                        }
-
-                        // We're not syncing, are we allowed to overwrite at all ?
-                        if (!updatesMayOverwrite) {
-                            results.coversSkipped++;
-                            return results;
                         }
                     }
 
@@ -115,8 +114,11 @@ public class CoverRecordReader
                     }
                 } catch (@NonNull final ExternalStorageException e) {
                     throw e;
-
-                } catch (@NonNull final IOException ignore) {
+//URGENT: check disk full
+                } catch (@NonNull final IOException e) {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "", e);
+                    }
                     // we don't want to quit importing just because one cover fails.
                     results.coversSkipped++;
                 }

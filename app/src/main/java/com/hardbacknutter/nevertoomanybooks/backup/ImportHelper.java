@@ -23,19 +23,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import javax.net.ssl.SSLException;
 
@@ -48,21 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 
 public final class ImportHelper {
 
-    /**
-     * New Books/Covers are always imported
-     * (if {@link RecordType#Books} is set obviously).
-     * <p>
-     * Existing Books/Covers handling:
-     * <ul>
-     *     <li>00: skip entirely, keep the current data.</li>
-     *     <li>01: overwrite current data with incoming data.</li>
-     *     <li>10: [invalid combination]</li>
-     *     <li>11: check the "update_date" field and only import newer data.</li>
-     * </ul>
-     */
-    public static final int OPTION_UPDATES_MAY_OVERWRITE = 1;
-    public static final int OPTION_UPDATES_MUST_SYNC = 1 << 1;
-
     /** <strong>Where</strong> we read from. */
     @NonNull
     private final Uri mUri;
@@ -73,12 +54,14 @@ public final class ImportHelper {
     @NonNull
     private final Set<RecordType> mImportEntries = EnumSet.noneOf(RecordType.class);
 
-    /** Bitmask.  Contains extra options for the {@link RecordReader}. */
-    @Options
-    private int mOptions;
-
     /** Extra arguments for specific readers. The reader must define them. */
     private final Bundle mExtraArgs = new Bundle();
+
+    /**
+     * New Books/Covers are always imported
+     * (if {@link RecordType#Books} is set obviously).
+     */
+    private Updates mUpdateOption = Updates.Skip;
 
     /**
      * Private constructor. Use the factory methods instead.
@@ -212,7 +195,6 @@ public final class ImportHelper {
         return mEncoding;
     }
 
-
     /**
      * Create an {@link ArchiveReader} based on the type.
      *
@@ -260,66 +242,57 @@ public final class ImportHelper {
         return mImportEntries;
     }
 
-
     @SuppressWarnings("WeakerAccess")
     public boolean isNewBooksOnly() {
-        return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) == 0;
+        return mUpdateOption == Updates.Skip;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public void setNewBooksOnly() {
-        mOptions &= ~OPTION_UPDATES_MAY_OVERWRITE;
-        mOptions &= ~OPTION_UPDATES_MUST_SYNC;
+        mUpdateOption = Updates.Skip;
     }
 
     public boolean isAllBooks() {
-        return (mOptions & OPTION_UPDATES_MAY_OVERWRITE) != 0
-               && (mOptions & OPTION_UPDATES_MUST_SYNC) == 0;
+        return mUpdateOption == Updates.Overwrite;
     }
 
     public void setAllBooks() {
-        mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
-        mOptions &= ~OPTION_UPDATES_MUST_SYNC;
+        mUpdateOption = Updates.Overwrite;
     }
 
     public boolean isNewAndUpdatedBooks() {
-        return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) != 0;
+        return mUpdateOption == Updates.OnlyNewer;
     }
 
     @SuppressWarnings("WeakerAccess")
     public void setNewAndUpdatedBooks() {
-        mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
-        mOptions |= OPTION_UPDATES_MUST_SYNC;
+        mUpdateOption = Updates.OnlyNewer;
     }
 
-    @Options
-    public int getOptions() {
-        return mOptions;
+    public Updates getUpdateOption() {
+        return mUpdateOption;
     }
 
     @Override
     @NonNull
     public String toString() {
-        final StringJoiner options = new StringJoiner(",", "[", "]");
-        if ((mOptions & OPTION_UPDATES_MAY_OVERWRITE) != 0) {
-            options.add("UPDATES_MAY_OVERWRITE");
-        }
-        if ((mOptions & OPTION_UPDATES_MUST_SYNC) != 0) {
-            options.add("UPDATES_MUST_SYNC");
-        }
-
         return "ImportHelper{"
                + "mUri=" + mUri
                + ", mArchiveEncoding=" + mEncoding
                + ", mImportEntries=" + mImportEntries
-               + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
+               + ", mUpdates=" + mUpdateOption
                + ", mExtraArgs=" + mExtraArgs
                + '}';
     }
 
-    @IntDef(flag = true, value = {OPTION_UPDATES_MAY_OVERWRITE, OPTION_UPDATES_MUST_SYNC})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Options {
-
+    /**
+     * Existing Books/Covers handling.
+     */
+    public enum Updates {
+        /** skip updates entirely. Current data is untouched. */
+        Skip,
+        /** Overwrite current data with incoming data. */
+        Overwrite,
+        /** check the "update_date" field and only import newer data. */
+        OnlyNewer
     }
 }

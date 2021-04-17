@@ -170,10 +170,10 @@ public class JsonRecordWriter
                 long lastUpdate = 0;
 
                 final JSONArray bookArray = new JSONArray();
-                try (BookDao bookDao = new BookDao(TAG);
-                     Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+                try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
                     while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                        final Book book = Book.from(cursor, bookDao);
+                        final Book book = Book.from(cursor);
                         bookArray.put(coder.encode(book));
                         results.addBook(book.getId());
 

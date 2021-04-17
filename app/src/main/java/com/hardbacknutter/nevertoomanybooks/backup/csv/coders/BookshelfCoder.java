@@ -27,7 +27,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -74,7 +74,7 @@ public class BookshelfCoder
         final JSONObject details = new JSONObject();
         try {
             if (!bookshelf.getStyleUuid().isEmpty()) {
-                details.put(DBKeys.KEY_FK_STYLE, bookshelf.getStyleUuid());
+                details.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
             }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
@@ -96,8 +96,8 @@ public class BookshelfCoder
                 final JSONObject details = new JSONObject(parts.get(1));
                 // It's quite possible that the UUID is not a style we (currently) know.
                 // But that does not matter as we'll check it upon first access.
-                if (details.has(DBKeys.KEY_FK_STYLE)) {
-                    bookshelf.setStyleUuid(details.optString(DBKeys.KEY_FK_STYLE));
+                if (details.has(DBKey.FK_STYLE)) {
+                    bookshelf.setStyleUuid(details.optString(DBKey.FK_STYLE));
                 } else if (details.has("style")) {
                     bookshelf.setStyleUuid(details.optString("style"));
                 }

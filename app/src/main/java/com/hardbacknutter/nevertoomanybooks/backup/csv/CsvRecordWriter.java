@@ -32,6 +32,7 @@ import java.io.Writer;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
@@ -95,15 +96,15 @@ public class CsvRecordWriter
             int delta = 0;
             long lastUpdate = 0;
 
-            try (BookDao bookDao = new BookDao(TAG);
-                 Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+            try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
 
                 writer.write(bookCoder.encodeHeader());
                 writer.write("\n");
 
                 while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                    final Book book = Book.from(cursor, bookDao);
+                    final Book book = Book.from(cursor);
 
                     writer.write(bookCoder.encode(book));
                     writer.write("\n");

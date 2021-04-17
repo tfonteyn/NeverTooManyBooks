@@ -62,7 +62,7 @@ public interface RecordReader
      *
      * @param context          Current context
      * @param record           to read data from
-     * @param options          any applicable options
+     * @param helper           ImportHelper for options etc...
      * @param progressListener Progress and cancellation provider
      *
      * @return {@link ImportResults}
@@ -74,7 +74,7 @@ public interface RecordReader
     @NonNull
     ImportResults read(@NonNull Context context,
                        @NonNull ArchiveReaderRecord record,
-                       @ImportHelper.Options int options,
+                       @NonNull ImportHelper helper,
                        @NonNull ProgressListener progressListener)
             throws GeneralParsingException, ImportException, IOException;
 

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -37,7 +36,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -49,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -82,9 +79,7 @@ public abstract class ArchiveWriterAbstract
      * This covers the styles/prefs/etc... and a small extra safety.
      */
     private static final int EXTRA_STEPS = 10;
-    /** Database Access. */
-    @NonNull
-    protected final BookDao mBookDao;
+
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
@@ -99,7 +94,6 @@ public abstract class ArchiveWriterAbstract
      */
     protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
         mHelper = helper;
-        mBookDao = new BookDao(TAG);
     }
 
     /**
@@ -137,13 +131,13 @@ public abstract class ArchiveWriterAbstract
 
         final LocalDateTime dateSince;
         if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullBackupDate(context);
+            dateSince = Backup.getLastFullBackupDate();
         } else {
             dateSince = null;
         }
 
         try {
-            int steps = mBookDao.countBooksForExport(dateSince);
+            int steps = ServiceLocator.getInstance().getBookDao().countBooksForExport(dateSince);
             if (steps == 0) {
                 // nothing to backup.
                 return mResults;
@@ -222,7 +216,7 @@ public abstract class ArchiveWriterAbstract
 
         // If the backup was a full backup remember that.
         if (!mHelper.isIncremental()) {
-            Backup.setLastFullBackupDate(LocalDateTime.now(ZoneOffset.UTC));
+            Backup.setLastFullBackupDate();
         }
 
         return mResults;
@@ -399,18 +393,6 @@ public abstract class ArchiveWriterAbstract
                                     @NonNull final File file,
                                     final boolean compress)
             throws IOException;
-
-    /**
-     * Concrete writer should override and close its output.
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        mBookDao.close();
-    }
 
     public interface SupportsCovers {
 

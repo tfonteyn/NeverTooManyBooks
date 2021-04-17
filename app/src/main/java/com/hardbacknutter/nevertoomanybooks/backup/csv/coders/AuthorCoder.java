@@ -24,7 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -67,10 +67,10 @@ public class AuthorCoder
         final JSONObject details = new JSONObject();
         try {
             if (author.isComplete()) {
-                details.put(DBKeys.KEY_AUTHOR_IS_COMPLETE, true);
+                details.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, true);
             }
             if (author.getType() != Author.TYPE_UNKNOWN) {
-                details.put(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
+                details.put(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
             }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
@@ -91,14 +91,14 @@ public class AuthorCoder
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
 
-                if (details.has(DBKeys.KEY_AUTHOR_IS_COMPLETE)) {
-                    author.setComplete(details.optBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE));
+                if (details.has(DBKey.BOOL_AUTHOR_IS_COMPLETE)) {
+                    author.setComplete(details.optBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE));
                 } else if (details.has("complete")) {
                     author.setComplete(details.optBoolean("complete"));
                 }
 
-                if (details.has(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-                    author.setType(details.optInt(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK));
+                if (details.has(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+                    author.setType(details.optInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK));
                 } else if (details.has("type")) {
                     author.setType(details.optInt("type"));
                 }
