@@ -47,7 +47,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -380,7 +380,7 @@ public class SearchBookByIsbnFragment
         // The isbn field should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
-        final String title = bookData.getString(DBKeys.KEY_TITLE);
+        final String title = bookData.getString(DBKey.KEY_TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
             showError(mVb.lblIsbn, R.string.warning_no_matching_book_found);
             return;

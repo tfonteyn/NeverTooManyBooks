@@ -36,7 +36,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -83,48 +83,48 @@ public class EditBookNotesFragment
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
 
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(true), DBKeys.KEY_READ);
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(true), DBKeys.KEY_SIGNED);
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(true), DBKey.BOOL_READ);
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(true), DBKey.BOOL_SIGNED);
 
-        fields.add(R.id.rating, new RatingBarAccessor(true), DBKeys.KEY_RATING)
+        fields.add(R.id.rating, new RatingBarAccessor(true), DBKey.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, new EditTextAccessor<>(), DBKeys.KEY_PRIVATE_NOTES)
+        fields.add(R.id.notes, new EditTextAccessor<>(), DBKey.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
         fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
-                   DBKeys.KEY_PRICE_PAID);
+                   DBKey.PRICE_PAID);
         fields.add(R.id.price_paid_currency,
                    new AutoCompleteTextAccessor(() -> mVm.getAllPricePaidCurrencyCodes()),
-                   DBKeys.KEY_PRICE_PAID_CURRENCY)
+                   DBKey.PRICE_PAID_CURRENCY)
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
         fields.add(R.id.condition,
                    new ExposedDropDownMenuAccessor(context, R.array.conditions_book, true),
-                   DBKeys.KEY_BOOK_CONDITION)
+                   DBKey.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
         fields.add(R.id.condition_cover,
                    new ExposedDropDownMenuAccessor(context, R.array.conditions_dust_cover, true),
-                   DBKeys.KEY_BOOK_CONDITION_COVER)
+                   DBKey.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 
         fields.add(R.id.location, new AutoCompleteTextAccessor(() -> mVm.getAllLocations()),
-                   DBKeys.KEY_LOCATION)
+                   DBKey.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
-                   DBKeys.KEY_DATE_ACQUIRED)
+                   DBKey.DATE_ACQUIRED)
               .setTextInputLayout(R.id.lbl_date_acquired);
 
         fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
-                   DBKeys.KEY_READ_START)
+                   DBKey.DATE_READ_START)
               .setTextInputLayout(R.id.lbl_read_start)
               .setFieldValidator(this::validateReadStartAndEndFields);
 
         fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
-                   DBKeys.KEY_READ_END)
+                   DBKey.DATE_READ_END)
               .setTextInputLayout(R.id.lbl_read_end)
               .setFieldValidator(this::validateReadStartAndEndFields);
     }

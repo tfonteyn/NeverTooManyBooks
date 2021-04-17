@@ -35,7 +35,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -214,8 +214,8 @@ public class SearchBookByTextFragment
         // If any of the search fields are not present in the result,
         // we add them manually as the template for a new book.
 
-        if (!bookData.containsKey(DBKeys.KEY_TITLE)) {
-            bookData.putString(DBKeys.KEY_TITLE, mCoordinator.getTitleSearchText());
+        if (!bookData.containsKey(DBKey.KEY_TITLE)) {
+            bookData.putString(DBKey.KEY_TITLE, mCoordinator.getTitleSearchText());
         }
 
         final ArrayList<Author> authors =

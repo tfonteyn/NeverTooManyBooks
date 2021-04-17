@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSetti
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
@@ -227,7 +227,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
-            mCoverHandler[0] = new CoverHandler(this, mVm.getBookDao(), 0, maxWidth, maxHeight);
+            mCoverHandler[0] = new CoverHandler(this, 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
@@ -238,7 +238,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
-            mCoverHandler[1] = new CoverHandler(this, mVm.getBookDao(), 1, maxWidth, maxHeight);
+            mCoverHandler[1] = new CoverHandler(this, 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
@@ -294,12 +294,12 @@ public class ShowBookFragment
                 .getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
-        final boolean isRead = book.getBoolean(DBKeys.KEY_READ);
+        final boolean isRead = book.getBoolean(DBKey.BOOL_READ);
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = DBKeys.isUsed(global, DBKeys.KEY_LOANEE);
+        final boolean useLending = DBKey.isUsed(global, DBKey.KEY_LOANEE);
         final boolean isAvailable = mVm.isAvailable(mVb.pager.getCurrentItem());
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
@@ -329,7 +329,7 @@ public class ShowBookFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
-            final String title = book.getString(DBKeys.KEY_TITLE);
+            final String title = book.getString(DBKey.KEY_TITLE);
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(context, title, authors, () -> {
@@ -459,7 +459,7 @@ public class ShowBookFragment
     }
 
     private void setActivityTitle(@NonNull final Book book) {
-        String title = book.getString(DBKeys.KEY_TITLE);
+        String title = book.getString(DBKey.KEY_TITLE);
         if (BuildConfig.DEBUG /* always */) {
             title = "[" + book.getId() + "] " + title;
         }
@@ -563,51 +563,51 @@ public class ShowBookFragment
             final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
 
             // book fields
-            fields.add(R.id.title, new TextViewAccessor<>(), DBKeys.KEY_TITLE);
+            fields.add(R.id.title, new TextViewAccessor<>(), DBKey.KEY_TITLE);
 
             fields.add(R.id.author, new TextViewAccessor<>(
                                new AuthorListFormatter(Author.Details.Full, false, true)),
-                       Book.BKEY_AUTHOR_LIST, DBKeys.KEY_FK_AUTHOR)
+                       Book.BKEY_AUTHOR_LIST, DBKey.FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author);
 
             fields.add(R.id.series_title, new TextViewAccessor<>(
                                new SeriesListFormatter(Series.Details.Full, false, true)),
-                       Book.BKEY_SERIES_LIST, DBKeys.KEY_SERIES_TITLE)
+                       Book.BKEY_SERIES_LIST, DBKey.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
 
-            fields.add(R.id.isbn, new TextViewAccessor<>(), DBKeys.KEY_ISBN)
+            fields.add(R.id.isbn, new TextViewAccessor<>(), DBKey.KEY_ISBN)
                   .setRelatedFields(R.id.lbl_isbn);
 
             fields.add(R.id.description, new TextViewAccessor<>(htmlFormatter),
-                       DBKeys.KEY_DESCRIPTION);
+                       DBKey.KEY_DESCRIPTION);
 
-            fields.add(R.id.genre, new TextViewAccessor<>(), DBKeys.KEY_GENRE)
+            fields.add(R.id.genre, new TextViewAccessor<>(), DBKey.KEY_GENRE)
                   .setRelatedFields(R.id.lbl_genre);
 
             fields.add(R.id.language, new TextViewAccessor<>(languageFormatter),
-                       DBKeys.KEY_LANGUAGE)
+                       DBKey.KEY_LANGUAGE)
                   .setRelatedFields(R.id.lbl_language);
 
             fields.add(R.id.pages, new TextViewAccessor<>(new PagesFormatter()),
-                       DBKeys.KEY_PAGES);
-            fields.add(R.id.format, new TextViewAccessor<>(), DBKeys.KEY_FORMAT);
-            fields.add(R.id.color, new TextViewAccessor<>(), DBKeys.KEY_COLOR);
+                       DBKey.KEY_PAGES);
+            fields.add(R.id.format, new TextViewAccessor<>(), DBKey.KEY_FORMAT);
+            fields.add(R.id.color, new TextViewAccessor<>(), DBKey.KEY_COLOR);
             fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
-                       Book.BKEY_PUBLISHER_LIST, DBKeys.KEY_PUBLISHER_NAME);
+                       Book.BKEY_PUBLISHER_LIST, DBKey.KEY_PUBLISHER_NAME);
 
             fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
-                       DBKeys.KEY_BOOK_DATE_PUBLISHED)
+                       DBKey.DATE_BOOK_PUBLICATION)
                   .setRelatedFields(R.id.lbl_date_published);
 
             fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),
-                       DBKeys.KEY_DATE_FIRST_PUBLICATION)
+                       DBKey.DATE_FIRST_PUBLICATION)
                   .setRelatedFields(R.id.lbl_first_publication);
 
-            fields.add(R.id.print_run, new TextViewAccessor<>(), DBKeys.KEY_PRINT_RUN)
+            fields.add(R.id.print_run, new TextViewAccessor<>(), DBKey.KEY_PRINT_RUN)
                   .setRelatedFields(R.id.lbl_print_run);
 
             fields.add(R.id.price_listed, new TextViewAccessor<>(moneyFormatter),
-                       DBKeys.KEY_PRICE_LISTED)
+                       DBKey.PRICE_LISTED)
                   .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
             // Personal fields
@@ -615,51 +615,51 @@ public class ShowBookFragment
                                () -> new ArrayList<>(
                                        ServiceLocator.getInstance().getBookshelfDao().getAll()),
                                false), Book.BKEY_BOOKSHELF_LIST,
-                       DBKeys.KEY_FK_BOOKSHELF)
+                       DBKey.FK_BOOKSHELF)
                   .setRelatedFields(R.id.lbl_bookshelves);
 
             fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
-                       DBKeys.KEY_DATE_ACQUIRED)
+                       DBKey.DATE_ACQUIRED)
                   .setRelatedFields(R.id.lbl_date_acquired);
 
             fields.add(R.id.edition,
                        new BitmaskChipGroupAccessor(Book.Edition::getEditions, false),
-                       DBKeys.KEY_EDITION_BITMASK)
+                       DBKey.BITMASK_EDITION)
                   .setRelatedFields(R.id.lbl_edition);
 
-            fields.add(R.id.location, new TextViewAccessor<>(), DBKeys.KEY_LOCATION)
+            fields.add(R.id.location, new TextViewAccessor<>(), DBKey.KEY_LOCATION)
                   .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-            fields.add(R.id.rating, new RatingBarAccessor(false), DBKeys.KEY_RATING)
+            fields.add(R.id.rating, new RatingBarAccessor(false), DBKey.KEY_RATING)
                   .setRelatedFields(R.id.lbl_rating);
 
             fields.add(R.id.condition, new TextViewAccessor<>(
                                new StringArrayResFormatter(context, R.array.conditions_book)),
-                       DBKeys.KEY_BOOK_CONDITION)
+                       DBKey.KEY_BOOK_CONDITION)
                   .setRelatedFields(R.id.lbl_condition);
             fields.add(R.id.condition_cover, new TextViewAccessor<>(
                                new StringArrayResFormatter(context, R.array.conditions_dust_cover)),
-                       DBKeys.KEY_BOOK_CONDITION_COVER)
+                       DBKey.KEY_BOOK_CONDITION_COVER)
                   .setRelatedFields(R.id.lbl_condition_cover);
 
             fields.add(R.id.notes, new TextViewAccessor<>(htmlFormatter),
-                       DBKeys.KEY_PRIVATE_NOTES)
+                       DBKey.KEY_PRIVATE_NOTES)
                   .setRelatedFields(R.id.lbl_notes);
 
             fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
-                       DBKeys.KEY_READ_START)
+                       DBKey.DATE_READ_START)
                   .setRelatedFields(R.id.lbl_read_start);
             fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
-                       DBKeys.KEY_READ_END)
+                       DBKey.DATE_READ_END)
                   .setRelatedFields(R.id.lbl_read_end);
 
-            fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBKeys.KEY_READ);
+            fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBKey.BOOL_READ);
 
-            fields.add(R.id.icon_signed, new BooleanIndicatorAccessor(), DBKeys.KEY_SIGNED)
+            fields.add(R.id.icon_signed, new BooleanIndicatorAccessor(), DBKey.BOOL_SIGNED)
                   .setRelatedFields(R.id.lbl_signed);
 
             fields.add(R.id.price_paid, new TextViewAccessor<>(moneyFormatter),
-                       DBKeys.KEY_PRICE_PAID)
+                       DBKey.PRICE_PAID)
                   .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
             return fields;
@@ -696,8 +696,8 @@ public class ShowBookFragment
 
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(itemView.getContext());
-                mUseLoanee = DBKeys.isUsed(global, DBKeys.KEY_LOANEE);
-                mUseToc = DBKeys.isUsed(global, DBKeys.KEY_TOC_BITMASK);
+                mUseLoanee = DBKey.isUsed(global, DBKey.KEY_LOANEE);
+                mUseToc = DBKey.isUsed(global, DBKey.BITMASK_TOC);
 
                 if (!mUseLoanee) {
                     mVb.lendTo.setVisibility(View.GONE);
@@ -797,7 +797,7 @@ public class ShowBookFragment
              * @param book to load from
              */
             private void onBindToc(@NonNull final Book book) {
-                final boolean isAnthology = book.isBitSet(DBKeys.KEY_TOC_BITMASK,
+                final boolean isAnthology = book.isBitSet(DBKey.BITMASK_TOC,
                                                           Book.TOC_MULTIPLE_WORKS);
                 mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
 

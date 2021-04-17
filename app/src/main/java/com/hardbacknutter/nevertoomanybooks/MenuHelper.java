@@ -39,7 +39,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -79,15 +79,15 @@ public final class MenuHelper {
                                      @NonNull final DataHolder rowData) {
 
         final boolean hasAuthor;
-        if (rowData.contains(DBKeys.KEY_FK_AUTHOR)) {
-            hasAuthor = rowData.getLong(DBKeys.KEY_FK_AUTHOR) > 0;
+        if (rowData.contains(DBKey.FK_AUTHOR)) {
+            hasAuthor = rowData.getLong(DBKey.FK_AUTHOR) > 0;
         } else {
             hasAuthor = false;
         }
 
         final boolean hasSeries;
-        if (rowData.contains(DBKeys.KEY_FK_SERIES)) {
-            hasSeries = rowData.getLong(DBKeys.KEY_FK_SERIES) > 0;
+        if (rowData.contains(DBKey.FK_SERIES)) {
+            hasSeries = rowData.getLong(DBKey.FK_SERIES) > 0;
         } else {
             hasSeries = false;
         }

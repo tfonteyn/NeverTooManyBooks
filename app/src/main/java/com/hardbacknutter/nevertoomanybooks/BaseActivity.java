@@ -129,7 +129,7 @@ public abstract class BaseActivity
      */
     public static void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+                view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 

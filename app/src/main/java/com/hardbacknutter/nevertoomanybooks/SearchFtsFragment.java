@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,14 +36,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 
 /**
  * FIXME: open screen, click in field -> keyb up * now rotate screen... logcat msg
  * https://stackoverflow.com/questions/8122625#15732554
- *
+ * <p>
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
  * ENHANCE: SHOW the list, just like the system search does?
@@ -74,7 +73,7 @@ public class SearchFtsFragment
     /** The results book id list. For sending back to the caller. */
     private final ArrayList<Long> mBookIdList = new ArrayList<>();
     /** Database Access. */
-    private BookDao mBookDao;
+    private FtsDao mDao;
     /** User entered search text. */
     @Nullable
     private String mAuthorSearchText;
@@ -127,12 +126,12 @@ public class SearchFtsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBookDao = new BookDao(TAG);
+        mDao = ServiceLocator.getInstance().getFtsDao();
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            mTitleSearchText = args.getString(DBKeys.KEY_TITLE);
-            mSeriesTitleSearchText = args.getString(DBKeys.KEY_SERIES_TITLE);
+            mTitleSearchText = args.getString(DBKey.KEY_TITLE);
+            mSeriesTitleSearchText = args.getString(DBKey.KEY_SERIES_TITLE);
             mAuthorSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             mPublisherNameSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
             mKeywordsSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
@@ -222,7 +221,8 @@ public class SearchFtsFragment
         super.onPause();
     }
 
-    private void updateUi(final int count) {
+    private void updateUi() {
+        final int count = mBookIdList.size();
         final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
         mVb.booksFound.setText(s);
     }
@@ -263,8 +263,8 @@ public class SearchFtsFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(DBKeys.KEY_TITLE, mTitleSearchText);
-        outState.putString(DBKeys.KEY_SERIES_TITLE, mSeriesTitleSearchText);
+        outState.putString(DBKey.KEY_TITLE, mTitleSearchText);
+        outState.putString(DBKey.KEY_SERIES_TITLE, mSeriesTitleSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, mAuthorSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, mPublisherNameSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mKeywordsSearchText);
@@ -274,10 +274,6 @@ public class SearchFtsFragment
     @CallSuper
     public void onDestroy() {
         stopIdleTimer();
-
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
         super.onDestroy();
     }
 
@@ -340,28 +336,17 @@ public class SearchFtsFragment
                 // we CAN actually read the Views here ?!
                 viewToModel();
 
-                int count = 0;
-                try (Cursor cursor = mBookDao.search(mAuthorSearchText,
-                                                     mTitleSearchText,
-                                                     mSeriesTitleSearchText,
-                                                     mPublisherNameSearchText,
-                                                     mKeywordsSearchText,
-                                                     MAX_SUGGESTIONS)) {
-                    // Null return means FTS thought the parameters were effectively blank.
-                    if (cursor != null) {
-                        count = cursor.getCount();
-
-                        mBookIdList.clear();
-                        while (cursor.moveToNext()) {
-                            mBookIdList.add(cursor.getLong(0));
-                        }
-                    }
-                }
+                mBookIdList.clear();
+                mBookIdList.addAll(mDao.search(mAuthorSearchText,
+                                               mTitleSearchText,
+                                               mSeriesTitleSearchText,
+                                               mPublisherNameSearchText,
+                                               mKeywordsSearchText,
+                                               MAX_SUGGESTIONS));
 
                 // Update the UI in main thread.
-                final int bookCount = count;
                 //noinspection ConstantConditions
-                getView().getHandler().post(() -> updateUi(bookCount));
+                getView().getHandler().post(SearchFtsFragment.this::updateUi);
             }
         }
     }

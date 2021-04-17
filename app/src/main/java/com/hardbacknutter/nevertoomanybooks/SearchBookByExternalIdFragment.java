@@ -36,7 +36,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExternalIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
@@ -224,7 +224,7 @@ public class SearchBookByExternalIdFragment
         // The external id field for the site should be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
-        final String title = bookData.getString(DBKeys.KEY_TITLE);
+        final String title = bookData.getString(DBKey.KEY_TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
             Snackbar.make(mVb.externalId, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();

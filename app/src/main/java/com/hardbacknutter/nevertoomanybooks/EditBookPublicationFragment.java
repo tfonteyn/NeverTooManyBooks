@@ -33,7 +33,7 @@ import androidx.preference.PreferenceManager;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -101,44 +101,44 @@ public class EditBookPublicationFragment
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
 
 
-        fields.add(R.id.pages, new EditTextAccessor<>(), DBKeys.KEY_PAGES)
+        fields.add(R.id.pages, new EditTextAccessor<>(), DBKey.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
         fields.add(R.id.format, new AutoCompleteTextAccessor(() -> mVm.getAllFormats()),
-                   DBKeys.KEY_FORMAT)
+                   DBKey.KEY_FORMAT)
               .setRelatedFields(R.id.lbl_format);
 
         fields.add(R.id.color, new AutoCompleteTextAccessor(() -> mVm.getAllColors()),
-                   DBKeys.KEY_COLOR)
+                   DBKey.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
-                   Book.BKEY_PUBLISHER_LIST, DBKeys.KEY_PUBLISHER_NAME)
+                   Book.BKEY_PUBLISHER_LIST, DBKey.KEY_PUBLISHER_NAME)
               .setRelatedFields(R.id.lbl_publisher);
 
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
-                   DBKeys.KEY_BOOK_DATE_PUBLISHED)
+                   DBKey.DATE_BOOK_PUBLICATION)
               .setTextInputLayout(R.id.lbl_date_published);
 
         fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),
-                   DBKeys.KEY_DATE_FIRST_PUBLICATION)
+                   DBKey.DATE_FIRST_PUBLICATION)
               .setTextInputLayout(R.id.lbl_first_publication);
 
         // MUST be defined before the currency field is defined.
         fields.add(R.id.price_listed, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
-                   DBKeys.KEY_PRICE_LISTED);
+                   DBKey.PRICE_LISTED);
         fields.add(R.id.price_listed_currency,
                    new AutoCompleteTextAccessor(() -> mVm.getAllListPriceCurrencyCodes()),
-                   DBKeys.KEY_PRICE_LISTED_CURRENCY)
+                   DBKey.PRICE_LISTED_CURRENCY)
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
 
-        fields.add(R.id.print_run, new EditTextAccessor<>(), DBKeys.KEY_PRINT_RUN)
+        fields.add(R.id.print_run, new EditTextAccessor<>(), DBKey.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
         fields.add(R.id.edition,
                    new BitmaskChipGroupAccessor(Book.Edition::getEditions, true),
-                   DBKeys.KEY_EDITION_BITMASK)
+                   DBKey.BITMASK_EDITION)
               .setRelatedFields(R.id.lbl_edition);
     }
 
@@ -155,7 +155,7 @@ public class EditBookPublicationFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        mVm.prunePublishers(getContext());
+        mVm.getBook().prunePublishers(getContext(), true);
 
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();

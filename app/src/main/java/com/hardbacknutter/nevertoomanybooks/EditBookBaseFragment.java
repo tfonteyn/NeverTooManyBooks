@@ -41,15 +41,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -62,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
@@ -295,7 +292,7 @@ public abstract class EditBookBaseFragment
             setSubtitle(null);
         } else {
             // Existing book
-            String title = book.getString(DBKeys.KEY_TITLE);
+            String title = book.getString(DBKey.KEY_TITLE);
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
@@ -400,8 +397,8 @@ public abstract class EditBookBaseFragment
             // single date picker for the start-date
             //noinspection ConstantConditions
             fieldStartDate.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(startDateTitleId,
-                            fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone)));
+                    .launch(startDateTitleId, fieldStartDate.getId(),
+                            mVm.getInstant(fieldStartDate, todayIfNone)));
         }
 
         if (fieldEndDate.isUsed(global)) {
@@ -411,14 +408,14 @@ public abstract class EditBookBaseFragment
                 //noinspection ConstantConditions
                 view.setOnClickListener(v -> mDateRangePickerLauncher
                         .launch(dateSpanTitleId,
-                                fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone),
-                                fieldEndDate.getId(), getInstant(fieldEndDate, todayIfNone)));
+                                fieldStartDate.getId(), mVm.getInstant(fieldStartDate, todayIfNone),
+                                fieldEndDate.getId(), mVm.getInstant(fieldEndDate, todayIfNone)));
             } else {
                 // without using a start-date, single date picker for the end-date
                 //noinspection ConstantConditions
                 view.setOnClickListener(v -> mDatePickerLauncher
-                        .launch(endDateTitleId,
-                                fieldEndDate.getId(), getInstant(fieldEndDate, todayIfNone)));
+                        .launch(endDateTitleId, fieldEndDate.getId(),
+                                mVm.getInstant(fieldEndDate, todayIfNone)));
             }
         }
     }
@@ -439,7 +436,7 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(global)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(titleId, field.getId(), getInstant(field, todayIfNone)));
+                    .launch(titleId, field.getId(), mVm.getInstant(field, todayIfNone)));
         }
     }
 
@@ -487,30 +484,6 @@ public abstract class EditBookBaseFragment
         if (fieldId == R.id.read_end) {
             getField(R.id.cbx_read).getAccessor().setValue(true);
         }
-    }
-
-    /**
-     * Convert a Field value (String) to an Instant in time.
-     *
-     * @param field       to extract from
-     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
-     *
-     * @return instant
-     */
-    @Nullable
-    private Instant getInstant(@NonNull final Field<String, TextView> field,
-                               final boolean todayIfNone) {
-        //noinspection ConstantConditions
-        final LocalDateTime date = DateParser.getInstance(getContext())
-                                             .parse(field.getAccessor().getValue());
-        if (date == null && !todayIfNone) {
-            return null;
-        }
-
-        if (date != null) {
-            return date.toInstant(ZoneOffset.UTC);
-        }
-        return Instant.now();
     }
 
     public abstract static class EditItemLauncher<T extends Parcelable>

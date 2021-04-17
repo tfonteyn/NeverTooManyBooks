@@ -48,9 +48,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -75,10 +75,10 @@ public class EditBookFieldsFragment
     private static final String TAG = "EditBookFieldsFragment";
 
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + CheckListDialogFragment.TAG;
+    private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
 
-    private final CheckListDialogFragment.Launcher mEditBookshelvesLauncher =
-            new CheckListDialogFragment.Launcher(RK_EDIT_BOOKSHELVES) {
+    private final MultiChoiceDialogFragment.Launcher mEditBookshelvesLauncher =
+            new MultiChoiceDialogFragment.Launcher(RK_EDIT_BOOKSHELVES) {
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final ArrayList<Entity> selectedItems) {
@@ -92,7 +92,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mVm.getBook().putString(DBKeys.KEY_ISBN, barCode);
+                    mVm.getBook().putString(DBKey.KEY_ISBN, barCode);
                 }
             });
     /** Delegate to handle cover replacement, rotation, etc. */
@@ -207,7 +207,7 @@ public class EditBookFieldsFragment
                                     final int maxWidth,
                                     final int maxHeight,
                                     @NonNull final CircularProgressIndicator progressIndicator) {
-        mCoverHandler[cIdx] = new CoverHandler(this, mVm.getBookDao(), cIdx, maxWidth, maxHeight);
+        mCoverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight);
         mCoverHandler[cIdx].onViewCreated(this);
         mCoverHandler[cIdx].setProgressView(progressIndicator);
         mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
@@ -228,35 +228,35 @@ public class EditBookFieldsFragment
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
-                   Book.BKEY_AUTHOR_LIST, DBKeys.KEY_FK_AUTHOR)
+                   Book.BKEY_AUTHOR_LIST, DBKey.FK_AUTHOR)
               .setErrorViewId(R.id.lbl_author)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Short, true, false)),
-                   Book.BKEY_SERIES_LIST, DBKeys.KEY_SERIES_TITLE)
+                   Book.BKEY_SERIES_LIST, DBKey.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.add(R.id.title, new EditTextAccessor<>(), DBKeys.KEY_TITLE)
+        fields.add(R.id.title, new EditTextAccessor<>(), DBKey.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
-        fields.add(R.id.description, new EditTextAccessor<>(), DBKeys.KEY_DESCRIPTION)
+        fields.add(R.id.description, new EditTextAccessor<>(), DBKey.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(R.id.isbn, new EditTextAccessor<>(), DBKeys.KEY_ISBN)
+        fields.add(R.id.isbn, new EditTextAccessor<>(), DBKey.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.language, new AutoCompleteTextAccessor(
                            () -> mVm.getAllLanguagesCodes(),
                            new LanguageFormatter(userLocale), true),
-                   DBKeys.KEY_LANGUAGE)
+                   DBKey.KEY_LANGUAGE)
               .setErrorViewId(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.genre, new AutoCompleteTextAccessor(() -> mVm.getAllGenres()),
-                   DBKeys.KEY_GENRE)
+                   DBKey.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
@@ -264,7 +264,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   Book.BKEY_BOOKSHELF_LIST, DBKeys.KEY_FK_BOOKSHELF)
+                   Book.BKEY_BOOKSHELF_LIST, DBKey.FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 
@@ -291,8 +291,8 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        mVm.pruneAuthors(getContext());
-        mVm.pruneSeries(getContext());
+        mVm.getBook().pruneAuthors(getContext(), true);
+        mVm.getBook().pruneSeries(getContext(), true);
 
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();

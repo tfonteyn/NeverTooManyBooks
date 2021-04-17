@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -296,9 +296,9 @@ public class EditBookTocFragment
         super.onSaveFields(book);
 
         // Combine the separate checkboxes into the single field.
-        book.setBit(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
+        book.setBit(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS,
                     mVb.cbxIsAnthology.isChecked());
-        book.setBit(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS,
+        book.setBit(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_AUTHORS,
                     mVb.cbxMultipleAuthors.isChecked());
     }
 
@@ -324,7 +324,7 @@ public class EditBookTocFragment
 
         if (itemId == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
             final Book book = mVm.getBook();
-            final long isfdbId = book.getLong(DBKeys.KEY_ESID_ISFDB);
+            final long isfdbId = book.getLong(DBKey.SID_ISFDB);
             if (isfdbId != 0) {
                 Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
@@ -332,7 +332,7 @@ public class EditBookTocFragment
                 return true;
             }
 
-            final String isbnStr = book.getString(DBKeys.KEY_ISBN);
+            final String isbnStr = book.getString(DBKey.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
                 final ISBN isbn = ISBN.createISBN(isbnStr);
                 if (isbn.isValid(true)) {
@@ -442,9 +442,9 @@ public class EditBookTocFragment
     }
 
     private void populateTocBits(@NonNull final Book book) {
-        mVb.cbxIsAnthology.setChecked(book.isBitSet(DBKeys.KEY_TOC_BITMASK,
+        mVb.cbxIsAnthology.setChecked(book.isBitSet(DBKey.BITMASK_TOC,
                                                     Book.TOC_MULTIPLE_WORKS));
-        updateMultiAuthor(book.isBitSet(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS));
+        updateMultiAuthor(book.isBitSet(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_AUTHORS));
     }
 
     private void updateMultiAuthor(final boolean isChecked) {
@@ -570,10 +570,10 @@ public class EditBookTocFragment
 
             // update the book with the first publication date that was gathered from the TOC
             final String bookFirstPublication =
-                    message.result.getString(DBKeys.KEY_DATE_FIRST_PUBLICATION);
+                    message.result.getString(DBKey.DATE_FIRST_PUBLICATION);
             if (bookFirstPublication != null) {
-                if (book.getString(DBKeys.KEY_DATE_FIRST_PUBLICATION).isEmpty()) {
-                    book.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION, bookFirstPublication);
+                if (book.getString(DBKey.DATE_FIRST_PUBLICATION).isEmpty()) {
+                    book.putString(DBKey.DATE_FIRST_PUBLICATION, bookFirstPublication);
                 }
             }
 
@@ -587,7 +587,7 @@ public class EditBookTocFragment
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
             final Book book = mVm.getBook();
-            book.putLong(DBKeys.KEY_TOC_BITMASK, tocBitMask);
+            book.putLong(DBKey.BITMASK_TOC, tocBitMask);
             populateTocBits(book);
         }
 
@@ -640,7 +640,7 @@ public class EditBookTocFragment
             mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                  "BKEY_TOC_LIST");
 
-            mTocBitMask = args.getLong(DBKeys.KEY_TOC_BITMASK);
+            mTocBitMask = args.getLong(DBKey.BITMASK_TOC);
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 

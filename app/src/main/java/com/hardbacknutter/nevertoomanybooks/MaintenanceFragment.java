@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -122,9 +121,7 @@ public class MaintenanceFragment
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList;
-            try (BookDao bookDao = new BookDao(TAG)) {
-                bookUuidList = bookDao.getBookUuidList();
-            }
+            bookUuidList = ServiceLocator.getInstance().getBookDao().getBookUuidList();
 
             final long bytes = AppDir.purge(bookUuidList, false);
             final String msg = getString(R.string.txt_cleanup_files,
@@ -147,8 +144,7 @@ public class MaintenanceFragment
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        BooklistNodeDao.clearNodeStateData())
+                .setPositiveButton(android.R.string.ok, (d, w) -> BooklistNodeDao.clearAll())
                 .create()
                 .show());
 
@@ -157,11 +153,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.menu_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.scheduleFtsRebuild(false);
+                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_FTS, false);
                     mVb.btnRebuildFts.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.scheduleFtsRebuild(true);
+                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_FTS, true);
                     mVb.btnRebuildFts.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
@@ -172,11 +168,11 @@ public class MaintenanceFragment
                 .setTitle(R.string.menu_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                    StartupViewModel.scheduleIndexRebuild(false);
+                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_INDEXES, false);
                     mVb.btnRebuildIndex.setError(null);
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    StartupViewModel.scheduleIndexRebuild(true);
+                    StartupViewModel.schedule(StartupViewModel.PK_REBUILD_INDEXES, true);
                     mVb.btnRebuildIndex.setError(getString(R.string.txt_rebuild_scheduled));
                 })
                 .create()
@@ -249,8 +245,6 @@ public class MaintenanceFragment
             final QueueManager qm = QueueManager.getInstance();
             qm.deleteTasksOlderThan(0);
             qm.deleteEventsOlderThan(0);
-            //FIXME: stop the qm
-            //qm.stop();
 
             //FIXME: delete all style xml files
             ServiceLocator.getInstance().getStyles().clearCache();
@@ -258,9 +252,9 @@ public class MaintenanceFragment
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
-            ServiceLocator.deleteDatabases(context);
+            ServiceLocator.getInstance().deleteDatabases(context);
 
-            AppDir.deleteAllContent();
+            FileUtils.deleteFiles(AppDir.Root.getDir(), null);
 
             // Exit the app
             //noinspection ConstantConditions
