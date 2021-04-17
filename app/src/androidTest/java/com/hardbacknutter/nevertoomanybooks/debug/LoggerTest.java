@@ -27,6 +27,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +42,7 @@ public class LoggerTest {
     public void cycleLogs()
             throws ExternalStorageException {
 
-        AppDir.Log.purge(true, null);
+        FileUtils.deleteFiles(AppDir.Log.getDir(), null);
 
         List<File> files;
 

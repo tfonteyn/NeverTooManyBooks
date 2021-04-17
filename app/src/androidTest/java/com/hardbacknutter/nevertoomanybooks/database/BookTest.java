@@ -21,16 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -67,7 +66,7 @@ public class BookTest {
     private static final String NEED_TWO_FILE =
             "pictures directory must contain at least two file to use for testing";
     private static final String NEED_A_PICTURES_DIRECTORY = "Need a pictures directory";
-    private static final String NEED_A_CACHE_DIRECTORY = "Need a cache directory";
+    private static final String NEED_A_TEMP_DIRECTORY = "Need a temp directory";
     private static final String EXT_JPG = ".jpg";
 
     private final Bookshelf[] mBookshelf = new Bookshelf[5];
@@ -91,22 +90,16 @@ public class BookTest {
 
     private final String[] mOriginalImageFileName = new String[2];
     private final long[] mOriginalImageSize = new long[2];
-    private final FilenameFilter mJpgFilter = (dir, name) -> name.endsWith(EXT_JPG);
-    private File mExternalFilesDir;
-    private File mExternalCacheDir;
+    private final FileFilter mJpgFilter = pathname -> pathname.getPath().endsWith(EXT_JPG);
 
     /**
      * Clean the database.
-     * Empty the cache directory.
-     * Copy two pictures from the Pictures directory to the cache directory.
+     * Empty the temp directory.
+     * Copy two pictures from the Pictures directory to the temp directory.
      */
     @Before
     public void setup()
             throws IOException {
-
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
         mBookshelfList.clear();
         mAuthorList.clear();
@@ -119,6 +112,16 @@ public class BookTest {
         Constants.deleteAuthors(db);
         Constants.deletePublishers(db);
 
+        final Context context = ServiceLocator.getLocalizedAppContext();
+
+        final int actualVolume = AppDir.initVolume(context, 0);
+        assertEquals(0, actualVolume);
+        assertNotNull(NEED_A_PICTURES_DIRECTORY, AppDir.Covers.getDir());
+        assertNotNull(NEED_A_TEMP_DIRECTORY, AppDir.Temp.getDir());
+        // empty the temp dir
+        AppDir.Temp.collectFiles(mJpgFilter).stream().forEach(File::delete);
+
+
 
         mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
         mBookshelfList.clear();
@@ -128,7 +131,7 @@ public class BookTest {
         mAuthor[1] = Author.from(AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
-        mAuthorId[0] = serviceLocator.getAuthorDao().insert(context, mAuthor[0]);
+        mAuthorId[0] = ServiceLocator.getInstance().getAuthorDao().insert(context, mAuthor[0]);
         mAuthorList.clear();
         mAuthorList.add(mAuthor[0]);
 
@@ -137,13 +140,16 @@ public class BookTest {
 
         // insert publisher[0] but do NOT publisher author[1]
 
-        mPublisherId[0] = serviceLocator.getPublisherDao().insert(context, mPublisher[0],
-                                                                  Locale.getDefault());
+        mPublisherId[0] = ServiceLocator.getInstance().getPublisherDao()
+                                        .insert(context, mPublisher[0], Locale.getDefault());
         mPublisherList.clear();
         mPublisherList.add(mPublisher[0]);
 
-        initCacheDirectory(context);
-        final File[] files = initPicturesDirectory(context);
+
+
+        final List<File> files = AppDir.Covers.collectFiles(mJpgFilter);
+        assertTrue(NEED_TWO_FILE, files.size() > 1);
+
         prepareCover(files, 0);
         prepareCover(files, 1);
 
@@ -153,53 +159,20 @@ public class BookTest {
     }
 
     /**
-     * Init the Pictures directory and check we have at least 2 pictures.
-     *
-     * @param context Current context
-     *
-     * @return array of picture files
-     */
-    private File[] initPicturesDirectory(final Context context) {
-        //noinspection ConstantConditions
-        mExternalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        assertNotNull(NEED_A_PICTURES_DIRECTORY, mExternalFilesDir);
-        final File[] files = mExternalFilesDir.listFiles(mJpgFilter);
-        assertNotNull(NEED_TWO_FILE, files);
-        assertTrue(NEED_TWO_FILE, files.length > 1);
-        return files;
-    }
-
-    /**
-     * Init the Cache directory and delete all pictures in it.
-     *
-     * @param context Current context
-     */
-    private void initCacheDirectory(final Context context) {
-        //noinspection ConstantConditions
-        mExternalCacheDir = context.getExternalCacheDir();
-        assertNotNull(NEED_A_CACHE_DIRECTORY, mExternalCacheDir);
-        final File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
-        if (cachedFiles != null) {
-            //noinspection ResultOfMethodCallIgnored
-            Arrays.stream(cachedFiles).forEach(File::delete);
-        }
-    }
-
-    /**
-     * Copy a file from the Pictures directory to the cache with a new/temp name.
+     * Copy a file from the Pictures directory to the temp with a new/temp name.
      *
      * @param files from the Pictures directory
      * @param cIdx  cover index to create
      *
      * @throws IOException on failure
      */
-    private void prepareCover(@NonNull final File[] files,
+    private void prepareCover(@NonNull final List<File> files,
                               final int cIdx)
             throws IOException {
-        mOriginalImageFileName[cIdx] = files[cIdx].getAbsolutePath();
+        mOriginalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
         final File srcFile = new File(mOriginalImageFileName[cIdx]);
         mOriginalImageSize[cIdx] = srcFile.length();
-        FileUtils.copy(srcFile, new File(mExternalCacheDir, Constants.COVER[cIdx]));
+        FileUtils.copy(srcFile, new File(AppDir.Covers.getDir(), Constants.COVER[cIdx]));
     }
 
     /**
@@ -218,151 +191,147 @@ public class BookTest {
             throws DaoWriteException, IOException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
-        try (BookDao bookDao = new BookDao("book")) {
+        mBook[0] = prepareAndInsertBook(context, bookDao);
+        mBookId[0] = mBook[0].getId();
 
-            mBook[0] = prepareAndInsertBook(context, bookDao);
-            mBookId[0] = mBook[0].getId();
+        /*
+         * test the inserted book
+         */
+        Book book = Book.from(mBookId[0], bookDao);
+        assertEquals(mBookId[0], book.getId());
+        checkBookAfterInitialInsert(book);
 
-            /*
-             * test the inserted book
-             */
-            Book book = Book.from(mBookId[0], bookDao);
-            assertEquals(mBookId[0], book.getId());
-            checkBookAfterInitialInsert(context, book);
+        ArrayList<Author> authors;
+        String uuid;
+        final ArrayList<Bookshelf> bookshelves;
+        final ArrayList<Publisher> publishers;
+        File cover;
+        final File[] tempFiles;
 
-            ArrayList<Author> authors;
-            String uuid;
-            final ArrayList<Bookshelf> bookshelves;
-            final ArrayList<Publisher> publishers;
-            File cover;
-            final File[] cachedFiles;
+        /*
+         * update the stored book
+         */
+        book.setStage(EntityStage.Stage.WriteAble);
+        book.putString(DBKey.KEY_TITLE, BOOK_TITLE + "0_upd");
+        book.setStage(EntityStage.Stage.Dirty);
 
-            /*
-             * update the stored book
-             */
-            book.setStage(EntityStage.Stage.WriteAble);
-            book.putString(DBKeys.KEY_TITLE, BOOK_TITLE + "0_upd");
-            book.setStage(EntityStage.Stage.Dirty);
+        authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        authors.add(mAuthor[1]);
 
-            authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            authors.add(mAuthor[1]);
+        book.setCover(1, new File(AppDir.Temp.getDir(), Constants.COVER[1]));
 
-            book.setCover(bookDao, 1, new File(AppDir.Cache.getDir(), Constants.COVER[1]));
+        assertEquals(AppDir.Temp.getDir().getAbsolutePath()
+                     + File.separatorChar + Constants.COVER[1],
+                     book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            assertEquals(mExternalCacheDir.getAbsolutePath()
-                         + File.separatorChar + Constants.COVER[1],
-                         book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertEquals(EntityStage.Stage.Dirty, book.getStage());
+        bookDao.update(context, book, 0);
+        book.setStage(EntityStage.Stage.Clean);
 
-            assertEquals(EntityStage.Stage.Dirty, book.getStage());
-            bookDao.update(context, book, 0);
-            book.setStage(EntityStage.Stage.Clean);
+        /*
+         * test the updated book
+         */
+        book = Book.from(mBookId[0], bookDao);
+        assertEquals(mBookId[0], book.getId());
 
-            /*
-             * test the updated book
-             */
-            book = Book.from(mBookId[0], bookDao);
-            assertEquals(mBookId[0], book.getId());
+        uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
-            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        assertEquals(BOOK_TITLE + "0_upd", book.getString(DBKey.KEY_TITLE));
+        bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        assertEquals(1, bookshelves.size());
+        assertEquals(mBookshelf[0], bookshelves.get(0));
+        authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        assertEquals(2, authors.size());
+        assertEquals(mAuthor[0], authors.get(0));
+        assertEquals(mAuthor[1], authors.get(1));
+        publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        assertEquals(1, publishers.size());
+        assertEquals(mPublisher[0], publishers.get(0));
 
-            assertEquals(BOOK_TITLE + "0_upd", book.getString(DBKeys.KEY_TITLE));
-            bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
-            assertEquals(1, bookshelves.size());
-            assertEquals(mBookshelf[0], bookshelves.get(0));
-            authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            assertEquals(2, authors.size());
-            assertEquals(mAuthor[0], authors.get(0));
-            assertEquals(mAuthor[1], authors.get(1));
-            publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
-            assertEquals(1, publishers.size());
-            assertEquals(mPublisher[0], publishers.get(0));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        cover = book.getCoverFile(0);
+        assertNotNull(cover);
+        assertEquals(mOriginalImageSize[0], cover.length());
+        assertEquals(uuid + EXT_JPG, cover.getName());
 
-            cover = book.getCoverFile(0);
-            assertNotNull(cover);
-            assertEquals(mOriginalImageSize[0], cover.length());
-            assertEquals(uuid + EXT_JPG, cover.getName());
+        cover = book.getCoverFile(1);
+        assertNotNull(cover);
+        assertEquals(mOriginalImageSize[1], cover.length());
+        assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
 
-            cover = book.getCoverFile(1);
-            assertNotNull(cover);
-            assertEquals(mOriginalImageSize[1], cover.length());
-            assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
-
-            cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
-            assertNotNull(cachedFiles);
-            // both files should be gone now
-            assertEquals(0, cachedFiles.length);
+        tempFiles = AppDir.Temp.getDir().listFiles(mJpgFilter);
+        assertNotNull(tempFiles);
+        // both files should be gone now
+        assertEquals(0, tempFiles.length);
 
 
-            /*
-             * Delete the second cover of the read-only book
-             */
-            book = Book.from(mBookId[0], bookDao);
-            assertEquals(mBookId[0], book.getId());
+        /*
+         * Delete the second cover of the read-only book
+         */
+        book = Book.from(mBookId[0], bookDao);
+        assertEquals(mBookId[0], book.getId());
 
-            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            // sanity check the cover is really there
-            cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
-            assertTrue(cover.exists());
+        // sanity check the cover is really there
+        cover = new File(AppDir.Covers.getDir(), uuid + "_1" + EXT_JPG);
+        assertTrue(cover.exists());
 
-            book.setCover(bookDao, 1, null);
+        book.setCover(1, null);
 
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            // setCover(.. null) should have deleted the file
-            cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
-            assertFalse(cover.exists());
+        // setCover(.. null) should have deleted the file
+        cover = new File(AppDir.Covers.getDir(), uuid + "_1" + EXT_JPG);
+        assertFalse(cover.exists());
 
-            cover = book.getCoverFile(1);
-            assertNull(cover);
+        cover = book.getCoverFile(1);
+        assertNull(cover);
 
-            /*
-             * Add the second cover of the read-only book
-             */
-            final File[] files = mExternalFilesDir.listFiles(mJpgFilter);
-            assertNotNull(files);
-            prepareCover(files, 1);
+        /*
+         * Add the second cover of the read-only book
+         */
+        final List<File> files = AppDir.Covers.collectFiles(mJpgFilter);
+        prepareCover(files, 1);
 
-            book.setCover(bookDao, 1, new File(AppDir.Cache.getDir(), Constants.COVER[1]));
+        book.setCover(1, new File(AppDir.Temp.getDir(), Constants.COVER[1]));
 
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
-            assertTrue(cover.exists());
+        cover = new File(AppDir.Covers.getDir(), uuid + "_1" + EXT_JPG);
+        assertTrue(cover.exists());
 
-            cover = book.getCoverFile(1);
-            assertNotNull(cover);
-            assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
-            assertTrue(cover.exists());
-        }
+        cover = book.getCoverFile(1);
+        assertNotNull(cover);
+        assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
+        assertTrue(cover.exists());
     }
 
     @Test
     public void showBookVM()
             throws DaoWriteException, ExternalStorageException {
         final Context context = ServiceLocator.getLocalizedAppContext();
-        try (BookDao bookDao = new BookDao("ShowBookViewModel-prep")) {
-            mBook[0] = prepareAndInsertBook(context, bookDao);
-            mBookId[0] = mBook[0].getId();
-        }
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        mBook[0] = prepareAndInsertBook(context, bookDao);
+        mBookId[0] = mBook[0].getId();
 
         final ShowBookViewModel vm = new ShowBookViewModel();
         final Bundle args = new Bundle();
-        args.putLong(DBKeys.KEY_PK_ID, mBookId[0]);
+        args.putLong(DBKey.PK_ID, mBookId[0]);
         try {
             vm.init(context, args);
             final Book retrieved = vm.getBookAtPosition(1);
             assertEquals(mBookId[0], retrieved.getId());
-            checkBookAfterInitialInsert(context, retrieved);
+            checkBookAfterInitialInsert(retrieved);
 
         } finally {
             vm.onCleared();
@@ -378,19 +347,19 @@ public class BookTest {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(DBKeys.KEY_TITLE, Constants.BOOK_TITLE + "0");
+        book.putString(DBKey.KEY_TITLE, Constants.BOOK_TITLE + "0");
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putLong(DBKeys.KEY_ESID_ISFDB, Constants.BOOK_ISFDB_123);
-        book.putString(DBKeys.KEY_ESID_LCCN, Constants.BOOK_LCCN_0);
+        book.putLong(DBKey.SID_ISFDB, Constants.BOOK_ISFDB_123);
+        book.putString(DBKey.SID_LCCN, Constants.BOOK_LCCN_0);
 
         book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
         book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
         book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublisherList);
 
-        book.setCover(db, 0, new File(AppDir.Cache.getDir(), Constants.COVER[0]));
+        book.setCover(0, new File(AppDir.Temp.getDir(), Constants.COVER[0]));
 
-        assertEquals(mExternalCacheDir.getAbsolutePath()
+        assertEquals(AppDir.Temp.getDir().getAbsolutePath()
                      + File.separatorChar + Constants.COVER[0],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
 
@@ -404,18 +373,18 @@ public class BookTest {
         return book;
     }
 
-    private void checkBookAfterInitialInsert(@NonNull final Context context,
-                                             final Book book) {
+    private void checkBookAfterInitialInsert(final Book book)
+            throws ExternalStorageException {
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
-        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());
-        assertEquals(BOOK_TITLE + "0", book.getString(DBKeys.KEY_TITLE));
+        assertEquals(BOOK_TITLE + "0", book.getString(DBKey.KEY_TITLE));
 
-        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBKeys.KEY_ESID_ISFDB));
+        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
 
         // not saved, hence empty
-        assertEquals("", book.getString(DBKeys.KEY_ESID_LCCN));
+        assertEquals("", book.getString(DBKey.SID_LCCN));
 
 
         final ArrayList<Bookshelf> bookshelves = book
@@ -440,10 +409,9 @@ public class BookTest {
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
-        final File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
-        assertNotNull(cachedFiles);
+        final List<File> tempFiles = AppDir.Temp.collectFiles(mJpgFilter);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
-        assertEquals(1, cachedFiles.length);
-        assertEquals(COVER[1], cachedFiles[0].getName());
+        assertEquals(1, tempFiles.size());
+        assertEquals(COVER[1], tempFiles.get(0).getName());
     }
 }

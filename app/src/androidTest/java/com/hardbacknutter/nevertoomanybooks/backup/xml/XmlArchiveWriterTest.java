@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -54,9 +53,7 @@ public class XmlArchiveWriterTest {
 
     @Before
     public void count() {
-        try (BookDao bookDao = new BookDao(TAG)) {
-            mBookInDb = bookDao.countBooks();
-        }
+        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }

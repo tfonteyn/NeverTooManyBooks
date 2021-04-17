@@ -55,31 +55,31 @@ public final class Constants {
 
     public static void deleteBookshelves(@NonNull final SynchronizedDb db) {
         db.delete(TBL_BOOKSHELF.getName(),
-                  DBKeys.KEY_BOOKSHELF_NAME
+                  DBKey.KEY_BOOKSHELF_NAME
                   + " LIKE '" + BOOKSHELF + "%'", null);
     }
 
     static void deleteAuthors(@NonNull final SynchronizedDb db) {
         db.delete(TBL_AUTHORS.getName(),
-                  DBKeys.KEY_AUTHOR_FAMILY_NAME
+                  DBKey.KEY_AUTHOR_FAMILY_NAME
                   + " LIKE '" + AUTHOR_FAMILY_NAME + "%'", null);
     }
 
     static void deletePublishers(@NonNull final SynchronizedDb db) {
         db.delete(TBL_PUBLISHERS.getName(),
-                  DBKeys.KEY_PUBLISHER_NAME
+                  DBKey.KEY_PUBLISHER_NAME
                   + " LIKE '" + PUBLISHER + "%'", null);
     }
 
     static void deleteTocs(@NonNull final SynchronizedDb db) {
         db.delete(TBL_TOC_ENTRIES.getName(),
-                  DBKeys.KEY_TITLE
+                  DBKey.KEY_TITLE
                   + " LIKE '" + TOC_TITLE + "%'", null);
     }
 
     static void deleteBooks(@NonNull final SynchronizedDb db) {
         db.delete(TBL_BOOKS.getName(),
-                  DBKeys.KEY_TITLE
+                  DBKey.KEY_TITLE
                   + " LIKE '" + BOOK_TITLE + "%'", null);
     }
 }

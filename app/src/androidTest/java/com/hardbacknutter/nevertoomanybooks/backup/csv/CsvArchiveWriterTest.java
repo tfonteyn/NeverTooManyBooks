@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,9 +71,7 @@ public class CsvArchiveWriterTest {
 
     @Before
     public void count() {
-        try (BookDao bookDao = new BookDao(TAG)) {
-            mBookInDb = bookDao.countBooks();
-        }
+        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
@@ -128,14 +126,13 @@ public class CsvArchiveWriterTest {
         final long deletedBookId = ids.get(3);
         final long modifiedBookId = ids.get(5);
 
-        try (BookDao bookDao = new BookDao(TAG)) {
-            bookDao.deleteBook(deletedBookId);
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        bookDao.delete(deletedBookId);
 
-            final Book book = Book.from(modifiedBookId, bookDao);
-            book.putString(DBKeys.KEY_PRIVATE_NOTES,
-                           "MODIFIED" + book.getString(DBKeys.KEY_PRIVATE_NOTES));
-            bookDao.update(context, book, 0);
-        }
+        final Book book = Book.from(modifiedBookId, bookDao);
+        book.putString(DBKey.KEY_PRIVATE_NOTES,
+                       "MODIFIED" + book.getString(DBKey.KEY_PRIVATE_NOTES));
+        bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
         importHelper.setImportEntry(RecordType.Books, true);

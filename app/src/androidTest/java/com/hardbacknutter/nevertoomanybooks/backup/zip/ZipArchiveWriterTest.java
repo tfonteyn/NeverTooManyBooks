@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -64,9 +63,7 @@ public class ZipArchiveWriterTest {
     @Before
     public void count() {
         final Context context = ServiceLocator.getLocalizedAppContext();
-        try (BookDao bookDao = new BookDao(TAG)) {
-            mBookInDb = bookDao.countBooks();
-        }
+            mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }

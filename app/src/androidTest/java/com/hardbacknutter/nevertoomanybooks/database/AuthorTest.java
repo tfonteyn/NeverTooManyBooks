@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -165,50 +164,48 @@ public class AuthorTest
         long existingId;
 
         final Context context = ServiceLocator.getLocalizedAppContext();
-        try (BookDao bookDao = new BookDao("renameAuthorWithTocs")) {
-            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
-            // rename an author
-            // UPDATE in the database
-            // run 'fixId' -> must keep same id
-            // No changes to anything else
-            author[1].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
+        // rename an author
+        // UPDATE in the database
+        // run 'fixId' -> must keep same id
+        // No changes to anything else
+        author[1].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-            idBefore = author[1].getId();
-            updateOk = authorDao.update(context, author[1]);
-            assertTrue(updateOk);
-            assertEquals(author[1].getId(), idBefore);
-            authorDao.fixId(context, author[1], false, Locale.getDefault());
-            assertEquals(author[1].getId(), idBefore);
+        idBefore = author[1].getId();
+        updateOk = authorDao.update(context, author[1]);
+        assertTrue(updateOk);
+        assertEquals(author[1].getId(), idBefore);
+        authorDao.fixId(context, author[1], false, Locale.getDefault());
+        assertEquals(author[1].getId(), idBefore);
 
-            // rename an Author to another EXISTING name and MERGE books
-            author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
+        // rename an Author to another EXISTING name and MERGE books
+        author[2].setName(RENAMED_FAMILY_NAME + "_b", RENAMED_GIVEN_NAMES + "_b");
 
-            existingId = authorDao.find(context, author[2], false, Locale.getDefault());
-            authorDao.merge(context, author[2], existingId);
-            // - the renamed author[2] will have been deleted
-            assertEquals(0, author[2].getId());
-            // find the author[2] again...
-            existingId = authorDao.find(context, author[2], false, Locale.getDefault());
-            // should be recognized as author[1]
-            assertEquals(author[1].getId(), existingId);
+        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        authorDao.merge(context, author[2], existingId);
+        // - the renamed author[2] will have been deleted
+        assertEquals(0, author[2].getId());
+        // find the author[2] again...
+        existingId = authorDao.find(context, author[2], false, Locale.getDefault());
+        // should be recognized as author[1]
+        assertEquals(author[1].getId(), existingId);
 
-            // - all books of author[2] will now belong to author[1]
-            bookIdList = authorDao.getBookIds(author[1].getId());
-            assertEquals(5, bookIdList.size());
-            assertEquals(bookId[0], (long) bookIdList.get(0));
-            assertEquals(bookId[1], (long) bookIdList.get(1));
-            assertEquals(bookId[2], (long) bookIdList.get(2));
-            assertEquals(bookId[3], (long) bookIdList.get(3));
-            assertEquals(bookId[4], (long) bookIdList.get(4));
+        // - all books of author[2] will now belong to author[1]
+        bookIdList = authorDao.getBookIds(author[1].getId());
+        assertEquals(5, bookIdList.size());
+        assertEquals(bookId[0], (long) bookIdList.get(0));
+        assertEquals(bookId[1], (long) bookIdList.get(1));
+        assertEquals(bookId[2], (long) bookIdList.get(2));
+        assertEquals(bookId[3], (long) bookIdList.get(3));
+        assertEquals(bookId[4], (long) bookIdList.get(4));
 
-            // - all tocs of author[2] will now belong to author[1]
-            works = bookDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
-            assertEquals(4, works.size());
-            assertEquals(tocEntry[0].getId(), works.get(0).getId());
-            assertEquals(tocEntry[1].getId(), works.get(1).getId());
-            assertEquals(tocEntry[2].getId(), works.get(2).getId());
-            assertEquals(tocEntry[3].getId(), works.get(3).getId());
-        }
+        // - all tocs of author[2] will now belong to author[1]
+        works = authorDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
+        assertEquals(4, works.size());
+        assertEquals(tocEntry[0].getId(), works.get(0).getId());
+        assertEquals(tocEntry[1].getId(), works.get(1).getId());
+        assertEquals(tocEntry[2].getId(), works.get(2).getId());
+        assertEquals(tocEntry[3].getId(), works.get(3).getId());
     }
 }
