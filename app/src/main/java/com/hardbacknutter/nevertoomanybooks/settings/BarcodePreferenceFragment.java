@@ -84,11 +84,11 @@ public class BarcodePreferenceFragment
             }
         }
 
-        final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
+        final ListPreference cameraPref = findPreference(Prefs.pk_camera_id_scan_barcode);
         //noinspection ConstantConditions
-        preference.setEntries(entries);
-        preference.setEntryValues(entryValues);
-        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+        cameraPref.setEntries(entries);
+        cameraPref.setEntryValues(entryValues);
+        cameraPref.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
     }
 
     @Override
