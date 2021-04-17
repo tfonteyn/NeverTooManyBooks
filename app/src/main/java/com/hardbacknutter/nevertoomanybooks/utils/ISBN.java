@@ -293,8 +293,7 @@ public class ISBN {
      */
     @Validity
     public static int getEditValidityLevel(@NonNull final SharedPreferences global) {
-        return ParseUtils
-                .getIntListPref(global, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
+        return Prefs.getIntListPref(global, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
     }
 
     /**

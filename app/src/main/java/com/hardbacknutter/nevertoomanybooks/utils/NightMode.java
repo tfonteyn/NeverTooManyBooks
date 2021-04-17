@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,7 +96,7 @@ public final class NightMode {
     public int apply(@NonNull final Context context) {
         // Always read from prefs.
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        mCurrentMode = ParseUtils.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+        mCurrentMode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
 
         final int dnMode;
         switch (mCurrentMode) {
@@ -124,7 +124,7 @@ public final class NightMode {
 
     public boolean isChanged(@NonNull final SharedPreferences global,
                              @NightModeId final int mode) {
-        mCurrentMode = ParseUtils.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+        mCurrentMode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
         return mode != mCurrentMode;
     }
 

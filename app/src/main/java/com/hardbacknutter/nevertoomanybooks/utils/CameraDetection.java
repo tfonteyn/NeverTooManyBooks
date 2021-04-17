@@ -86,7 +86,7 @@ public final class CameraDetection {
     public static int getPreferredCameraId(@NonNull final Context context,
                                            @NonNull final SharedPreferences global) {
         // By default -1, which for the scanner IntentIntegrator call means 'no preference'
-        int cameraId = ParseUtils.getIntListPref(global, Prefs.pk_camera_id_scan_barcode, -1);
+        int cameraId = Prefs.getIntListPref(global, Prefs.pk_camera_id_scan_barcode, -1);
         // we must verify the id, as the preference could have been imported from another device
         if (!getCameras(context).containsKey(String.valueOf(cameraId))) {
             cameraId = -1;
