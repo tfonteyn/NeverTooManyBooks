@@ -70,8 +70,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -86,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
@@ -121,9 +119,6 @@ public class CoverHandler {
     private final int mCIdx;
     private final int mMaxWidth;
     private final int mMaxHeight;
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     @NonNull
     private final CoverHandlerHost mCoverHandlerHost;
     @NonNull
@@ -154,18 +149,15 @@ public class CoverHandler {
      * Constructor.
      *
      * @param coverHandlerHost the hosting component
-     * @param bookDao          Database access
      * @param cIdx             0..n image index
      * @param maxWidth         the maximum width for the cover
      * @param maxHeight        the maximum height for the cover
      */
     public CoverHandler(@NonNull final CoverHandlerHost coverHandlerHost,
-                        @NonNull final BookDao bookDao,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         final int maxWidth,
                         final int maxHeight) {
         mCoverHandlerHost = coverHandlerHost;
-        mBookDao = bookDao;
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
@@ -341,7 +333,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
 
         if (itemId == R.id.MENU_DELETE) {
-            book.setCover(mBookDao, mCIdx, null);
+            book.setCover(mCIdx, null);
             mCoverHandlerHost.refresh(mCIdx);
             return true;
 
@@ -428,7 +420,7 @@ public class CoverHandler {
         if (mCoverBrowserIsbnSupplier != null) {
             isbnStr = mCoverBrowserIsbnSupplier.get();
         } else {
-            isbnStr = book.getString(DBKeys.KEY_ISBN);
+            isbnStr = book.getString(DBKey.KEY_ISBN);
         }
 
         if (!isbnStr.isEmpty()) {
@@ -458,9 +450,9 @@ public class CoverHandler {
 
         final File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            mBookSupplier.get().setCover(mBookDao, mCIdx, srcFile);
+            mBookSupplier.get().setCover(mCIdx, srcFile);
         } else {
-            mBookSupplier.get().setCover(mBookDao, mCIdx, null);
+            mBookSupplier.get().setCover(mCIdx, null);
         }
 
         mCoverHandlerHost.refresh(mCIdx);
@@ -623,7 +615,7 @@ public class CoverHandler {
                         .getDefaultSharedPreferences(context);
 
                 // Should we apply an explicit rotation angle?
-                final int explicitRotation = ParseUtils
+                final int explicitRotation = Prefs
                         .getIntListPref(global, Prefs.pk_camera_image_autorotate, 0);
 
                 final int surfaceRotation;
@@ -638,7 +630,7 @@ public class CoverHandler {
 
                 // What action (if any) should we take after we're done?
                 @NextAction
-                final int action = ParseUtils
+                final int action = Prefs
                         .getIntListPref(global, Prefs.pk_camera_image_action, ACTION_DONE);
 
                 showProgress();
@@ -697,7 +689,7 @@ public class CoverHandler {
 
                     case ACTION_DONE:
                     default:
-                        mBookSupplier.get().setCover(mBookDao, mCIdx, result.getFile());
+                        mBookSupplier.get().setCover(mCIdx, result.getFile());
                         // must use a post to force the View to update.
                         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
                         return;
@@ -708,7 +700,7 @@ public class CoverHandler {
         }
 
         // transformation failed
-        mBookSupplier.get().setCover(mBookDao, mCIdx, null);
+        mBookSupplier.get().setCover(mCIdx, null);
         // must use a post to force the View to update.
         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
     }
@@ -721,7 +713,7 @@ public class CoverHandler {
     @NonNull
     private File getTempFile()
             throws ExternalStorageException {
-        return new File(AppDir.Cache.getDir(), TAG + "_" + mCIdx + ".jpg");
+        return new File(AppDir.Temp.getDir(), TAG + "_" + mCIdx + ".jpg");
     }
 
     /**

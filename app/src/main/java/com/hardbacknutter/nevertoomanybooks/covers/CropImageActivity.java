@@ -43,7 +43,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.activity.result.contract.ActivityResultContract;
@@ -113,17 +112,10 @@ public class CropImageActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Check if shared storage is mounted and accessible.
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Snackbar.make(mVb.coverImage0, R.string.error_storage_not_accessible,
+        // make an educated guess how many pics we can store.
+        if (AppDir.Covers.getFreeSpace() / ESTIMATED_PICTURE_SIZE < 1) {
+            Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
                           Snackbar.LENGTH_LONG).show();
-        } else {
-            final long freeSpace = AppDir.Root.getFreeSpace();
-            // make an educated guess how many pics we can store.
-            if (freeSpace >= 0 && freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
-                Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
-                              Snackbar.LENGTH_LONG).show();
-            }
         }
 
         final Bundle args = Objects.requireNonNull(getIntent().getExtras(),

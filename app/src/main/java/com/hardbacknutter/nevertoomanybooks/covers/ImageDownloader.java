@@ -128,13 +128,13 @@ public class ImageDownloader {
     /**
      * Create a temporary file.
      *
-     * @param source  of the image (normally a SearchEngine specific code)
-     * @param bookId  (optional) either the native id, or the isbn
-     * @param cIdx    0..n image index
-     * @param size    (optional) size of the image
-     *                Omitted if not set
+     * @param source of the image (normally a SearchEngine specific code)
+     * @param bookId (optional) either the native id, or the isbn
+     * @param cIdx   0..n image index
+     * @param size   (optional) size of the image
+     *               Omitted if not set
      *
-     * @return temporary file in {@link AppDir#Cache}
+     * @return temporary file in {@link AppDir#Temp}
      */
     @AnyThread
     @NonNull
@@ -152,7 +152,7 @@ public class ImageDownloader {
                                 + "_" + (size != null ? size : "")
                                 + ".jpg";
 
-        return new File(AppDir.Cache.getDir(), filename);
+        return new File(AppDir.Temp.getDir(), filename);
     }
 
     /**
