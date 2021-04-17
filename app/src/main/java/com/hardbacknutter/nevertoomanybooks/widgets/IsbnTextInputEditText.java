@@ -53,8 +53,9 @@ import com.google.android.material.textfield.TextInputEditText;
  * Hide it when already showing:
  * <pre>
  * {@code
- *      InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
- *      if (imm.isActive(this)) {
+ *      InputMethodManager imm = (InputMethodManager)
+ *          getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+ *      if (imm != null && imm.isActive(this)) {
  *          imm.hideSoftInputFromWindow(getWindowToken(), 0);
  *      }
  * }
@@ -92,7 +93,8 @@ public class IsbnTextInputEditText
         setKeyListener(DigitsKeyListener.getInstance(ISBN_DIGITS));
 
         // hide the virtual keyboard.
-        final InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
+        final InputMethodManager imm = (InputMethodManager)
+                getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null && imm.isActive(this)) {
             imm.hideSoftInputFromWindow(getWindowToken(), 0);
         }
