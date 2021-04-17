@@ -49,10 +49,7 @@ public final class DebugReport {
     /** Log tag. */
     private static final String TAG = "DebugReport";
 
-    /**
-     * Prefix for the filename of a database backup.
-     * Created in {@link AppDir#Cache}.
-     */
+    /** Prefix for the filename of a database backup. Created in {@link AppDir#Temp}. */
     private static final String DB_EXPORT_FILE_PREFIX = "DBDebug";
 
     private DebugReport() {
@@ -100,12 +97,13 @@ public final class DebugReport {
         }
 
         try {
-            // Copy the database from the internal protected area to the cache area.
+            // Copy the database from the internal protected area to the temp dir.
             final String fileName =
                     DB_EXPORT_FILE_PREFIX
+                    // User local zone - it's for THEIR reference.
                     + '-' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     + ".db";
-            final File dbFile = new File(AppDir.Cache.getDir(), fileName);
+            final File dbFile = new File(AppDir.Temp.getDir(), fileName);
             dbFile.deleteOnExit();
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
 
@@ -115,9 +113,8 @@ public final class DebugReport {
             files.addAll(AppDir.Log.collectFiles(null));
             files.addAll(AppDir.Upgrades.collectFiles(null));
 
-            files.addAll(AppDir.Cache.collectFiles(file ->
-                                                           file.getName()
-                                                               .startsWith(DB_EXPORT_FILE_PREFIX)));
+            files.addAll(AppDir.Temp.collectFiles(
+                    file -> file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));
 
             // Build the attachment list
             final ArrayList<Uri> uriList = files
