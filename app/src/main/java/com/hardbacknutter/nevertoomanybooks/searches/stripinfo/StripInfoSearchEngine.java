@@ -49,7 +49,7 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -145,7 +145,7 @@ public class StripInfoSearchEngine
                 .setCountry("BE", "nl")
                 .setFilenameSuffix("SI")
 
-                .setDomainKey(DBKeys.KEY_ESID_STRIP_INFO_BE)
+                .setDomainKey(DBKey.SID_STRIP_INFO)
                 .setDomainViewId(R.id.site_strip_info_be)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
 
@@ -316,7 +316,7 @@ public class StripInfoSearchEngine
                     primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
-                    bookData.putString(DBKeys.KEY_TITLE, cleanText(titleUrlElement.text()));
+                    bookData.putString(DBKey.KEY_TITLE, cleanText(titleUrlElement.text()));
                     // extract the external (site) id from the url
                     externalId = processExternalId(titleUrlElement, bookData);
 
@@ -360,19 +360,19 @@ public class StripInfoSearchEngine
                                 break;
 
                             case "Jaar":
-                                i += processText(td, DBKeys.KEY_BOOK_DATE_PUBLISHED, bookData);
+                                i += processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
                                 break;
 
                             case "Pagina's":
-                                i += processText(td, DBKeys.KEY_PAGES, bookData);
+                                i += processText(td, DBKey.KEY_PAGES, bookData);
                                 break;
 
                             case "ISBN":
-                                i += processText(td, DBKeys.KEY_ISBN, bookData);
+                                i += processText(td, DBKey.KEY_ISBN, bookData);
                                 break;
 
                             case "Kaft":
-                                i += processText(td, DBKeys.KEY_FORMAT, bookData);
+                                i += processText(td, DBKey.KEY_FORMAT, bookData);
                                 break;
 
                             case "Taal":
@@ -384,7 +384,7 @@ public class StripInfoSearchEngine
                                 break;
 
                             case "Oplage":
-                                i += processText(td, DBKeys.KEY_PRINT_RUN, bookData);
+                                i += processText(td, DBKey.KEY_PRINT_RUN, bookData);
                                 break;
 
                             case "Barcode":
@@ -451,7 +451,7 @@ public class StripInfoSearchEngine
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-            bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
         }
 
         // store accumulated ArrayList's *after* we got the TOC
@@ -466,8 +466,8 @@ public class StripInfoSearchEngine
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKeys.KEY_LANGUAGE)) {
-            bookData.putString(DBKeys.KEY_LANGUAGE, "nld");
+        if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
+            bookData.putString(DBKey.KEY_LANGUAGE, "nld");
         }
 
         if (isCancelled()) {
@@ -477,11 +477,11 @@ public class StripInfoSearchEngine
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
         if (toc != null && !toc.isEmpty()) {
             @Book.TocBits
-            long type = bookData.getLong(DBKeys.KEY_TOC_BITMASK);
+            long type = bookData.getLong(DBKey.BITMASK_TOC);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
             }
-            bookData.putLong(DBKeys.KEY_TOC_BITMASK, type);
+            bookData.putLong(DBKey.BITMASK_TOC, type);
         }
 
         if (isCancelled()) {
@@ -516,7 +516,7 @@ public class StripInfoSearchEngine
                               @IntRange(from = 0, to = 1) final int cIdx,
                               @NonNull final Bundle bookData) {
 
-        final String isbn = bookData.getString(DBKeys.KEY_ISBN);
+        final String isbn = bookData.getString(DBKey.KEY_ISBN);
         final String url = parseCover(document, cIdx);
         if (url != null) {
             final String fileSpec = saveCover(isbn, cIdx, url);
@@ -703,7 +703,7 @@ public class StripInfoSearchEngine
                                             .split("_")[0];
             bookId = Long.parseLong(idString);
             if (bookId > 0) {
-                bookData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, bookId);
+                bookData.putLong(DBKey.SID_STRIP_INFO, bookId);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore
@@ -752,7 +752,7 @@ public class StripInfoSearchEngine
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
-                bookData.putString(DBKeys.KEY_COLOR, text);
+                bookData.putString(DBKey.KEY_COLOR, text);
             }
             return 1;
         }
@@ -888,11 +888,11 @@ public class StripInfoSearchEngine
 
     private int processLanguage(@NonNull final Element td,
                                 @NonNull final Bundle bookData) {
-        final int found = processText(td, DBKeys.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
+        final int found = processText(td, DBKey.KEY_LANGUAGE, bookData);
+        String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
-            bookData.putString(DBKeys.KEY_LANGUAGE, lang);
+            bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
         return found;
     }
@@ -934,7 +934,7 @@ public class StripInfoSearchEngine
                 }
             }
             if (content.length() > 0) {
-                bookData.putString(DBKeys.KEY_DESCRIPTION, content.toString());
+                bookData.putString(DBKey.KEY_DESCRIPTION, content.toString());
             }
         }
     }

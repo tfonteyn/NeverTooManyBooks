@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -335,7 +335,7 @@ class AmazonXmlHandler
         if (mFetchCovers[0] && !mCoverUrl.isEmpty()) {
 
             final String fileSpec = mSearchEngine
-                    .saveImage(mCoverUrl, mBookData.getString(DBKeys.KEY_ISBN), 0, null);
+                    .saveImage(mCoverUrl, mBookData.getString(DBKey.KEY_ISBN), 0, null);
             if (fileSpec != null) {
                 ArrayList<String> list = mBookData.getStringArrayList(
                         SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0]);
@@ -440,25 +440,25 @@ class AmazonXmlHandler
                 mAuthors.add(Author.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-                addIfNotPresent(DBKeys.KEY_TITLE, mBuilder.toString());
+                addIfNotPresent(DBKey.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
                 mPublishers.add(Publisher.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                addIfNotPresent(DBKeys.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
+                addIfNotPresent(DBKey.DATE_BOOK_PUBLICATION, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
-                addIfNotPresent(DBKeys.KEY_PAGES, mBuilder.toString());
+                addIfNotPresent(DBKey.KEY_PAGES, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_DESCRIPTION)) {
-                addIfNotPresent(DBKeys.KEY_DESCRIPTION, mBuilder.toString());
+                addIfNotPresent(DBKey.KEY_DESCRIPTION, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_BINDING)) {
-                addIfNotPresent(DBKeys.KEY_FORMAT, mBuilder.toString());
+                addIfNotPresent(DBKey.KEY_FORMAT, mBuilder.toString());
 
             } else if (mInLanguage && localName.equalsIgnoreCase(XML_NAME)) {
-                addIfNotPresent(DBKeys.KEY_LANGUAGE, Languages
+                addIfNotPresent(DBKey.KEY_LANGUAGE, Languages
                         .getInstance().getISO3FromDisplayName(
                                 mSearchEngine.getLocale(), mBuilder.toString()));
 
@@ -473,13 +473,13 @@ class AmazonXmlHandler
                        || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
                 final String tmp = mBuilder.toString();
-                final String isbnStr = mBookData.getString(DBKeys.KEY_ISBN);
+                final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
                 if (isbnStr == null || isbnStr.length() < tmp.length()) {
-                    mBookData.putString(DBKeys.KEY_ISBN, tmp);
+                    mBookData.putString(DBKey.KEY_ISBN, tmp);
                 }
 
             } else if (localName.equalsIgnoreCase(XML_ASIN)) {
-                addIfNotPresent(DBKeys.KEY_ESID_ASIN, mBuilder.toString());
+                addIfNotPresent(DBKey.SID_ASIN, mBuilder.toString());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
@@ -529,14 +529,14 @@ class AmazonXmlHandler
      * is $12.34
      */
     private void handleListPrice() {
-        if (!mBookData.containsKey(DBKeys.KEY_PRICE_LISTED)) {
+        if (!mBookData.containsKey(DBKey.PRICE_LISTED)) {
             try {
                 final int decDigits = java.util.Currency.getInstance(mCurrencyCode)
                                                         .getDefaultFractionDigits();
                 // move the decimal point 'digits' up
                 final double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
-                mBookData.putDouble(DBKeys.KEY_PRICE_LISTED, price);
-                mBookData.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
+                mBookData.putDouble(DBKey.PRICE_LISTED, price);
+                mBookData.putString(DBKey.PRICE_LISTED_CURRENCY, mCurrencyCode);
             } catch (@NonNull final NumberFormatException ignore) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "handleListPrice"

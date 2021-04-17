@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
@@ -77,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -282,6 +283,8 @@ public class SearchCoordinator
         return mIsCancelled;
     }
 
+    private DateParser mDateParser;
+
     /**
      * Pseudo constructor.
      *
@@ -300,6 +303,8 @@ public class SearchCoordinator
             mSearchEngineRegistry = SearchEngineRegistry.getInstance();
             mAllSites = Site.Type.Data.getSites();
 
+            mDateParser = new FullDateParser(context);
+
             mListElementPrefixString = context.getString(R.string.list_element);
 
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
@@ -312,13 +317,13 @@ public class SearchCoordinator
 
             if (args != null) {
                 mFetchCover = new boolean[]{
-                        DBKeys.isUsed(global, DBKeys.COVER_IS_USED[0]),
-                        DBKeys.isUsed(global, DBKeys.COVER_IS_USED[1])
+                        DBKey.isUsed(global, DBKey.COVER_IS_USED[0]),
+                        DBKey.isUsed(global, DBKey.COVER_IS_USED[1])
                 };
 
-                mIsbnSearchText = args.getString(DBKeys.KEY_ISBN, "");
+                mIsbnSearchText = args.getString(DBKey.KEY_ISBN, "");
 
-                mTitleSearchText = args.getString(DBKeys.KEY_TITLE, "");
+                mTitleSearchText = args.getString(DBKey.KEY_TITLE, "");
 
                 mAuthorSearchText = args.getString(
                         SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
@@ -524,7 +529,7 @@ public class SearchCoordinator
      * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final Bundle bundle) {
-        final String isbnStr = bundle.getString(DBKeys.KEY_ISBN);
+        final String isbnStr = bundle.getString(DBKey.KEY_ISBN);
         return isbnStr != null && !isbnStr.trim().isEmpty();
     }
 
@@ -721,8 +726,8 @@ public class SearchCoordinator
             for (final Site site : allSites) {
                 if (mSearchResults.containsKey(site.engineId)) {
                     final Bundle bookData = mSearchResults.get(site.engineId);
-                    if (bookData != null && bookData.containsKey(DBKeys.KEY_ISBN)) {
-                        final String isbnFound = bookData.getString(DBKeys.KEY_ISBN);
+                    if (bookData != null && bookData.containsKey(DBKey.KEY_ISBN)) {
+                        final String isbnFound = bookData.getString(DBKey.KEY_ISBN);
                         // do they match?
                         if (isbnFound != null && !isbnFound.isEmpty()
                             && mIsbn.equals(ISBN.createISBN(isbnFound))) {
@@ -742,7 +747,7 @@ public class SearchCoordinator
             sites.addAll(sitesWithoutIsbn);
             // Add the passed ISBN first;
             // avoids overwriting with potentially different isbn from the sites
-            mBookData.putString(DBKeys.KEY_ISBN, mIsbnSearchText);
+            mBookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
 
         } else {
             // If an ISBN was not passed, then just use the default order
@@ -758,7 +763,7 @@ public class SearchCoordinator
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
                 }
-                accumulateSiteData(context, siteData, searchEngine.getLocale());
+                accumulateSiteData(searchEngine.getLocale(), siteData);
             }
         }
 
@@ -771,15 +776,15 @@ public class SearchCoordinator
         mCoverFilter.filter(mBookData);
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = mBookData.getString(DBKeys.KEY_ISBN);
+        final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            mBookData.putString(DBKeys.KEY_ISBN, mIsbnSearchText);
+            mBookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
         }
 
         // If we did not get an title, use the one we originally searched for.
-        final String title = mBookData.getString(DBKeys.KEY_TITLE);
+        final String title = mBookData.getString(DBKey.KEY_TITLE);
         if (title == null || title.isEmpty()) {
-            mBookData.putString(DBKeys.KEY_TITLE, mTitleSearchText);
+            mBookData.putString(DBKey.KEY_TITLE, mTitleSearchText);
         }
     }
 
@@ -793,16 +798,14 @@ public class SearchCoordinator
      * <p>
      * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
      *
-     * @param context Current context
      */
-    private void accumulateSiteData(@NonNull final Context context,
-                                    @NonNull final Bundle siteData,
-                                    @NonNull final Locale locale) {
+    private void accumulateSiteData(@NonNull final Locale siteLocale,
+                                    @NonNull final Bundle siteData) {
 
         for (final String key : siteData.keySet()) {
-            if (DBKeys.KEY_BOOK_DATE_PUBLISHED.equals(key)
-                || DBKeys.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(context, locale, key, siteData);
+            if (DBKey.DATE_BOOK_PUBLICATION.equals(key)
+                || DBKey.DATE_FIRST_PUBLICATION.equals(key)) {
+                accumulateDates(siteLocale, key, siteData);
 
             } else if (Book.BKEY_AUTHOR_LIST.equals(key)
                        || Book.BKEY_SERIES_LIST.equals(key)
@@ -857,19 +860,15 @@ public class SearchCoordinator
      * If so, then check if the previous date was actually valid at all.
      * if not, use new date.
      *
-     * @param context    Current context
      * @param siteLocale the specific Locale of the website
      * @param key        for the date field
      * @param siteData   to digest
      */
-    private void accumulateDates(@NonNull final Context context,
-                                 @NonNull final Locale siteLocale,
+    private void accumulateDates(@NonNull final Locale siteLocale,
                                  @NonNull final String key,
                                  @NonNull final Bundle siteData) {
         final String currentDateHeld = mBookData.getString(key);
         final String dataToAdd = siteData.getString(key);
-
-        final DateParser dateParser = DateParser.getInstance(context);
 
         if (currentDateHeld == null || currentDateHeld.isEmpty()) {
             // copy, even if the incoming date might not be valid.
@@ -877,12 +876,15 @@ public class SearchCoordinator
             mBookData.putString(key, dataToAdd);
 
         } else {
+            // FIXME: there is overlap with some SearchEngines which already do a full
+            //  validity check on the dates they gather. We should avoid a double-check.
+            //
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                final LocalDateTime newDate = dateParser.parse(dataToAdd, siteLocale);
+                final LocalDateTime newDate = mDateParser.parse(dataToAdd, siteLocale);
                 if (newDate != null) {
-                    if (dateParser.parse(currentDateHeld, siteLocale) == null) {
+                    if (mDateParser.parse(currentDateHeld, siteLocale) == null) {
                         // current date was invalid, use the new one instead.
                         // (theoretically this check was not needed, as we should not have
                         // an invalid date stored anyhow... but paranoia rules)
@@ -960,7 +962,7 @@ public class SearchCoordinator
             if (result != null && hasIsbn(result)) {
                 mWaitingForExactCode = false;
                 // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = result.getString(DBKeys.KEY_ISBN, "");
+                mIsbnSearchText = result.getString(DBKey.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn=" + mIsbnSearchText);

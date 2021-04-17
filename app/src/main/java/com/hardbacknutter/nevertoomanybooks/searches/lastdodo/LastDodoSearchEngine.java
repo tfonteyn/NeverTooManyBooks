@@ -35,7 +35,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -86,7 +86,7 @@ public class LastDodoSearchEngine
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
 
-                .setDomainKey(DBKeys.KEY_ESID_LAST_DODO_NL)
+                .setDomainKey(DBKey.SID_LAST_DODO_NL)
                 .setDomainViewId(R.id.site_last_dodo_nl)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
                 .build();
@@ -180,11 +180,11 @@ public class LastDodoSearchEngine
             final Element td = tr.child(1);
             switch (th.text()) {
                 case "LastDodo nummer:":
-                    processText(td, DBKeys.KEY_ESID_LAST_DODO_NL, bookData);
+                    processText(td, DBKey.SID_LAST_DODO_NL, bookData);
                     break;
 
                 case "Titel:":
-                    processText(td, DBKeys.KEY_TITLE, bookData);
+                    processText(td, DBKey.KEY_TITLE, bookData);
                     break;
 
                 case "Serie / held:":
@@ -220,11 +220,11 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Jaar:":
-                    processText(td, DBKeys.KEY_BOOK_DATE_PUBLISHED, bookData);
+                    processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
                     break;
 
                 case "Cover:":
-                    processText(td, DBKeys.KEY_FORMAT, bookData);
+                    processText(td, DBKey.KEY_FORMAT, bookData);
                     break;
 
                 case "Druk:":
@@ -232,7 +232,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Inkleuring:":
-                    processText(td, DBKeys.KEY_COLOR, bookData);
+                    processText(td, DBKey.KEY_COLOR, bookData);
                     break;
 
                 case "ISBN:":
@@ -240,17 +240,17 @@ public class LastDodoSearchEngine
                     if (!"Geen".equals(tmpString)) {
                         tmpString = digits(tmpString, true);
                         if (!tmpString.isEmpty()) {
-                            bookData.putString(DBKeys.KEY_ISBN, tmpString);
+                            bookData.putString(DBKey.KEY_ISBN, tmpString);
                         }
                     }
                     break;
 
                 case "Oplage:":
-                    processText(td, DBKeys.KEY_PRINT_RUN, bookData);
+                    processText(td, DBKey.KEY_PRINT_RUN, bookData);
                     break;
 
                 case "Aantal bladzijden:":
-                    processText(td, DBKeys.KEY_PAGES, bookData);
+                    processText(td, DBKey.KEY_PAGES, bookData);
                     break;
 
                 case "Afmetingen:":
@@ -268,7 +268,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Bijzonderheden:":
-                    processText(td, DBKeys.KEY_DESCRIPTION, bookData);
+                    processText(td, DBKey.KEY_DESCRIPTION, bookData);
                     break;
 
                 default:
@@ -295,7 +295,7 @@ public class LastDodoSearchEngine
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-            bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
         }
 
         if (!mAuthors.isEmpty()) {
@@ -309,8 +309,8 @@ public class LastDodoSearchEngine
         }
 
         // It's extremely unlikely, but should the language be missing, add dutch.
-        if (!bookData.containsKey(DBKeys.KEY_LANGUAGE)) {
-            bookData.putString(DBKeys.KEY_LANGUAGE, "nld");
+        if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
+            bookData.putString(DBKey.KEY_LANGUAGE, "nld");
         }
 
         if (isCancelled()) {
@@ -318,7 +318,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchCovers[0] || fetchCovers[1]) {
-            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.KEY_ISBN);
             parseCovers(document, isbn, fetchCovers, bookData);
         }
     }
@@ -451,11 +451,11 @@ public class LastDodoSearchEngine
 
     private void processLanguage(@NonNull final Element td,
                                  @NonNull final Bundle bookData) {
-        processText(td, DBKeys.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
+        processText(td, DBKey.KEY_LANGUAGE, bookData);
+        String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
-            bookData.putString(DBKeys.KEY_LANGUAGE, lang);
+            bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
     }
 

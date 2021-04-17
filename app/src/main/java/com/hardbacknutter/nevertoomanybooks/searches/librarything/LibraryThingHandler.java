@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -539,7 +539,7 @@ class LibraryThingHandler
             if ("work".equalsIgnoreCase(type)) {
                 try {
                     final long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
-                    mBookData.putLong(DBKeys.KEY_ESID_LIBRARY_THING, id);
+                    mBookData.putLong(DBKey.SID_LIBRARY_THING, id);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
@@ -568,12 +568,12 @@ class LibraryThingHandler
             mAuthors.add(Author.from(mBuilder.toString()));
 
         } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-            addIfNotPresent(DBKeys.KEY_TITLE, mBuilder.toString());
+            addIfNotPresent(DBKey.KEY_TITLE, mBuilder.toString());
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             switch (mFieldType) {
                 case FT_TITLE:
-                    addIfNotPresent(DBKeys.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(DBKey.KEY_TITLE, mBuilder.toString());
                     break;
 
                 case FT_SERIES:
@@ -587,14 +587,14 @@ class LibraryThingHandler
                     break;
 
                 case FT_DESCRIPTION:
-                    addIfNotPresent(DBKeys.KEY_DESCRIPTION, mBuilder.toString());
+                    addIfNotPresent(DBKey.KEY_DESCRIPTION, mBuilder.toString());
                     break;
 
                 case FT_ORIGINAL_PUB_DATE:
-                    if (!mBookData.containsKey(DBKeys.KEY_DATE_FIRST_PUBLICATION)) {
+                    if (!mBookData.containsKey(DBKey.DATE_FIRST_PUBLICATION)) {
                         final Matcher matcher = YEAR_PATTERN.matcher(mBuilder.toString());
                         if (matcher.find()) {
-                            mBookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION,
+                            mBookData.putString(DBKey.DATE_FIRST_PUBLICATION,
                                                 matcher.group(1));
                         }
                     }

@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -79,8 +79,8 @@ class KbNlBookHandler
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.
-        if (!mBookData.isEmpty() && !mBookData.containsKey(DBKeys.KEY_LANGUAGE)) {
-            mBookData.putString(DBKeys.KEY_LANGUAGE, "nld");
+        if (!mBookData.isEmpty() && !mBookData.containsKey(DBKey.KEY_LANGUAGE)) {
+            mBookData.putString(DBKey.KEY_LANGUAGE, "nld");
         }
     }
 
@@ -231,7 +231,7 @@ class KbNlBookHandler
             sbTitle.append(name).append(" ");
         }
         final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
-        mBookData.putString(DBKeys.KEY_TITLE, cleanedTitle);
+        mBookData.putString(DBKey.KEY_TITLE, cleanedTitle);
     }
 
     /**
@@ -316,7 +316,7 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processSeriesNumber(@NonNull final List<String> currentData) {
-        final String title = mBookData.getString(DBKeys.KEY_TITLE);
+        final String title = mBookData.getString(DBKey.KEY_TITLE);
         // should never happen, but paranoia...
         if (title != null) {
             final Series series = Series.from(title, currentData.get(0));
@@ -345,16 +345,16 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processIsbn(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKeys.KEY_ISBN)) {
-            mBookData.putString(DBKeys.KEY_ISBN, digits(currentData.get(0), true));
+        if (!mBookData.containsKey(DBKey.KEY_ISBN)) {
+            mBookData.putString(DBKey.KEY_ISBN, digits(currentData.get(0), true));
             if (currentData.size() > 1) {
-                if (!mBookData.containsKey(DBKeys.KEY_FORMAT)) {
+                if (!mBookData.containsKey(DBKey.KEY_FORMAT)) {
                     String format = currentData.get(1).trim();
                     if (format.startsWith("(")) {
                         format = format.substring(1, format.length() - 1);
                     }
                     if (!format.isEmpty()) {
-                        mBookData.putString(DBKeys.KEY_FORMAT, format);
+                        mBookData.putString(DBKey.KEY_FORMAT, format);
                     }
                 }
             }
@@ -423,10 +423,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKeys.KEY_BOOK_DATE_PUBLISHED)) {
+        if (!mBookData.containsKey(DBKey.DATE_BOOK_PUBLICATION)) {
             final String year = digits(currentData.get(0), false);
             if (year != null && !year.isEmpty()) {
-                mBookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED, year);
+                mBookData.putString(DBKey.DATE_BOOK_PUBLICATION, year);
             }
         }
     }
@@ -447,14 +447,14 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processPages(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBKeys.KEY_PAGES)) {
+        if (!mBookData.containsKey(DBKey.KEY_PAGES)) {
             try {
                 final String cleanedString = currentData.get(0).split(" ")[0];
                 final int pages = Integer.parseInt(cleanedString);
-                mBookData.putString(DBKeys.KEY_PAGES, String.valueOf(pages));
+                mBookData.putString(DBKey.KEY_PAGES, String.valueOf(pages));
             } catch (@NonNull final NumberFormatException e) {
                 // use source
-                mBookData.putString(DBKeys.KEY_PAGES, currentData.get(0));
+                mBookData.putString(DBKey.KEY_PAGES, currentData.get(0));
             }
         }
     }

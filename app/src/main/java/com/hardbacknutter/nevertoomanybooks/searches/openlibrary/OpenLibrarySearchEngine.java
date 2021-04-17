@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -97,7 +98,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * <ul>Problems:
  *      <li>"data" does not contain all information that the site has</li>
  *      <li>"details" seems, by their own admission, not to be stable yet.</li>
- *      <li>both: dates are not structured, but {@link DateParser} can work around that.</li>
+ *      <li>both: dates are not structured, but {@link FullDateParser} can work around that.</li>
  *      <li>last update dates on the website & api docs are sometimes from years ago.
  * Is this still developed ?</li>
  * </ul>
@@ -179,7 +180,7 @@ public class OpenLibrarySearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("OL")
 
-                .setDomainKey(DBKeys.KEY_ESID_OPEN_LIBRARY)
+                .setDomainKey(DBKey.SID_OPEN_LIBRARY)
                 .setDomainViewId(R.id.site_open_library)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
                 .build();
@@ -476,9 +477,11 @@ public class OpenLibrarySearchEngine
                        @NonNull final Bundle bookData)
             throws JSONException {
 
+        final DateParser dateParser = new FullDateParser(getContext());
+
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBKeys.KEY_ISBN, validIsbn);
+        bookData.putString(DBKey.KEY_ISBN, validIsbn);
 
         JSONObject element;
         JSONArray a;
@@ -487,7 +490,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("title");
         if (!s.isEmpty()) {
-            bookData.putString(DBKeys.KEY_TITLE, s);
+            bookData.putString(DBKey.KEY_TITLE, s);
         }
 
         // s = document.optString("subtitle");
@@ -513,7 +516,7 @@ public class OpenLibrarySearchEngine
         // } else {
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DBKeys.KEY_PAGES, String.valueOf(i));
+            bookData.putString(DBKey.KEY_PAGES, String.valueOf(i));
         }
         // }
 
@@ -529,9 +532,9 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date");
         if (!s.isEmpty()) {
-            final LocalDateTime date = DateParser.getInstance(getContext()).parse(s, getLocale());
+            final LocalDateTime date = dateParser.parse(s, getLocale());
             if (date != null) {
-                bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
+                bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }
@@ -547,7 +550,7 @@ public class OpenLibrarySearchEngine
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = document.optString("notes");
         if (!s.isEmpty()) {
-            bookData.putString(DBKeys.KEY_DESCRIPTION, s);
+            bookData.putString(DBKey.KEY_DESCRIPTION, s);
         }
 
 
@@ -566,7 +569,7 @@ public class OpenLibrarySearchEngine
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+                    bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
                 }
             }
         }
@@ -608,40 +611,40 @@ public class OpenLibrarySearchEngine
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ISBN, a.getString(0));
+            bookData.putString(DBKey.KEY_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBKeys.KEY_ISBN, a.getString(0));
+                bookData.putString(DBKey.KEY_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ESID_ASIN, a.getString(0));
+            bookData.putString(DBKey.SID_ASIN, a.getString(0));
         }
         a = element.optJSONArray("openlibrary");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ESID_OPEN_LIBRARY, a.getString(0));
+            bookData.putString(DBKey.SID_OPEN_LIBRARY, a.getString(0));
         }
         a = element.optJSONArray("librarything");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBKeys.KEY_ESID_LIBRARY_THING, a.getLong(0));
+            bookData.putLong(DBKey.SID_LIBRARY_THING, a.getLong(0));
         }
         a = element.optJSONArray("goodreads");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBKeys.KEY_ESID_GOODREADS_BOOK, a.getLong(0));
+            bookData.putLong(DBKey.SID_GOODREADS_BOOK, a.getLong(0));
         }
         a = element.optJSONArray("google");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ESID_GOOGLE, a.getString(0));
+            bookData.putString(DBKey.SID_GOOGLE, a.getString(0));
         }
         a = element.optJSONArray("lccn");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ESID_LCCN, a.getString(0));
+            bookData.putString(DBKey.SID_LCCN, a.getString(0));
         }
         a = element.optJSONArray("oclc");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBKeys.KEY_ESID_OCLC, a.getString(0));
+            bookData.putString(DBKey.SID_OCLC, a.getString(0));
         }
     }
 

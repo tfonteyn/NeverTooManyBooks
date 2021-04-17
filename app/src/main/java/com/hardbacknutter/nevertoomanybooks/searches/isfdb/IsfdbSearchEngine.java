@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.EditBookTocFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 
 /**
  * See notes in the package-info.java file.
@@ -232,7 +233,7 @@ public class IsfdbSearchEngine
                                               "http://www.isfdb.org")
                 .setFilenameSuffix("ISFDB")
 
-                .setDomainKey(DBKeys.KEY_ESID_ISFDB)
+                .setDomainKey(DBKey.SID_ISFDB)
                 .setDomainViewId(R.id.site_isfdb)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
 
@@ -553,6 +554,8 @@ public class IsfdbSearchEngine
             throws IOException {
         super.parse(document, fetchCovers, bookData);
 
+        final DateParser dateParser = new FullDateParser(getContext());
+
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
         if (allContentBoxes.isEmpty()) {
@@ -562,8 +565,6 @@ public class IsfdbSearchEngine
             }
             return;
         }
-
-        final DateParser dateParser = DateParser.getInstance(getContext());
 
         final Element contentBox = allContentBoxes.first();
         final Element ul = contentBox.selectFirst("ul");
@@ -598,7 +599,7 @@ public class IsfdbSearchEngine
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
                     mTitle = fieldLabelElement.nextSibling().toString().trim();
-                    bookData.putString(DBKeys.KEY_TITLE, mTitle);
+                    bookData.putString(DBKey.KEY_TITLE, mTitle);
 
                 } else if ("Author:".equalsIgnoreCase(fieldName)
                            || "Authors:".equalsIgnoreCase(fieldName)) {
@@ -620,7 +621,7 @@ public class IsfdbSearchEngine
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
                         // This should be acceptable IMHO.
-                        bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
+                        bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
                                            date.format(DateTimeFormatter.ISO_LOCAL_DATE));
                     }
 
@@ -630,7 +631,7 @@ public class IsfdbSearchEngine
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
                     tmpString = digits(tmpString, true);
                     if (!tmpString.isEmpty()) {
-                        bookData.putString(DBKeys.KEY_ISBN, tmpString);
+                        bookData.putString(DBKey.KEY_ISBN, tmpString);
                     }
 
                     tmpString = fieldLabelElement.nextElementSibling().text();
@@ -660,23 +661,23 @@ public class IsfdbSearchEngine
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
                     final Money money = new Money(getLocale(), tmpString);
                     if (money.getCurrency() != null) {
-                        bookData.putDouble(DBKeys.KEY_PRICE_LISTED, money.doubleValue());
-                        bookData.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY,
+                        bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
+                        bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
                                            money.getCurrency());
                     } else {
-                        bookData.putString(DBKeys.KEY_PRICE_LISTED, tmpString);
+                        bookData.putString(DBKey.PRICE_LISTED, tmpString);
                     }
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    bookData.putString(DBKeys.KEY_PAGES, tmpString);
+                    bookData.putString(DBKey.KEY_PAGES, tmpString);
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
                     // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
                     // need to lift "tp".
                     tmpString = fieldLabelElement.nextElementSibling().ownText();
-                    bookData.putString(DBKeys.KEY_FORMAT, tmpString);
+                    bookData.putString(DBKey.KEY_FORMAT, tmpString);
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
@@ -684,7 +685,7 @@ public class IsfdbSearchEngine
                     bookData.putString(SiteField.BOOK_TYPE, tmpString);
                     final Integer type = TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        bookData.putLong(DBKeys.KEY_TOC_BITMASK, type);
+                        bookData.putLong(DBKey.BITMASK_TOC, type);
                     }
 
                 } else if ("Cover:".equalsIgnoreCase(fieldName)) {
@@ -727,7 +728,7 @@ public class IsfdbSearchEngine
             if (!tmpString.isEmpty()) {
                 try {
                     final long record = Long.parseLong(tmpString);
-                    bookData.putLong(DBKeys.KEY_ESID_ISFDB, record);
+                    bookData.putLong(DBKey.SID_ISFDB, record);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
@@ -743,19 +744,19 @@ public class IsfdbSearchEngine
             if (tmpString.startsWith("<b>Notes:</b>")) {
                 tmpString = tmpString.substring(13).trim();
             }
-            bookData.putString(DBKeys.KEY_DESCRIPTION, tmpString);
+            bookData.putString(DBKey.KEY_DESCRIPTION, tmpString);
         }
 
         // ISFDB does not offer the books language on the main page (although they store
         // it in their database).
         //ENHANCE: the site is adding language to the data.. revisit. For now, default to English
-        bookData.putString(DBKeys.KEY_LANGUAGE, "eng");
+        bookData.putString(DBKey.KEY_LANGUAGE, "eng");
 
         final ArrayList<TocEntry> toc = parseToc(document);
         if (!toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
-                bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+                bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
             }
         }
 
@@ -779,11 +780,11 @@ public class IsfdbSearchEngine
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
         if (!toc.isEmpty()) {
             @Book.TocBits
-            long type = bookData.getLong(DBKeys.KEY_TOC_BITMASK);
+            long type = bookData.getLong(DBKey.BITMASK_TOC);
             if (TocEntry.hasMultipleAuthors(toc)) {
                 type |= Book.TOC_MULTIPLE_AUTHORS;
             }
-            bookData.putLong(DBKeys.KEY_TOC_BITMASK, type);
+            bookData.putLong(DBKey.BITMASK_TOC, type);
         }
 
         // try to deduce the first publication date from the TOC
@@ -792,12 +793,12 @@ public class IsfdbSearchEngine
             // then this will have the first publication year for sure
             tmpString = digits(toc.get(0).getFirstPublicationDate().getIsoString(), false);
             if (!tmpString.isEmpty()) {
-                bookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION, tmpString);
+                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, tmpString);
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found in the TOC
             if (mFirstPublicationYear != null) {
-                bookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION, mFirstPublicationYear);
+                bookData.putString(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationYear);
             }
         }
 
@@ -806,7 +807,7 @@ public class IsfdbSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
+            final String isbn = bookData.getString(DBKey.KEY_ISBN);
             final ArrayList<String> list = parseCovers(document, isbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
@@ -1241,7 +1242,7 @@ public class IsfdbSearchEngine
                 .forEach(url -> {
                     if (url.contains("www.worldcat.org")) {
                         // http://www.worldcat.org/oclc/60560136
-                        bookData.putString(DBKeys.KEY_ESID_OCLC, stripString(url, '/'));
+                        bookData.putString(DBKey.SID_OCLC, stripString(url, '/'));
 
                     } else if (url.contains("amazon")) {
                         final int start = url.lastIndexOf('/');
@@ -1251,13 +1252,13 @@ public class IsfdbSearchEngine
                                 end = url.length();
                             }
                             final String asin = url.substring(start + 1, end);
-                            bookData.putString(DBKeys.KEY_ESID_ASIN, asin);
+                            bookData.putString(DBKey.SID_ASIN, asin);
                         }
                     } else if (url.contains("lccn.loc.gov")) {
                         // Library of Congress (USA)
                         // http://lccn.loc.gov/2008299472
                         // http://lccn.loc.gov/95-22691
-                        bookData.putString(DBKeys.KEY_ESID_LCCN, stripString(url, '/'));
+                        bookData.putString(DBKey.SID_LCCN, stripString(url, '/'));
 
                         //            } else if (url.contains("explore.bl.uk")) {
                         // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?

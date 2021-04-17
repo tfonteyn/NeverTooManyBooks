@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -132,7 +132,7 @@ public class LibraryThingSearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("LT")
 
-                .setDomainKey(DBKeys.KEY_ESID_LIBRARY_THING)
+                .setDomainKey(DBKey.SID_LIBRARY_THING)
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
 
@@ -219,7 +219,7 @@ public class LibraryThingSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final String isbnStr = bookData.getString(DBKeys.KEY_ISBN);
+            final String isbnStr = bookData.getString(DBKey.KEY_ISBN);
             if (isbnStr != null && !isbnStr.isEmpty()) {
                 final ArrayList<String> list = searchBestCoverImageByIsbn(isbnStr, 0);
                 if (!list.isEmpty()) {
