@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -144,11 +144,11 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBKeys.KEY_BOOKSHELF_NAME);
-        mStyleUuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
+        mName = rowData.getString(DBKey.KEY_BOOKSHELF_NAME);
+        mStyleUuid = rowData.getString(DBKey.KEY_STYLE_UUID);
 
-        mFirstVisibleItemPosition = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_POS);
-        mFirstVisibleViewOffset = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET);
+        mFirstVisibleItemPosition = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_POS);
+        mFirstVisibleViewOffset = rowData.getInt(DBKey.KEY_BOOKSHELF_BL_TOP_OFFSET);
     }
 
     /**
@@ -297,6 +297,7 @@ public class Bookshelf
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         mStyleUuid = style.getUuid();
+
         ServiceLocator.getInstance().getBookshelfDao().update(context, this);
 
     }

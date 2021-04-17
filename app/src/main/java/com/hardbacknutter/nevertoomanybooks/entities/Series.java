@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -199,11 +199,11 @@ public class Series
     public Series(final long id,
                   @NonNull final DataHolder rowData) {
         mId = id;
-        mTitle = rowData.getString(DBKeys.KEY_SERIES_TITLE);
-        mIsComplete = rowData.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE);
+        mTitle = rowData.getString(DBKey.KEY_SERIES_TITLE);
+        mIsComplete = rowData.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (rowData.contains(DBKeys.KEY_BOOK_NUM_IN_SERIES)) {
-            mNumber = rowData.getString(DBKeys.KEY_BOOK_NUM_IN_SERIES);
+        if (rowData.contains(DBKey.KEY_BOOK_NUM_IN_SERIES)) {
+            mNumber = rowData.getString(DBKey.KEY_BOOK_NUM_IN_SERIES);
         } else {
             mNumber = "";
         }

@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -263,11 +263,11 @@ public class Author
     public Author(final long id,
                   @NonNull final DataHolder rowData) {
         mId = id;
-        mFamilyName = rowData.getString(DBKeys.KEY_AUTHOR_FAMILY_NAME);
-        mGivenNames = rowData.getString(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
-        mIsComplete = rowData.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE);
-        if (rowData.contains(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            mType = rowData.getInt(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+        mFamilyName = rowData.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
+        mGivenNames = rowData.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
+        mIsComplete = rowData.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE);
+        if (rowData.contains(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+            mType = rowData.getInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
         }
     }
 
@@ -578,7 +578,7 @@ public class Author
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        if (DBKeys.isUsed(global, DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+        if (DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             final String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";

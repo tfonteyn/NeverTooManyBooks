@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * Fakes a Book with just enough information to implement an {@link AuthorWork}.
  * This is a transitive solution.
  * <p>
- * See {@link BookDao#getAuthorWorks}.
+ * See {@link AuthorDao#getAuthorWorks}.
  */
 public class BookAsWork
         implements ItemWithTitle, AuthorWork {

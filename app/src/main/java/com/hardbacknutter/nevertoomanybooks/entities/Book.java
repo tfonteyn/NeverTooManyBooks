@@ -35,13 +35,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -49,26 +46,20 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -101,7 +92,7 @@ public class Book
         implements ItemWithTitle, AuthorWork {
 
     /**
-     * {@link DBKeys#KEY_TOC_BITMASK}
+     * {@link DBKey#BITMASK_TOC}
      * <p>
      * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
      * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
@@ -177,8 +168,7 @@ public class Book
      * <br>type: {@code Bundle}
      */
     public static final String BKEY_DATA_BUNDLE = TAG + ":plainBundle";
-    /** Used to transform Java-ISO to SQL-ISO datetime format. */
-    private static final Pattern T = Pattern.compile("T");
+
     /** the stage of the book entity. */
     private final EntityStage mStage = new EntityStage();
 
@@ -209,8 +199,14 @@ public class Book
      */
     public static Book from(@IntRange(from = 1) final long bookId,
                             @NonNull final BookDao bookDao) {
+        SanityCheck.requirePositiveValue(bookId, "bookId");
+
         final Book book = new Book();
-        book.load(bookId, bookDao);
+        try (Cursor bookCursor = bookDao.fetchById(bookId)) {
+            if (bookCursor.moveToFirst()) {
+                book.load(bookId, bookCursor);
+            }
+        }
         return book;
     }
 
@@ -218,16 +214,14 @@ public class Book
      * Constructor. Load the book details from the cursor.
      *
      * @param bookCursor an already positioned Cursor to read from
-     * @param bookDao    to load linked array data from
      *
      * @return new instance
      */
-    public static Book from(@NonNull final Cursor bookCursor,
-                            @NonNull final BookDao bookDao) {
+    public static Book from(@NonNull final Cursor bookCursor) {
         final Book book = new Book();
-        final int idCol = bookCursor.getColumnIndex(DBKeys.KEY_PK_ID);
+        final int idCol = bookCursor.getColumnIndex(DBKey.PK_ID);
         final long bookId = bookCursor.getLong(idCol);
-        book.load(bookId, bookCursor, bookDao);
+        book.load(bookId, bookCursor);
         return book;
     }
 
@@ -289,50 +283,38 @@ public class Book
 
     /**
      * Load the book details from the database.
-     *
-     * @param bookId  of book must be != 0
-     * @param bookDao Database Access
-     */
-    public void load(@IntRange(from = 1) final long bookId,
-                     @NonNull final BookDao bookDao) {
-        SanityCheck.requirePositiveValue(bookId, "bookId");
-
-        try (Cursor bookCursor = bookDao.fetchBookById(bookId)) {
-            if (bookCursor.moveToFirst()) {
-                load(bookId, bookCursor, bookDao);
-            }
-        }
-    }
-
-    /**
-     * Load the book details from the database.
      * The current book data is cleared before loading.
      *
      * @param bookId     of book must be != 0
      * @param bookCursor an already positioned Cursor to read from
-     * @param bookDao    to load linked array data from
      */
     public void load(@IntRange(from = 1) final long bookId,
-                     @NonNull final Cursor bookCursor,
-                     @NonNull final BookDao bookDao) {
+                     @NonNull final Cursor bookCursor) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         clearData();
         putAll(bookCursor);
-        // load lists (or init with empty lists)
-        putParcelableArrayList(BKEY_BOOKSHELF_LIST, bookDao.getBookshelvesByBookId(bookId));
-        putParcelableArrayList(BKEY_AUTHOR_LIST, bookDao.getAuthorsByBookId(bookId));
-        putParcelableArrayList(BKEY_SERIES_LIST, bookDao.getSeriesByBookId(bookId));
-        putParcelableArrayList(BKEY_PUBLISHER_LIST, bookDao.getPublishersByBookId(bookId));
-        putParcelableArrayList(BKEY_TOC_LIST, bookDao.getTocEntryByBookId(bookId));
 
-        // do NOT preload the full library object. We hardly ever need it as such.
+        // load lists (or init with empty lists)
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        putParcelableArrayList(BKEY_BOOKSHELF_LIST,
+                               serviceLocator.getBookshelfDao().getBookshelvesByBookId(bookId));
+
+        putParcelableArrayList(BKEY_AUTHOR_LIST,
+                               serviceLocator.getAuthorDao().getAuthorsByBookId(bookId));
+
+        putParcelableArrayList(BKEY_SERIES_LIST,
+                               serviceLocator.getSeriesDao().getSeriesByBookId(bookId));
+
+        putParcelableArrayList(BKEY_PUBLISHER_LIST,
+                               serviceLocator.getPublisherDao().getPublishersByBookId(bookId));
+
+        putParcelableArrayList(BKEY_TOC_LIST,
+                               serviceLocator.getTocEntryDao().getTocEntryByBookId(bookId));
+
+        // do NOT preload the full Calibre library object. We hardly ever need it as such.
         // see #getCalibreLibrary
-//        final CalibreLibrary calibreLibrary = db
-//                .getCalibreLibrary(getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
-//        if (calibreLibrary != null) {
-//            putParcelable(BKEY_CALIBRE_LIBRARY, calibreLibrary);
-//        }
     }
 
     /**
@@ -342,7 +324,7 @@ public class Book
      *
      * @return bundle with book data
      * <p>
-     * <b>Developer:</b> keep in sync with {@link BookDao} .SqlAllBooks#BOOK
+     * <b>Developer:</b> keep in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      */
     @NonNull
     public Bundle duplicate() {
@@ -364,13 +346,15 @@ public class Book
         // KEY_ESID_ISFDB
         // KEY_ESID_GOODREADS
         // ...
+        // Do not copy the Bookshelves list
+        // ...
         // Do not copy these specific dates.
         // KEY_BOOK_DATE_ADDED
         // KEY_DATE_LAST_UPDATED
         // KEY_BOOK_GOODREADS_LAST_SYNC_DATE
 
-        bookData.putString(DBKeys.KEY_TITLE, getString(DBKeys.KEY_TITLE));
-        bookData.putString(DBKeys.KEY_ISBN, getString(DBKeys.KEY_ISBN));
+        bookData.putString(DBKey.KEY_TITLE, getString(DBKey.KEY_TITLE));
+        bookData.putString(DBKey.KEY_ISBN, getString(DBKey.KEY_ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));
@@ -382,137 +366,52 @@ public class Book
                                         getParcelableArrayList(BKEY_TOC_LIST));
 
         // publication data
-        bookData.putString(DBKeys.KEY_PRINT_RUN, getString(DBKeys.KEY_PRINT_RUN));
-        bookData.putLong(DBKeys.KEY_TOC_BITMASK, getLong(DBKeys.KEY_TOC_BITMASK));
-        bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
-                           getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
-        bookData.putDouble(DBKeys.KEY_PRICE_LISTED,
-                           getDouble(DBKeys.KEY_PRICE_LISTED));
-        bookData.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY,
-                           getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
-        bookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION,
-                           getString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
+        bookData.putString(DBKey.KEY_PRINT_RUN, getString(DBKey.KEY_PRINT_RUN));
+        bookData.putLong(DBKey.BITMASK_TOC, getLong(DBKey.BITMASK_TOC));
+        bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
+                           getString(DBKey.DATE_BOOK_PUBLICATION));
+        bookData.putDouble(DBKey.PRICE_LISTED,
+                           getDouble(DBKey.PRICE_LISTED));
+        bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
+                           getString(DBKey.PRICE_LISTED_CURRENCY));
+        bookData.putString(DBKey.DATE_FIRST_PUBLICATION,
+                           getString(DBKey.DATE_FIRST_PUBLICATION));
 
-        bookData.putString(DBKeys.KEY_FORMAT, getString(DBKeys.KEY_FORMAT));
-        bookData.putString(DBKeys.KEY_COLOR, getString(DBKeys.KEY_COLOR));
-        bookData.putString(DBKeys.KEY_GENRE, getString(DBKeys.KEY_GENRE));
-        bookData.putString(DBKeys.KEY_LANGUAGE, getString(DBKeys.KEY_LANGUAGE));
-        bookData.putString(DBKeys.KEY_PAGES, getString(DBKeys.KEY_PAGES));
+        bookData.putString(DBKey.KEY_FORMAT, getString(DBKey.KEY_FORMAT));
+        bookData.putString(DBKey.KEY_COLOR, getString(DBKey.KEY_COLOR));
+        bookData.putString(DBKey.KEY_GENRE, getString(DBKey.KEY_GENRE));
+        bookData.putString(DBKey.KEY_LANGUAGE, getString(DBKey.KEY_LANGUAGE));
+        bookData.putString(DBKey.KEY_PAGES, getString(DBKey.KEY_PAGES));
         // common blurb
-        bookData.putString(DBKeys.KEY_DESCRIPTION, getString(DBKeys.KEY_DESCRIPTION));
+        bookData.putString(DBKey.KEY_DESCRIPTION, getString(DBKey.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(DBKeys.KEY_EDITION_BITMASK, getLong(DBKeys.KEY_EDITION_BITMASK));
+        bookData.putLong(DBKey.BITMASK_EDITION, getLong(DBKey.BITMASK_EDITION));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKeys.KEY_SIGNED, getLong(DBKeys.KEY_SIGNED));
+        bookData.putLong(DBKey.BOOL_SIGNED, getLong(DBKey.BOOL_SIGNED));
+
+        bookData.putDouble(DBKey.KEY_RATING, getDouble(DBKey.KEY_RATING));
+        bookData.putString(DBKey.KEY_PRIVATE_NOTES, getString(DBKey.KEY_PRIVATE_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBKeys.KEY_READ, getLong(DBKeys.KEY_READ));
+        bookData.putLong(DBKey.BOOL_READ, getLong(DBKey.BOOL_READ));
+        bookData.putString(DBKey.DATE_READ_START, getString(DBKey.DATE_READ_START));
+        bookData.putString(DBKey.DATE_READ_END, getString(DBKey.DATE_READ_END));
 
-        bookData.putDouble(DBKeys.KEY_RATING, getDouble(DBKeys.KEY_RATING));
-        bookData.putString(DBKeys.KEY_PRIVATE_NOTES, getString(DBKeys.KEY_PRIVATE_NOTES));
+        bookData.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
+        bookData.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID));
+        bookData.putString(DBKey.PRICE_PAID_CURRENCY,
+                           getString(DBKey.PRICE_PAID_CURRENCY));
 
-        bookData.putInt(DBKeys.KEY_BOOK_CONDITION, getInt(DBKeys.KEY_BOOK_CONDITION));
-        bookData.putInt(DBKeys.KEY_BOOK_CONDITION_COVER, getInt(DBKeys.KEY_BOOK_CONDITION_COVER));
-
-        bookData.putString(DBKeys.KEY_READ_START, getString(DBKeys.KEY_READ_START));
-        bookData.putString(DBKeys.KEY_READ_END, getString(DBKeys.KEY_READ_END));
-        bookData.putString(DBKeys.KEY_DATE_ACQUIRED, getString(DBKeys.KEY_DATE_ACQUIRED));
-        bookData.putDouble(DBKeys.KEY_PRICE_PAID, getDouble(DBKeys.KEY_PRICE_PAID));
-        bookData.putString(DBKeys.KEY_PRICE_PAID_CURRENCY,
-                           getString(DBKeys.KEY_PRICE_PAID_CURRENCY));
+        bookData.putInt(DBKey.KEY_BOOK_CONDITION, getInt(DBKey.KEY_BOOK_CONDITION));
+        bookData.putInt(DBKey.KEY_BOOK_CONDITION_COVER, getInt(DBKey.KEY_BOOK_CONDITION_COVER));
 
         return bookData;
     }
 
-    @NonNull
-    public EntityStage.Stage getStage() {
-        return mStage.getStage();
-    }
-
-    public void setStage(@NonNull final EntityStage.Stage stage) {
-        mStage.setStage(stage);
-    }
-
-    /**
-     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * <strong>If no file found, a jpg place holder is returned.</strong>
-     * <p>
-     * Keep in mind that internally we always use PNG compression (except for the cache).
-     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
-     * <p>
-     * The index only gets appended to the name if it's > 0.
-     *
-     * @param cIdx 0..n image index
-     *
-     * @return The File object for existing files, or a new jpg placeholder.
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     * @see #getUuidCoverFile(int)
-     */
-    @NonNull
-    public File getUuidCoverFileOrNew(@IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
-        final File coverDir = AppDir.Covers.getDir();
-
-        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
-
-        final String name;
-        if (cIdx > 0) {
-            name = uuid + "_" + cIdx;
-        } else {
-            name = uuid + "";
-        }
-
-        final File jpg = new File(coverDir, name + ".jpg");
-        if (jpg.exists()) {
-            return jpg;
-        }
-        // could be a png
-        final File png = new File(coverDir, name + ".png");
-        if (png.exists()) {
-            return png;
-        }
-
-        // we need a new file, return a placeholder with the jpg extension
-        return jpg;
-    }
-
-    @Nullable
-    public File getUuidCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
-
-        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
-        return getUuidCoverFile(uuid, cIdx);
-    }
-
-    @Override
-    public char getType() {
-        return AuthorWork.TYPE_BOOK;
-    }
-
-    @NonNull
-    @Override
-    public PartialDate getFirstPublicationDate() {
-        return new PartialDate(getString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
-    }
-
-    /**
-     * Get the parsed last update date.
-     * <p>
-     * Note this method can return {@code null} while in theory, the date will
-     * <strong>always</strong> be valid but as usual we code with paranoia in mind.
-     *
-     * @param context Current context
-     *
-     * @return the date
-     */
-    @Nullable
-    public LocalDateTime getLastUpdateUtcDate(@NonNull final Context context) {
-        return DateParser.getInstance(context).parseISO(getString(DBKeys.KEY_UTC_LAST_UPDATED));
-    }
 
     /**
      * Check if this book has not been saved to the database yet.
@@ -530,7 +429,7 @@ public class Book
      */
     @Override
     public long getId() {
-        return getLong(DBKeys.KEY_PK_ID);
+        return getLong(DBKey.PK_ID);
     }
 
     /**
@@ -540,7 +439,7 @@ public class Book
      */
     @Override
     public void setId(final long id) {
-        putLong(DBKeys.KEY_PK_ID, id);
+        putLong(DBKey.PK_ID, id);
     }
 
     /**
@@ -551,7 +450,7 @@ public class Book
     @Override
     @NonNull
     public String getTitle() {
-        return getString(DBKeys.KEY_TITLE);
+        return getString(DBKey.KEY_TITLE);
     }
 
     /**
@@ -592,19 +491,19 @@ public class Book
      * @return the Locale.
      */
     @NonNull
-    private Locale getAndUpdateLocale(@NonNull final Context context,
-                                      @NonNull final Locale fallbackLocale,
-                                      final boolean updateLanguage) {
+    public Locale getAndUpdateLocale(@NonNull final Context context,
+                                     @NonNull final Locale fallbackLocale,
+                                     final boolean updateLanguage) {
         Locale bookLocale = null;
-        if (contains(DBKeys.KEY_LANGUAGE)) {
-            final String lang = getString(DBKeys.KEY_LANGUAGE);
+        if (contains(DBKey.KEY_LANGUAGE)) {
+            final String lang = getString(DBKey.KEY_LANGUAGE);
 
             bookLocale = AppLocale.getInstance().getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
             } else if (updateLanguage) {
-                putString(DBKeys.KEY_LANGUAGE, lang);
+                putString(DBKey.KEY_LANGUAGE, lang);
             }
         }
 
@@ -616,6 +515,7 @@ public class Book
         }
     }
 
+
     /**
      * Get the first author in the list of authors for this book.
      *
@@ -625,21 +525,6 @@ public class Book
     public Author getPrimaryAuthor() {
         final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
         return authors.isEmpty() ? null : authors.get(0);
-    }
-
-    /**
-     * Update author details from DB.
-     *
-     * @param context Current context
-     */
-    public void refreshAuthorList(@NonNull final Context context) {
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        final Locale bookLocale = getLocale(context);
-        final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
-        for (final Author author : list) {
-            authorDao.refresh(context, author, bookLocale);
-        }
     }
 
     /**
@@ -654,21 +539,6 @@ public class Book
     }
 
     /**
-     * Update Series details from DB.
-     *
-     * @param context Current context
-     */
-    public void refreshSeriesList(@NonNull final Context context) {
-
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-        final Locale bookLocale = getLocale(context);
-        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
-        for (final Series series : list) {
-            seriesDao.refresh(context, series, bookLocale);
-        }
-    }
-
-    /**
      * Get the first Publisher in the list of Publishers for this book.
      *
      * @return the Publisher, or {@code null} if none present
@@ -679,20 +549,12 @@ public class Book
         return list.isEmpty() ? null : list.get(0);
     }
 
-    /**
-     * Update Publisher details from DB.
-     *
-     * @param context Current context
-     */
-    public void refreshPublishersList(@NonNull final Context context) {
-
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-        final Locale bookLocale = getLocale(context);
-        final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
-        for (final Publisher publisher : list) {
-            publisherDao.refresh(context, publisher, bookLocale);
-        }
+    @NonNull
+    @Override
+    public PartialDate getFirstPublicationDate() {
+        return new PartialDate(getString(DBKey.DATE_FIRST_PUBLICATION));
     }
+
 
     @Nullable
     public CalibreLibrary getCalibreLibrary() {
@@ -704,7 +566,7 @@ public class Book
             // but if not, go explicitly fetch it.
             final CalibreLibrary library = ServiceLocator
                     .getInstance().getCalibreLibraryDao()
-                    .getLibrary(getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY));
+                    .getLibrary(getLong(DBKey.FK_CALIBRE_LIBRARY));
 
             if (library != null) {
                 // store for reuse
@@ -716,17 +578,18 @@ public class Book
 
     public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
         if (library != null) {
-            putLong(DBKeys.KEY_FK_CALIBRE_LIBRARY, library.getId());
+            putLong(DBKey.FK_CALIBRE_LIBRARY, library.getId());
             putParcelable(BKEY_CALIBRE_LIBRARY, library);
         } else {
-            remove(DBKeys.KEY_FK_CALIBRE_LIBRARY);
+            remove(DBKey.FK_CALIBRE_LIBRARY);
             remove(BKEY_CALIBRE_LIBRARY);
 
-            remove(DBKeys.KEY_CALIBRE_BOOK_ID);
-            remove(DBKeys.KEY_CALIBRE_BOOK_UUID);
-            remove(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+            remove(DBKey.KEY_CALIBRE_BOOK_ID);
+            remove(DBKey.KEY_CALIBRE_BOOK_UUID);
+            remove(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
         }
     }
+
 
     /**
      * Get the name of the loanee (if any).
@@ -736,8 +599,8 @@ public class Book
     @NonNull
     public String getLoanee() {
         // We SHOULD have it...
-        if (contains(DBKeys.KEY_LOANEE)) {
-            return getString(DBKeys.KEY_LOANEE);
+        if (contains(DBKey.KEY_LOANEE)) {
+            return getString(DBKey.KEY_LOANEE);
 
         } else {
             // but if not, go explicitly fetch it.
@@ -746,7 +609,7 @@ public class Book
                 loanee = "";
             }
             // store for reuse
-            putString(DBKeys.KEY_LOANEE, loanee);
+            putString(DBKey.KEY_LOANEE, loanee);
             return loanee;
         }
     }
@@ -755,363 +618,85 @@ public class Book
         return getLoanee().isEmpty();
     }
 
+
     /**
      * Toggle the read-status for this book.
      *
-     * @param bookDao Database Access
-     *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    public boolean toggleRead(@NonNull final BookDao bookDao) {
-        return setRead(bookDao, !getBoolean(DBKeys.KEY_READ));
+    public boolean toggleRead() {
+        return setRead(!getBoolean(DBKey.BOOL_READ));
     }
 
     /**
      * Update the 'read' status of a book in the database + sets the 'read end' to today.
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param bookDao Database Access
-     * @param isRead  Flag for the 'read' status
+     * @param isRead Flag for the 'read' status
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    private boolean setRead(@NonNull final BookDao bookDao,
-                            final boolean isRead) {
-        final boolean old = getBoolean(DBKeys.KEY_READ);
+    private boolean setRead(final boolean isRead) {
+        final boolean old = getBoolean(DBKey.BOOL_READ);
 
-        if (bookDao.setBookRead(this, isRead)) {
+        if (ServiceLocator.getInstance().getBookDao().setRead(this, isRead)) {
             return isRead;
         }
 
         return old;
     }
 
+
     /**
-     * Ensure the book has a bookshelf.
-     * If the book is not on any Bookshelf, add the preferred/current bookshelf
+     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
+     * <strong>If no file found, a jpg place holder is returned.</strong>
+     * <p>
+     * Keep in mind that internally we always use PNG compression (except for the cache).
+     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
+     * <p>
+     * The index only gets appended to the name if it's > 0.
      *
-     * @param context Current context
-     */
-    public void ensureBookshelf(@NonNull final Context context) {
-        final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
-        if (list.isEmpty()) {
-            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
-        }
-    }
-
-    /**
-     * Ensure the book has a language.
-     * If the book does not, add the preferred/current language the user is using the app in.
+     * @param cIdx 0..n image index
      *
-     * @param context Current context
-     */
-    public void ensureLanguage(@NonNull final Context context) {
-        if (getString(DBKeys.KEY_LANGUAGE).isEmpty()) {
-            putString(DBKeys.KEY_LANGUAGE,
-                      AppLocale.getInstance().getUserLocale(context).getISO3Language());
-        }
-    }
-
-    /**
-     * Add validators.
-     */
-    public void addValidators() {
-
-        addValidator(DBKeys.KEY_TITLE,
-                     NON_BLANK_VALIDATOR, R.string.lbl_title);
-        addValidator(BKEY_AUTHOR_LIST,
-                     NON_BLANK_VALIDATOR, R.string.lbl_author);
-
-        addValidator(DBKeys.KEY_LANGUAGE,
-                     NON_BLANK_VALIDATOR, R.string.lbl_language);
-
-        addValidator(DBKeys.KEY_EDITION_BITMASK,
-                     LONG_VALIDATOR, R.string.lbl_edition);
-        addValidator(DBKeys.KEY_TOC_BITMASK,
-                     LONG_VALIDATOR, R.string.lbl_table_of_content);
-
-        addValidator(DBKeys.KEY_PRICE_LISTED,
-                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_listed);
-        addValidator(DBKeys.KEY_PRICE_PAID,
-                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
-
-        addCrossValidator((context, book) -> {
-            final String start = book.getString(DBKeys.KEY_READ_START);
-            if (start.isEmpty()) {
-                return;
-            }
-            final String end = book.getString(DBKeys.KEY_READ_END);
-            if (end.isEmpty()) {
-                return;
-            }
-            if (start.compareToIgnoreCase(end) > 0) {
-                throw new ValidatorException(context.getString(R.string.vldt_read_start_after_end));
-            }
-        });
-    }
-
-
-    /**
-     * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link BookDao#insert(Context, Book, int)}
-     * and {@link BookDao#update(Context, Book, int)}.
+     * @return The File object for existing files, or a new jpg placeholder.
      *
-     * @param context Current context
-     * @param isNew   {@code true} if the book is new
+     * @throws ExternalStorageException if the Shared Storage media is not available
+     * @see #getUuidCoverFile(int)
      */
-    public void preprocessForStoring(@NonNull final Context context,
-                                     final boolean isNew) {
+    @NonNull
+    public File getUuidCoverFileOrNew(@IntRange(from = 0, to = 1) final int cIdx)
+            throws ExternalStorageException {
+        final File coverDir = AppDir.Covers.getDir();
 
-        // Handle Language field FIRST, we need it for _OB fields.
-        final Locale bookLocale = getAndUpdateLocale(
-                context, AppLocale.getInstance().getUserLocale(context), true);
+        final String uuid = getString(DBKey.KEY_BOOK_UUID);
 
-        // Handle TITLE
-        if (contains(DBKeys.KEY_TITLE)) {
-            final String obTitle = reorderTitleForSorting(context, bookLocale);
-            putString(DBKeys.KEY_TITLE_OB, BaseDaoImpl
-                    .encodeOrderByColumn(obTitle, bookLocale));
+        final String name;
+        if (cIdx > 0) {
+            name = uuid + "_" + cIdx;
+        } else {
+            name = uuid + "";
         }
 
-        // Handle TOC_BITMASK only, no handling of actual titles here,
-        // but making sure TOC_MULTIPLE_AUTHORS is correct.
-        final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_LIST);
-        if (!tocEntries.isEmpty()) {
-            @TocBits
-            long type = getLong(DBKeys.KEY_TOC_BITMASK);
-            if (TocEntry.hasMultipleAuthors(tocEntries)) {
-                type |= TOC_MULTIPLE_AUTHORS;
-            }
-            putLong(DBKeys.KEY_TOC_BITMASK, type);
+        final File jpg = new File(coverDir, name + ".jpg");
+        if (jpg.exists()) {
+            return jpg;
+        }
+        // could be a png
+        final File png = new File(coverDir, name + ".png");
+        if (png.exists()) {
+            return png;
         }
 
-        // make sure we only store valid bits
-        if (contains(DBKeys.KEY_EDITION_BITMASK)) {
-            final long editions = getLong(DBKeys.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
-            putLong(DBKeys.KEY_EDITION_BITMASK, editions);
-        }
-
-        // cleanup/build all price related fields
-        preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED,
-                        DBKeys.KEY_PRICE_LISTED_CURRENCY);
-        preprocessPrice(bookLocale, DBKeys.KEY_PRICE_PAID,
-                        DBKeys.KEY_PRICE_PAID_CURRENCY);
-
-        // replace 'T' by ' ' and truncate pure date fields if needed
-        preprocessDates();
-
-        // make sure there are only valid external id's present
-        preprocessExternalIds(isNew);
-
-        // lastly, cleanup null and blank fields as needed.
-        preprocessNullsAndBlanks(isNew);
+        // we need a new file, return a placeholder with the jpg extension
+        return jpg;
     }
 
-    /**
-     * Helper for {@link #preprocessForStoring(Context, boolean)}.
-     * <p>
-     *
-     * @param bookLocale  the book Locale
-     * @param valueKey    key for the value field
-     * @param currencyKey key for the currency field
-     */
-    @VisibleForTesting
-    void preprocessPrice(@NonNull final Locale bookLocale,
-                         @NonNull final String valueKey,
-                         @NonNull final String currencyKey) {
-        // handle a price without a currency.
-        if (contains(valueKey) && !contains(currencyKey)) {
-            // we presume the user bought the book in their own currency.
-            final Money money = new Money(bookLocale, getString(valueKey));
-            if (money.getCurrency() != null) {
-                putDouble(valueKey, money.doubleValue());
-                putString(currencyKey, money.getCurrency().toUpperCase(bookLocale));
-                return;
-            }
-            // else just leave the original in the data
-        }
+    @Nullable
+    public File getUuidCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
-        // Make sure currencies are uppercase
-        if (contains(currencyKey)) {
-            putString(currencyKey, getString(currencyKey).toUpperCase(bookLocale));
-        }
+        final String uuid = getString(DBKey.KEY_BOOK_UUID);
+        return getUuidCoverFile(uuid, cIdx);
     }
-
-    /**
-     * Helper for {@link #preprocessForStoring(Context, boolean)}.
-     * <p>
-     * Truncate Date fields to being pure dates without a time segment.
-     * Replaces 'T' with ' ' to please SqLite/SQL datetime standards.
-     * <p>
-     * <strong>Note 1:</strong>: We do not fully parse each date string,
-     * to verify/correct as an SQLite datetime string.
-     * It is assumed that during normal logic flow this is already done.
-     * The 'T' is the exception as that is easier to handle here for all fields.
-     *
-     * <strong>Note 2:</strong>: such a full parse should be done during import operations.
-     */
-    @VisibleForTesting
-    void preprocessDates() {
-        final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
-
-        // Partial/Full Date strings
-        domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATE))
-               .map(Domain::getName)
-               .filter(this::contains)
-               .forEach(key -> {
-                   final String date = getString(key);
-                   // This is very crude... we simply truncate to 10 characters maximum
-                   // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
-                   if (date.length() > 10) {
-                       putString(key, date.substring(0, 10));
-                   }
-               });
-
-        // Full UTC based DateTime strings
-        domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATETIME))
-               .map(Domain::getName)
-               .filter(this::contains)
-               .forEach(key -> {
-                   final String date = getString(key);
-                   // Again, very crude logic... we simply check for the 11th char being a 'T'
-                   // and if so, replace it with a space
-                   if (date.length() > 10 && date.charAt(10) == 'T') {
-                       putString(key, T.matcher(date).replaceFirst(" "));
-                   }
-               });
-    }
-
-    /**
-     * Helper for {@link #preprocessForStoring(Context, boolean)}.
-     * <p>
-     * Processes the external id keys.
-     * <p>
-     * For new books, REMOVE zero values, empty strings AND null values
-     * Existing books, REPLACE zero values and empty string with a {@code null}
-     * <p>
-     * Invalid values are always removed.
-     * <p>
-     * Further processing should be done in {@link #preprocessNullsAndBlanks(boolean)}.
-     *
-     * @param isNew {@code true} if the book is new
-     */
-    @VisibleForTesting
-    void preprocessExternalIds(final boolean isNew) {
-        final List<Domain> domains = SearchEngineRegistry.getInstance().getExternalIdDomains();
-
-        domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_INTEGER))
-               .map(Domain::getName)
-               .filter(this::contains)
-               .forEach(key -> {
-                   final Object o = get(key);
-                   try {
-                       if (isNew) {
-                           // For new books:
-                           if (o == null) {
-                               // remove null values
-                               remove(key);
-                           } else {
-                               final long v = getLong(key);
-                               if (v < 1) {
-                                   // remove zero values
-                                   remove(key);
-                               }
-                           }
-                       } else {
-                           // for existing books, leave null values as-is
-                           if (o != null) {
-                               final long v = getLong(key);
-                               if (v < 1) {
-                                   // replace zero values with a null
-                                   putNull(key);
-                               }
-                           }
-                       }
-                   } catch (@NonNull final NumberFormatException e) {
-                       // always remove illegal input
-                       remove(key);
-
-                       if (BuildConfig.DEBUG /* always */) {
-                           Logger.d(TAG, "preprocessExternalIds", "NumberFormatException"
-                                                                  + "|name=" + key
-                                                                  + "|value=`" + o + '`');
-                       }
-                   }
-               });
-
-        domains.stream()
-               .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_TEXT))
-               .map(Domain::getName)
-               .filter(this::contains)
-               .forEach(key -> {
-                   final Object o = get(key);
-                   if (isNew) {
-                       // for new books,
-                       if (o == null) {
-                           // remove null values
-                           remove(key);
-                       } else {
-                           final String v = o.toString();
-                           if (v.isEmpty() || "0".equals(v)) {
-                               // remove empty/zero values
-                               remove(key);
-                           }
-                       }
-                   } else {
-                       // for existing books, leave null values as-is
-                       if (o != null) {
-                           final String v = o.toString();
-                           if (v.isEmpty() || "0".equals(v)) {
-                               // replace "0" and empty strings with a null
-                               putNull(key);
-                           }
-                       }
-                   }
-               });
-    }
-
-    /**
-     * Helper for {@link #preprocessForStoring(Context, boolean)}.
-     *
-     * <ul>Fields in this Book, which have a default in the database and
-     *      <li>which are null but not allowed to be null</li>
-     *      <li>which are null/empty (i.e. blank) but not allowed to be blank</li>
-     * </ul>
-     * <p>
-     * For new books, REMOVE those keys.
-     * Existing books, REPLACE those keys with the default value for the column.
-     *
-     * @param isNew {@code true} if the book is new
-     */
-    @VisibleForTesting
-    void preprocessNullsAndBlanks(final boolean isNew) {
-        DBDefinitions.TBL_BOOKS
-                .getDomains()
-                .stream()
-                .filter(domain -> contains(domain.getName()) && domain.hasDefault())
-                .forEach(domain -> {
-                    final Object o = get(domain.getName());
-                    if (
-                        // Fields which are null but not allowed to be null
-                            (o == null && domain.isNotNull())
-                            ||
-                            // Fields which are null/empty (i.e. blank) but not allowed to be blank
-                            ((o == null || o.toString().isEmpty()) && domain.isNotBlank())
-                    ) {
-                        if (isNew) {
-                            remove(domain.getName());
-                        } else {
-                            // restore the column to its default value.
-                            //noinspection ConstantConditions
-                            putString(domain.getName(), domain.getDefault());
-                        }
-                    }
-                });
-    }
-
 
     /**
      * Get the <strong>current</strong> cover file for this book.
@@ -1136,7 +721,7 @@ public class Book
             }
         } else {
             // Get the permanent, UUID based, cover file for this book.
-            final String uuid = getString(DBKeys.KEY_BOOK_UUID);
+            final String uuid = getString(DBKey.KEY_BOOK_UUID);
             if (!uuid.isEmpty()) {
                 final String name;
                 if (cIdx > 0) {
@@ -1179,7 +764,7 @@ public class Book
      * If there is a permanent cover, we get a <strong>copy of that one</strong>.
      * If there is no cover, we get a new File object with a temporary name.
      * <p>
-     * Location: {@link AppDir#Cache}
+     * Location: {@link AppDir#Temp}
      *
      * @param cIdx 0..n image index
      *
@@ -1193,7 +778,7 @@ public class Book
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC in this method.
-        final File coverFile = new File(AppDir.Cache.getDir(), System.nanoTime() + ".jpg");
+        final File coverFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
 
         final File uuidFile = getCoverFile(cIdx);
         if (uuidFile != null && uuidFile.exists()) {
@@ -1215,16 +800,14 @@ public class Book
     /**
      * Update the book cover with the given file.
      *
-     * @param bookDao Database Access
-     * @param cIdx    0..n image index
-     * @param file    cover file or {@code null} to delete the cover
+     * @param cIdx 0..n image index
+     * @param file cover file or {@code null} to delete the cover
      *
      * @return the File after processing (either original, or a renamed/moved file)
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
-    public File setCover(@NonNull final BookDao bookDao,
-                         @IntRange(from = 0, to = 1) final int cIdx,
+    public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file) {
 
         if (mStage.getStage() == EntityStage.Stage.WriteAble
@@ -1262,7 +845,7 @@ public class Book
 
         } else {
             // we're in read-only mode, use the UUID storage based file name
-            final String uuid = getString(DBKeys.KEY_BOOK_UUID);
+            final String uuid = getString(DBKey.KEY_BOOK_UUID);
             SanityCheck.requireValue(uuid, "uuid");
 
             // the file to return from this method, after the incoming file has been processed
@@ -1317,68 +900,183 @@ public class Book
                 }
             }
 
-            bookDao.touchBook(this);
+            ServiceLocator.getInstance().getBookDao().touch(this);
 
             return destination;
         }
     }
 
+
     /**
-     * Called during {@link BookDao#insert(Context, Book, int)}
-     * and {@link BookDao#update(Context, Book, int)}.
-     *
-     * @return {@code false} on failure
+     * Add validators.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean storeCovers() {
+    public void addValidators() {
 
-        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
+        addValidator(DBKey.KEY_TITLE,
+                     NON_BLANK_VALIDATOR, R.string.lbl_title);
+        addValidator(BKEY_AUTHOR_LIST,
+                     NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        if (BuildConfig.DEBUG /* always */) {
-            // the UUID should always be valid here
-            SanityCheck.requireValue(uuid, "uuid");
+        addValidator(DBKey.KEY_LANGUAGE,
+                     NON_BLANK_VALIDATOR, R.string.lbl_language);
+
+        addValidator(DBKey.BITMASK_EDITION,
+                     LONG_VALIDATOR, R.string.lbl_edition);
+        addValidator(DBKey.BITMASK_TOC,
+                     LONG_VALIDATOR, R.string.lbl_table_of_content);
+
+        addValidator(DBKey.PRICE_LISTED,
+                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_listed);
+        addValidator(DBKey.PRICE_PAID,
+                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
+
+        addCrossValidator((context, book) -> {
+            final String start = book.getString(DBKey.DATE_READ_START);
+            if (start.isEmpty()) {
+                return;
+            }
+            final String end = book.getString(DBKey.DATE_READ_END);
+            if (end.isEmpty()) {
+                return;
+            }
+            if (start.compareToIgnoreCase(end) > 0) {
+                throw new ValidatorException(context.getString(R.string.vldt_read_start_after_end));
+            }
+        });
+    }
+
+    /**
+     * Ensure the book has a bookshelf.
+     * If the book is not on any Bookshelf, add the preferred/current bookshelf
+     *
+     * @param context Current context
+     */
+    public void ensureBookshelf(@NonNull final Context context) {
+        final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+        if (list.isEmpty()) {
+            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
         }
+    }
 
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
-            if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
-                final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
+    /**
+     * Ensure the book has a language.
+     * If the book does not, add the preferred/current language the user is using the app in.
+     *
+     * @param context Current context
+     */
+    public void ensureLanguage(@NonNull final Context context) {
+        if (getString(DBKey.KEY_LANGUAGE).isEmpty()) {
+            putString(DBKey.KEY_LANGUAGE,
+                      AppLocale.getInstance().getUserLocale(context).getISO3Language());
+        }
+    }
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "storeCovers",
-                             "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
-                }
 
-                if (fileSpec.isEmpty()) {
-                    // An empty fileSpec indicates we need to delete the cover
-                    FileUtils.delete(getUuidCoverFile(cIdx));
-                    // Delete from the cache. And yes, we also delete the ones
-                    // where != index, but we don't care; it's a cache.
-                    if (ImageUtils.isImageCachingEnabled()) {
-                        ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
-                    }
-                } else {
-                    // Rename the temp file to the uuid permanent file name
-                    final File file = new File(fileSpec);
-                    try {
-                        final File destination = getUuidCoverFileOrNew(cIdx);
-                        FileUtils.rename(file, destination);
-                    } catch (@NonNull final IOException e) {
-                        Logger.error(TAG, e, "storeCovers|bookId=" + getId() + "|cIdx=" + cIdx);
-                        return false;
-                    }
-                }
+    @NonNull
+    public EntityStage.Stage getStage() {
+        return mStage.getStage();
+    }
 
-                remove(BKEY_TMP_FILE_SPEC[cIdx]);
-            } else {
-                // If the key is NOT present, we don't need to do anything!
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                    Logger.d(TAG, "storeCovers",
-                             "BKEY_TMP_FILE_SPEC[" + cIdx + "]=<not present>");
-                }
+    public void setStage(@NonNull final EntityStage.Stage stage) {
+        mStage.setStage(stage);
+    }
+
+    /** Used exclusively during display / populating the Views when loading the book. */
+    public void lockStage() {
+        mStage.lock();
+    }
+
+    /** Used exclusively during display / populating the Views when loading the book. */
+    public void unlockStage() {
+        mStage.unlock();
+    }
+
+
+    public void pruneAuthors(@NonNull final Context context,
+                             final boolean lookupLocale) {
+        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
+        if (!authors.isEmpty()) {
+            if (Author.pruneList(authors, context, lookupLocale, getLocale(context))) {
+                mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
 
-        return true;
+        // No authors ? Fallback to a potential failed search result
+        // which would contain whatever the user searched for.
+        if (authors.isEmpty()) {
+            final String searchText = getString(
+                    SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            if (!searchText.isEmpty()) {
+                authors.add(Author.from(searchText));
+                remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+                mStage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+    }
+
+    /**
+     * Update author details from DB.
+     *
+     * @param context Current context
+     */
+    public void refreshAuthorList(@NonNull final Context context) {
+
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Locale bookLocale = getLocale(context);
+        final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
+        for (final Author author : list) {
+            authorDao.refresh(context, author, bookLocale);
+        }
+    }
+
+    public void pruneSeries(@NonNull final Context context,
+                            final boolean lookupLocale) {
+        final ArrayList<Series> series = getParcelableArrayList(BKEY_SERIES_LIST);
+        if (!series.isEmpty()) {
+            if (Series.pruneList(series, context, lookupLocale, getLocale(context))) {
+                mStage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+    }
+
+    /**
+     * Update Series details from DB.
+     *
+     * @param context Current context
+     */
+    public void refreshSeriesList(@NonNull final Context context) {
+
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        final Locale bookLocale = getLocale(context);
+        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
+        for (final Series series : list) {
+            seriesDao.refresh(context, series, bookLocale);
+        }
+    }
+
+    public void prunePublishers(@NonNull final Context context,
+                                final boolean lookupLocale) {
+        final ArrayList<Publisher> publishers = getParcelableArrayList(BKEY_PUBLISHER_LIST);
+        if (!publishers.isEmpty()) {
+            if (Publisher.pruneList(publishers, context, lookupLocale, getLocale(context))) {
+                mStage.setStage(EntityStage.Stage.Dirty);
+            }
+        }
+    }
+
+    /**
+     * Update Publisher details from DB.
+     *
+     * @param context Current context
+     */
+    public void refreshPublishersList(@NonNull final Context context) {
+
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+        final Locale bookLocale = getLocale(context);
+        final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
+        for (final Publisher publisher : list) {
+            publisherDao.refresh(context, publisher, bookLocale);
+        }
     }
 
 
@@ -1392,8 +1090,8 @@ public class Book
      */
     @NonNull
     public Intent getShareIntent(@NonNull final Context context) {
-        final String title = getString(DBKeys.KEY_TITLE);
-        final String author = getString(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+        final String title = getString(DBKey.KEY_TITLE);
+        final String author = getString(DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Series series = getPrimarySeries();
         final String seriesStr;
@@ -1405,7 +1103,7 @@ public class Book
         }
 
         //remove trailing 0's
-        final double rating = getDouble(DBKeys.KEY_RATING);
+        final double rating = getDouble(DBKey.KEY_RATING);
         final String ratingStr;
         if (rating > 0) {
             // force rounding
@@ -1439,56 +1137,9 @@ public class Book
                                     context.getString(R.string.whichSendApplication));
     }
 
-    /** Used exclusively during display / populating the Views when loading the book. */
-    public void lockStage() {
-        mStage.lock();
-    }
-
-    /** Used exclusively during display / populating the Views when loading the book. */
-    public void unlockStage() {
-        mStage.unlock();
-    }
-
-    public void pruneAuthors(@NonNull final Context context,
-                             final boolean lookupLocale) {
-        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
-        if (!authors.isEmpty()) {
-            if (Author.pruneList(authors, context, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
-            }
-        }
-
-        // No authors ? Fallback to a potential failed search result
-        // which would contain whatever the user searched for.
-        if (authors.isEmpty()) {
-            final String searchText = getString(
-                    SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-            if (!searchText.isEmpty()) {
-                authors.add(Author.from(searchText));
-                remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-                mStage.setStage(EntityStage.Stage.Dirty);
-            }
-        }
-    }
-
-    public void pruneSeries(@NonNull final Context context,
-                            final boolean lookupLocale) {
-        final ArrayList<Series> series = getParcelableArrayList(BKEY_SERIES_LIST);
-        if (!series.isEmpty()) {
-            if (Series.pruneList(series, context, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
-            }
-        }
-    }
-
-    public void prunePublishers(@NonNull final Context context,
-                                final boolean lookupLocale) {
-        final ArrayList<Publisher> publishers = getParcelableArrayList(BKEY_PUBLISHER_LIST);
-        if (!publishers.isEmpty()) {
-            if (Publisher.pruneList(publishers, context, lookupLocale, getLocale(context))) {
-                mStage.setStage(EntityStage.Stage.Dirty);
-            }
-        }
+    @Override
+    public char getType() {
+        return AuthorWork.TYPE_BOOK;
     }
 
     @Retention(RetentionPolicy.SOURCE)

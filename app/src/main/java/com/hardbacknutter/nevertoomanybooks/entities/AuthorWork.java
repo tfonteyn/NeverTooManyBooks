@@ -24,12 +24,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Abstracts/shield a {@link Book} / {@link TocEntry} for use in a list
- * of works by an {@link Author}. i.e. {@link BookDao#getAuthorWorks}.
+ * of works by an {@link Author}. i.e. {@link AuthorDao#getAuthorWorks}.
  */
 public interface AuthorWork {
 
