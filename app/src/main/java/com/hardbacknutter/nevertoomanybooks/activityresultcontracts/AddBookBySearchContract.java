@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
@@ -54,7 +54,7 @@ public class AddBookBySearchContract
                                           final long bookId,
                                           final boolean modified) {
         final Intent resultIntent = new Intent()
-                .putExtra(DBKeys.KEY_PK_ID, bookId)
+                .putExtra(DBKey.PK_ID, bookId)
                 .putExtra(Entity.BKEY_DATA_MODIFIED, modified);
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();

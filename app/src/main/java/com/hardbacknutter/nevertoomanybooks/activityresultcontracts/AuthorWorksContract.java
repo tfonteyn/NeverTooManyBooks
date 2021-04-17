@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -55,8 +55,8 @@ public class AuthorWorksContract
                                @NonNull final Input input) {
         return new Intent(context, FragmentHostActivity.class)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AuthorWorksFragment.TAG)
-                .putExtra(DBKeys.KEY_PK_ID, input.authorId)
-                .putExtra(DBKeys.KEY_FK_BOOKSHELF, input.bookshelfId);
+                .putExtra(DBKey.PK_ID, input.authorId)
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }
 
     @Override

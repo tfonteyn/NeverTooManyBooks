@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class EditBookByIdContract
@@ -44,7 +44,7 @@ public class EditBookByIdContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Long bookId) {
         return new Intent(context, EditBookActivity.class)
-                .putExtra(DBKeys.KEY_PK_ID, bookId.longValue());
+                .putExtra(DBKey.PK_ID, bookId.longValue());
     }
 
     @Override

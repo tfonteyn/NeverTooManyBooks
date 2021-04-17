@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.SearchFtsFragment;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -57,8 +57,8 @@ public class SearchFtsContract
                 // pass the book ID's for the list
                 .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                 // pass these for displaying to the user
-                .putExtra(DBKeys.KEY_TITLE, titleSearchText)
-                .putExtra(DBKeys.KEY_SERIES_TITLE, seriesTitleSearchText)
+                .putExtra(DBKey.KEY_TITLE, titleSearchText)
+                .putExtra(DBKey.KEY_SERIES_TITLE, seriesTitleSearchText)
                 .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, authorSearchText)
                 .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, publisherNameSearchText)
                 .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, keywordsSearchText);
