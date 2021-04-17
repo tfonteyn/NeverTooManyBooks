@@ -55,7 +55,7 @@
     <string name="lbl_import_books_option_all">Όλα τα βιβλία.</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="action_add">Προσθήκη</string>
-    <string name="X_action_exit">Έξοδος</string>
+    <string name="action_exit">Έξοδος</string>
     <string name="action_merge">Συγχώνευση</string>
     <string name="action_save">Αποθήκευση</string>
     <string name="X_btn_continue_edit">Συνέχεια Επεξεργασίας</string>
@@ -735,4 +735,7 @@
     <string name="lbl_owned">Ιδιοκτησία</string>
     <string name="lbl_created">Δημιουργήθηκε</string>
     <string name="lbl_wishlist">Επιθυμητά</string>
+    <string name="action_move">Μετακίνηση</string>
+    <string name="lbl_moving_data">Μετακίνηση δεδομένων</string>
+    <string name="lbl_folder">Φάκελος</string>
 </resources>

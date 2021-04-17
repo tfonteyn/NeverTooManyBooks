@@ -55,7 +55,7 @@
     <string name="lbl_import_books_option_all">Tüm kitaplar</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="action_add">Ekle</string>
-    <string name="X_action_exit">Çıkış</string>
+    <string name="action_exit">Çıkış</string>
     <string name="action_merge">Birleşmek</string>
     <string name="action_save">Kaydet</string>
     <string name="X_btn_continue_edit">Düzenlemeyi sürdür</string>
@@ -730,4 +730,7 @@
     <string name="lbl_created">Oluşturuldu</string>
     <string name="lbl_owned">Sahip olunan</string>
     <string name="lbl_wishlist">İstek Listesi</string>
+    <string name="action_move">Taşı</string>
+    <string name="lbl_moving_data">Veriler taşınıyor</string>
+    <string name="lbl_folder">Klasör</string>
 </resources>

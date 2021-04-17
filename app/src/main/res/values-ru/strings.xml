@@ -54,7 +54,7 @@
     <string name="lbl_import_books_option_all">Все книги</string>
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="action_add">Добавить</string>
-    <string name="X_action_exit">Выход</string>
+    <string name="action_exit">Выход</string>
     <string name="action_merge">сливаться</string>
     <string name="action_save">Сохранить</string>
     <string name="X_btn_continue_edit">Продолжить редактирование</string>
@@ -728,4 +728,7 @@
     <string name="lbl_created">Создано</string>
     <string name="lbl_owned">В собственности</string>
     <string name="lbl_wishlist">Список желаний</string>
+    <string name="action_move">Перенести</string>
+    <string name="lbl_moving_data">Перенос данных</string>
+    <string name="lbl_folder">Папка</string>
 </resources>

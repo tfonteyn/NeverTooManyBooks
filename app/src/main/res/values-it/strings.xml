@@ -55,7 +55,7 @@
     <string name="lbl_import_books_option_all">Tutti i libri</string>
     <string name="bookshelf_my_books">I miei libri</string>
     <string name="action_add">Aggiungi</string>
-    <string name="X_action_exit">Esci</string>
+    <string name="action_exit">Esci</string>
     <string name="action_merge">Unire</string>
     <string name="action_save">Salva</string>
     <string name="X_btn_continue_edit">Annulla</string>
@@ -734,4 +734,7 @@
     <string name="lbl_created">Creazione</string>
     <string name="lbl_owned">Di proprietà</string>
     <string name="lbl_wishlist">Lista dei desideri</string>
+    <string name="action_move">Sposta</string>
+    <string name="lbl_moving_data">Spostamento dei dati in corso</string>
+    <string name="lbl_folder">Cartella</string>
 </resources>

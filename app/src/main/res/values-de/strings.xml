@@ -620,7 +620,7 @@
     <string name="warning_toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="warning_x_already_exists">%1$s existiert bereits.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ ist keine gültige Code</string>
-    <string name="X_action_exit">Beenden</string>
+    <string name="action_exit">Beenden</string>
     <string name="X_action_swap">Tauschen</string>
     <string name="X_action_update">Aktualisieren</string>
     <string name="X_anthology_titles">Anthologie-Titel</string>
@@ -734,4 +734,7 @@
     <string name="lbl_owned">Im Besitz</string>
     <string name="lbl_created">Erstellt</string>
     <string name="lbl_wishlist">Wunschzettel</string>
+    <string name="action_move">Verschieben</string>
+    <string name="lbl_moving_data">Daten werden verschoben</string>
+    <string name="lbl_folder">Ordner</string>
 </resources>

@@ -1672,7 +1672,7 @@
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
 
-    <string name="X_action_exit">Exit</string>
+    <string name="action_exit">Exit</string>
     <string name="X_action_update">Update</string>
     <string name="X_action_swap">Swap</string>
 
@@ -1745,8 +1745,20 @@
 
     <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
-    <string name="txt_import_collection">Download the complete collection, updating existing books and queue new books for import in a second step.</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_folder">Folder</string>
+    <!-- [VERIFIED] - Notification title when moving data to external storage [CHAR LIMIT=32] -->
+    <string name="lbl_moving_data">Moving data</string>
+    <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
+    <string name="action_move">Move</string>
 
-    <string name="txt_x_books_queued">There are %d new books queued for import</string>
+    <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”. Do your really want to proceed? This could take some time.</string>
+
+    <string name="lbl_storage_volume">Covers location</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SDCARD</string>
+    <string name="lbl_storage_select">Select %1$s</string>
+    <string name="lbl_storage_move_data">lbl_storage_move_data</string>
+    <string name="lbl_storage_settings">lbl_storage_settings</string>
+    <string name="restarting">Restarting</string>
 
 </resources>

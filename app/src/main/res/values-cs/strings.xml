@@ -54,7 +54,7 @@
     <string name="lbl_import_books_option_all">Všechny knihy</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="action_add">Přidat</string>
-    <string name="X_action_exit">Přestat</string>
+    <string name="action_exit">Přestat</string>
     <string name="action_merge">Spojit</string>
     <string name="action_save">Uložit</string>
     <string name="X_btn_continue_edit">Pokračovat v úpravách</string>
@@ -731,4 +731,7 @@
     <string name="lbl_owned">Vlastněno</string>
     <string name="lbl_created">Vytvořeno</string>
     <string name="lbl_wishlist">Seznam přání</string>
+    <string name="action_move">Přesunout</string>
+    <string name="lbl_moving_data">Probíhá přesun dat</string>
+    <string name="lbl_folder">Složka</string>
 </resources>
