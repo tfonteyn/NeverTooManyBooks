@@ -46,13 +46,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 /**
  * DialogFragment to edit a list of {@link Entity}.
  * <p>
- * Replacement for the AlertDialog with multipleChoice setup.
+ * Replacement for the AlertDialog with MultipleChoice setup.
  */
-public class CheckListDialogFragment
+public class MultiChoiceDialogFragment
         extends DialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "CheckListDialogFragment";
+    public static final String TAG = "MultiChoiceDialogFragment";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_DIALOG_TITLE = TAG + ":title";
     /** Argument. */
@@ -175,7 +175,7 @@ public class CheckListDialogFragment
             args.putParcelableArrayList(BKEY_ALL, allItems);
             args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
 
-            final DialogFragment frag = new CheckListDialogFragment();
+            final DialogFragment frag = new MultiChoiceDialogFragment();
             frag.setArguments(args);
             frag.show(mFragmentManager, TAG);
         }
