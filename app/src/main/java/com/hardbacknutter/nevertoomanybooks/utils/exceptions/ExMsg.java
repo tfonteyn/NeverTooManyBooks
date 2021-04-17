@@ -82,7 +82,7 @@ public final class ExMsg {
 
         // Use the embedded localised message if possible
         if (e instanceof LocalizedException) {
-            msg = ((LocalizedException) e).getLocalizedMessage(context);
+            msg = ((LocalizedException) e).getUserMessage(context);
 
         } else if (e instanceof JSONException) {
             msg = context.getString(R.string.error_unknown_long);

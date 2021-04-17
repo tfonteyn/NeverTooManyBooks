@@ -29,5 +29,5 @@ import androidx.annotation.NonNull;
 public interface LocalizedException {
 
     @NonNull
-    String getLocalizedMessage(@NonNull Context context);
+    String getUserMessage(@NonNull Context context);
 }

@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -39,14 +40,34 @@ public class ExternalStorageException
     @NonNull
     private final AppDir mAppDir;
 
-    public ExternalStorageException(@NonNull final AppDir appDir) {
+    public ExternalStorageException(@NonNull final AppDir appDir,
+                                    @Nullable final String message) {
+        super(message);
         mAppDir = appDir;
     }
 
+    public ExternalStorageException(@NonNull final AppDir appDir,
+                                    @Nullable final String message,
+                                    @Nullable final Throwable cause) {
+        super(message, cause);
+        mAppDir = appDir;
+    }
+
+    /**
+     * Used for logging.
+     * Will give the actual folder which is having problems + the underlying cause.
+     *
+     * @return message
+     */
     @NonNull
     @Override
-    public String getLocalizedMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_accessible_s, mAppDir.toString());
+    public String getMessage() {
+        final Throwable cause = getCause();
+        if (cause != null) {
+            return mAppDir.toString() + ": " + super.getMessage() + ": " + cause.getMessage();
+        } else {
+            return mAppDir.toString() + ": " + super.getMessage();
+        }
     }
 
     @NonNull
@@ -54,12 +75,26 @@ public class ExternalStorageException
         return mAppDir;
     }
 
+    /**
+     * The default user displayable message.
+     * For a detailed  message, use {@link #getAppDir()} and/or {@link #getCause()}.
+     *
+     * @param context Current context
+     *
+     * @return text
+     */
+    @NonNull
+    @Override
+    public String getUserMessage(@NonNull final Context context) {
+        return context.getString(R.string.error_storage_not_accessible);
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "ExternalStorageException{"
-               + super.toString()
-               + ", mAppDir=" + mAppDir
+               + "mAppDir=" + mAppDir.name()
+               + ", " + super.toString()
                + '}';
     }
 }
