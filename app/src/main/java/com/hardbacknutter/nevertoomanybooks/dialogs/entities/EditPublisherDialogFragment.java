@@ -37,7 +37,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
@@ -86,7 +86,7 @@ public class EditPublisherDialogFragment
                               @NonNull final Publisher publisher) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBKeys.KEY_FK_PUBLISHER, publisher);
+        args.putParcelable(DBKey.FK_PUBLISHER, publisher);
 
         final DialogFragment frag = new EditPublisherDialogFragment();
         frag.setArguments(args);
@@ -100,14 +100,14 @@ public class EditPublisherDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mPublisher = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_PUBLISHER),
+        mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
                                             "KEY_FK_PUBLISHER");
 
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBKeys.KEY_PUBLISHER_NAME);
+            mName = savedInstanceState.getString(DBKey.KEY_PUBLISHER_NAME);
         }
     }
 
@@ -215,7 +215,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKeys.KEY_PUBLISHER_NAME, mName);
+        outState.putString(DBKey.KEY_PUBLISHER_NAME, mName);
     }
 
     @Override

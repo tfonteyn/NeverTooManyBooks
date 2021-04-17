@@ -33,7 +33,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -91,7 +91,7 @@ public class EditTocEntryDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mBookTitle = args.getString(DBKeys.KEY_TITLE);
+        mBookTitle = args.getString(DBKey.KEY_TITLE);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), "BKEY_TOC_ENTRY");
 
         if (savedInstanceState == null) {
@@ -101,12 +101,12 @@ public class EditTocEntryDialogFragment
             mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBKeys.KEY_TITLE);
+            mTitle = savedInstanceState.getString(DBKey.KEY_TITLE);
             //noinspection ConstantConditions
             mFirstPublicationDate = savedInstanceState
-                    .getParcelable(DBKeys.KEY_DATE_FIRST_PUBLICATION);
+                    .getParcelable(DBKey.DATE_FIRST_PUBLICATION);
             //noinspection ConstantConditions
-            mAuthorName = savedInstanceState.getString(DBKeys.KEY_AUTHOR_FORMATTED);
+            mAuthorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
 
             mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
         }
@@ -150,7 +150,7 @@ public class EditTocEntryDialogFragment
                         getContext(), R.layout.dropdown_menu_popup_item,
                         ExtArrayAdapter.FilterType.Diacritic,
                         ServiceLocator.getInstance().getAuthorDao()
-                                      .getNames(DBKeys.KEY_AUTHOR_FORMATTED));
+                                      .getNames(DBKey.KEY_AUTHOR_FORMATTED));
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 
@@ -205,9 +205,9 @@ public class EditTocEntryDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKeys.KEY_TITLE, mTitle);
-        outState.putParcelable(DBKeys.KEY_DATE_FIRST_PUBLICATION, mFirstPublicationDate);
-        outState.putString(DBKeys.KEY_AUTHOR_FORMATTED, mAuthorName);
+        outState.putString(DBKey.KEY_TITLE, mTitle);
+        outState.putParcelable(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationDate);
+        outState.putString(DBKey.KEY_AUTHOR_FORMATTED, mAuthorName);
         outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
     }
 
@@ -248,7 +248,7 @@ public class EditTocEntryDialogFragment
 
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKeys.KEY_TITLE, book.getTitle());
+            args.putString(DBKey.KEY_TITLE, book.getTitle());
             args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
             args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
 

@@ -37,7 +37,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
@@ -90,7 +90,7 @@ public class EditAuthorDialogFragment
                               @NonNull final Author author) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBKeys.KEY_FK_AUTHOR, author);
+        args.putParcelable(DBKey.FK_AUTHOR, author);
 
         final DialogFragment frag = new EditAuthorDialogFragment();
         frag.setArguments(args);
@@ -104,7 +104,7 @@ public class EditAuthorDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mAuthor = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_AUTHOR),
+        mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
                                          "KEY_FK_AUTHOR");
 
         if (savedInstanceState == null) {
@@ -113,10 +113,10 @@ public class EditAuthorDialogFragment
             mIsComplete = mAuthor.isComplete();
         } else {
             //noinspection ConstantConditions
-            mFamilyName = savedInstanceState.getString(DBKeys.KEY_AUTHOR_FAMILY_NAME);
+            mFamilyName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
             //noinspection ConstantConditions
-            mGivenNames = savedInstanceState.getString(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
-            mIsComplete = savedInstanceState.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE,
+            mGivenNames = savedInstanceState.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
+            mIsComplete = savedInstanceState.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE,
                                                         false);
         }
     }
@@ -135,12 +135,12 @@ public class EditAuthorDialogFragment
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKeys.KEY_AUTHOR_FAMILY_NAME));
+                authorDao.getNames(DBKey.KEY_AUTHOR_FAMILY_NAME));
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBKeys.KEY_AUTHOR_GIVEN_NAMES));
+                authorDao.getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES));
 
         mVb.familyName.setText(mFamilyName);
         mVb.familyName.setAdapter(familyNameAdapter);
@@ -240,9 +240,9 @@ public class EditAuthorDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKeys.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(DBKeys.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+        outState.putString(DBKey.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+        outState.putString(DBKey.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+        outState.putBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     @Override

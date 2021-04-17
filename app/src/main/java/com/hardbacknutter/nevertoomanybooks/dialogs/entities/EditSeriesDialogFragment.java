@@ -37,7 +37,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
@@ -88,7 +88,7 @@ public class EditSeriesDialogFragment
                               @NonNull final Series series) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBKeys.KEY_FK_SERIES, series);
+        args.putParcelable(DBKey.FK_SERIES, series);
 
         final DialogFragment frag = new EditSeriesDialogFragment();
         frag.setArguments(args);
@@ -102,7 +102,7 @@ public class EditSeriesDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mSeries = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_SERIES),
+        mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
                                          "KEY_FK_SERIES");
 
         if (savedInstanceState == null) {
@@ -110,8 +110,8 @@ public class EditSeriesDialogFragment
             mIsComplete = mSeries.isComplete();
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBKeys.KEY_FK_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE,
+            mTitle = savedInstanceState.getString(DBKey.FK_SERIES);
+            mIsComplete = savedInstanceState.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE,
                                                         false);
         }
     }
@@ -221,8 +221,8 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKeys.KEY_SERIES_TITLE, mTitle);
-        outState.putBoolean(DBKeys.KEY_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putString(DBKey.KEY_SERIES_TITLE, mTitle);
+        outState.putBoolean(DBKey.BOOL_SERIES_IS_COMPLETE, mIsComplete);
     }
 
     @Override
