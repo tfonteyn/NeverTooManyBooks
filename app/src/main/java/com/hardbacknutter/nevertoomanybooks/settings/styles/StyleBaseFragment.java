@@ -43,9 +43,9 @@ public abstract class StyleBaseFragment
     StyleViewModel mVm;
 
     @Override
-    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
-                                    @Nullable final String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
@@ -57,21 +57,13 @@ public abstract class StyleBaseFragment
             // non-global, set the correct UUID SharedPreferences to use
             getPreferenceManager().setSharedPreferencesName(style.getUuid());
         }
-    }
 
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final ListStyle style = mVm.getStyle();
         if (style.getId() == 0) {
             mActionBar.setTitle(R.string.lbl_clone_style);
         } else {
             mActionBar.setTitle(R.string.lbl_edit_style);
         }
 
-        //noinspection ConstantConditions
         mActionBar.setSubtitle(style.getLabel(getContext()));
     }
 

@@ -109,13 +109,6 @@ public class StyleFragment
                 //  Why is this MultiSelectListPreference?
                 //  should this be a TriStateMultiSelectListPreference
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
-
-
-        if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            TipManager.getInstance()
-                      .display(getContext(), R.string.tip_booklist_style_properties, null);
-        }
     }
 
     @Override
@@ -126,6 +119,12 @@ public class StyleFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        if (savedInstanceState == null) {
+            //noinspection ConstantConditions
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_booklist_style_properties, null);
+        }
     }
 
     @Override

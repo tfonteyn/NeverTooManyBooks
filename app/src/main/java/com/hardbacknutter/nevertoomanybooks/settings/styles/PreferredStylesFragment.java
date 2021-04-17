@@ -204,15 +204,16 @@ public class PreferredStylesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
         setTitle(R.string.lbl_styles_long);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
         }
-
-        //noinspection ConstantConditions
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mVm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         //noinspection ConstantConditions
