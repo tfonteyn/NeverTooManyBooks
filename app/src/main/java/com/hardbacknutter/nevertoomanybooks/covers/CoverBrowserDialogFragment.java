@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
@@ -129,7 +129,7 @@ public class CoverBrowserDialogFragment
         mVb = DialogCoverBrowserBinding.bind(view);
 
         final String bookTitle = Objects.requireNonNull(
-                requireArguments().getString(DBKeys.KEY_TITLE));
+                requireArguments().getString(DBKey.KEY_TITLE));
         mVb.toolbar.setSubtitle(bookTitle);
 
         mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
@@ -365,8 +365,8 @@ public class CoverBrowserDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(DBKeys.KEY_TITLE, bookTitle);
-            args.putString(DBKeys.KEY_ISBN, isbn);
+            args.putString(DBKey.KEY_TITLE, bookTitle);
+            args.putString(DBKey.KEY_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
             final DialogFragment frag = new CoverBrowserDialogFragment();

@@ -39,7 +39,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -155,7 +155,7 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKeys.KEY_ISBN),
+            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKey.KEY_ISBN),
                                                  "KEY_ISBN");
             mCIdx = args.getInt(BKEY_FILE_INDEX);
 
