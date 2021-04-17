@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -160,8 +160,8 @@ public class BitmaskFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        if (!DBKeys.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                           mDomainExpression.getName())) {
+        if (!DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                          mDomainExpression.getName())) {
             return false;
         }
 

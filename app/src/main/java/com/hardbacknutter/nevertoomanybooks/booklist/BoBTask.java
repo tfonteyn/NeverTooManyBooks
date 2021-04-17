@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
@@ -88,44 +88,44 @@ public class BoBTask
                 // Title for displaying; do NOT sort on it
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE)));
         mFixedDomainList.add(
                 // Title for sorting
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE_OB),
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE_OB),
                         DomainExpression.SORT_ASC));
 
         mFixedDomainList.add(
                 // the book language is needed for reordering titles
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LANGUAGE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LANGUAGE)));
 
         mFixedDomainList.add(
                 // Always get the read flag
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_READ,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_READ)));
 
         mFixedDomainList.add(
                 // Always get the Author ID
                 // (the need for the name will depend on the style).
                 new DomainExpression(
                         DBDefinitions.DOM_FK_AUTHOR,
-                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR)));
+                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)));
 
         mFixedDomainList.add(
                 // We want the UUID for the book so we can get thumbnails
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_UUID,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_UUID)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_UUID)));
 
         mFixedDomainList.add(
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_ISBN)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
@@ -171,30 +171,31 @@ public class BoBTask
 
             // Add the conditional domains; global level.
 
-            if (DBKeys.isUsed(global, DBKeys.KEY_EDITION_BITMASK)) {
+            if (DBKey.isUsed(global, DBKey.BITMASK_EDITION)) {
                 // The edition bitmask
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_EDITION_BITMASK)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)));
             }
 
-            if (DBKeys.isUsed(global, DBKeys.KEY_SIGNED)) {
+            if (DBKey.isUsed(global, DBKey.BOOL_SIGNED)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_SIGNED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_SIGNED)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.BOOL_SIGNED)));
             }
 
-            if (DBKeys.isUsed(global, DBKeys.KEY_BOOK_CONDITION)) {
+            if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_CONDITION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_CONDITION)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_BOOK_CONDITION)));
             }
 
-            if (DBKeys.isUsed(global, DBKeys.KEY_LOANEE)) {
+            if (DBKey.isUsed(global, DBKey.KEY_LOANEE)) {
                 // Used to display/hide the 'lend' icon for each book.
+                builder.addLeftOuterJoin(DBDefinitions.TBL_BOOK_LOANEE);
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_LOANEE,
-                        DBDefinitions.TBL_BOOK_LOANEE.dot(DBKeys.KEY_LOANEE)));
+                        DBDefinitions.TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)));
             }
 
             // Add the conditional domains; style level.
@@ -232,25 +233,25 @@ public class BoBTask
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_DATE_PUBLISHED)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.DATE_BOOK_PUBLICATION)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_FORMAT,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_FORMAT)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_FORMAT)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_LOCATION,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LOCATION)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_LOCATION)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_RATING,
-                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_RATING)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_RATING)));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -303,17 +304,17 @@ public class BoBTask
 
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_ID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKeys.KEY_CALIBRE_BOOK_ID)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_ID)));
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_UUID,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKeys.KEY_CALIBRE_BOOK_UUID)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_UUID)));
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
         builder.addDomain(new DomainExpression(
                 DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
-                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKeys.KEY_FK_CALIBRE_LIBRARY)));
+                DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBKey.FK_CALIBRE_LIBRARY)));
     }
 
     public static class Outcome {

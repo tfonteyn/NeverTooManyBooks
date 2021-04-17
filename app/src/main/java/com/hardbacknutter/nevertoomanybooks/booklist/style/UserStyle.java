@@ -28,7 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
@@ -80,11 +80,11 @@ public class UserStyle
      */
     private UserStyle(@NonNull final Context context,
                       @NonNull final DataHolder dataHolder) {
-        super(context, dataHolder.getString(DBKeys.KEY_STYLE_UUID), true);
+        super(context, dataHolder.getString(DBKey.KEY_STYLE_UUID), true);
 
-        mId = dataHolder.getLong(DBKeys.KEY_PK_ID);
-        mIsPreferred = dataHolder.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED);
-        mMenuPosition = dataHolder.getInt(DBKeys.KEY_STYLE_MENU_POSITION);
+        mId = dataHolder.getLong(DBKey.PK_ID);
+        mIsPreferred = dataHolder.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
+        mMenuPosition = dataHolder.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
         initPrefs(true);
     }

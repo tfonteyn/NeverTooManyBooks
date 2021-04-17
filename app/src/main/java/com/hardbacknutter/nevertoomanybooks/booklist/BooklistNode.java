@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -78,11 +78,11 @@ public class BooklistNode {
      */
     @NonNull
     static String getColumns(@NonNull final TableDefinition table) {
-        return table.dot(DBKeys.KEY_PK_ID)
-               + ',' + table.dot(DBKeys.KEY_BL_NODE_KEY)
-               + ',' + table.dot(DBKeys.KEY_BL_NODE_LEVEL)
-               + ',' + table.dot(DBKeys.KEY_BL_NODE_EXPANDED)
-               + ',' + table.dot(DBKeys.KEY_BL_NODE_VISIBLE);
+        return table.dot(DBKey.PK_ID)
+               + ',' + table.dot(DBKey.KEY_BL_NODE_KEY)
+               + ',' + table.dot(DBKey.KEY_BL_NODE_LEVEL)
+               + ',' + table.dot(DBKey.KEY_BL_NODE_EXPANDED)
+               + ',' + table.dot(DBKey.KEY_BL_NODE_VISIBLE);
     }
 
     /**

@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Encapsulate the Book fields which can be shown on the Book-details screen.
@@ -54,7 +54,7 @@ public class DetailScreenBookFields
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             addField(new PBoolean(isPersistent, persistenceLayer,
                                   PK_COVER[cIdx],
-                                  DBKeys.isUsed(global, DBKeys.COVER_IS_USED[cIdx])));
+                                  DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])));
         }
     }
 

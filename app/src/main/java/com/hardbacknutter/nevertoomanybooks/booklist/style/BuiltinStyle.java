@@ -32,7 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
@@ -236,10 +236,10 @@ public final class BuiltinStyle
         // Dev Note: the way we construct these is not optimal, but it mimics the
         // way we create user-styles. The intention is that this configuration eventually
         // goes into the database.
-        final int id = rowData.getInt(DBKeys.KEY_PK_ID);
-        final String uuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
-        final boolean isPreferred = rowData.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED);
-        final int menuPos = rowData.getInt(DBKeys.KEY_STYLE_MENU_POSITION);
+        final int id = rowData.getInt(DBKey.PK_ID);
+        final String uuid = rowData.getString(DBKey.KEY_STYLE_UUID);
+        final boolean isPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
+        final int menuPos = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
         final BuiltinStyle style;
         switch (id) {

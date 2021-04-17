@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -108,10 +108,10 @@ class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     static final String EXP_BOOKSHELF_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKeys.KEY_BOOKSHELF_NAME) + ",', ')"
-            + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME) + ",', ')"
+            + _FROM_ + TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF)
             + _WHERE_
-            + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOK)
+            + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOK)
             + ")";
 
     /**
@@ -121,10 +121,10 @@ class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     static final String EXP_PUBLISHER_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKeys.KEY_PUBLISHER_NAME) + ",', ')"
-            + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
+            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKey.KEY_PUBLISHER_NAME) + ",', ')"
+            + _FROM_ + TBL_PUBLISHERS.startJoin(TBL_BOOK_PUBLISHER)
             + _WHERE_
-            + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_FK_BOOK)
+            + TBL_BOOKS.dot(DBKey.PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKey.FK_BOOK)
             + ")";
     /**
      * Counter for generating ID's. Only increments.
@@ -220,7 +220,7 @@ class BooklistBuilder {
      */
     void addFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
-            mFilters.add(new NumberListFilter(TBL_BOOKS, DBKeys.KEY_PK_ID, filter));
+            mFilters.add(new NumberListFilter(TBL_BOOKS, DBKey.PK_ID, filter));
         }
     }
 
@@ -241,13 +241,13 @@ class BooklistBuilder {
                              @Nullable final String publisherName,
                              @Nullable final String keywords) {
 
-        final String query = BookDao.Sql.Fts.createMatchString(author, title, seriesTitle,
-                                                               publisherName, keywords);
+        final String query = FtsDao.createMatchString(author, title, seriesTitle,
+                                                      publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
-                                 '(' + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + " IN ("
+                                 '(' + TBL_BOOKS.dot(DBKey.PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + DBKeys.KEY_FTS_BOOK_ID
+                                 + SELECT_ + DBKey.KEY_FTS_BOOK_ID
                                  + _FROM_ + TBL_FTS_BOOKS.getName()
                                  + _WHERE_ + TBL_FTS_BOOKS.getName()
                                  + " MATCH '" + query + "')"
@@ -266,8 +266,8 @@ class BooklistBuilder {
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKeys.KEY_LOANEE)
-                                 + "='" + BaseDaoImpl.encodeString(filter) + '\''
+                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKey.KEY_LOANEE)
+                                 + "='" + SqlEncode.string(filter) + '\''
                                  + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                  + ')');
         }
@@ -299,11 +299,11 @@ class BooklistBuilder {
         // The filter will only be added if the current style does not contain the Bookshelf group.
         if (isFilteredOnBookshelves && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
             if (mBookshelves.size() == 1) {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKeys.KEY_PK_ID)
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKey.PK_ID)
                                   + '=' + mBookshelves.get(0).getId()
                                   + ')');
             } else {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKeys.KEY_PK_ID)
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKey.PK_ID)
                                   + " IN (" + mBookshelves.stream()
                                                           .map(Bookshelf::getId)
                                                           .map(String::valueOf)
@@ -381,8 +381,7 @@ class BooklistBuilder {
         private static final int NANO_TO_MILLIS = 1_000_000;
 
         /** Supposed to be {@code false}. */
-        private static final boolean COLLATION_IS_CASE_SENSITIVE =
-                ServiceLocator.isCollationCaseSensitive();
+        private final boolean mCollationIsCaseSensitive;
 
         @NonNull
         private final ListStyle mStyle;
@@ -457,6 +456,8 @@ class BooklistBuilder {
             mFilteredOnBookshelf = isFilteredOnBookshelf;
             mRebuildMode = rebuildMode;
 
+            mCollationIsCaseSensitive = ServiceLocator.getInstance().isCollationCaseSensitive();
+
             /*
              * Temporary table used to store a flattened booklist tree structure.
              * This table should always be created without column constraints applied,
@@ -526,7 +527,7 @@ class BooklistBuilder {
                     DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)), false);
 
             // The book id itself
-            addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKeys.KEY_PK_ID)), false);
+            addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKey.PK_ID)), false);
 
             // Add style-specified groups
             for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -575,7 +576,7 @@ class BooklistBuilder {
             }
 
             // add the node key column
-            destColumns.append(',').append(DBKeys.KEY_BL_NODE_KEY);
+            destColumns.append(',').append(DBKey.KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey()).append(_AS_).append(DOM_BL_NODE_KEY);
 
             // and the node state columns
@@ -651,7 +652,7 @@ class BooklistBuilder {
                            + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }
 
-            if (!COLLATION_IS_CASE_SENSITIVE) {
+            if (!mCollationIsCaseSensitive) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
                 db.execSQL(
@@ -671,11 +672,11 @@ class BooklistBuilder {
             // Don't apply constraints (no need)
             db.recreate(mNavTable, false);
             db.execSQL(INSERT_INTO_ + mNavTable.getName()
-                       + " (" + DBKeys.KEY_FK_BOOK + ',' + DBKeys.KEY_FK_BL_ROW_ID + ") "
-                       + SELECT_ + DBKeys.KEY_FK_BOOK + ',' + DBKeys.KEY_PK_ID
+                       + " (" + DBKey.FK_BOOK + ',' + DBKey.FK_BL_ROW_ID + ") "
+                       + SELECT_ + DBKey.FK_BOOK + ',' + DBKey.PK_ID
                        + _FROM_ + mListTable.getName()
-                       + _WHERE_ + DBKeys.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
-                       + _ORDER_BY_ + DBKeys.KEY_PK_ID
+                       + _WHERE_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                       + _ORDER_BY_ + DBKey.PK_ID
                       );
 
             return new Pair<>(mListTable, mNavTable);
@@ -736,11 +737,11 @@ class BooklistBuilder {
 
                 // Create the INSERT columns clause for the next level up
                 final StringBuilder listColumns = new StringBuilder()
-                        .append(DBKeys.KEY_BL_NODE_LEVEL)
-                        .append(',').append(DBKeys.KEY_BL_NODE_GROUP)
-                        .append(',').append(DBKeys.KEY_BL_NODE_KEY)
-                        .append(',').append(DBKeys.KEY_BL_NODE_EXPANDED)
-                        .append(',').append(DBKeys.KEY_BL_NODE_VISIBLE);
+                        .append(DBKey.KEY_BL_NODE_LEVEL)
+                        .append(',').append(DBKey.KEY_BL_NODE_GROUP)
+                        .append(',').append(DBKey.KEY_BL_NODE_KEY)
+                        .append(',').append(DBKey.KEY_BL_NODE_EXPANDED)
+                        .append(',').append(DBKey.KEY_BL_NODE_VISIBLE);
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
@@ -750,7 +751,7 @@ class BooklistBuilder {
                 final StringBuilder listValues = new StringBuilder()
                         .append(level)
                         .append(',').append(group.getId())
-                        .append(",NEW.").append(DBKeys.KEY_BL_NODE_KEY)
+                        .append(",NEW.").append(DBKey.KEY_BL_NODE_KEY)
                         .append(",").append(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
                         .append(",").append(level == 1 ? 1 : expVis);
@@ -784,7 +785,7 @@ class BooklistBuilder {
                 final String levelTgSql =
                         "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                         + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                        + "\n WHEN NEW." + DBKeys.KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                        + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
@@ -803,7 +804,7 @@ class BooklistBuilder {
             final String currentValueTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + DBKeys.KEY_BL_NODE_LEVEL + '=' + groupCount
+                    + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
                     + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
                     + "\n  INSERT INTO " + mTriggerHelperTable.getName()
@@ -946,8 +947,7 @@ class BooklistBuilder {
          *      + {@link DBDefinitions#TBL_PUBLISHERS}</li>
          *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}
          *      + {@link DBDefinitions#TBL_BOOKSHELF}</li>
-         *      <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
-         *      <li>{@link DBDefinitions#TBL_CALIBRE_BOOKS}</li>
+         *      <li>{@link #mLeftOuterJoins}</li>
          * </ul>
          *
          * @return FROM clause
@@ -961,24 +961,36 @@ class BooklistBuilder {
             final Groups styleGroups = mStyle.getGroups();
 
             // If there is a bookshelf specified (either as group or as a filter),
-            // start the join there.
+            // we start the join there.
             if (styleGroups.contains(BooklistGroup.BOOKSHELF) || mFilteredOnBookshelf) {
-                sql.append(TBL_BOOKSHELF.ref())
-                   .append(TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF))
-                   .append(TBL_BOOK_BOOKSHELF.join(TBL_BOOKS));
+                sql.append(TBL_BOOKSHELF.startJoin(TBL_BOOK_BOOKSHELF, TBL_BOOKS));
             } else {
-                // Otherwise, start with the BOOKS table.
+                // Otherwise, we start with the BOOKS table.
                 sql.append(TBL_BOOKS.ref());
             }
 
-            if (DBKeys.isUsed(global, DBKeys.KEY_LOANEE)) {
-                // get the loanee name, or a {@code null} for available books.
-                sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
+            joinWithAuthors(sql);
+
+            if (styleGroups.contains(BooklistGroup.SERIES)
+                || DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
+                joinWithSeries(sql);
             }
 
+            if (styleGroups.contains(BooklistGroup.PUBLISHER)
+                || DBKey.isUsed(global, DBKey.KEY_PUBLISHER_NAME)) {
+                joinWithPublishers(sql);
+            }
+
+            // Add LEFT OUTER JOIN tables as needed
+            //noinspection SimplifyStreamApiCallChains
+            mLeftOuterJoins.stream().forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
+
+            return sql.toString();
+        }
+
+        private void joinWithAuthors(@NonNull final StringBuilder sql) {
             // Join with the link table between Book and Author.
             sql.append(TBL_BOOKS.join(TBL_BOOK_AUTHOR));
-
             // Extend the join filtering on the primary Author unless
             // the user wants the book to show under all its Authors
             if (!mStyle.isShowBooksUnderEachAuthor()) {
@@ -987,61 +999,52 @@ class BooklistBuilder {
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
                     sql.append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION))
                        .append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the 1st
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" & ").append(primaryAuthorType).append(")<>0)")
                        .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
                        .append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION))
                        .append("=1))");
                 }
             }
             // Join with Authors to make the names available
             sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
+        }
 
-            if (styleGroups.contains(BooklistGroup.SERIES)
-                || DBKeys.isUsed(global, DBKeys.KEY_SERIES_TITLE)) {
-                // Join with the link table between Book and Series.
-                sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
-                // Extend the join filtering on the primary Series unless
-                // the user wants the book to show under all its Series
-                if (!mStyle.isShowBooksUnderEachSeries()) {
-                    sql.append(_AND_)
-                       .append(TBL_BOOK_SERIES.dot(DBKeys.KEY_BOOK_SERIES_POSITION))
-                       .append("=1");
-                }
-                // Join with Series to make the titles available
-                sql.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
+        private void joinWithSeries(@NonNull final StringBuilder sql) {
+            // Join with the link table between Book and Series.
+            sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
+            // Extend the join filtering on the primary Series unless
+            // the user wants the book to show under all its Series
+            if (!mStyle.isShowBooksUnderEachSeries()) {
+                sql.append(_AND_)
+                   .append(TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_SERIES_POSITION))
+                   .append("=1");
             }
+            // Join with Series to make the titles available
+            sql.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
+        }
 
-            if (styleGroups.contains(BooklistGroup.PUBLISHER)
-                || DBKeys.isUsed(global, DBKeys.KEY_PUBLISHER_NAME)) {
-                // Join with the link table between Book and Publishers.
-                sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
-                // Extend the join filtering on the primary Publisher unless
-                // the user wants the book to show under all its Publishers
-                if (!mStyle.isShowBooksUnderEachPublisher()) {
-                    sql.append(_AND_)
-                       .append(TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_BOOK_PUBLISHER_POSITION))
-                       .append("=1");
-                }
-                // Join with Publishers to make the names available
-                sql.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
+        private void joinWithPublishers(@NonNull final StringBuilder sql) {
+            // Join with the link table between Book and Publishers.
+            sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
+            // Extend the join filtering on the primary Publisher unless
+            // the user wants the book to show under all its Publishers
+            if (!mStyle.isShowBooksUnderEachPublisher()) {
+                sql.append(_AND_)
+                   .append(TBL_BOOK_PUBLISHER.dot(DBKey.KEY_BOOK_PUBLISHER_POSITION))
+                   .append("=1");
             }
-
-
-            // Add LEFT OUTER JOIN tables as needed
-            //noinspection SimplifyStreamApiCallChains
-            mLeftOuterJoins.stream().forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
-
-            return sql.toString();
+            // Join with Publishers to make the names available
+            sql.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
         }
 
         /**
@@ -1088,7 +1091,7 @@ class BooklistBuilder {
                         // always use a pre-prepared order-by column as-is
                         orderBy.append(sd.getName());
 
-                    } else if (COLLATION_IS_CASE_SENSITIVE) {
+                    } else if (mCollationIsCaseSensitive) {
                         // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
                         // This should never happen, but see the DAO method docs.
                         orderBy.append("lower(").append(sd.getName()).append(')');

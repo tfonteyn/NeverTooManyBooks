@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
@@ -146,8 +146,8 @@ abstract class IntStringFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         return !P_NOT_USED.equals(getValue())
-               && DBKeys.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                mDomainExpression.getName());
+               && DBKey.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                               mDomainExpression.getName());
     }
 
     @NonNull

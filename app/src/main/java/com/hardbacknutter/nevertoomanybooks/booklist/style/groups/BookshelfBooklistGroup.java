@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -111,7 +111,7 @@ public class BookshelfBooklistGroup
     private DomainExpression createDisplayDomain() {
         // Not sorted; we sort on the OB domain as defined in the GroupKey.
         return new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
-                                    DBDefinitions.TBL_BOOKSHELF.dot(DBKeys.KEY_BOOKSHELF_NAME));
+                                    DBDefinitions.TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME));
     }
 
     @NonNull

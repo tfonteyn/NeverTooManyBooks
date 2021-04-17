@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
@@ -46,9 +46,6 @@ public final class BooklistNavigatorDao {
     @NonNull
     private final SynchronizedStatement mGetBookStmt;
     private final int mRowCount;
-    /** Database Access. */
-    @NonNull
-    private final SynchronizedDb mDb;
     @NonNull
     private final String mListTableName;
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
@@ -61,17 +58,18 @@ public final class BooklistNavigatorDao {
      */
     public BooklistNavigatorDao(@NonNull final String listTableName) {
 
-        mDb = ServiceLocator.getDb();
         mListTableName = listTableName;
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(
+        final SynchronizedDb db = ServiceLocator.getDb();
+
+        try (SynchronizedStatement stmt = db.compileStatement(
                 "SELECT COUNT(*) FROM " + mListTableName)) {
             mRowCount = (int) stmt.simpleQueryForLongOrZero();
         }
 
-        mGetBookStmt = mDb.compileStatement(
-                SELECT_ + DBKeys.KEY_FK_BOOK
-                + _FROM_ + mListTableName + _WHERE_ + DBKeys.KEY_PK_ID + "=?");
+        mGetBookStmt = db.compileStatement(
+                SELECT_ + DBKey.FK_BOOK
+                + _FROM_ + mListTableName + _WHERE_ + DBKey.PK_ID + "=?");
     }
 
     /**
@@ -95,9 +93,9 @@ public final class BooklistNavigatorDao {
     @IntRange(from = 1)
     public int getRowNumber(final long listTableRowId) {
         // This method is only called once to get the initial row number
-        try (SynchronizedStatement stmt = mDb.compileStatement(
-                SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + mListTableName
-                + _WHERE_ + DBKeys.KEY_FK_BL_ROW_ID + "=?")) {
+        try (SynchronizedStatement stmt = ServiceLocator.getDb().compileStatement(
+                SELECT_ + DBKey.PK_ID + _FROM_ + mListTableName
+                + _WHERE_ + DBKey.FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
             return (int) stmt.simpleQueryForLongOrZero();
         }

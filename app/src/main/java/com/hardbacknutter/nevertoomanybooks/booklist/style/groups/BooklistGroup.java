@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
@@ -90,34 +91,24 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_CONDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_DATE_PUBLISHED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_COLOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_PUBLISHER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LANGUAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PUBLISHER_NAME_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_RATING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_READ_END;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SERIES_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SERIES_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.BOOL_SERIES_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.DATE_BOOK_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOK_NUM_IN_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_GENRE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LANGUAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_LOCATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_PUBLISHER_NAME_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_RATING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_TITLE_OB;
 
 /**
  * Class representing a single level in the booklist hierarchy.
@@ -190,6 +181,9 @@ public class BooklistGroup {
     private static final String _ELSE_ = " ELSE ";
     private static final String _END = " END";
 
+    /** Cache for the static GroupKey instances. */
+    private static final Map<Integer, GroupKey> GROUP_KEYS = new UniqueMap<>();
+
     /** The {@link StylePersistenceLayer} to use. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -223,7 +217,7 @@ public class BooklistGroup {
                   final boolean isPersistent,
                   @NonNull final ListStyle style) {
         mId = id;
-        mGroupKey = GroupKey.getGroupKey(mId);
+        mGroupKey = getGroupKey(mId);
 
         mPersisted = isPersistent;
         mStyle = style;
@@ -245,7 +239,7 @@ public class BooklistGroup {
         mPersistenceLayer = mStyle.getPersistenceLayer();
 
         mId = group.mId;
-        mGroupKey = GroupKey.getGroupKey(mId);
+        mGroupKey = getGroupKey(mId);
     }
 
     /**
@@ -407,6 +401,24 @@ public class BooklistGroup {
                // invalid
                + " ELSE ''"
                + _END;
+    }
+
+    /**
+     * Create/get a GroupKey. We create the keys only once and keep them in a static cache map.
+     *
+     * @param id of group to get
+     *
+     * @return instance
+     */
+    @NonNull
+    @VisibleForTesting
+    public static GroupKey getGroupKey(@Id final int id) {
+        GroupKey groupKey = GROUP_KEYS.get(id);
+        if (groupKey == null) {
+            groupKey = GroupKey.createGroupKey(id);
+            GROUP_KEYS.put(id, groupKey);
+        }
+        return groupKey;
     }
 
     /**
@@ -655,8 +667,6 @@ public class BooklistGroup {
         private static final DomainExpression DATE_ACQUIRED =
                 new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, DomainExpression.SORT_DESC);
 
-        /** Cache for the static GroupKey instances. */
-        private static final Map<Integer, GroupKey> ALL = new UniqueMap<>();
 
         /** User displayable label resource id. */
         @StringRes
@@ -703,6 +713,9 @@ public class BooklistGroup {
 
         /**
          * GroupKey factory constructor.
+         * <p>
+         * Dev note: most of the time, we we'll need most of the groups.
+         * But keeping the switch approach for now for more flexibility.
          *
          * @param id for the desired group key
          *
@@ -724,25 +737,25 @@ public class BooklistGroup {
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column in the BooklistGroup.
                     return new GroupKey(R.string.lbl_author, "a",
-                                        DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID),
+                                        DOM_FK_AUTHOR, TBL_AUTHORS.dot(DBKey.PK_ID),
                                         DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Authors will have the same name)
                                     new DomainExpression(DOM_FK_AUTHOR,
-                                                         TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR)))
+                                                         TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)))
                             .addGroupDomain(
                                     // Group by complete-flag
                                     new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
-                                                         TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)));
+                                                         TBL_AUTHORS.dot(BOOL_AUTHOR_IS_COMPLETE)));
                 }
                 case SERIES: {
                     // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(R.string.lbl_series, "s",
-                                        DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID),
+                                        DOM_FK_SERIES, TBL_SERIES.dot(DBKey.PK_ID),
                                         DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
@@ -754,29 +767,29 @@ public class BooklistGroup {
                                     // Group by id (we want the id available and there is
                                     // a chance two Series will have the same name)
                                     new DomainExpression(DOM_FK_SERIES,
-                                                         TBL_BOOK_SERIES.dot(KEY_FK_SERIES)))
+                                                         TBL_BOOK_SERIES.dot(DBKey.FK_SERIES)))
                             .addGroupDomain(
                                     // Group by complete-flag
                                     new DomainExpression(DOM_SERIES_IS_COMPLETE,
-                                                         TBL_SERIES.dot(KEY_SERIES_IS_COMPLETE)))
+                                                         TBL_SERIES.dot(BOOL_SERIES_IS_COMPLETE)))
                             .addBaseDomain(
                                     // The series number in the base data in sorted order.
                                     // This field is NOT displayed.
                                     // Casting it as a float allows for the possibility of 3.1,
                                     // or even 3.1|Omnibus 3-10" as a series number.
-                                    new DomainExpression(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
-                                                         "CAST(" + TBL_BOOK_SERIES
-                                                                 .dot(KEY_BOOK_NUM_IN_SERIES)
-                                                         + " AS REAL)",
-                                                         DomainExpression.SORT_ASC))
+                                    new DomainExpression(
+                                            DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
+                                            "CAST(" + TBL_BOOK_SERIES
+                                                    .dot(KEY_BOOK_NUM_IN_SERIES) + " AS REAL)",
+                                            DomainExpression.SORT_ASC))
                             .addBaseDomain(
                                     // The series number in the base data in sorted order.
                                     // This field is displayed.
                                     // Covers non-numeric data (where the above float would fail)
-                                    new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
-                                                         TBL_BOOK_SERIES
-                                                                 .dot(KEY_BOOK_NUM_IN_SERIES),
-                                                         DomainExpression.SORT_ASC));
+                                    new DomainExpression(
+                                            DOM_BOOK_NUM_IN_SERIES,
+                                            TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES),
+                                            DomainExpression.SORT_ASC));
 
                 }
                 case PUBLISHER: {
@@ -784,38 +797,42 @@ public class BooklistGroup {
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(R.string.lbl_publisher, "p",
-                                        DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(KEY_PK_ID),
+                                        DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(DBKey.PK_ID),
                                         DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group and sort by the OB column
-                                    new DomainExpression(DOM_BL_PUBLISHER_SORT,
-                                                         TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
-                                                         DomainExpression.SORT_ASC)
+                                    new DomainExpression(
+                                            DOM_BL_PUBLISHER_SORT,
+                                            TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
+                                            DomainExpression.SORT_ASC)
                                            )
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Publishers will have the same name)
-                                    new DomainExpression(DOM_FK_PUBLISHER,
-                                                         TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER)));
+                                    new DomainExpression(
+                                            DOM_FK_PUBLISHER,
+                                            TBL_BOOK_PUBLISHER.dot(DBKey.FK_PUBLISHER)));
                 }
                 case BOOKSHELF: {
                     // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     return new GroupKey(R.string.lbl_bookshelf, "shelf",
-                                        DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_PK_ID),
+                                        DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(DBKey.PK_ID),
                                         DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group and sort by the NAME column
-                                    new DomainExpression(DOM_BL_BOOKSHELF_SORT,
-                                                         TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
-                                                         DomainExpression.SORT_ASC)
+                                    new DomainExpression(
+                                            DOM_BL_BOOKSHELF_SORT,
+                                            TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
+                                            DomainExpression.SORT_ASC)
                                            )
                             .addGroupDomain(
                                     // Group by id (we want the id available)
-                                    new DomainExpression(DOM_FK_BOOKSHELF,
-                                                         TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
+                                    new DomainExpression(
+                                            DOM_FK_BOOKSHELF,
+                                            TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF)));
                 }
 
                 // Data without a linked table use the display name as the key domain.
@@ -873,7 +890,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_rd_sts", ColumnInfo.TYPE_TEXT)
                                                 .notNull()
                                                 .build(),
-                                        TBL_BOOKS.dot(KEY_READ),
+                                        TBL_BOOKS.dot(BOOL_READ),
                                         DomainExpression.SORT_ASC);
                 }
                 case BOOK_TITLE_LETTER: {
@@ -903,7 +920,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_year, "yrp",
                                         new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
+                                        year(TBL_BOOKS.dot(DATE_BOOK_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
@@ -912,7 +929,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_month, "mp",
                                         new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
+                                        month(TBL_BOOKS.dot(DATE_BOOK_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
@@ -922,7 +939,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_first_pub_year, "yfp",
                                         new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION), false),
+                                        year(TBL_BOOKS.dot(DBKey.DATE_FIRST_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
@@ -931,7 +948,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_first_pub_month, "mfp",
                                         new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION), false),
+                                        month(TBL_BOOKS.dot(DBKey.DATE_FIRST_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
@@ -941,7 +958,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_year, "yac",
                                         new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        year(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -950,7 +967,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_month, "mac",
                                         new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        month(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -959,7 +976,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_day, "dac",
                                         new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        day(TBL_BOOKS.dot(DBKey.DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -970,7 +987,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_year, "ya",
                                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        year(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -979,7 +996,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_month, "ma",
                                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        month(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -988,7 +1005,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_day, "da",
                                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        day(TBL_BOOKS.dot(DBKey.UTC_DATE_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -998,7 +1015,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_year, "yu",
                                         new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        year(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1007,7 +1024,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_month, "mu",
                                         new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        month(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1016,7 +1033,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_day, "du",
                                         new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        day(TBL_BOOKS.dot(DBKey.UTC_DATE_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -1026,7 +1043,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_year, "yr",
                                         new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        year(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        year(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -1036,7 +1053,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_month, "mr",
                                         new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        month(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        month(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -1046,7 +1063,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_day, "dr",
                                         new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        day(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        day(TBL_BOOKS.dot(DBKey.DATE_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -1055,24 +1072,6 @@ public class BooklistGroup {
                 default:
                     throw new IllegalArgumentException(String.valueOf(id));
             }
-        }
-
-        /**
-         * External entry point to create/get a GroupKey.
-         *
-         * @param id of group to get
-         *
-         * @return instance
-         */
-        @NonNull
-        @VisibleForTesting
-        public static GroupKey getGroupKey(@Id final int id) {
-            GroupKey groupKey = ALL.get(id);
-            if (groupKey == null) {
-                groupKey = createGroupKey(id);
-                ALL.put(id, groupKey);
-            }
-            return groupKey;
         }
 
         @NonNull
