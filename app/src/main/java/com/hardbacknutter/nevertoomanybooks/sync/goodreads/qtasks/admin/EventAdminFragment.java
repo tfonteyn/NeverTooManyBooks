@@ -33,7 +33,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 
@@ -107,13 +106,11 @@ public class EventAdminFragment
      * Get a CursorAdapter returning all events we are interested in,
      * either specific to our task or all events.
      *
-     * @param bookDao Database Access
-     *
      * @return CursorAdapter to use
      */
     @NonNull
     @Override
-    protected EventCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
+    protected EventCursorAdapter getListAdapter() {
         final Cursor cursor;
         if (mTaskId == 0) {
             cursor = QueueManager.getInstance().getEvents();
@@ -122,7 +119,7 @@ public class EventAdminFragment
         }
 
         //noinspection ConstantConditions
-        return new EventCursorAdapter(getContext(), cursor, bookDao);
+        return new EventCursorAdapter(getContext(), cursor);
     }
 
     @Override

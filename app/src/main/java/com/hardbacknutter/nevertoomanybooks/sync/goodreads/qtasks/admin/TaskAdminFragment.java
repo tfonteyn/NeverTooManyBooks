@@ -36,7 +36,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQItem;
@@ -98,7 +97,7 @@ public class TaskAdminFragment
      */
     @NonNull
     @Override
-    protected TaskCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
+    protected TaskCursorAdapter getListAdapter() {
         //noinspection ConstantConditions
         return new TaskCursorAdapter(getContext(), QueueManager.getInstance().getTasks());
     }

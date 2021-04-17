@@ -19,23 +19,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
 
 /**
  * Base class for Goodreads tasks.
- * Defines the categories and the extended-status field.
+ * Defines the categories and the Goodreads specific extended-status field.
  */
-public abstract class BaseTQTask
+public abstract class GrBaseTask
         extends TQTask {
 
-    private static final long serialVersionUID = 4676971523754206924L;
+    /** We're only allowing a single import task to be scheduled/run at any time. */
+    public static final int CAT_IMPORT = 1;
+    /** We're only allowing a single export task to be scheduled/run at any time. */
+    public static final int CAT_EXPORT = 2;
+    /** But we can schedule multiple single-book export times at any time. */
+    public static final int CAT_EXPORT_ONE_BOOK = 3;
+
+    private static final long serialVersionUID = 6014113427811967096L;
 
     @GrStatus.Status
     private int mLastExtStatus;
@@ -45,7 +49,7 @@ public abstract class BaseTQTask
      *
      * @param description for the task
      */
-    BaseTQTask(@NonNull final String description) {
+    GrBaseTask(@NonNull final String description) {
         super(description);
     }
 
@@ -63,14 +67,4 @@ public abstract class BaseTQTask
     void setLastExtStatus(@GrStatus.Status final int status) {
         mLastExtStatus = status;
     }
-
-    /**
-     * Run the task.
-     *
-     * @param context The localised Application context
-     *
-     * @return {@code false} to requeue, {@code true} for success
-     */
-    public abstract boolean doWork(@NonNull final Context context,
-                                   @NonNull QueueManager queueManager);
 }

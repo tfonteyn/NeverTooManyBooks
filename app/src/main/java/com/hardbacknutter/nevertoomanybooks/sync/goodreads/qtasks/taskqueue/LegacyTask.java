@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -27,7 +29,7 @@ import androidx.annotation.NonNull;
 public class LegacyTask
         extends TQTask {
 
-    private static final long serialVersionUID = 7171611206001905702L;
+    private static final long serialVersionUID = 7889859886626333344L;
 
     /**
      * Constructor.
@@ -36,6 +38,13 @@ public class LegacyTask
      */
     LegacyTask(@NonNull final String description) {
         super(description);
+    }
+
+    // dummy implementation
+    @Override
+    public TaskStatus doWork(@NonNull final Context context,
+                             @NonNull final QueueManager queueManager) {
+        return TaskStatus.Cancelled;
     }
 
     @Override

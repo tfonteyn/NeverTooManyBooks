@@ -30,8 +30,8 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -103,9 +103,7 @@ public class SendOneBookTask
             final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
             final GoodreadsDao grDao = grManager.getGoodreadsDao();
 
-            try (BookDao bookDao = new BookDao(TAG);
-                 Cursor cursor = grDao.fetchBookForExport(mBookId)) {
-
+            try (Cursor cursor = grDao.fetchBookForExport(mBookId)) {
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
                         return new GrStatus(GrStatus.CANCELLED);
@@ -114,7 +112,9 @@ public class SendOneBookTask
 
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    final int status = grManager.sendOneBook(bookDao, grDao, bookData);
+                    final int status = grManager.sendOneBook(
+                            ServiceLocator.getInstance().getBookshelfDao(), grDao, bookData);
+
                     if (status == GrStatus.SUCCESS) {
                         // Record the update
                         grDao.setSyncDate(mBookId);

@@ -24,13 +24,13 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -40,8 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTa
 public class SendOneBookGrTask
         extends SendBooksGrTaskBase {
 
-    /** Log tag. */
-    private static final String TAG = "GR.SendOneBookTQTask";
     private static final long serialVersionUID = 3836442077648262220L;
 
     /** id of book to send. */
@@ -60,26 +58,24 @@ public class SendOneBookGrTask
     }
 
     @Override
-    protected boolean send(@NonNull final QueueManager queueManager,
-                           @NonNull final GoodreadsManager grManager) {
+    protected TaskStatus send(@NonNull final QueueManager queueManager,
+                              @NonNull final GoodreadsManager grManager) {
 
         final GoodreadsDao grDao = grManager.getGoodreadsDao();
-        try (BookDao bookDao = new BookDao(TAG);
-             Cursor cursor = grDao.fetchBookForExport(mBookId)) {
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
+        try (Cursor cursor = grDao.fetchBookForExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, grManager, grDao, bookDao, bookData)) {
-                    // quit on error
-                    return false;
-                }
+            if (cursor.moveToFirst()) {
+                return sendOneBook(queueManager, grManager, grDao, bookshelfDao, bookData);
             }
         }
-        return true;
+        // No book to send is considered a success
+        return TaskStatus.Success;
     }
 
     @Override
     public int getCategory() {
-        return TQTask.CAT_EXPORT_ONE_BOOK;
+        return GrBaseTask.CAT_EXPORT_ONE_BOOK;
     }
 }

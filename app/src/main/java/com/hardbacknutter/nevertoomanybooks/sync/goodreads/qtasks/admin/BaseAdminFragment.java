@@ -34,7 +34,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminListviewBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
@@ -45,9 +44,6 @@ public abstract class BaseAdminFragment
         extends BaseFragment {
 
     public static final String TAG = "BaseAdminFragment";
-
-    /** Database Access. */
-    private BookDao mBookDao;
 
     /** The adapter for the list. */
     private TQCursorAdapter mListAdapter;
@@ -60,12 +56,10 @@ public abstract class BaseAdminFragment
     /**
      * Get a CursorAdapter returning the items we are interested in.
      *
-     * @param bookDao Database Access
-     *
      * @return CursorAdapter to use
      */
     @NonNull
-    protected abstract TQCursorAdapter getListAdapter(@NonNull BookDao bookDao);
+    protected abstract TQCursorAdapter getListAdapter();
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -88,9 +82,7 @@ public abstract class BaseAdminFragment
         super.onViewCreated(view, savedInstanceState);
         setTitle(R.string.site_goodreads);
 
-        mBookDao = new BookDao(TAG);
-
-        mListAdapter = getListAdapter(mBookDao);
+        mListAdapter = getListAdapter();
 
         mVb.itemList.setAdapter(mListAdapter);
         mVb.itemList.setOnItemClickListener((parent, v, position, id) -> onItemClick(
@@ -120,7 +112,7 @@ public abstract class BaseAdminFragment
         addContextMenuItems(menuItems, item);
         // allow the selected item to add menu options
         //noinspection ConstantConditions
-        item.addContextMenuItems(getContext(), menuItems, mBookDao);
+        item.addContextMenuItems(getContext(), menuItems);
         ContextDialogItem.showContextDialog(getContext(), menuItems);
     }
 
@@ -152,9 +144,6 @@ public abstract class BaseAdminFragment
     public void onDestroy() {
         if (mListAdapter.getCursor() != null) {
             mListAdapter.getCursor().close();
-        }
-        if (mBookDao != null) {
-            mBookDao.close();
         }
         super.onDestroy();
     }

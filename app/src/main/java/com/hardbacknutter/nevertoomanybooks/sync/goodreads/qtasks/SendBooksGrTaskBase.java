@@ -28,8 +28,8 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public abstract class SendBooksGrTaskBase
-        extends BaseTQTask {
+        extends GrBaseTask {
 
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
@@ -80,8 +80,8 @@ public abstract class SendBooksGrTaskBase
     }
 
     @Override
-    public boolean doWork(@NonNull final Context context,
-                          @NonNull final QueueManager queueManager) {
+    public TaskStatus doWork(@NonNull final Context context,
+                             @NonNull final QueueManager queueManager) {
         try {
             // can we reach the site at all ?
             NetworkUtils.ping(GoodreadsManager.BASE_URL);
@@ -98,7 +98,7 @@ public abstract class SendBooksGrTaskBase
             }
         }
 
-        return false;
+        return TaskStatus.Requeue;
     }
 
     /**
@@ -107,55 +107,52 @@ public abstract class SendBooksGrTaskBase
      * @param queueManager the QueueManager
      * @param grManager    the Goodreads Manager
      *
-     * @return {@code false} to requeue, {@code true} for success
+     * @return Status
      */
-    protected abstract boolean send(@NonNull QueueManager queueManager,
-                                    @NonNull GoodreadsManager grManager);
+    protected abstract TaskStatus send(@NonNull QueueManager queueManager,
+                                       @NonNull GoodreadsManager grManager);
 
     /**
      * Try to export one book.
      *
-     * @param grManager the Goodreads Manager
-     * @param bookDao   Database Access
-     * @param bookData  the book data to send
+     * @param grManager    the Goodreads Manager
+     * @param bookshelfDao Database Access
+     * @param bookData     the book data to send
      *
-     * @return {@code false} on failure, {@code true} on success
+     * @return Status
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean sendOneBook(@NonNull final QueueManager queueManager,
-                        @NonNull final GoodreadsManager grManager,
-                        @NonNull final GoodreadsDao grDao,
-                        @NonNull final BookDao bookDao,
-                        @NonNull final DataHolder bookData) {
+    TaskStatus sendOneBook(@NonNull final QueueManager queueManager,
+                           @NonNull final GoodreadsManager grManager,
+                           @NonNull final GoodreadsDao grDao,
+                           @NonNull final BookshelfDao bookshelfDao,
+                           @NonNull final DataHolder bookData) {
 
-        final long bookId = bookData.getLong(DBKeys.KEY_PK_ID);
+        final long bookId = bookData.getLong(DBKey.PK_ID);
 
         try {
             @GrStatus.Status
-            final int status = grManager.sendOneBook(bookDao, grDao, bookData);
-            setLastExtStatus(status);
-            if (status == GrStatus.SUCCESS) {
+            final int grStatus = grManager.sendOneBook(bookshelfDao, grDao, bookData);
+            setLastExtStatus(grStatus);
+            if (grStatus == GrStatus.SUCCESS) {
                 mSent++;
                 grDao.setSyncDate(bookId);
-                return true;
+                return TaskStatus.Success;
 
-            } else if (status == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
-                // not a success, but don't try again until the user acts on the stored event
+            } else if (grStatus == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
                 mNoIsbn++;
                 storeEvent(new GrNoIsbnEvent(grManager.getContext(), bookId));
-                return true;
+                return TaskStatus.Failed;
             }
-            // any other status is a non fatal error
-
-        } catch (@NonNull final CredentialsException e) {
-            setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
 
         } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
             storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
             mNotFound++;
-            // not a success, but don't try again until the user acts on the stored event
-            return true;
+            return TaskStatus.Failed;
+
+        } catch (@NonNull final CredentialsException e) {
+            setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
+            // Requeue, so we can retry after the user corrects their credentials
 
         } catch (@NonNull final IOException e) {
             setLastExtStatus(GrStatus.FAILED_IO_EXCEPTION, e);
@@ -163,14 +160,16 @@ public abstract class SendBooksGrTaskBase
             if (getRetryDelay() > FIVE_MINUTES) {
                 setRetryDelay(FIVE_MINUTES);
             }
+            // Requeue
 
         } catch (@NonNull final RuntimeException e) {
             // catch all, as we REALLY don't want the whole task to fail.
             setLastExtStatus(GrStatus.FAILED_UNEXPECTED_EXCEPTION, e);
+            // Requeue
         }
 
         queueManager.updateTask(this);
-        return false;
+        return TaskStatus.Requeue;
     }
 
     /**

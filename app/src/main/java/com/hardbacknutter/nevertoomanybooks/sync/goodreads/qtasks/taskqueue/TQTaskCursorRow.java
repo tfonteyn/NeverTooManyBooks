@@ -29,7 +29,6 @@ import java.time.ZoneOffset;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 public class TQTaskCursorRow
         extends CursorRow {
@@ -49,20 +48,19 @@ public class TQTaskCursorRow
      * @return id
      */
     public long getId() {
-        return getLong(QueueDBHelper.KEY_PK_ID);
+        return getLong(TaskQueueDBHelper.KEY_PK_ID);
     }
 
     /**
      * Get the date of when the Task was queued.
      *
-     * @param context Current context
-     *
-     * @return date; UTC based
+     * @return LocalDateTime(ZoneOffset.UTC)
      */
     @NonNull
-    public LocalDateTime getQueuedDate(@NonNull final Context context) {
-        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
-                getString(QueueDBHelper.KEY_TASK_QUEUED_UTC_DATETIME));
+    public LocalDateTime getQueuedUtcDate() {
+
+        LocalDateTime utcDate = mDateParser.parse(getString(
+                TaskQueueDBHelper.KEY_TASK_QUEUED_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
@@ -72,14 +70,12 @@ public class TQTaskCursorRow
     /**
      * Get the date of when the Task was last retried.
      *
-     * @param context Current context
-     *
-     * @return date; UTC based
+     * @return LocalDateTime(ZoneOffset.UTC)
      */
     @NonNull
-    public LocalDateTime getRetryDate(@NonNull final Context context) {
-        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
-                getString(QueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME));
+    public LocalDateTime getRetryUtcDate() {
+        LocalDateTime utcDate = mDateParser.parse(getString(
+                TaskQueueDBHelper.KEY_TASK_RETRY_UTC_DATETIME));
         if (utcDate == null) {
             utcDate = LocalDateTime.now(ZoneOffset.UTC);
         }
@@ -93,7 +89,7 @@ public class TQTaskCursorRow
      */
     @NonNull
     public String getStatusCode() {
-        return getString(QueueDBHelper.KEY_TASK_STATUS_CODE);
+        return getString(TaskQueueDBHelper.KEY_TASK_STATUS_CODE);
     }
 
     /**
@@ -102,7 +98,7 @@ public class TQTaskCursorRow
      * @return count
      */
     public int getEventCount() {
-        return getInt(QueueDBHelper.KEY_EVENT_COUNT);
+        return getInt(TaskQueueDBHelper.KEY_EVENT_COUNT);
     }
 
     /**
@@ -115,7 +111,7 @@ public class TQTaskCursorRow
     @NonNull
     public TQTask getTask(@NonNull final Context context) {
         TQTask task;
-        final byte[] blob = getBlob(QueueDBHelper.KEY_TASK);
+        final byte[] blob = getBlob(TaskQueueDBHelper.KEY_TASK);
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {

@@ -28,7 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendBooksGrTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
  * It can either send 'all' or 'updated-only' books.
  * <p>
  * We runs a network and authorization check first.
- * If successful, an actual GoodReads task {@link BaseTQTask}
+ * If successful, an actual GoodReads task {@link GrBaseTask}
  * is kicked of to do the actual work.
  */
 public class SendBooksTask
@@ -88,10 +88,10 @@ public class SendBooksTask
         }
 
         // Check that no other sync-related jobs are queued
-        if (QueueManager.getInstance().hasActiveTasks(TQTask.CAT_EXPORT)) {
+        if (QueueManager.getInstance().hasActiveTasks(GrBaseTask.CAT_EXPORT)) {
             return new GrStatus(GrStatus.FAILED_EXPORT_TASK_ALREADY_QUEUED);
         }
-        if (QueueManager.getInstance().hasActiveTasks(TQTask.CAT_IMPORT)) {
+        if (QueueManager.getInstance().hasActiveTasks(GrBaseTask.CAT_IMPORT)) {
             return new GrStatus(GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED);
         }
 

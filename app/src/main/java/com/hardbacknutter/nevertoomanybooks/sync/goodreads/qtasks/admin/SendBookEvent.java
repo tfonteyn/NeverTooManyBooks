@@ -24,13 +24,14 @@ import android.content.Intent;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQEvent;
@@ -77,19 +78,22 @@ public class SendBookEvent
     public void retry(@NonNull final Context context) {
         final QueueManager qm = QueueManager.getInstance();
 
-        final String desc = context.getString(R.string.gr_send_book_to_goodreads, getBookId());
-        final TQTask task = new SendOneBookGrTask(desc, getBookId());
+        final String desc = context.getString(R.string.gr_send_book_to_goodreads, mBookId);
+        final TQTask task = new SendOneBookGrTask(desc, mBookId);
         qm.enqueueTask(QueueManager.Q_SMALL_JOBS, task);
         qm.deleteEvent(getId());
     }
 
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final BookDao bookDao) {
+                                    @NonNull final List<ContextDialogItem> menuItems) {
         // RETRY EVENT
-        final String isbn = bookDao.getBookIsbn(getBookId());
-        if (isbn != null && !isbn.isEmpty()) {
+        final Pair<String, String> data = ServiceLocator.getInstance().getBookDao()
+                                                        .getBookTitleAndIsbnById(mBookId);
+        // data.first -> title
+        // data.second -> isbn
+
+        if (data.second != null && !data.second.isEmpty()) {
             menuItems.add(new ContextDialogItem(context.getString(R.string.action_retry),
                                                 () -> retry(context)));
         }
@@ -98,10 +102,10 @@ public class SendBookEvent
         menuItems.add(
                 new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
                     final Intent intent = new Intent(context, EditBookActivity.class)
-                            .putExtra(DBKeys.KEY_PK_ID, getBookId());
+                            .putExtra(DBKey.PK_ID, getBookId());
                     context.startActivity(intent);
                 }));
 
-        super.addContextMenuItems(context, menuItems, bookDao);
+        super.addContextMenuItems(context, menuItems);
     }
 }

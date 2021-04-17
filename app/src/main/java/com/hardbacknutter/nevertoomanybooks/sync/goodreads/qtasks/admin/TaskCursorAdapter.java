@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.LegacyTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQCursorAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQItem;
@@ -69,7 +69,7 @@ public class TaskCursorAdapter
                         @NonNull final ViewGroup parent) {
         final TQTaskCursorRow row = new TQTaskCursorRow(cursor);
         final Object task = row.getTask(context);
-        if (task instanceof BaseTQTask) {
+        if (task instanceof GrBaseTask) {
             // same layout for all subclasses
             return mLayoutInflater.inflate(R.layout.row_task_info, parent, false);
         } else {
@@ -83,9 +83,9 @@ public class TaskCursorAdapter
                          @NonNull final Cursor cursor) {
         final TQTaskCursorRow row = new TQTaskCursorRow(cursor);
         final Object task = row.getTask(context);
-        if (task instanceof BaseTQTask) {
+        if (task instanceof GrBaseTask) {
             final TaskViewHolder holder = new TaskViewHolder(view);
-            holder.bind(row, (BaseTQTask) task);
+            holder.bind(row, (GrBaseTask) task);
         } else {
             final LegacyViewHolder holder = new LegacyViewHolder(view);
             holder.bind((LegacyTask) task);

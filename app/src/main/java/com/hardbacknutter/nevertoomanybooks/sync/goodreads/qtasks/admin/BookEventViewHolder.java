@@ -26,15 +26,16 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQEventCursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 public class BookEventViewHolder
         extends BaseViewHolder {
@@ -66,35 +67,37 @@ public class BookEventViewHolder
                      @NonNull final SendBookEvent event,
                      @NonNull final BookDao bookDao) {
         final Context context = itemView.getContext();
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         errorView.setText(event.getDescription(context));
         infoView.setText(infoView.getContext().getString(
                 R.string.gr_tq_occurred_at,
-                toPrettyDateTime(rowData.getEventDate(context), userLocale)));
+                DateUtils.utcToDisplay(context, rowData.getEventUtcDate())));
 
         final long bookId = event.getBookId();
-        final String title = bookDao.getBookTitle(bookId);
+        final Pair<String, String> data = bookDao.getBookTitleAndIsbnById(bookId);
+        // data.first -> title
+        // data.second -> isbn
 
-        if (title == null) {
+        if (data.first == null) {
             titleView.setText(R.string.warning_book_no_longer_exists);
             authorView.setVisibility(View.GONE);
             retryButton.setVisibility(View.GONE);
 
         } else {
-            titleView.setText(title);
+            titleView.setText(data.first);
 
-            final ArrayList<Author> authors = bookDao.getAuthorsByBookId(bookId);
+            final ArrayList<Author> authors = ServiceLocator.getInstance().getAuthorDao()
+                                                            .getAuthorsByBookId(bookId);
             final String authorName;
-            if (!authors.isEmpty()) {
-                authorName = Author.getCondensedNames(context, authors);
-            } else {
+            if (authors.isEmpty()) {
                 authorName = context.getString(R.string.unknown_author);
+            } else {
+                authorName = Author.getCondensedNames(context, authors);
             }
             authorView.setText(authorName);
             authorView.setVisibility(View.VISIBLE);
 
-            final String isbn = bookDao.getBookIsbn(bookId);
+            final String isbn = data.second;
             if (isbn != null && !isbn.isEmpty()) {
                 retryButton.setVisibility(View.VISIBLE);
                 retryButton.setOnClickListener(v -> event.retry(v.getContext()));

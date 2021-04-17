@@ -28,8 +28,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueDAO.ScheduledTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDao.ScheduledTask;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
@@ -50,10 +49,10 @@ class Queue
 
     /** Currently running task. */
     @Nullable
-    private WeakReference<TQTask> mTask;
+    private WeakReference<TQTask> mCurrentTaskReference;
 
     /** Flag to indicate process is terminating. */
-    private boolean mTerminate;
+    private boolean mStopping;
 
     /**
      * Constructor.
@@ -84,10 +83,10 @@ class Queue
     }
 
     /**
-     * Terminate processing.
+     * Terminate processing. (can't call this stop()...)
      */
-    public void finish() {
-        mTerminate = true;
+    void terminate() {
+        mStopping = true;
         interrupt();
     }
 
@@ -96,26 +95,26 @@ class Queue
      */
     public void run() {
         final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
-        try (QueueDAO queueDAO = new QueueDAO(context)) {
-            while (!mTerminate) {
+        try {
+            while (!mStopping) {
                 final ScheduledTask scheduledTask;
                 final TQTask task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mQueueManager) {
-                    scheduledTask = queueDAO.getNextTask(context, mName);
+                    scheduledTask = mQueueManager.getTaskQueueDao().getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
-                        mTerminate = true;
+                        mStopping = true;
                         mQueueManager.onQueueTerminating(this);
                         return;
                     }
                     if (scheduledTask.getMillisUntilRunnable() == 0) {
                         // Ready to run now.
                         task = scheduledTask.getTask();
-                        mTask = new WeakReference<>(task);
+                        mCurrentTaskReference = new WeakReference<>(task);
                     } else {
-                        mTask = null;
+                        mCurrentTaskReference = null;
                         task = null;
                     }
                 }
@@ -123,7 +122,7 @@ class Queue
                 // If we get here, we have a task, or know that there is one waiting to run.
                 // Just wait for any wait that is longer than a minute.
                 if (task != null) {
-                    runTask(context, queueDAO, task);
+                    runTask(context, task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
@@ -150,21 +149,12 @@ class Queue
      * Run the task then save the results.
      */
     private void runTask(@NonNull final Context context,
-                         @NonNull final QueueDAO queueDAO,
                          @NonNull final TQTask task) {
-        boolean success = false;
-        boolean requeue = false;
+        TQTask.TaskStatus status;
         try {
             task.setLastException(null);
             mQueueManager.notifyTaskChange();
-
-            if (task instanceof BaseTQTask) {
-                success = ((BaseTQTask) task).doWork(context, mQueueManager);
-            } else {
-                // Either extend Task, or override QueueManager.runTask()
-                throw new IllegalStateException("Can not handle tasks that are not BaseTQTask");
-            }
-            requeue = !success;
+            status = task.doWork(context, mQueueManager);
 
         } catch (@NonNull final RuntimeException e) {
             // Don't overwrite exception set by handler
@@ -172,37 +162,49 @@ class Queue
                 task.setLastException(e);
             }
             Logger.error(TAG, e, "Error running task " + task.getId());
+            status = TQTask.TaskStatus.Failed;
         }
 
         // Update the related database record to process the task correctly.
         synchronized (mQueueManager) {
-            if (task.isCancelled()) {
-                queueDAO.deleteTask(task.getId());
-            } else if (success) {
-                queueDAO.setTaskCompleted(task.getId());
-            } else if (requeue) {
-                queueDAO.requeueTask(task);
-            } else {
-                final Exception e = task.getLastException();
-                String msg = null;
-                if (e != null) {
-                    msg = e.getLocalizedMessage();
-                }
-                queueDAO.setTaskFailed(task, "Unhandled exception while running task: " + msg);
+            final TaskQueueDao taskQueueDAO = mQueueManager.getTaskQueueDao();
+            switch (status) {
+                case Success:
+                    taskQueueDAO.setTaskCompleted(task.getId());
+                    break;
+
+                case Requeue:
+                    taskQueueDAO.requeueTask(task);
+                    break;
+
+                case Cancelled:
+                    taskQueueDAO.deleteTask(task.getId());
+                    break;
+
+                case Failed:
+                    final Exception e = task.getLastException();
+                    String msg = null;
+                    if (e != null) {
+                        msg = e.getLocalizedMessage();
+                    }
+                    taskQueueDAO
+                            .setTaskFailed(task, "Unhandled exception while running task: " + msg);
+                    break;
             }
+
             //noinspection ConstantConditions
-            mTask.clear();
-            mTask = null;
+            mCurrentTaskReference.clear();
+            mCurrentTaskReference = null;
         }
         mQueueManager.notifyTaskChange();
     }
 
     @Nullable
-    public TQTask getTask() {
-        if (mTask == null) {
+    TQTask getCurrentTask() {
+        if (mCurrentTaskReference == null) {
             return null;
         } else {
-            return mTask.get();
+            return mCurrentTaskReference.get();
         }
     }
 }

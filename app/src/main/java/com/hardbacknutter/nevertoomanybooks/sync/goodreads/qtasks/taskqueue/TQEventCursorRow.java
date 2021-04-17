@@ -29,8 +29,10 @@ import java.time.ZoneOffset;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
+/**
+ * All date handling is done using ZoneOffset.UTC.
+ */
 public class TQEventCursorRow
         extends CursorRow {
 
@@ -49,24 +51,24 @@ public class TQEventCursorRow
      * @return id
      */
     public long getId() {
-        return getLong(QueueDBHelper.KEY_PK_ID);
+        return getLong(TaskQueueDBHelper.KEY_PK_ID);
     }
 
     /**
      * Get the date of when the Event occurred.
      *
-     * @param context Current context
-     *
-     * @return date; UTC based
+     * @return LocalDateTime(ZoneOffset.UTC)
      */
     @NonNull
-    public LocalDateTime getEventDate(@NonNull final Context context) {
-        LocalDateTime utcDate = DateParser.getInstance(context).parseISO(
-                getString(QueueDBHelper.KEY_EVENT_UTC_DATETIME));
-        if (utcDate == null) {
-            utcDate = LocalDateTime.now(ZoneOffset.UTC);
+    public LocalDateTime getEventUtcDate() {
+        LocalDateTime utcDateTime = mDateParser.parse(getString(
+                TaskQueueDBHelper.KEY_EVENT_UTC_DATETIME));
+
+
+        if (utcDateTime == null) {
+            utcDateTime = LocalDateTime.now(ZoneOffset.UTC);
         }
-        return utcDate;
+        return utcDateTime;
     }
 
     /**
@@ -79,7 +81,7 @@ public class TQEventCursorRow
     @NonNull
     public TQEvent getEvent(@NonNull final Context context) {
         TQEvent event;
-        final byte[] blob = getBlob(QueueDBHelper.KEY_EVENT);
+        final byte[] blob = getBlob(TaskQueueDBHelper.KEY_EVENT);
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {

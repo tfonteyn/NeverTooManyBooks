@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.ContextDialogItem;
 
 /**
@@ -50,9 +49,7 @@ public interface TQItem
      *
      * @param context   Current context
      * @param menuItems menu collection to fill
-     * @param bookDao   Database Access
      */
     void addContextMenuItems(@NonNull Context context,
-                             @NonNull List<ContextDialogItem> menuItems,
-                             @NonNull BookDao bookDao);
+                             @NonNull List<ContextDialogItem> menuItems);
 }

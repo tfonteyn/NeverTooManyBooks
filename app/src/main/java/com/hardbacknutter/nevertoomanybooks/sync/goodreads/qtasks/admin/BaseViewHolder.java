@@ -23,11 +23,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Locale;
-
 public abstract class BaseViewHolder {
 
     /** Container View for this item. */
@@ -36,21 +31,5 @@ public abstract class BaseViewHolder {
 
     BaseViewHolder(@NonNull final View view) {
         itemView = view;
-    }
-
-    /**
-     * Pretty format a LocalDateTime to a datetime-string, using the specified locale.
-     *
-     * @param date          to format
-     * @param displayLocale to use
-     *
-     * @return human readable datetime string
-     */
-    @NonNull
-    static String toPrettyDateTime(@NonNull final LocalDateTime date,
-                                   @NonNull final Locale displayLocale) {
-        return date.format(DateTimeFormatter
-                                   .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-                                   .withLocale(displayLocale));
     }
 }

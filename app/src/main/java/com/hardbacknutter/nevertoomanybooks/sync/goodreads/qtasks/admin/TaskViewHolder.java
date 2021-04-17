@@ -27,17 +27,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.BaseTQTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTaskCursorRow;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 /**
- * Holder to maintain {@link BaseTQTask} views.
+ * Holder to maintain {@link GrBaseTask} views.
  */
 public class TaskViewHolder
         extends BaseViewHolder {
@@ -68,10 +66,9 @@ public class TaskViewHolder
     }
 
     public void bind(@NonNull final TQTaskCursorRow rowData,
-                     @NonNull final BaseTQTask task) {
+                     @NonNull final GrBaseTask task) {
 
         final Context context = itemView.getContext();
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         descriptionView.setText(task.getDescription(context));
         final String statusCode = rowData.getStatusCode();
@@ -94,7 +91,7 @@ public class TaskViewHolder
                 retryInfoView.setText(context.getString(
                         R.string.gr_tq_retry_x_of_y_next_at_z, task.getRetries(),
                         task.getRetryLimit(),
-                        toPrettyDateTime(rowData.getRetryDate(context), userLocale)));
+                        DateUtils.utcToDisplay(context, rowData.getRetryUtcDate())));
                 retryInfoView.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
                 break;
@@ -124,6 +121,6 @@ public class TaskViewHolder
 
         infoView.setText(context.getString(
                 R.string.gr_tq_generic_task_info, task.getId(),
-                toPrettyDateTime(rowData.getQueuedDate(context), userLocale)));
+                DateUtils.utcToDisplay(context, rowData.getQueuedUtcDate())));
     }
 }

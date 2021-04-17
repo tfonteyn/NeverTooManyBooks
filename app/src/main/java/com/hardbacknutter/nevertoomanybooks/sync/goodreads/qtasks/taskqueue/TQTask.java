@@ -28,7 +28,6 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.ContextDialogItem;
 
 /**
@@ -37,25 +36,20 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.ContextD
 public abstract class TQTask
         implements TQItem {
 
+    public static final String COMPLETED = "S";
+    public static final String FAILED = "F";
+    public static final String QUEUED = "Q";
+
     /**
      * See {@link #getCategory()}.
      * <p>
      * {@code 0} is used for legacy tasks.
      */
     static final int CAT_UNKNOWN = 0;
-    /** We're only allowing a single import task to be scheduled/run at any time. */
-    public static final int CAT_IMPORT = 1;
-    /** We're only allowing a single export task to be scheduled/run at any time. */
-    public static final int CAT_EXPORT = 2;
-    /** But we can schedule multiple single-book export times at any time. */
-    public static final int CAT_EXPORT_ONE_BOOK = 3;
-
-    public static final String COMPLETED = "S";
-    public static final String FAILED = "F";
-    public static final String QUEUED = "Q";
 
     private static final int RETRY_LIMIT = 15;
-    private static final long serialVersionUID = 6663611438001508755L;
+
+    private static final long serialVersionUID = 371317945454248534L;
 
     @NonNull
     private final String mDescription;
@@ -76,6 +70,16 @@ public abstract class TQTask
     public TQTask(@NonNull final String description) {
         mDescription = description;
     }
+
+    /**
+     * Run the task.
+     *
+     * @param context The localised Application context
+     *
+     * @return Status
+     */
+    public abstract TaskStatus doWork(@NonNull final Context context,
+                                      @NonNull QueueManager queueManager);
 
     @Override
     public long getId() {
@@ -168,8 +172,7 @@ public abstract class TQTask
     @Override
     @CallSuper
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final BookDao bookDao) {
+                                    @NonNull final List<ContextDialogItem> menuItems) {
         menuItems.add(new ContextDialogItem(
                 context.getString(R.string.gr_tq_menu_delete_task),
                 () -> QueueManager.getInstance().deleteTask(getId())));
@@ -186,5 +189,16 @@ public abstract class TQTask
                + ", mRetryDelay=" + mRetryDelay
                + ", mIsAborting=" + mIsCancelled
                + '}';
+    }
+
+    public enum TaskStatus {
+        /** All done. */
+        Success,
+        /** Failure, but can be requeue'd. */
+        Requeue,
+        /** User cancelled. */
+        Cancelled,
+        /** Total failure, do not requeue. */
+        Failed
     }
 }

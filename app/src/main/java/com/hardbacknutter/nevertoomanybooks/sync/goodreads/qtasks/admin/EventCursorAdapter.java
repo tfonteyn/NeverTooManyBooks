@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.LegacyEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQCursorAdapter;
@@ -51,14 +52,12 @@ public class EventCursorAdapter
      *
      * @param context Current context
      * @param cursor  Cursor to use as source
-     * @param bookDao Database Access
      */
     EventCursorAdapter(@NonNull final Context context,
-                       @NonNull final Cursor cursor,
-                       @NonNull final BookDao bookDao) {
+                       @NonNull final Cursor cursor) {
         super(context, cursor);
         mLayoutInflater = LayoutInflater.from(context);
-        mBookDao = bookDao;
+        mBookDao = ServiceLocator.getInstance().getBookDao();
     }
 
     @Override
