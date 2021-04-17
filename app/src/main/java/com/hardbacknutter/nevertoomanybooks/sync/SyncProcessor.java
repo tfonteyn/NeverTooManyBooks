@@ -39,7 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -68,7 +68,7 @@ public final class SyncProcessor {
      * as (theoretically) it allows the code to download more or less data depending on
      * the fields wanted. Prime example is of course the cover images.
      *
-     * @param book    to filter
+     * @param book to filter
      *
      * @return the filtered SyncField unmodifiableMap
      */
@@ -211,19 +211,19 @@ public final class SyncProcessor {
         // Commit the new data
         if (!incoming.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = incoming.getString(DBKeys.KEY_LANGUAGE);
+            String bookLang = incoming.getString(DBKey.KEY_LANGUAGE);
             if (bookLang == null || bookLang.isEmpty()) {
                 // Otherwise add the original one.
-                bookLang = book.getString(DBKeys.KEY_LANGUAGE);
+                bookLang = book.getString(DBKey.KEY_LANGUAGE);
                 if (!bookLang.isEmpty()) {
-                    incoming.putString(DBKeys.KEY_LANGUAGE, bookLang);
+                    incoming.putString(DBKey.KEY_LANGUAGE, bookLang);
                 }
             }
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
             final Book delta = Book.from(incoming);
-            delta.putLong(DBKeys.KEY_PK_ID, bookId);
+            delta.putLong(DBKey.PK_ID, bookId);
             return delta;
         }
 
@@ -278,7 +278,7 @@ public final class SyncProcessor {
                 FileUtils.rename(downloadedFile, destination);
 
             } catch (@NonNull final IOException e) {
-                final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
+                final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
                 Logger.error(TAG, e, "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
             }
         }
@@ -448,7 +448,7 @@ public final class SyncProcessor {
                           @NonNull final String key,
                           @NonNull final SyncAction defaultAction) {
 
-            if (DBKeys.isUsed(mGlobalPref, key)) {
+            if (DBKey.isUsed(mGlobalPref, key)) {
                 final SyncAction action = SyncAction
                         .read(mGlobalPref, mPreferencePrefix + key, defaultAction);
                 mFields.put(key, new SyncField(key, labelId, false,
@@ -473,7 +473,7 @@ public final class SyncProcessor {
                               @NonNull final String prefKey,
                               @NonNull final String key) {
 
-            if (DBKeys.isUsed(mGlobalPref, prefKey)) {
+            if (DBKey.isUsed(mGlobalPref, prefKey)) {
                 final SyncAction action = SyncAction
                         .read(mGlobalPref, mPreferencePrefix + key, SyncAction.Append);
                 mFields.put(key, new SyncField(key, labelId, true,

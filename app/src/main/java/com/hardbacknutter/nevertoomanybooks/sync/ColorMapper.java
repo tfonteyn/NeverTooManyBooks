@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -48,7 +48,7 @@ public final class ColorMapper
     @NonNull
     @Override
     public String getKey() {
-        return DBKeys.KEY_COLOR;
+        return DBKey.KEY_COLOR;
     }
 
     public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {

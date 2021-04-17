@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -76,6 +76,6 @@ public final class FormatMapper
     @NonNull
     @Override
     public String getKey() {
-        return DBKeys.KEY_FORMAT;
+        return DBKey.KEY_FORMAT;
     }
 }
