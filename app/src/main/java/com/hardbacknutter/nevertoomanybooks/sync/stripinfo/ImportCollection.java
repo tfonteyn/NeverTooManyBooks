@@ -41,7 +41,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
@@ -261,7 +261,7 @@ class ImportCollection {
                 if (mine != null) {
                     final long collectionId = Long.parseLong(mine.val());
 
-                    cData.putLong(DBKeys.KEY_ESID_STRIP_INFO_BE, externalId);
+                    cData.putLong(DBKey.SID_STRIP_INFO, externalId);
 
                     final Element coverElement =
                             row.selectFirst("figure.stripThumbInnerWrapper > img");
@@ -316,7 +316,7 @@ class ImportCollection {
             parseDetails(root, destBundle);
 
             // Add as last one in case of errors thrown
-            destBundle.putLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID, collectionId);
+            destBundle.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
         }
     }
 }

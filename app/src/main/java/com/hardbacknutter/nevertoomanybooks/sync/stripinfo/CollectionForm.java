@@ -46,7 +46,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
@@ -118,7 +118,7 @@ public class CollectionForm
         parseDetails(form, destBundle);
 
         // Add as last one in case of errors thrown
-        destBundle.putLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID, collectionId);
+        destBundle.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
     }
 
 
@@ -137,7 +137,7 @@ public class CollectionForm
     public void setOwned(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final boolean owned = book.getBoolean(DBKeys.KEY_STRIP_INFO_BE_OWNED);
+        final boolean owned = book.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED);
 
         setBooleanByMode(book, owned ? "inBezit" : "notInBezit");
     }
@@ -157,7 +157,7 @@ public class CollectionForm
     public void setRead(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final boolean read = book.getBoolean(DBKeys.KEY_READ);
+        final boolean read = book.getBoolean(DBKey.BOOL_READ);
 
         setBooleanByMode(book, read ? "gelezen" : "notGelezen");
     }
@@ -177,7 +177,7 @@ public class CollectionForm
     public void setWanted(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final boolean wanted = book.getBoolean(DBKeys.KEY_STRIP_INFO_BE_WANTED);
+        final boolean wanted = book.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED);
 
         setBooleanByMode(book, wanted ? "inWishlist" : "notInWishlist");
     }
@@ -187,12 +187,12 @@ public class CollectionForm
                                   @NonNull final String mode)
             throws IOException, IllegalArgumentException {
 
-        final long externalId = book.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        long collectionId = book.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID);
+        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             final String postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -203,7 +203,7 @@ public class CollectionForm
             //noinspection ConstantConditions
             final Document responseForm = doPost(postBody);
             collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
-            book.putLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID, collectionId);
+            book.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
 
             book.setStage(EntityStage.Stage.Dirty);
 
@@ -224,12 +224,12 @@ public class CollectionForm
     public void setRating(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final long externalId = book.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        final long collectionId = book.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID);
+        final long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             throw new IllegalArgumentException("collectionId == 0");
         }
@@ -262,16 +262,16 @@ public class CollectionForm
     public void send(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final long externalId = book.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        long collectionId = book.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID);
+        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             // Flag the book as 'owned' which will give it a collection-id.
             setOwned(book);
-            collectionId = book.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID);
+            collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
             // sanity check
             if (collectionId == 0) {
                 throw new IllegalArgumentException("collectionId == 0");
@@ -282,7 +282,7 @@ public class CollectionForm
 
         builder.appendQueryParameter(FF_SCORE, ratingToSite(book));
 
-        String dateAcquired = book.getString(DBKeys.KEY_DATE_ACQUIRED);
+        String dateAcquired = book.getString(DBKey.DATE_ACQUIRED);
         if (dateAcquired.length() == 10) {
             // convert from ISO {@code "YYYY-MM-DD"} to "DD/MM/YYYY"
             dateAcquired = dateAcquired.substring(8, 10)
@@ -292,20 +292,20 @@ public class CollectionForm
         builder.appendQueryParameter(FF_AANKOOP_DATUM, dateAcquired);
 
         // The site does not store a currency; it's hardcoded/supposed to be EURO.
-        final Money paid = book.getMoney(DBKeys.KEY_PRICE_PAID);
+        final Money paid = book.getMoney(DBKey.PRICE_PAID);
         builder.appendQueryParameter(FF_AANKOOP_PRIJS,
                                      paid != null ? String.valueOf(paid.toEuro()) : "");
 
         // The site only supports numbers 1..x (and changes an empty string into a "1")
         // so we either put "1" for first-edition, or "2" for a reprint.
-        builder.appendQueryParameter(FF_DRUK, book.isBitSet(DBKeys.KEY_EDITION_BITMASK,
+        builder.appendQueryParameter(FF_DRUK, book.isBitSet(DBKey.BITMASK_EDITION,
                                                             Book.Edition.FIRST) ? "1" : "2");
 
         // we're only supporting 1 copy and the site does not allow 0 or an empty string.
         builder.appendQueryParameter(FF_AANTAL, "1");
 
-        builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKeys.KEY_LOCATION));
-        builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKeys.KEY_PRIVATE_NOTES));
+        builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.KEY_LOCATION));
+        builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.KEY_PRIVATE_NOTES));
 
         final String postBody = builder
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -320,19 +320,19 @@ public class CollectionForm
 
     @AnyThread
     private String ratingToSite(@NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(DBKeys.KEY_RATING) * 2, 0, 10));
+        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.KEY_RATING) * 2, 0, 10));
     }
 
     @WorkerThread
     public void delete(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
-        final long externalId = book.getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
             throw new IllegalArgumentException("externalId == 0");
         }
 
-        final long collectionId = book.getLong(DBKeys.KEY_STRIP_INFO_BE_COLL_ID);
+        final long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
             throw new IllegalArgumentException("collectionId == 0");
         }

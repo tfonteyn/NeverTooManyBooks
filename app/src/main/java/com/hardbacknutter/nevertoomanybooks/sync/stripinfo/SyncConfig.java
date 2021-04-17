@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class SyncConfig {
 
@@ -41,7 +41,7 @@ public class SyncConfig {
     private static Bookshelf getBookshelf(@NonNull final Context context,
                                           @NonNull final String key) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        final int id = ParseUtils.getIntListPref(global, key, Bookshelf.DEFAULT);
+        final int id = Prefs.getIntListPref(global, key, Bookshelf.DEFAULT);
         return Bookshelf.getBookshelf(context, id);
     }
 

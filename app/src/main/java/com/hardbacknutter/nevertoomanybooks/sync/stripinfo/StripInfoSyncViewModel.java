@@ -33,8 +33,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -49,18 +48,12 @@ public class StripInfoSyncViewModel
 
     private ImportCollectionTask mImportCollectionTask;
 
-    private BookDao mBookDao;
-
     private SyncProcessor mSyncProcessor;
     private boolean[] mCoversForNewBooks;
 
     @Override
     protected void onCleared() {
         mImportCollectionTask.cancel(true);
-
-        if (mBookDao != null) {
-            mBookDao.close();
-        }
 
         super.onCleared();
     }
@@ -73,43 +66,42 @@ public class StripInfoSyncViewModel
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
-        if (mBookDao == null) {
-            mBookDao = new BookDao(TAG);
-            mImportCollectionTask = new ImportCollectionTask(mBookDao);
+        if (mImportCollectionTask == null) {
+            mImportCollectionTask = new ImportCollectionTask();
 
             //ENHANCE: make these user configurable. The simple fields are CopyIfBlank
             mSyncProcessor = new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
-                    .add(R.string.site_stripinfo_be, DBKeys.KEY_ESID_STRIP_INFO_BE)
+                    .add(R.string.site_stripinfo_be, DBKey.SID_STRIP_INFO)
 
-                    .add(R.string.lbl_cover_front, DBKeys.COVER_IS_USED[0])
-                    .addRelatedField(DBKeys.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
-                    .add(R.string.lbl_cover_back, DBKeys.COVER_IS_USED[1])
-                    .addRelatedField(DBKeys.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+                    .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
+                    .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
+                    .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
+                    .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
 
                     // the wishlist
-                    .addList(R.string.lbl_bookshelves, DBKeys.KEY_FK_BOOKSHELF,
+                    .addList(R.string.lbl_bookshelves, DBKey.FK_BOOKSHELF,
                              Book.BKEY_BOOKSHELF_LIST)
 
-                    .add(R.string.lbl_date_acquired, DBKeys.KEY_DATE_ACQUIRED)
-                    .add(R.string.lbl_location, DBKeys.KEY_LOCATION)
-                    .add(R.string.lbl_personal_notes, DBKeys.KEY_PRIVATE_NOTES)
-                    .add(R.string.lbl_rating, DBKeys.KEY_RATING)
-                    .add(R.string.lbl_read, DBKeys.KEY_READ)
+                    .add(R.string.lbl_date_acquired, DBKey.DATE_ACQUIRED)
+                    .add(R.string.lbl_location, DBKey.KEY_LOCATION)
+                    .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
+                    .add(R.string.lbl_rating, DBKey.KEY_RATING)
+                    .add(R.string.lbl_read, DBKey.BOOL_READ)
 
-                    .add(R.string.lbl_price_paid, DBKeys.KEY_PRICE_PAID)
-                    .addRelatedField(DBKeys.KEY_PRICE_PAID_CURRENCY, DBKeys.KEY_PRICE_PAID)
+                    .add(R.string.lbl_price_paid, DBKey.PRICE_PAID)
+                    .addRelatedField(DBKey.PRICE_PAID_CURRENCY, DBKey.PRICE_PAID)
 
                     // The site specific keys
-                    .add(R.string.lbl_owned, DBKeys.KEY_STRIP_INFO_BE_OWNED)
-                    .add(R.string.lbl_wishlist, DBKeys.KEY_STRIP_INFO_BE_WANTED)
-                    .add(R.string.lbl_number, DBKeys.KEY_STRIP_INFO_BE_AMOUNT)
-                    .add(R.string.site_stripinfo_be, DBKeys.KEY_STRIP_INFO_BE_COLL_ID)
+                    .add(R.string.lbl_owned, DBKey.BOOL_STRIP_INFO_OWNED)
+                    .add(R.string.lbl_wishlist, DBKey.BOOL_STRIP_INFO_WANTED)
+                    .add(R.string.lbl_number, DBKey.KEY_STRIP_INFO_AMOUNT)
+                    .add(R.string.site_stripinfo_be, DBKey.KEY_STRIP_INFO_COLL_ID)
 
                     .build();
 
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            mCoversForNewBooks = new boolean[]{DBKeys.isUsed(global, DBKeys.COVER_IS_USED[0]),
-                                               DBKeys.isUsed(global, DBKeys.COVER_IS_USED[1])};
+            mCoversForNewBooks = new boolean[]{DBKey.isUsed(global, DBKey.COVER_IS_USED[0]),
+                                               DBKey.isUsed(global, DBKey.COVER_IS_USED[1])};
         }
     }
 

@@ -35,7 +35,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -73,17 +73,14 @@ public class ImportCollectionTask
     private final ArrayList<Long> mAdded = new ArrayList<>();
 
     private StripInfoSearchEngine mSearchEngine;
-    @NonNull
-    private final BookDao mBookDao;
     /** Which fields and how to process them for existing books. */
     private SyncProcessor mSyncProcessor;
     /** How to fetch covers for new books. */
     private boolean[] mCoversForNewBooks;
 
     @UiThread
-    ImportCollectionTask(@NonNull final BookDao bookDao) {
+    ImportCollectionTask() {
         super(R.id.TASK_ID_IMPORT, TAG);
-        mBookDao = bookDao;
     }
 
     @UiThread
@@ -115,6 +112,7 @@ public class ImportCollectionTask
         mSearchEngine.setLoginHelper(loginHelper);
 
         final SynchronizedDb db = ServiceLocator.getDb();
+        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
         final ImportCollection ic = new ImportCollection(context, new SyncConfig(), userId);
 
@@ -126,7 +124,7 @@ public class ImportCollectionTask
                 try {
                     txLock = db.beginTransaction(true);
 
-                    processPage(context, page);
+                    processPage(context, bookDao, page);
 
                     db.setTransactionSuccessful();
                 } finally {
@@ -137,29 +135,25 @@ public class ImportCollectionTask
             }
         }
 
-        if (!isCancelled()) {
-            // always done, even if queued is empty as we need to delete any previous queued books
-            ServiceLocator.getInstance().getStripInfoDao().setQueuedBooks(mAdded);
-        }
-
         return new Outcome(mUpdated, mAdded);
     }
 
     private void processPage(@NonNull final Context context,
+                             @NonNull final BookDao bookDao,
                              @NonNull final List<Bundle> page)
             throws IOException, DaoWriteException {
 
         for (final Bundle cData : page) {
             if (!isCancelled()) {
                 final long externalId = cData
-                        .getLong(DBKeys.KEY_ESID_STRIP_INFO_BE);
+                        .getLong(DBKey.SID_STRIP_INFO);
                 // lookup locally using the externalId column.
-                try (Cursor cursor = mBookDao.fetchBooksByKey(
-                        DBKeys.KEY_ESID_STRIP_INFO_BE, externalId)) {
+                try (Cursor cursor = bookDao.fetchByKey(
+                        DBKey.SID_STRIP_INFO, String.valueOf(externalId))) {
 
                     if (cursor.moveToFirst()) {
                         // The full local data
-                        final Book book = Book.from(cursor, mBookDao);
+                        final Book book = Book.from(cursor);
                         // The delta values we'll be updating
                         final Book delta;
 
@@ -191,7 +185,7 @@ public class ImportCollectionTask
 
                         if (delta != null) {
                             try {
-                                mBookDao.update(context, delta, 0);
+                                bookDao.update(context, delta, 0);
                             } catch (@NonNull final DaoWriteException e) {
                                 // ignore, but log it.
                                 Logger.error(TAG, e);
@@ -209,7 +203,7 @@ public class ImportCollectionTask
                         final Book book = Book.from(bookData);
                         book.ensureBookshelf(context);
 
-                        final long id = mBookDao.insert(context, book, 0);
+                        final long id = bookDao.insert(context, book, 0);
                         if (id > 0) {
                             mAdded.add(id);
                             publishProgress(1, book.getTitle());
