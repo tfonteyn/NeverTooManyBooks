@@ -20,55 +20,185 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
-import android.os.StatFs;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * The set of named directories used and support functions for them.
+ * <p>
+ * 2021-04: no longer using the dedicated cache dir now that we support multiple storage volumes.
  */
 public enum AppDir {
     /** Nothing stored here, just the sub directories. */
-    Root,
-    /** Database backup taken during app upgrades. */
-    Upgrades,
-    /** temp files. */
-    Cache,
-    /** log files. */
-    Log,
-    /** The book covers. This is the app external Pictures folder. */
-    Covers;
+    Root(null, null),
 
-    /** error result code for {@link #getFreeSpace}. */
-    public static final int ERROR_CANNOT_STAT = -2;
+    /** The book covers. */
+    Covers(Environment.DIRECTORY_PICTURES, null),
+    /** Temp files: covers before they become permanent + debug report files. */
+    Temp(null, "tmp"),
+    /** log files. */
+    Log(null, "log"),
+    /** Database backup taken during app upgrades. */
+    Upgrades(null, "Upgrades");
+
     /** The length of a UUID string. */
     public static final int UUID_LEN = 32;
     /** Log tag. */
     private static final String TAG = "AppDir";
-    /** Sub directory of Root : Upgrade files. */
-    private static final String UPGRADES_SUB_DIR = "Upgrades";
-    /** Sub directory of Root : log files. */
-    private static final String LOG_SUB_DIR = "log";
-    /** The cached directory. */
+    @Nullable
+    private final String mSubDir;
+    @Nullable
+    private final String mType;
+    /** The physical directory. */
     @Nullable
     private File mDir;
+
+    AppDir(@Nullable final String type,
+           @Nullable final String subDir) {
+        mType = type;
+        mSubDir = subDir;
+    }
+
+    /**
+     * Initialize storage needs. Called from StartupActivity.
+     * <p>
+     * Dev note: if the desired volume index is not found, then we revert to '0'.
+     * Hence the return value will either be the desired==actual volume or '0'.
+     *
+     * @param context Current context
+     * @param volume  the desired volume
+     *
+     * @return the actual volume
+     *
+     * @throws ExternalStorageException on any failure.
+     */
+    public static int initVolume(@NonNull final Context context,
+                                 final int volume)
+            throws ExternalStorageException {
+
+        final StorageManager storage = (StorageManager)
+                context.getSystemService(Context.STORAGE_SERVICE);
+        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
+
+        final int actualVolume;
+        if (volume >= storageVolumes.size()) {
+            // The most obvious issue:
+            // Storage was configured to be on SDCARD (index==1),
+            // but the SDCARD was ejected AND removed.
+            // We set "0" and go ahead for now, so at least we get a valid Log folder.
+            actualVolume = 0;
+
+        } else if (!Environment.MEDIA_MOUNTED.equals(storageVolumes.get(volume).getState())) {
+            // The second most obvious issue:
+            // Storage was configured to be on SDCARD (index==1),
+            // but the SDCARD was eject and NOT removed: status wil be MEDIA_UNMOUNTED.
+            // There are plenty of other possible issues but they are not as easy to handle
+            // so we won't...
+            // We set "0" and go ahead for now, so at least we get a valid Log folder.
+            actualVolume = 0;
+
+        } else {
+            //FIXME: add one more, elaborate, check for situations where the SDCARD was REPLACED.
+            // all fine.
+            actualVolume = volume;
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.d(TAG, "initVolume", "volume=" + volume
+                                        + "|actualVolume=" + actualVolume);
+            dumpStorageInfo(context, storage);
+        }
+
+        for (final AppDir ad : values()) {
+            ad.initDir(context, actualVolume);
+        }
+
+        // Prevent thumbnails showing up in the device Image Gallery.
+        final File mif = new File(Covers.mDir, MediaStore.MEDIA_IGNORE_FILENAME);
+        if (!mif.exists()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                mif.createNewFile();
+            } catch (@NonNull final IOException | SecurityException e) {
+                throw new ExternalStorageException(Covers, "Failed to write .nomedia", e);
+            }
+        }
+
+        return actualVolume;
+    }
+
+    private static void dumpStorageInfo(@NonNull final Context context,
+                                        @NonNull final StorageManager storage) {
+        // Typical emulator output:
+        // 0    uuid=null
+        //      Description=Internal shared storage
+        //      Directory=/storage/emulated/0
+        //      MediaStoreVolumeName=external_primary
+        //      isPrimary=true
+        //      isEmulated=true
+        //      isRemovable=false
+        //      getState=mounted
+        //
+        // 1    uuid=17FE-1508
+        //      Description="SDCARD"
+        //      Directory=/storage/17FE-1508
+        //      MediaStoreVolumeName=17fe-1508
+        //      isPrimary=false
+        //      isEmulated=false
+        //      isRemovable=true
+        //      getState=mounted
+        final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
+        for (final StorageVolume sv : storageVolumes) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Logger.d(TAG, "init",
+                         "uuid=" + sv.getUuid()
+                         + "|sv.getDescription=" + sv.getDescription(context)
+                         + "|getDirectory=" + sv.getDirectory()
+                         + "|getMediaStoreVolumeName=" + sv.getMediaStoreVolumeName()
+                         + "|isPrimary=" + sv.isPrimary()
+                         + "|isEmulated=" + sv.isEmulated()
+                         + "|isRemovable=" + sv.isRemovable()
+                         + "|getState=" + sv.getState());
+            } else {
+                Logger.d(TAG, "init",
+                         "uuid=" + sv.getUuid()
+                         + "|sv.getDescription=" + sv.getDescription(context)
+                         + "|isPrimary=" + sv.isPrimary()
+                         + "|isEmulated=" + sv.isEmulated()
+                         + "|isRemovable=" + sv.isRemovable()
+                         + "|getState=" + sv.getState());
+            }
+        }
+    }
+
+    public static void setVolume(@NonNull final Context context,
+                                 final int volume) {
+        // User is ok with the change.
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(Prefs.pk_storage_volume, String.valueOf(volume))
+                         .apply();
+    }
 
     /**
      * Count size + (optional) Cleanup any purgeable files.
@@ -81,116 +211,74 @@ public enum AppDir {
      */
     public static long purge(@NonNull final Collection<String> bookUuidList,
                              final boolean reallyDelete) {
+
+        // check for orphaned cover files
+        final FileFilter coverFilter = file -> {
+            if (file.getName().length() > UUID_LEN) {
+                // not in the list? then we can purge it
+                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
+            }
+            // not a uuid base file ? be careful and leave it.
+            return false;
+        };
+
         long totalSize = 0;
-
         try {
-            // just trash these dirs
-            totalSize += Cache.purge(reallyDelete, null);
-            totalSize += Log.purge(reallyDelete, null);
-            totalSize += Upgrades.purge(reallyDelete, null);
-
-            // check for orphaned cover files
-            totalSize += Covers.purge(reallyDelete, file -> {
-                if (file.getName().length() > UUID_LEN) {
-                    // not in the list? then we can purge it
-                    return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
-                }
-                // not a uuid base file ? be careful and leave it.
-                return false;
-            });
-
-        } catch (@NonNull final SecurityException e) {
+            if (reallyDelete) {
+                totalSize = FileUtils.deleteFiles(Temp.getDir(), null)
+                            + FileUtils.deleteFiles(Log.getDir(), null)
+                            + FileUtils.deleteFiles(Upgrades.getDir(), null)
+                            + FileUtils.deleteFiles(Covers.getDir(), coverFilter);
+            } else {
+                totalSize = FileUtils.getUsedSpace(Temp.getDir(), null)
+                            + FileUtils.getUsedSpace(Log.getDir(), null)
+                            + FileUtils.getUsedSpace(Upgrades.getDir(), null)
+                            + FileUtils.getUsedSpace(Covers.getDir(), coverFilter);
+            }
+        } catch (@NonNull final SecurityException | ExternalStorageException e) {
             // not critical, just log it.
             Logger.error(TAG, e);
             return 0;
         }
-
         return totalSize;
     }
 
     /**
-     * Initialize storage needs. Called from StartupActivity.
-     * <p>
-     * All exceptions are suppressed but logged.
-     *
-     * @param context Current context
-     *
-     * @return {@code null} for all ok, or a user displayable error.
-     */
-    @Nullable
-    public static String init(@NonNull final Context context) {
-
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return context.getString(R.string.error_storage_not_accessible);
-        }
-
-        try {
-            // check we can get our root.
-            Root.getDir();
-
-            // create sub directories if needed
-            final AppDir[] appDirs = {Log, Upgrades};
-            for (final AppDir appDir : appDirs) {
-                final File dir = appDir.getDir();
-                if (!(dir.isDirectory() || dir.mkdirs())) {
-                    return context.getString(R.string.error_storage_not_writable);
-                }
-            }
-
-            // Prevent thumbnails showing up in the device Image Gallery.
-            //noinspection ResultOfMethodCallIgnored
-            new File(Covers.getDir(), MediaStore.MEDIA_IGNORE_FILENAME).createNewFile();
-
-            return null;
-
-        } catch (@NonNull final ExternalStorageException e) {
-            // Don't log, we don't have a log!
-            return e.getLocalizedMessage(context);
-
-        } catch (@NonNull final IOException | SecurityException e) {
-            Logger.error(TAG, e, "init failed");
-            return context.getString(R.string.error_storage_not_writable);
-        }
-    }
-
-    /**
-     * Delete <strong>ALL</strong> files in our private directories.
-     */
-    public static void deleteAllContent()
-            throws ExternalStorageException {
-
-        File[] files;
-
-        files = Upgrades.getDir().listFiles();
-        if (files != null) {
-            //noinspection ResultOfMethodCallIgnored
-            Arrays.stream(files).forEach(File::delete);
-        }
-        files = Cache.getDir().listFiles();
-        if (files != null) {
-            //noinspection ResultOfMethodCallIgnored
-            Arrays.stream(files).forEach(File::delete);
-        }
-        files = Covers.getDir().listFiles();
-        if (files != null) {
-            //noinspection ResultOfMethodCallIgnored
-            Arrays.stream(files).forEach(File::delete);
-        }
-        files = Log.getDir().listFiles();
-        if (files != null) {
-            //noinspection ResultOfMethodCallIgnored
-            Arrays.stream(files).forEach(File::delete);
-        }
-
-        // we don't delete root, there are no files there
-    }
-
-    /**
      * Get the File object for this directory.
+     *
+     * @return Directory (File) object
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available
+     */
+    // keep the ExternalStorageException declaration for future usage!
+    @SuppressWarnings("RedundantThrows")
+    @NonNull
+    public File getDir()
+            throws ExternalStorageException {
+        return Objects.requireNonNull(mDir, "mDir");
+    }
+
+    public boolean exists() {
+        try {
+            return mDir != null && mDir.exists();
+        } catch (@NonNull final SecurityException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Make sure the directory and any other conditions for this dir are fulfilled.
      * <p>
-     * Dev. note: a device might have two (or more) external file directories of the same type.
+     * Dev. notes: A device might have two (or more) external file directories of the same type.
      * i.e. {@link Context#getExternalFilesDir} for {@link Environment#DIRECTORY_PICTURES}
-     * might internally resolve to two paths. Android will "ensure" those before returning them,
+     * might internally resolve several paths:
+     * <ol>
+     *     <li>the "external/shared" memory card, which is these days the builtin memory</li>
+     *     <li>a removable sdcard</li>
+     *     <li>other</li>
+     * </ol>
+     * <p>
+     * Android will "ensure" those before returning them,
      * which (at least in the emulator) can result in log messages like this:
      * <pre>
      *     W/ContextImpl: Failed to ensure /storage/14ED-381E/Android/data/com.hardbacknutter
@@ -199,94 +287,48 @@ public enum AppDir {
      *     .nevertoomanybooks/files/Pictures:
      *     java.io.IOException: I/O error
      * </pre>
-     * These can be ignored. The other "ensured" path will be returned for use as normal. flw...
-     *
-     * @return Directory (File) object
+     * These can mostly be ignored.
+     * The internal "ensured" path will be returned for use as normal. flw...
+     * {@link Context#getExternalFilesDir} will always return element [0] (or {@code null})
+     * <p>
+     * To make debugging easier, we actually use {@link Context#getExternalFilesDirs}
+     * and handle the index ourselves.
      *
      * @throws ExternalStorageException if the Shared Storage media is not available
      */
-    @NonNull
-    public File getDir()
+    private void initDir(@NonNull final Context context,
+                         final int index)
             throws ExternalStorageException {
 
-        if (mDir != null && mDir.exists()) {
-            return mDir;
-        }
-        final Context appContext = ServiceLocator.getAppContext();
+        final File[] d = context.getExternalFilesDirs(mType);
 
-        switch (this) {
-            case Covers:
-                mDir = appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                break;
-
-            case Root:
-                mDir = appContext.getExternalFilesDir(null);
-                break;
-
-            case Upgrades:
-                mDir = new File(appContext.getExternalFilesDir(null), UPGRADES_SUB_DIR);
-                break;
-
-            case Log:
-                mDir = new File(appContext.getExternalFilesDir(null), LOG_SUB_DIR);
-                break;
-
-            case Cache:
-                mDir = appContext.getExternalCacheDir();
-                break;
+        if (d == null || d.length < index || d[index] == null || !d[index].exists()) {
+            throw new ExternalStorageException(this, "No volume: " + index);
         }
 
-        if (mDir == null) {
-            throw new ExternalStorageException(this);
+        if (mSubDir == null) {
+            mDir = d[index];
+
+        } else {
+            final File dir = new File(d[index], mSubDir);
+            if (!(dir.isDirectory() || dir.mkdirs())) {
+                throw new ExternalStorageException(this, "No directory: " + mSubDir);
+            }
+            mDir = dir;
         }
-        return mDir;
     }
 
     /**
      * Get the space free in this directory.
      *
-     * @return Space in bytes free or {@link #ERROR_CANNOT_STAT} on error
+     * @return Space in bytes free, or {@code 0} on any failure
      */
     public long getFreeSpace() {
         try {
-            final StatFs stat = new StatFs(getDir().getPath());
-            return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
-
-        } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {
-            Logger.error(TAG, e);
-            return ERROR_CANNOT_STAT;
+            return FileUtils.getFreeSpace(getDir());
+        } catch (@NonNull final IOException e) {
+            return 0;
         }
-    }
-
-    /**
-     * Purge applicable files for this directory.
-     * Recursively visits sub directories.
-     *
-     * @param reallyDelete {@code true} to actually delete files,
-     *                     {@code false} to only sum file sizes in bytes
-     * @param filter       (optional) to apply; {@code null} for all files.
-     *
-     * @return number of bytes (potentially) deleted
-     */
-    public long purge(final boolean reallyDelete,
-                      @Nullable final FileFilter filter) {
-
-        long totalSize = 0;
-        try {
-            for (final File file : collectFiles(getDir(), filter)) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "purge", this + "|" + file.getName());
-                }
-                totalSize += file.length();
-                if (reallyDelete) {
-                    FileUtils.delete(file);
-                }
-            }
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // ignore
-        }
-
-        return totalSize;
     }
 
     /**
@@ -301,7 +343,7 @@ public enum AppDir {
     public List<File> collectFiles(@Nullable final FileFilter filter)
             throws ExternalStorageException {
         try {
-            return collectFiles(getDir(), filter);
+            return FileUtils.collectFiles(getDir(), filter);
 
         } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
@@ -309,32 +351,5 @@ public enum AppDir {
             // just return an empty list
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Collect applicable files for the given directory.
-     * Recursively visits sub directories.
-     *
-     * @param root   directory to collect from
-     * @param filter (optional) to apply; {@code null} for all files.
-     *
-     * @return list of files
-     */
-    @NonNull
-    private List<File> collectFiles(@NonNull final File root,
-                                    @Nullable final FileFilter filter) {
-        final List<File> files = new ArrayList<>();
-        // sanity check
-        if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (file.isFile()) {
-                    files.add(file);
-                } else if (file.isDirectory()) {
-                    files.addAll(collectFiles(file, filter));
-                }
-            }
-        }
-        return files;
     }
 }
