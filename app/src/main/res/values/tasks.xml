@@ -56,12 +56,14 @@
     <!-- Startup task to build language cache file(s). -->
     <item name="TASK_ID_BUILD_LANG_MAP" type="id" />
 
+    <item name="TASK_ID_VOLUME_MOVER" type="id" />
+
     <!-- Database maintenance tasks. -->
     <item name="TASK_ID_DB_CLEANER" type="id" />
     <item name="TASK_ID_DB_OPTIMIZE" type="id" />
     <item name="TASK_ID_DB_REBUILD_INDEXES" type="id" />
     <item name="TASK_ID_DB_REBUILD_FTS" type="id" />
-    <item name="TASK_ID_DB_REBUILD_REORDER_TITLES" type="id" />
+    <item name="TASK_ID_DB_REBUILD_TITLE_OB" type="id" />
 
 
     <!-- Goodreads. -->
