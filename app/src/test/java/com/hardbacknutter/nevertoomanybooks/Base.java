@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -90,13 +89,11 @@ public class Base {
     /**
      * @param locale0 to use for
      *                JDK
-     *                DateParser.create(locale0)
      *                context.getResources().getConfiguration().getLocales().get(0)
      */
     public void setLocale(@NonNull final Locale locale0) {
         mLocale0 = locale0;
         Locale.setDefault(mLocale0);
-        DateParser.getTestInstance(mLocale0);
     }
 
 

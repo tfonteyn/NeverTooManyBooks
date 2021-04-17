@@ -19,19 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,32 +41,22 @@ class BookTest
 
     private static final String INVALID_DEFAULT = "Invalid default";
 
-    protected Bundle mBundleHelper;
-
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-
-        mBundleHelper = BundleMock.create();
-    }
-
     /** US english book, price in $. */
     @Test
     void preprocessPrices01() {
         setLocale(Locale.US);
 
         final Book book = new Book(mRawData);
-        book.putString(DBKeys.KEY_LANGUAGE, "eng");
-        book.putDouble(DBKeys.KEY_PRICE_LISTED, 1.23d);
-        book.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, "$");
+        book.putString(DBKey.KEY_LANGUAGE, "eng");
+        book.putDouble(DBKey.PRICE_LISTED, 1.23d);
+        book.putString(DBKey.PRICE_LISTED_CURRENCY, "$");
 
-        final Locale bookLocale = book.getLocale(mContext);
-
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
         // dump(book);
 
-        assertEquals(1.23d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals("$", book.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals("$", book.getString(DBKey.PRICE_LISTED_CURRENCY));
     }
 
     /** US english book, price set, currency not set. */
@@ -78,22 +65,21 @@ class BookTest
         setLocale(Locale.US);
 
         final Book book = new Book(mRawData);
-        book.putString(DBKeys.KEY_LANGUAGE, "eng");
-        book.putDouble(DBKeys.KEY_PRICE_LISTED, 0d);
-        book.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, "");
-        book.putDouble(DBKeys.KEY_PRICE_PAID, 456.789d);
+        book.putString(DBKey.KEY_LANGUAGE, "eng");
+        book.putDouble(DBKey.PRICE_LISTED, 0d);
+        book.putString(DBKey.PRICE_LISTED_CURRENCY, "");
+        book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no KEY_PRICE_PAID_CURRENCY
 
-        final Locale bookLocale = book.getLocale(mContext);
-
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY);
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_PAID, DBKeys.KEY_PRICE_PAID_CURRENCY);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertNotNull(book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
-        assertEquals(456.789d, book.getDouble(DBKeys.KEY_PRICE_PAID));
-        assertNull(book.get(DBKeys.KEY_PRICE_PAID_CURRENCY));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
+        assertNotNull(book.get(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID));
+        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
     }
 
     @Test
@@ -101,23 +87,22 @@ class BookTest
         setLocale(Locale.FRANCE);
 
         final Book book = new Book(mRawData);
-        book.putString(DBKeys.KEY_LANGUAGE, "fra");
-        book.putString(DBKeys.KEY_PRICE_LISTED, "");
-        book.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, Money.EUR);
-        book.putString(DBKeys.KEY_PRICE_PAID, "test");
+        book.putString(DBKey.KEY_LANGUAGE, "fra");
+        book.putString(DBKey.PRICE_LISTED, "");
+        book.putString(DBKey.PRICE_LISTED_CURRENCY, Money.EUR);
+        book.putString(DBKey.PRICE_PAID, "test");
         // no KEY_PRICE_PAID_CURRENCY
 
-        final Locale bookLocale = book.getLocale(mContext);
-
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY);
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_PAID, DBKeys.KEY_PRICE_PAID_CURRENCY);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
         //dump(book);
 
-        assertEquals(0d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals(Money.EUR, book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY));
         // "test" is correct according to preprocessPrices NOT changing illegal values.
-        assertEquals("test", book.get(DBKeys.KEY_PRICE_PAID));
-        assertNull(book.get(DBKeys.KEY_PRICE_PAID_CURRENCY));
+        assertEquals("test", book.get(DBKey.PRICE_PAID));
+        assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
     }
 
     @Test
@@ -125,16 +110,15 @@ class BookTest
         setLocale(Locale.FRANCE);
 
         final Book book = new Book(mRawData);
-        book.putString(DBKeys.KEY_LANGUAGE, "eng");
-        book.putString(DBKeys.KEY_PRICE_LISTED, "EUR 45");
+        book.putString(DBKey.KEY_LANGUAGE, "eng");
+        book.putString(DBKey.PRICE_LISTED, "EUR 45");
 
-        final Locale bookLocale = book.getLocale(mContext);
-
-        book.preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED, DBKeys.KEY_PRICE_LISTED_CURRENCY);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
         //dump(book);
 
-        assertEquals(45d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals(Money.EUR, book.get(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(Money.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY));
     }
 
     @Test
@@ -143,45 +127,43 @@ class BookTest
         final Book book = new Book(mRawData);
 
         // Long: valid number
-        book.put(DBKeys.KEY_ESID_GOODREADS_BOOK, 2L);
+        book.put(DBKey.SID_GOODREADS_BOOK, 2L);
         // Long: 0 -> should be removed
-        book.put(DBKeys.KEY_ESID_ISFDB, 0L);
+        book.put(DBKey.SID_ISFDB, 0L);
         // Long: null -> should be removed
-        book.put(DBKeys.KEY_ESID_LAST_DODO_NL, null);
+        book.put(DBKey.SID_LAST_DODO_NL, null);
         // Long: blank string -> should be removed
-        book.put(DBKeys.KEY_ESID_LIBRARY_THING, "");
+        book.put(DBKey.SID_LIBRARY_THING, "");
         // Long: non-blank string -> should be removed
-        book.put(DBKeys.KEY_ESID_STRIP_INFO_BE, "test");
+        book.put(DBKey.SID_STRIP_INFO, "test");
 
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKeys.KEY_ISBN, "test");
+        book.put(DBKey.KEY_ISBN, "test");
         // blank string for a text field -> should be removed
-        book.put(DBKeys.KEY_ESID_OPEN_LIBRARY, "");
-
+        book.put(DBKey.SID_OPEN_LIBRARY, "");
 
         // Not tested: null string for a string field..
 
-
-        book.preprocessExternalIds(true);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processExternalIds();
         dump(book);
 
-        assertEquals(2, book.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK));
-        assertFalse(book.contains(DBKeys.KEY_ESID_ISFDB));
-        assertFalse(book.contains(DBKeys.KEY_ESID_LAST_DODO_NL));
-        assertFalse(book.contains(DBKeys.KEY_ESID_LIBRARY_THING));
-        assertFalse(book.contains(DBKeys.KEY_ESID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertFalse(book.contains(DBKey.SID_ISFDB));
+        assertFalse(book.contains(DBKey.SID_LAST_DODO_NL));
+        assertFalse(book.contains(DBKey.SID_LIBRARY_THING));
+        assertFalse(book.contains(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKeys.KEY_ISBN));
-        assertFalse(book.contains(DBKeys.KEY_ESID_OPEN_LIBRARY));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
+        assertFalse(book.contains(DBKey.SID_OPEN_LIBRARY));
 
-
-        book.preprocessNullsAndBlanks(true);
+        bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals(2, book.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK));
-        assertEquals("test", book.getString(DBKeys.KEY_ISBN));
+        assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
     }
 
     @Test
@@ -190,51 +172,52 @@ class BookTest
         final Book book = new Book(mRawData);
 
         // Long: valid number
-        book.put(DBKeys.KEY_ESID_GOODREADS_BOOK, 2L);
+        book.put(DBKey.SID_GOODREADS_BOOK, 2L);
         // Long: 0 -> should be defaulted to null
-        book.put(DBKeys.KEY_ESID_ISFDB, 0L);
+        book.put(DBKey.SID_ISFDB, 0L);
         // Long: null
-        book.put(DBKeys.KEY_ESID_LAST_DODO_NL, null);
+        book.put(DBKey.SID_LAST_DODO_NL, null);
         // Long: blank string -> defaulted to null
-        book.put(DBKeys.KEY_ESID_LIBRARY_THING, "");
+        book.put(DBKey.SID_LIBRARY_THING, "");
         // Long: non-blank string -> defaulted to null
-        book.put(DBKeys.KEY_ESID_STRIP_INFO_BE, "test");
+        book.put(DBKey.SID_STRIP_INFO, "test");
 
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
-        book.put(DBKeys.KEY_ISBN, "test");
+        book.put(DBKey.KEY_ISBN, "test");
         // blank string for a text field -> defaulted to null
-        book.put(DBKeys.KEY_ESID_OPEN_LIBRARY, "");
+        book.put(DBKey.SID_OPEN_LIBRARY, "");
 
 
         // Not tested: null string for a string field..
 
 
-        book.preprocessExternalIds(false);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, false);
+        bdh.processExternalIds();
         dump(book);
 
-        assertEquals(2, book.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK));
-        assertNull(book.get(DBKeys.KEY_ESID_ISFDB));
-        assertNull(book.get(DBKeys.KEY_ESID_LAST_DODO_NL));
-        assertNull(book.get(DBKeys.KEY_ESID_LIBRARY_THING));
-        assertNull(book.get(DBKeys.KEY_ESID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertNull(book.get(DBKey.SID_ISFDB));
+        assertNull(book.get(DBKey.SID_LAST_DODO_NL));
+        assertNull(book.get(DBKey.SID_LIBRARY_THING));
+        assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKeys.KEY_ISBN));
-        assertNull(book.get(DBKeys.KEY_ESID_OPEN_LIBRARY));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
+        assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
 
 
-        book.preprocessNullsAndBlanks(false);
+        bdh.processNullsAndBlanks();
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals(2, book.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK));
-        assertNull(book.get(DBKeys.KEY_ESID_ISFDB));
-        assertNull(book.get(DBKeys.KEY_ESID_LAST_DODO_NL));
-        assertNull(book.get(DBKeys.KEY_ESID_LIBRARY_THING));
-        assertNull(book.get(DBKeys.KEY_ESID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(DBKey.SID_GOODREADS_BOOK));
+        assertNull(book.get(DBKey.SID_ISFDB));
+        assertNull(book.get(DBKey.SID_LAST_DODO_NL));
+        assertNull(book.get(DBKey.SID_LIBRARY_THING));
+        assertNull(book.get(DBKey.SID_STRIP_INFO));
 
-        assertEquals("test", book.getString(DBKeys.KEY_ISBN));
-        assertNull(book.get(DBKeys.KEY_ESID_OPEN_LIBRARY));
+        assertEquals("test", book.getString(DBKey.KEY_ISBN));
+        assertNull(book.get(DBKey.SID_OPEN_LIBRARY));
     }
 
     /**
@@ -249,7 +232,7 @@ class BookTest
         assertEquals("0.0",
                      DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
         assertEquals("0000-00-00",
-                     DBDefinitions.DOM_UTC_LAST_SYNC_DATE_GOODREADS.getDefault(), INVALID_DEFAULT);
+                     DBDefinitions.DOM_GOODREADS_UTC_LAST_SYNC_DATE.getDefault(), INVALID_DEFAULT);
 
     }
 
@@ -257,57 +240,59 @@ class BookTest
     @Test
     void preprocessNullsAndBlanksForInsert() {
         final Book book = new Book(mRawData);
-        book.put(DBKeys.KEY_DATE_ACQUIRED, "2020-01-14");
-        book.put(DBKeys.KEY_READ_START, "");
-        book.put(DBKeys.KEY_READ_END, null);
+        book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
+        book.put(DBKey.DATE_READ_START, "");
+        book.put(DBKey.DATE_READ_END, null);
 
-        book.put(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE, null);
-        book.putDouble(DBKeys.KEY_PRICE_LISTED, 12.34);
-        book.putDouble(DBKeys.KEY_PRICE_PAID, 0);
+        book.put(DBKey.UTC_DATE_LAST_SYNC_GOODREADS, null);
+        book.putDouble(DBKey.PRICE_LISTED, 12.34);
+        book.putDouble(DBKey.PRICE_PAID, 0);
 
-        book.preprocessNullsAndBlanks(true);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
+        bdh.processNullsAndBlanks();
 
-        assertEquals("2020-01-14", book.getString(DBKeys.KEY_DATE_ACQUIRED));
+        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
 
         // text, default "". Storing an empty string is allowed.
-        assertEquals("", book.getString(DBKeys.KEY_READ_START));
+        assertEquals("", book.getString(DBKey.DATE_READ_START));
 
         // text, default "". A null is removed.
-        assertFalse(book.contains(DBKeys.KEY_READ_END));
+        assertFalse(book.contains(DBKey.DATE_READ_END));
 
         // text, default "0000-00-00". A null is removed.
-        assertFalse(book.contains(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE));
+        assertFalse(book.contains(DBKey.UTC_DATE_LAST_SYNC_GOODREADS));
 
-        assertEquals(12.34d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals(0d, book.getDouble(DBKeys.KEY_PRICE_PAID));
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
     }
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
         final Book book = new Book(mRawData);
-        book.put(DBKeys.KEY_DATE_ACQUIRED, "2020-01-14");
-        book.put(DBKeys.KEY_READ_START, "");
-        book.put(DBKeys.KEY_READ_END, null);
+        book.put(DBKey.DATE_ACQUIRED, "2020-01-14");
+        book.put(DBKey.DATE_READ_START, "");
+        book.put(DBKey.DATE_READ_END, null);
 
-        book.put(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE, null);
-        book.putDouble(DBKeys.KEY_PRICE_LISTED, 12.34);
-        book.putDouble(DBKeys.KEY_PRICE_PAID, 0);
+        book.put(DBKey.UTC_DATE_LAST_SYNC_GOODREADS, null);
+        book.putDouble(DBKey.PRICE_LISTED, 12.34);
+        book.putDouble(DBKey.PRICE_PAID, 0);
 
-        book.preprocessNullsAndBlanks(false);
+        final BookDaoHelper bdh = new BookDaoHelper(mContext, book, false);
+        bdh.processNullsAndBlanks();
 
-        assertEquals("2020-01-14", book.getString(DBKeys.KEY_DATE_ACQUIRED));
+        assertEquals("2020-01-14", book.getString(DBKey.DATE_ACQUIRED));
 
         // text, default "". Storing an empty string is allowed.
-        assertEquals("", book.getString(DBKeys.KEY_READ_START));
+        assertEquals("", book.getString(DBKey.DATE_READ_START));
 
         // text, default "". A null is replaced by the default
-        assertEquals("", book.getString(DBKeys.KEY_READ_END));
+        assertEquals("", book.getString(DBKey.DATE_READ_END));
 
         // text, default "". A null is replaced by the default
-        assertEquals("0000-00-00", book.getString(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE));
+        assertEquals("0000-00-00", book.getString(DBKey.UTC_DATE_LAST_SYNC_GOODREADS));
 
-        assertEquals(12.34d, book.getDouble(DBKeys.KEY_PRICE_LISTED));
-        assertEquals(0d, book.getDouble(DBKeys.KEY_PRICE_PAID));
+        assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
+        assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
     }
 
     private void dump(@NonNull final Book book) {

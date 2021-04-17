@@ -27,7 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -52,7 +52,7 @@ class BitmaskFilterTest
                 false, mLayerMock, R.string.lbl_edition,
                 Filters.PK_FILTER_EDITION_BITMASK,
                 new DomainExpression(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                                     DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_EDITION_BITMASK)),
+                                     DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)),
                 Book.Edition.BITMASK_ALL);
 
         p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);

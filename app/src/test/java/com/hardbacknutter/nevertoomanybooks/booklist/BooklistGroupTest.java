@@ -31,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Sanity check for duplicate prefix names and any missing keys.
+ */
 class BooklistGroupTest
         extends Base {
 
@@ -41,7 +44,7 @@ class BooklistGroupTest
 
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
-            final BooklistGroup.GroupKey groupKey = BooklistGroup.GroupKey.getGroupKey(id);
+            final BooklistGroup.GroupKey groupKey = BooklistGroup.getGroupKey(id);
             assertNotNull(groupKey, "Missing id: " + id);
 
             final String prefix = groupKey.getKeyPrefix();

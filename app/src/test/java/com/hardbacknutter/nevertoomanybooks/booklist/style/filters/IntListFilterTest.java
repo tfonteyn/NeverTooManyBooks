@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -53,7 +53,7 @@ public class IntListFilterTest
                 false, mLayerMock, R.string.lbl_bookshelves,
                 Filters.PK_FILTER_BOOKSHELVES,
                 new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
-                                     TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOKSHELF)));
+                                     TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF)));
 
         final ArrayList<Integer> value = new ArrayList<>();
         value.add(1);

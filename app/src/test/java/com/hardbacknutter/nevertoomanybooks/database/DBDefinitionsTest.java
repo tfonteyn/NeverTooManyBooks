@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Sanity check for duplicate table names and aliases.
+ */
 class DBDefinitionsTest {
 
     @BeforeAll
