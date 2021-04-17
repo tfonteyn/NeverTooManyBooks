@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,18 +24,8 @@
     Rather rough... we make them all available.
 -->
 <paths>
-    <!-- to access the "Picture", "log" and "Upgrades" sub directories. -->
+    <!-- to access the AppDir directories. -->
     <external-path
         name="external-path"
         path="./" />
-
-    <!-- we build files in the external cache dir that need to be given access to. -->
-    <external-cache-path
-        name="external-cache-path"
-        path="." />
-
-    <!--    <cache-path-->
-    <!--        name="cache-path"-->
-    <!--        path="." />-->
-
 </paths>
