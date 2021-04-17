@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 
 /**
  * Validator to apply a default value and validate as a Date.
@@ -62,7 +62,7 @@ public class DateValidator
         if (value.isEmpty()) {
             value = mDefaultValue;
         } else {
-            final LocalDateTime date = DateParser.getInstance(context).parse(value);
+            final LocalDateTime date = new FullDateParser(context).parse(value);
             if (date != null) {
                 value = date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             } else {
