@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
@@ -30,7 +31,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -39,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment {
 
-    /** The Activity results. */
     private SettingsViewModel mVm;
 
     @Override
@@ -47,6 +47,12 @@ public class FieldVisibilityPreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
@@ -57,10 +63,10 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
 
-        if (DBKeys.PREFS_COVER_VISIBILITY_KEY[0].equals(key)
+        if (DBKey.PREFS_COVER_VISIBILITY_KEY[0].equals(key)
             && !preferences.getBoolean(key, false)) {
             // Setting cover 0 to false -> set cover 1 to false as well
-            final SwitchPreference cover = findPreference(DBKeys.PREFS_COVER_VISIBILITY_KEY[1]);
+            final SwitchPreference cover = findPreference(DBKey.PREFS_COVER_VISIBILITY_KEY[1]);
             //noinspection ConstantConditions
             cover.setChecked(false);
         }

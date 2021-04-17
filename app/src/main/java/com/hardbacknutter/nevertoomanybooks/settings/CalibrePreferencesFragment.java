@@ -95,6 +95,9 @@ public class CalibrePreferencesFragment
                 }
             };
 
+    private Preference mFolderPref;
+    private Preference mCaPref;
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -139,18 +142,20 @@ public class CalibrePreferencesFragment
         });
 
 
-        final Preference caPref = findPreference(PSK_CA_FROM_FILE);
         //noinspection ConstantConditions
-        setCertificateSummary(caPref);
-        caPref.setOnPreferenceClickListener(preference -> {
+        mCaPref = findPreference(PSK_CA_FROM_FILE);
+        //noinspection ConstantConditions
+        setCertificateSummary(mCaPref);
+        mCaPref.setOnPreferenceClickListener(preference -> {
             mOpenCaUriLauncher.launch("*/*");
             return true;
         });
 
-        final Preference folderPref = findPreference(PSK_PICK_FOLDER);
         //noinspection ConstantConditions
-        setFolderSummary(folderPref);
-        folderPref.setOnPreferenceClickListener(preference -> {
+        mFolderPref = findPreference(PSK_PICK_FOLDER);
+        //noinspection ConstantConditions
+        setFolderSummary(mFolderPref);
+        mFolderPref.setOnPreferenceClickListener(preference -> {
             //noinspection ConstantConditions
             mPickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
                                                            .orElse(null));
@@ -173,13 +178,13 @@ public class CalibrePreferencesFragment
                         //noinspection ConstantConditions
                         CalibreContentServer.setFolderUri(getContext(), uri);
                     }
-                    //noinspection ConstantConditions
-                    setFolderSummary(findPreference(PSK_PICK_FOLDER));
+                    setFolderSummary(mFolderPref);
                 });
 
         mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+
     }
 
     private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
@@ -243,8 +248,6 @@ public class CalibrePreferencesFragment
 
     private void onOpenCaUri(@Nullable final Uri uri) {
         if (uri != null) {
-            final Preference preference = findPreference(PSK_CA_FROM_FILE);
-
             //noinspection ConstantConditions
             try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
                 if (is != null) {
@@ -256,13 +259,11 @@ public class CalibrePreferencesFragment
                     }
                     CalibreContentServer.setCertificate(getContext(), ca);
 
-                    //noinspection ConstantConditions
-                    preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
-                                          + "\nI: " + ca.getIssuerX500Principal().getName());
+                    mCaPref.setSummary("S: " + ca.getSubjectX500Principal().getName()
+                                       + "\nI: " + ca.getIssuerX500Principal().getName());
                 }
             } catch (@NonNull final IOException | CertificateException e) {
-                //noinspection ConstantConditions
-                preference.setSummary(R.string.error_certificate_invalid);
+                mCaPref.setSummary(R.string.error_certificate_invalid);
             }
         }
     }
