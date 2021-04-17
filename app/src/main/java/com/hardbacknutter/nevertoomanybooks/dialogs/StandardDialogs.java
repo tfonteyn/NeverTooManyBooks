@@ -291,7 +291,7 @@ public final class StandardDialogs {
                                  @NonNull final LocalizedException e) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(e.getLocalizedMessage(context))
+                .setMessage(e.getUserMessage(context))
                 .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();
