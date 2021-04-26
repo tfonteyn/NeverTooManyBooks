@@ -24,7 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -70,8 +70,9 @@ public class DoubleNumberFormatter
         }
 
         try {
-            // getSystemLocale: the user types it in on the SYSTEM keypad using a , or .
-            return ParseUtils.parseDouble(text, AppLocale.getInstance().getSystemLocale());
+            // System Locale: the user types it in on the SYSTEM keypad using a , or .
+            return ParseUtils.parseDouble(text, ServiceLocator.getSystemLocale());
+
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw
             return 0;

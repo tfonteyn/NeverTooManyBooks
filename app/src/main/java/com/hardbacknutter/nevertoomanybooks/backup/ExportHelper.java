@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Writes to a temporary file in the internal cache first.
@@ -121,19 +120,6 @@ public class ExportHelper {
     }
 
     /**
-     * Get the {@link FileUtils.UriInfo} of the archive (based on the Uri/Encoding).
-     *
-     * @param context Current context
-     *
-     * @return info
-     */
-    @NonNull
-    FileUtils.UriInfo getUriInfo(@NonNull final Context context) {
-        Objects.requireNonNull(mUri, "uri");
-        return FileUtils.getUriInfo(context, mUri);
-    }
-
-    /**
      * Create an {@link ArchiveWriter} based on the type.
      *
      * @param context Current context
@@ -147,8 +133,7 @@ public class ExportHelper {
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
             throws CertificateException,
                    SSLException,
-                   FileNotFoundException,
-                   ExternalStorageException {
+                   FileNotFoundException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");
@@ -176,12 +161,12 @@ public class ExportHelper {
      *
      * @param context Current context
      *
-     * @return OutputStream
+     * @return FileOutputStream
      *
      * @throws FileNotFoundException on ...
      */
     @NonNull
-    public OutputStream createOutputStream(@NonNull final Context context)
+    public FileOutputStream createOutputStream(@NonNull final Context context)
             throws FileNotFoundException {
         return new FileOutputStream(getTempFile(context));
     }

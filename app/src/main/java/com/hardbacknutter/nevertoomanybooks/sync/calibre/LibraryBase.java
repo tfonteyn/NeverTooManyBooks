@@ -136,10 +136,8 @@ abstract class LibraryBase
     @Override
     @NonNull
     public String toString() {
-        return "LibraryBase{"
-               + "mId=" + mId
+        return "mId=" + mId
                + ", mName='" + mName + '\''
-               + ", mMappedBookshelfId=" + mMappedBookshelfId
-               + '}';
+               + ", mMappedBookshelfId=" + mMappedBookshelfId;
     }
 }

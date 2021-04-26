@@ -38,6 +38,7 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
@@ -59,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -122,7 +122,7 @@ public class CalibreContentServerWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         mResults = new ExportResults();
 
@@ -154,7 +154,7 @@ public class CalibreContentServerWriter
                 libraryDao.update(library);
             }
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ExportException(e);
         }
         return mResults;
     }

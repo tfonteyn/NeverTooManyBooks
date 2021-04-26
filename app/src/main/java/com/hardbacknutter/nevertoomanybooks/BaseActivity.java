@@ -135,13 +135,16 @@ public abstract class BaseActivity
 
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
         // apply the user-preferred Locale before onCreate is called.
-        final Context localizedContext = AppLocale.getInstance().apply(base);
+        final Context localizedContext = appLocale.apply(base);
+
         super.attachBaseContext(localizedContext);
+
         // preserve, so we can check for changes in onResume.
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(localizedContext);
-        mInitialLocaleSpec = AppLocale.getInstance().getPersistedLocaleSpec(global);
+        mInitialLocaleSpec = appLocale.getPersistedLocaleSpec(global);
     }
 
     /**
@@ -283,7 +286,7 @@ public abstract class BaseActivity
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
-            || AppLocale.getInstance().isChanged(global, mInitialLocaleSpec)
+            || ServiceLocator.getInstance().getAppLocale().isChanged(global, mInitialLocaleSpec)
             || NightMode.getInstance().isChanged(global, mInitialNightModeId)) {
 
             sActivityRecreateStatus = ACTIVITY_IS_RECREATING;

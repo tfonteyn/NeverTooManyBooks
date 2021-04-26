@@ -26,7 +26,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep

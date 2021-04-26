@@ -50,9 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncStripinfoBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
@@ -66,7 +66,7 @@ public class StripInfoSyncFragment
 
     private StripInfoSyncViewModel mVm;
     @Nullable
-    private ProgressDialogFragment mProgressDialog;
+    private ProgressDelegate mProgressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -144,28 +144,25 @@ public class StripInfoSyncFragment
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            final FragmentManager fm = getChildFragmentManager();
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.lbl_importing), false, true);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+        if (message.isNewEvent()) {
+            if (mProgressDelegate == null) {
+                //noinspection ConstantConditions
+                mProgressDelegate = new ProgressDelegate(
+                        getActivity().findViewById(R.id.progress_frame))
+                        .setTitle(getString(R.string.lbl_importing))
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .show(getActivity().getWindow());
             }
-
-            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
+            mProgressDelegate.onProgress(message);
         }
-
-        mProgressDialog.onProgress(message);
     }
 
     private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        if (mProgressDelegate != null) {
+            //noinspection ConstantConditions
+            mProgressDelegate.dismiss(getActivity().getWindow());
+            mProgressDelegate = null;
         }
     }
 
@@ -174,27 +171,21 @@ public class StripInfoSyncFragment
 
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+
+            final Context context = getContext();
+
             //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(getString(R.string.error_storage_not_writable));
+
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_import_failed)
-                    .setMessage(createErrorReport(getContext(), message.result))
+                    .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
         }
-    }
-
-    @NonNull
-    private String createErrorReport(@NonNull final Context context,
-                                     @Nullable final Exception e) {
-        final String msg = ExMsg.map(context, TAG, e);
-        if (msg != null) {
-            return msg;
-        }
-
-        return ExMsg.ioExFallbackMsg(context, e, context.getString(
-                R.string.error_storage_not_writable));
     }
 
     private void onImportCollectionFinished(

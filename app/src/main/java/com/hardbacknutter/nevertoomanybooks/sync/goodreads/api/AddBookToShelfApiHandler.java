@@ -33,9 +33,9 @@ import java.util.function.Consumer;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -109,12 +109,12 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     public long add(final long grBookId,
                     @NonNull final Collection<String> shelfNames)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();
@@ -135,12 +135,12 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public long add(final long grBookId,
                     @NonNull final String shelfName)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         return send(grBookId, shelfName, false);
     }
@@ -158,12 +158,12 @@ public class AddBookToShelfApiHandler
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void remove(final long grBookId,
                        @NonNull final String shelfName)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         send(grBookId, shelfName, true);
     }
@@ -177,13 +177,13 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     private long send(final long grBookId,
                       @NonNull final String shelfName,
                       final boolean isRemove)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();

@@ -31,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -222,7 +223,7 @@ public final class TerminatorConnection
     public BufferedInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            mInputStream = openInputStream();
+            mInputStream = new BufferedInputStream(openInputStream());
         }
         return mInputStream;
     }
@@ -233,10 +234,12 @@ public final class TerminatorConnection
      * <p>
      * Called from {@link #getInputStream()}.
      *
+     * @return an input stream that reads from this open connection.
+     *
      * @throws IOException on failure
      */
     @NonNull
-    private BufferedInputStream openInputStream()
+    private InputStream openInputStream()
             throws IOException {
         Objects.requireNonNull(mRequest, "mRequest");
 
@@ -256,7 +259,7 @@ public final class TerminatorConnection
                 }
 
                 // make the actual connection
-                final BufferedInputStream is = new BufferedInputStream(mRequest.getInputStream());
+                final InputStream is = mRequest.getInputStream();
                 if (mRequest.getResponseCode() < 400) {
                     // we'll close the connection on a background task after a 'kill' timeout,
                     // so that we can cancel any runaway timeouts.

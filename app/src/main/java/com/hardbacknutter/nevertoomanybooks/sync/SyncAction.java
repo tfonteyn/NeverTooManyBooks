@@ -43,10 +43,10 @@ public enum SyncAction {
                                   @NonNull final String key,
                                   @NonNull final SyncAction defValue) {
         final int ordinal = global.getInt(key, -1);
-        if (ordinal != -1) {
-            return values()[ordinal];
-        } else {
+        if (ordinal == -1) {
             return defValue;
+        } else {
+            return values()[ordinal];
         }
     }
 

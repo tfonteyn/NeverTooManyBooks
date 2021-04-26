@@ -27,11 +27,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
@@ -50,7 +49,6 @@ public class XmlFilter {
 
     /** List of sub-filters for this filter. */
     private final Collection<XmlFilter> mSubFilters = new ArrayList<>();
-    private final Locale mSystemLocale;
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
     private Consumer<ElementContext> mStartAction;
@@ -71,8 +69,6 @@ public class XmlFilter {
      */
     public XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
-
-        mSystemLocale = AppLocale.getInstance().getSystemLocale();
     }
 
     /**
@@ -134,12 +130,12 @@ public class XmlFilter {
             sub = new XmlFilter(curr);
             root.addFilter(sub);
         }
-        if (!iterator.hasNext()) {
-            // At end
-            return sub;
-        } else {
+        if (iterator.hasNext()) {
             // We are still finding leaf
             return buildFilter(sub, depth + 1, iterator);
+        } else {
+            // At end
+            return sub;
         }
     }
 
@@ -269,7 +265,7 @@ public class XmlFilter {
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        final String lcPat = filter.getTagName().toLowerCase(mSystemLocale);
+        final String lcPat = filter.getTagName().toLowerCase(ServiceLocator.getSystemLocale());
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

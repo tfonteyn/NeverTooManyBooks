@@ -53,10 +53,10 @@ public class HttpStatusException
     @StringRes
     private final int mSiteResId;
 
-    public HttpStatusException(@StringRes final int siteResId,
-                               final int statusCode,
-                               @NonNull final String statusMessage,
-                               @Nullable final URL url) {
+    HttpStatusException(@StringRes final int siteResId,
+                        final int statusCode,
+                        @NonNull final String statusMessage,
+                        @Nullable final URL url) {
         super(statusMessage);
         mSiteResId = siteResId;
         mStatusCode = statusCode;
@@ -65,7 +65,7 @@ public class HttpStatusException
     }
 
     @StringRes
-    public int getSiteResId() {
+    int getSiteResId() {
         return mSiteResId;
     }
 
@@ -101,11 +101,11 @@ public class HttpStatusException
     @NonNull
     public String toString() {
         return "HttpStatusException{"
-               + super.toString()
-               + ", mStatusCode=" + mStatusCode
+               + "mStatusCode=" + mStatusCode
                + ", mStatusMessage=" + mStatusMessage
                + ", mUrl=" + mUrl
                + ", mSiteResId=" + ServiceLocator.getAppContext().getString(mSiteResId)
+               + ", " + super.toString()
                + '}';
     }
 }

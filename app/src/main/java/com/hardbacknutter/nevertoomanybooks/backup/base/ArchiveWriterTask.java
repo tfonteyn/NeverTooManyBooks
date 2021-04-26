@@ -30,10 +30,10 @@ import java.security.cert.CertificateException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Input: {@link ExportHelper}.
@@ -67,7 +67,7 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws GeneralParsingException, IOException, CertificateException {
+            throws ExportException, IOException, CertificateException {
 
         ExportResults results = null;
         //noinspection ConstantConditions

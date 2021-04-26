@@ -138,10 +138,9 @@
 
     <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
 
-    <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
-
-    <string name="error_unknown">An unknown error occurred.</string>
-    <string name="error_unknown_long">An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.</string>
+    <!-- URGENT: review usage; replace with better msg-->
+    <string name="error_unknown">An unexpected error occurred.</string>
+    <string name="error_unknown_long">An unexpected error has occurred. If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
     <!-- [VERIFIED] -->
     <string name="error_network_please_connect">Please connect to the internet.</string>
@@ -1751,14 +1750,19 @@
     <string name="lbl_moving_data">Moving data</string>
     <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
     <string name="action_move">Move</string>
+    <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
+    <string name="ext_media_missing_title">%s missing</string>
+    <!-- [VERIFIED] - Notification body when external media is missing [CHAR LIMIT=30] -->
+    <string name="ext_media_missing_message">Insert device again</string>
 
-    <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”. Do your really want to proceed? This could take some time.</string>
+    <string name="lbl_storage_volume">Storage volume</string>
 
-    <string name="lbl_storage_volume">Covers location</string>
+    <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
+
     <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SDCARD</string>
-    <string name="lbl_storage_select">Select %1$s</string>
-    <string name="lbl_storage_move_data">lbl_storage_move_data</string>
-    <string name="lbl_storage_settings">lbl_storage_settings</string>
-    <string name="restarting">Restarting</string>
+    <string name="lbl_storage_select">Use “%1$s”</string>
+    <string name="lbl_edit_settings">Edit settings</string>
+
+    <string name="progress_msg_cleaning_up">Cleaning up…</string>
 
 </resources>

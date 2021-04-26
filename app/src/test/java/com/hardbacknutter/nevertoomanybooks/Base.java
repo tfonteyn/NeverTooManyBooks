@@ -46,13 +46,14 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
@@ -129,8 +130,15 @@ public class Base {
         when(mApp.getApplicationContext()).thenReturn(mContext);
 
         when(mContext.getResources()).thenReturn(mResources);
+
+        // Global prefs
         when(mContext.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
                 .thenReturn(mMockPreferences);
+
+        // Styles
+        when(mContext.getSharedPreferences(anyString(), anyInt()))
+                .thenReturn(mMockPreferences);
+
 
         doAnswer(invocation -> mResources.getString(invocation.getArgument(0)))
                 .when(mContext).getString(anyInt());
@@ -154,10 +162,6 @@ public class Base {
          * SharedPreferences for the language map.
          */
         final SharedPreferences mLanguageMap = SharedPreferencesMock.create();
-
-        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
-                .thenReturn(mLanguageMap);
-
         mLanguageMap.edit()
                     .putString("english", "eng")
                     .putString("engels", "eng")
@@ -180,6 +184,9 @@ public class Base {
                     .putString("nederlands", "nld")
 
                     .apply();
+
+        when(context.getSharedPreferences(eq(Languages.LANGUAGE_MAP), anyInt()))
+                .thenReturn(mLanguageMap);
     }
 
     private void setupSearchEnginePreferences() {

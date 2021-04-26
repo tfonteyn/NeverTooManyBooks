@@ -77,7 +77,9 @@ public class CalibreSyncFragment
 
         mVb.btnLibMap.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl();
-            if (!url.isEmpty()) {
+            if (url.isEmpty()) {
+                openSettings();
+            } else {
                 final Bundle args = new Bundle();
                 args.putString(ImportViewModel.BKEY_URL, url);
 
@@ -89,13 +91,13 @@ public class CalibreSyncFragment
                   .addToBackStack(CalibreLibraryMappingFragment.TAG)
                   .replace(R.id.main_fragment, fragment, CalibreLibraryMappingFragment.TAG)
                   .commit();
-            } else {
-                openSettings();
             }
         });
         mVb.btnImport.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl();
-            if (!url.isEmpty()) {
+            if (url.isEmpty()) {
+                openSettings();
+            } else {
                 final Bundle args = new Bundle();
                 args.putString(ImportViewModel.BKEY_URL, url);
 
@@ -107,13 +109,13 @@ public class CalibreSyncFragment
                   .addToBackStack(ImportFragment.TAG)
                   .replace(R.id.main_fragment, fragment, ImportFragment.TAG)
                   .commit();
-            } else {
-                openSettings();
             }
         });
         mVb.btnSendUpdatedBooks.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl();
-            if (!url.isEmpty()) {
+            if (url.isEmpty()) {
+                openSettings();
+            } else {
                 final Bundle args = new Bundle();
                 args.putParcelable(ExportFragment.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
 
@@ -125,8 +127,6 @@ public class CalibreSyncFragment
                   .addToBackStack(ExportFragment.TAG)
                   .replace(R.id.main_fragment, fragment, ExportFragment.TAG)
                   .commit();
-            } else {
-                openSettings();
             }
         });
     }

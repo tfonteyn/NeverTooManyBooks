@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -28,11 +26,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public final class Backup {
 
@@ -41,8 +37,6 @@ public final class Backup {
 
     /** Number of app startup's between offers to backup. */
     public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
-
-    private static final String TAG = "Backup";
 
     /** Last full BACKUP date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
@@ -112,26 +106,5 @@ public final class Backup {
         }
 
         return null;
-    }
-
-    /**
-     * Transform a failure into a user friendly report.
-     * <p>
-     * This method check exceptions for <strong>both reader and writers</strong>.
-     *
-     * @param e error exception
-     *
-     * @return report string
-     */
-    @NonNull
-    static String createErrorReport(@NonNull final Context context,
-                                    @Nullable final Exception e) {
-        final String msg = ExMsg.map(context, TAG, e);
-        if (msg != null) {
-            return msg;
-        }
-
-        return ExMsg.ioExFallbackMsg(context, e, context.getString(
-                R.string.error_storage_not_writable));
     }
 }

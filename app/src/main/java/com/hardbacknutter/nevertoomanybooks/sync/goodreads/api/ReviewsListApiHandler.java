@@ -31,14 +31,14 @@ import java.time.format.DateTimeFormatter;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.SimpleXmlFilter.XmlListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -116,13 +116,13 @@ public class ReviewsListApiHandler
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
                                          mGrAuth.getUserId());
@@ -464,7 +464,7 @@ public class ReviewsListApiHandler
         /** Date format used for parsing the date fields. */
         private static final DateTimeFormatter DATE_PARSER = DateTimeFormatter
                 .ofPattern("EEE MMM dd HH:mm:ss ZZZZ yyyy",
-                           AppLocale.getInstance().getSystemLocale());
+                           ServiceLocator.getSystemLocale());
 
         private Review() {
         }

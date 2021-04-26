@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 
 /**
  * A minimalistic interface for a Task (or similar, e.g. {@link SearchCoordinator})
@@ -33,16 +33,11 @@ public interface Canceller {
     /**
      * Request cancellation.
      *
-     * @param mayInterruptIfRunning {@code true} if the thread executing this task
-     *                              should be interrupted; otherwise, in-progress tasks
-     *                              are allowed to complete.
-     *                              The task implementation is free to ignore this flag though.
-     *
      * @return {@code false} if the task could not be cancelled,
      * typically because it has already completed normally;
      * {@code true} otherwise
      */
-    boolean cancel(boolean mayInterruptIfRunning);
+    boolean cancel();
 
     /**
      * Check if the task is or should be cancelled.

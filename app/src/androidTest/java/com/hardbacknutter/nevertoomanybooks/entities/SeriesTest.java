@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 
@@ -37,7 +38,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
-public class SeriesTest {
+public class SeriesTest
+        extends BaseDBTest {
 
     @Test
     public void parcelling() {

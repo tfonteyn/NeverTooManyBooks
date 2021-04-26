@@ -24,8 +24,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hardbacknutter.nevertoomanybooks"
     android:installLocation="auto"
-    android:versionCode="9"
-    android:versionName="2.0.0">
+    android:versionCode="10"
+    android:versionName="2.1.0">
 
     <!-- scanning bar codes / cover images... -->
     <uses-feature
@@ -129,7 +129,7 @@
         </activity>
         <activity android:name=".ShowBookActivity" />
         <activity
-            android:name=".EditBookActivity"
+            android:name=".bookedit.EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity
@@ -144,7 +144,7 @@
         <activity android:name=".settings.SearchAdminActivity" />
 
         <activity
-            android:name=".searches.librarything.LibraryThingRegistrationActivity"
+            android:name=".searchengines.librarything.LibraryThingRegistrationActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <activity android:name=".sync.goodreads.GoodreadsRegistrationActivity" />

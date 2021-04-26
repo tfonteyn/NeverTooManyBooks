@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -30,23 +31,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -111,11 +109,9 @@ class ImportCollection {
     @NonNull
     private final String mUserId;
     @NonNull
-    private final SearchEngineConfig mSEConfig;
+    private final SearchEngine mSearchEngine;
     @NonNull
     private final RowParser mRowParser;
-
-    private final Function<String, Optional<TerminatorConnection>> mConCreator;
 
     private int mCurrentPage;
     private int mMaxPages = -1;
@@ -131,22 +127,10 @@ class ImportCollection {
                      @NonNull final SyncConfig config,
                      @NonNull final String userId) {
         mUserId = userId;
-        mSEConfig = SearchEngineRegistry.getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+        mSearchEngine = SearchEngineRegistry.getInstance()
+                                            .createSearchEngine(SearchSites.STRIP_INFO_BE);
         mJsoupLoader = new JsoupLoader();
         mRowParser = new RowParser(context, config);
-
-        mConCreator = url -> {
-            try {
-                final TerminatorConnection con = new TerminatorConnection(url)
-                        .setConnectTimeout(mSEConfig.getConnectTimeoutInMs())
-                        .setReadTimeout(mSEConfig.getReadTimeoutInMs())
-                        .setThrottler(mSEConfig.getThrottler());
-
-                return Optional.of(con);
-            } catch (@NonNull final IOException ignore) {
-                return Optional.empty();
-            }
-        };
     }
 
     boolean hasMore() {
@@ -179,27 +163,25 @@ class ImportCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, mCurrentPage));
 
-        final String url = mSEConfig.getSiteUrl()
+        final String url = mSearchEngine.getSiteUrl()
                            + String.format(URL_MY_BOOKS, mUserId, mCurrentPage, mFlags);
 
-        final Document currentDocument;
-        try {
-            currentDocument = mJsoupLoader.loadDocument(url, mConCreator);
-
-        } catch (@NonNull final FileNotFoundException e1) {
-            return null;
-        }
-
-        if (currentDocument != null) {
-            final Element root = currentDocument.getElementById("collectionContent");
-            if (root != null) {
-                if (mCurrentPage == 1) {
-                    parseMaxPages(root, progressListener);
-                }
-                return parsePage(root);
+        final Document currentDocument = mJsoupLoader
+                .loadDocument(url, mSearchEngine.createConnectionProducer());
+        final Element root = currentDocument.getElementById("collectionContent");
+        if (root != null) {
+            if (mCurrentPage == 1) {
+                parseMaxPages(root, progressListener);
             }
+            return parsePage(root);
         }
 
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "No 'collectionContent' found for url=" + url);
+        }
+
+        // The last page did not contain 'collectionContent'.
+        // Assume we reached the end.
         return null;
     }
 

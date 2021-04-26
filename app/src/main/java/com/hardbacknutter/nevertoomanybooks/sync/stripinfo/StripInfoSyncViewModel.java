@@ -36,14 +36,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
 public class StripInfoSyncViewModel
         extends ViewModel {
 
-    private static final String TAG = "CollectionImporterVM";
     private static final String SYNC_PROCESSOR_PREFIX = StripInfoAuth.PREF_KEY + ".fields.update.";
 
     private ImportCollectionTask mImportCollectionTask;
@@ -53,7 +51,7 @@ public class StripInfoSyncViewModel
 
     @Override
     protected void onCleared() {
-        mImportCollectionTask.cancel(true);
+        mImportCollectionTask.cancel();
 
         super.onCleared();
     }
@@ -129,11 +127,9 @@ public class StripInfoSyncViewModel
         return mImportCollectionTask.onFailure();
     }
 
-    void linkTaskWithDialog(@IdRes final int taskId,
-                            @NonNull final ProgressDialogFragment dialog) {
+    void cancelTask(@IdRes final int taskId) {
         if (taskId == mImportCollectionTask.getTaskId()) {
-            dialog.setCanceller(mImportCollectionTask);
-
+            mImportCollectionTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

@@ -36,12 +36,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 public abstract class SendBooksGrTaskBase
         extends GrBaseTask {
@@ -144,7 +145,7 @@ public abstract class SendBooksGrTaskBase
                 return TaskStatus.Failed;
             }
 
-        } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
+        } catch (@NonNull final HttpNotFoundException | SiteParsingException e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
             storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
             mNotFound++;
@@ -153,6 +154,10 @@ public abstract class SendBooksGrTaskBase
         } catch (@NonNull final CredentialsException e) {
             setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
             // Requeue, so we can retry after the user corrects their credentials
+
+        } catch (@NonNull final DiskFullException e) {
+            setLastExtStatus(GrStatus.FAILED_DISK_FULL, e);
+            // Requeue, so we can retry after the user makes space
 
         } catch (@NonNull final IOException e) {
             setLastExtStatus(GrStatus.FAILED_IO_EXCEPTION, e);

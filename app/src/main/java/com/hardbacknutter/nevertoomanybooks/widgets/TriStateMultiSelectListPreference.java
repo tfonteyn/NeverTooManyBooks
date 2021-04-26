@@ -380,12 +380,12 @@ public class TriStateMultiSelectListPreference
         @Nullable
         public CharSequence provideSummary(@NonNull final TriStateMultiSelectListPreference
                                                    preference) {
-            if (!preference.isActive()) {
-                return preference.getDisregardSummaryText();
-            } else {
+            if (preference.isActive()) {
                 // if it is active, drop through to MultiSelectListPreference
                 return MultiSelectListPreferenceSummaryProvider
                         .getInstance().provideSummary(preference);
+            } else {
+                return preference.getDisregardSummaryText();
             }
         }
     }

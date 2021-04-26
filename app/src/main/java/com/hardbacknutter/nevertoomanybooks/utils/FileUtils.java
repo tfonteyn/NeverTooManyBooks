@@ -19,13 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.StatFs;
-import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -47,6 +44,7 @@ import java.util.zip.CRC32;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 /**
  * Class to wrap common storage related functions.
@@ -77,26 +75,170 @@ public final class FileUtils {
     private static final int TO_KILOBYTES = 1_000;
     private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
-    private static final String ERROR_COULD_NOT_RESOLVE_URI = "Could not resolve uri=";
-    private static final String ERROR_UNKNOWN_SCHEME_FOR_URI = "Unknown scheme for uri: ";
-    private static final String ERROR_COULD_NOT_CREATE_FILE = "Could not create file=";
 
     private FileUtils() {
     }
 
     /**
-     * Convenience wrapper for {@link File#delete()}.
+     * Given a InputStream, write it to a file.
+     * We first write to a temporary file, so an existing 'out' file is not destroyed
+     * if the stream somehow fails.
      *
-     * @param file to delete
+     * @param is       InputStream to read
+     * @param destFile File to write to
+     *
+     * @return File written to (the one passed in)
+     *
+     * @throws FileNotFoundException if the input stream was {@code null}
+     * @throws IOException           on failure
      */
-    public static void delete(@Nullable final File file) {
-        if (file != null && file.exists()) {
-            try {
-                //noinspection ResultOfMethodCallIgnored
-                file.delete();
-            } catch (@NonNull final /* SecurityException */ RuntimeException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.e(TAG, "delete|file=" + file, e);
+    @NonNull
+    public static File copy(@Nullable final InputStream is,
+                            @NonNull final File destFile)
+            throws IOException {
+        if (is == null) {
+            throw new FileNotFoundException("InputStream was NULL");
+        }
+
+        final File tmpFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
+        try (OutputStream os = new FileOutputStream(tmpFile)) {
+            copy(is, os);
+            // rename to real output file
+            rename(tmpFile, destFile);
+            return destFile;
+        } finally {
+            delete(tmpFile);
+        }
+    }
+
+    /**
+     * Copy the InputStream to the OutputStream.
+     * Neither stream is closed here.
+     *
+     * @param is InputStream
+     * @param os OutputStream
+     *
+     * @throws IOException on failure
+     */
+    public static void copy(@NonNull final InputStream is,
+                            @NonNull final OutputStream os)
+            throws IOException {
+
+        if (Build.VERSION.SDK_INT >= 29) {
+            android.os.FileUtils.copy(is, os);
+
+        } else {
+            final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+            int nRead;
+            while ((nRead = is.read(buffer)) > 0) {
+                os.write(buffer, 0, nRead);
+            }
+            os.flush();
+        }
+    }
+
+    /**
+     * Copy the source File to the destination File.
+     *
+     * @param source      file
+     * @param destination file
+     *
+     * @throws IOException on failure
+     */
+    public static void copy(@NonNull final File source,
+                            @NonNull final File destination)
+            throws IOException {
+
+        try (FileChannel inChannel = new FileInputStream(source).getChannel();
+             FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        }
+    }
+
+    /**
+     * Copy the source File to the destination File.
+     *
+     * @param source      file
+     * @param destination file
+     *
+     * @throws IOException on failure
+     */
+    public static void copy(@NonNull final FileInputStream source,
+                            @NonNull final FileOutputStream destination)
+            throws IOException {
+
+        try (FileChannel inChannel = source.getChannel();
+             FileChannel outChannel = destination.getChannel()) {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        }
+    }
+
+    /**
+     * Copy the source file to the destFilename; keeping 'copies' of the old file.
+     * <p>
+     * The number of the copy is added as a SUFFIX to the name.
+     *
+     * @param source      file to copy
+     * @param destination final destination file
+     * @param copies      #copies of the previous one to keep
+     *
+     * @throws IOException on failure
+     */
+    public static void copyWithBackup(@NonNull final File source,
+                                      @NonNull final File destination,
+                                      final int copies)
+            throws IOException {
+
+        // remove the oldest copy
+        File previous = new File(destination + "." + copies);
+        delete(previous);
+
+        // now bump each copy up one suffix.
+        for (int i = copies - 1; i > 0; i--) {
+            final File current = new File(destination + "." + i);
+            if (current.exists()) {
+                rename(current, previous);
+            }
+            previous = current;
+        }
+
+        // Give the previous file a suffix.
+        if (destination.exists()) {
+            rename(destination, previous);
+        }
+
+        // and write the new copy.
+        copy(source, destination);
+    }
+
+    /**
+     * Recursively copy the source Directory to the destination Directory.
+     *
+     * @param sourceDir directory
+     * @param destDir   directory
+     * @param canceller (optional) to check for user cancellation
+     *
+     * @throws IOException on failure
+     */
+    public static void copyDirectory(@NonNull final File sourceDir,
+                                     @NonNull final File destDir,
+                                     @Nullable final Canceller canceller)
+            throws IOException {
+        // sanity check
+        if (sourceDir.isDirectory() && destDir.isDirectory()) {
+            //noinspection ConstantConditions
+            for (final File file : sourceDir.listFiles()) {
+                if (canceller != null && canceller.isCancelled()) {
+                    return;
+                }
+                if (file.isFile()) {
+                    copy(file, new File(destDir, file.getName()));
+
+                } else if (file.isDirectory()) {
+                    final File destSubDir = new File(destDir, file.getName());
+                    //noinspection ResultOfMethodCallIgnored
+                    destSubDir.mkdir();
+                    copyDirectory(file, destSubDir, canceller);
                 }
             }
         }
@@ -141,292 +283,55 @@ public final class FileUtils {
         }
     }
 
-    /**
-     * Given a InputStream, write it to a file.
-     * We first write to a temporary file, so an existing 'out' file is not destroyed
-     * if the stream somehow fails.
-     *
-     * @param is       InputStream to read
-     * @param destFile File to write to
-     *
-     * @return File written to (the one passed in)
-     *
-     * @throws FileNotFoundException if the input stream was {@code null}
-     * @throws IOException           on failure
-     */
-    @NonNull
-    public static File copyInputStream(@Nullable final InputStream is,
-                                       @NonNull final File destFile)
-            throws IOException {
-        if (is == null) {
-            throw new FileNotFoundException("InputStream was NULL");
-        }
-
-        final File tmpFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
-        try (OutputStream os = new FileOutputStream(tmpFile)) {
-            copy(is, os);
-            // rename to real output file
-            rename(tmpFile, destFile);
-            return destFile;
-        } finally {
-            delete(tmpFile);
-        }
-    }
 
     /**
-     * Export the source File to the destination directory specified by the DocumentFile.
+     * Convenience wrapper for {@link File#delete()}.
      *
-     * @param context  Current context
-     * @param file     to copy
-     * @param mimeType to use for writing
-     * @param destDir  the folder where to copy the file to
-     *
-     * @throws IOException on failure
+     * @param file to delete
      */
-    public static void copy(@NonNull final Context context,
-                            @NonNull final File file,
-                            @SuppressWarnings("SameParameterValue")
-                            @NonNull final String mimeType,
-                            @NonNull final DocumentFile destDir)
-            throws IOException {
-
-        final DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
-        if (destinationFile == null) {
-            throw new IOException(ERROR_COULD_NOT_CREATE_FILE + file.getName());
-        }
-
-        final Uri destinationUri = destinationFile.getUri();
-        try (InputStream is = new FileInputStream(file);
-             OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
-            if (os == null) {
-                throw new IOException(ERROR_COULD_NOT_RESOLVE_URI + destinationUri);
-            }
-            copy(is, os);
-        }
-    }
-
-    /**
-     * Export the source File to the destination Uri.
-     *
-     * @param context Current context
-     * @param source  File
-     * @param destUri Uri
-     *
-     * @throws IOException on failure
-     */
-    public static void copy(@NonNull final Context context,
-                            @NonNull final File source,
-                            @NonNull final Uri destUri)
-            throws IOException {
-
-        try (InputStream is = new FileInputStream(source);
-             OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
-            if (os != null) {
-                copy(is, os);
-            }
-        }
-    }
-
-    /**
-     * Copy the source file to the destFilename; keeping 'copies' of the old file.
-     * <p>
-     * The number of the copy is added as a SUFFIX to the name.
-     *
-     * @param source      file to copy
-     * @param destination final destination file
-     * @param copies      #copies of the previous one to keep
-     *
-     * @throws IOException on failure
-     */
-    public static void copyWithBackup(@NonNull final File source,
-                                      @NonNull final File destination,
-                                      final int copies)
-            throws IOException {
-
-        // remove the oldest copy
-        File previous = new File(destination + "." + copies);
-        delete(previous);
-
-        // now bump each copy up one suffix.
-        for (int i = copies - 1; i > 0; i--) {
-            final File current = new File(destination + "." + i);
-            if (current.exists()) {
-                rename(current, previous);
-            }
-            previous = current;
-        }
-
-        // Give the previous file a suffix.
-        if (destination.exists()) {
-            rename(destination, previous);
-        }
-
-        // and write the new copy.
-        copy(source, destination);
-    }
-
-    /**
-     * Copy the InputStream to the OutputStream.
-     * Neither stream is closed here.
-     *
-     * @param is InputStream
-     * @param os OutputStream
-     *
-     * @throws IOException on failure
-     */
-    public static void copy(@NonNull final InputStream is,
-                            @NonNull final OutputStream os)
-            throws IOException {
-        if (Build.VERSION.SDK_INT >= 29) {
-            android.os.FileUtils.copy(is, os);
-
-        } else {
-            final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
-            int nRead;
-            while ((nRead = is.read(buffer)) > 0) {
-                os.write(buffer, 0, nRead);
-            }
-            os.flush();
-        }
-    }
-
-    /**
-     * Private filesystem only - Copy the source File to the destination File.
-     *
-     * @param source      file
-     * @param destination file
-     *
-     * @throws IOException on failure
-     */
-    public static void copy(@NonNull final File source,
-                            @NonNull final File destination)
-            throws IOException {
-        try (InputStream is = new FileInputStream(source);
-             OutputStream os = new FileOutputStream(destination)) {
-            copy(is, os);
-        } catch (@NonNull final FileNotFoundException ignore) {
-            // ignore
-        }
-    }
-
-    /**
-     * Channels are FAST... TODO: replace old method with this one.
-     * but needs testing, never used it on Android myself
-     *
-     * @param source      file
-     * @param destination file
-     *
-     * @throws IOException on failure
-     */
-    @SuppressWarnings("unused")
-    private static void copy2(@NonNull final File source,
-                              @NonNull final File destination)
-            throws IOException {
-        try (FileChannel inChannel = new FileInputStream(source).getChannel();
-             FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        }
-    }
-
-    /**
-     * Format a number of bytes in a human readable form.
-     *
-     * @param context Current context
-     * @param bytes   to format
-     *
-     * @return formatted # bytes
-     */
-    @NonNull
-    public static String formatFileSize(@NonNull final Context context,
-                                        final float bytes) {
-        if (bytes < 3_000) {
-            // Show 'bytes' if < 3k
-            return context.getString(R.string.bytes, bytes);
-        } else if (bytes < 250_000) {
-            // Show Kb if less than 250kB
-            return context.getString(R.string.kilobytes, bytes / TO_KILOBYTES);
-        } else {
-            // Show MB otherwise...
-            return context.getString(R.string.megabytes, bytes / TO_MEGABYTES);
-        }
-    }
-
-    /**
-     * Get the name and size of the content behind a Uri.
-     * <p>
-     * Dev Note: alternatively use {@link DocumentFile} 'from' methods
-     * and {@link DocumentFile#getName()} / {@link DocumentFile#length()} but that's TWO queries.
-     *
-     * @param context Current context
-     * @param uri     to inspect
-     *
-     * @return a UriInfo
-     */
-    @NonNull
-    public static UriInfo getUriInfo(@NonNull final Context context,
-                                     @NonNull final Uri uri) {
-
-        final String scheme = uri.getScheme();
-        if (scheme == null) {
-            throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
-        }
-
-        if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            final ContentResolver contentResolver = context.getContentResolver();
-            final String[] columns = new String[]{OpenableColumns.DISPLAY_NAME,
-                                                  OpenableColumns.SIZE};
-            try (Cursor cursor = contentResolver.query(uri, columns, null, null, null)) {
-                if (cursor != null && cursor.moveToFirst()) {
-
-                    // display name
-                    final String name = cursor.getString(0);
-                    // 0 for a directory
-                    final long size = cursor.getLong(1);
-
-                    // sanity check, according to the android.provider.OpenableColumns
-                    // documentation, the name and size MUST be present.
-                    if (name != null && !name.isEmpty()) {
-                        return new UriInfo(uri, name, size);
-                    }
+    public static void delete(@Nullable final File file) {
+        if (file != null && file.exists()) {
+            try {
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            } catch (@NonNull final /* SecurityException */ RuntimeException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.e(TAG, "delete|file=" + file, e);
                 }
             }
-        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            final String path = uri.getPath();
-            if (path != null) {
-                final File file = new File(path);
-                // sanity check
-                if (file.exists()) {
-                    return new UriInfo(uri, file.getName(), file.length());
-                }
-            }
-        } else if (scheme.startsWith("http")) {
-            return new UriInfo(uri, uri.toString(), 0);
         }
-
-        throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
     }
 
     /**
-     * Calculate the CRC32 checksum for the given file.
+     * Recursively delete files.
+     * Does <strong>NOT</strong> delete the directory itself or any subdirectories.
      *
-     * @param file to parse
+     * @param root      directory
+     * @param filter    (optional) to apply; {@code null} for all files.
+     * @param canceller (optional) to check for user cancellation
      *
-     * @return crc32
-     *
-     * @throws IOException on failure
+     * @return number of bytes deleted
      */
-    @NonNull
-    public static CRC32 getCrc32(@NonNull final File file)
-            throws IOException {
-        final CRC32 crc32 = new CRC32();
-        final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
-        try (InputStream is = new FileInputStream(file)) {
-            int nRead;
-            while ((nRead = is.read(buffer)) > 0) {
-                crc32.update(buffer, 0, nRead);
+    public static long deleteDirectory(@NonNull final File root,
+                                       @Nullable final FileFilter filter,
+                                       @Nullable final Canceller canceller) {
+        long totalSize = 0;
+        // sanity check
+        if (root.isDirectory()) {
+            //noinspection ConstantConditions
+            for (final File file : root.listFiles(filter)) {
+                if (canceller != null && canceller.isCancelled()) {
+                    return totalSize;
+                }
+                if (file.isFile()) {
+                    totalSize += file.length();
+                    delete(file);
+                } else if (file.isDirectory()) {
+                    totalSize += deleteDirectory(file, filter, canceller);
+                }
             }
         }
-        return crc32;
+        return totalSize;
     }
 
     /**
@@ -474,32 +379,6 @@ public final class FileUtils {
         return totalSize;
     }
 
-    /**
-     * Recursively delete files.
-     * Does <strong>NOT</strong> delete the directory or any subdirectories.
-     *
-     * @param root   directory
-     * @param filter (optional) to apply; {@code null} for all files.
-     *
-     * @return number of bytes deleted
-     */
-    public static long deleteFiles(@NonNull final File root,
-                                   @Nullable final FileFilter filter) {
-        long totalSize = 0;
-        // sanity check
-        if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (file.isFile()) {
-                    totalSize += file.length();
-                    delete(file);
-                } else if (file.isDirectory()) {
-                    totalSize += deleteFiles(file, filter);
-                }
-            }
-        }
-        return totalSize;
-    }
 
     /**
      * Recursively collect applicable files for the given directory.
@@ -528,34 +407,127 @@ public final class FileUtils {
         return files;
     }
 
-    public static class UriInfo {
+    /**
+     * Format a number of bytes in a human readable form.
+     *
+     * @param context Current context
+     * @param bytes   to format
+     *
+     * @return formatted # bytes
+     */
+    @NonNull
+    public static String formatFileSize(@NonNull final Context context,
+                                        final float bytes) {
+        if (bytes < 3_000) {
+            // Show 'bytes' if < 3k
+            return context.getString(R.string.bytes, bytes);
+        } else if (bytes < 250_000) {
+            // Show Kb if less than 250kB
+            return context.getString(R.string.kilobytes, bytes / TO_KILOBYTES);
+        } else {
+            // Show MB otherwise...
+            return context.getString(R.string.megabytes, bytes / TO_MEGABYTES);
+        }
+    }
 
-        @NonNull
-        private final Uri mUri;
-        @NonNull
-        private final String mDisplayName;
-        private final long mSize;
+    /**
+     * Calculate the CRC32 checksum for the given file.
+     *
+     * @param file to parse
+     *
+     * @return crc32
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    public static CRC32 getCrc32(@NonNull final File file)
+            throws IOException {
+        final CRC32 crc32 = new CRC32();
+        final byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
+        try (InputStream is = new FileInputStream(file)) {
+            int nRead;
+            while ((nRead = is.read(buffer)) > 0) {
+                crc32.update(buffer, 0, nRead);
+            }
+        }
+        return crc32;
+    }
 
-        public UriInfo(@NonNull final Uri uri,
-                       @NonNull final String displayName,
-                       final long size) {
-            mUri = uri;
-            mDisplayName = displayName;
-            mSize = size;
+    /**
+     * Mutate the given filename to make it valid for a FAT or ext4 filesystem,
+     * replacing any invalid characters with "_".
+     * <p>
+     * The main usage is when dealing with
+     * {@link DocumentFile#createFile(String, String)} which DOES, and
+     * {@link DocumentFile#findFile(String)} which does NOT
+     * convert invalid characters.
+     *
+     * <ul>Combines the hidden methods:
+     *  <li>android.os.FileUtils#buildValidFatFilename</li>
+     *  <li>android.os.FileUtils#buildValidExtFilename</li>
+     *  <li>android.os.FileUtils#trimFilename</li>
+     * </ul>
+     */
+    public static String buildValidFilename(@Nullable final String name)
+            throws IOException {
+        if (name == null || name.isEmpty() || ".".equals(name) || "..".equals(name)) {
+            throw new IOException("invalid name: " + name);
         }
 
-        @NonNull
-        public Uri getUri() {
-            return mUri;
+        final StringBuilder sb = new StringBuilder(name.length());
+        for (int i = 0; i < name.length(); i++) {
+            final char c = name.charAt(i);
+            if (isValidFilenameChar(c)) {
+                sb.append(c);
+            } else {
+                sb.append('_');
+            }
         }
-
-        @NonNull
-        public String getDisplayName() {
-            return mDisplayName;
+        // Even though vfat allows 255 UCS-2 chars, we might eventually write to
+        // ext4 through a FUSE layer, so use that limit.
+        int maxBytes = 255;
+        byte[] raw = sb.toString().getBytes(StandardCharsets.UTF_8);
+        if (raw.length > maxBytes) {
+            maxBytes -= 3;
+            while (raw.length > maxBytes) {
+                sb.deleteCharAt(sb.length() / 2);
+                raw = sb.toString().getBytes(StandardCharsets.UTF_8);
+            }
+            sb.insert(sb.length() / 2, "...");
         }
+        return sb.toString();
+    }
 
-        public long getSize() {
-            return mSize;
+    /**
+     * Check file name character.
+     *
+     * <ul>Combines the hidden methods:
+     *  <li>android.os.FileUtils#isValidFatFilenameChar</li>
+     *  <li>android.os.FileUtils#isValidExtFilenameChar</li>
+     * </ul>
+     *
+     * @param c char to check
+     *
+     * @return flag
+     */
+    private static boolean isValidFilenameChar(final char c) {
+        if (c <= 0x1f) {
+            return false;
+        }
+        switch (c) {
+            case '"':
+            case '*':
+            case '/':
+            case ':':
+            case '<':
+            case '>':
+            case '?':
+            case '\\':
+            case '|':
+            case 0x7F:
+                return false;
+            default:
+                return true;
         }
     }
 }

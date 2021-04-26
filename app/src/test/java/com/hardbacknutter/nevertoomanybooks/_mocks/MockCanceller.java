@@ -25,7 +25,7 @@ public class MockCanceller
         implements Canceller {
 
     @Override
-    public boolean cancel(final boolean mayInterruptIfRunning) {
+    public boolean cancel() {
         return false;
     }
 

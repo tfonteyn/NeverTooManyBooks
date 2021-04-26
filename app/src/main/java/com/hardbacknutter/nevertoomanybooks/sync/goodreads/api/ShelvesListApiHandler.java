@@ -33,10 +33,10 @@ import java.util.Map;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -77,12 +77,12 @@ public class ShelvesListApiHandler
      *
      * @return unmodifiableMap
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     @NonNull
     public Map<String, GoodreadsShelf> getAll()
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         final Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -115,12 +115,12 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @NonNull
     private Bundle get(final int page)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, mGrAuth.getUserId());
 

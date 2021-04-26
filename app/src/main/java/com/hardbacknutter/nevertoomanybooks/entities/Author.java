@@ -138,7 +138,7 @@ public class Author
 
     /**
      * Any: indicate that this name entry is a pseudonym.
-     * ENHANCE: pseudonym flag its own this is not much use; need to link it with the real name
+     * ENHANCE: pseudonym flag on its own this is not much use; need to link it with the real name
      */
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
@@ -266,6 +266,7 @@ public class Author
         mFamilyName = rowData.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
         mGivenNames = rowData.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
         mIsComplete = rowData.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE);
+
         if (rowData.contains(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             mType = rowData.getInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
         }
@@ -321,12 +322,12 @@ public class Author
         final List<String> tmp = StringList.newInstance().decode(uName, ',', true);
         if (tmp.size() > 1) {
             final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(tmp.get(1));
-            if (!suffixMatcher.find()) {
-                // not a suffix, assume the names are already formatted.
-                return new Author(tmp.get(0), tmp.get(1));
-            } else {
+            if (suffixMatcher.find()) {
                 // concatenate without the comma. Further processing will take care of the suffix.
                 uName = tmp.get(0) + ' ' + tmp.get(1);
+            } else {
+                // not a suffix, assume the names are already formatted.
+                return new Author(tmp.get(0), tmp.get(1));
             }
         }
 
@@ -347,14 +348,14 @@ public class Author
         int pos = names.length - 1;
 
         final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(names[pos]);
-        if (!suffixMatcher.find()) {
-            // no suffix.
-            buildFamilyName.append(names[pos]);
-            pos--;
-        } else {
+        if (suffixMatcher.find()) {
             // suffix and the element before it are part of the last name.
             buildFamilyName.append(names[pos - 1]).append(' ').append(names[pos]);
             pos -= 2;
+        } else {
+            // no suffix.
+            buildFamilyName.append(names[pos]);
+            pos--;
         }
 
         // the last name could also have a prefix
@@ -554,14 +555,14 @@ public class Author
      */
     @NonNull
     public String getFormattedName(final boolean givenNameFirst) {
-        if (!mGivenNames.isEmpty()) {
+        if (mGivenNames.isEmpty()) {
+            return mFamilyName;
+        } else {
             if (givenNameFirst) {
                 return mGivenNames + ' ' + mFamilyName;
             } else {
                 return mFamilyName + ", " + mGivenNames;
             }
-        } else {
-            return mFamilyName;
         }
     }
 

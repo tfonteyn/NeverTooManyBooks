@@ -30,6 +30,7 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
@@ -90,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -187,8 +189,8 @@ public class CalibreContentServer {
      */
     private static final int BUFFER_FILE = 1_048_576;
 
-    private static final int CONNECT_TIMEOUT_IN_MS = 5_000;
-    private static final int READ_TIMEOUT_IN_MS = 5_000;
+    private static final int CONNECT_TIMEOUT_IN_MS = 3_000;
+    private static final int READ_TIMEOUT_IN_MS = 2_000;
 
     @NonNull
     private final Uri mServerUri;
@@ -249,12 +251,12 @@ public class CalibreContentServer {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final String username = global.getString(PK_HOST_USER, "");
         //noinspection ConstantConditions
-        if (!username.isEmpty()) {
+        if (username.isEmpty()) {
+            mAuthHeader = null;
+        } else {
             final String password = global.getString(PK_HOST_PASS, "");
             //noinspection ConstantConditions
             mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
-        } else {
-            mAuthHeader = null;
         }
     }
 
@@ -426,10 +428,10 @@ public class CalibreContentServer {
             if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
                 final JSONObject details = libraryDetails.getJSONObject(libraryId);
                 uuid = details.getString("uuid");
-                if (!details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
-                    vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
-                } else {
+                if (details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
                     vlibs = null;
+                } else {
+                    vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
                 }
             } else {
                 uuid = "";
@@ -1029,23 +1031,19 @@ public class CalibreContentServer {
     @WorkerThread
     @Nullable
     public File getCover(final int calibreId,
-                         @NonNull final String coverUrl) {
-        try {
-            if (mImageDownloader == null) {
-                mImageDownloader = new ImageDownloader()
-                        .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
-                        .setReadTimeout(READ_TIMEOUT_IN_MS)
-                        .setAuthHeader(mAuthHeader)
-                        .setSslContext(mSslContext);
-            }
-            final File tmpFile = mImageDownloader
-                    .createTmpFile(TAG, String.valueOf(calibreId), 0, null);
-            return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
+                         @NonNull final String coverUrl)
+            throws DiskFullException, ExternalStorageException {
 
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // a fail here is never critical, we're ignoring any
+        if (mImageDownloader == null) {
+            mImageDownloader = new ImageDownloader()
+                    .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
+                    .setReadTimeout(READ_TIMEOUT_IN_MS)
+                    .setAuthHeader(mAuthHeader)
+                    .setSslContext(mSslContext);
         }
-        return null;
+        final File tmpFile = mImageDownloader
+                .createTmpFile(TAG, String.valueOf(calibreId), 0, null);
+        return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
     }
 
     /**
@@ -1104,7 +1102,7 @@ public class CalibreContentServer {
         if (destFile.exists()) {
             return destUri;
         } else {
-            throw new FileNotFoundException("No error, but not found?");
+            throw new FileNotFoundException("No error, but not found? destFile=" + destFile);
         }
     }
 
@@ -1198,50 +1196,32 @@ public class CalibreContentServer {
             throw new FileNotFoundException(folder.toString());
         }
 
-        final Author primaryAuthor = book.getPrimaryAuthor();
-        if (primaryAuthor == null) {
-            // This should never happen... flw
-            throw new IOException("primaryAuthor was null");
-        }
+        final String authorDirectory = createAuthorDirectoryName(book);
 
-        String author = primaryAuthor.getFormattedName(false);
-        // A little nastiness... if our name ends with a '.'
-        // then Android, in its infinite wisdom, will remove it
-        // If we escape it, Android will turn it into a '_'
-        // Hence, we remove it ourselves, so a subsequent lookup will work.
-        if (author.endsWith(".")) {
-            author = author.substring(0, author.length() - 2).trim();
-        }
         // FIRST check if it exists
-        DocumentFile authorFolder = root.findFile(author);
+        DocumentFile authorFolder = root.findFile(authorDirectory);
         if (authorFolder == null) {
             if (creating) {
-                authorFolder = root.createDirectory(author);
+                authorFolder = root.createDirectory(authorDirectory);
             }
             if (authorFolder == null) {
-                throw new FileNotFoundException(author);
+                throw new FileNotFoundException(authorDirectory);
             }
         }
 
-        String seriesPrefix = "";
-        final Series primarySeries = book.getPrimarySeries();
-        if (primarySeries != null) {
-            seriesPrefix = primarySeries.getLabel(context) + " - ";
-        }
-        final String fileName = seriesPrefix + book.getTitle();
-
-        final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final String fileName = createFilename(context, book);
+        final String fileExt = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
 
         // FIRST check if it exists using the format extension
-        DocumentFile bookFile = authorFolder.findFile(fileName + "." + format);
+        DocumentFile bookFile = authorFolder.findFile(fileName + "." + fileExt);
         if (bookFile == null) {
             if (creating) {
                 // when creating, we must NOT directly use the extension,
                 // but deduce the mime type from the extension.
-                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(format);
+                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
                 if (mimeType == null) {
                     // shouldn't be needed, ... flw
-                    mimeType = "application/" + format;
+                    mimeType = "application/" + fileExt;
                 }
                 bookFile = authorFolder.createFile(mimeType, fileName);
             }
@@ -1251,6 +1231,43 @@ public class CalibreContentServer {
         }
 
         return bookFile;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    String createFilename(@NonNull final Context context,
+                          @NonNull final Book book)
+            throws IOException {
+        String seriesPrefix = "";
+        final Series primarySeries = book.getPrimarySeries();
+        if (primarySeries != null) {
+            seriesPrefix = primarySeries.getLabel(context) + " - ";
+        }
+
+        // Combine, and filter all other invalid characters for filenames
+        return FileUtils.buildValidFilename(seriesPrefix + book.getTitle());
+    }
+
+    @VisibleForTesting
+    @NonNull
+    String createAuthorDirectoryName(@NonNull final Book book)
+            throws IOException {
+        final Author primaryAuthor = book.getPrimaryAuthor();
+        if (primaryAuthor == null) {
+            // This should never happen... flw
+            throw new IOException("primaryAuthor was null");
+        }
+
+        String authorDirectory = FileUtils.buildValidFilename(
+                primaryAuthor.getFormattedName(false));
+        // A little extra nastiness... if our name ends with a '.'
+        // then Android, in its infinite wisdom, will remove it
+        // If we escape it, Android will turn it into a '_'
+        // Hence, we remove it ourselves, so a subsequent findFile will work.
+        while (authorDirectory.endsWith(".") && authorDirectory.length() > 2) {
+            authorDirectory = authorDirectory.substring(0, authorDirectory.length() - 1).trim();
+        }
+        return authorDirectory;
     }
 
     /**

@@ -190,7 +190,8 @@ public class SqliteShellFragment
             }
         } catch (@NonNull final Exception e) {
             setTitle("");
-            mVb.output.loadDataWithBaseURL(null, e.getLocalizedMessage(),
+
+            mVb.output.loadDataWithBaseURL(null, String.valueOf(e.getLocalizedMessage()),
                                            TEXT_HTML, UTF_8, null);
         }
     }

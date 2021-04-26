@@ -43,11 +43,44 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 public final class StandardDialogs {
 
     private StandardDialogs() {
+    }
+
+    /**
+     * Show a popup info text.
+     *
+     * @param infoView the View from which we'll take the content-description as text to display
+     *                 and anchor the popup to.
+     */
+    public static void infoPopup(@NonNull final View infoView) {
+        infoPopup(infoView, infoView.getContentDescription());
+    }
+
+    /**
+     * Show a popup info text. A tap outside of the popup will make it go away again.
+     *
+     * @param anchorView for the popup window
+     * @param text       to display
+     */
+    public static void infoPopup(@NonNull final View anchorView,
+                                 @NonNull final CharSequence text) {
+        final Context context = anchorView.getContext();
+        @SuppressLint("InflateParams")
+        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null);
+        final TextView infoView = root.findViewById(R.id.info);
+        infoView.setText(text);
+
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(root);
+        // make the rounded corners transparent
+        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        popup.setOutsideTouchable(true);
+        popup.setFocusable(true);
+        // finally show it
+        popup.showAsDropDown(anchorView);
     }
 
     /**
@@ -240,7 +273,6 @@ public final class StandardDialogs {
                 .show();
     }
 
-
     /**
      * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
      *
@@ -286,60 +318,4 @@ public final class StandardDialogs {
                 .create()
                 .show();
     }
-
-    public static void showError(@NonNull final Context context,
-                                 @NonNull final LocalizedException e) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(e.getUserMessage(context))
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
-    }
-
-    public static String createBadError(@NonNull final Context context,
-                                        @StringRes final int msgId) {
-        return createBadError(context, context.getString(msgId));
-    }
-
-    public static String createBadError(@NonNull final Context context,
-                                        @NonNull final String msg) {
-        return msg + "\n" + context.getString(R.string.error_if_the_problem_persists,
-                                              context.getString(R.string.lbl_send_debug));
-    }
-
-    /**
-     * Show a popup info text.
-     *
-     * @param infoView the View from which we'll take the content-description as text to display
-     *                 and anchor the popup to.
-     */
-    public static void infoPopup(@NonNull final View infoView) {
-        infoPopup(infoView, infoView.getContentDescription());
-    }
-
-    /**
-     * Show a popup info text. A tap outside of the popup will make it go away again.
-     *
-     * @param anchorView for the popup window
-     * @param text       to display
-     */
-    public static void infoPopup(@NonNull final View anchorView,
-                                 @NonNull final CharSequence text) {
-        final Context context = anchorView.getContext();
-        @SuppressLint("InflateParams")
-        final View root = LayoutInflater.from(context).inflate(R.layout.popup_info, null);
-        final TextView infoView = root.findViewById(R.id.info);
-        infoView.setText(text);
-
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(root);
-        // make the rounded corners transparent
-        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setOutsideTouchable(true);
-        popup.setFocusable(true);
-        // finally show it
-        popup.showAsDropDown(anchorView);
-    }
-
 }

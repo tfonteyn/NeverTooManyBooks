@@ -28,9 +28,9 @@ import androidx.annotation.WorkerThread;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public interface ArchiveWriter
         extends Closeable {
@@ -53,14 +53,14 @@ public interface ArchiveWriter
      *
      * @return the export results summary
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ExportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     @WorkerThread
     @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull ProgressListener progressListener)
-            throws GeneralParsingException, IOException;
+            throws ExportException, IOException;
 
     /**
      * Override if the implementation needs to close something.

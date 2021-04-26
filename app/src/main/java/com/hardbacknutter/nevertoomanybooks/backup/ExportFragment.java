@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -61,10 +61,12 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ExportFragment
@@ -72,7 +74,9 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
+    /** The (optional) preset encoding when this fragment starts. */
     public static final String BKEY_ENCODING = TAG + ":encoding";
+
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
 
@@ -83,12 +87,13 @@ public class ExportFragment
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::exportToUri);
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
+
     /** View Binding. */
     private FragmentExportBinding mVb;
     @Nullable
     private ArchiveEncoding mPresetEncoding;
+    @Nullable
+    private ProgressDelegate mProgressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -115,6 +120,8 @@ public class ExportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setTitle(R.string.menu_backup_and_export);
+
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
@@ -123,9 +130,11 @@ public class ExportFragment
         mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        // if the task is NOT already running (e.g. after a screen rotation...) ...
+        // Check if the task is already running (e.g. after a screen rotation...)
+        // Note that after a screen rotation, the full-options screen will NOT be re-shown.
         if (!mVm.isExportRunning()) {
-            // show either the full details screen or the quick options dialog
+            // The task is NOT yet running.
+            // Show either the full-options screen or the quick-options dialog
             if (mVm.isQuickOptionsAlreadyShown()) {
                 showOptions();
             } else {
@@ -139,7 +148,6 @@ public class ExportFragment
         final ExportHelper helper = mVm.getExportHelper();
 
         if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            setTitle(R.string.action_export);
             helper.setEncoding(mPresetEncoding);
 
             //noinspection ConstantConditions
@@ -159,7 +167,7 @@ public class ExportFragment
                     .create()
                     .show();
         } else {
-            setTitle(R.string.lbl_backup);
+            // set the default; a backup to archive
             helper.setEncoding(ArchiveEncoding.Zip);
 
             //noinspection ConstantConditions
@@ -226,22 +234,17 @@ public class ExportFragment
                 .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
 
         if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            setTitle(R.string.action_export);
             helper.setEncoding(mPresetEncoding);
+
+            mVb.grpArchive.setVisibility(View.GONE);
+            mVb.grpServer.setVisibility(View.VISIBLE);
 
             mVb.cbxBooks.setChecked(true);
             mVb.cbxBooks.setEnabled(true);
 
             mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
 
-            mVb.lblArchiveFormat.setVisibility(View.GONE);
-            mVb.archiveFormat.setVisibility(View.GONE);
-            mVb.archiveFormatInfo.setVisibility(View.GONE);
-            mVb.archiveFormatInfoLong.setVisibility(View.GONE);
-
-            mVb.lblRemoteServer.setVisibility(View.VISIBLE);
             mVb.lblRemoteServer.setText(mPresetEncoding.getRemoteServerDescriptionResId());
-            mVb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
             mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
                     (v, isChecked) ->
                             mVm.getExportHelper()
@@ -250,6 +253,9 @@ public class ExportFragment
                                            isChecked));
 
         } else {
+            mVb.grpArchive.setVisibility(View.VISIBLE);
+            mVb.grpServer.setVisibility(View.GONE);
+
             mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
             mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 mVm.getExportHelper().setExportEntry(RecordType.Books, isChecked);
@@ -283,7 +289,6 @@ public class ExportFragment
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (encoding) {
             case Zip: {
-                setTitle(R.string.lbl_backup);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -303,7 +308,6 @@ public class ExportFragment
                 break;
             }
             case Csv: {
-                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -323,7 +327,6 @@ public class ExportFragment
                 break;
             }
             case Json: {
-                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_json_info);
                 mVb.archiveFormatInfoLong.setText("");
 
@@ -344,7 +347,6 @@ public class ExportFragment
                 break;
             }
             case Xml: {
-                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
@@ -366,7 +368,6 @@ public class ExportFragment
                 break;
             }
             case SqLiteDb: {
-                setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
@@ -422,32 +423,6 @@ public class ExportFragment
         mVm.startExport(Uri.parse(CalibreContentServer.getHostUrl()));
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            final FragmentManager fm = getChildFragmentManager();
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.menu_backup_and_export), false, true);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
-            }
-
-            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
-        }
-
-        mProgressDialog.onProgress(message);
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
     private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
         closeProgressDialog();
 
@@ -470,11 +445,16 @@ public class ExportFragment
                               ? R.string.error_backup_failed
                               : R.string.error_export_failed;
 
+            final Context context = getContext();
             //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(getString(R.string.error_storage_not_writable));
+
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(title)
-                    .setMessage(Backup.createErrorReport(getContext(), message.result))
+                    .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
@@ -538,14 +518,14 @@ public class ExportFragment
 
                     final StringBuilder msg = new StringBuilder(itemList);
 
-                    final FileUtils.UriInfo uriInfo = helper.getUriInfo(getContext());
-                    final long size = uriInfo.getSize();
+                    final UriInfo uriInfo = new UriInfo(helper.getUri());
+                    final long size = uriInfo.getSize(getContext());
 
                     // We cannot get the folder name for the file.
                     // FIXME: We need to change the descriptive string not to include the folder.
                     msg.append("\n\n")
                        .append(getString(R.string.progress_end_export_report, "",
-                                         uriInfo.getDisplayName(),
+                                         uriInfo.getDisplayName(getContext()),
                                          FileUtils.formatFileSize(getContext(), size)));
 
                     if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
@@ -635,4 +615,26 @@ public class ExportFragment
         }
     }
 
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.isNewEvent()) {
+            if (mProgressDelegate == null) {
+                //noinspection ConstantConditions
+                mProgressDelegate = new ProgressDelegate(
+                        getActivity().findViewById(R.id.progress_frame))
+                        .setTitle(getString(R.string.menu_backup_and_export))
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .show(getActivity().getWindow());
+            }
+            mProgressDelegate.onProgress(message);
+        }
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDelegate != null) {
+            //noinspection ConstantConditions
+            mProgressDelegate.dismiss(getActivity().getWindow());
+            mProgressDelegate = null;
+        }
+    }
 }

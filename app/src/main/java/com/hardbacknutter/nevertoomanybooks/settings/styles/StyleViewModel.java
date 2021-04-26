@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -42,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class StyleViewModel
         extends ViewModel
@@ -50,10 +50,6 @@ public class StyleViewModel
 
     public static final int BKEY_ACTION_CLONE = 0;
     public static final int BKEY_ACTION_EDIT = 1;
-
-    /** Log tag. */
-    private static final String TAG = "StyleViewModel";
-
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
@@ -76,7 +72,12 @@ public class StyleViewModel
 
             final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));
 
-            if (!uuid.isEmpty()) {
+            if (uuid.isEmpty()) {
+                // we're doing the global preferences, create a placeholder style with an empty uuid
+                // and let it use the standard SharedPreferences
+                mStyle = UserStyle.createGlobal(context);
+
+            } else {
                 // ALWAYS pass the original style uuid back.
                 mResultIntent.putExtra(EditStyleContract.BKEY_TEMPLATE_UUID, uuid);
 
@@ -101,10 +102,6 @@ public class StyleViewModel
                 // so even if the user makes no changes, we still send it back!
                 mResultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, mStyle.getUuid());
 
-            } else {
-                // we're doing the global preferences, create a placeholder style with an empty uuid
-                // and let it use the standard SharedPreferences
-                mStyle = UserStyle.createGlobal(context);
             }
         }
     }

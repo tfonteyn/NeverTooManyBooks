@@ -104,10 +104,27 @@
         app:layout_constraintTop_toBottomOf="@id/rb_export_books_option_new_and_updated"
         />
 
+    <!-- grp_archive *OR* grp_server is shown. -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/grp_archive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="lbl_archive_format,archive_format_info,archive_format_info_long"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/grp_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="lbl_remote_server,cbx_delete_removed_books"
+        />
+
+    <!-- BEGIN grp_archive -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_archive_format"
         style="@style/ExposedDropdownMenu"
-        android:layout_margin="@dimen/field_margin_start"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginTop="@dimen/field_label_margin_top"
         android:hint="@string/lbl_archive_format"
         app:layout_constraintStart_toEndOf="@id/middle"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -128,7 +145,7 @@
         android:id="@+id/archive_format_info"
         style="@style/Text.Body.Small"
         android:layout_marginStart="@dimen/field_margin_start"
-        app:layout_constraintStart_toEndOf="@id/middle"
+        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
         app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_format_xml_info"
@@ -140,12 +157,14 @@
         android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/middle"
+        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
         app:layout_constraintTop_toBottomOf="@id/archive_format_info"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_is_export_only"
         />
+    <!-- END grp_archive -->
 
+    <!-- BEGIN grp_server -->
     <TextView
         android:id="@+id/lbl_remote_server"
         style="@style/Text.Body.Small"
@@ -167,8 +186,10 @@
         android:text="@string/lbl_delete_removed_books"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/middle"
+        app:layout_constraintStart_toStartOf="@id/lbl_remote_server"
         app:layout_constraintTop_toBottomOf="@id/lbl_remote_server"
         tools:visibility="visible"
         />
+    <!-- END grp_server -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

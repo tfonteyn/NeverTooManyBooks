@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.IntRange;
@@ -26,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -36,22 +36,24 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
 /**
  * A delegate class for handling a Goodreads enabled Book.
  */
 public class GoodreadsHandler {
 
+    private Activity mActivity;
+
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
 
     @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    private FragmentManager mFragmentManager;
+    private ProgressDelegate mProgressDelegate;
+
     private GoodreadsHandlerViewModel mVm;
 
     /**
@@ -62,7 +64,8 @@ public class GoodreadsHandler {
      */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
-        onViewCreated(view, activity, activity, activity.getSupportFragmentManager());
+        onViewCreated(activity, view,
+                      activity, activity);
     }
 
     /**
@@ -72,21 +75,22 @@ public class GoodreadsHandler {
      */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
-        onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
-                      fragment, fragment.getChildFragmentManager());
+        onViewCreated(fragment.getActivity(), fragment.getView(),
+                      fragment, fragment.getViewLifecycleOwner());
     }
 
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param view the hosting component root view
+     * @param activity the hosting Activity
+     * @param view     the hosting component root view
      */
-    private void onViewCreated(@NonNull final View view,
-                               @NonNull final LifecycleOwner lifecycleOwner,
+    private void onViewCreated(@NonNull final Activity activity,
+                               @NonNull final View view,
                                @NonNull final ViewModelStoreOwner viewModelStoreOwner,
-                               @NonNull final FragmentManager fm) {
+                               @NonNull final LifecycleOwner lifecycleOwner) {
+        mActivity = activity;
         mView = view;
-        mFragmentManager = fm;
 
         mVm = new ViewModelProvider(viewModelStoreOwner).get(GoodreadsHandlerViewModel.class);
         mVm.onFinished().observe(lifecycleOwner, this::onFinished);
@@ -130,12 +134,8 @@ public class GoodreadsHandler {
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
+        if (message.isNewEvent()) {
+            if (mProgressDelegate == null) {
                 final String dialogTitle;
 
                 if (message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
@@ -150,20 +150,21 @@ public class GoodreadsHandler {
                     throw new IllegalArgumentException("id=" + message.taskId);
                 }
 
-                mProgressDialog = ProgressDialogFragment.newInstance(dialogTitle, false, true);
-                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+                mProgressDelegate = new ProgressDelegate(
+                        mActivity.findViewById(R.id.progress_frame))
+                        .setTitle(dialogTitle)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .show(mActivity.getWindow());
             }
-
-            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
+            mProgressDelegate.onProgress(message);
         }
-
-        mProgressDialog.onProgress(message);
     }
 
     private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        if (mProgressDelegate != null) {
+            mProgressDelegate.dismiss(mActivity.getWindow());
+            mProgressDelegate = null;
         }
     }
 }

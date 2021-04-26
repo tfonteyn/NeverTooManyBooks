@@ -38,13 +38,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * Start a background task that exports a single books to Goodreads.
@@ -84,7 +85,8 @@ public class SendOneBookTask
     @NonNull
     @Override
     @WorkerThread
-    protected GrStatus doWork(@NonNull final Context context) {
+    protected GrStatus doWork(@NonNull final Context context)
+            throws DiskFullException {
 
         try {
             if (!NetworkUtils.isNetworkAvailable()) {
@@ -134,7 +136,7 @@ public class SendOneBookTask
         } catch (@NonNull final CredentialsException e) {
             return new GrStatus(GrStatus.FAILED_CREDENTIALS);
 
-        } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
+        } catch (@NonNull final HttpNotFoundException | SiteParsingException e) {
             return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
 
         } catch (@NonNull final IOException e) {

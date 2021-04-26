@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Details of a database table as retrieved from {@code PRAGMA table_info(tableName)}.
@@ -80,7 +80,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        final String lcName = name.toLowerCase(AppLocale.getInstance().getSystemLocale());
+        final String lcName = name.toLowerCase(ServiceLocator.getSystemLocale());
         return mColumns.get(lcName);
     }
 
@@ -95,7 +95,7 @@ public class TableInfo {
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
                                                   @NonNull final String tableName) {
-        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
+        final Locale systemLocale = ServiceLocator.getSystemLocale();
 
         final Map<String, ColumnInfo> allColumns = new HashMap<>();
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {

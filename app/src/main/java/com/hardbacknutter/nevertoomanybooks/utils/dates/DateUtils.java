@@ -30,8 +30,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
-
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import java.util.Locale;
 
 public final class DateUtils {
 
@@ -45,7 +44,7 @@ public final class DateUtils {
      *
      * @return local timezone DateTime
      */
-    public static ZonedDateTime utcToZoned(@NonNull final LocalDateTime utc) {
+    private static ZonedDateTime utcToZoned(@NonNull final LocalDateTime utc) {
         return utc.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
     }
 
@@ -61,8 +60,9 @@ public final class DateUtils {
     public static String toDisplay(@NonNull final Context context,
                                    @NonNull final TemporalAccessor localDate) {
 
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-                                .withLocale(AppLocale.getInstance().getUserLocale(context))
+                                .withLocale(userLocale)
                                 .format(localDate);
     }
 

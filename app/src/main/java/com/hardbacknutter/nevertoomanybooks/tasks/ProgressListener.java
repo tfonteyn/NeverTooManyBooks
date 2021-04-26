@@ -23,8 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-
 /**
  * Listener interface for progress messages.
  */

@@ -37,11 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 
+@SuppressWarnings("WeakerAccess")
 public class PreferredStylesViewModel
         extends ViewModel {
-
-    /** Log tag. */
-    private static final String TAG = "PreferredStylesVM";
 
     /** the selected style at onCreate time. */
     private String mInitialStyleUuid;

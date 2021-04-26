@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -144,7 +143,7 @@ public class JsonRecordReader
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException {
         try {
             // Don't close this stream
             final InputStream is = record.getInputStream();
@@ -155,7 +154,7 @@ public class JsonRecordReader
             return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(content)));
 
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ImportException(e);
 
         } catch (@NonNull final UncheckedIOException e) {
             //noinspection ConstantConditions

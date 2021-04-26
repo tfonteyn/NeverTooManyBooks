@@ -47,8 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -61,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  *     <li>{@link #process(Context)}</li>
  *     <li>{@link #filterValues(TableInfo)}</li>
  *     <li>insert or update the book to the database</li>
- *     <li>{@link #storeCovers()}</li>
+ *     <li>{@link #persistCovers()}</li>
  * </ol>
  */
 public class BookDaoHelper {
@@ -85,8 +84,8 @@ public class BookDaoHelper {
         mIsNew = isNew;
 
         // Handle Language field FIRST, we need it for _OB fields.
-        mBookLocale = mBook.getAndUpdateLocale(
-                context, AppLocale.getInstance().getUserLocale(context), true);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        mBookLocale = mBook.getAndUpdateLocale(context, userLocale, true);
     }
 
     /**
@@ -390,13 +389,13 @@ public class BookDaoHelper {
                                 // Theoretically we should only get here during an import,
                                 // where everything is handled as a String.
                                 final String stringValue = entry.toString().trim();
-                                if (!stringValue.isEmpty()) {
+                                if (stringValue.isEmpty()) {
+                                    cv.put(columnInfo.name, "");
+                                } else {
                                     // Sqlite does not care about float/double,
                                     // Using double covers float as well.
                                     //Reminder: do NOT use the bookLocale to parse.
                                     cv.put(columnInfo.name, Double.parseDouble(stringValue));
-                                } else {
-                                    cv.put(columnInfo.name, "");
                                 }
                             }
                             break;
@@ -416,7 +415,9 @@ public class BookDaoHelper {
                                 // Theoretically we should only get here during an import,
                                 // where everything is handled as a String.
                                 final String s = entry.toString().toLowerCase(bookLocale);
-                                if (!s.isEmpty()) {
+                                if (s.isEmpty()) {
+                                    cv.put(columnInfo.name, "");
+                                } else {
                                     // It's not strictly needed to do these conversions.
                                     // parseInt/catch(Exception) works,
                                     // but it's not elegant...
@@ -443,9 +444,6 @@ public class BookDaoHelper {
                                             cv.put(columnInfo.name, Integer.parseInt(s));
                                     }
 
-                                } else {
-                                    // s.isEmpty
-                                    cv.put(columnInfo.name, "");
                                 }
                             }
                             break;
@@ -483,7 +481,7 @@ public class BookDaoHelper {
      * @return {@code false} on failure
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean storeCovers() {
+    boolean persistCovers() {
 
         final String uuid = mBook.getString(DBKey.KEY_BOOK_UUID);
 
@@ -503,7 +501,7 @@ public class BookDaoHelper {
 
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    FileUtils.delete(mBook.getUuidCoverFile(cIdx));
+                    FileUtils.delete(mBook.getPersistedCoverFile(cIdx));
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled()) {
@@ -513,8 +511,7 @@ public class BookDaoHelper {
                     // Rename the temp file to the uuid permanent file name
                     final File file = new File(fileSpec);
                     try {
-                        final File destination = mBook.getUuidCoverFileOrNew(cIdx);
-                        FileUtils.rename(file, destination);
+                        mBook.persistCover(file, cIdx);
                     } catch (@NonNull final IOException e) {
                         Logger.error(TAG, e, "storeCovers|bookId=" + mBook.getId()
                                              + "|cIdx=" + cIdx);

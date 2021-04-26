@@ -43,15 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -83,7 +83,8 @@ public abstract class ShowBookApiHandler
     @NonNull
     private final XmlFilter mCoverFilter = new XmlFilter("");
 
-
+    @NonNull
+    private final Locale mUserLocale;
     @NonNull
     private final Locale mBookLocale;
 
@@ -249,6 +250,7 @@ public abstract class ShowBookApiHandler
             throws CredentialsException {
         super(context, grAuth);
 
+
         if (sGenreExclusions.isEmpty()) {
             sGenreExclusions.addAll(Arrays.asList(
                     context.getResources().getStringArray(R.array.goodreads_genre_exclusions)));
@@ -258,8 +260,10 @@ public abstract class ShowBookApiHandler
 
         mEBookString = context.getString(R.string.book_format_ebook);
 
+        mUserLocale = mContext.getResources().getConfiguration().getLocales().get(0);
+
         // Ideally we should use the Book locale
-        mBookLocale = AppLocale.getInstance().getUserLocale(context);
+        mBookLocale = mUserLocale;
 
         buildFilters();
     }
@@ -277,13 +281,13 @@ public abstract class ShowBookApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException, DiskFullException {
 
         mBookData = bookData;
 
@@ -291,10 +295,9 @@ public abstract class ShowBookApiHandler
         final DefaultHandler handler = new XmlResponseParser(mCoverFilter);
         executeGet(url, null, true, handler);
 
-        return ApiUtils.handleThumbnail(
-                mBookData,
-                SiteField.LARGE_IMAGE_URL,
-                SiteField.SMALL_IMAGE_URL);
+        return ApiUtils.handleThumbnail(mBookData,
+                                        SiteField.LARGE_IMAGE_URL,
+                                        SiteField.SMALL_IMAGE_URL);
     }
 
     /**
@@ -306,14 +309,14 @@ public abstract class ShowBookApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @NonNull
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException, DiskFullException {
 
         mBookData = bookData;
 
@@ -370,11 +373,10 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBKey.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBKey.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
-                final Locale userLocale = AppLocale.getInstance().getUserLocale(mContext);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
                 source = Languages.getInstance().getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
-                source = Languages.getInstance().toBibliographic(userLocale, source);
+                source = Languages.getInstance().toBibliographic(mUserLocale, source);
                 // store the iso3
                 mBookData.putString(DBKey.KEY_LANGUAGE, source);
             }
@@ -425,10 +427,9 @@ public abstract class ShowBookApiHandler
         }
 
         if (fetchCovers[0]) {
-            final String fileSpec = ApiUtils.handleThumbnail(
-                    mBookData,
-                    SiteField.LARGE_IMAGE_URL,
-                    SiteField.SMALL_IMAGE_URL);
+            final String fileSpec = ApiUtils.handleThumbnail(mBookData,
+                                                             SiteField.LARGE_IMAGE_URL,
+                                                             SiteField.SMALL_IMAGE_URL);
             if (fileSpec != null) {
                 final ArrayList<String> list = new ArrayList<>();
                 list.add(fileSpec);

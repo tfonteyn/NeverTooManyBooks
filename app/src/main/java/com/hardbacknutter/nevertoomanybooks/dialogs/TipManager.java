@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -139,9 +138,9 @@ public final class TipManager {
      * @param prefix to match
      */
     public void reset(@NonNull final String prefix) {
+        final Locale systemLocale = ServiceLocator.getSystemLocale();
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         final SharedPreferences.Editor ed = global.edit();
-        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
         for (final String key : global.getAll().keySet()) {
             if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
                 ed.remove(key);

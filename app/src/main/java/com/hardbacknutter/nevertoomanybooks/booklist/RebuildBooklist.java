@@ -19,12 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -44,12 +47,14 @@ public final class RebuildBooklist {
     /**
      * Get the current preferred rebuild mode for the list.
      *
+     * @param context Current context
+     *
      * @return Mode
      */
     @Mode
-    public static int getPreferredMode() {
-        final String value = ServiceLocator.getGlobalPreferences()
-                                           .getString(Prefs.pk_booklist_rebuild_state, null);
+    public static int getPreferredMode(@NonNull final Context context) {
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(Prefs.pk_booklist_rebuild_state, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }

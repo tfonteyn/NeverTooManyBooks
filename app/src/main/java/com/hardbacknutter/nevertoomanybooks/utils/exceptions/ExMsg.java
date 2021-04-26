@@ -27,15 +27,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.org.json.JSONException;
 
 public final class ExMsg {
+
+    private static final String TAG = "ExMsg";
 
     private ExMsg() {
     }
@@ -46,49 +46,45 @@ public final class ExMsg {
      * Dev Note: the return value should preferable fit on a single line
      *
      * @param context Current context
-     * @param tag     the tag from the caller object
      * @param e       Throwable to process
      *
-     * @return user-friendly error message for the given site
+     * @return user-friendly error message for the given Throwable
      */
+    @NonNull
+    public static Optional<String> map(@NonNull final Context context,
+                                       @Nullable final Throwable e) {
+        String msg = getMsg(context, e);
+        if (msg == null && e instanceof IOException) {
+            // Handle encapsulated exceptions, but don't handle pure IOException
+            // The latter must be handled by the caller.
+            msg = getMsg(context, e.getCause());
+        }
+
+        if (msg != null) {
+            return Optional.of(msg);
+        }
+
+        return Optional.empty();
+    }
+
     @Nullable
-    public static String map(@NonNull final Context context,
-                             @NonNull final String tag,
-                             @Nullable final Throwable e) {
+    private static String getMsg(@NonNull final Context context,
+                                 @Nullable final Throwable e) {
         if (e == null) {
             return null;
         }
 
-        String msg = getMsg(context, tag, e);
-        if (msg != null) {
-            return msg;
-        }
-
-        if (e instanceof IOException) {
-            // Handle encapsulated exceptions, but don't handle pure IOException
-            // The latter must be handled by the caller.
-            msg = getMsg(context, tag, e.getCause());
-        }
-
-        return msg;
-    }
-
-    //FIXME: review some of these error message and improve them
-    @Nullable
-    private static String getMsg(@NonNull final Context context,
-                                 @NonNull final String tag,
-                                 @Nullable final Throwable e) {
         String msg = null;
+
+        //FIXME: review some of these error message and improve them
 
         // Use the embedded localised message if possible
         if (e instanceof LocalizedException) {
             msg = ((LocalizedException) e).getUserMessage(context);
 
         } else if (e instanceof JSONException) {
-            msg = context.getString(R.string.error_unknown_long);
-
-        } else if (e instanceof DaoWriteException) {
-            msg = context.getString(R.string.error_storage_not_writable);
+            msg = context.getString(R.string.error_unknown_long,
+                                    context.getString(R.string.lbl_send_debug));
 
         } else if (e instanceof java.io.FileNotFoundException) {
             msg = context.getString(R.string.httpErrorFile);
@@ -99,7 +95,8 @@ public final class ExMsg {
 
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
-            msg = context.getString(R.string.error_unknown_long);
+            msg = context.getString(R.string.error_unknown_long,
+                                    context.getString(R.string.lbl_send_debug));
 
         } else if (e instanceof java.net.SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);
@@ -128,42 +125,9 @@ public final class ExMsg {
             if (errno == OsConstants.ENOSPC) {
                 msg = context.getString(R.string.error_storage_no_space_left);
             } else {
-                msg = Os.strerror(errno);
                 // write to logfile for future reporting enhancements.
-                Logger.warn(tag, "errno=" + errno);
-            }
-        }
-
-        return msg;
-    }
-
-    @NonNull
-    public static String ioExFallbackMsg(@NonNull final Context context,
-                                         @Nullable final Exception e,
-                                         @NonNull final String fallbackMsg) {
-        String msg = null;
-        // generic storage related IOException message
-        if (e instanceof IOException) {
-            if (BuildConfig.DEBUG /* always */) {
-                // in debug mode show the raw exception
-                msg = context.getString(R.string.error_unknown)
-                      + "\n\n" + e.getLocalizedMessage();
-            } else {
-                msg = StandardDialogs.createBadError(context, fallbackMsg);
-            }
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                // in debug mode show the raw exception
-                msg = context.getString(R.string.error_unknown);
-                if (e != null) {
-                    msg += "\n\n" + e.getLocalizedMessage();
-                }
-            } else {
-                // when not in debug, ask for feedback
-                msg = StandardDialogs.createBadError(context, R.string.error_unknown);
+                Logger.warn(TAG, "errno=" + errno);
+                msg = Os.strerror(errno);
             }
         }
 

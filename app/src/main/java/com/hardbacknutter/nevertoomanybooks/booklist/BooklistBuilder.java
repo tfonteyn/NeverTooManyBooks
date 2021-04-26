@@ -186,13 +186,11 @@ class BooklistBuilder {
      */
     void addLeftOuterJoin(@SuppressWarnings("SameParameterValue")
                           @NonNull final TableDefinition tableDefinition) {
-        if (!mLeftOuterJoins.containsKey(tableDefinition.getName())) {
-            mLeftOuterJoins.put(tableDefinition.getName(), tableDefinition);
-
-        } else {
+        if (mLeftOuterJoins.containsKey(tableDefinition.getName())) {
             // adding a duplicate here is a bug.
             throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
         }
+        mLeftOuterJoins.put(tableDefinition.getName(), tableDefinition);
     }
 
     /**
@@ -201,13 +199,11 @@ class BooklistBuilder {
      * @param domainExpression Domain to add
      */
     void addDomain(@NonNull final DomainExpression domainExpression) {
-        if (!mBookDomains.containsKey(domainExpression.getName())) {
-            mBookDomains.put(domainExpression.getName(), domainExpression);
-
-        } else {
+        if (mBookDomains.containsKey(domainExpression.getName())) {
             // adding a duplicate here is a bug.
             throw new IllegalArgumentException("Duplicate domain=" + domainExpression.getName());
         }
+        mBookDomains.put(domainExpression.getName(), domainExpression);
     }
 
     /**

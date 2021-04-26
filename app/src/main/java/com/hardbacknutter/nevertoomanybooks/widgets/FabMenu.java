@@ -157,14 +157,14 @@ public class FabMenu {
             if (fab != null && fab.isEnabled()) {
                 if (show) {
                     fab.show();
-                    if (!smallScreen) {
-                        // on top of base FAB
-                        fab.animate().translationX(baseX);
-                        fab.animate().translationY(baseY + ((i + 1) * deltaY));
-                    } else {
+                    if (smallScreen) {
                         // to the left of FAB and up
                         fab.animate().translationX(baseX + deltaX);
                         fab.animate().translationY(i * deltaY);
+                    } else {
+                        // on top of base FAB
+                        fab.animate().translationX(baseX);
+                        fab.animate().translationY(baseY + ((i + 1) * deltaY));
                     }
                 } else {
                     fab.animate().translationX(0);

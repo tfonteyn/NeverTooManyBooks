@@ -23,19 +23,16 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Export the main database file.
@@ -72,11 +69,11 @@ public class DbArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (OutputStream os = new BufferedOutputStream(
-                mHelper.createOutputStream(context), BUFFER_SIZE);
-             InputStream is = new BufferedInputStream(new FileInputStream(
-                     DBHelper.getDatabasePath(context)), BUFFER_SIZE)) {
-            FileUtils.copy(is, os);
+        final File databasePath = DBHelper.getDatabasePath(context);
+
+        try (FileChannel ic = new FileInputStream(databasePath).getChannel();
+             FileChannel oc = mHelper.createOutputStream(context).getChannel()) {
+            ic.transferTo(0, ic.size(), oc);
         }
 
         final ExportResults results = new ExportResults();

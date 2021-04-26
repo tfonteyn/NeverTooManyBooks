@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public class ImageDownloader {
@@ -163,11 +164,14 @@ public class ImageDownloader {
      * @param destination file to write to
      *
      * @return Downloaded File, or {@code null} on failure
+     *
+     * @throws DiskFullException on...
      */
     @Nullable
     @WorkerThread
     public File fetch(@NonNull final String url,
-                      @NonNull final File destination) {
+                      @NonNull final File destination)
+            throws DiskFullException {
         @Nullable
         final File savedFile;
 
@@ -192,8 +196,7 @@ public class ImageDownloader {
                         con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
                     }
 
-                    savedFile = FileUtils.copyInputStream(con.getInputStream(),
-                                                          destination);
+                    savedFile = FileUtils.copy(con.getInputStream(), destination);
                 }
             }
         } catch (@NonNull final IOException e) {
@@ -208,6 +211,12 @@ public class ImageDownloader {
                 if (Logger.isJUnitTest) {
                     return destination;
                 }
+            }
+
+            // we swallow IOExceptions, **EXCEPT** when the disk is full.
+            if (DiskFullException.isDiskFull(e)) {
+                //noinspection ConstantConditions
+                throw new DiskFullException(e.getCause());
             }
             return null;
         }

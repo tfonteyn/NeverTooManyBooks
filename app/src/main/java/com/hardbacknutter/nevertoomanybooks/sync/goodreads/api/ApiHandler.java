@@ -52,12 +52,13 @@ import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
 
 /**
  * Base class for all Goodreads handler classes.
@@ -99,15 +100,15 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     @WorkerThread
     void executeGet(@NonNull final String url,
                     @Nullable final Map<String, String> parameterMap,
                     final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -150,7 +151,7 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @WorkerThread
@@ -158,7 +159,7 @@ public abstract class ApiHandler {
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
@@ -214,7 +215,7 @@ public abstract class ApiHandler {
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException,
-                   GeneralParsingException {
+                   SiteParsingException {
 
         try {
             HttpUtils.checkResponseCode(request, R.string.site_goodreads);
@@ -225,15 +226,18 @@ public abstract class ApiHandler {
                 parser.parse(is, requestHandler);
             }
 
+        } catch (@NonNull final CredentialsException e) {
+            GoodreadsAuth.invalidateCredentials();
+            throw e;
+
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "parseResponse", e);
             }
-            throw new GeneralParsingException(e);
-
-        } catch (@NonNull final CredentialsException e) {
-            GoodreadsAuth.invalidateCredentials();
-            throw e;
+            // unwrap SAXException which are really IOExceptions
+            SAXHelper.unwrapIOException(e);
+            // wrap parser exceptions in an IOException /
+            throw new SiteParsingException(SearchSites.GOODREADS, e);
 
         } finally {
             request.disconnect();

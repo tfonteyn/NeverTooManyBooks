@@ -42,13 +42,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 public class JsonArchiveReader
         implements ArchiveReader {
-
-    /** Log tag. */
-    private static final String TAG = "JsonArchiveReader";
 
     /** Import configuration. */
     @NonNull
@@ -68,8 +65,8 @@ public class JsonArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, ImportException,
-                   IOException {
+            throws ImportException,
+                   IOException, DiskFullException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
@@ -82,7 +79,7 @@ public class JsonArchiveReader
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
-                    mHelper.getUriInfo(context).getDisplayName(), is);
+                    mHelper.getUriInfo(context).getDisplayName(context), is);
 
             return recordReader.read(context, record, mHelper, progressListener);
         } finally {

@@ -93,7 +93,7 @@
     <string name="error_import_file_not_supported">Wybranego pliku nie można zaimportować.</string>
     <string name="error_import_csv_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
     <string name="error_email_failed">E-mail nie mógł zostać wysłany.</string>
-    <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą opcji „%1$s” u dołu strony ustawień.</string>
+    <string name="error_unknown_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
@@ -111,7 +111,6 @@
     <string name="error_storage_not_accessible_s">Pamięć niedostępna: %1$s</string>
     <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
-    <string name="error_unknown_long">Wystąpił nieoczekiwany błąd, wyślij szczegóły do pomocy poprzez stronę „Administracja” z menu głównego.</string>
     <string name="error_unknown">Wystąpił nieznany błąd</string>
     <string name="fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>
     <string name="fab_add_book_by_internet_search">Szukaj w Internecie</string>

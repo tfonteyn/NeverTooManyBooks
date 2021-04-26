@@ -229,7 +229,6 @@ public final class ConstraintRadioGroup
      *
      * @param listener the callback to call on checked state change
      */
-    @SuppressWarnings("unused")
     public void setOnCheckedChangeListener(@Nullable final OnCheckedChangeListener listener) {
         mOnCheckedChangeListener = listener;
     }

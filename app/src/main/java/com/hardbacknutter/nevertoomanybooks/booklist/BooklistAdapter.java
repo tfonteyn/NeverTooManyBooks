@@ -77,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -152,7 +151,7 @@ public class BooklistAdapter
     public BooklistAdapter(@NonNull final Context context) {
 
         mInflater = LayoutInflater.from(context);
-        mUserLocale = AppLocale.getInstance().getUserLocale(context);
+        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled();
 
         mLevelIndent = context.getResources()
@@ -1026,7 +1025,7 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            final File file = Book.getUuidCoverFile(uuid, 0);
+            final File file = Book.getPersistedCoverFile(uuid, 0);
             if (file != null && file.exists()) {
                 final FragmentActivity activity = (FragmentActivity) coverView.getContext();
                 ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
@@ -1045,14 +1044,14 @@ public class BooklistAdapter
             final String title;
             if (mReorderTitle) {
                 final String bookLanguage = rowData.getString(DBKey.KEY_LANGUAGE);
-                if (!bookLanguage.isEmpty()) {
-                    title = ItemWithTitle.reorder(itemView.getContext(),
-                                                  rowData.getString(DBKey.KEY_TITLE),
-                                                  bookLanguage);
-                } else {
+                if (bookLanguage.isEmpty()) {
                     title = ItemWithTitle.reorder(itemView.getContext(),
                                                   rowData.getString(DBKey.KEY_TITLE),
                                                   mAdapter.getUserLocale());
+                } else {
+                    title = ItemWithTitle.reorder(itemView.getContext(),
+                                                  rowData.getString(DBKey.KEY_TITLE),
+                                                  bookLanguage);
                 }
             } else {
                 title = rowData.getString(DBKey.KEY_TITLE);
@@ -1086,7 +1085,10 @@ public class BooklistAdapter
 
             if (mInUse.series) {
                 final String number = rowData.getString(DBKey.KEY_BOOK_NUM_IN_SERIES);
-                if (!number.isEmpty()) {
+                if (number.isEmpty()) {
+                    mSeriesNumView.setVisibility(View.GONE);
+                    mSeriesNumLongView.setVisibility(View.GONE);
+                } else {
                     // Display it in one of the views, based on the size of the text.
                     // 4 characters is based on e.g. "1.12" being considered short
                     // and e.g. "1|omnibus" being long.
@@ -1099,9 +1101,6 @@ public class BooklistAdapter
                         mSeriesNumView.setVisibility(View.VISIBLE);
                         mSeriesNumLongView.setVisibility(View.GONE);
                     }
-                } else {
-                    mSeriesNumView.setVisibility(View.GONE);
-                    mSeriesNumLongView.setVisibility(View.GONE);
                 }
             }
 
@@ -1220,7 +1219,7 @@ public class BooklistAdapter
             }
 
             // 2. Cache did not have it, or we were not allowed to check.
-            final File file = Book.getUuidCoverFile(uuid, 0);
+            final File file = Book.getPersistedCoverFile(uuid, 0);
             // Check if the file exists; if it does not...
             if (file == null || !file.exists()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
@@ -1480,7 +1479,8 @@ public class BooklistAdapter
             // It should be done using the Series language
             // but as long as we don't store the Series language there is no point
             @Nullable
-            final Locale bookLocale = AppLocale.getInstance().getLocale(context, mBookLanguage);
+            final Locale bookLocale = ServiceLocator.getInstance().getAppLocale()
+                                                    .getLocale(context, mBookLanguage);
             return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }
     }

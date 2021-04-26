@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
@@ -164,13 +163,14 @@ public class EditSeriesDialogFragment
         mSeries.setComplete(mIsComplete);
 
         final Context context = getContext();
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final SeriesDao seriesDao = serviceLocator.getSeriesDao();
 
         // There is no book involved here, so use the users Locale instead
-        //noinspection ConstantConditions
-        final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
         // check if it already exists (will be 0 if not)
+        //noinspection ConstantConditions
         final long existingId = seriesDao.find(context, mSeries, true, bookLocale);
 
         if (existingId == 0) {

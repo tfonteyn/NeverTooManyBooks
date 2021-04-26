@@ -41,11 +41,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 
 public class CoverBrowserViewModel
         extends ViewModel {
@@ -180,12 +180,12 @@ public class CoverBrowserViewModel
         mIsCancelled = true;
 
         if (mSelectedImageTask != null) {
-            mSelectedImageTask.cancel(true);
+            mSelectedImageTask.cancel();
         }
 
         synchronized (mGalleryTasks) {
             for (final FetchImageTask task : mGalleryTasks.values()) {
-                task.cancel(true);
+                task.cancel();
             }
             // not strictly needed, but future-proof
             mGalleryTasks.clear();
@@ -331,7 +331,7 @@ public class CoverBrowserViewModel
      */
     void fetchSelectedImage(@NonNull final ImageFileInfo imageFileInfo) {
         if (mSelectedImageTask != null) {
-            mSelectedImageTask.cancel(true);
+            mSelectedImageTask.cancel();
         }
         mSelectedImageTask = new FetchImageTask(R.id.TASK_ID_PREVIEW_IMAGE,
                                                 imageFileInfo.getIsbn(), mCIdx,

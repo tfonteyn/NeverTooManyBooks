@@ -51,7 +51,7 @@
             >
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/progressBar"
+                android:id="@+id/progress_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -66,8 +66,8 @@
             <TextView
                 android:id="@+id/statusMessage"
                 style="@style/Text.Body.Small"
-                app:layout_constraintStart_toStartOf="@id/progressBar"
-                app:layout_constraintTop_toBottomOf="@id/progressBar"
+                app:layout_constraintStart_toStartOf="@id/progress_bar"
+                app:layout_constraintTop_toBottomOf="@id/progress_bar"
                 tools:ignore="SelectableText"
                 tools:text="@string/progress_msg_searching_editions"
                 />

@@ -98,11 +98,13 @@ public final class Languages {
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
                                          @NonNull final String iso3) {
-        final Locale langLocale = AppLocale.getInstance().getLocale(context, iso3);
+        final Locale langLocale = ServiceLocator.getInstance().getAppLocale()
+                                                .getLocale(context, iso3);
         if (langLocale == null) {
             return iso3;
         }
-        return langLocale.getDisplayLanguage(AppLocale.getInstance().getUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return langLocale.getDisplayLanguage(userLocale);
     }
 
     /**
@@ -142,7 +144,7 @@ public final class Languages {
             return "eng";
         } else {
             try {
-                return AppLocale.getInstance().create(code).getISO3Language();
+                return ServiceLocator.getInstance().getAppLocale().create(code).getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
                 return code;
             }
@@ -184,17 +186,17 @@ public final class Languages {
             return iso2;
         }
 
-        final Locale locale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
-        String lang = toTerminology(locale, iso3);
+        String lang = toTerminology(userLocale, iso3);
         iso2 = mLang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
         }
 
         // desperate and last attempt using 'bibliographic'.
-        lang = toBibliographic(locale, iso3);
+        lang = toBibliographic(userLocale, iso3);
         iso2 = mLang3ToLang2Map.get(lang);
         if (iso2 != null) {
             return iso2;
@@ -381,9 +383,9 @@ public final class Languages {
      */
     public void createLanguageMappingCache(@NonNull final Context context) {
         // the one the user is using our app in (can be different from the system one)
-        createLanguageMappingCache(AppLocale.getInstance().getUserLocale(context));
+        createLanguageMappingCache(context.getResources().getConfiguration().getLocales().get(0));
         // the system default
-        createLanguageMappingCache(AppLocale.getInstance().getSystemLocale());
+        createLanguageMappingCache(ServiceLocator.getSystemLocale());
         // Always add English
         createLanguageMappingCache(Locale.ENGLISH);
 

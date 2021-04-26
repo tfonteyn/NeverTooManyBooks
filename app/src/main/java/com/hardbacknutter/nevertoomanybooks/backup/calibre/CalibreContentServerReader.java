@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
@@ -65,7 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -178,12 +180,12 @@ public class CalibreContentServerReader
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException {
 
         try {
             initServer(context);
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ImportException(e);
         }
 
         final ArchiveMetaData archiveMetaData = new ArchiveMetaData();
@@ -203,7 +205,7 @@ public class CalibreContentServerReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException, DiskFullException {
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
@@ -293,7 +295,7 @@ public class CalibreContentServerReader
                      && !progressListener.isCancelled());
 
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ImportException(e);
         }
 
         // always set the sync date!
@@ -312,7 +314,8 @@ public class CalibreContentServerReader
      */
     private void handleBook(@NonNull final Context context,
                             @NonNull final CalibreLibraryDao libraryDao,
-                            @NonNull final JSONObject calibreBook) {
+                            @NonNull final JSONObject calibreBook)
+            throws DiskFullException, ExternalStorageException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if the book exists in our database, and fetch it's id.
@@ -381,7 +384,7 @@ public class CalibreContentServerReader
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,
                                  @NonNull final Book localBook)
-            throws JSONException {
+            throws JSONException, DiskFullException, ExternalStorageException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
         localBook.putInt(DBKey.KEY_CALIBRE_BOOK_ID, calibreBookId);
@@ -462,8 +465,12 @@ public class CalibreContentServerReader
                 final Series series = Series.from(seriesName);
                 // "series_index": null,
                 // "series_index": 2,  --> it's a float, but we grab it as a string
-                final String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
+                String seriesNr = calibreBook.optString(CalibreBook.SERIES_INDEX);
                 if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
+                    // transform "3.0" to just "3" (and similar) but leave "3.1" alone
+                    if (seriesNr.endsWith(".0")) {
+                        seriesNr = seriesNr.substring(0, seriesNr.length() - 2);
+                    }
                     series.setNumber(seriesNr);
                 }
                 final ArrayList<Series> bookSeries = new ArrayList<>();
@@ -524,7 +531,11 @@ public class CalibreContentServerReader
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
                     final File file = mServer.getCover(calibreBookId, coverUrl);
-                    localBook.setCover(0, file);
+                    try {
+                        localBook.setCover(0, file);
+                    } catch (@NonNull final IOException ignore) {
+                        // ignore
+                    }
                 }
             }
         }

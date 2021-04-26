@@ -31,8 +31,10 @@ import java.security.cert.CertificateException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
@@ -44,8 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -53,7 +56,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @MediumTest
-public class ZipArchiveWriterTest {
+public class ZipArchiveWriterTest
+        extends BaseDBTest {
 
     private static final String TAG = "ZipArchiveWriterTest";
 
@@ -61,9 +65,11 @@ public class ZipArchiveWriterTest {
     private int mNrOfStyles;
 
     @Before
-    public void count() {
+    public void setup()
+            throws DaoWriteException {
+        super.setup();
         final Context context = ServiceLocator.getLocalizedAppContext();
-            mBookInDb = ServiceLocator.getInstance().getBookDao().count();
+        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
@@ -72,8 +78,9 @@ public class ZipArchiveWriterTest {
 
     @Test
     public void write()
-            throws ImportException, InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException {
+            throws ImportException, ExportException,
+                   InvalidArchiveException,
+                   IOException, CertificateException, DiskFullException {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(AppDir.Log.getDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored

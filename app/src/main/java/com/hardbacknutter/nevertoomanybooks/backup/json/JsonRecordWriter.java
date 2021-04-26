@@ -39,6 +39,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -74,9 +74,6 @@ public class JsonRecordWriter
     /** The format version of this RecordWriter. */
     private static final int VERSION = 1;
 
-    /** Log tag. */
-    private static final String TAG = "JsonRecordWriter";
-
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -94,11 +91,11 @@ public class JsonRecordWriter
     @Override
     public void writeMetaData(@NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
         try {
             writer.write(new BundleCoder().encode(metaData.getBundle()).toString());
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ExportException(e);
         }
     }
 
@@ -108,7 +105,7 @@ public class JsonRecordWriter
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> entries,
                                @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -179,7 +176,7 @@ public class JsonRecordWriter
 
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                final File cover = book.getUuidCoverFile(cIdx);
+                                final File cover = book.getPersistedCoverFile(cIdx);
                                 if (cover != null && cover.exists()) {
                                     results.addCover(cover.getName());
                                 }
@@ -202,7 +199,7 @@ public class JsonRecordWriter
             }
 
         } catch (@NonNull final JSONException e) {
-            throw new GeneralParsingException(e);
+            throw new ExportException(e);
         }
 
         // Write the complete json output in one go

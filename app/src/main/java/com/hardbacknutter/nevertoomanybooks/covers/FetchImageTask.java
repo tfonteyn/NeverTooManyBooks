@@ -30,6 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Fetch an image from the {@link FileManager}.
@@ -88,15 +90,22 @@ class FetchImageTask
     @NonNull
     @Override
     @WorkerThread
-    protected ImageFileInfo doWork(@NonNull final Context context) {
+    protected ImageFileInfo doWork(@NonNull final Context context)
+            throws ExternalStorageException, DiskFullException {
+        // Exception handling here is a kludge.
+        // java.io.InterruptedIOException: thread interrupted
+        // CAN BE THROWN (we've SEEN it happen), but for some reason javac does not think so.
+        // Hence we need to catch the exceptions we really want to thrown,
+        // and catch all others.
         try {
-            return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);
+            return mFileManager.search(this, mIsbn, mCIdx, mSizes);
+
+        } catch (@NonNull final ExternalStorageException | DiskFullException e) {
+            throw e;
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-            // tad annoying... java.io.InterruptedIOException: thread interrupted
-            // can be thrown, but for some reason javac does not think so.
+            // we failed, but we still need to return the isbn + null fileSpec
+            return new ImageFileInfo(mIsbn);
         }
-        // we failed, but we still need to return the isbn + null fileSpec
-        return new ImageFileInfo(mIsbn);
     }
 }

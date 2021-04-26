@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Parser for dates comes from the internet and/or the user (either as direct input, or by import).
@@ -63,6 +63,7 @@ public class FullDateParser
             "MM-dd-yyyy",
             "dd-MM-yyyy",
             };
+
     /** Patterns with Locale dependent text. */
     private static final String[] TEXT_PATTERNS = {
             // These are the wide spread common formats
@@ -100,8 +101,8 @@ public class FullDateParser
      * Constructor.
      */
     public FullDateParser(@NonNull final Context context) {
-        final AppLocale appLocale = AppLocale.getInstance();
-        mLocales = new Locale[]{appLocale.getUserLocale(context), appLocale.getSystemLocale()};
+        mLocales = new Locale[]{context.getResources().getConfiguration().getLocales().get(0),
+                                ServiceLocator.getSystemLocale()};
         mISODateParser = new ISODateParser();
     }
 
@@ -151,7 +152,7 @@ public class FullDateParser
             if (mNumericalParsers == null) {
                 mNumericalParsers = new ArrayList<>();
                 addPatterns(mNumericalParsers, NUMERICAL_PATTERNS,
-                            AppLocale.getInstance().getSystemLocale());
+                            ServiceLocator.getSystemLocale());
             }
             result = parse(mNumericalParsers, dateStr, locale);
 

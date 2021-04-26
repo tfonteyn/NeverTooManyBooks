@@ -39,9 +39,13 @@ public class ImportException
         super(message);
     }
 
+    public ImportException(@NonNull final Throwable cause) {
+        super(cause);
+    }
+
     public ImportException(@NonNull final String message,
-                           @NonNull final Throwable e) {
-        super(message, e);
+                           @NonNull final Throwable cause) {
+        super(message, cause);
     }
 
     @NonNull

@@ -71,9 +71,11 @@ public interface ItemWithTitle {
         // 3. the user device Locale
         // 4. ENGLISH.
         final Locale[] locales = {titleLocale,
-                                  AppLocale.getInstance().getUserLocale(context),
-                                  AppLocale.getInstance().getSystemLocale(),
+                                  context.getResources().getConfiguration().getLocales().get(0),
+                                  ServiceLocator.getSystemLocale(),
                                   Locale.ENGLISH};
+
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         for (final Locale locale : locales) {
             if (locale == null) {
@@ -83,11 +85,11 @@ public interface ItemWithTitle {
             String words = LOCALE_PREFIX_MAP.get(locale);
             if (words == null) {
                 // the resources bundle in the language that the book (item) is written in.
-                final Resources localeResources =
-                        AppLocale.getInstance().getLocalizedResources(context, locale);
+                final Resources localeResources = appLocale.getLocalizedResources(context, locale);
                 words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
                 LOCALE_PREFIX_MAP.put(locale, words);
             }
+
             // case sensitive, see notes in
             // src/main/res/values/string.xml/pv_reformat_titles_prefixes
             if (words.contains(titleWords[0])) {
@@ -109,7 +111,8 @@ public interface ItemWithTitle {
     static String reorder(@NonNull final Context context,
                           @NonNull final String title,
                           @NonNull final String language) {
-        final Locale locale = AppLocale.getInstance().getLocale(context, language);
+        final Locale locale = ServiceLocator.getInstance().getAppLocale()
+                                            .getLocale(context, language);
         if (locale != null) {
             return reorder(context, title, locale);
         } else {

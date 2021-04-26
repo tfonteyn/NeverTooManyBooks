@@ -161,9 +161,9 @@ public abstract class BooklistStyle
      * @param uuid         a full UUID string, or an empty string to represent the global style.
      * @param isPersistent flag
      */
-    protected BooklistStyle(@NonNull final Context context,
-                            @NonNull final String uuid,
-                            final boolean isPersistent) {
+    BooklistStyle(@NonNull final Context context,
+                  @NonNull final String uuid,
+                  final boolean isPersistent) {
         mUuid = uuid;
         mPersistenceLayer = new StyleSharedPreferences(context, mUuid, isPersistent);
     }

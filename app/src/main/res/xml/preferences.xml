@@ -195,11 +195,18 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment"
-            android:key="psk_calibre"
             android:icon="@drawable/ic_baseline_cloud_24"
+            android:key="psk_calibre"
             android:summary="@string/lbl_calibre_content_server"
             android:title="@string/site_calibre">
         </Preference>
+
+        <!-- entries/values are set from code; default 0 == internal 'shared' storage. -->
+        <ListPreference
+            android:defaultValue="0"
+            android:icon="@drawable/ic_baseline_folder_24"
+            android:key="storage.volume.index"
+            android:title="@string/lbl_storage_volume" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"

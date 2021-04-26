@@ -29,13 +29,12 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Data cleaning. Done on each startup.
@@ -68,7 +67,7 @@ public class DBCleanerTask
     protected Boolean doWork(@NonNull final Context context) {
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final DBCleaner cleaner = new DBCleaner();
         try {
             // do a mass update of any languages not yet converted to ISO 639-2 codes

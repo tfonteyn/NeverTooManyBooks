@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,7 +34,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
@@ -51,10 +51,10 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -75,12 +75,14 @@ public class CalibreHandler {
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
 
+    private Activity mActivity;
+
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
 
     @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    private FragmentManager mFragmentManager;
+    private ProgressDelegate mProgressDelegate;
+
     private CalibreHandlerViewModel mVm;
 
     /**
@@ -104,7 +106,9 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
-        onViewCreated(view, activity, activity, activity.getSupportFragmentManager(), activity);
+        onViewCreated(activity, view,
+                      activity, activity,
+                      activity);
     }
 
     /**
@@ -114,22 +118,24 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
-        onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
-                      fragment, fragment.getChildFragmentManager(), fragment);
+        onViewCreated(fragment.getActivity(), fragment.getView(),
+                      fragment, fragment.getViewLifecycleOwner(),
+                      fragment);
     }
 
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param view the hosting component root view
+     * @param activity the hosting Activity
+     * @param view     the hosting component root view
      */
-    private void onViewCreated(@NonNull final View view,
-                               @NonNull final LifecycleOwner lifecycleOwner,
+    private void onViewCreated(@NonNull final Activity activity,
+                               @NonNull final View view,
                                @NonNull final ViewModelStoreOwner viewModelStoreOwner,
-                               @NonNull final FragmentManager fm,
+                               @NonNull final LifecycleOwner lifecycleOwner,
                                @NonNull final ActivityResultCaller caller) {
+        mActivity = activity;
         mView = view;
-        mFragmentManager = fm;
 
         mPickFolderLauncher = caller.registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(), uri -> {
@@ -279,10 +285,10 @@ public class CalibreHandler {
                 return mServer.getDocumentFile(context, book, optFolderUri.get(), false).getUri();
             } catch (@NonNull final IOException e) {
                 // Keep it simple.
-                throw new FileNotFoundException();
+                throw new FileNotFoundException(optFolderUri.get().toString());
             }
         }
-        throw new FileNotFoundException();
+        throw new FileNotFoundException("Folder not configured");
     }
 
     private void openBookUri(@NonNull final Uri uri) {
@@ -317,37 +323,33 @@ public class CalibreHandler {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            String msg = ExMsg.map(mView.getContext(), TAG, message.result);
-            if (msg == null) {
-                msg = mView.getContext().getString(R.string.error_unknown);
-            }
+            final Context context = mView.getContext();
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(context.getString(R.string.error_unknown));
+
             Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    mFragmentManager.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        mView.getContext().getString(R.string.progress_msg_downloading),
-                        true, true);
-                mProgressDialog.show(mFragmentManager, ProgressDialogFragment.TAG);
+        if (message.isNewEvent()) {
+            if (mProgressDelegate == null) {
+                mProgressDelegate = new ProgressDelegate(
+                        mActivity.findViewById(R.id.progress_frame))
+                        .setTitle(mActivity.getString(R.string.progress_msg_downloading))
+                        .setPreventSleep(true)
+                        .setIndeterminate(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .show(mActivity.getWindow());
             }
-
-            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
+            mProgressDelegate.onProgress(message);
         }
-
-        mProgressDialog.onProgress(message);
     }
 
     private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        if (mProgressDelegate != null) {
+            mProgressDelegate.dismiss(mActivity.getWindow());
+            mProgressDelegate = null;
         }
     }
 }

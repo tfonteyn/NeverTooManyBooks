@@ -31,13 +31,13 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnViewModel;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
 
 /**
  * <ul>

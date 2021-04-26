@@ -118,6 +118,12 @@ public class MaintenanceDaoImpl
     @Override
     public void rebuildOrderByTitleColumns(@NonNull final Context context,
                                            final boolean reorder) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+
+        // Books
+        String language;
+        Locale bookLocale;
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -125,18 +131,13 @@ public class MaintenanceDaoImpl
                 txLock = mDb.beginTransaction(true);
             }
 
-            final AppLocale localeHelper = AppLocale.getInstance();
-
-            // Books
-            String language;
-            Locale bookLocale;
             try (Cursor cursor = mDb.rawQuery(BOOK_TITLES, null)) {
                 final int langIdx = cursor.getColumnIndex(DBKey.KEY_LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
-                    bookLocale = localeHelper.getLocale(context, language);
+                    bookLocale = appLocale.getLocale(context, language);
                     if (bookLocale == null) {
-                        bookLocale = localeHelper.getUserLocale(context);
+                        bookLocale = userLocale;
                     }
                     rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
                                                TBL_BOOKS, DBKey.KEY_TITLE_OB);
@@ -144,7 +145,6 @@ public class MaintenanceDaoImpl
             }
 
             // Series and TOC Entries use the user Locale.
-            final Locale userLocale = localeHelper.getUserLocale(context);
 
             // We should use the locale from the 1st book in the series...
             // but that is a huge overhead.
@@ -183,18 +183,18 @@ public class MaintenanceDaoImpl
     /**
      * Process a <strong>single row</strong> from the cursor.
      *
-     * @param context    Current context
-     * @param locale     to use for this row
-     * @param reorder    flag whether to reorder or not
-     * @param cursor     positioned on the row to handle
-     * @param table      to update
-     * @param domainName to update
+     * @param context     Current context
+     * @param titleLocale to use for this title
+     * @param reorder     flag whether to reorder or not
+     * @param cursor      positioned on the row to handle
+     * @param table       to update
+     * @param domainName  to update
      *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean rebuildOrderByTitleColumns(@NonNull final Context context,
-                                               @NonNull final Locale locale,
+                                               @NonNull final Locale titleLocale,
                                                final boolean reorder,
                                                @NonNull final Cursor cursor,
                                                @NonNull final TableDefinition table,
@@ -212,7 +212,7 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = ItemWithTitle.reorder(context, title, locale);
+            rebuildObTitle = ItemWithTitle.reorder(context, title, titleLocale);
         } else {
             rebuildObTitle = currentObTitle;
         }
@@ -220,7 +220,7 @@ public class MaintenanceDaoImpl
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
-            cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, locale));
+            cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, titleLocale));
             return 0 < mDb.update(table.getName(), cv, DBKey.PK_ID + "=?",
                                   new String[]{String.valueOf(id)});
         }

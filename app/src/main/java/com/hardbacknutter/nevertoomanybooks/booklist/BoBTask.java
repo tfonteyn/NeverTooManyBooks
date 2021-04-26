@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
@@ -208,11 +208,10 @@ public class BoBTask
                         BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
             }
 
-            // we fetch ONLY the primary author
+            // we fetch ONLY the primary author to show on the Book level
             if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_AUTHOR_FORMATTED,
-                        AuthorDaoImpl.getDisplayAuthor(style.isShowAuthorByGivenName())));
+                builder.addDomain(AuthorDaoImpl.createDisplayDomainExpression(
+                        style.isShowAuthorByGivenName()));
             }
 
             // for now, don't get the author type.

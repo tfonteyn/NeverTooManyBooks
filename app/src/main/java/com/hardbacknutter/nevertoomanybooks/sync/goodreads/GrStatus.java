@@ -29,10 +29,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class GrStatus {
-
-    public static final String BKEY = "GrStatus";
 
     /** Everything was good. */
     public static final int SUCCESS = 0;
@@ -66,6 +65,7 @@ public class GrStatus {
     public static final int FAILED_UNEXPECTED_EXCEPTION = 200;
     /** There is network connectivity but something went wrong. */
     public static final int FAILED_IO_EXCEPTION = 201;
+    public static final int FAILED_DISK_FULL = 202;
 
     @Status
     private final int mMessageId;
@@ -90,8 +90,7 @@ public class GrStatus {
             // the task was cancelled before it started.
             return context.getString(R.string.cancelled);
         } else {
-            return context.getString(R.string.error_unknown_long)
-                   + ' ' + exception.getLocalizedMessage();
+            return ExMsg.map(context, exception).orElse(context.getString(R.string.error_unknown));
         }
     }
 
@@ -143,9 +142,13 @@ public class GrStatus {
             case FAILED_IO_EXCEPTION:
                 return context.getString(R.string.error_network_site_access_failed,
                                          context.getString(R.string.site_goodreads));
+            case FAILED_DISK_FULL:
+                return context.getString(R.string.error_storage_no_space_left);
+
             case FAILED_UNEXPECTED_EXCEPTION:
             default:
-                return context.getString(R.string.error_unknown_long);
+                return context.getString(R.string.error_unknown_long,
+                                         context.getString(R.string.lbl_send_debug));
 
         }
     }
@@ -176,7 +179,9 @@ public class GrStatus {
              FAILED_BOOK_NOT_FOUND_LOCALLY,
              FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
              FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
-             FAILED_UNEXPECTED_EXCEPTION, FAILED_IO_EXCEPTION})
+             FAILED_IO_EXCEPTION,
+             FAILED_DISK_FULL,
+             FAILED_UNEXPECTED_EXCEPTION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {
 

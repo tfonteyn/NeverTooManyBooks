@@ -67,8 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 
 /**
  * Display all TocEntry's for an Author.
@@ -85,9 +83,9 @@ public class AuthorWorksFragment
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Show the TOC. Defaults to {@code true}. */
-    public static final String BKEY_WITH_TOC = TAG + ":tocs";
+    static final String BKEY_WITH_TOC = TAG + ":tocs";
     /** Optional. Show the books. Defaults to {@code true}. */
-    public static final String BKEY_WITH_BOOKS = TAG + ":books";
+    static final String BKEY_WITH_BOOKS = TAG + ":books";
 
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;

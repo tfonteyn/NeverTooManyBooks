@@ -86,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -119,7 +120,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
@@ -127,8 +128,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
@@ -357,7 +357,7 @@ public class BooksOnBookshelf
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
-                    mVm.resetPreferredListRebuildMode();
+                    mVm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
                     buildBookList();
                 }
             };
@@ -1513,7 +1513,7 @@ public class BooksOnBookshelf
         }
 
         if (!mVm.isBuilding()) {
-            mVb.progressBar.show();
+            mVb.progressCircle.show();
             // Invisible... theoretically this means the page should not re-layout
             mVb.list.setVisibility(View.INVISIBLE);
 
@@ -1538,7 +1538,7 @@ public class BooksOnBookshelf
      * @param message from the task; contains the (optional) target rows.
      */
     private void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
-        mVb.progressBar.hide();
+        mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
@@ -1557,7 +1557,7 @@ public class BooksOnBookshelf
      * @param message from the task
      */
     public void onBuildCancelled(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
-        mVb.progressBar.hide();
+        mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             mVm.onBuildCancelled(message);
 
@@ -1575,7 +1575,7 @@ public class BooksOnBookshelf
      * @param message from the task
      */
     public void onBuildFailed(@NonNull final FinishedMessage<Exception> message) {
-        mVb.progressBar.hide();
+        mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             mVm.onBuildFailed(message);
 

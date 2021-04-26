@@ -38,7 +38,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminSearchBinding;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 public class SearchAdminActivity
         extends BaseActivity {
@@ -94,7 +94,7 @@ public class SearchAdminActivity
                 setResult(Activity.RESULT_OK, resultIntent);
 
             } else {
-                mVm.persist(this);
+                mVm.persist();
             }
             super.onBackPressed();
 

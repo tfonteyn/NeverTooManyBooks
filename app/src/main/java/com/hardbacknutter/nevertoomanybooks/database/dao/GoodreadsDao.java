@@ -27,16 +27,6 @@ import androidx.annotation.NonNull;
 public interface GoodreadsDao {
 
     /**
-     * Query to get the relevant columns for searching for a Book on Goodreads.
-     *
-     * @param bookId to retrieve
-     *
-     * @return A subset of book columns, suitable for searches on Goodreads.
-     */
-    @NonNull
-    Cursor fetchBookColumnsForSearch(@IntRange(from = 1) long bookId);
-
-    /**
      * Query to get the relevant columns for sending a single Book to Goodreads.
      *
      * @param bookId to retrieve

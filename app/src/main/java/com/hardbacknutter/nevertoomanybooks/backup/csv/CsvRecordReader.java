@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
@@ -142,7 +141,7 @@ public class CsvRecordReader
     public CsvRecordReader(@NonNull final Context context) {
         mBookDao = ServiceLocator.getInstance().getBookDao();
         mBookCoder = new BookCoder(context);
-        mUserLocale = AppLocale.getInstance().getUserLocale(context);
+        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -414,21 +413,8 @@ public class CsvRecordReader
         book.putLong(DBKey.PK_ID, importNumericId);
 
         // Is that id already in use ?
-        if (!mBookDao.bookExistsById(importNumericId)) {
-            // The id is not in use, simply insert the book using the given importNumericId,
-            // explicitly allowing the id to be reused
-            final long insId = mBookDao.insert(context, book,
-                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "importNumericId=" + importNumericId
-                           + "|insert=" + insId
-                           + "|" + book.getTitle());
-            }
-
-        } else {
-            // The id IS in use, we will be updating an existing book (if allowed).
+        if (mBookDao.bookExistsById(importNumericId)) {
+            // The id is in use, we will be updating an existing book (if allowed).
 
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
@@ -453,6 +439,19 @@ public class CsvRecordReader
                                + "|skipped|" + book.getTitle());
                 }
             }
+        } else {
+            // The id is not in use, simply insert the book using the given importNumericId,
+            // explicitly allowing the id to be reused
+            final long insId = mBookDao.insert(context, book,
+                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            mResults.booksCreated++;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                Log.d(TAG, "importNumericId=" + importNumericId
+                           + "|insert=" + insId
+                           + "|" + book.getTitle());
+            }
+
         }
     }
 

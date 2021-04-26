@@ -94,7 +94,7 @@
     <string name="error_import_file_not_supported">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
     <string name="error_import_csv_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
-    <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
+    <string name="error_unknown_long">Προέκυψε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_import_csv_missing_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
@@ -112,7 +112,6 @@
     <string name="error_storage_not_accessible_s">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
     <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
-    <string name="error_unknown_long">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής «Διαχειριστής» από το κεντρικό μενού.</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
     <string name="fab_add_book_by_barcode_scan">Σκανάρισμα Barcode</string>
     <string name="fab_add_book_by_internet_search">Αναζήτηση στο Internet</string>

@@ -353,7 +353,7 @@ public class Groups
             return false;
         }
         final Groups groups = (Groups) o;
-        // mPersisted is NOT part of the values to compare!
+        // mPersisted/mStyle is NOT part of the values to compare!
         return mKey.equals(groups.mKey)
                && mNonPersistedValue.equals(groups.mNonPersistedValue)
                && mDefaultValue.equals(groups.mDefaultValue)
@@ -363,10 +363,7 @@ public class Groups
 
     @Override
     public int hashCode() {
-        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue,
-                            mGroupMap,
-                            // UUID only
-                            mStyle.getUuid());
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mGroupMap);
     }
 
     @Override

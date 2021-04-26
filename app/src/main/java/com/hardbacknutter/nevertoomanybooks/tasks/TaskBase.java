@@ -33,9 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
@@ -126,7 +123,7 @@ abstract class TaskBase<Result>
             Thread.currentThread().setName(mTaskName);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
-            final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
+            final Context context = ServiceLocator.getLocalizedAppContext();
             try {
                 final Result result = doWork(context);
                 final FinishedMessage<Result> message = new FinishedMessage<>(getTaskId(), result);
@@ -168,7 +165,7 @@ abstract class TaskBase<Result>
 
     @Override
     @AnyThread
-    public boolean cancel(final boolean mayInterruptIfRunning) {
+    public boolean cancel() {
         mIsCancelled.set(true);
         return true;
     }

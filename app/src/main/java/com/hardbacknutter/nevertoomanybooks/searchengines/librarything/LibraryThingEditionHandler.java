@@ -1,0 +1,96 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xml.sax.helpers.DefaultHandler;
+
+/**
+ * Parser Handler to collect the edition data.
+ * <p>
+ * http://www.librarything.com/api/thingISBN/{ISBN}
+ * <p>
+ * Typical request output:
+ * <pre>
+ *     {@code
+ *   <?xml version="1.0" encoding="utf-8"?>
+ *   <idlist>
+ *     <isbn>0380014300</isbn>
+ *     <isbn>0839824270</isbn>
+ *     <isbn>0722194390</isbn>
+ *     <isbn>0783884257</isbn>
+ *     ...etc...
+ *     <isbn>2207301907</isbn>
+ *   </idlist>
+ *   }
+ * </pre>
+ */
+class LibraryThingEditionHandler
+        extends DefaultHandler {
+
+    /** isbn tag in an editions xml response. */
+    private static final String XML_ISBN = "isbn";
+
+    /** XML content. */
+    @SuppressWarnings("StringBufferField")
+    private final StringBuilder mBuilder = new StringBuilder();
+    /** List of ISBN numbers for all found editions. */
+    private final List<String> mIsbnList = new ArrayList<>();
+
+    /**
+     * Get the results.
+     *
+     * @return the list with ISBN numbers.
+     */
+    @NonNull
+    public List<String> getResult() {
+        return mIsbnList;
+    }
+
+    @Override
+    @CallSuper
+    public void endElement(@NonNull final String uri,
+                           @NonNull final String localName,
+                           @NonNull final String qName) {
+
+        if (localName.equalsIgnoreCase(XML_ISBN)) {
+            mIsbnList.add(mBuilder.toString());
+        }
+
+        // Always reset the length. This is not entirely the right thing to do, but works
+        // because we always want strings from the lowest level (leaf) XML elements.
+        // To be completely correct, we should maintain a stack of builders that are pushed and
+        // popped as each startElement/endElement is called. But lets not be pedantic for now.
+        mBuilder.setLength(0);
+    }
+
+    @Override
+    @CallSuper
+    public void characters(final char[] ch,
+                           final int start,
+                           final int length) {
+        mBuilder.append(ch, start, length);
+    }
+}

@@ -32,52 +32,51 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer
 public class StylePersistenceLayerBundle
         implements StylePersistenceLayer {
 
-    private final Bundle b = new Bundle();
-
+    private final Bundle mBundle = new Bundle();
 
     @Override
     public void remove(@NonNull final String key) {
-        b.remove(key);
+        mBundle.remove(key);
     }
 
     @Override
     public void setString(@NonNull final String key,
                           @Nullable final String value) {
-        b.putString(key, value);
+        mBundle.putString(key, value);
     }
 
     @Nullable
     @Override
     public String getNonGlobalString(@NonNull final String key) {
-        return b.getString(key);
+        return mBundle.getString(key);
     }
 
     @Nullable
     @Override
     public String getString(@NonNull final String key) {
-        return b.getString(key);
+        return mBundle.getString(key);
     }
 
     @Override
     public void setBoolean(@NonNull final String key,
                            @Nullable final Boolean value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putBoolean(key, value);
+            mBundle.putBoolean(key, value);
         }
     }
 
     @Override
     public boolean getNonGlobalBoolean(@NonNull final String key) {
-        return b.getBoolean(key);
+        return mBundle.getBoolean(key);
     }
 
     @Nullable
     @Override
     public Boolean getBoolean(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getBoolean(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getBoolean(key);
         } else {
             return null;
         }
@@ -87,17 +86,17 @@ public class StylePersistenceLayerBundle
     public void setInt(@NonNull final String key,
                        @Nullable final Integer value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putInt(key, value);
+            mBundle.putInt(key, value);
         }
     }
 
     @Nullable
     @Override
     public Integer getInteger(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getInt(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getInt(key);
         } else {
             return null;
         }
@@ -107,17 +106,17 @@ public class StylePersistenceLayerBundle
     public void setStringedInt(@NonNull final String key,
                                @Nullable final Integer value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putInt(key, value);
+            mBundle.putInt(key, value);
         }
     }
 
     @Nullable
     @Override
     public Integer getStringedInt(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getInt(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getInt(key);
         } else {
             return null;
         }
@@ -127,17 +126,17 @@ public class StylePersistenceLayerBundle
     public void setStringedIntList(@NonNull final String key,
                                    @Nullable final List<Integer> value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putIntegerArrayList(key, new ArrayList<>(value));
+            mBundle.putIntegerArrayList(key, new ArrayList<>(value));
         }
     }
 
     @Nullable
     @Override
     public ArrayList<Integer> getStringedIntList(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getIntegerArrayList(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getIntegerArrayList(key);
         } else {
             return null;
         }
@@ -147,17 +146,17 @@ public class StylePersistenceLayerBundle
     public void setIntList(@NonNull final String key,
                            @Nullable final List<Integer> value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putIntegerArrayList(key, new ArrayList<>(value));
+            mBundle.putIntegerArrayList(key, new ArrayList<>(value));
         }
     }
 
     @Nullable
     @Override
     public ArrayList<Integer> getIntList(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getIntegerArrayList(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getIntegerArrayList(key);
         } else {
             return null;
         }
@@ -167,17 +166,17 @@ public class StylePersistenceLayerBundle
     public void setBitmask(@NonNull final String key,
                            @Nullable final Integer value) {
         if (value == null) {
-            b.remove(key);
+            mBundle.remove(key);
         } else {
-            b.putInt(key, value);
+            mBundle.putInt(key, value);
         }
     }
 
     @Nullable
     @Override
     public Integer getBitmask(@NonNull final String key) {
-        if (b.containsKey(key)) {
-            return b.getInt(key);
+        if (mBundle.containsKey(key)) {
+            return mBundle.getInt(key);
         } else {
             return null;
         }

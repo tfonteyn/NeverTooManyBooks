@@ -34,7 +34,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -54,8 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements Entity, ItemWithTitle, AuthorWork,
-                   Mergeable {
+        implements Entity, ItemWithTitle, Mergeable, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<TocEntry>() {
@@ -262,7 +260,8 @@ public class TocEntry
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
         // overkill...  see the getLocale method for more comments
         //   locale = getLocale(context, AppLocale.getUserLocale(context));
         return reorderTitleForDisplaying(context, userLocale);

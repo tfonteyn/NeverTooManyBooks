@@ -107,7 +107,7 @@
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="error_backup_failed">Back-up mislukt</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
-    <string name="error_if_the_problem_persists">Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
+    <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_import_csv_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
     <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
@@ -128,7 +128,6 @@
     <string name="error_storage_not_accessible_s">Opslag niet toegankelijk: %1$s</string>
     <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
-    <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Zend ons aub de details via de „Admin” optie in het hoofdmenu.</string>
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="fab_add_book_by_barcode_scan">Scan barcode</string>
     <string name="fab_add_book_by_external_id">Website boek-id</string>

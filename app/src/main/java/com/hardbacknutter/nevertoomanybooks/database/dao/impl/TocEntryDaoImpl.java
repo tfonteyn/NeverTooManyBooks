@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -247,7 +246,7 @@ public class TocEntryDaoImpl
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+            final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
             Synchronizer.SyncLock txLock = null;

@@ -27,7 +27,7 @@ import java.io.InputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

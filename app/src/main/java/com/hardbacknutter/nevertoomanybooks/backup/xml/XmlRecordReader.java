@@ -54,11 +54,11 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
@@ -79,10 +79,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -135,14 +134,13 @@ public class XmlRecordReader
     public XmlRecordReader(@NonNull final Context context,
                            @NonNull final Set<RecordType> importEntriesAllowed) {
         mImportEntriesAllowed = importEntriesAllowed;
-
-        mUserLocale = AppLocale.getInstance().getUserLocale(context);
+        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
     }
 
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException {
         final ArchiveMetaData metaData = new ArchiveMetaData();
         fromXml(record, new InfoReader(metaData));
         return metaData;
@@ -154,7 +152,7 @@ public class XmlRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper unused,
                               @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException {
 
         final ImportResults results = new ImportResults();
 
@@ -185,12 +183,12 @@ public class XmlRecordReader
      * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ImportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
-            throws GeneralParsingException, IOException {
+            throws ImportException, IOException {
 
         // we need an uber-root to hang our tree on.
         final XmlFilter rootFilter = new XmlFilter("");
@@ -199,7 +197,7 @@ public class XmlRecordReader
         buildFilters(rootFilter, accessor);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final DefaultHandler handler = new XmlResponseParser(rootFilter);
+        final XmlResponseParser handler = new XmlResponseParser(rootFilter);
 
         try {
             // Alternative which saves us from having to use BufferedReaderNoClose
@@ -216,12 +214,14 @@ public class XmlRecordReader
 
             final SAXParser parser = factory.newSAXParser();
             parser.parse(source, handler);
-            // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fromXml", e);
             }
-            throw new GeneralParsingException(e);
+            // unwrap SAXException which are really IOExceptions
+            SAXHelper.unwrapIOException(e);
+            // wrap parser exceptions in an ImportException /
+            throw new ImportException(e);
         }
     }
 

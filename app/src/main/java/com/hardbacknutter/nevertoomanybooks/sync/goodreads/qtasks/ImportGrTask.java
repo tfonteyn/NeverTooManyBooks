@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
@@ -67,11 +68,11 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ReviewsListApiHan
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ReviewsListApiHandler.Review;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
@@ -120,6 +121,9 @@ public class ImportGrTask
     private transient Map<String, String> mBookshelfLookup;
     private transient AuthorTypeMapper mAuthorTypeMapper;
 
+    @NonNull
+    private final Locale mUserLocale;
+
     /**
      * Constructor.
      *
@@ -132,6 +136,8 @@ public class ImportGrTask
                         final boolean isSync) {
 
         super(description);
+
+        mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
 
         mISODateParser = new ISODateParser();
 
@@ -170,7 +176,8 @@ public class ImportGrTask
             }
             return status;
 
-        } catch (@NonNull final CredentialsException e) {
+        } catch (@NonNull final CredentialsException | DiskFullException
+                | ExternalStorageException e) {
             setLastException(e);
             return TaskStatus.Failed;
         }
@@ -187,7 +194,7 @@ public class ImportGrTask
      */
     private TaskStatus importReviews(@NonNull final Context context,
                                      @NonNull final QueueManager queueManager)
-            throws CredentialsException {
+            throws CredentialsException, DiskFullException, ExternalStorageException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth();
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
@@ -226,7 +233,7 @@ public class ImportGrTask
                 if (mStartDate == null) {
                     mStartDate = startDate;
                 }
-            } catch (@NonNull final IOException | GeneralParsingException e) {
+            } catch (@NonNull final IOException | SiteParsingException e) {
                 setLastException(e);
                 return TaskStatus.Failed;
             }
@@ -287,7 +294,8 @@ public class ImportGrTask
      */
     private void processReview(@NonNull final Context context,
                                @NonNull final BookDao bookDao,
-                               @NonNull final Bundle review) {
+                               @NonNull final Bundle review)
+            throws DiskFullException, ExternalStorageException {
 
         final long grBookId = review.getLong(DBKey.SID_GOODREADS_BOOK);
 
@@ -393,7 +401,8 @@ public class ImportGrTask
     @NonNull
     private Book buildBook(@NonNull final Context context,
                            @NonNull final Book localData,
-                           @NonNull final Bundle goodreadsData) {
+                           @NonNull final Bundle goodreadsData)
+            throws DiskFullException, ExternalStorageException {
 
         // The Book will'll populate with the delta data, and return from this method.
         final Book delta = new Book();
@@ -533,13 +542,11 @@ public class ImportGrTask
 
         final ArrayList<Bundle> grShelves = goodreadsData.getParcelableArrayList(Review.SHELVES);
         if (grShelves != null) {
-            // Explicitly use the user locale to handle shelf names
-            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-
             final ArrayList<Bookshelf> bookshelfList =
                     localData.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
             for (final Bundle shelfData : grShelves) {
-                final String name = mapShelf(userLocale, shelfData.getString(Review.SHELF));
+                // Explicitly use the user locale to handle shelf names
+                final String name = mapShelf(mUserLocale, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
                     bookshelfList.add(new Bookshelf(
                             name, ServiceLocator.getInstance().getStyles()
@@ -561,7 +568,11 @@ public class ImportGrTask
                     Review.LARGE_IMAGE_URL,
                     Review.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                delta.setCover(0, new File(fileSpec));
+                try {
+                    delta.setCover(0, new File(fileSpec));
+                } catch (@NonNull final IOException ignore) {
+                    // ignore
+                }
             }
         }
 
@@ -579,29 +590,31 @@ public class ImportGrTask
      * Passed a Goodreads shelf name, return the best matching local bookshelf name,
      * or the original if no match found.
      *
-     * @param locale      to use
+     * @param userLocale  to use
      * @param grShelfName Goodreads shelf name
      *
      * @return Local name, or Goodreads name if no match
      */
     @Nullable
-    private String mapShelf(@NonNull final Locale locale,
+    private String mapShelf(@NonNull final Locale userLocale,
                             @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
             return null;
         }
+
         if (mBookshelfLookup == null) {
             final List<Bookshelf> bookshelves =
                     ServiceLocator.getInstance().getBookshelfDao().getAll();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (final Bookshelf bookshelf : bookshelves) {
-                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(locale, bookshelf.getName()),
-                                     bookshelf.getName());
+                final String bookshelfName = bookshelf.getName();
+                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(userLocale, bookshelfName),
+                                     bookshelfName);
             }
         }
 
-        final String lcGrShelfName = grShelfName.toLowerCase(locale);
+        final String lcGrShelfName = grShelfName.toLowerCase(userLocale);
         if (mBookshelfLookup.containsKey(lcGrShelfName)) {
             return mBookshelfLookup.get(lcGrShelfName);
         } else {

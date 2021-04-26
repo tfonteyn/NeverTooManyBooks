@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
@@ -68,8 +67,7 @@ public class GoodreadsAuthorizationActivity
             ASyncExecutor.SERIAL.execute(() -> {
                 Thread.currentThread().setName(TAG);
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                final Context context =
-                        AppLocale.getInstance().apply(ServiceLocator.getAppContext());
+                final Context context = ServiceLocator.getLocalizedAppContext();
 
                 boolean res = false;
                 Exception ex = null;
@@ -108,7 +106,7 @@ public class GoodreadsAuthorizationActivity
         } else if (exception != null) {
             final String msg = context.getString(
                     R.string.error_site_authorization_failed, siteName) + ' '
-                               + context.getString(R.string.error_if_the_problem_persists,
+                               + context.getString(R.string.error_unknown_long,
                                                    context.getString(R.string.lbl_send_debug));
 
             final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);

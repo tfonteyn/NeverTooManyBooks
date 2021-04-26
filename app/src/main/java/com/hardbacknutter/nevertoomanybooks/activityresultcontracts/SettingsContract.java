@@ -58,7 +58,7 @@ public class SettingsContract
         final Intent intent = new Intent(context, SettingsHostActivity.class)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SettingsFragment.TAG);
         if (scrollToKey != null) {
-            intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_KEY, scrollToKey);
+            intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
         }
         return intent;
     }

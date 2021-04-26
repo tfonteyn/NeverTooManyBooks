@@ -27,7 +27,7 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.tasks.MTask}
  * They use {@link androidx.lifecycle.MutableLiveData} and
- * {@link com.hardbacknutter.nevertoomanybooks.tasks.messages.LiveDataEvent}.
+ * {@link com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent}.
  * <p>
  * <p>
  * In some other places, we use {@link java.util.concurrent.Executor} and

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +39,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,10 +67,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ImportFragment
@@ -120,8 +121,8 @@ public class ImportFragment
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
 
     @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    /** Ref to the actual Toolbar so we can get its menu. */
+    private ProgressDelegate mProgressDelegate;
+    /** Ref to the actual Toolbar so we can enable/disable its menu. */
     private Toolbar mToolbar;
 
     @Override
@@ -375,7 +376,7 @@ public class ImportFragment
         final ImportHelper helper = mVm.getImportHelper();
 
         //noinspection ConstantConditions
-        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName());
+        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName(getContext()));
 
         final ArchiveMetaData metaData = mVm.getArchiveMetaData();
         if (metaData != null) {
@@ -482,11 +483,17 @@ public class ImportFragment
 
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+
+            final Context context = getContext();
             //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(getString(R.string.error_storage_not_writable));
+
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_import_failed)
-                    .setMessage(Backup.createErrorReport(getContext(), message.result))
+                    .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
@@ -624,30 +631,26 @@ public class ImportFragment
                 .collect(Collectors.joining("\n")));
     }
 
-    protected void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            final FragmentManager fm = getChildFragmentManager();
-            // get dialog after a fragment restart
-            mProgressDialog = (ProgressDialogFragment)
-                    fm.findFragmentByTag(ProgressDialogFragment.TAG);
-            // not found? create it
-            if (mProgressDialog == null) {
-                mProgressDialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.lbl_importing), false, true);
-                mProgressDialog.show(fm, ProgressDialogFragment.TAG);
+    private void onProgress(@NonNull final ProgressMessage message) {
+        if (message.isNewEvent()) {
+            if (mProgressDelegate == null) {
+                //noinspection ConstantConditions
+                mProgressDelegate = new ProgressDelegate(
+                        getActivity().findViewById(R.id.progress_frame))
+                        .setTitle(getString(R.string.lbl_importing))
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .show(getActivity().getWindow());
             }
-
-            mVm.linkTaskWithDialog(message.taskId, mProgressDialog);
+            mProgressDelegate.onProgress(message);
         }
-
-        mProgressDialog.onProgress(message);
     }
 
     private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        if (mProgressDelegate != null) {
+            //noinspection ConstantConditions
+            mProgressDelegate.dismiss(getActivity().getWindow());
+            mProgressDelegate = null;
         }
     }
-
 }

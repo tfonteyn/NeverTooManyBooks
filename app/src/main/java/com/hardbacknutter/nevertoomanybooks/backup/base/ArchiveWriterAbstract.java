@@ -42,6 +42,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
@@ -63,9 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  */
 public abstract class ArchiveWriterAbstract
         implements ArchiveWriter {
-
-    /** Log tag. */
-    private static final String TAG = "ArchiveWriterAbstract";
 
     /**
      * See {@link ArchiveReaderAbstract} class docs for the version descriptions.
@@ -111,15 +108,15 @@ public abstract class ArchiveWriterAbstract
      * @param context          Current context
      * @param progressListener to send progress updates to
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ExportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     @NonNull
     @Override
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
@@ -233,13 +230,13 @@ public abstract class ArchiveWriterAbstract
      *
      * @return the temporary books file
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ExportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
                               @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
@@ -271,12 +268,12 @@ public abstract class ArchiveWriterAbstract
      * @param context current context
      * @param data    to add to the header bundle
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ExportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.MetaData);
 
@@ -303,14 +300,14 @@ public abstract class ArchiveWriterAbstract
      * @param encoding         for the record
      * @param progressListener Listener to receive progress information.
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ExportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     private void writeRecord(@NonNull final Context context,
                              @NonNull final RecordType recordType,
                              @NonNull final RecordEncoding encoding,
                              @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, IOException {
+            throws ExportException, IOException {
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);

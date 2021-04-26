@@ -28,6 +28,8 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * {@link #parseFloat} / {@link #parseDouble}.
  * <p>
@@ -353,10 +355,9 @@ public final class ParseUtils {
         }
 
         // we check in order - first match returns.
-        // US is used for '.' as decimal; ',' as thousands separator.
-        final Locale[] locales = {sourceLocale,
-                                  AppLocale.getInstance().getSystemLocale(),
-                                  Locale.US};
+        // Locale.US is used for '.' as decimal and ',' as thousands separator.
+        final Locale[] locales = {sourceLocale, ServiceLocator.getSystemLocale(), Locale.US};
+
         for (final Locale locale : locales) {
             try {
                 final Number number = DecimalFormat.getInstance(locale).parse(source);
@@ -437,9 +438,7 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        final Locale[] locales = {sourceLocale,
-                                  AppLocale.getInstance().getSystemLocale(),
-                                  Locale.US};
+        final Locale[] locales = {sourceLocale, ServiceLocator.getSystemLocale(), Locale.US};
 
         for (final Locale locale : locales) {
             try {

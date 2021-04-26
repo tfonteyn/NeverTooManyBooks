@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.ShowBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -48,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
@@ -119,8 +119,8 @@ public class BookTest {
         assertNotNull(NEED_A_PICTURES_DIRECTORY, AppDir.Covers.getDir());
         assertNotNull(NEED_A_TEMP_DIRECTORY, AppDir.Temp.getDir());
         // empty the temp dir
+        //noinspection SimplifyStreamApiCallChains,ResultOfMethodCallIgnored
         AppDir.Temp.collectFiles(mJpgFilter).stream().forEach(File::delete);
-
 
 
         mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

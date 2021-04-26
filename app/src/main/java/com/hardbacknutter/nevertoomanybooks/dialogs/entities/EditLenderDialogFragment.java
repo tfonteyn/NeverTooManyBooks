@@ -215,12 +215,12 @@ public class EditLenderDialogFragment
         }
 
         final boolean success;
-        if (!mLoanee.isEmpty()) {
-            // lend book, reluctantly...
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
-        } else {
+        if (mLoanee.isEmpty()) {
             // return the book
             success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
+        } else {
+            // lend book, reluctantly...
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
         }
 
         if (success) {

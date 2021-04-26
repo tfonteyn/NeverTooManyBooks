@@ -19,23 +19,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
-import java.util.Map;
-import java.util.Objects;
-
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_SERIES_TITLE_OB;
 
 
 /**
@@ -46,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
  */
 public class SeriesBooklistGroup
-        extends BooklistGroup {
+        extends AbstractLinkedTableBooklistGroup {
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_SERIES = "psk_style_series";
@@ -54,11 +58,13 @@ public class SeriesBooklistGroup
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.series.show.all";
 
-    /** Customized domain with display data. */
-    @NonNull
-    private final DomainExpression mDisplayDomain;
-    /** Show a book under each {@link Series} it is linked to. */
-    private PBoolean mUnderEach;
+    /** For sorting. */
+    private static final Domain DOM_SORTING;
+
+    static {
+        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT)
+                .build();
+    }
 
     /**
      * Constructor.
@@ -68,10 +74,7 @@ public class SeriesBooklistGroup
      */
     SeriesBooklistGroup(final boolean isPersistent,
                         @NonNull final ListStyle style) {
-        super(SERIES, isPersistent, style);
-        mDisplayDomain = createDisplayDomain();
-
-        initPrefs();
+        super(SERIES, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     /**
@@ -85,9 +88,6 @@ public class SeriesBooklistGroup
                         @NonNull final ListStyle style,
                         @NonNull final SeriesBooklistGroup group) {
         super(isPersistent, style, group);
-        mDisplayDomain = createDisplayDomain();
-
-        mUnderEach = new PBoolean(isPersistent, mPersistenceLayer, group.mUnderEach);
     }
 
     /**
@@ -99,30 +99,53 @@ public class SeriesBooklistGroup
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
-    private void initPrefs() {
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, PK_SHOW_BOOKS_UNDER_EACH);
+    @Override
+    public GroupKey createGroupKey() {
+        // We use the foreign ID to create the key domain.
+        // We override the display domain in #createDisplayDomain.
+        return new GroupKey(R.string.lbl_series, "s",
+                            DOM_FK_SERIES, TBL_SERIES.dot(DBKey.PK_ID),
+                            DomainExpression.SORT_UNSORTED)
+                .addGroupDomain(
+                        // We do not sort on the key domain but add the OB column instead
+                        new DomainExpression(DOM_SORTING,
+                                             TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
+                                             DomainExpression.SORT_ASC))
+                .addGroupDomain(
+                        // Group by id (we want the id available and there is
+                        // a chance two Series will have the same name)
+                        new DomainExpression(DOM_FK_SERIES,
+                                             TBL_BOOK_SERIES.dot(DBKey.FK_SERIES)))
+                .addGroupDomain(
+                        // Group by complete-flag
+                        new DomainExpression(DOM_SERIES_IS_COMPLETE,
+                                             TBL_SERIES.dot(
+                                                     DBKey.BOOL_SERIES_IS_COMPLETE)))
+                .addBaseDomain(
+                        // The series number in the base data in sorted order.
+                        // This field is NOT displayed.
+                        // Casting it as a float allows for the possibility of 3.1,
+                        // or even 3.1|Omnibus 3-10" as a series number.
+                        new DomainExpression(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
+                                             "CAST("
+                                             + TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_NUM_IN_SERIES)
+                                             + " AS REAL)",
+                                             DomainExpression.SORT_ASC))
+                .addBaseDomain(
+                        // The series number in the base data in sorted order.
+                        // This field is displayed.
+                        // Covers non-numeric data (where the above float would fail)
+                        new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
+                                             TBL_BOOK_SERIES.dot(DBKey.KEY_BOOK_NUM_IN_SERIES),
+                                             DomainExpression.SORT_ASC));
     }
 
+    @Override
     @NonNull
-    private DomainExpression createDisplayDomain() {
-        // Not sorted; we sort on the OB domain as defined in the GroupKey.
+    protected DomainExpression createDisplayDomain() {
+        // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_SERIES_TITLE,
                                     DBDefinitions.TBL_SERIES.dot(DBKey.KEY_SERIES_TITLE));
-    }
-
-    @NonNull
-    @Override
-    public DomainExpression getDisplayDomain() {
-        return mDisplayDomain;
-    }
-
-    @NonNull
-    @Override
-    @CallSuper
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mUnderEach.getKey(), mUnderEach);
-        return map;
     }
 
     @Override
@@ -135,43 +158,11 @@ public class SeriesBooklistGroup
         }
     }
 
-    /**
-     * Get this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Series.
-     */
-    public boolean showBooksUnderEach() {
-        return mUnderEach.isTrue();
-    }
-
-    @Override
-    public boolean equals(@Nullable final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final SeriesBooklistGroup that = (SeriesBooklistGroup) o;
-        return mDisplayDomain.equals(that.mDisplayDomain)
-               && Objects.equals(mUnderEach, that.mUnderEach);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), mDisplayDomain, mUnderEach);
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "SeriesBooklistGroup{"
                + super.toString()
-               + ", mDisplayDomain=" + mDisplayDomain
-               + ", mUnderEach=" + mUnderEach
                + '}';
     }
 }

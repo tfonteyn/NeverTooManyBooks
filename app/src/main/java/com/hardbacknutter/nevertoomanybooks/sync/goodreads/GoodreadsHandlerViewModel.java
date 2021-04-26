@@ -20,10 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 
 public class GoodreadsHandlerViewModel
         extends GoodreadsAuthenticationViewModel {
@@ -34,13 +32,11 @@ public class GoodreadsHandlerViewModel
         mSendOneBookTask.send(bookId);
     }
 
-    void linkTaskWithDialog(@IdRes final int taskId,
-                            @NonNull final ProgressDialogFragment dialog) {
+    public void cancelTask(@IdRes final int taskId) {
         if (taskId == mSendOneBookTask.getTaskId()) {
-            dialog.setCanceller(mSendOneBookTask);
-
+            mSendOneBookTask.cancel();
         } else {
-            super.linkTaskWithDialog(taskId, dialog);
+            super.cancelTask(taskId);
         }
     }
 }

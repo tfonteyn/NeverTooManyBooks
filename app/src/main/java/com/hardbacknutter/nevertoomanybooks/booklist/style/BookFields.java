@@ -142,9 +142,7 @@ public abstract class BookFields {
     @Override
     @NonNull
     public String toString() {
-        return "BookFields{"
-               + "mFields=" + mFields
-               + '}';
+        return "mFields=" + mFields;
     }
 
 }

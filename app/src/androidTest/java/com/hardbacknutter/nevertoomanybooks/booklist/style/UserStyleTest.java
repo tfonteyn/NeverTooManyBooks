@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class UserStyleTest {
+public class UserStyleTest
+        extends BaseDBTest {
 
     @Test
     public void clone01() {

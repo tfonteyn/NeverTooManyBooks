@@ -35,7 +35,7 @@ import org.acra.config.ToastConfigurationBuilder;
 import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class App
@@ -63,7 +63,7 @@ public class App
         initAcra();
 
         // https://developer.android.com/reference/android/os/StrictMode
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG  /* always */) {
             if (DEBUG_SWITCHES.STRICT_MODE_THREADING) {
                 StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                                                    .detectAll()

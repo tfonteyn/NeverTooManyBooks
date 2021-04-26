@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.AddBookToShelfApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.IsbnToIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ReviewEditApiHandler;
@@ -54,10 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShelvesListApiHan
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIsbnApiHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.
@@ -94,6 +94,9 @@ public class GoodreadsManager {
     /** A localized context. */
     @NonNull
     private final Context mContext;
+    @NonNull
+    private final Locale mUserLocale;
+
     @NonNull
     private final GoodreadsDao mGoodreadsDao;
 
@@ -132,6 +135,8 @@ public class GoodreadsManager {
     public GoodreadsManager(@NonNull final Context context,
                             @NonNull final GoodreadsAuth grAuth) {
         mContext = context;
+        mUserLocale = mContext.getResources().getConfiguration().getLocales().get(0);
+
         mGoodreadsAuth = grAuth;
         mGoodreadsDao = ServiceLocator.getInstance().getGoodreadsDao();
     }
@@ -213,7 +218,7 @@ public class GoodreadsManager {
      *
      * @return Disposition of book
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @WorkerThread
@@ -221,7 +226,7 @@ public class GoodreadsManager {
     public int sendOneBook(@NonNull final BookshelfDao bookshelfDao,
                            @NonNull final GoodreadsDao goodreadsDao,
                            @NonNull final DataHolder bookData)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException, DiskFullException {
 
         final long bookId = bookData.getLong(DBKey.PK_ID);
 
@@ -282,8 +287,6 @@ public class GoodreadsManager {
         final Collection<String> shelves = new ArrayList<>();
         final Collection<String> canonicalShelves = new ArrayList<>();
 
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(mContext);
-
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
         for (final Bookshelf bookshelf : bookshelfDao.getBookshelvesByBookId(bookId)) {
@@ -291,7 +294,7 @@ public class GoodreadsManager {
             shelves.add(bookshelfName);
 
             final String canonicalShelfName =
-                    GoodreadsShelf.canonicalizeName(userLocale, bookshelfName);
+                    GoodreadsShelf.canonicalizeName(mUserLocale, bookshelfName);
             canonicalShelves.add(canonicalShelfName);
 
             // Count how many of these shelves are exclusive in Goodreads.
@@ -311,7 +314,7 @@ public class GoodreadsManager {
             }
             if (!shelves.contains(pseudoShelf)) {
                 shelves.add(pseudoShelf);
-                canonicalShelves.add(GoodreadsShelf.canonicalizeName(userLocale, pseudoShelf));
+                canonicalShelves.add(GoodreadsShelf.canonicalizeName(mUserLocale, pseudoShelf));
             }
         }
 
@@ -343,7 +346,7 @@ public class GoodreadsManager {
         final Collection<String> shelvesToAddTo = new ArrayList<>();
         for (final String shelf : shelves) {
             // Get the name the shelf will have at Goodreads
-            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(userLocale, shelf);
+            final String canonicalShelfName = GoodreadsShelf.canonicalizeName(mUserLocale, shelf);
             // Can only sent canonical shelf names if the book is on 0 or 1 of them.
             final boolean okToSend = exclusiveCount < 2
                                      || !grShelfList.isExclusive(canonicalShelfName);
@@ -392,14 +395,14 @@ public class GoodreadsManager {
      *
      * @return Bundle of Goodreads book data
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     @NonNull
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException, DiskFullException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
@@ -420,14 +423,14 @@ public class GoodreadsManager {
      *
      * @return Bundle with Goodreads book data
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @NonNull
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Bundle bookData)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException, DiskFullException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mContext, mGoodreadsAuth);
@@ -442,12 +445,12 @@ public class GoodreadsManager {
      *
      * @return the Goodreads shelves
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     @NonNull
     private GoodreadsShelves getShelves()
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (mShelvesList == null) {
             final ShelvesListApiHandler handler =
@@ -465,13 +468,13 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
@@ -487,12 +490,12 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @NonNull final Collection<String> shelfNames)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
@@ -506,12 +509,12 @@ public class GoodreadsManager {
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      */
     private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);

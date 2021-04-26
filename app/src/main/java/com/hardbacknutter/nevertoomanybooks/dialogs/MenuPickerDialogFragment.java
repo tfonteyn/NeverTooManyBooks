@@ -469,10 +469,10 @@ public class MenuPickerDialogFragment
 
         @Override
         public int getItemViewType(final int position) {
-            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
-                return MENU_ITEM;
-            } else {
+            if (mList.get(position).getItemId() == R.id.MENU_DIVIDER) {
                 return MENU_DIVIDER;
+            } else {
+                return MENU_ITEM;
             }
         }
 

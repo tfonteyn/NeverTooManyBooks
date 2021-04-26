@@ -165,7 +165,7 @@ public class MenuPicker {
             extends RecyclerView.Adapter<Holder> {
 
         /** ViewType. */
-        static final int DIVIDER = 0;
+        static final int MENU_DIVIDER = 0;
         /** ViewType. */
         static final int MENU_ITEM = 1;
 
@@ -214,10 +214,10 @@ public class MenuPicker {
 
         @Override
         public int getItemViewType(final int position) {
-            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
-                return MENU_ITEM;
+            if (mList.get(position).getItemId() == R.id.MENU_DIVIDER) {
+                return MENU_DIVIDER;
             } else {
-                return DIVIDER;
+                return MENU_ITEM;
             }
         }
 

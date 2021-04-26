@@ -21,9 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-
 /**
  * <strong>Warning:</strong> To prevent unintended garbage collection, you must store
  * a strong reference to the listener. Do NOT simply pass a lambda, or anonymous class.

@@ -31,28 +31,33 @@ import java.security.cert.CertificateException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @MediumTest
-public class XmlArchiveWriterTest {
+public class XmlArchiveWriterTest
+        extends BaseDBTest {
 
     private static final String TAG = "XmlArchiveWriterTest";
 
     private long mBookInDb;
 
     @Before
-    public void count() {
+    public void setup()
+            throws DaoWriteException {
+        super.setup();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -61,7 +66,7 @@ public class XmlArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, GeneralParsingException, CertificateException {
+            throws IOException, ExportException, CertificateException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(AppDir.Log.getDir(), TAG + ".xml");

@@ -102,7 +102,7 @@
     <!-- Book Description. -->
     <style name="Field.Description">
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
-        <item name="android:background">@drawable/outline_rounded</item>
+        <item name="android:background">@drawable/bg_outline_rounded</item>
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
@@ -707,24 +707,22 @@
         <item name="iconGravity">end</item>
     </style>
 
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner.
+        Used as standalone menu selections. -->
     <style name="ExposedDropdownMenu"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
-    <style name="ExposedDropdownMenu.Dense"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner.
+        Used for Fields on an input form. -->
+    <style name="ExposedDropdownMenu.Field">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:layout_margin">@dimen/til_field_margin</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -746,10 +744,14 @@
 
     <!-- The added padding/stroke items are copied from: "Widget.MaterialComponents.Button.OutlinedButton" -->
     <style name="Button.Menu.Outlined">
-        <item name="android:paddingLeft">@dimen/mtrl_btn_padding_left</item>
-        <item name="android:paddingRight">@dimen/mtrl_btn_padding_right</item>
-        <item name="strokeColor">@color/mtrl_btn_stroke_color_selector</item>
-        <item name="strokeWidth">@dimen/mtrl_btn_stroke_size</item>
+        <!-- @dimen/mtrl_btn_padding_left -->
+        <item name="android:paddingLeft">16dp</item>
+        <!-- @dimen/mtrl_btn_padding_right -->
+        <item name="android:paddingRight">16dp</item>
+        <!-- @dimen/mtrl_btn_stroke_size -->
+        <item name="strokeWidth">1dp</item>
+        <!-- @color/mtrl_btn_stroke_color_selector -->
+        <item name="strokeColor">@color/btn_stroke_color_selector</item>
     </style>
 
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->

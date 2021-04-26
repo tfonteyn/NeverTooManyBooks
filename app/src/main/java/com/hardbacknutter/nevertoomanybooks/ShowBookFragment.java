@@ -87,15 +87,13 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 /**
  * Class for representing read-only book details.
@@ -553,14 +551,14 @@ public class ShowBookFragment
 
         private Fields initFields(@NonNull final Context context) {
 
-            final Fields fields = new Fields();
-
-            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             // These FieldFormatter's can be shared between multiple fields.
             final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
             final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true, true);
             final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
             final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
+
+            final Fields fields = new Fields();
 
             // book fields
             fields.add(R.id.title, new TextViewAccessor<>(), DBKey.KEY_TITLE);
@@ -704,13 +702,7 @@ public class ShowBookFragment
                 }
 
                 // Anthology/TOC fields
-                if (!mUseToc) {
-                    mVbToc.lblAnthology.setVisibility(View.GONE);
-                    mVbToc.lblToc.setVisibility(View.GONE);
-                    mVbToc.toc.setVisibility(View.GONE);
-                    mVbToc.btnShowToc.setVisibility(View.GONE);
-
-                } else {
+                if (mUseToc) {
                     // show/hide the TOC as the user flips the switch.
                     mVbToc.btnShowToc.setOnClickListener(v -> {
                         // note that the button is explicitly (re)set.
@@ -727,6 +719,11 @@ public class ShowBookFragment
                             mVbToc.btnShowToc.setChecked(true);
                         }
                     });
+                } else {
+                    mVbToc.lblAnthology.setVisibility(View.GONE);
+                    mVbToc.lblToc.setVisibility(View.GONE);
+                    mVbToc.toc.setVisibility(View.GONE);
+                    mVbToc.btnShowToc.setVisibility(View.GONE);
                 }
             }
 
@@ -807,7 +804,11 @@ public class ShowBookFragment
 
                 final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
 
-                if (!tocList.isEmpty()) {
+                if (tocList.isEmpty()) {
+                    mVbToc.lblToc.setVisibility(View.GONE);
+                    mVbToc.btnShowToc.setVisibility(View.GONE);
+
+                } else {
                     final Context context = itemView.getContext();
 
                     for (final TocEntry tocEntry : tocList) {
@@ -846,9 +847,6 @@ public class ShowBookFragment
                     mVbToc.lblToc.setVisibility(View.VISIBLE);
                     mVbToc.btnShowToc.setVisibility(View.VISIBLE);
 
-                } else {
-                    mVbToc.lblToc.setVisibility(View.GONE);
-                    mVbToc.btnShowToc.setVisibility(View.GONE);
                 }
             }
 

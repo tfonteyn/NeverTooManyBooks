@@ -29,15 +29,22 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 
 /**
  * Specialized BooklistGroup representing an {@link Author} group.
@@ -47,26 +54,29 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
  */
 public class AuthorBooklistGroup
-        extends BooklistGroup {
+        extends AbstractLinkedTableBooklistGroup {
 
     public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
+
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_AUTHOR = "psk_style_author";
+
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.authors.show.all";
+    /** For sorting. */
+    private static final Domain DOM_SORTING;
 
-    /** Customized domain with display data. */
-    @NonNull
-    private final DomainExpression mDisplayDomain;
-    /** Customized domain with sorted data. */
+    static {
+        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT)
+                .build();
+    }
+
+    /** DomainExpression for sorting the data - depends on the style used. */
     @NonNull
     private final DomainExpression mSortedDomain;
-
-    /** Show a book under each {@link Author} it is linked to. */
-    private PBoolean mUnderEach;
     /** The primary author type the user prefers. */
-    private PBitmask mPrimaryType;
+    private final PBitmask mPrimaryType;
 
     /**
      * Constructor.
@@ -76,12 +86,11 @@ public class AuthorBooklistGroup
      */
     AuthorBooklistGroup(final boolean isPersistent,
                         @NonNull final ListStyle style) {
-        super(AUTHOR, isPersistent, style);
-
-        mDisplayDomain = createDisplayDomain();
+        super(AUTHOR, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
         mSortedDomain = createSortDomain();
 
-        initPrefs();
+        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
+                                    Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
     }
 
     /**
@@ -95,11 +104,8 @@ public class AuthorBooklistGroup
                         @NonNull final ListStyle style,
                         @NonNull final AuthorBooklistGroup group) {
         super(isPersistent, style, group);
-
-        mDisplayDomain = createDisplayDomain();
         mSortedDomain = createSortDomain();
 
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
         mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, group.mPrimaryType);
     }
 
@@ -122,41 +128,50 @@ public class AuthorBooklistGroup
         return ServiceLocator.getGlobalPreferences().getInt(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
     }
 
+    @Override
+    public GroupKey createGroupKey() {
+        // We use the foreign ID to create the key domain.
+        // We override the display domain in #createDisplayDomain.
+        // We do not sort on the key domain but add the OB column in #createSortDomain
+        return new GroupKey(R.string.lbl_author, "a",
+                            DOM_FK_AUTHOR, TBL_AUTHORS.dot(DBKey.PK_ID),
+                            DomainExpression.SORT_UNSORTED)
+
+                .addGroupDomain(
+                        // Group by id (we want the id available and there is
+                        // a chance two Authors will have the same name)
+                        new DomainExpression(DOM_FK_AUTHOR,
+                                             TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR)))
+                .addGroupDomain(
+                        // Group by complete-flag
+                        new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
+                                             TBL_AUTHORS.dot(
+                                                     DBKey.BOOL_AUTHOR_IS_COMPLETE)));
+    }
+
+    @Override
     @NonNull
-    private DomainExpression createDisplayDomain() {
+    protected DomainExpression createDisplayDomain() {
         // Not sorted; sort as defined in #createSortDomain
-        return new DomainExpression(DBDefinitions.DOM_AUTHOR_FORMATTED, AuthorDaoImpl
-                .getDisplayAuthor(mStyle.isShowAuthorByGivenName()));
+        return AuthorDaoImpl.createDisplayDomainExpression(mStyle.isShowAuthorByGivenName());
     }
 
     @NonNull
     private DomainExpression createSortDomain() {
         // Sorting depends on user preference
-        return new DomainExpression(DBDefinitions.DOM_BL_AUTHOR_SORT, AuthorDaoImpl
-                .getSortAuthor(mStyle.isSortAuthorByGivenName()), DomainExpression.SORT_ASC);
-    }
-
-    @NonNull
-    @Override
-    public DomainExpression getDisplayDomain() {
-        return mDisplayDomain;
+        return new DomainExpression(DOM_SORTING,
+                                    AuthorDaoImpl.getSortAuthor(mStyle.isSortAuthorByGivenName()),
+                                    DomainExpression.SORT_ASC);
     }
 
     @NonNull
     @Override
     public ArrayList<DomainExpression> getGroupDomains() {
-        // We need to inject the mSortedDomain as first in the list.
+        // We inject the mSortedDomain as first in the list.
         final ArrayList<DomainExpression> list = new ArrayList<>();
         list.add(0, mSortedDomain);
         list.addAll(super.getGroupDomains());
         return list;
-    }
-
-    private void initPrefs() {
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, PK_SHOW_BOOKS_UNDER_EACH);
-
-        mPrimaryType = new PBitmask(mPersisted, mPersistenceLayer, PK_PRIMARY_TYPE,
-                                    Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
     }
 
     @NonNull
@@ -164,7 +179,6 @@ public class AuthorBooklistGroup
     @CallSuper
     public Map<String, PPref<?>> getRawPreferences() {
         final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mUnderEach.getKey(), mUnderEach);
         map.put(mPrimaryType.getKey(), mPrimaryType);
         return map;
     }
@@ -175,19 +189,9 @@ public class AuthorBooklistGroup
 
         final PreferenceCategory category = screen.findPreference(PSK_STYLE_AUTHOR);
         if (category != null) {
-            setPreferenceVisibility(category,
-                                    new String[]{PK_SHOW_BOOKS_UNDER_EACH, PK_PRIMARY_TYPE},
-                                    visible);
+            final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH, PK_PRIMARY_TYPE};
+            setPreferenceVisibility(category, keys, visible);
         }
-    }
-
-    /**
-     * Get this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Authors.
-     */
-    public boolean showBooksUnderEach() {
-        return mUnderEach.isTrue();
     }
 
     /**
@@ -202,26 +206,17 @@ public class AuthorBooklistGroup
 
     @Override
     public boolean equals(@Nullable final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
         if (!super.equals(o)) {
             return false;
         }
         final AuthorBooklistGroup that = (AuthorBooklistGroup) o;
-        return mDisplayDomain.equals(that.mDisplayDomain)
-               && mSortedDomain.equals(that.mSortedDomain)
-               && Objects.equals(mUnderEach, that.mUnderEach)
+        return Objects.equals(mSortedDomain, that.mSortedDomain)
                && Objects.equals(mPrimaryType, that.mPrimaryType);
     }
 
     @Override
     public int hashCode() {
-        return Objects
-                .hash(super.hashCode(), mDisplayDomain, mSortedDomain, mUnderEach, mPrimaryType);
+        return Objects.hash(super.hashCode(), mSortedDomain, mPrimaryType);
     }
 
     @Override
@@ -229,9 +224,7 @@ public class AuthorBooklistGroup
     public String toString() {
         return "AuthorBooklistGroup{"
                + super.toString()
-               + ", mDisplayDomain=" + mDisplayDomain
                + ", mSortedDomain=" + mSortedDomain
-               + ", mUnderEach=" + mUnderEach
                + ", mPrimaryType=" + mPrimaryType
                + '}';
     }

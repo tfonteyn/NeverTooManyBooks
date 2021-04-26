@@ -60,6 +60,12 @@
             android:src="@drawable/ic_baseline_edit_24"
             />
 
+        <include
+            android:id="@+id/progress_frame"
+            layout="@layout/progress_overlay"
+            android:visibility="gone"
+            />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView

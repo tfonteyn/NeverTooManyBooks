@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.FileNotFoundException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
@@ -42,10 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
 public class ImportViewModel
         extends ViewModel
@@ -115,8 +114,8 @@ public class ImportViewModel
 
     @Override
     protected void onCleared() {
-        mArchiveReadMetaDataTask.cancel(true);
-        mArchiveReaderTask.cancel(true);
+        mArchiveReadMetaDataTask.cancel();
+        mArchiveReaderTask.cancel();
         super.onCleared();
     }
 
@@ -197,11 +196,9 @@ public class ImportViewModel
         mArchiveReaderTask.start(mImportHelper);
     }
 
-    void linkTaskWithDialog(@IdRes final int taskId,
-                            @NonNull final ProgressDialogFragment dialog) {
+    void cancelTask(@IdRes final int taskId) {
         if (taskId == mArchiveReaderTask.getTaskId()) {
-            dialog.setCanceller(mArchiveReaderTask);
-
+            mArchiveReaderTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

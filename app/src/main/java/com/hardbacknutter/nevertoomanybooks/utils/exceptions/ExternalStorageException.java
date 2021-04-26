@@ -86,14 +86,21 @@ public class ExternalStorageException
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_accessible);
+        if (mAppDir == AppDir.Root) {
+            // We never write directly to the root, except to create sub directories.
+            // Hence, this is likely a security/access problem.
+            return context.getString(R.string.error_storage_not_accessible);
+        } else {
+            // All others are sub directories, so most likely there are space issues.
+            return context.getString(R.string.error_storage_not_writable);
+        }
     }
 
     @Override
     @NonNull
     public String toString() {
         return "ExternalStorageException{"
-               + "mAppDir=" + mAppDir.name()
+               + "mAppDir=" + mAppDir
                + ", " + super.toString()
                + '}';
     }

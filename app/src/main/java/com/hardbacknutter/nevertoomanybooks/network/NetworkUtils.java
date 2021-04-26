@@ -30,11 +30,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Locale;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -47,9 +57,10 @@ public final class NetworkUtils {
     /** Log tag. */
     private static final String TAG = "NetworkUtils";
 
-    private static final Pattern SLASH_PATTERN = Pattern.compile("//");
+    /** Timeout for {@link #ping(String)}; the DNS address lookup. */
+    private static final long DNS_TIMEOUT_MS = 5_000L;
 
-    /** Timeout for {@link #ping(String)}. */
+    /** Timeout for {@link #ping(String)}; the actual connection to the host. */
     private static final int PING_TIMEOUT_MS = 5_000;
 
     private NetworkUtils() {
@@ -86,6 +97,7 @@ public final class NetworkUtils {
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                    //noinspection NegativelyNamedBooleanVariable
                     final boolean notMetered =
                             nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
@@ -112,30 +124,105 @@ public final class NetworkUtils {
 
     /**
      * Low level check if a url is reachable.
-     * <p>
-     * url format: "http://some.site.com" or "https://secure.site.com"
-     * Any path after the hostname will be ignored.
-     * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
      * @param urlStr url to check
      *
      * @throws NetworkUnavailableException if the network itself is unavailable
+     * @throws UnknownHostException        the IP address of a host could not be determined.
      * @throws IOException                 if we cannot reach the site
+     * @throws SocketTimeoutException      on timeouts (both DNS and host itself)
      */
     @WorkerThread
     public static void ping(@NonNull final String urlStr)
-            throws NetworkUnavailableException, UnknownHostException, IOException {
+            throws NetworkUnavailableException,
+                   UnknownHostException,
+                   IOException,
+                   SocketTimeoutException,
+                   MalformedURLException {
 
         if (!isNetworkAvailable()) {
             throw new NetworkUnavailableException();
         }
 
-        final String url = urlStr.toLowerCase(Locale.ROOT);
-        final int port = url.startsWith("https://") ? 443 : 80;
-        final String host = SLASH_PATTERN.split(url)[1].split("/")[0];
+        final URL url = new URL(urlStr.toLowerCase(Locale.ROOT));
+        final String host = url.getHost();
+        int port = url.getPort();
+        if (port == -1) {
+            switch (url.getProtocol()) {
+                case "https":
+                    port = 443;
+                    break;
+
+                case "http":
+                    port = 80;
+                    break;
+
+                default:
+                    // should never get here... flw
+                    throw new MalformedURLException(urlStr);
+            }
+        }
+
+        final InetAddress inetAddress = new DNSService().lookup(host, DNS_TIMEOUT_MS);
 
         final Socket sock = new Socket();
-        sock.connect(new InetSocketAddress(host, port), PING_TIMEOUT_MS);
+        sock.connect(new InetSocketAddress(inetAddress, port), PING_TIMEOUT_MS);
         sock.close();
+    }
+
+    /**
+     * Workaround for {@link InetAddress#getByName(String)} which does not support a timeout.
+     */
+    private static class DNSService {
+
+        private final ExecutorService executor;
+
+        DNSService() {
+            executor = Executors.newSingleThreadExecutor(r -> {
+                final Thread t = new Thread(r);
+                t.setDaemon(true);
+                return t;
+            });
+        }
+
+        @NonNull
+        public InetAddress lookup(@NonNull final String host,
+                                  final long timeoutMs)
+                throws NetworkUnavailableException,
+                       UnknownHostException {
+
+            Future<InetAddress> future = null;
+            try {
+                future = getByName(host);
+                final InetAddress inetAddress = future.get(timeoutMs, TimeUnit.MILLISECONDS);
+                // sanity check
+                if (inetAddress == null) {
+                    throw new UnknownHostException(host);
+                }
+
+                return inetAddress;
+
+            } catch (@NonNull final ExecutionException e) {
+                // Shouldn't happen... flw
+                throw new NetworkUnavailableException("DNS lookup failed for: " + host, e);
+
+            } catch (@NonNull final TimeoutException | InterruptedException e) {
+                // wrap For simplicity
+                throw new UnknownHostException(host);
+
+            } finally {
+                if (future != null) {
+                    future.cancel(true);
+                }
+            }
+        }
+
+        @NonNull
+        private Future<InetAddress> getByName(@NonNull final String host) {
+            final FutureTask<InetAddress> future = new FutureTask<>(
+                    () -> InetAddress.getByName(host));
+            executor.execute(future);
+            return future;
+        }
     }
 }

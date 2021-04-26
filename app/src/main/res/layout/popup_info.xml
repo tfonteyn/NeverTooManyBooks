@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
     android:id="@+id/info"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/popup_background"
+    android:background="@drawable/bg_popup"
     android:maxWidth="250dp"
     android:maxLines="10"
     android:paddingStart="8dp"

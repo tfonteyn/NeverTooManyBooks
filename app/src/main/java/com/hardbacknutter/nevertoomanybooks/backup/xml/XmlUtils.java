@@ -91,10 +91,10 @@ public final class XmlUtils {
     private static String tag(@NonNull final String tag,
                               @Nullable final String name,
                               @NonNull final String value) {
-        if (!value.isEmpty()) {
-            return '<' + tag + nameAttr(name) + attr(ATTR_VALUE, value) + "/>\n";
-        } else {
+        if (value.isEmpty()) {
             return "";
+        } else {
+            return '<' + tag + nameAttr(name) + attr(ATTR_VALUE, value) + "/>\n";
         }
     }
 
@@ -110,10 +110,10 @@ public final class XmlUtils {
                                       @NonNull final Object value) {
 
         final String valueString = value.toString();
-        if (!valueString.isEmpty()) {
-            return '<' + tag + nameAttr(name) + '>' + value + "</" + tag + ">\n";
-        } else {
+        if (valueString.isEmpty()) {
             return "";
+        } else {
+            return '<' + tag + nameAttr(name) + '>' + value + "</" + tag + ">\n";
         }
     }
 
@@ -127,12 +127,12 @@ public final class XmlUtils {
     static String tagWithCData(@NonNull final String tag,
                                @Nullable final String name,
                                @NonNull final String value) {
-        if (!value.isEmpty()) {
+        if (value.isEmpty()) {
+            return "";
+        } else {
             return '<' + tag + nameAttr(name) + ">\n"
                    + "<![CDATA[" + value + "]]>\n"
                    + "</" + tag + ">\n";
-        } else {
-            return "";
         }
     }
 

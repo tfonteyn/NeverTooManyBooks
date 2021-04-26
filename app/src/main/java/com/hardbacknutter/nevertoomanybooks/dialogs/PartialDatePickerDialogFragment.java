@@ -48,7 +48,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -240,8 +239,7 @@ public class PartialDatePickerDialogFragment
      * Generate the month names (abbreviated). There are 13: first entry being 'unknown'.
      */
     private String[] getMonthAbbr() {
-        //noinspection ConstantConditions
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
+        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
         final String[] monthNames = new String[13];
         monthNames[0] = UNKNOWN_MONTH;
         for (int i = 1; i <= 12; i++) {

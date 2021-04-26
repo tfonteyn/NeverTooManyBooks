@@ -57,10 +57,10 @@
         tools:text="archive name"
         />
 
+    <!-- lbl_calibre_library *OR* archive_content is shown.-->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_calibre_library"
-        style="@style/ExposedDropdownMenu.Dense"
-        android:layout_width="wrap_content"
+        style="@style/ExposedDropdownMenu"
         android:layout_marginTop="@dimen/section_margin_top"
         android:hint="@string/lbl_library"
         android:visibility="gone"

@@ -68,10 +68,12 @@ public class LanguageDaoImpl
             // The cursor is distinct, but we need to make sure code->name does not create
             // duplicates (very unlikely, but not impossible)
             final Set<String> set = new LinkedHashSet<>();
+            final Languages languages = Languages.getInstance();
+
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 if (name != null && !name.isEmpty()) {
-                    set.add(Languages.getInstance().getDisplayNameFromISO3(context, name));
+                    set.add(languages.getDisplayNameFromISO3(context, name));
                 }
             }
             return new ArrayList<>(set);

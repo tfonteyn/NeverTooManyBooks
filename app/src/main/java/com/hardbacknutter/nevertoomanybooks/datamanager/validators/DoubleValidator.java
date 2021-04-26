@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,11 +24,9 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -42,8 +40,6 @@ public class DoubleValidator
 
     /** Default to apply if the field is {@code null} or empty. */
     private final double mDefaultValue;
-    /** Cached system locale. */
-    private final Locale mSystemLocale;
 
     /**
      * Constructor; default value is 0d.
@@ -52,7 +48,6 @@ public class DoubleValidator
      */
     public DoubleValidator() {
         mDefaultValue = 0d;
-        mSystemLocale = AppLocale.getInstance().getSystemLocale();
     }
 
     @Override
@@ -75,7 +70,7 @@ public class DoubleValidator
                 value = mDefaultValue;
             } else {
                 try {
-                    value = ParseUtils.parseDouble(stringValue, mSystemLocale);
+                    value = ParseUtils.parseDouble(stringValue, ServiceLocator.getSystemLocale());
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(

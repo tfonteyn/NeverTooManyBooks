@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
@@ -417,13 +417,7 @@ public class BookCoder {
         book.remove(CSV_COLUMN_AUTHORS);
 
         final ArrayList<Author> list;
-        if (!encodedList.isEmpty()) {
-            list = mAuthorCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                Author.pruneList(list, context, false, bookLocale);
-            }
-        } else {
+        if (encodedList.isEmpty()) {
             // check for individual author (full/family/given) fields in the input
             list = new ArrayList<>();
             if (book.contains(DBKey.KEY_AUTHOR_FORMATTED)) {
@@ -450,6 +444,12 @@ public class BookCoder {
                 }
                 book.remove(LEGACY_AUTHOR_NAME);
             }
+        } else {
+            list = mAuthorCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                Author.pruneList(list, context, false, bookLocale);
+            }
         }
 
         // we MUST have an author.
@@ -475,14 +475,7 @@ public class BookCoder {
         final String encodedList = book.getString(CSV_COLUMN_SERIES);
         book.remove(CSV_COLUMN_SERIES);
 
-        if (!encodedList.isEmpty()) {
-            final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                Series.pruneList(list, context, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
-            }
-        } else {
+        if (encodedList.isEmpty()) {
             // check for individual series title/number fields in the input
             if (book.contains(DBKey.KEY_SERIES_TITLE)) {
                 final String title = book.getString(DBKey.KEY_SERIES_TITLE);
@@ -496,6 +489,13 @@ public class BookCoder {
                 }
                 book.remove(DBKey.KEY_SERIES_TITLE);
                 book.remove(DBKey.KEY_BOOK_NUM_IN_SERIES);
+            }
+        } else {
+            final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
+            if (!list.isEmpty()) {
+                // Force using the Book Locale, otherwise the import is far to slow.
+                Series.pruneList(list, context, false, bookLocale);
+                book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
             }
         }
     }

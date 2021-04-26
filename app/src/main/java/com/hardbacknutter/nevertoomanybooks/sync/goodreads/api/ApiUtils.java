@@ -27,12 +27,13 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public final class ApiUtils {
@@ -86,7 +87,9 @@ public final class ApiUtils {
     @Nullable
     public static String handleThumbnail(@NonNull final Bundle goodreadsData,
                                          @NonNull final String keyLargeImageUrl,
-                                         @NonNull final String keySmallImageUrl) {
+                                         @NonNull final String keySmallImageUrl)
+            throws DiskFullException, ExternalStorageException {
+
         // first check what the "best" image is that we have.
         final String largeImage = goodreadsData.getString(keyLargeImageUrl);
         final String smallImage = goodreadsData.getString(keySmallImageUrl);
@@ -111,20 +114,14 @@ public final class ApiUtils {
                 .setReadTimeout(GoodreadsManager.READ_TIMEOUT_MS)
                 .setThrottler(GoodreadsSearchEngine.THROTTLER);
 
-        try {
-            final File tmpFile = imageDownloader.createTmpFile(
-                    GoodreadsManager.FILENAME_SUFFIX,
-                    String.valueOf(goodreadsData.getLong(DBKey.SID_GOODREADS_BOOK)), 0, size);
 
-            final File file = imageDownloader.fetch(url, tmpFile);
-            if (file != null) {
-                return file.getAbsolutePath();
-            }
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // ignore
-        }
+        final File tmpFile = imageDownloader.createTmpFile(
+                GoodreadsManager.FILENAME_SUFFIX,
+                String.valueOf(goodreadsData.getLong(DBKey.SID_GOODREADS_BOOK)), 0, size);
 
-        return null;
+        final File file = imageDownloader.fetch(url, tmpFile);
+        return file != null ? file.getAbsolutePath() : null;
+
     }
 
     /**
@@ -138,7 +135,7 @@ public final class ApiUtils {
         if (url == null) {
             return false;
         }
-        final String name = url.toLowerCase(AppLocale.getInstance().getSystemLocale());
+        final String name = url.toLowerCase(ServiceLocator.getSystemLocale());
         // these string can be part of an image 'name' indicating there is no cover image.
         return !name.contains("nophoto") && !name.contains("nocover");
     }

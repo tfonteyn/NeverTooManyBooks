@@ -241,6 +241,16 @@ public final class BuiltinStyle
         final boolean isPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
         final int menuPos = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
+        return create(context, id, uuid, isPreferred, menuPos);
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public static BuiltinStyle create(@NonNull final Context context,
+                                      final int id,
+                                      @NonNull final String uuid,
+                                      final boolean isPreferred,
+                                      final int menuPos) {
         final BuiltinStyle style;
         switch (id) {
             case ID_AUTHOR_THEN_SERIES:
@@ -418,7 +428,6 @@ public final class BuiltinStyle
             default:
                 throw new IllegalStateException("style id=" + id);
         }
-
         return style;
     }
 

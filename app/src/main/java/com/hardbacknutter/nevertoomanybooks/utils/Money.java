@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+
 /**
  * Value class to represent a value + currency.
  * <p>
@@ -253,7 +255,7 @@ public class Money
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        final String key = currency.trim().toLowerCase(AppLocale.getInstance().getSystemLocale());
+        final String key = currency.trim().toLowerCase(ServiceLocator.getSystemLocale());
         return CURRENCY_MAP.get(key);
     }
 

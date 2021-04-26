@@ -43,6 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -51,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -67,23 +69,24 @@ public class AuthorDaoImpl
     /** Log tag. */
     private static final String TAG = "AuthorDaoImpl";
 
-    static final String DISPLAY_AUTHOR_GIVEN_FIRST =
-            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES) + "=''"
-            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
-            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES)
-            + "||' '||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
-            + _END;
+    private static final String CASE_WHEN_ = "CASE WHEN ";
+    private static final String _THEN_ = " THEN ";
+    private static final String _ELSE_ = " ELSE ";
+    private static final String _END = " END";
+
     /** All Books (id only!) for a given Author. */
     private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID =
             SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?";
+
     /** All Books (id only!) for a given Author and Bookshelf. */
     private static final String SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
             SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID)
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_BOOKS, TBL_BOOK_BOOKSHELF)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_AUTHOR) + "=?"
             + _AND_ + TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF) + "=?";
+
     /**
      * All Book titles and their first pub. date, for an Author,
      * returned as an {@link AuthorWork}.
@@ -104,6 +107,7 @@ public class AuthorDaoImpl
 
     /** {@link Author}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_AUTHORS.getName();
+
     /**
      * All TocEntry's for an Author,
      * returned as an {@link AuthorWork}.
@@ -122,10 +126,12 @@ public class AuthorDaoImpl
             + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.KEY_BOOK_COUNT
             // join with the books, so we can group by toc id, and get the number of books.
             + _FROM_ + TBL_TOC_ENTRIES.startJoin(TBL_BOOK_TOC_ENTRIES);
+
     /** Get an {@link Author} by the Author id. */
     private static final String SELECT_BY_ID = SELECT_ALL + _WHERE_ + DBKey.PK_ID + "=?";
 
     private static final String COUNT_ALL = SELECT_COUNT_FROM_ + TBL_AUTHORS.getName();
+
     /**
      * Get the id of a {@link Author} by name.
      * The lookup is by EQUALITY and CASE-SENSITIVE.
@@ -135,28 +141,28 @@ public class AuthorDaoImpl
             SELECT_ + DBKey.PK_ID + _FROM_ + TBL_AUTHORS.getName()
             + _WHERE_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + "=?" + _COLLATION
             + _AND_ + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + _COLLATION;
+
     /** Count the number of {@link Book}'s by an {@link Author}. */
     private static final String COUNT_BOOKS =
             "SELECT COUNT(" + DBKey.FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR.getName()
             + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
     /** Count the number of {@link TocEntry}'s by an {@link Author}. */
     private static final String COUNT_TOC_ENTRIES =
             "SELECT COUNT(" + DBKey.PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
             + _WHERE_ + DBKey.FK_AUTHOR + "=?";
+
     private static final String INSERT =
             INSERT_INTO_ + TBL_AUTHORS.getName()
             + '(' + DBKey.KEY_AUTHOR_FAMILY_NAME + ',' + DBKey.KEY_AUTHOR_FAMILY_NAME_OB
             + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB
             + ',' + DBKey.BOOL_AUTHOR_IS_COMPLETE
             + ") VALUES (?,?,?,?,?)";
+
     /** Delete an {@link Author}. */
     private static final String DELETE_BY_ID =
             DELETE_FROM_ + TBL_AUTHORS.getName() + _WHERE_ + DBKey.PK_ID + "=?";
 
-    private static final String CASE_WHEN_ = "CASE WHEN ";
-    private static final String _THEN_ = " THEN ";
-    private static final String _ELSE_ = " ELSE ";
-    private static final String _END = " END";
     /**
      * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
      */
@@ -166,12 +172,22 @@ public class AuthorDaoImpl
             + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.getName() + ')'
             + " AND " + DBKey.PK_ID + _NOT_IN_
             + "(SELECT DISTINCT " + DBKey.FK_AUTHOR + _FROM_ + TBL_TOC_ENTRIES.getName() + ')';
+
+
     private static final String DISPLAY_AUTHOR_FAMILY_FIRST =
             CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES) + "=''"
             + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
             + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
             + "||', '||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES)
             + _END;
+
+    private static final String DISPLAY_AUTHOR_GIVEN_FIRST =
+            CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES) + "=''"
+            + _THEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + _ELSE_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES)
+            + "||' '||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME)
+            + _END;
+
 
     private static final String SORT_AUTHOR_FAMILY_FIRST =
             CASE_WHEN_ + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_GIVEN_NAMES_OB) + "=''"
@@ -189,6 +205,7 @@ public class AuthorDaoImpl
             + "||" + TBL_AUTHORS.dot(DBKey.KEY_AUTHOR_FAMILY_NAME_OB)
             + _END;
 
+
     /** {@link #getNames(String)} : 'Family name' in column 0. */
     private static final String SELECT_ALL_FAMILY_NAMES =
             SELECT_DISTINCT_ + DBKey.KEY_AUTHOR_FAMILY_NAME + _FROM_ + TBL_AUTHORS.getName()
@@ -201,14 +218,16 @@ public class AuthorDaoImpl
             + _ORDER_BY_ + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /** {@link #getNames(String)} : 'Display name' in column 0. */
-    private static final String SELECT_ALL_NAMES_FORMATTED =
-            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST + _FROM_ + TBL_AUTHORS.ref()
+    private static final String SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST =
+            SELECT_ + DISPLAY_AUTHOR_FAMILY_FIRST
+            + _FROM_ + TBL_AUTHORS.ref()
             + _ORDER_BY_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
     /** {@link #getNames(String)} : 'Display name' in column 0. */
     private static final String SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST =
-            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST + _FROM_ + TBL_AUTHORS.ref()
+            SELECT_ + DISPLAY_AUTHOR_GIVEN_FIRST
+            + _FROM_ + TBL_AUTHORS.ref()
             + _ORDER_BY_ + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
 
@@ -216,20 +235,29 @@ public class AuthorDaoImpl
     private static final String AUTHORS_BY_BOOK_ID =
             SELECT_DISTINCT_ + TBL_AUTHORS.dotAs(DBKey.PK_ID,
                                                  DBKey.KEY_AUTHOR_FAMILY_NAME,
-                                                 DBKey.KEY_AUTHOR_FAMILY_NAME_OB,
                                                  DBKey.KEY_AUTHOR_GIVEN_NAMES,
-                                                 DBKey.KEY_AUTHOR_GIVEN_NAMES_OB,
                                                  DBKey.BOOL_AUTHOR_IS_COMPLETE)
-            + ',' + DISPLAY_AUTHOR_FAMILY_FIRST + _AS_ + DBKey.KEY_AUTHOR_FORMATTED
+
             + ',' + TBL_BOOK_AUTHOR.dotAs(DBKey.KEY_BOOK_AUTHOR_POSITION,
                                           DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)
 
             + _FROM_ + TBL_BOOK_AUTHOR.startJoin(TBL_AUTHORS)
             + _WHERE_ + TBL_BOOK_AUTHOR.dot(DBKey.FK_BOOK) + "=?"
-            + _ORDER_BY_
-            + TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION)
+
+            + _ORDER_BY_ + TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION)
             + ',' + DBKey.KEY_AUTHOR_FAMILY_NAME_OB + _COLLATION
             + ',' + DBKey.KEY_AUTHOR_GIVEN_NAMES_OB + _COLLATION;
+
+
+    /** Virtual: "FamilyName, GivenName". */
+    private static final Domain DOM_AUTHOR_FORMATTED_FAMILY_FIRST;
+
+    static {
+        DOM_AUTHOR_FORMATTED_FAMILY_FIRST =
+                new Domain.Builder(DBKey.KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+    }
 
     /**
      * Constructor.
@@ -239,8 +267,9 @@ public class AuthorDaoImpl
     }
 
     /**
-     * Single column, with the formatted name of the Author.
-     * Note how the 'otherwise' will always concatenate the names without white space.
+     * Single column, for sorting on the formatted name of the Author.
+     * <p>
+     * Dev note: Note how the 'otherwise' will always concatenate the names without white space.
      *
      * @param givenNameFirst {@code true}
      *                       If no given name -> "FamilyName"
@@ -273,12 +302,30 @@ public class AuthorDaoImpl
      * @return column expression
      */
     @NonNull
-    public static String getDisplayAuthor(final boolean givenNameFirst) {
+    private static String getDisplayAuthor(final boolean givenNameFirst) {
         if (givenNameFirst) {
             return DISPLAY_AUTHOR_GIVEN_FIRST;
         } else {
             return DISPLAY_AUTHOR_FAMILY_FIRST;
         }
+    }
+
+    /**
+     * Create a {@link DomainExpression} for displaying the formatted name of the Author.
+     *
+     * @param givenNameFirst {@code true}
+     *                       If no given name -> "FamilyName"
+     *                       otherwise -> "GivenNames FamilyName"
+     *                       {@code false}
+     *                       If no given name -> "FamilyName"
+     *                       otherwise -> "FamilyName, GivenNames"
+     *
+     * @return DomainExpression
+     */
+    @NonNull
+    public static DomainExpression createDisplayDomainExpression(final boolean givenNameFirst) {
+        return new DomainExpression(DOM_AUTHOR_FORMATTED_FAMILY_FIRST,
+                                    getDisplayAuthor(givenNameFirst));
     }
 
     @Override
@@ -324,7 +371,7 @@ public class AuthorDaoImpl
                 return getColumnAsStringArrayList(SELECT_ALL_GIVEN_NAMES);
 
             case DBKey.KEY_AUTHOR_FORMATTED:
-                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED);
+                return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_FAMILY_FIRST);
 
             case DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST:
                 return getColumnAsStringArrayList(SELECT_ALL_NAMES_FORMATTED_GIVEN_FIRST);
@@ -559,8 +606,8 @@ public class AuthorDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Author author) {
 
-        final Locale authorLocale =
-                author.getLocale(context, AppLocale.getInstance().getUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale authorLocale = author.getLocale(context, userLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, author.getFamilyName());
@@ -580,8 +627,8 @@ public class AuthorDaoImpl
     public boolean update(@NonNull final Context context,
                           @NonNull final Author author) {
 
-        final Locale authorLocale =
-                author.getLocale(context, AppLocale.getInstance().getUserLocale(context));
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        final Locale authorLocale = author.getLocale(context, userLocale);
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
@@ -703,7 +750,7 @@ public class AuthorDaoImpl
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+            final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
             Synchronizer.SyncLock txLock = null;

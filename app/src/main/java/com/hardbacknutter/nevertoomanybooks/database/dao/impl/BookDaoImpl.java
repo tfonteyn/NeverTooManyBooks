@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -244,7 +244,7 @@ public class BookDaoImpl
             ServiceLocator.getInstance().getFtsDao().insert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
-            if (!bookDaoHelper.storeCovers()) {
+            if (!bookDaoHelper.persistCovers()) {
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_STORING_COVERS + book);
@@ -312,7 +312,7 @@ public class BookDaoImpl
 
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
-                if (!bookDaoHelper.storeCovers()) {
+                if (!bookDaoHelper.persistCovers()) {
                     throw new DaoWriteException(ERROR_STORING_COVERS + book);
                 }
 
@@ -368,7 +368,7 @@ public class BookDaoImpl
                 if (!uuid.isEmpty()) {
                     // Delete the covers from the file system.
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        FileUtils.delete(Book.getUuidCoverFile(uuid, cIdx));
+                        FileUtils.delete(Book.getPersistedCoverFile(uuid, cIdx));
                     }
                     // and from the cache. If the user flipped the cache on/off we'll
                     // not always be cleaning up correctly. It's not that important though.

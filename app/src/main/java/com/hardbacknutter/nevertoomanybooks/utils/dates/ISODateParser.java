@@ -30,9 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * Parser for dates coming from the database or other sources
@@ -112,8 +111,6 @@ public class ISODateParser
     private void create() {
         mParsers = new ArrayList<>();
 
-        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-
         // '2011-12-03T10:15:30',
         // '2011-12-03T10:15:30+01:00'
         // '2011-12-03T10:15:30+01:00[Europe/Paris]'
@@ -141,7 +138,7 @@ public class ISODateParser
                 .appendZoneRegionId()
                 .appendLiteral(']')
                 // Uses ResolverStyle.SMART and 'null' Chronology
-                .toFormatter(systemLocale);
+                .toFormatter(ServiceLocator.getSystemLocale());
 
         mParsers.add(SQLITE_ISO_DATE_TIME);
     }

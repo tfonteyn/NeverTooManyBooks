@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -90,7 +89,7 @@ public class BookAsWork
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         return reorderTitleForDisplaying(context, userLocale);
     }
 

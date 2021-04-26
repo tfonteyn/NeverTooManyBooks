@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
@@ -32,7 +33,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
@@ -101,7 +101,8 @@ public class DecimalEditTextAccessor
 
         DecimalTextWatcher(@NonNull final EditText view) {
             mView = view;
-            final Locale userLocale = AppLocale.getInstance().getUserLocale(mView.getContext());
+            final Context context = mView.getContext();
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
             final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(userLocale);
             final DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());

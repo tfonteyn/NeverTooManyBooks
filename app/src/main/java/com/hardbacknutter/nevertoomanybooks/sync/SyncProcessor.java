@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public final class SyncProcessor {
 
@@ -110,14 +109,14 @@ public final class SyncProcessor {
                             // If it's a cover...
                             if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
                                 // check if it's missing or empty.
-                                final File file = book.getUuidCoverFile(0);
+                                final File file = book.getPersistedCoverFile(0);
                                 if (file == null || file.length() == 0) {
                                     filteredMap.put(field.key, field);
                                 }
 
                             } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
                                 // check if it's missing or empty.
-                                final File file = book.getUuidCoverFile(1);
+                                final File file = book.getPersistedCoverFile(1);
                                 if (file == null || file.length() == 0) {
                                     filteredMap.put(field.key, field);
                                 }
@@ -274,8 +273,7 @@ public final class SyncProcessor {
         if (fileSpec != null) {
             final File downloadedFile = new File(fileSpec);
             try {
-                final File destination = book.getUuidCoverFileOrNew(cIdx);
-                FileUtils.rename(downloadedFile, destination);
+                book.persistCover(downloadedFile, cIdx);
 
             } catch (@NonNull final IOException e) {
                 final String uuid = book.getString(DBKey.KEY_BOOK_UUID);

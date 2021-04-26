@@ -32,10 +32,10 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ShowBookActivity;
+import com.hardbacknutter.nevertoomanybooks.ShowBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 public class ShowBookContract
         extends ActivityResultContract<ShowBookContract.Input, Bundle> {

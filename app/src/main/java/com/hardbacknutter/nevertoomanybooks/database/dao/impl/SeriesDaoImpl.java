@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -442,8 +441,9 @@ public class SeriesDaoImpl
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+            final Locale bookLocale = context.getResources().getConfiguration().getLocales().get(0);
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+
             Synchronizer.SyncLock txLock = null;
             try {
                 if (!mDb.inTransaction()) {

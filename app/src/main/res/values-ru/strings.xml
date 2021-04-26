@@ -93,7 +93,7 @@
     <string name="error_import_file_not_supported">Выбранный файл не может быть импортирован.</string>
     <string name="error_import_csv_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
-    <string name="error_if_the_problem_persists">Если проблема не устранена, обратитесь в службу поддержки через опцию «%1$s» внизу страницы настроек.</string>
+    <string name="error_unknown_long">Произошла непредвиденная ошибка. Если проблема не исчезнет, обратитесь в службу поддержки, используя параметр «%1$s» внизу страницы настроек.</string>
     <string name="error_import_csv_missing_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_file_not_recognized">Выбранный файл не распознан.</string>
@@ -111,7 +111,6 @@
     <string name="error_storage_not_accessible_s">Хранение недоступно: %1$s</string>
     <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unknown_long">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню «Настройки» из Главного меню</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="fab_add_book_by_barcode_scan">Сканировать штрих-код</string>
     <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>

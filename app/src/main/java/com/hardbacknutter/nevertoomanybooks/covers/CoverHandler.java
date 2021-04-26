@@ -80,11 +80,12 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
@@ -255,7 +256,7 @@ public class CoverHandler {
         } else {
             ImageUtils.setPlaceholder(view, mMaxWidth, mMaxHeight,
                                       R.drawable.ic_baseline_add_a_photo_24,
-                                      R.drawable.outline_rounded);
+                                      R.drawable.bg_outline_rounded);
         }
     }
 
@@ -333,7 +334,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
 
         if (itemId == R.id.MENU_DELETE) {
-            book.setCover(mCIdx, null);
+            book.removeCover(mCIdx);
             mCoverHandlerHost.refresh(mCIdx);
             return true;
 
@@ -366,10 +367,10 @@ public class CoverHandler {
                         // destination
                         getTempFile()));
 
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
             } catch (@NonNull final IOException e) {
-                StandardDialogs.showError(context, R.string.error_storage_not_accessible);
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
             return true;
 
@@ -377,10 +378,10 @@ public class CoverHandler {
             try {
                 editPicture(context, book.createTempCoverFile(mCIdx));
 
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
             } catch (@NonNull final IOException e) {
-                StandardDialogs.showError(context, R.string.error_storage_not_accessible);
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
             return true;
 
@@ -450,9 +451,13 @@ public class CoverHandler {
 
         final File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            mBookSupplier.get().setCover(mCIdx, srcFile);
+            try {
+                mBookSupplier.get().setCover(mCIdx, srcFile);
+            } catch (@NonNull final IOException ignore) {
+                // ignore, we just checked existence...
+            }
         } else {
-            mBookSupplier.get().setCover(mCIdx, null);
+            mBookSupplier.get().removeCover(mCIdx);
         }
 
         mCoverHandlerHost.refresh(mCIdx);
@@ -511,7 +516,9 @@ public class CoverHandler {
         final List<ResolveInfo> resInfoList =
                 context.getPackageManager()
                        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (!resInfoList.isEmpty()) {
+        if (resInfoList.isEmpty()) {
+            Snackbar.make(mView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG).show();
+        } else {
             // We do not know which app will be used, so need to grant permission to all.
             for (final ResolveInfo resolveInfo : resInfoList) {
                 final String packageName = resolveInfo.activityInfo.packageName;
@@ -522,8 +529,6 @@ public class CoverHandler {
             final String prompt = context.getString(R.string.whichEditApplication);
             mEditPictureLauncher.launch(Intent.createChooser(intent, prompt));
 
-        } else {
-            Snackbar.make(mView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -537,8 +542,10 @@ public class CoverHandler {
                     mVm.execute(new TransFormTask.Transformation(file).setScale(true));
                     return;
                 }
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final IOException e) {
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
         }
 
@@ -556,19 +563,19 @@ public class CoverHandler {
             final Context context = mView.getContext();
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
-                final File file = FileUtils.copyInputStream(is, getTempFile());
+                final File file = FileUtils.copy(is, getTempFile());
 
                 showProgress();
                 mVm.execute(new TransFormTask.Transformation(file).setScale(true));
-
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
 
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);
                 }
-                StandardDialogs.showError(context, R.string.warning_image_copy_failed);
+
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.warning_image_copy_failed)));
             }
         }
     }
@@ -591,8 +598,10 @@ public class CoverHandler {
                 final Uri uri = GenericFileProvider.createUri(context, dstFile);
                 mTakePictureLauncher.launch(uri);
 
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final IOException e) {
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
 
         } else {
@@ -606,8 +615,11 @@ public class CoverHandler {
             File file = null;
             try {
                 file = getTempFile();
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
+
+            } catch (@NonNull final IOException e) {
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
 
             if (file != null && file.exists()) {
@@ -655,10 +667,10 @@ public class CoverHandler {
             showProgress();
             mVm.execute(new TransFormTask.Transformation(srcFile).setRotation(angle));
 
-        } catch (@NonNull final ExternalStorageException e) {
-            StandardDialogs.showError(context, e);
         } catch (@NonNull final IOException e) {
-            StandardDialogs.showError(context, R.string.error_storage_not_writable);
+            StandardDialogs.showError(context, ExMsg
+                    .map(context, e)
+                    .orElse(context.getString(R.string.error_storage_not_accessible)));
         }
     }
 
@@ -694,13 +706,15 @@ public class CoverHandler {
                         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
                         return;
                 }
-            } catch (@NonNull final ExternalStorageException e) {
-                StandardDialogs.showError(context, e);
+            } catch (@NonNull final IOException e) {
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e)
+                        .orElse(context.getString(R.string.error_storage_not_accessible)));
             }
         }
 
         // transformation failed
-        mBookSupplier.get().setCover(mCIdx, null);
+        mBookSupplier.get().removeCover(mCIdx);
         // must use a post to force the View to update.
         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
     }

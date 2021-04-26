@@ -142,12 +142,15 @@ public final class DBKey {
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
 
 
-    /** {@link DBDefinitions#TBL_AUTHORS} {@link DBDefinitions#TBL_BOOK_AUTHOR} */
+    /** {@link DBDefinitions#TBL_AUTHORS} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
     public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
     public static final String BOOL_AUTHOR_IS_COMPLETE = "author_complete";
+    /** Aliases for CASE expressions. */
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
+
+    /** {@link DBDefinitions#TBL_BOOK_AUTHOR} */
     public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
     public static final String KEY_BOOK_AUTHOR_POSITION = "author_position";
 

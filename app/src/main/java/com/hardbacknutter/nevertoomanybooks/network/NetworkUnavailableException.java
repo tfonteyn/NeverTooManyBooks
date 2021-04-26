@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -35,7 +36,24 @@ public class NetworkUnavailableException
         extends IOException
         implements LocalizedException {
 
-    private static final long serialVersionUID = 2682363186617939835L;
+
+    private static final long serialVersionUID = 5622402043205751302L;
+
+    NetworkUnavailableException() {
+    }
+
+    NetworkUnavailableException(@Nullable final Throwable cause) {
+        super(cause);
+    }
+
+    public NetworkUnavailableException(@Nullable final String message) {
+        super(message);
+    }
+
+    public NetworkUnavailableException(@Nullable final String message,
+                                       @Nullable final Throwable cause) {
+        super(message, cause);
+    }
 
     @NonNull
     @Override

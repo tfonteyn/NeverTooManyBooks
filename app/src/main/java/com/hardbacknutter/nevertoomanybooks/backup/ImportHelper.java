@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -39,8 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 
 public final class ImportHelper {
 
@@ -62,6 +62,9 @@ public final class ImportHelper {
      * (if {@link RecordType#Books} is set obviously).
      */
     private Updates mUpdateOption = Updates.Skip;
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private UriInfo mUriInfo;
 
     /**
      * Private constructor. Use the factory methods instead.
@@ -168,21 +171,25 @@ public final class ImportHelper {
     }
 
     /**
-     * Get the {@link FileUtils.UriInfo} of the archive (based on the Uri/Encoding).
+     * Get the {@link UriInfo} of the archive (based on the Uri/Encoding).
      *
      * @param context Current context
      *
      * @return info
      */
     @NonNull
-    public FileUtils.UriInfo getUriInfo(@NonNull final Context context) {
-        if (mEncoding.isRemoteServer()) {
-            final String displayName =
-                    context.getString(mEncoding.getRemoteServerDescriptionResId());
-            return new FileUtils.UriInfo(mUri, displayName, 0);
-        } else {
-            return FileUtils.getUriInfo(context, mUri);
+    public UriInfo getUriInfo(@NonNull final Context context) {
+        if (mUriInfo == null) {
+            if (mEncoding.isRemoteServer()) {
+                final String displayName =
+                        context.getString(mEncoding.getRemoteServerDescriptionResId());
+                mUriInfo = new UriInfo(mUri, displayName, 0);
+
+            } else {
+                mUriInfo = new UriInfo(mUri);
+            }
         }
+        return mUriInfo;
     }
 
     /**
@@ -203,7 +210,7 @@ public final class ImportHelper {
      * @return a new reader
      *
      * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws ImportException         on a decoding/parsing of data issue
      * @throws IOException             on other failures
      * @throws CertificateException    on failures related to a user installed CA.
      * @throws SSLException            on secure connection failures
@@ -212,7 +219,7 @@ public final class ImportHelper {
     @WorkerThread
     public ArchiveReader createArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException,
-                   GeneralParsingException,
+                   ImportException,
                    IOException,
                    CertificateException {
         if (BuildConfig.DEBUG /* always */) {

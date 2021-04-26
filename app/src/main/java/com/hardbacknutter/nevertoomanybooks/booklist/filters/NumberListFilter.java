@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,9 @@ public class NumberListFilter
                                                @NonNull final List<T> list) {
         mTable = table;
         mDomainKey = domainKey;
-        mCriteria = list.stream().map(String::valueOf).collect(Collectors.joining(","));
+        mCriteria = list.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
     }
 
     /**

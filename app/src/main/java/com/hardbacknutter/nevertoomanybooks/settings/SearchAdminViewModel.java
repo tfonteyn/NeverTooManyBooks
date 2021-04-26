@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -153,10 +152,8 @@ public class SearchAdminViewModel
      * Persist the lists.
      * <p>
      * Should only be called when {@link #isSingleListMode()} returns {@code false}
-     *
-     * @param context Current context
      */
-    public void persist(@NonNull final Context context) {
+    void persist() {
         if (isSingleListMode()) {
             throw new IllegalStateException("in single-list mode");
         }

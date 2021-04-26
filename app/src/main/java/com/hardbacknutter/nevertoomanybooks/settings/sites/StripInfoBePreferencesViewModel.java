@@ -29,11 +29,11 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 
 public class StripInfoBePreferencesViewModel
         extends ViewModel {
@@ -42,7 +42,7 @@ public class StripInfoBePreferencesViewModel
 
     @Override
     protected void onCleared() {
-        mValidateConnectionTask.cancel(true);
+        mValidateConnectionTask.cancel();
         super.onCleared();
     }
 

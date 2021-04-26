@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -239,18 +238,18 @@ public class Book
     }
 
     /**
-     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
+     * Get the cover for the given uuid. We'll attempt to find a jpg or a png.
+     * <p>
+     * Any {@link ExternalStorageException} is <strong>IGNORED</strong>
      *
      * @param uuid UUID of the book
      * @param cIdx 0..n image index
      *
      * @return The File object for existing files, or {@code null}
-     *
-     * @see #getUuidCoverFileOrNew(int)
      */
     @Nullable
-    public static File getUuidCoverFile(@NonNull final String uuid,
-                                        @IntRange(from = 0, to = 1) final int cIdx) {
+    public static File getPersistedCoverFile(@NonNull final String uuid,
+                                             @IntRange(from = 0, to = 1) final int cIdx) {
         final File coverDir;
         try {
             coverDir = AppDir.Covers.getDir();
@@ -477,7 +476,8 @@ public class Book
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context) {
-        return getAndUpdateLocale(context, AppLocale.getInstance().getUserLocale(context), false);
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+        return getAndUpdateLocale(context, userLocale, false);
     }
 
     /**
@@ -498,7 +498,7 @@ public class Book
         if (contains(DBKey.KEY_LANGUAGE)) {
             final String lang = getString(DBKey.KEY_LANGUAGE);
 
-            bookLocale = AppLocale.getInstance().getLocale(context, lang);
+            bookLocale = ServiceLocator.getInstance().getAppLocale().getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
@@ -646,30 +646,27 @@ public class Book
         return old;
     }
 
-
     /**
-     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * <strong>If no file found, a jpg place holder is returned.</strong>
+     * Persist the given cover file.
+     * <p>
+     * Name format: "{uuid}.jpg" or "{uuid}_{cIdx}".jpg".
+     * The index only gets appended to the name if it's > 0.
      * <p>
      * Keep in mind that internally we always use PNG compression (except for the cache).
      * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
-     * <p>
-     * The index only gets appended to the name if it's > 0.
      *
      * @param cIdx 0..n image index
      *
-     * @return The File object for existing files, or a new jpg placeholder.
+     * @return The persisted file
      *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     * @see #getUuidCoverFile(int)
+     * @throws IOException on any failure
+     * @see #getPersistedCoverFile(int)
      */
-    @NonNull
-    public File getUuidCoverFileOrNew(@IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
-        final File coverDir = AppDir.Covers.getDir();
+    public File persistCover(@NonNull final File downloadedFile,
+                             @IntRange(from = 0, to = 1) final int cIdx)
+            throws IOException {
 
         final String uuid = getString(DBKey.KEY_BOOK_UUID);
-
         final String name;
         if (cIdx > 0) {
             name = uuid + "_" + cIdx;
@@ -677,29 +674,34 @@ public class Book
             name = uuid + "";
         }
 
-        final File jpg = new File(coverDir, name + ".jpg");
-        if (jpg.exists()) {
-            return jpg;
-        }
-        // could be a png
-        final File png = new File(coverDir, name + ".png");
-        if (png.exists()) {
-            return png;
-        }
+        final File coverDir = AppDir.Covers.getDir();
 
-        // we need a new file, return a placeholder with the jpg extension
-        return jpg;
+        final File destination = new File(coverDir, name + ".jpg");
+        FileUtils.rename(downloadedFile, destination);
+        return destination;
     }
 
+
+    /**
+     * See {@link #getPersistedCoverFile(String, int)}.
+     *
+     * @param cIdx 0..n image index
+     *
+     * @return The File object for existing files, or {@code null}
+     *
+     * @see #persistCover(File, int)
+     */
     @Nullable
-    public File getUuidCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
+    public File getPersistedCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
 
         final String uuid = getString(DBKey.KEY_BOOK_UUID);
-        return getUuidCoverFile(uuid, cIdx);
+        return getPersistedCoverFile(uuid, cIdx);
     }
 
     /**
      * Get the <strong>current</strong> cover file for this book.
+     * <p>
+     * Any {@link ExternalStorageException} is <strong>IGNORED</strong>
      *
      * @param cIdx 0..n image index
      *
@@ -730,20 +732,23 @@ public class Book
                     name = uuid + "";
                 }
 
+                final File coverDir;
                 try {
-                    final File coverDir = AppDir.Covers.getDir();
-                    // should be / try jpg first
-                    coverFile = new File(coverDir, name + ".jpg");
-                    if (!coverFile.exists()) {
-                        // no cover, try for a png
-                        coverFile = new File(coverDir, name + ".png");
-                        if (!coverFile.exists()) {
-                            coverFile = null;
-                        }
-                    }
+                    coverDir = AppDir.Covers.getDir();
                 } catch (@NonNull final ExternalStorageException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "getUuidCoverFile", e);
+                        Log.d(TAG, "getCoverFile", e);
+                    }
+                    return null;
+                }
+
+                // should be / try jpg first
+                coverFile = new File(coverDir, name + ".jpg");
+                if (!coverFile.exists()) {
+                    // no cover, try for a png
+                    coverFile = new File(coverDir, name + ".png");
+                    if (!coverFile.exists()) {
+                        coverFile = null;
                     }
                 }
             }
@@ -797,6 +802,15 @@ public class Book
         return coverFile;
     }
 
+
+    public void removeCover(@IntRange(from = 0, to = 1) final int cIdx) {
+        try {
+            setCover(cIdx, null);
+        } catch (@NonNull final IOException ignore) {
+            // ignore, won't happen with a 'null' input.
+        }
+    }
+
     /**
      * Update the book cover with the given file.
      *
@@ -808,7 +822,8 @@ public class Book
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
-                         @Nullable final File file) {
+                         @Nullable final File file)
+            throws IOException {
 
         if (mStage.getStage() == EntityStage.Stage.WriteAble
             || mStage.getStage() == EntityStage.Stage.Dirty) {
@@ -849,6 +864,7 @@ public class Book
             SanityCheck.requireValue(uuid, "uuid");
 
             // the file to return from this method, after the incoming file has been processed
+            @Nullable
             File destination = file;
 
             if (file != null) {
@@ -872,18 +888,9 @@ public class Book
                                 );
                     }
 
-
-                    try {
-                        // Rename the temp file to the uuid permanent file name
-                        destination = getUuidCoverFileOrNew(cIdx);
-                        FileUtils.rename(file, destination);
-
-                    } catch (@NonNull final IOException e) {
-                        Logger.error(TAG, e, "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
-                        return null;
-                    }
+                    // Rename the temp file to the uuid permanent file name
+                    destination = persistCover(file, cIdx);
                 }
-
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, "readOnly"
@@ -893,7 +900,7 @@ public class Book
                             );
                 }
 
-                FileUtils.delete(getUuidCoverFile(cIdx));
+                FileUtils.delete(getPersistedCoverFile(cIdx));
                 if (ImageUtils.isImageCachingEnabled()) {
                     // We delete *all* files related to this book from the cache.
                     ServiceLocator.getInstance().getCoverCacheDao().delete(uuid);
@@ -966,8 +973,9 @@ public class Book
      */
     public void ensureLanguage(@NonNull final Context context) {
         if (getString(DBKey.KEY_LANGUAGE).isEmpty()) {
-            putString(DBKey.KEY_LANGUAGE,
-                      AppLocale.getInstance().getUserLocale(context).getISO3Language());
+            putString(DBKey.KEY_LANGUAGE, context.getResources().getConfiguration()
+                                                 .getLocales().get(0)
+                                                 .getISO3Language());
         }
     }
 
@@ -1091,16 +1099,13 @@ public class Book
     @NonNull
     public Intent getShareIntent(@NonNull final Context context) {
         final String title = getString(DBKey.KEY_TITLE);
-        final String author = getString(DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+
+        final Author author = getPrimaryAuthor();
+        final String authorStr = author != null ? author.getFormattedName(true)
+                                                : context.getString(R.string.unknown_author);
 
         final Series series = getPrimarySeries();
-        final String seriesStr;
-        if (series != null) {
-            final String number = series.getNumber();
-            seriesStr = " (" + series.getTitle() + (number.isEmpty() ? "" : "%23" + number) + ')';
-        } else {
-            seriesStr = "";
-        }
+        final String seriesStr = series != null ? " (" + series.getLabel(context) + ')' : "";
 
         //remove trailing 0's
         final double rating = getDouble(DBKey.KEY_RATING);
@@ -1129,7 +1134,7 @@ public class Book
 //        }
 
         final String text = context.getString(R.string.txt_share_book_im_reading,
-                                              title, seriesStr, author, ratingStr);
+                                              title, seriesStr, authorStr, ratingStr);
 
         return Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                             .setType("text/plain")

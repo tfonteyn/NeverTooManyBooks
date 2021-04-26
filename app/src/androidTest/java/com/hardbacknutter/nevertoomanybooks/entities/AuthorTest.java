@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
@@ -40,7 +41,8 @@ import static org.junit.Assert.assertTrue;
 
 
 @MediumTest
-public class AuthorTest {
+public class AuthorTest
+        extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 

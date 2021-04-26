@@ -70,9 +70,9 @@
             android:id="@+id/lbl_bookshelf"
             style="@style/ExposedDropdownMenu"
             android:hint="@string/lbl_bookshelf"
-            android:paddingTop="4dp"
+            android:paddingTop="@dimen/field_label_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_library_name"
             app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
             >
 

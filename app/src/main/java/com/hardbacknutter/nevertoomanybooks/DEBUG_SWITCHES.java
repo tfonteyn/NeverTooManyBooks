@@ -53,7 +53,7 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean BOB_THE_BUILDER_TIMERS = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel}. */
+    /** {@link BooksOnBookshelfViewModel}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao}
@@ -82,7 +82,7 @@ public final class DEBUG_SWITCHES {
     /** {@link com.hardbacknutter.nevertoomanybooks.network.JsoupLoader}. */
     public static final boolean JSOUP = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
     /** enable timers for rough performance measurements. */
     public static final boolean SEARCH_COORDINATOR_TIMERS = false;
@@ -92,7 +92,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean GOODREADS_SEND = false;
     public static final boolean GOODREADS_IMPORT = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.searchengines.isfdb}. */
     public static final boolean ISFDB = false;
 
     public static final boolean IMPORT_CSV_BOOKS = false;
@@ -106,7 +106,7 @@ public final class DEBUG_SWITCHES {
     /** Enable strict mode reporting on network,disc,... */
     public static final boolean STRICT_MODE_THREADING = false;
     /** Enable strict mode reporting on VM leaking,... */
-    public static final boolean STRICT_MODE_VM = false;
+    public static final boolean STRICT_MODE_VM = true;
 
     public static final boolean FAKE_BARCODE_SCANNER = false;
 

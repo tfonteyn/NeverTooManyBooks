@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.ShowBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -31,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 /**
  * Static definitions of database objects.
@@ -200,11 +200,6 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
-
-    /** Virtual: "FamilyName, GivenName". */
-    public static final Domain DOM_AUTHOR_FORMATTED;
-    /** Virtual: "GivenName FamilyName". */
-    public static final Domain DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
 
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_TITLE;
@@ -382,14 +377,7 @@ public final class DBDefinitions {
     /* ======================================================================================
      *  {@link Booklist} domains.
      * ====================================================================================== */
-    /** For sorting in the {@link Booklist}. */
-    public static final Domain DOM_BL_AUTHOR_SORT;
-    /** For sorting in the {@link Booklist}. */
-    public static final Domain DOM_BL_SERIES_SORT;
-    /** For sorting in the {@link Booklist}. */
-    public static final Domain DOM_BL_PUBLISHER_SORT;
-    /** For sorting in the {@link Booklist}. */
-    public static final Domain DOM_BL_BOOKSHELF_SORT;
+
 
     /**
      * Series number, cast()'d for sorting purposes in {@link Booklist}
@@ -613,16 +601,6 @@ public final class DBDefinitions {
                 new Domain.Builder(DBKey.BOOL_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
                         .notNull()
                         .withDefault(0)
-                        .build();
-
-        DOM_AUTHOR_FORMATTED =
-                new Domain.Builder(DBKey.KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
-                        .notNull()
-                        .build();
-
-        DOM_AUTHOR_FORMATTED_GIVEN_FIRST =
-                new Domain.Builder(DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT)
-                        .notNull()
                         .build();
 
         /* ======================================================================================
@@ -1048,22 +1026,6 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Booklist domains
          * ====================================================================================== */
-
-        DOM_BL_AUTHOR_SORT =
-                new Domain.Builder(DBKey.KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT)
-                        .build();
-
-        DOM_BL_SERIES_SORT =
-                new Domain.Builder(DBKey.KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT)
-                        .build();
-
-        DOM_BL_PUBLISHER_SORT =
-                new Domain.Builder(DBKey.KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT)
-                        .build();
-
-        DOM_BL_BOOKSHELF_SORT =
-                new Domain.Builder(DBKey.KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
-                        .build();
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
                 new Domain.Builder(DBKey.KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL)

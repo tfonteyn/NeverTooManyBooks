@@ -29,10 +29,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS. Dates are likely not handled correctly yet.
@@ -71,12 +71,12 @@ class OwnedBookCreateApiHandler
      *
      * @return the Goodreads book ID
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws SiteParsingException on a decoding/parsing of data issue
+     * @throws IOException          on failures
      */
     public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mContext, mGrAuth);
         final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
@@ -100,12 +100,12 @@ class OwnedBookCreateApiHandler
      * @param grBookId     Goodreads book id
      * @param dateAcquired (optional)
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws GeneralParsingException, IOException {
+            throws SiteParsingException, IOException {
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));

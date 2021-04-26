@@ -35,6 +35,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,8 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
 public class MaintenanceFragment
@@ -120,10 +120,19 @@ public class MaintenanceFragment
 
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
-            final ArrayList<String> bookUuidList;
-            bookUuidList = ServiceLocator.getInstance().getBookDao().getBookUuidList();
+            final ArrayList<String> bookUuidList =
+                    ServiceLocator.getInstance().getBookDao().getBookUuidList();
 
-            final long bytes = AppDir.purge(bookUuidList, false);
+            final long bytes;
+            try {
+                bytes = AppDir.purge(bookUuidList, false);
+
+            } catch (@NonNull final IOException e) {
+                StandardDialogs.showError(context, ExMsg
+                        .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));
+                return;
+            }
+
             final String msg = getString(R.string.txt_cleanup_files,
                                          FileUtils.formatFileSize(context, bytes),
                                          getString(R.string.lbl_send_debug));
@@ -133,8 +142,16 @@ public class MaintenanceFragment
                     .setTitle(R.string.lbl_purge_files)
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) ->
-                            AppDir.purge(bookUuidList, true))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        try {
+                            AppDir.purge(bookUuidList, true);
+
+                        } catch (@NonNull final IOException e) {
+                            StandardDialogs.showError(context, ExMsg
+                                    .map(context, e)
+                                    .orElse(getString(R.string.error_storage_not_accessible)));
+                        }
+                    })
                     .create()
                     .show();
         });
@@ -254,17 +271,13 @@ public class MaintenanceFragment
 
             ServiceLocator.getInstance().deleteDatabases(context);
 
-            FileUtils.deleteFiles(AppDir.Root.getDir(), null);
+            FileUtils.deleteDirectory(AppDir.Root.getDir(), null, null);
 
-            // Exit the app
-            //noinspection ConstantConditions
-            getActivity().finishAndRemoveTask();
+            Snackbar.make(mVb.getRoot(), "Now quit the app", Snackbar.LENGTH_LONG).show();
 
-        } catch (@NonNull final ExternalStorageException e) {
-            StandardDialogs.showError(context, e);
+        } catch (@NonNull final IOException e) {
+            StandardDialogs.showError(context, ExMsg
+                    .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));
         }
-
-        //noinspection ConstantConditions
-        getActivity().finish();
     }
 }

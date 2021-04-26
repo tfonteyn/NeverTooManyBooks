@@ -93,7 +93,7 @@
     <string name="error_import_file_not_supported">Vybraný soubor nelze importovat.</string>
     <string name="error_import_csv_column_is_blank">Sloupec %1$s je prázdný na řádku %2$d</string>
     <string name="error_email_failed">Odeslání e-mailu se nezdařilo.</string>
-    <string name="error_if_the_problem_persists">Pokud problém přetrvává, obraťte se na podporu prostřednictvím možnosti „%1$s“ v dolní části stránky nastavení.</string>
+    <string name="error_unknown_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_file_not_recognized">Vybraný soubor není rozpoznán.</string>
@@ -111,7 +111,6 @@
     <string name="error_storage_not_accessible_s">Úložiště není přístupné: %1$s</string>
     <string name="error_storage_not_accessible">Zkontrolujte, zda je úložiště přístupné.</string>
     <string name="error_storage_not_writable">Zkontrolujte, zda je úložiště zapisovatelné a má dostatek místa.</string>
-    <string name="error_unknown_long">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím „Admin“ v hlavním menu.</string>
     <string name="error_unknown">Neznámá chyba</string>
     <string name="fab_add_book_by_barcode_scan">Skenování čárového kódu</string>
     <string name="fab_add_book_by_internet_search">Prohledat internet</string>

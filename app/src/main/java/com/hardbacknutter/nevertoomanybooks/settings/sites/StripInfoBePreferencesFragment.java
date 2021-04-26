@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -39,12 +40,11 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
@@ -179,15 +179,19 @@ public class StripInfoBePreferencesFragment
     }
 
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        //noinspection ConstantConditions
-        String msg = ExMsg.map(getContext(), TAG, message.result);
-        if (msg == null) {
-            msg = "";
-        } else {
-            msg += "\n";
-        }
+        if (message.isNewEvent()) {
+            final Context context = getContext();
+            //noinspection ConstantConditions
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(getString(R.string.error_unknown));
 
-        StandardDialogs.showError(
-                getContext(), msg + getString(R.string.error_network_failed_try_again));
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.error_network_failed_try_again)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
+        }
     }
 }

@@ -362,7 +362,7 @@ public class Booklist
      * @return the node(s), or {@code null} if none
      */
     @Nullable
-    public ArrayList<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
+    public List<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
         // sanity check
         if (bookId == 0) {
             return null;
@@ -376,7 +376,7 @@ public class Booklist
         }
 
         // get all positions the book is on
-        final ArrayList<BooklistNode> nodeList = new ArrayList<>();
+        final List<BooklistNode> nodeList = new ArrayList<>();
         try (Cursor cursor = mDb.rawQuery(mSqlGetBookNodes, new String[]{
                 String.valueOf(bookId)})) {
 
@@ -393,10 +393,10 @@ public class Booklist
         }
 
         // We have nodes; first get the ones that are currently visible
-        final ArrayList<BooklistNode> visibleNodes =
+        final List<BooklistNode> visibleNodes =
                 nodeList.stream()
                         .filter(BooklistNode::isVisible)
-                        .collect(Collectors.toCollection(ArrayList::new));
+                        .collect(Collectors.toList());
 
         // If we have nodes already visible, return those
         if (!visibleNodes.isEmpty()) {
@@ -543,7 +543,7 @@ public class Booklist
             while (cursor.moveToNext()) {
                 node.from(cursor);
                 final String uuid = cursor.getString(BooklistNode.COLS);
-                final File file = Book.getUuidCoverFile(uuid, 0);
+                final File file = Book.getPersistedCoverFile(uuid, 0);
                 if (file == null || !file.exists()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);

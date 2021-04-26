@@ -70,14 +70,14 @@
         android:text="@string/progress_msg_starting_up"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textIsSelectable="true"
-        app:layout_constraintBottom_toTopOf="@id/progressBar"
+        app:layout_constraintBottom_toTopOf="@id/progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/app_icon"
         />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"

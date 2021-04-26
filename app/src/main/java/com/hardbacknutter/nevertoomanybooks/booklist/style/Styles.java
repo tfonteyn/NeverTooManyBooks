@@ -172,26 +172,25 @@ public final class Styles {
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
         // while the non-preferred styles will be 1000.
-        final ArrayList<ListStyle> allStyles = list
+        final List<ListStyle> allStyles = list
                 .stream()
                 .sorted((style1, style2) -> Integer.compare(
                         style1.getMenuPosition(), style2.getMenuPosition()))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
         if (all) {
             return allStyles;
         }
 
-        final ArrayList<ListStyle> preferredStyles = allStyles
+        final List<ListStyle> preferredStyles = allStyles
                 .stream()
                 .filter(ListStyle::isPreferred)
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
 
-        if (!preferredStyles.isEmpty()) {
-            return preferredStyles;
-
-        } else {
-            // If there are no preferred styles, just return the full list
+        if (preferredStyles.isEmpty()) {
+            // If there are no preferred styles, return the full list
             return allStyles;
+        } else {
+            return preferredStyles;
         }
     }
 

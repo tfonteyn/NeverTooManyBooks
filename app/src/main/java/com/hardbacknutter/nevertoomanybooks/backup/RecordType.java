@@ -24,12 +24,12 @@ import androidx.annotation.NonNull;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Supported archive entry types.
@@ -120,7 +120,7 @@ public enum RecordType {
      */
     @NonNull
     public static Optional<RecordType> getType(@NonNull final String entryName) {
-        final String name = entryName.toLowerCase(AppLocale.getInstance().getSystemLocale());
+        final String name = entryName.toLowerCase(ServiceLocator.getSystemLocale());
 
         for (final RecordType type : values()) {
             if (name.startsWith(type.mPrefix)) {

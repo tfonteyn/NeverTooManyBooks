@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Implementation of ZIP-specific writer functions.
@@ -64,7 +63,7 @@ public class ZipArchiveWriter
      */
     public ZipArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportHelper helper)
-            throws FileNotFoundException, ExternalStorageException {
+            throws FileNotFoundException {
         super(helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(

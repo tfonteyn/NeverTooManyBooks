@@ -21,14 +21,17 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -37,12 +40,17 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -51,21 +59,26 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 public class StartupActivity
         extends AppCompatActivity {
 
+    private static final String TAG = "StartupActivity";
+
     /** Self reference for use by database upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
 
     /** The Activity ViewModel. */
     private StartupViewModel mVm;
-    /** Make a backup; when done, move to the next startup stage. */
-    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
-            registerForActivityResult(new ExportContract(), success -> nextStage());
 
     /** View Binding. */
     private ActivityStartupBinding mVb;
 
+    private int mVolumeChangedOptionChosen;
+
+    /** Make a backup; when done, move to the next startup stage. */
+    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
+            registerForActivityResult(new ExportContract(), success -> nextStage());
+
     /**
      * Kludge to allow the database open-helper to get a reference to the currently running
-     * StartupActivity, so it can send progress messages to the local ProgressDialogFragment.
+     * StartupActivity, so it can send progress messages.
      *
      * @return Reference or {@code null}.
      */
@@ -77,8 +90,7 @@ public class StartupActivity
     @Override
     protected void attachBaseContext(@NonNull final Context base) {
         // apply the user-preferred Locale before onCreate is called.
-        final Context localizedContext = AppLocale.getInstance().apply(base);
-        super.attachBaseContext(localizedContext);
+        super.attachBaseContext(ServiceLocator.getInstance().getAppLocale().apply(base));
 
         // create self-reference for DBHelper callbacks.
         sStartupActivity = new WeakReference<>(this);
@@ -93,19 +105,8 @@ public class StartupActivity
 
         // Are we going through a hot/warm start ?
         if (((App) getApplication()).isHotStart()) {
-            // yes, skip the usual startup process
-            gotoMainScreen();
-            return;
-        }
-        ((App) getApplication()).setHotStart();
-
-        // can't function without access to custom directories
-        final String msg = AppDir.init(this);
-        if (msg != null) {
-            // Let's hope the user fixes the issue... clicking the notification will restart us.
-            final Intent intent = new Intent(this, StartupActivity.class);
-            ServiceLocator.getInstance().getNotifier().sendError(this, intent, msg);
-            finish();
+            // yes, skip the entire startup process
+            startMainActivity();
             return;
         }
 
@@ -118,26 +119,10 @@ public class StartupActivity
 
         mVm = new ViewModelProvider(this).get(StartupViewModel.class);
         mVm.init(this);
-        mVm.onProgressUpdate().observe(this, message ->
-                mVb.progressMessage.setText(message.text));
+        mVm.onProgress().observe(this, message -> onProgress(message.text));
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());
-
-        // any error, notify the user and die.
-        mVm.onFailure().observe(this, e -> {
-            if (e.result != null) {
-                // We'll TRY to start the maintenance fragment which gives access
-                // to debug options
-                final Intent intent = new Intent(this, FragmentHostActivity.class)
-                        .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, MaintenanceFragment.TAG);
-
-                final CharSequence message = e.result.getLocalizedMessage();
-                ServiceLocator.getInstance().getNotifier()
-                              .sendError(this, intent,
-                                         message != null ? message : "");
-                finish();
-            }
-        });
+        mVm.onFailure().observe(this, this::onFailure);
 
         nextStage();
     }
@@ -148,17 +133,23 @@ public class StartupActivity
     private void nextStage() {
         switch (mVm.getNextStartupStage()) {
             case 1:
-                startTasks();
+                initStorage();
                 return;
 
             case 2:
-                backupRequired();
+                initDb();
                 return;
 
             case 3:
-                // Create and start the Goodreads QueueManager (only if not already running).
-                QueueManager.start(this);
-                gotoMainScreen();
+                startTasks();
+                return;
+
+            case 4:
+                proposeBackup();
+                return;
+
+            case 5:
+                startMainActivity();
                 return;
 
             default:
@@ -166,16 +157,95 @@ public class StartupActivity
         }
     }
 
+    private void initStorage() {
+        final int storedVolumeIndex = AppDir.getVolume(this);
+        final int actualVolumeIndex;
+        try {
+            actualVolumeIndex = AppDir.initVolume(this, storedVolumeIndex);
+
+        } catch (@NonNull final ExternalStorageException e) {
+            onExternalStorageException(e);
+            return;
+        }
+
+        if (storedVolumeIndex == actualVolumeIndex) {
+            // all ok
+            nextStage();
+
+        } else {
+            final StorageManager storage = (StorageManager) getSystemService(
+                    Context.STORAGE_SERVICE);
+            final StorageVolume volume = storage.getStorageVolumes().get(actualVolumeIndex);
+
+            final CharSequence[] items = new CharSequence[]{
+                    getString(R.string.lbl_storage_quit_and_reinsert_sdcard),
+                    getString(R.string.lbl_storage_select, volume.getDescription(this)),
+                    getString(R.string.lbl_edit_settings)};
+
+            new MaterialAlertDialogBuilder(this)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setTitle(R.string.lbl_storage_volume)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    .setSingleChoiceItems(items, 0, (d, w) -> mVolumeChangedOptionChosen = w)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        switch (mVolumeChangedOptionChosen) {
+                            case 0: {
+                                // exit the app, and let the user insert the correct sdcard
+                                finishAndRemoveTask();
+                                break;
+                            }
+                            case 1: {
+                                // Just set the new location and continue startup
+                                AppDir.setVolume(this, actualVolumeIndex);
+                                nextStage();
+                                break;
+                            }
+                            case 2: {
+                                // take user to the settings screen
+                                final Intent intent = new Intent(this, SettingsHostActivity.class)
+                                        .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                                  SettingsFragment.TAG)
+                                        .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
+                                                  Prefs.pk_storage_volume)
+                                        .putExtra(SettingsFragment.BKEY_STORAGE_WAS_MISSING, true);
+
+                                startActivity(intent);
+                                // and quit, this will make sure the user exists our app afterwards
+                                finish();
+                                break;
+                            }
+                            default:
+                                throw new IllegalStateException();
+                        }
+                    })
+                    .create()
+                    .show();
+        }
+    }
+
+    public void initDb() {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+        try {
+            // Create/Upgrade/Open the main database as needed.
+            ServiceLocator.getInstance().initialiseDb(global);
+
+        } catch (@NonNull final Exception e) {
+            onGenericException(e);
+            return;
+        }
+
+        // kick of next startup stage
+        nextStage();
+    }
+
     /**
-     * Start the tasks.
+     * Start all essential startup tasks.
      * When the last tasks finishes, it will trigger the next startup stage.
-     * <p>
-     * If the tasks are not allowed to start, simply move to the next startup stage.
      */
     private void startTasks() {
-        if (mVm.isStartTasks()) {
-            mVm.startTasks(this);
-        } else {
+        if (!mVm.startTasks(this)) {
+            // If no task were started, simply move to the next startup stage.
             nextStage();
         }
     }
@@ -183,7 +253,7 @@ public class StartupActivity
     /**
      * Prompt the user to make a backup.
      */
-    private void backupRequired() {
+    private void proposeBackup() {
         if (mVm.isProposeBackup()) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -200,9 +270,13 @@ public class StartupActivity
     }
 
     /**
-     * Finally, start the main user activity.
+     * Last step in the startup process.
      */
-    private void gotoMainScreen() {
+    private void startMainActivity() {
+        // Any future hot start will skip the startup tasks
+        ((App) getApplication()).setHotStart();
+        // Create and start the Goodreads QueueManager (only if not already running).
+        QueueManager.start();
         // Remove the weak self-reference
         sStartupActivity.clear();
         // and hand over to the real main activity
@@ -210,12 +284,75 @@ public class StartupActivity
         finish();
     }
 
+
     /**
-     * Used by the database upgrade procedure.
+     * Show progress.
      *
-     * @param messageId to display
+     * @param message to display
      */
-    public void onProgress(@StringRes final int messageId) {
-        mVb.progressMessage.setText(messageId);
+    public void onProgress(@Nullable final CharSequence message) {
+        mVb.progressMessage.setText(message);
+    }
+
+    // Not called for now, see {@link StartupViewModel} #mTaskListener.
+    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
+        @Nullable
+        final Exception e = message.result;
+
+        if (e instanceof ExternalStorageException) {
+            onExternalStorageException((ExternalStorageException) e);
+        } else {
+            onGenericException(e);
+        }
+    }
+
+    private void onGenericException(@Nullable final Exception e) {
+        if (AppDir.Log.exists()) {
+            Logger.error(TAG, e, "");
+        }
+
+        CharSequence text = null;
+        if (e != null) {
+            text = e.getLocalizedMessage();
+        }
+        if (text == null) {
+            text = getString(R.string.error_unknown_long, getString(R.string.lbl_send_debug));
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.ic_baseline_error_24)
+                .setTitle(R.string.app_name)
+                .setMessage(text)
+                .setOnDismissListener(d -> finishAndRemoveTask())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    // We'll TRY to start the maintenance fragment
+                    // which gives access to debug options
+                    final Intent intent = new Intent(this, FragmentHostActivity.class)
+                            .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                      MaintenanceFragment.TAG);
+                    startActivity(intent);
+                    finish();
+                })
+                .create()
+                .show();
+    }
+
+    private void onExternalStorageException(@NonNull final ExternalStorageException e) {
+        if (AppDir.Log.exists()) {
+            Logger.error(TAG, e, "");
+        }
+
+        final CharSequence msg = getString(R.string.error_storage_not_accessible_s,
+                                           e.getAppDir().toString());
+
+        new MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.ic_baseline_error_24)
+                .setTitle(R.string.app_name)
+                .setMessage(msg)
+                .setOnDismissListener(d -> finishAndRemoveTask())
+                .setPositiveButton(android.R.string.ok, (d, w) -> finishAndRemoveTask())
+                .create()
+                .show();
     }
 }

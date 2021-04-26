@@ -110,7 +110,7 @@ public class DataManager
     /**
      * Clear all data in this instance.
      */
-    public void clearData() {
+    protected void clearData() {
         mRawData.clear();
     }
 

@@ -80,7 +80,7 @@ public enum AppDir {
     }
 
     /**
-     * Initialize storage needs. Called from StartupActivity.
+     * Initialize storage needs.
      * <p>
      * Dev note: if the desired volume index is not found, then we revert to '0'.
      * Hence the return value will either be the desired==actual volume or '0'.
@@ -200,6 +200,11 @@ public enum AppDir {
                          .apply();
     }
 
+    public static int getVolume(@NonNull final Context context) {
+        return Prefs.getIntListPref(PreferenceManager.getDefaultSharedPreferences(context),
+                                    Prefs.pk_storage_volume, 0);
+    }
+
     /**
      * Count size + (optional) Cleanup any purgeable files.
      *
@@ -210,7 +215,8 @@ public enum AppDir {
      * @return the total size in bytes of purgeable/purged files.
      */
     public static long purge(@NonNull final Collection<String> bookUuidList,
-                             final boolean reallyDelete) {
+                             final boolean reallyDelete)
+            throws ExternalStorageException {
 
         // check for orphaned cover files
         final FileFilter coverFilter = file -> {
@@ -222,20 +228,20 @@ public enum AppDir {
             return false;
         };
 
-        long totalSize = 0;
+        final long totalSize;
         try {
             if (reallyDelete) {
-                totalSize = FileUtils.deleteFiles(Temp.getDir(), null)
-                            + FileUtils.deleteFiles(Log.getDir(), null)
-                            + FileUtils.deleteFiles(Upgrades.getDir(), null)
-                            + FileUtils.deleteFiles(Covers.getDir(), coverFilter);
+                totalSize = FileUtils.deleteDirectory(Temp.getDir(), null, null)
+                            + FileUtils.deleteDirectory(Log.getDir(), null, null)
+                            + FileUtils.deleteDirectory(Upgrades.getDir(), null, null)
+                            + FileUtils.deleteDirectory(Covers.getDir(), coverFilter, null);
             } else {
                 totalSize = FileUtils.getUsedSpace(Temp.getDir(), null)
                             + FileUtils.getUsedSpace(Log.getDir(), null)
                             + FileUtils.getUsedSpace(Upgrades.getDir(), null)
                             + FileUtils.getUsedSpace(Covers.getDir(), coverFilter);
             }
-        } catch (@NonNull final SecurityException | ExternalStorageException e) {
+        } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
             Logger.error(TAG, e);
             return 0;
@@ -300,17 +306,20 @@ public enum AppDir {
                          final int index)
             throws ExternalStorageException {
 
-        final File[] d = context.getExternalFilesDirs(mType);
+        final File[] externalFilesDirs = context.getExternalFilesDirs(mType);
 
-        if (d == null || d.length < index || d[index] == null || !d[index].exists()) {
+        if (externalFilesDirs == null
+            || externalFilesDirs.length < index
+            || externalFilesDirs[index] == null
+            || !externalFilesDirs[index].exists()) {
             throw new ExternalStorageException(this, "No volume: " + index);
         }
 
         if (mSubDir == null) {
-            mDir = d[index];
+            mDir = externalFilesDirs[index];
 
         } else {
-            final File dir = new File(d[index], mSubDir);
+            final File dir = new File(externalFilesDirs[index], mSubDir);
             if (!(dir.isDirectory() || dir.mkdirs())) {
                 throw new ExternalStorageException(this, "No directory: " + mSubDir);
             }

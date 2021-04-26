@@ -51,9 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -616,7 +615,7 @@ public class DBHelper
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
-        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
@@ -642,7 +641,7 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        final Context context = AppLocale.getInstance().apply(ServiceLocator.getAppContext());
+        final Context context = ServiceLocator.getLocalizedAppContext();
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {

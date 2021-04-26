@@ -31,7 +31,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -66,7 +65,8 @@ public class EditLanguageDialogFragment
         if (text.length() > 3) {
             editLang = text;
         } else {
-            final Locale locale = AppLocale.getInstance().getLocale(activity, text);
+            final Locale locale = ServiceLocator.getInstance().getAppLocale()
+                                                .getLocale(activity, text);
             if (locale == null) {
                 editLang = text;
             } else {
@@ -93,10 +93,9 @@ public class EditLanguageDialogFragment
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        //noinspection ConstantConditions
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
-        final String iso = Languages.getInstance()
-                                    .getISO3FromDisplayName(userLocale, currentText);
+
+        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
+        final String iso = Languages.getInstance().getISO3FromDisplayName(userLocale, currentText);
 
         ServiceLocator.getInstance().getLanguageDao().rename(originalText, iso);
     }

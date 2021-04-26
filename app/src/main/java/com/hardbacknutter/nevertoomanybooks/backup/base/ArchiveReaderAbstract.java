@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * This is the base for full-fledged archives which can contain
@@ -120,8 +120,7 @@ public abstract class ArchiveReaderAbstract
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException {
+            throws InvalidArchiveException, ImportException, IOException {
         if (mArchiveMetaData == null) {
             mArchiveMetaData = readMetaData(context);
         }
@@ -149,8 +148,7 @@ public abstract class ArchiveReaderAbstract
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException {
+            throws InvalidArchiveException, ImportException, IOException {
         if (mArchiveMetaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
@@ -198,8 +196,8 @@ public abstract class ArchiveReaderAbstract
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, GeneralParsingException, ImportException,
-                   IOException {
+            throws InvalidArchiveException, ImportException,
+                   IOException, DiskFullException {
 
         // Sanity check: the archive info should have been read during the validate phase
         Objects.requireNonNull(mArchiveMetaData, "info");
@@ -230,8 +228,8 @@ public abstract class ArchiveReaderAbstract
 
     private void readV4(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, GeneralParsingException, ImportException,
-                   IOException {
+            throws InvalidArchiveException, ImportException,
+                   IOException, DiskFullException {
 
         ArchiveReaderRecord record = seek(RecordType.AutoDetect);
         while (record != null && !progressListener.isCancelled()) {
@@ -244,8 +242,8 @@ public abstract class ArchiveReaderAbstract
 
     private void readV2(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, GeneralParsingException, ImportException,
-                   IOException {
+            throws InvalidArchiveException, ImportException,
+                   IOException, DiskFullException {
 
         final Set<RecordType> importEntries = mHelper.getImportEntries();
         try {
@@ -317,8 +315,8 @@ public abstract class ArchiveReaderAbstract
     private void readRecord(@NonNull final Context context,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, GeneralParsingException, ImportException,
-                   IOException {
+            throws InvalidArchiveException, ImportException,
+                   IOException, DiskFullException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {

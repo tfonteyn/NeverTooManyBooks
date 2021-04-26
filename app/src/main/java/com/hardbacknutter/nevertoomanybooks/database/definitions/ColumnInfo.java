@@ -28,7 +28,7 @@ import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 public class ColumnInfo {
 
@@ -166,7 +166,7 @@ public class ColumnInfo {
 
         static StorageClass newInstance(@NonNull final String columnType) {
             // hardcoded strings are for backwards compatibility
-            switch (columnType.toLowerCase(AppLocale.getInstance().getSystemLocale())) {
+            switch (columnType.toLowerCase(ServiceLocator.getSystemLocale())) {
                 case TYPE_INTEGER:
                 case "int":
                 case TYPE_BOOLEAN:

@@ -32,4 +32,6 @@
 
     <dimen name="large_menu_button_info">350dp</dimen>
 
+    <dimen name="progress_width">340dp</dimen>
+
 </resources>

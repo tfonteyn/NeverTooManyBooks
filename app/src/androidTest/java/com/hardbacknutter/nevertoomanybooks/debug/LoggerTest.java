@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -42,7 +43,9 @@ public class LoggerTest {
     public void cycleLogs()
             throws ExternalStorageException {
 
-        FileUtils.deleteFiles(AppDir.Log.getDir(), null);
+        AppDir.initVolume(ServiceLocator.getAppContext(), 0);
+
+        FileUtils.deleteDirectory(AppDir.Log.getDir(), null, null);
 
         List<File> files;
 

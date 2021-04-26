@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -48,9 +49,8 @@ import java.security.cert.X509Certificate;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
@@ -60,15 +60,9 @@ public class CalibrePreferencesFragment
     public static final String TAG = "CalibrePreferencesFrag";
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
     private static final String PSK_PICK_FOLDER = "psk_pick_folder";
-
-    private final ActivityResultLauncher<String> mOpenCaUriLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenCaUri);
-
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
-
     private CalibrePreferencesViewModel mVm;
-
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -94,9 +88,10 @@ public class CalibrePreferencesFragment
                     }
                 }
             };
-
     private Preference mFolderPref;
     private Preference mCaPref;
+    private final ActivityResultLauncher<String> mOpenCaUriLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenCaUri);
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -204,16 +199,18 @@ public class CalibrePreferencesFragment
 
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
+            final Context context = getContext();
             //noinspection ConstantConditions
-            String msg = ExMsg.map(getContext(), TAG, message.result);
-            if (msg == null) {
-                msg = "";
-            } else {
-                msg += "\n";
-            }
+            final String msg = ExMsg.map(context, message.result)
+                                    .orElse(getString(R.string.error_unknown));
 
-            StandardDialogs.showError(
-                    getContext(), msg + getString(R.string.error_network_failed_try_again));
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.error_network_failed_try_again)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                    .create()
+                    .show();
         }
     }
 

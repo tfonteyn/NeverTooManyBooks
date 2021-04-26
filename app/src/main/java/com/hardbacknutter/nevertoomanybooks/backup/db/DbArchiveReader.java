@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * A generic wrapper to read sqlite db files.
@@ -87,7 +87,7 @@ public class DbArchiveReader
 
             // Copy the file from the uri to a place where we can access it as a database.
             File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
-            tmpDb = FileUtils.copyInputStream(is, tmpDb);
+            tmpDb = FileUtils.copy(is, tmpDb);
             mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
                                                           SQLiteDatabase.OPEN_READONLY);
         }
@@ -116,8 +116,7 @@ public class DbArchiveReader
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException {
+            throws InvalidArchiveException, IOException, ImportException {
         if (mDelegateReader != null) {
             return mDelegateReader.readMetaData(context);
         } else {
@@ -130,8 +129,7 @@ public class DbArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, GeneralParsingException, ImportException,
-                   IOException {
+            throws InvalidArchiveException, ImportException, IOException, DiskFullException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateReader == null) {

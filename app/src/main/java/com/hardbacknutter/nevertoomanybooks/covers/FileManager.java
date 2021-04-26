@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -36,11 +35,13 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Handles downloading, checking and cleanup of files.
@@ -93,7 +94,6 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param context Current context
      * @param caller  to check for any cancellations
      * @param isbn    to search for, <strong>must</strong> be valid.
      * @param cIdx    0..n image index
@@ -103,11 +103,11 @@ public class FileManager {
      */
     @NonNull
     @WorkerThread
-    public ImageFileInfo search(@NonNull final Context context,
-                                @NonNull final Canceller caller,
+    public ImageFileInfo search(@NonNull final Canceller caller,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
-                                @NonNull final ImageFileInfo.Size... sizes) {
+                                @NonNull final ImageFileInfo.Size... sizes)
+            throws ExternalStorageException, DiskFullException {
 
         final List<Site> enabledSites = Site.filterForEnabled(mSiteList);
 
@@ -189,7 +189,7 @@ public class FileManager {
 
                         @Nullable
                         final String fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
-                                .searchCoverImageByIsbn(isbn, cIdx, size);
+                                .searchCoverByIsbn(isbn, cIdx, size);
 
                         if (fileSpec != null) {
                             // we got a file
@@ -217,8 +217,7 @@ public class FileManager {
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!((SearchEngine.CoverByIsbn) searchEngine)
-                                .supportsMultipleCoverSizes()) {
+                        if (!searchEngine.getConfig().supportsMultipleCoverSizes()) {
                             currentSearchSites &= ~site.engineId;
                         }
                     } else {

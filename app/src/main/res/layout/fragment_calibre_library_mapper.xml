@@ -40,9 +40,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_library_name"
-        style="@style/ExposedDropdownMenu.Dense"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/ExposedDropdownMenu"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginEnd="@dimen/field_margin_inline"
         app:layout_constraintEnd_toStartOf="@id/btn_create"
@@ -74,7 +72,7 @@
         android:id="@+id/lbl_bookshelf"
         style="@style/ExposedDropdownMenu"
         android:hint="@string/lbl_bookshelf"
-        android:paddingTop="4dp"
+        android:paddingTop="@dimen/field_label_margin_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_library_name"
         app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
@@ -112,9 +110,11 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_vlibs"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.562"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+        app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/row_edit_calibre_library"
         tools:visibility="visible"
         />

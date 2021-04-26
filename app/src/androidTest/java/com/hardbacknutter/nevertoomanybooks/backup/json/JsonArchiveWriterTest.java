@@ -32,8 +32,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
@@ -50,14 +52,15 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 @MediumTest
-public class JsonArchiveWriterTest {
+public class JsonArchiveWriterTest
+        extends BaseDBTest {
 
     private static final String TAG = "JsonArchiveWriterTest";
 
@@ -65,7 +68,9 @@ public class JsonArchiveWriterTest {
     private int mNrOfStyles;
 
     @Before
-    public void count() {
+    public void setup()
+            throws DaoWriteException {
+        super.setup();
         final Context context = ServiceLocator.getLocalizedAppContext();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
@@ -77,8 +82,9 @@ public class JsonArchiveWriterTest {
     // Disabled. The JsonArchiveWriter is currently hardcoded NOT to write styles.
     // @Test
     public void styles()
-            throws ImportException, InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException {
+            throws ImportException, ExportException,
+                   InvalidArchiveException,
+                   IOException, CertificateException, DiskFullException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(AppDir.Log.getDir(), TAG + "-styles.json");
@@ -121,8 +127,8 @@ public class JsonArchiveWriterTest {
     @Test
     public void books()
             throws ImportException, DaoWriteException,
-                   InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException {
+                   InvalidArchiveException,
+                   IOException, CertificateException, ExportException, DiskFullException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(AppDir.Log.getDir(), TAG + "-books.json");

@@ -35,10 +35,10 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
+@SuppressWarnings("WeakerAccess")
 public class ExportViewModel
         extends ViewModel {
 
@@ -59,9 +59,8 @@ public class ExportViewModel
     /** Export configuration. */
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
-    private boolean mQuickOptionsAlreadyShown;
-
     private final ArchiveWriterTask mArchiveWriterTask = new ArchiveWriterTask();
+    private boolean mQuickOptionsAlreadyShown;
 
     @NonNull
     ExportHelper getExportHelper() {
@@ -143,11 +142,9 @@ public class ExportViewModel
         mArchiveWriterTask.start(mExportHelper);
     }
 
-    void linkTaskWithDialog(@IdRes final int taskId,
-                            @NonNull final ProgressDialogFragment dialog) {
+    void cancelTask(@IdRes final int taskId) {
         if (taskId == mArchiveWriterTask.getTaskId()) {
-            dialog.setCanceller(mArchiveWriterTask);
-
+            mArchiveWriterTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

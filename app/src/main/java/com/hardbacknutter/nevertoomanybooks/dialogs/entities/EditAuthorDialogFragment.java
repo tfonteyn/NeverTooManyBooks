@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
@@ -183,12 +182,12 @@ public class EditAuthorDialogFragment
         final Context context = getContext();
 
         // There is no book involved here, so use the users Locale instead
-        //noinspection ConstantConditions
-        final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale bookLocale = getResources().getConfiguration().getLocales().get(0);
 
         final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         // check if it already exists (will be 0 if not)
+        //noinspection ConstantConditions
         final long existingId = authorDao.find(context, mAuthor, true, bookLocale);
 
         if (existingId == 0) {

@@ -108,15 +108,15 @@ public class TaskViewHolder
 
         @GrStatus.Status
         final int extStatus = task.getLastExtStatus();
-        if (extStatus != GrStatus.SUCCESS) {
+        if (extStatus == GrStatus.SUCCESS) {
+            errorView.setVisibility(View.GONE);
+        } else {
             final GrStatus grStatus = new GrStatus(extStatus, task.getLastException());
             final String msg = context.getString(R.string.gr_tq_last_error_e,
                                                  grStatus.getMessage(context));
             errorView.setText(msg);
             errorView.setVisibility(View.VISIBLE);
 
-        } else {
-            errorView.setVisibility(View.GONE);
         }
 
         infoView.setText(context.getString(

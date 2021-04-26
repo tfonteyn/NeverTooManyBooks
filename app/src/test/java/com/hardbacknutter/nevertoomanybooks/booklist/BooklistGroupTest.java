@@ -25,6 +25,8 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,12 +44,17 @@ class BooklistGroupTest
         // loop starting at 1 must exclude BOOK
         assertEquals(0, BooklistGroup.BOOK);
 
+        final BooklistStyle style = BuiltinStyle.create(mContext,
+                                                        BuiltinStyle.DEFAULT_ID,
+                                                        BuiltinStyle.DEFAULT_UUID,
+                                                        true, 1);
+
         final Collection<String> prefixes = new HashSet<>();
         for (int id = 0; id <= BooklistGroup.GROUP_KEY_MAX; id++) {
-            final BooklistGroup.GroupKey groupKey = BooklistGroup.getGroupKey(id);
-            assertNotNull(groupKey, "Missing id: " + id);
+            final BooklistGroup group = BooklistGroup.newInstance(id, false, style);
+            assertNotNull(group, "Missing id: " + id);
 
-            final String prefix = groupKey.getKeyPrefix();
+            final String prefix = group.getGroupKey().getKeyPrefix();
             if (!prefixes.add(prefix)) {
                 fail("Duplicate keyPrefix: " + prefix);
             }

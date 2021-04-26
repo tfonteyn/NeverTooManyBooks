@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -132,8 +132,10 @@ public final class ViewFocusOrder {
     private static void fixNextView(@NonNull final SparseArray<View> list,
                                     @NonNull final View view,
                                     @NonNull final INextView getter) {
+        @IdRes
         final int nextId = getter.getNext(view);
         if (nextId != View.NO_ID) {
+            @IdRes
             final int actualNextId = getNextView(list, nextId, getter);
             if (actualNextId != nextId) {
                 getter.setNext(view, actualNextId);
@@ -152,7 +154,7 @@ public final class ViewFocusOrder {
      * @return id if first visible 'next' view
      */
     private static int getNextView(@NonNull final SparseArray<View> list,
-                                   final int nextId,
+                                   @IdRes final int nextId,
                                    @NonNull final INextView getter) {
         final View v = list.get(nextId);
         if (v == null) {
@@ -225,6 +227,7 @@ public final class ViewFocusOrder {
 
     private interface INextView {
 
+        @IdRes
         int getNext(@NonNull View v);
 
         void setNext(@NonNull View v,

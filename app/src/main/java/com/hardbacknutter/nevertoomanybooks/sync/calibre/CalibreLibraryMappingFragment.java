@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMa
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -109,8 +109,7 @@ public class CalibreLibraryMappingFragment
 
             } catch (@NonNull final DaoWriteException e) {
                 //TODO: better error msg
-                Snackbar.make(mVb.getRoot(), R.string.error_unknown,
-                              Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.getRoot(), R.string.error_unknown, Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -172,14 +171,13 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
+
         final Context context = getContext();
+
         //noinspection ConstantConditions
-        String msg = ExMsg.map(context, TAG, message.result);
-        if (msg == null) {
-            msg = ExMsg.ioExFallbackMsg(context, message.result,
-                                        getString(R.string.error_network_site_access_failed,
+        final String msg = ExMsg.map(context, message.result)
+                                .orElse(getString(R.string.error_network_site_access_failed,
                                                   CalibreContentServer.getHostUrl()));
-        }
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_error_24)
                 .setTitle(R.string.lbl_calibre_content_server)
@@ -245,7 +243,6 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.mVb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    //TODO: better error msg
                     Snackbar.make(holder.itemView, R.string.error_unknown,
                                   Snackbar.LENGTH_LONG).show();
                 }

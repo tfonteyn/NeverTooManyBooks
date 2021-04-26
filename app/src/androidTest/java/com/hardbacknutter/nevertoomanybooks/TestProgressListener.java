@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
 public class TestProgressListener
         implements ProgressListener {
@@ -44,7 +44,7 @@ public class TestProgressListener
                                 @Nullable final String message) {
         mProgressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG  /* always */) {
             Log.d(mTag + "|publishProgressStep",
                   "mProgressCurrentPos=" + mProgressCurrentPos
                   + "|delta=" + delta
@@ -56,7 +56,7 @@ public class TestProgressListener
     @Override
     public void publishProgress(@NonNull final ProgressMessage message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG  /* always */) {
             Log.d(mTag + "|publishProgress", "message=" + message);
         }
     }

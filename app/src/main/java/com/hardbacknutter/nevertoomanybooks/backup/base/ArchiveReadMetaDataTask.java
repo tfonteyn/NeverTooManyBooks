@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Input: {@link ImportHelper}.
@@ -66,8 +66,7 @@ public class ArchiveReadMetaDataTask
     @Override
     @WorkerThread
     protected ArchiveMetaData doWork(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException {
+            throws InvalidArchiveException, ImportException, IOException, CertificateException {
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
             return reader.readMetaData(context);

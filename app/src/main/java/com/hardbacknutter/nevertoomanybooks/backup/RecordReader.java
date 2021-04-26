@@ -30,7 +30,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * Implements Closeable to enforce a cleanup structure.
@@ -48,12 +48,12 @@ public interface RecordReader
      *
      * @return the archive info
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
+     * @throws ImportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     @Nullable
     default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws GeneralParsingException, IOException {
+            throws IOException, ImportException {
         return null;
     }
 
@@ -67,16 +67,15 @@ public interface RecordReader
      *
      * @return {@link ImportResults}
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failure
-     * @throws ImportException         on failure
+     * @throws ImportException on a decoding/parsing of data issue
+     * @throws IOException     on failure
      */
     @NonNull
     ImportResults read(@NonNull Context context,
                        @NonNull ArchiveReaderRecord record,
                        @NonNull ImportHelper helper,
                        @NonNull ProgressListener progressListener)
-            throws GeneralParsingException, ImportException, IOException;
+            throws ImportException, IOException, DiskFullException;
 
     /**
      * Override if the implementation needs to close something.

@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
@@ -74,8 +74,7 @@ public class CsvArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws GeneralParsingException, ImportException,
-                   IOException {
+            throws ImportException, IOException, DiskFullException {
 
         // Importing CSV which we didn't create can be dangerous.
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
@@ -93,7 +92,7 @@ public class CsvArchiveReader
 
         try (RecordReader recordReader = new CsvRecordReader(context)) {
             final ArchiveReaderRecord record = new CsvArchiveRecord(
-                    mHelper.getUriInfo(context).getDisplayName(), is);
+                    mHelper.getUriInfo(context).getDisplayName(context), is);
 
             return recordReader.read(context, record, mHelper, progressListener);
         } finally {

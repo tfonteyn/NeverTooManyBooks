@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
@@ -37,7 +38,8 @@ import static org.junit.Assert.assertTrue;
 
 //URGENT: test 1 does not use toc id's (and passes) + test 2/3 uses id's (and fails)
 @MediumTest
-public class TocEntryTest {
+public class TocEntryTest
+        extends BaseDBTest {
 
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 

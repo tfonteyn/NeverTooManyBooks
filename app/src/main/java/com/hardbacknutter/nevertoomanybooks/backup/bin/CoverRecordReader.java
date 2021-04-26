@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
@@ -60,7 +61,7 @@ public class CoverRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws ExternalStorageException {
+            throws ExternalStorageException, DiskFullException {
 
         final ImportResults results = new ImportResults();
 
@@ -101,7 +102,7 @@ public class CoverRecordReader
                     // Don't close this stream; Also; this comes from a zip/tar archive
                     // which will give us a buffered stream; do not buffer twice.
                     final InputStream is = record.getInputStream();
-                    dstFile = FileUtils.copyInputStream(is, dstFile);
+                    dstFile = FileUtils.copy(is, dstFile);
 
                     if (ImageUtils.isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored
@@ -114,10 +115,15 @@ public class CoverRecordReader
                     }
                 } catch (@NonNull final ExternalStorageException e) {
                     throw e;
-//URGENT: check disk full
+
                 } catch (@NonNull final IOException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "", e);
+                    }
+                    // we swallow IOExceptions, **EXCEPT** when the disk is full.
+                    if (DiskFullException.isDiskFull(e)) {
+                        //noinspection ConstantConditions
+                        throw new DiskFullException(e.getCause());
                     }
                     // we don't want to quit importing just because one cover fails.
                     results.coversSkipped++;

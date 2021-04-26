@@ -27,9 +27,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
 public class CalibreHandlerViewModel
         extends ViewModel {
@@ -67,11 +66,9 @@ public class CalibreHandlerViewModel
         return mSingleFileDownloadTask.download(book, folder);
     }
 
-    void linkTaskWithDialog(@IdRes final int taskId,
-                            @NonNull final ProgressDialogFragment dialog) {
+    public void cancelTask(@IdRes final int taskId) {
         if (taskId == mSingleFileDownloadTask.getTaskId()) {
-            dialog.setCanceller(mSingleFileDownloadTask);
-
+            mSingleFileDownloadTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

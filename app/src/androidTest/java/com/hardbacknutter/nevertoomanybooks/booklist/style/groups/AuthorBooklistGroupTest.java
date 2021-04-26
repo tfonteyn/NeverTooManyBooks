@@ -23,6 +23,7 @@ import android.content.Context;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -31,7 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class AuthorBooklistGroupTest {
+public class AuthorBooklistGroupTest
+        extends BaseDBTest {
 
     @Test
     public void cc() {
@@ -40,9 +42,9 @@ public class AuthorBooklistGroupTest {
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
         assertNotNull(s1);
 
-        final AuthorBooklistGroup g1 = new AuthorBooklistGroup(false, s1);
+        final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.AUTHOR, false, s1);
 
-        final BooklistGroup g2 = new AuthorBooklistGroup(false, s1, g1);
+        final BooklistGroup g2 = new AuthorBooklistGroup(false, s1, (AuthorBooklistGroup) g1);
         assertEquals(g1, g2);
     }
 }

@@ -42,12 +42,14 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * A simple task wrapping {@link ImportCollection}.
@@ -102,7 +104,7 @@ public class ImportCollectionTask
     @Override
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context)
-            throws IOException, DaoWriteException {
+            throws IOException, DaoWriteException, DiskFullException {
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_connecting));
@@ -141,7 +143,7 @@ public class ImportCollectionTask
     private void processPage(@NonNull final Context context,
                              @NonNull final BookDao bookDao,
                              @NonNull final List<Bundle> page)
-            throws IOException, DaoWriteException {
+            throws IOException, DaoWriteException, DiskFullException {
 
         for (final Bundle cData : page) {
             if (!isCancelled()) {
@@ -216,7 +218,8 @@ public class ImportCollectionTask
 
     @WorkerThread
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
-                                    @NonNull final Bundle cData) {
+                                    @NonNull final Bundle cData)
+            throws DiskFullException, ExternalStorageException {
         final String url = cData.getString(ImportCollection.BKEY_FRONT_COVER_URL);
         if (url != null) {
             final String fileSpec = mSearchEngine

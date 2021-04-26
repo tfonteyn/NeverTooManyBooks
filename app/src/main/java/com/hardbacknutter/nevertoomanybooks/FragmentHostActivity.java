@@ -30,6 +30,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
+import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;

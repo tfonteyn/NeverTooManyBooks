@@ -30,9 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 
 public class GoodreadsDaoImpl
         extends BaseDaoImpl
@@ -87,17 +85,6 @@ public class GoodreadsDaoImpl
     private static final String ALL_BOOKS = BASE_SELECT + _WHERE_ + DBKey.PK_ID + ">?"
                                             + _ORDER_BY_ + DBKey.PK_ID;
 
-    /** A subset of book columns, to be used for searches on Goodreads. */
-    private static final String BOOK_COLUMNS_FOR_SEARCH =
-            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
-                                      DBKey.KEY_TITLE,
-                                      DBKey.KEY_ISBN)
-            + ',' + AuthorDaoImpl.DISPLAY_AUTHOR_GIVEN_FIRST
-            + _AS_ + DBKey.KEY_AUTHOR_FORMATTED_GIVEN_FIRST
-
-            + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR, TBL_AUTHORS)
-            + _WHERE_ + TBL_BOOKS.dot(DBKey.PK_ID) + "=?";
-
     /**
      * Update a single Book's last sync date with Goodreads.
      * Do NOT update the {@link DBKey#UTC_DATE_LAST_UPDATED} field.
@@ -121,12 +108,6 @@ public class GoodreadsDaoImpl
      */
     public GoodreadsDaoImpl() {
         super(TAG);
-    }
-
-    @Override
-    @NonNull
-    public Cursor fetchBookColumnsForSearch(@IntRange(from = 1) final long bookId) {
-        return mDb.rawQuery(BOOK_COLUMNS_FOR_SEARCH, new String[]{String.valueOf(bookId)});
     }
 
     @Override

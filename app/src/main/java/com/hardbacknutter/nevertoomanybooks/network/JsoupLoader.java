@@ -98,18 +98,18 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param url         to fetch
-     * @param conProvider a provider that constructs a fully configured TerminatorConnection
+     * @param url                to fetch
+     * @param connectionProducer a provider that constructs a fully configured TerminatorConnection
      *
-     * @return the parsed Document, or {@code null} on failure to load.
+     * @return the parsed Document
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    @Nullable
+    @NonNull
     public Document loadDocument(@NonNull final String url,
-                                 @NonNull final
-                                 Function<String, Optional<TerminatorConnection>> conProvider)
+                                 @NonNull final Function<String, Optional<TerminatorConnection>>
+                                         connectionProducer)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -130,8 +130,9 @@ public class JsoupLoader {
                          "REQUESTED|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
             }
 
-            try (TerminatorConnection con = conProvider.apply(mDocRequestUrl)
-                                                       .orElseThrow(IOException::new)) {
+            // URGENT: the logic is not very clear.... why use a Function if we orElseThrow?
+            try (TerminatorConnection con = connectionProducer.apply(mDocRequestUrl)
+                                                              .orElseThrow(IOException::new)) {
                 mDoc = doGet(con);
                 return mDoc;
 
@@ -177,9 +178,10 @@ public class JsoupLoader {
         }
 
         // Shouldn't get here ... flw
-        return null;
+        throw new IOException("All attempts failed");
     }
 
+    @NonNull
     private Document doGet(@NonNull final TerminatorConnection con)
             throws IOException {
         // Don't retry if the initial connection fails...

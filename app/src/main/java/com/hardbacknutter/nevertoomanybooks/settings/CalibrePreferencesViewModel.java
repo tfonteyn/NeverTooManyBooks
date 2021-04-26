@@ -31,8 +31,8 @@ import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 
 public class CalibrePreferencesViewModel
         extends ViewModel {
@@ -41,7 +41,7 @@ public class CalibrePreferencesViewModel
 
     @Override
     protected void onCleared() {
-        mValidateConnectionTask.cancel(true);
+        mValidateConnectionTask.cancel();
         super.onCleared();
     }
 

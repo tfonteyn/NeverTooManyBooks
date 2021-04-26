@@ -114,7 +114,7 @@ public class CalibreVirtualLibrary
     @Override
     @NonNull
     public String toString() {
-        return "CalibreLibrary{"
+        return "CalibreVirtualLibrary{"
                + super.toString()
                + ", mLibraryId=" + mLibraryId
                + ", mExpr=" + mExpr

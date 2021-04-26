@@ -270,7 +270,6 @@ public class ExtArrayAdapter<T>
      *
      * @return An ExtArrayAdapter<CharSequence>.
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static ExtArrayAdapter<CharSequence> createFromResource(
             @NonNull final Context context,

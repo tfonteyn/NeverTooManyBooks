@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ import androidx.preference.PreferenceManager;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
@@ -76,8 +78,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
 
@@ -121,6 +125,9 @@ public final class ServiceLocator {
 
 
     /** Interfaces. */
+    @Nullable
+    private AppLocale mAppLocale;
+
     @Nullable
     private Notifier mNotifier;
 
@@ -176,29 +183,6 @@ public final class ServiceLocator {
     }
 
     /**
-     * Get the Application Context <strong>with the device Locale</strong>.
-     *
-     * @return raw Application Context
-     */
-    @NonNull
-    public static Context getAppContext() {
-        return sInstance.mAppContext;
-    }
-
-    /**
-     * Get a <strong>new</strong>> localized Application Context
-     *
-     * @return Application Context using the user preferred Locale
-     */
-    public static Context getLocalizedAppContext() {
-        return AppLocale.getInstance().apply(sInstance.mAppContext);
-    }
-
-    public static SharedPreferences getGlobalPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(sInstance.mAppContext);
-    }
-
-    /**
      * Public constructor.
      *
      * @param context <strong>Application</strong> or <strong>test</strong> context.
@@ -216,11 +200,61 @@ public final class ServiceLocator {
         return sInstance;
     }
 
+
+    /**
+     * Get the Application Context <strong>with the device Locale</strong>.
+     *
+     * @return raw Application Context
+     */
+    @NonNull
+    public static Context getAppContext() {
+        return sInstance.mAppContext;
+    }
+
+    /**
+     * Get a <strong>new</strong>> localized Application Context
+     *
+     * @return Application Context using the user preferred Locale
+     */
+    @NonNull
+    public static Context getLocalizedAppContext() {
+        return sInstance.getAppLocale().apply(sInstance.mAppContext);
+    }
+
+
+    @NonNull
+    public static SharedPreferences getGlobalPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(sInstance.mAppContext);
+    }
+
+
+    /**
+     * Return the device Locale.
+     * <p>
+     * When running a JUnit test, this method will always return {@code Locale.ENGLISH}.
+     *
+     * @return Locale
+     */
+    @NonNull
+    public static Locale getSystemLocale() {
+        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG /* always */) {
+            if (Logger.isJUnitTest) {
+                return Locale.US;
+            }
+        }
+
+        return Resources.getSystem().getConfiguration().getLocales().get(0);
+    }
+
+
     /**
      * Main entry point for clients to get the main database. Static for shorter code...
      *
      * @return the database instance
      */
+    @NonNull
     public static SynchronizedDb getDb() {
         //noinspection ConstantConditions
         return sInstance.mDBHelper.getDb();
@@ -231,9 +265,11 @@ public final class ServiceLocator {
      *
      * @return the database instance
      */
+    @NonNull
     public static SynchronizedDb getCoversDb() {
         return sInstance.getCoversDbHelper().getDb();
     }
+
 
     public boolean isCollationCaseSensitive() {
         //noinspection ConstantConditions
@@ -251,7 +287,7 @@ public final class ServiceLocator {
      *
      * @param global Global preferences
      */
-    public void initialiseDb(@NonNull final SharedPreferences global) {
+    void initialiseDb(@NonNull final SharedPreferences global) {
         mDBHelper = new DBHelper(mAppContext);
         mDBHelper.initialiseDb(global);
     }
@@ -276,6 +312,18 @@ public final class ServiceLocator {
         return mTaskQueueDBHelper;
     }
 
+
+    @NonNull
+    public Styles getStyles() {
+        synchronized (this) {
+            if (mStyles == null) {
+                mStyles = new Styles();
+            }
+        }
+        return mStyles;
+    }
+
+
     /**
      * Client must call this <strong>before</strong> doing its first request (lazy init).
      *
@@ -298,22 +346,29 @@ public final class ServiceLocator {
         CookieHandler.setDefault(mCookieManager);
     }
 
+
     @NonNull
-    public Styles getStyles() {
+    public AppLocale getAppLocale() {
         synchronized (this) {
-            if (mStyles == null) {
-                mStyles = new Styles();
+            if (mAppLocale == null) {
+                mAppLocale = new AppLocaleImpl();
             }
         }
-        return mStyles;
+        return mAppLocale;
     }
+
+    @VisibleForTesting
+    public void setAppLocale(@Nullable final AppLocale locale) {
+        mAppLocale = locale;
+    }
+
 
     @NonNull
     public Notifier getNotifier() {
         synchronized (this) {
             if (mNotifier == null) {
                 mNotifier = new NotifierImpl();
-                AppLocale.getInstance().registerOnLocaleChangedListener(mNotifier);
+                getAppLocale().registerOnLocaleChangedListener(mNotifier);
             }
         }
         return mNotifier;
@@ -322,13 +377,14 @@ public final class ServiceLocator {
     @VisibleForTesting
     public void setNotifier(@Nullable final Notifier notifier) {
         if (mNotifier != null) {
-            AppLocale.getInstance().unregisterOnLocaleChangedListener(mNotifier);
+            getAppLocale().unregisterOnLocaleChangedListener(mNotifier);
         }
         mNotifier = notifier;
         if (mNotifier != null) {
-            AppLocale.getInstance().registerOnLocaleChangedListener(mNotifier);
+            getAppLocale().registerOnLocaleChangedListener(mNotifier);
         }
     }
+
 
     @NonNull
     public AuthorDao getAuthorDao() {

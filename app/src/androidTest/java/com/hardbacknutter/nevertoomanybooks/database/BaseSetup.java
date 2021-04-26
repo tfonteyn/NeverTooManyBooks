@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 
+import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -62,7 +63,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.Constants.TOC_TITLE;
  * Pro: easier to simultaneously do manual testing.
  * Con: cannot test id's (but in a sense this is a 'pro' imho as id's should be unpredictable).
  */
-public abstract class BaseSetup {
+public abstract class BaseSetup
+        extends BaseDBTest {
 
     protected final Bookshelf[] bookshelf = new Bookshelf[5];
     protected final long[] bookshelfId = new long[5];
@@ -86,6 +88,7 @@ public abstract class BaseSetup {
     @Before
     public void setup()
             throws DaoWriteException {
+        super.setup();
 
         final Context context = ServiceLocator.getLocalizedAppContext();
 

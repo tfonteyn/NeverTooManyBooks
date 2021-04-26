@@ -40,15 +40,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditSearchOrderBinding;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -143,12 +142,9 @@ public class SearchOrderFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_RESET) {
-            final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-            //noinspection ConstantConditions
-            final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
-
             // Reset the global/original list for the type.
-            mType.resetList(systemLocale, userLocale);
+            mType.resetList(ServiceLocator.getSystemLocale(),
+                            getResources().getConfiguration().getLocales().get(0));
             // and replace the content of the local list with the (new) defaults.
             mSiteList.clear();
             mSiteList.addAll(mType.getSites());

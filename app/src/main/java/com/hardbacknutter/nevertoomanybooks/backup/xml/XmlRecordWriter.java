@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -610,7 +610,7 @@ public class XmlRecordWriter
 
                 if (collectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = book.getUuidCoverFile(cIdx);
+                        final File cover = book.getPersistedCoverFile(cIdx);
                         if (cover != null && cover.exists()) {
                             results.addCover(cover.getName());
                         }

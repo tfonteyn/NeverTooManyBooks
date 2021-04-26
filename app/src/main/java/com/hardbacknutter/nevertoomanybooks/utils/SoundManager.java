@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,9 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
 public final class SoundManager {
-
-    /** Log tag. */
-    private static final String TAG = "SoundManager";
 
     private SoundManager() {
     }

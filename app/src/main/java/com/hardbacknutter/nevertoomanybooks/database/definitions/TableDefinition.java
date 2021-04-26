@@ -181,14 +181,10 @@ public class TableDefinition {
      *
      * @param db                    Database Access
      * @param withDomainConstraints Indicates if fields should have constraints applied
-     *
-     * @return {@code this} (for chaining)
      */
-    @NonNull
-    public TableDefinition create(@NonNull final SQLiteDatabase db,
-                                  final boolean withDomainConstraints) {
+    public void create(@NonNull final SQLiteDatabase db,
+                       final boolean withDomainConstraints) {
         db.execSQL(def(mName, withDomainConstraints));
-        return this;
     }
 
     /**
@@ -596,7 +592,7 @@ public class TableDefinition {
      * Some SQLite versions make the alias part of the output column name which
      * breaks the easy fetching by pure column name.
      *
-     * @param domainKeys Domain name
+     * @param domainKeys list of domain names
      *
      * @return SQL fragment
      */

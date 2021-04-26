@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -477,16 +476,16 @@ public class Series
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
 
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
         //   locale = getLocale(context, AppLocale.getUserLocale(context));
         final String title = reorderTitleForDisplaying(context, userLocale);
 
-        if (!mNumber.isEmpty()) {
-            return title + " (" + mNumber + ')';
-        } else {
+        if (mNumber.isEmpty()) {
             return title;
+        } else {
+            return title + " (" + mNumber + ')';
         }
     }
 
@@ -568,7 +567,8 @@ public class Series
         // entering the book language mandatory.
         final String lang = ServiceLocator.getInstance().getSeriesDao().getLanguage(mId);
         if (!lang.isEmpty()) {
-            final Locale seriesLocale = AppLocale.getInstance().getLocale(context, lang);
+            final Locale seriesLocale = ServiceLocator.getInstance().getAppLocale()
+                                                      .getLocale(context, lang);
             if (seriesLocale != null) {
                 return seriesLocale;
             }

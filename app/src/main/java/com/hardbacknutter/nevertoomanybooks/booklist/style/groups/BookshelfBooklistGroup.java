@@ -19,23 +19,24 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
-import java.util.Map;
-import java.util.Objects;
-
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_BOOKSHELF_NAME;
 
 /**
  * All plumbing present, but the 'under each' preference is not exposed to the user yet,
@@ -49,20 +50,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
  */
 public class BookshelfBooklistGroup
-        extends BooklistGroup {
+        extends AbstractLinkedTableBooklistGroup {
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.bookshelf.show.all";
+    /** For sorting. */
+    private static final Domain DOM_SORTING;
 
-    /** Customized domain with display data. */
-    @NonNull
-    private final DomainExpression mDisplayDomain;
-
-    /** Show a book under each {@link Bookshelf} it is linked to. */
-    private PBoolean mUnderEach;
+    static {
+        DOM_SORTING = new Domain.Builder(DBKey.KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
+                .build();
+    }
 
     /**
      * Constructor.
@@ -72,10 +73,7 @@ public class BookshelfBooklistGroup
      */
     BookshelfBooklistGroup(final boolean isPersistent,
                            @NonNull final ListStyle style) {
-        super(BOOKSHELF, isPersistent, style);
-        mDisplayDomain = createDisplayDomain();
-
-        initPrefs();
+        super(BOOKSHELF, isPersistent, style, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     /**
@@ -89,9 +87,6 @@ public class BookshelfBooklistGroup
                            @NonNull final ListStyle style,
                            @NonNull final BookshelfBooklistGroup group) {
         super(isPersistent, style, group);
-        mDisplayDomain = createDisplayDomain();
-
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
     }
 
     /**
@@ -103,30 +98,30 @@ public class BookshelfBooklistGroup
         return ServiceLocator.getGlobalPreferences().getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
-    private void initPrefs() {
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, PK_SHOW_BOOKS_UNDER_EACH);
+    @Override
+    public GroupKey createGroupKey() {
+        // We use the foreign ID to create the key.
+        // We override the display domain in #createDisplayDomain.
+        return new GroupKey(R.string.lbl_bookshelf, "shelf",
+                            DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(DBKey.PK_ID),
+                            DomainExpression.SORT_UNSORTED)
+                .addGroupDomain(
+                        // We do not sort on the key domain but add the OB column instead
+                        new DomainExpression(DOM_SORTING,
+                                             TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
+                                             DomainExpression.SORT_ASC))
+                .addGroupDomain(
+                        // Group by id (we want the id available)
+                        new DomainExpression(DOM_FK_BOOKSHELF,
+                                             TBL_BOOK_BOOKSHELF.dot(DBKey.FK_BOOKSHELF)));
     }
 
+    @Override
     @NonNull
-    private DomainExpression createDisplayDomain() {
-        // Not sorted; we sort on the OB domain as defined in the GroupKey.
+    protected DomainExpression createDisplayDomain() {
+        // Not sorted; we sort on the OB domain as defined in #createGroupKey.
         return new DomainExpression(DBDefinitions.DOM_BOOKSHELF_NAME,
                                     DBDefinitions.TBL_BOOKSHELF.dot(DBKey.KEY_BOOKSHELF_NAME));
-    }
-
-    @NonNull
-    @Override
-    public DomainExpression getDisplayDomain() {
-        return mDisplayDomain;
-    }
-
-    @NonNull
-    @Override
-    @CallSuper
-    public Map<String, PPref<?>> getRawPreferences() {
-        final Map<String, PPref<?>> map = super.getRawPreferences();
-        map.put(mUnderEach.getKey(), mUnderEach);
-        return map;
     }
 
     @Override
@@ -139,43 +134,11 @@ public class BookshelfBooklistGroup
         }
     }
 
-    /**
-     * Get this preference.
-     *
-     * @return {@code true} if we want to show a book under each of its Bookshelves.
-     */
-    public boolean showBooksUnderEach() {
-        return mUnderEach.isTrue();
-    }
-
-    @Override
-    public boolean equals(@Nullable final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final BookshelfBooklistGroup that = (BookshelfBooklistGroup) o;
-        return mDisplayDomain.equals(that.mDisplayDomain)
-               && Objects.equals(mUnderEach, that.mUnderEach);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), mDisplayDomain, mUnderEach);
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "BookshelfBooklistGroup{"
                + super.toString()
-               + ", mDisplayDomain=" + mDisplayDomain
-               + ", mUnderEach=" + mUnderEach
                + '}';
     }
 }
