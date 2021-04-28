@@ -34,9 +34,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -73,7 +73,7 @@ public class CoverRecordReader
 
                 try {
                     // see if we have this file already
-                    File dstFile = new File(AppDir.Covers.getDir(), record.getName());
+                    File dstFile = new File(CoverDir.getDir(context), record.getName());
                     final boolean exists = dstFile.exists();
 
                     if (exists) {
@@ -113,9 +113,6 @@ public class CoverRecordReader
                             results.coversCreated++;
                         }
                     }
-                } catch (@NonNull final ExternalStorageException e) {
-                    throw e;
-
                 } catch (@NonNull final IOException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "", e);

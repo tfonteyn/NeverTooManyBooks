@@ -50,6 +50,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -65,8 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -113,9 +114,19 @@ public class CropImageActivity
         super.onCreate(savedInstanceState);
 
         // make an educated guess how many pics we can store.
-        if (AppDir.Covers.getFreeSpace() / ESTIMATED_PICTURE_SIZE < 1) {
-            Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
-                          Snackbar.LENGTH_LONG).show();
+        try {
+            if (FileUtils.getFreeSpace(CoverDir.getDir(this)) / ESTIMATED_PICTURE_SIZE < 1) {
+                Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
+                              Snackbar.LENGTH_LONG).show();
+            }
+        } catch (@NonNull final IOException | ExternalStorageException e) {
+            new MaterialAlertDialogBuilder(this)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setMessage(R.string.error_storage_not_accessible)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> finish())
+                    .create()
+                    .show();
+            return;
         }
 
         final Bundle args = Objects.requireNonNull(getIntent().getExtras(),

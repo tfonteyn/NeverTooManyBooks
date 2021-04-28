@@ -35,13 +35,15 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
+import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -49,9 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 @Keep
 public class MaintenanceFragment
@@ -59,6 +61,9 @@ public class MaintenanceFragment
 
     /** Log tag. */
     public static final String TAG = "MaintenanceFragment";
+
+    /** The length of a UUID string. */
+    private static final int UUID_LEN = 32;
 
     /**
      * After clicking the debug category header 3 times, we display the debug options.
@@ -125,11 +130,12 @@ public class MaintenanceFragment
 
             final long bytes;
             try {
-                bytes = AppDir.purge(bookUuidList, false);
+                bytes = purge(bookUuidList, false);
 
-            } catch (@NonNull final IOException e) {
+            } catch (@NonNull final ExternalStorageException | SecurityException e) {
                 StandardDialogs.showError(context, ExMsg
-                        .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));
+                        .map(context, e)
+                        .orElse(getString(R.string.error_storage_not_accessible)));
                 return;
             }
 
@@ -144,9 +150,9 @@ public class MaintenanceFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         try {
-                            AppDir.purge(bookUuidList, true);
+                            purge(bookUuidList, true);
 
-                        } catch (@NonNull final IOException e) {
+                        } catch (@NonNull final ExternalStorageException | SecurityException e) {
                             StandardDialogs.showError(context, ExMsg
                                     .map(context, e)
                                     .orElse(getString(R.string.error_storage_not_accessible)));
@@ -255,6 +261,57 @@ public class MaintenanceFragment
         Logger.warn(TAG, sb.toString());
     }
 
+
+    /**
+     * Count size / Cleanup any purgeable files.
+     *
+     * @param bookUuidList a list of book uuid to check for orphaned covers
+     * @param reallyDelete {@code true} to actually delete files,
+     *                     {@code false} to only sum file sizes in bytes
+     *
+     * @return the total size in bytes of purgeable/purged files.
+     */
+    private long purge(@NonNull final Collection<String> bookUuidList,
+                       final boolean reallyDelete)
+            throws ExternalStorageException {
+
+        // check for orphaned cover files
+        final FileFilter coverFilter = file -> {
+            if (file.getName().length() > UUID_LEN) {
+                // not in the list? then we can purge it
+                return !bookUuidList.contains(file.getName().substring(0, UUID_LEN));
+            }
+            // not a uuid base filename ? be careful and leave it.
+            return false;
+        };
+
+        if (reallyDelete) {
+            return delete(coverFilter);
+        } else {
+            return count(coverFilter);
+        }
+    }
+
+    private long count(@Nullable final FileFilter coverFilter)
+            throws ExternalStorageException {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        return FileUtils.getUsedSpace(ServiceLocator.getLogDir(), null)
+               + FileUtils.getUsedSpace(ServiceLocator.getUpgradesDir(), null)
+               + FileUtils.getUsedSpace(CoverDir.getTemp(context), null)
+               + FileUtils.getUsedSpace(CoverDir.getDir(context), coverFilter);
+    }
+
+    private long delete(@Nullable final FileFilter coverFilter)
+            throws ExternalStorageException {
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        return FileUtils.deleteDirectory(ServiceLocator.getLogDir(), null, null)
+               + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
+               + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
+               + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
+    }
+
     private void onDeleteAll() {
         final Context context = getContext();
         try {
@@ -271,11 +328,12 @@ public class MaintenanceFragment
 
             ServiceLocator.getInstance().deleteDatabases(context);
 
-            FileUtils.deleteDirectory(AppDir.Root.getDir(), null, null);
+            delete(null);
 
             Snackbar.make(mVb.getRoot(), "Now quit the app", Snackbar.LENGTH_LONG).show();
 
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final ExternalStorageException | SecurityException e) {
+            //noinspection ConstantConditions
             StandardDialogs.showError(context, ExMsg
                     .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));
         }

@@ -26,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.IOException;
+
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
@@ -52,14 +54,16 @@ public class SettingsViewModel
                      final int sourceIndex,
                      final int destIndex) {
 
-        //URGENT: add verification that mStoredVolumeIndex HAS our dir,
         mStorageMoverTask.setDirs(context, sourceIndex, destIndex);
-        if (mStorageMoverTask.checkSpace()) {
-            mStorageMoverTask.start();
-            return true;
-        } else {
-            return false;
+        try {
+            if (mStorageMoverTask.checkSpace()) {
+                mStorageMoverTask.start();
+                return true;
+            }
+        } catch (@NonNull final IOException ignore) {
+            // ignore, just report we can't move
         }
+        return false;
     }
 
     @NonNull

@@ -24,60 +24,28 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Thrown when external storage media is not available.
  */
 public class ExternalStorageException
-        extends IOException
+        extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -3542125839470576149L;
-    @NonNull
-    private final AppDir mAppDir;
+    private static final long serialVersionUID = 2553728112905906864L;
 
-    public ExternalStorageException(@NonNull final AppDir appDir,
-                                    @Nullable final String message) {
+    public ExternalStorageException(@Nullable final String message) {
         super(message);
-        mAppDir = appDir;
     }
 
-    public ExternalStorageException(@NonNull final AppDir appDir,
-                                    @Nullable final String message,
+    public ExternalStorageException(@Nullable final String message,
                                     @Nullable final Throwable cause) {
         super(message, cause);
-        mAppDir = appDir;
-    }
-
-    /**
-     * Used for logging.
-     * Will give the actual folder which is having problems + the underlying cause.
-     *
-     * @return message
-     */
-    @NonNull
-    @Override
-    public String getMessage() {
-        final Throwable cause = getCause();
-        if (cause != null) {
-            return mAppDir.toString() + ": " + super.getMessage() + ": " + cause.getMessage();
-        } else {
-            return mAppDir.toString() + ": " + super.getMessage();
-        }
-    }
-
-    @NonNull
-    public AppDir getAppDir() {
-        return mAppDir;
     }
 
     /**
      * The default user displayable message.
-     * For a detailed  message, use {@link #getAppDir()} and/or {@link #getCause()}.
      *
      * @param context Current context
      *
@@ -86,22 +54,6 @@ public class ExternalStorageException
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        if (mAppDir == AppDir.Root) {
-            // We never write directly to the root, except to create sub directories.
-            // Hence, this is likely a security/access problem.
-            return context.getString(R.string.error_storage_not_accessible);
-        } else {
-            // All others are sub directories, so most likely there are space issues.
-            return context.getString(R.string.error_storage_not_writable);
-        }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "ExternalStorageException{"
-               + "mAppDir=" + mAppDir
-               + ", " + super.toString()
-               + '}';
+        return context.getString(R.string.error_storage_not_writable);
     }
 }

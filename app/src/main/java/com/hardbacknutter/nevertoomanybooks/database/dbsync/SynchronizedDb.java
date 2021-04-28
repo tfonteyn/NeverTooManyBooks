@@ -522,8 +522,7 @@ public class SynchronizedDb
             }
         } catch (@NonNull final RuntimeException e) {
             txLock.unlock();
-            throw new TransactionException("beginTransaction failed: "
-                                           + e.getLocalizedMessage(), e);
+            throw new TransactionException("beginTransaction failed: " + e.getMessage(), e);
         }
         mTxLock = txLock;
         return txLock;

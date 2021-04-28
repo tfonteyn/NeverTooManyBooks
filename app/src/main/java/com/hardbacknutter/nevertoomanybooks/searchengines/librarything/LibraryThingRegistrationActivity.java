@@ -138,12 +138,13 @@ public class LibraryThingRegistrationActivity
                          .putString(LibraryThingSearchEngine.PK_DEV_KEY, devKey)
                          .apply();
 
-        if (!devKey.isEmpty()) {
+        if (devKey.isEmpty()) {
+            showError(mVb.lblDevKey, getString(R.string.vldt_non_blank_required));
+
+        } else {
             Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             mVm.validateKey();
-        } else {
-            showError(mVb.lblDevKey, getString(R.string.vldt_non_blank_required));
         }
     }
 }

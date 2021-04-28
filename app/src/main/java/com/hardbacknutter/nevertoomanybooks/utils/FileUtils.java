@@ -43,8 +43,11 @@ import java.util.zip.CRC32;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Class to wrap common storage related functions.
@@ -58,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
  * TODO: implement the sample code for 'watching'  Environment.getExternalStorageDirectory()
  * and/or isExternalStorageRemovable()
  * <p>
- * Also see {@link AppDir}.
+ * Also see {@link CoverDir}.
  */
 public final class FileUtils {
 
@@ -95,12 +98,13 @@ public final class FileUtils {
     @NonNull
     public static File copy(@Nullable final InputStream is,
                             @NonNull final File destFile)
-            throws IOException {
+            throws IOException, ExternalStorageException {
         if (is == null) {
             throw new FileNotFoundException("InputStream was NULL");
         }
 
-        final File tmpFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
+        final File tmpFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
+                                      System.nanoTime() + ".jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
@@ -148,6 +152,11 @@ public final class FileUtils {
     public static void copy(@NonNull final File source,
                             @NonNull final File destination)
             throws IOException {
+        if (BuildConfig.DEBUG /* always */) {
+            if (!source.isFile() || !destination.isFile()) {
+                throw new IllegalArgumentException("copy only files");
+            }
+        }
 
         try (FileChannel inChannel = new FileInputStream(source).getChannel();
              FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
@@ -304,7 +313,7 @@ public final class FileUtils {
 
     /**
      * Recursively delete files.
-     * Does <strong>NOT</strong> delete the directory itself or any subdirectories.
+     * Does <strong>NOT</strong> delete the actual directory or any actual subdirectories.
      *
      * @param root      directory
      * @param filter    (optional) to apply; {@code null} for all files.
@@ -388,7 +397,6 @@ public final class FileUtils {
      *
      * @return list of files
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static List<File> collectFiles(@NonNull final File root,
                                           @Nullable final FileFilter filter) {

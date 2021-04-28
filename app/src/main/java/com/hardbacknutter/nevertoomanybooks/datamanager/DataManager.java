@@ -664,18 +664,19 @@ public class DataManager
      * @return a user displayable list of error messages, or {@code null} if none present
      */
     @Nullable
-    public String getValidationExceptionMessage() {
+    public String getValidationExceptionMessage(@NonNull final Context context) {
         if (mValidationExceptions.isEmpty()) {
             return null;
+
         } else {
-            final StringBuilder message = new StringBuilder();
+            final StringBuilder msg = new StringBuilder();
             int i = 0;
             for (final ValidatorException e : mValidationExceptions) {
-                message.append(" (").append(++i).append(") ")
-                       .append(e.getLocalizedMessage())
-                       .append('\n');
+                msg.append(" (").append(++i).append(") ")
+                   .append(e.getUserMessage(context))
+                   .append('\n');
             }
-            return message.toString();
+            return msg.toString();
         }
     }
 

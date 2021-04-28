@@ -31,7 +31,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsRegistrationActivity;
@@ -85,7 +84,8 @@ public class AuthTask
     @NonNull
     @Override
     @WorkerThread
-    protected GrStatus doWork(@NonNull final Context context) {
+    protected GrStatus doWork(@NonNull final Context context)
+            throws IOException {
 
         try {
             if (!NetworkUtils.isNetworkAvailable()) {
@@ -107,10 +107,6 @@ public class AuthTask
             context.startActivity(intent);
 
             return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_REQUESTED);
-
-        } catch (@NonNull final IOException e) {
-            Logger.error(TAG, e);
-            return new GrStatus(GrStatus.FAILED_IO_EXCEPTION, e);
 
         } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {
             return new GrStatus(GrStatus.FAILED_AUTHORIZATION);

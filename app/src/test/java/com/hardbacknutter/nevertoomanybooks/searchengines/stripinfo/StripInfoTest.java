@@ -42,6 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -433,16 +435,18 @@ class StripInfoTest
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, null, locationHeader);
+
         } catch (@NonNull final IOException e) {
             fail(e);
         }
+
         assertNotNull(document);
         assertTrue(document.hasText());
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         try {
             mSearchEngine.parseMultiResult(document, new boolean[]{false, false}, mRawData);
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final IOException | DiskFullException | ExternalStorageException e) {
             fail(e);
         }
 

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -172,7 +173,7 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Document loadDocument(@NonNull final String url)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         if (StripInfoAuth.isLoginToSearch()) {
             if (mLoginHelper == null) {
@@ -191,7 +192,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -212,7 +213,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -232,7 +233,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByBarcode(@NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
         // the search url is the same
         return searchByIsbn(barcode, fetchCovers);
     }
@@ -256,7 +257,7 @@ public class StripInfoSearchEngine
     void parseMultiResult(@NonNull final Document document,
                           @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -295,7 +296,7 @@ public class StripInfoSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException {
         super.parse(document, fetchCovers, bookData);
 
         // extracted from the page header.

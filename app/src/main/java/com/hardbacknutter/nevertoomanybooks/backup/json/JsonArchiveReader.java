@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public class JsonArchiveReader
         implements ArchiveReader {
@@ -66,7 +67,7 @@ public class JsonArchiveReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws ImportException,
-                   IOException, DiskFullException {
+                   IOException, DiskFullException, ExternalStorageException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());

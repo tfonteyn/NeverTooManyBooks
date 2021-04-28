@@ -48,9 +48,9 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -108,7 +108,7 @@ public abstract class ApiHandler {
                     @Nullable final Map<String, String> parameterMap,
                     final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws SiteParsingException, IOException {
+            throws IOException, SiteParsingException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -152,7 +152,7 @@ public abstract class ApiHandler {
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws IOException          on failures
      */
     @WorkerThread
     void executePost(@NonNull final String url,
@@ -206,15 +206,18 @@ public abstract class ApiHandler {
      * @param request        to execute
      * @param requestHandler (optional) handler for the parser
      *
-     * @throws CredentialsException  on login failure
-     * @throws HttpNotFoundException the URL was not found
-     * @throws HttpStatusException   on other HTTP failures
-     * @throws IOException           on other failures
+     * @throws HttpUnauthorizedException on login failure
+     * @throws HttpNotFoundException     the URL was not found
+     * @throws HttpStatusException       on other HTTP failures
+     * @throws IOException               on other failures
      */
     @WorkerThread
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException,
+            throws HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   HttpStatusException,
+                   IOException,
                    SiteParsingException {
 
         try {
@@ -226,7 +229,7 @@ public abstract class ApiHandler {
                 parser.parse(is, requestHandler);
             }
 
-        } catch (@NonNull final CredentialsException e) {
+        } catch (@NonNull final HttpUnauthorizedException e) {
             GoodreadsAuth.invalidateCredentials();
             throw e;
 
@@ -252,16 +255,19 @@ public abstract class ApiHandler {
      *
      * @return the raw text output.
      *
-     * @throws CredentialsException  on login failure
-     * @throws HttpNotFoundException the URL was not found
-     * @throws HttpStatusException   on other HTTP failures
-     * @throws IOException           on other failures
+     * @throws HttpUnauthorizedException on login failure
+     * @throws HttpNotFoundException     the URL was not found
+     * @throws HttpStatusException       on other HTTP failures
+     * @throws IOException               on other failures
      */
     @NonNull
     @WorkerThread
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {
+            throws HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   HttpStatusException,
+                   IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
@@ -297,7 +303,7 @@ public abstract class ApiHandler {
             }
             return content.toString();
 
-        } catch (@NonNull final CredentialsException e) {
+        } catch (@NonNull final HttpUnauthorizedException e) {
             GoodreadsAuth.invalidateCredentials();
             throw e;
 

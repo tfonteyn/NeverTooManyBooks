@@ -69,7 +69,7 @@ public class DBCleaner {
      * Constructor.
      */
     public DBCleaner() {
-        mDb = ServiceLocator.getDb();
+        mDb = ServiceLocator.getInstance().getDb();
     }
 
     /**

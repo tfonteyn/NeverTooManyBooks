@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * The hosting activity for editing a book.
@@ -198,7 +199,7 @@ public class EditBookActivity
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.vldt_failure)
-                    .setMessage(book.getValidationExceptionMessage())
+                    .setMessage(book.getValidationExceptionMessage(this))
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
@@ -234,7 +235,7 @@ public class EditBookActivity
             mVm.saveBook(this);
             setResultsAndFinish();
 
-        } catch (@NonNull final DaoWriteException e) {
+        } catch (@NonNull final DaoWriteException | ExternalStorageException e) {
             Logger.error(TAG, e);
             StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }

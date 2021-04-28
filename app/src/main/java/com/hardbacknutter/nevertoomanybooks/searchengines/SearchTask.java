@@ -33,10 +33,12 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -176,7 +178,9 @@ public class SearchTask
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
-            throws IOException, SiteParsingException, DiskFullException {
+            throws DiskFullException, ExternalStorageException, CredentialsException,
+                   IOException,
+                   SiteParsingException {
         publishProgress(1, mProgressTitle);
 
         // can we reach the site at all ?

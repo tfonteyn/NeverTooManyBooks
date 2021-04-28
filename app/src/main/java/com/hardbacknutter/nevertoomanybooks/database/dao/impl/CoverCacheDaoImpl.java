@@ -103,7 +103,7 @@ public class CoverCacheDaoImpl
      * Constructor.
      */
     public CoverCacheDaoImpl() {
-        mDb = ServiceLocator.getCoversDb();
+        mDb = ServiceLocator.getInstance().getCoversDb();
     }
 
     /**

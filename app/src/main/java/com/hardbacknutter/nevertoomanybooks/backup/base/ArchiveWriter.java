@@ -31,6 +31,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public interface ArchiveWriter
         extends Closeable {
@@ -60,7 +61,7 @@ public interface ArchiveWriter
     @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull ProgressListener progressListener)
-            throws ExportException, IOException;
+            throws ExportException, IOException, ExternalStorageException;
 
     /**
      * Override if the implementation needs to close something.

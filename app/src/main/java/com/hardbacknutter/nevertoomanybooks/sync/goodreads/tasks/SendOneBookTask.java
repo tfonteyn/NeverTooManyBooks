@@ -33,10 +33,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpUnauthorizedException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrT
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Start a background task that exports a single books to Goodreads.
@@ -86,7 +87,9 @@ public class SendOneBookTask
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context)
-            throws DiskFullException {
+            throws DiskFullException, ExternalStorageException,
+                   IOException, SiteParsingException,
+                   CredentialsException {
 
         try {
             if (!NetworkUtils.isNetworkAvailable()) {
@@ -133,15 +136,11 @@ public class SendOneBookTask
                 }
             }
 
-        } catch (@NonNull final CredentialsException e) {
-            return new GrStatus(GrStatus.FAILED_CREDENTIALS);
+        } catch (@NonNull final HttpUnauthorizedException e) {
+            throw new CredentialsException(R.string.site_goodreads, "HttpUnauthorizedException");
 
-        } catch (@NonNull final HttpNotFoundException | SiteParsingException e) {
+        } catch (@NonNull final HttpNotFoundException e) {
             return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
-
-        } catch (@NonNull final IOException e) {
-            Logger.error(TAG, e);
-            return new GrStatus(GrStatus.FAILED_IO_EXCEPTION, e);
         }
     }
 }

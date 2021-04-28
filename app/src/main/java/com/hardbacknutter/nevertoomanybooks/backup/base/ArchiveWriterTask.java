@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Input: {@link ExportHelper}.
@@ -67,7 +68,7 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws ExportException, IOException, CertificateException {
+            throws ExportException, IOException, CertificateException, ExternalStorageException {
 
         ExportResults results = null;
         //noinspection ConstantConditions

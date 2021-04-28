@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+import android.content.Context;
+
 import androidx.test.filters.SmallTest;
 
 import java.io.File;
@@ -27,7 +29,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -43,13 +45,17 @@ public class LoggerTest {
     public void cycleLogs()
             throws ExternalStorageException {
 
-        AppDir.initVolume(ServiceLocator.getAppContext(), 0);
+        final Context context = ServiceLocator.getAppContext();
 
-        FileUtils.deleteDirectory(AppDir.Log.getDir(), null, null);
+        CoverDir.initVolume(context, 0);
+
+        final File logDir = ServiceLocator.getLogDir();
+
+        FileUtils.deleteDirectory(logDir, null, null);
 
         List<File> files;
 
-        files = AppDir.Log.collectFiles(null);
+        files = FileUtils.collectFiles(logDir, null);
         assertTrue(files.isEmpty());
 
         for (int i = 0; i < 6; i++) {
@@ -60,7 +66,7 @@ public class LoggerTest {
             Logger.cycleLogs();
         }
 
-        files = AppDir.Log.collectFiles(null);
+        files = FileUtils.collectFiles(logDir, null);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
         Logger.warn("final", files.toString());

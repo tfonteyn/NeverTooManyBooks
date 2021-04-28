@@ -61,20 +61,16 @@ public class StorageMoverTask
         mDestDir = dirs[destIndex];
     }
 
-    public boolean checkSpace() {
+    public boolean checkSpace()
+            throws IOException {
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mSourceDir);
             Objects.requireNonNull(mDestDir);
         }
 
-        try {
-            final long usedSpace = FileUtils.getUsedSpace(mSourceDir, null);
-            final long freeSpace = FileUtils.getFreeSpace(mDestDir);
-            return freeSpace > (usedSpace * OVERHEAD);
-
-        } catch (@NonNull final IOException ignore) {
-            return false;
-        }
+        final long usedSpace = FileUtils.getUsedSpace(mSourceDir, null);
+        final long freeSpace = FileUtils.getFreeSpace(mDestDir);
+        return freeSpace > (usedSpace * OVERHEAD);
     }
 
     public void start() {

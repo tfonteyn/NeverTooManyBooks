@@ -29,5 +29,6 @@
     <dimen name="large_menu_button_info">420dp</dimen>
 
     <dimen name="progress_margin_top">50dp</dimen>
+    <dimen name="progress_width">340dp</dimen>
 
 </resources>

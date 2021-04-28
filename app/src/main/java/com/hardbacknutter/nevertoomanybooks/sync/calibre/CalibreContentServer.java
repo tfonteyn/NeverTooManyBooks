@@ -1042,7 +1042,7 @@ public class CalibreContentServer {
                     .setSslContext(mSslContext);
         }
         final File tmpFile = mImageDownloader
-                .createTmpFile(TAG, String.valueOf(calibreId), 0, null);
+                .getTempFile(TAG, String.valueOf(calibreId), 0, null);
         return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
     }
 

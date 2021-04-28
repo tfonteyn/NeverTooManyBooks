@@ -20,29 +20,21 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 
 import org.junit.Before;
 
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-
-import static org.junit.Assert.fail;
 
 public abstract class BaseDBTest {
 
     @Before
     @CallSuper
     public void setup()
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
 
-        try {
-            AppDir.initVolume(ServiceLocator.getAppContext(), 0);
-        } catch (@NonNull final ExternalStorageException e) {
-            fail(e.toString());
-        }
-
+        CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
         ServiceLocator.getInstance().initialiseDb(ServiceLocator.getGlobalPreferences());
     }
 }

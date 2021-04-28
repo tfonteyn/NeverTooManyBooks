@@ -22,45 +22,40 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
- * Dedicated 401 HTTP_UNAUTHORIZED providing a user readable/localized message.
- * <p>
- * This could be due to Authentication and/or Authorization (e.g. Goodreads OAuth, Calibre).
- * Maybe this should be split in two classes.
+ * Authentication.
  */
 public class CredentialsException
-        extends HttpStatusException {
+        extends Exception
+        implements LocalizedException {
 
-    private static final long serialVersionUID = -7925143754981772300L;
+    private static final long serialVersionUID = -8898712365307463338L;
+
+    /** The site. */
+    @StringRes
+    private final int mSiteResId;
 
     /**
      * Constructor.
      *
      * @param siteResId the site string res; which will be embedded in a default user message
-     * @param url       (optional) The full url, for debugging
+     * @param message   message
      */
     public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final String statusMessage,
-                                @Nullable final URL url) {
-        super(siteResId, HttpURLConnection.HTTP_FORBIDDEN, statusMessage, url);
+                                @NonNull final String message) {
+        super(message);
+        mSiteResId = siteResId;
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        if (getSiteResId() != 0) {
-            return context.getString(R.string.error_site_authentication_failed,
-                                     context.getString(getSiteResId()));
-        } else {
-            return context.getString(R.string.httpErrorAuth);
-        }
+        return context.getString(R.string.error_site_authentication_failed,
+                                 context.getString(mSiteResId));
     }
 }

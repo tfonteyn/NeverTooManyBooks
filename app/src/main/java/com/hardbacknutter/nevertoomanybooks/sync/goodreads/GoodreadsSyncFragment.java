@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TaskAdmi
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Starting point for sending and importing books with Goodreads.
@@ -121,9 +123,13 @@ public class GoodreadsSyncFragment
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
+            final Context context = getContext();
             //noinspection ConstantConditions
-            Snackbar.make(mVb.getRoot(), GrStatus.getMessage(getContext(), message.result),
-                          Snackbar.LENGTH_LONG).show();
+            final String msg = ExMsg
+                    .map(context, message.result)
+                    .orElse(context.getString(R.string.error_network_site_access_failed,
+                                              context.getString(R.string.site_goodreads)));
+            Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
         }
     }
 

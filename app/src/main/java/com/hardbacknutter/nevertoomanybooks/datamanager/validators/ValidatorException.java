@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,17 +19,30 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
  * Exception class for all validation errors.
  */
 public class ValidatorException
-        extends Exception {
+        extends Exception
+        implements LocalizedException {
 
-    private static final long serialVersionUID = -4386613914673182889L;
+    private static final long serialVersionUID = -6649344132897810680L;
 
     public ValidatorException(@NonNull final String message) {
         super(message);
+    }
+
+    @NonNull
+    @Override
+    public String getUserMessage(@NonNull final Context context) {
+        final String msg = getMessage();
+        return msg != null ? msg : context.getString(R.string.error_unknown);
     }
 }

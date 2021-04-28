@@ -139,7 +139,7 @@ public class StripInfoAuth {
      * @throws IOException          on any other failure
      */
     public String login()
-            throws IOException {
+            throws IOException, CredentialsException {
         mUserId = null;
 
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
@@ -149,7 +149,7 @@ public class StripInfoAuth {
         // Sanity check
         //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
-            throw new CredentialsException(R.string.site_stripinfo_be, "", null);
+            throw new CredentialsException(R.string.site_stripinfo_be, "missing password");
         }
 
         StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
@@ -206,7 +206,7 @@ public class StripInfoAuth {
             }
         }
         mUserId = null;
-        throw new CredentialsException(R.string.site_stripinfo_be, "", null);
+        throw new CredentialsException(R.string.site_stripinfo_be, "cookie has no user data");
     }
 
     /**

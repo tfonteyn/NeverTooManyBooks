@@ -51,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -69,7 +69,7 @@ public class JsonArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         super.setup();
         final Context context = ServiceLocator.getLocalizedAppContext();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
@@ -84,10 +84,10 @@ public class JsonArchiveWriterTest
     public void styles()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, DiskFullException {
+                   IOException, CertificateException, DiskFullException, ExternalStorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
-        final File file = new File(AppDir.Log.getDir(), TAG + "-styles.json");
+        final File file = new File(context.getFilesDir(), TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
@@ -128,10 +128,11 @@ public class JsonArchiveWriterTest
     public void books()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException,
-                   IOException, CertificateException, ExportException, DiskFullException {
+                   IOException, CertificateException, ExportException,
+                   DiskFullException, ExternalStorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
-        final File file = new File(AppDir.Log.getDir(), TAG + "-books.json");
+        final File file = new File(context.getFilesDir(), TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 

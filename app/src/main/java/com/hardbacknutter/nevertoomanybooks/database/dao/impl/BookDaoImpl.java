@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -183,7 +185,7 @@ public class BookDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Book /* in/out */ book,
                        @BookFlags final int flags)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -244,7 +246,15 @@ public class BookDaoImpl
             ServiceLocator.getInstance().getFtsDao().insert(newBookId);
 
             // lastly we move the covers from the cache dir to their permanent dir/name
-            if (!bookDaoHelper.persistCovers()) {
+            try {
+                bookDaoHelper.persistCovers();
+
+            } catch (@NonNull final ExternalStorageException e) {
+                book.putLong(PK_ID, 0);
+                book.remove(KEY_BOOK_UUID);
+                throw e;
+
+            } catch (@NonNull final IOException e) {
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_STORING_COVERS + book);
@@ -269,7 +279,7 @@ public class BookDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @BookFlags final int flags)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -312,7 +322,14 @@ public class BookDaoImpl
 
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
-                if (!bookDaoHelper.persistCovers()) {
+                //noinspection CaughtExceptionImmediatelyRethrown
+                try {
+                    bookDaoHelper.persistCovers();
+
+                } catch (@NonNull final ExternalStorageException e) {
+                    throw e;
+
+                } catch (@NonNull final IOException e) {
                     throw new DaoWriteException(ERROR_STORING_COVERS + book);
                 }
 
@@ -1093,9 +1110,8 @@ public class BookDaoImpl
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
             try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_VALID_ISBN,
-                                              new String[]{isbn.asText(
-                                                      ISBN.TYPE_ISBN10), isbn.asText(
-                                                      ISBN.TYPE_ISBN13)})) {
+                                              new String[]{isbn.asText(ISBN.TYPE_ISBN10),
+                                                           isbn.asText(ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -1104,8 +1120,7 @@ public class BookDaoImpl
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_ISBN,
-                                              new String[]{isbn.asText()})) {
+            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_ISBN, new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));

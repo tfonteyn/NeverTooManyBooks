@@ -57,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -74,7 +74,7 @@ public class CsvArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         super.setup();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
@@ -86,10 +86,10 @@ public class CsvArchiveWriterTest
     public void write()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException, ExportException,
-                   IOException, CertificateException, DiskFullException {
+                   IOException, CertificateException, DiskFullException, ExternalStorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
-        final File file = new File(AppDir.Log.getDir(), TAG + ".csv");
+        final File file = new File(context.getFilesDir(), TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 

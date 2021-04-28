@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -107,7 +108,7 @@ public class FileManager {
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException, ExternalStorageException, CredentialsException {
 
         final List<Site> enabledSites = Site.filterForEnabled(mSiteList);
 
@@ -131,40 +132,9 @@ public class FileManager {
 
             // Do we already have a file previously downloaded?
             imageFileInfo = mFiles.get(isbn);
-            if (imageFileInfo != null) {
-                // Does it have an actual file ?
-                if (imageFileInfo.hasFileSpec()) {
-                    // There is a file and it is good (as determined at download time)
-                    // But is the size we have suitable ? (null check to satisfy lint)
-                    // Bigger files are always better (we hope)...
-                    if (imageFileInfo.getSize() != null
-                        && imageFileInfo.getSize().compareTo(size) >= 0) {
-
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                            Log.d(TAG, "search|PRESENT|SUCCESS"
-                                       + "|imageFileInfo=" + imageFileInfo);
-                        }
-
-                        // YES, use the file we already have
-                        return imageFileInfo;
-                    }
-
-                    // else drop through and search for it.
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Log.d(TAG, "search|PRESENT|TO SMALL"
-                                   + "|imageFileInfo=" + imageFileInfo);
-                    }
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                        Log.d(TAG, "search|PRESENT|NO FILE"
-                                   + "|imageFileInfo=" + imageFileInfo);
-                    }
-                    // a previous search failed, there simply is NO file
-                    return imageFileInfo;
-
-                }
+            if (imageFileInfo != null && imageFileInfo.isUseThisImage(size)) {
+                return imageFileInfo;
             }
-
 
             for (final Site site : enabledSites) {
                 // Should we search this site ?
@@ -232,14 +202,13 @@ public class FileManager {
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "search|FAILED"
-                       + "|isbn=" + isbn);
+            Log.d(TAG, "search|FAILED|isbn=" + isbn);
         }
 
         // Failed to find any size on all sites, record the failure to prevent future attempt
-        // and return the failure
         imageFileInfo = new ImageFileInfo(isbn);
         mFiles.put(isbn, imageFileInfo);
+        // and return the failure
         return imageFileInfo;
     }
 

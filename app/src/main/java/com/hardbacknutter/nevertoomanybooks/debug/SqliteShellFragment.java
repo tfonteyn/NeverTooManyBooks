@@ -82,7 +82,7 @@ public class SqliteShellFragment
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
 
-        mDb = ServiceLocator.getDb();
+        mDb = ServiceLocator.getInstance().getDb();
     }
 
     @Override
@@ -191,7 +191,7 @@ public class SqliteShellFragment
         } catch (@NonNull final Exception e) {
             setTitle("");
 
-            mVb.output.loadDataWithBaseURL(null, String.valueOf(e.getLocalizedMessage()),
+            mVb.output.loadDataWithBaseURL(null, String.valueOf(e.getMessage()),
                                            TEXT_HTML, UTF_8, null);
         }
     }

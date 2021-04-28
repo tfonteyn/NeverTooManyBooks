@@ -38,8 +38,8 @@ public final class HttpUtils {
     public static final String AUTHORIZATION = "Authorization";
 
     /** HTTP Request Header. */
-    public static final String CONNECTION = "Connection";
-    public static final String CONNECTION_CLOSE = "close";
+    static final String CONNECTION = "Connection";
+    static final String CONNECTION_CLOSE = "close";
 
     /** HTTP Request Header. */
     public static final String CONTENT_TYPE = "Content-Type";
@@ -49,19 +49,19 @@ public final class HttpUtils {
 
 
     /** HTTP Request Header. */
-    public static final String USER_AGENT = "User-Agent";
+    static final String USER_AGENT = "User-Agent";
     /**
      * RELEASE: Chrome 2021-03-13. Continuously update to latest version.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
-    public static final String USER_AGENT_VALUE =
+    static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
             + " Chrome/88.0.4324.190 Safari/537.36";
 
 
     /** HTTP Response Header. */
-    public static final String LOCATION = "location";
+    static final String LOCATION = "location";
 
     private HttpUtils() {
     }
@@ -79,15 +79,20 @@ public final class HttpUtils {
      * @param request   to check
      * @param siteResId site identifier
      *
-     * @throws CredentialsException  on login failure
-     * @throws HttpNotFoundException the URL was not found
-     * @throws HttpStatusException   on other HTTP failures
-     * @throws IOException           on other failures
+     * @throws IOException               on connect
+     * @throws HttpUnauthorizedException 401: Unauthorized.
+     * @throws HttpNotFoundException     404: Not Found.
+     * @throws SocketTimeoutException    408: Request Time-Out.
+     * @throws HttpStatusException       on any other HTTP failures
      */
     public static void checkResponseCode(@NonNull final HttpURLConnection request,
                                          @StringRes final int siteResId)
-            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {
-        // Make sure the server was happy.
+            throws IOException,
+                   HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   SocketTimeoutException,
+                   HttpStatusException {
+
         final int responseCode = request.getResponseCode();
         switch (responseCode) {
             case HttpURLConnection.HTTP_OK:
@@ -95,9 +100,9 @@ public final class HttpUtils {
                 break;
 
             case HttpURLConnection.HTTP_UNAUTHORIZED:
-                throw new CredentialsException(siteResId,
-                                               request.getResponseMessage(),
-                                               request.getURL());
+                throw new HttpUnauthorizedException(siteResId,
+                                                    request.getResponseMessage(),
+                                                    request.getURL());
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 throw new HttpNotFoundException(siteResId,

@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -103,7 +104,7 @@ public class LastDodoSearchEngine
     @NonNull
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -119,7 +120,7 @@ public class LastDodoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -147,7 +148,7 @@ public class LastDodoSearchEngine
     private void parseMultiResult(@NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.cw-lot_content");
@@ -167,7 +168,7 @@ public class LastDodoSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException {
         super.parse(document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer

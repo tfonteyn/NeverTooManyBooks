@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public class EditBookFragmentViewModel
         extends ViewModel
@@ -287,7 +288,7 @@ public class EditBookFragmentViewModel
      * @throws DaoWriteException on failure
      */
     void saveBook(@NonNull final Context context)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
 
         if (mBook.isNew()) {
             ServiceLocator.getInstance().getBookDao().insert(context, mBook, 0);

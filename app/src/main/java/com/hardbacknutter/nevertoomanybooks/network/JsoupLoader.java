@@ -159,7 +159,7 @@ public class JsoupLoader {
 
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
                 Logger.warn(TAG, "loadDocument"
-                                 + "|e=" + e.getLocalizedMessage()
+                                 + "|e=" + e.getMessage()
                                  + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
                 // we'll retry.
                 attempts--;

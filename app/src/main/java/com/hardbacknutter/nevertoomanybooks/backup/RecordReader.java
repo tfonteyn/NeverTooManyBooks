@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Implements Closeable to enforce a cleanup structure.
@@ -75,7 +76,7 @@ public interface RecordReader
                        @NonNull ArchiveReaderRecord record,
                        @NonNull ImportHelper helper,
                        @NonNull ProgressListener progressListener)
-            throws ImportException, IOException, DiskFullException;
+            throws ImportException, IOException, DiskFullException, ExternalStorageException;
 
     /**
      * Override if the implementation needs to close something.

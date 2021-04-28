@@ -89,8 +89,9 @@ public class SearchSuggestionProvider
             // do we have anything to search for?
             if (!query.isEmpty()) {
                 //noinspection UnnecessaryLocalVariable
-                final Cursor cursor = ServiceLocator
-                        .getDb().rawQuery(SEARCH_SUGGESTIONS, new String[]{query});
+                final Cursor cursor = ServiceLocator.getInstance().getDb()
+                                                    .rawQuery(SEARCH_SUGGESTIONS,
+                                                              new String[]{query});
 
                 //  if (cursor != null) {
                 //      //noinspection ConstantConditions

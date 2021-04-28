@@ -54,6 +54,7 @@ final class SerializationUtils {
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
         } catch (@NonNull final IOException e) {
+            // We should never see an IOException unless the developer made a boo-boo
             throw new IllegalStateException(e);
         }
         return bos.toByteArray();

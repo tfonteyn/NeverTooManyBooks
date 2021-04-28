@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -210,7 +211,9 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -243,12 +246,13 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(),
-                                                        "isbn", validIsbn);
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "isbn", validIsbn);
         fetchBook(url, bookData);
 
         if (isCancelled()) {

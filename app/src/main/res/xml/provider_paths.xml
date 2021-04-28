@@ -24,8 +24,18 @@
     Rather rough... we make them all available.
 -->
 <paths>
-    <!-- to access the AppDir directories. -->
+    <!-- to access the Pictures directory. -->
     <external-path
         name="external-path"
+        path="./" />
+
+    <!-- log and Upgrades -->
+    <files-path
+        name="files-path"
+        path="./" />
+
+    <!-- For the debug-report attachments. -->
+    <cache-path
+        name="cache-path"
         path="./" />
 </paths>

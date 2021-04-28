@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public interface ArchiveReader
         extends Closeable {
@@ -92,7 +93,7 @@ public interface ArchiveReader
     ImportResults read(@NonNull Context context,
                        @NonNull ProgressListener progressListener)
             throws InvalidArchiveException, IOException,
-                   ImportException, DiskFullException;
+                   ImportException, DiskFullException, ExternalStorageException;
 
     /**
      * Override if the implementation needs to close something.

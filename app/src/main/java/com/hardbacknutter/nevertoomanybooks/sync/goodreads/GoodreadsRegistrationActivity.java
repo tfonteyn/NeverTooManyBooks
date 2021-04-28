@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegiste
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Allow the user to explain Goodreads and authorize this application to access their
@@ -104,8 +105,11 @@ public class GoodreadsRegistrationActivity
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.getRoot(), GrStatus.getMessage(this, message.result),
-                          Snackbar.LENGTH_LONG).show();
+            final String msg = ExMsg
+                    .map(this, message.result)
+                    .orElse(getString(R.string.error_network_site_access_failed,
+                                      getString(R.string.site_goodreads)));
+            Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
         }
     }
 

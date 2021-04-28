@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -94,6 +95,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
  * This class is the next step as we can mock Context/db/dao classes before running a test.
  */
 public final class ServiceLocator {
+
+    /**
+     * Sub directory of {@link Context#getFilesDir()}.
+     * log files.
+     */
+    static final String DIR_LOG = "log";
+
+    /**
+     * Sub directory of {@link Context#getFilesDir()}.
+     * Database backup taken during app upgrades.
+     */
+    private static final String DIR_UPGRADES = "upgrades";
 
     /** Singleton. */
     private static ServiceLocator sInstance;
@@ -191,6 +204,17 @@ public final class ServiceLocator {
         synchronized (ServiceLocator.class) {
             if (sInstance == null) {
                 sInstance = new ServiceLocator(context);
+                File dir = getLogDir();
+                if (!dir.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    dir.mkdirs();
+                }
+
+                dir = getUpgradesDir();
+                if (!dir.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    dir.mkdirs();
+                }
             }
         }
     }
@@ -249,67 +273,14 @@ public final class ServiceLocator {
     }
 
 
-    /**
-     * Main entry point for clients to get the main database. Static for shorter code...
-     *
-     * @return the database instance
-     */
     @NonNull
-    public static SynchronizedDb getDb() {
-        //noinspection ConstantConditions
-        return sInstance.mDBHelper.getDb();
-    }
-
-    /**
-     * Main entry point for clients to get the covers database. Static for shorter code...
-     *
-     * @return the database instance
-     */
-    @NonNull
-    public static SynchronizedDb getCoversDb() {
-        return sInstance.getCoversDbHelper().getDb();
-    }
-
-
-    public boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
-        return mDBHelper.isCollationCaseSensitive();
-    }
-
-    void deleteDatabases(@NonNull final Context context) {
-        context.deleteDatabase(DBHelper.DATABASE_NAME);
-        context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
-        context.deleteDatabase(TaskQueueDBHelper.DATABASE_NAME);
-    }
-
-    /**
-     * Called during startup. This will trigger the creation/upgrade/open process.
-     *
-     * @param global Global preferences
-     */
-    void initialiseDb(@NonNull final SharedPreferences global) {
-        mDBHelper = new DBHelper(mAppContext);
-        mDBHelper.initialiseDb(global);
+    public static File getLogDir() {
+        return new File(sInstance.mAppContext.getFilesDir(), DIR_LOG);
     }
 
     @NonNull
-    private CoversDbHelper getCoversDbHelper() {
-        synchronized (this) {
-            if (mCoversDbHelper == null) {
-                mCoversDbHelper = new CoversDbHelper(mAppContext);
-            }
-        }
-        return mCoversDbHelper;
-    }
-
-    @NonNull
-    public SQLiteOpenHelper getTaskQueueDBHelper() {
-        synchronized (this) {
-            if (mTaskQueueDBHelper == null) {
-                mTaskQueueDBHelper = new TaskQueueDBHelper(mAppContext);
-            }
-        }
-        return mTaskQueueDBHelper;
+    public static File getUpgradesDir() {
+        return new File(sInstance.mAppContext.getFilesDir(), DIR_UPGRADES);
     }
 
 
@@ -383,6 +354,65 @@ public final class ServiceLocator {
         if (mNotifier != null) {
             getAppLocale().registerOnLocaleChangedListener(mNotifier);
         }
+    }
+
+
+    /**
+     * Called during startup. This will trigger the creation/upgrade/open process.
+     *
+     * @param global Global preferences
+     */
+    void initialiseDb(@NonNull final SharedPreferences global) {
+        mDBHelper = new DBHelper(mAppContext);
+        mDBHelper.initialiseDb(global);
+    }
+
+    /**
+     * Main entry point for clients to get the main database.
+     *
+     * @return the database instance
+     */
+    @NonNull
+    public SynchronizedDb getDb() {
+        //noinspection ConstantConditions
+        return mDBHelper.getDb();
+    }
+
+    /**
+     * Main entry point for clients to get the covers database.
+     *
+     * @return the database instance
+     */
+    @NonNull
+    public SynchronizedDb getCoversDb() {
+        synchronized (this) {
+            if (mCoversDbHelper == null) {
+                mCoversDbHelper = new CoversDbHelper(mAppContext);
+            }
+        }
+        return mCoversDbHelper.getDb();
+    }
+
+    @NonNull
+    public SQLiteOpenHelper getTaskQueueDBHelper() {
+        synchronized (this) {
+            if (mTaskQueueDBHelper == null) {
+                mTaskQueueDBHelper = new TaskQueueDBHelper(mAppContext);
+            }
+        }
+        return mTaskQueueDBHelper;
+    }
+
+
+    public boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
+        return mDBHelper.isCollationCaseSensitive();
+    }
+
+    void deleteDatabases(@NonNull final Context context) {
+        context.deleteDatabase(DBHelper.DATABASE_NAME);
+        context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
+        context.deleteDatabase(TaskQueueDBHelper.DATABASE_NAME);
     }
 
 

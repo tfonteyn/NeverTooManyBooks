@@ -41,8 +41,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
@@ -65,12 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  */
 public final class Logger {
 
-    /** Full log path name. Used by ACRA configuration which only seems to accepts a constant. */
-    public static final String LOG_PATH = "log/error.log";
-    //public static final String LOG_PATH = AppDir.LOG_SUB_DIR + "/" + ERROR_LOG_FILE;
-
-    /** serious errors are written to this file. Stored in {@link AppDir#Log}. */
-    private static final String ERROR_LOG_FILE = "error.log";
+    /** serious errors are written to this file. */
+    public static final String ERROR_LOG_FILE = "error.log";
 
     /** Keep the last 3 log files. */
     private static final int LOGFILE_COPIES = 3;
@@ -116,8 +112,8 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
      *
-     * @param tag     log tag
-     * @param params  to concat
+     * @param tag    log tag
+     * @param params to concat
      */
     public static void warn(@NonNull final String tag,
                             @NonNull final Object... params) {
@@ -176,7 +172,7 @@ public final class Logger {
 
         final String exMsg;
         if (e != null) {
-            exMsg = '|' + e.getLocalizedMessage() + '\n' + getStackTraceString(e);
+            exMsg = '|' + getStackTraceString(e);
         } else {
             exMsg = "";
         }
@@ -187,7 +183,7 @@ public final class Logger {
                                + '|' + tag + '|' + type + '|' + message + exMsg;
 
         try {
-            final File logFile = new File(AppDir.Log.getDir(), ERROR_LOG_FILE);
+            final File logFile = new File(ServiceLocator.getLogDir(), ERROR_LOG_FILE);
             //noinspection ImplicitDefaultCharsetUsage
             try (FileWriter fw = new FileWriter(logFile, true);
                  PrintWriter out = new PrintWriter(fw)) {
@@ -290,12 +286,11 @@ public final class Logger {
 
     /**
      * Cycle the log each time the app is started; preserve previous if non-empty.
-     *
      */
     public static void cycleLogs() {
         File logFile = null;
         try {
-            logFile = new File(AppDir.Log.getDir(), ERROR_LOG_FILE);
+            logFile = new File(ServiceLocator.getLogDir(), ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 final File backup = new File(logFile.getPath() + ".bak");
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);

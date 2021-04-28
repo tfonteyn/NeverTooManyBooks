@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -318,7 +319,8 @@ public interface SearchEngine {
                              @Nullable final String bookId,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException {
 
         final SearchEngineConfig config = getConfig();
 
@@ -327,8 +329,8 @@ public interface SearchEngine {
                 .setReadTimeout(config.getReadTimeoutInMs())
                 .setThrottler(config.getThrottler());
 
-        final File tmpFile = loader.createTmpFile(config.getFilenameSuffix(),
-                                                  bookId, cIdx, size);
+        final File tmpFile = loader.getTempFile(config.getFilenameSuffix(),
+                                                bookId, cIdx, size);
         final File file = loader.fetch(url, tmpFile);
         return file != null ? file.getAbsolutePath() : null;
     }
@@ -375,7 +377,11 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
                                   @NonNull boolean[] fetchCovers)
-                throws SiteParsingException, IOException, DiskFullException;
+                throws DiskFullException,
+                       ExternalStorageException,
+                       IOException,
+                       SiteParsingException,
+                       CredentialsException;
     }
 
     /** Optional. Every engine should really implement this. */
@@ -392,13 +398,17 @@ public interface SearchEngine {
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws SiteParsingException on a decoding/parsing of data issue
-         * @throws IOException             on other failures
+         * @throws IOException          on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchCovers)
-                throws SiteParsingException, IOException, DiskFullException;
+                throws DiskFullException,
+                       ExternalStorageException,
+                       IOException,
+                       SiteParsingException,
+                       CredentialsException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -441,7 +451,11 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
                                @NonNull boolean[] fetchCovers)
-                throws IOException, DiskFullException;
+                throws DiskFullException,
+                       ExternalStorageException,
+                       IOException,
+                       SiteParsingException,
+                       CredentialsException;
     }
 
     /**
@@ -470,7 +484,7 @@ public interface SearchEngine {
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws SiteParsingException on a decoding/parsing of data issue
-         * @throws IOException             on other failures
+         * @throws IOException          on other failures
          */
         @WorkerThread
         @NonNull
@@ -479,7 +493,11 @@ public interface SearchEngine {
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchCovers)
-                throws SiteParsingException, IOException, DiskFullException;
+                throws DiskFullException,
+                       ExternalStorageException,
+                       IOException,
+                       SiteParsingException,
+                       CredentialsException;
     }
 
     /** Optional. */
@@ -508,7 +526,9 @@ public interface SearchEngine {
         String searchCoverByIsbn(@NonNull String validIsbn,
                                  @IntRange(from = 0, to = 1) int cIdx,
                                  @Nullable ImageFileInfo.Size size)
-                throws DiskFullException, ExternalStorageException;
+                throws DiskFullException,
+                       ExternalStorageException,
+                       CredentialsException;
 
         /**
          * Helper method for sites which support multiple image sizes.
@@ -530,7 +550,9 @@ public interface SearchEngine {
         @NonNull
         default ArrayList<String> searchBestCoverByIsbn(@NonNull final String validIsbn,
                                                         @IntRange(from = 0, to = 1) final int cIdx)
-                throws DiskFullException, ExternalStorageException {
+                throws DiskFullException,
+                       ExternalStorageException,
+                       CredentialsException {
 
             final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
@@ -558,11 +580,13 @@ public interface SearchEngine {
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
          *
          * @throws SiteParsingException on a decoding/parsing of data issue
-         * @throws IOException             on other failures
+         * @throws IOException          on other failures
          */
         @WorkerThread
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
-                throws SiteParsingException, IOException;
+                throws IOException,
+                       SiteParsingException,
+                       CredentialsException;
     }
 }

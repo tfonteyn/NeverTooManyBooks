@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * book.show   —   Get the reviews for a book given a Goodreads book id.
@@ -73,7 +74,7 @@ public class ShowBookByIdApiHandler
     public Bundle searchByExternalId(final long grBookId,
                                      @NonNull final boolean[] fetchCovers,
                                      @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
 
         final String url = String.format(BY_ID, grBookId, mGrAuth.getDevKey());
         return searchBook(url, fetchCovers, bookData);

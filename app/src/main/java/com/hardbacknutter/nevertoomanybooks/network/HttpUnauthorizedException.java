@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.net.HttpURLConnection;
@@ -30,33 +31,33 @@ import java.net.URL;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Dedicated 404 HTTP_NOT_FOUND providing a user readable/localized message.
+ * Dedicated 401 HTTP_UNAUTHORIZED providing a user readable/localized message.
  */
-public class HttpNotFoundException
+public class HttpUnauthorizedException
         extends HttpStatusException {
 
-    private static final long serialVersionUID = 6461290696382042369L;
+    private static final long serialVersionUID = 8143451500280935138L;
 
     /**
      * Constructor.
      *
      * @param siteResId the site string res; which will be embedded in a default user message
-     * @param url       The full url, for debugging
+     * @param url       (optional) The full url, for debugging
      */
-    HttpNotFoundException(@StringRes final int siteResId,
-                          @NonNull final String statusMessage,
-                          @NonNull final URL url) {
-        super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
+    HttpUnauthorizedException(@StringRes final int siteResId,
+                              @NonNull final String statusMessage,
+                              @Nullable final URL url) {
+        super(siteResId, HttpURLConnection.HTTP_UNAUTHORIZED, statusMessage, url);
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
         if (getSiteResId() != 0) {
-            return context.getString(R.string.error_network_site_access_failed,
+            return context.getString(R.string.error_site_authorization_failed,
                                      context.getString(getSiteResId()));
         } else {
-            return context.getString(R.string.httpErrorFileNotFound);
+            return context.getString(R.string.error_authorization_failed);
         }
     }
 }

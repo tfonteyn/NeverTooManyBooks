@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Input: {@link ImportHelper}.
@@ -66,7 +67,8 @@ public class ArchiveReadMetaDataTask
     @Override
     @WorkerThread
     protected ArchiveMetaData doWork(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException, CertificateException {
+            throws InvalidArchiveException, ImportException, IOException, CertificateException,
+                   ExternalStorageException {
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
             return reader.readMetaData(context);

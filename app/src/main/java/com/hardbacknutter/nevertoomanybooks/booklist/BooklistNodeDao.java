@@ -95,7 +95,7 @@ public class BooklistNodeDao {
      * Purge <strong>all</strong> Booklist node state data.
      */
     public static void clearAll() {
-        ServiceLocator.getDb().execSQL(Sql.DELETE_ALL);
+        ServiceLocator.getInstance().getDb().execSQL(Sql.DELETE_ALL);
     }
 
     /**

@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public abstract class SendBooksGrTaskBase
         extends GrBaseTask {
@@ -153,11 +154,15 @@ public abstract class SendBooksGrTaskBase
 
         } catch (@NonNull final CredentialsException e) {
             setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
-            // Requeue, so we can retry after the user corrects their credentials
+            // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final DiskFullException e) {
             setLastExtStatus(GrStatus.FAILED_DISK_FULL, e);
-            // Requeue, so we can retry after the user makes space
+            // Requeue, so we can retry after the user corrects this
+
+        } catch (@NonNull final ExternalStorageException e) {
+            setLastExtStatus(GrStatus.FAILED_STORAGE_NOT_ACCESSIBLE, e);
+            // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final IOException e) {
             setLastExtStatus(GrStatus.FAILED_IO_EXCEPTION, e);

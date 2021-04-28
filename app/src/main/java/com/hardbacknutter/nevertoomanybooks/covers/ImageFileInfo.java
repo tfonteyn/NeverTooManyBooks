@@ -21,17 +21,20 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 /**
- * Value class containing info about a cover file.
+ * Info about a cover file.
  */
 public class ImageFileInfo
         implements Parcelable {
@@ -48,14 +51,13 @@ public class ImageFileInfo
             return new ImageFileInfo[size];
         }
     };
-
+    private static final String TAG = "ImageFileInfo";
     @NonNull
     private final String mIsbn;
     @Nullable
     private final Size mSize;
     @Nullable
     private final String mFileSpec;
-
     @SearchSites.EngineId
     private final int mEngineId;
 
@@ -133,16 +135,46 @@ public class ImageFileInfo
         return mEngineId;
     }
 
-    boolean hasFileSpec() {
-        return mFileSpec != null;
-    }
-
     @Nullable
     public File getFile() {
         if (mFileSpec != null && !mFileSpec.isEmpty()) {
             return new File(mFileSpec);
         }
         return null;
+    }
+
+    /**
+     * Check if this image is either bigger or equal to the given size,
+     * or if we already established the image does not exist.
+     *
+     * @param size to compare to
+     */
+    boolean isUseThisImage(@NonNull final ImageFileInfo.Size size) {
+        // Does it have an actual file ?
+        if (mFileSpec != null) {
+            // There is a file and it is good (as determined at download time)
+            // But is the size we have suitable ? Bigger files are always better (we hope)...
+            if (mSize != null && mSize.compareTo(size) >= 0) {
+                // YES, use the file we already have
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                    Log.d(TAG, "search|PRESENT|SUCCESS|imageFileInfo=" + this);
+                }
+                return true;
+            }
+
+            // else drop through and search for it.
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                Log.d(TAG, "search|PRESENT|TO SMALL|imageFileInfo=" + this);
+            }
+            return false;
+
+        } else {
+            // a previous search failed, there simply is NO file
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                Log.d(TAG, "search|PRESENT|NO FILE|imageFileInfo=" + this);
+            }
+            return true;
+        }
     }
 
     @Override

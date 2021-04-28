@@ -97,7 +97,7 @@ abstract class BaseDaoImpl {
             Logger.d(TAG, "Constructor", logTag);
         }
 
-        mDb = ServiceLocator.getDb();
+        mDb = ServiceLocator.getInstance().getDb();
     }
 
     /**

@@ -43,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
@@ -74,14 +74,14 @@ public class CsvArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws ImportException, IOException, DiskFullException {
+            throws ImportException, IOException, DiskFullException, ExternalStorageException {
 
         // Importing CSV which we didn't create can be dangerous.
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
 
-        FileUtils.copyWithBackup(ServiceLocator.getDb().getDatabaseFile(),
-                                 new File(AppDir.Upgrades.getDir(), DB_BACKUP_NAME),
+        FileUtils.copyWithBackup(ServiceLocator.getInstance().getDb().getDatabaseFile(),
+                                 new File(ServiceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
         @Nullable

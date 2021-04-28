@@ -37,8 +37,10 @@ import org.jsoup.nodes.Document;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -96,7 +98,7 @@ public abstract class JsoupSearchEngineBase
     @WorkerThread
     @NonNull
     public Document loadDocument(@NonNull final String url)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         return mJsoupLoader.loadDocument(url, createConnectionProducer());
     }
@@ -120,7 +122,7 @@ public abstract class JsoupSearchEngineBase
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.
         // But this way is more future oriented... maybe we'll need/can share more logic/data

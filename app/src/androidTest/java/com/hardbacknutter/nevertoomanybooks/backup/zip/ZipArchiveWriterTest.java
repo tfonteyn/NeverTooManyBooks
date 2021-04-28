@@ -47,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -66,7 +66,7 @@ public class ZipArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         super.setup();
         final Context context = ServiceLocator.getLocalizedAppContext();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
@@ -80,9 +80,9 @@ public class ZipArchiveWriterTest
     public void write()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, DiskFullException {
+                   IOException, CertificateException, DiskFullException, ExternalStorageException {
         final Context context = ServiceLocator.getLocalizedAppContext();
-        final File file = new File(AppDir.Log.getDir(), TAG + ".zip");
+        final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 

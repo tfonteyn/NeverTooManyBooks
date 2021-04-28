@@ -419,8 +419,8 @@ public class SearchBookByIsbnFragment
                 //noinspection ConstantConditions
                 mVm.readQueue(getContext(), uri, mCoordinator.isStrictIsbn());
             } catch (@NonNull final IOException ignore) {
-                Snackbar.make(mVb.getRoot(), R.string.error_import_failed, Snackbar.LENGTH_LONG)
-                        .show();
+                Snackbar.make(mVb.getRoot(), R.string.error_import_failed,
+                              Snackbar.LENGTH_LONG).show();
             }
 
             populateQueueView();

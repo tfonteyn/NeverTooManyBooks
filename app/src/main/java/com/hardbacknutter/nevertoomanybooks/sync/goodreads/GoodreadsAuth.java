@@ -254,7 +254,7 @@ public class GoodreadsAuth {
     public void hasValidCredentialsOrThrow(@NonNull final Context context)
             throws CredentialsException {
         if (!hasValidCredentials(context)) {
-            throw new CredentialsException(R.string.site_goodreads, "", null);
+            throw new CredentialsException(R.string.site_goodreads, "no valid credentials");
         }
     }
 

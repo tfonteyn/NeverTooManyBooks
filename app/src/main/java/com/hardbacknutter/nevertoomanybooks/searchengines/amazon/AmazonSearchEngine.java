@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -336,7 +337,7 @@ public class AmazonSearchEngine
 //    @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -353,7 +354,7 @@ public class AmazonSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
@@ -379,11 +380,7 @@ public class AmazonSearchEngine
                     return new File(imageList.get(0)).getAbsolutePath();
                 }
             }
-
-        } catch (@NonNull final ExternalStorageException e) {
-            throw e;
-
-        } catch (@NonNull final IOException ignore) {
+        } catch (@NonNull final IOException | CredentialsException ignore) {
             // ignore
         }
         return null;
@@ -394,7 +391,7 @@ public class AmazonSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException {
         super.parse(document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(document.location().split("/")[2]);
@@ -417,6 +414,46 @@ public class AmazonSearchEngine
         final String title = titleElement.text().trim();
         bookData.putString(DBKey.KEY_TITLE, title);
 
+        parsePrice(document, bookData, siteLocale);
+
+        parseAuthors(document, siteLocale);
+
+        if (isCancelled()) {
+            return;
+        }
+
+        parseDetails(document, bookData, siteLocale);
+
+        parseASIN(document, bookData);
+
+        if (!mAuthors.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
+        }
+        if (!mPublishers.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
+        }
+        if (!mSeries.isEmpty()) {
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
+        }
+
+        checkForSeriesNameInTitle(bookData);
+
+        if (isCancelled()) {
+            return;
+        }
+
+        if (fetchCovers[0]) {
+            final String isbn = bookData.getString(DBKey.KEY_ISBN);
+            final ArrayList<String> list = parseCovers(document, isbn, 0);
+            if (!list.isEmpty()) {
+                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+            }
+        }
+    }
+
+    private void parsePrice(@NonNull final Document document,
+                            @NonNull final Bundle bookData,
+                            @NonNull final Locale siteLocale) {
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
             final Money money = new Money(siteLocale, price.text());
@@ -427,40 +464,27 @@ public class AmazonSearchEngine
                 bookData.putString(DBKey.PRICE_LISTED, price.text());
             }
         }
+    }
 
-        for (final Element span : document.select("div#bylineInfo > span.author")) {
-            // If an author has a popup dialog linked, then it has an id with contributorNameID
-            Element a = span.selectFirst("a.contributorNameID");
-            if (a == null) {
-                // If there is no popup, it's a simple link
-                a = span.selectFirst("a.a-link-normal");
-            }
-            if (a != null) {
-                final String href = a.attr("href");
-                if (href != null && href.contains("byline")) {
-                    final Author author = Author.from(a.text());
-
-                    final Element typeElement = span.selectFirst("span.contribution");
-                    if (typeElement != null) {
-                        String data = typeElement.text();
-                        final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
-                        if (matcher.find()) {
-                            data = matcher.group(1);
-                        }
-
-                        if (data != null) {
-                            author.addType(mAuthorTypeMapper.map(siteLocale, data));
-                        }
-                    }
-                    mAuthors.add(author);
+    private void parseASIN(@NonNull final Document document,
+                           @NonNull final Bundle bookData) {
+        // <form method="post" id="addToCart"
+        //<input type="hidden" id="ASIN" name="ASIN" value="0752853694">
+        final Element addToCart = document.getElementById("addToCart");
+        if (addToCart != null) {
+            final Element asinElement = addToCart.selectFirst("input#ASIN");
+            if (asinElement != null) {
+                final String asin = asinElement.attr("value");
+                if (asin != null) {
+                    bookData.putString(DBKey.SID_ASIN, asin);
                 }
             }
         }
+    }
 
-        if (isCancelled()) {
-            return;
-        }
-
+    private void parseDetails(@NonNull final Document document,
+                              @NonNull final Bundle bookData,
+                              @NonNull final Locale siteLocale) {
         final Elements lis = document
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
         for (final Element li : lis) {
@@ -569,42 +593,36 @@ public class AmazonSearchEngine
                     break;
             }
         }
+    }
 
-
-        // <form method="post" id="addToCart"
-        //<input type="hidden" id="ASIN" name="ASIN" value="0752853694">
-        final Element addToCart = document.getElementById("addToCart");
-        if (addToCart != null) {
-            final Element asinElement = addToCart.selectFirst("input#ASIN");
-            if (asinElement != null) {
-                final String asin = asinElement.attr("value");
-                if (asin != null) {
-                    bookData.putString(DBKey.SID_ASIN, asin);
-                }
+    private void parseAuthors(@NonNull final Document document,
+                              @NonNull final Locale siteLocale) {
+        for (final Element span : document.select("div#bylineInfo > span.author")) {
+            // If an author has a popup dialog linked, then it has an id with contributorNameID
+            Element a = span.selectFirst("a.contributorNameID");
+            if (a == null) {
+                // If there is no popup, it's a simple link
+                a = span.selectFirst("a.a-link-normal");
             }
-        }
+            if (a != null) {
+                final String href = a.attr("href");
+                if (href != null && href.contains("byline")) {
+                    final Author author = Author.from(a.text());
 
-        if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
-        }
-        if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
-        }
-        if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
-        }
+                    final Element typeElement = span.selectFirst("span.contribution");
+                    if (typeElement != null) {
+                        String data = typeElement.text();
+                        final Matcher matcher = AUTHOR_TYPE_PATTERN.matcher(data);
+                        if (matcher.find()) {
+                            data = matcher.group(1);
+                        }
 
-        checkForSeriesNameInTitle(bookData);
-
-        if (isCancelled()) {
-            return;
-        }
-
-        if (fetchCovers[0]) {
-            final String isbn = bookData.getString(DBKey.KEY_ISBN);
-            final ArrayList<String> list = parseCovers(document, isbn, 0);
-            if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                        if (data != null) {
+                            author.addType(mAuthorTypeMapper.map(siteLocale, data));
+                        }
+                    }
+                    mAuthors.add(author);
+                }
             }
         }
     }

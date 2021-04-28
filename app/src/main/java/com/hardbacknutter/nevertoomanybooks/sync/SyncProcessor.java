@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public final class SyncProcessor {
 
@@ -143,6 +144,8 @@ public final class SyncProcessor {
      * Process the search-result data for one book.
      * <p>
      * This method should be called <strong>after</strong> we got the info/covers from the website.
+     * <p>
+     * Exceptions related to storing cover files are ignored.
      *
      * @param context      Current context
      * @param bookId       to use for updating the database.
@@ -271,13 +274,15 @@ public final class SyncProcessor {
 
         final String fileSpec = incoming.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
         if (fileSpec != null) {
-            final File downloadedFile = new File(fileSpec);
             try {
-                book.persistCover(downloadedFile, cIdx);
+                book.persistCover(new File(fileSpec), cIdx);
 
-            } catch (@NonNull final IOException e) {
-                final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
-                Logger.error(TAG, e, "processCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
+            } catch (@NonNull final IOException | ExternalStorageException e) {
+                // We're called in a loop, and the chance of an exception here is very low
+                // so let's log it, and quietly continue.
+                Logger.error(TAG, e, "processCoverImage|uuid="
+                                     + book.getString(DBKey.KEY_BOOK_UUID)
+                                     + "|cIdx=" + cIdx);
             }
         }
         incoming.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);

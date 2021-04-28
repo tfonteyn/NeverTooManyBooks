@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -287,7 +288,7 @@ public abstract class ShowBookApiHandler
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
 
         mBookData = bookData;
 
@@ -316,7 +317,7 @@ public abstract class ShowBookApiHandler
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
 
         mBookData = bookData;
 

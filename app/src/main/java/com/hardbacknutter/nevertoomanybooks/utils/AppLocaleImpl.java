@@ -56,7 +56,10 @@ public final class AppLocaleImpl
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private final Map<String, Locale> mLocaleMap = new HashMap<>();
 
-    /** The currently active/preferred user Locale. See {@link #apply} for why we store it. */
+    /**
+     * The currently active/preferred user Locale.
+     * See {@link #apply} for why we store it.
+     */
     @Nullable
     private Locale sPreferredLocale;
 
@@ -200,7 +203,7 @@ public final class AppLocaleImpl
 
         } catch (@NonNull final MissingResourceException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "isValid|e=" + e.getLocalizedMessage() + "|locale=" + locale);
+                Log.d(TAG, "isValid|e=" + e.getMessage() + "|locale=" + locale);
             }
             return false;
 

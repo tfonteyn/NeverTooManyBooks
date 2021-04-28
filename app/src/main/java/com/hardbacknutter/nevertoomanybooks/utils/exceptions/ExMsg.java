@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.org.json.JSONException;
 
 public final class ExMsg {
 
@@ -55,9 +54,13 @@ public final class ExMsg {
                                        @Nullable final Throwable e) {
         String msg = getMsg(context, e);
         if (msg == null && e instanceof IOException) {
-            // Handle encapsulated exceptions, but don't handle pure IOException
-            // The latter must be handled by the caller.
-            msg = getMsg(context, e.getCause());
+            // handle a LIMITED set of IO exceptions
+            msg = getIOExMsg(context, (IOException) e);
+
+            if (msg == null) {
+                // Handle encapsulated exceptions last.
+                msg = getMsg(context, e.getCause());
+            }
         }
 
         if (msg != null) {
@@ -65,6 +68,16 @@ public final class ExMsg {
         }
 
         return Optional.empty();
+    }
+
+    @Nullable
+    private static String getIOExMsg(@NonNull final Context context,
+                                     @NonNull final IOException e) {
+        String msg = null;
+
+
+
+        return msg;
     }
 
     @Nullable
@@ -82,7 +95,7 @@ public final class ExMsg {
         if (e instanceof LocalizedException) {
             msg = ((LocalizedException) e).getUserMessage(context);
 
-        } else if (e instanceof JSONException) {
+        } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
             msg = context.getString(R.string.error_unknown_long,
                                     context.getString(R.string.lbl_send_debug));
 

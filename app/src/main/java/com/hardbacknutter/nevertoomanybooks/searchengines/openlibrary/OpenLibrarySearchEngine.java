@@ -198,7 +198,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
 
         final Bundle bookData = new Bundle();
 
@@ -216,7 +216,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
 
         final Bundle bookData = new Bundle();
 
@@ -269,7 +269,7 @@ public class OpenLibrarySearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
         // get and store the result into a string.
         final String response;
         try (TerminatorConnection con = createConnection(url);

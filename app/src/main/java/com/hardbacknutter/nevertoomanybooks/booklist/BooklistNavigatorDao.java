@@ -60,7 +60,7 @@ public final class BooklistNavigatorDao {
 
         mListTableName = listTableName;
 
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         try (SynchronizedStatement stmt = db.compileStatement(
                 "SELECT COUNT(*) FROM " + mListTableName)) {
@@ -93,7 +93,7 @@ public final class BooklistNavigatorDao {
     @IntRange(from = 1)
     public int getRowNumber(final long listTableRowId) {
         // This method is only called once to get the initial row number
-        try (SynchronizedStatement stmt = ServiceLocator.getDb().compileStatement(
+        try (SynchronizedStatement stmt = ServiceLocator.getInstance().getDb().compileStatement(
                 SELECT_ + DBKey.PK_ID + _FROM_ + mListTableName
                 + _WHERE_ + DBKey.FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);

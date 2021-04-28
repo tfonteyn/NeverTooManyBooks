@@ -31,10 +31,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
+import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
@@ -169,6 +171,9 @@ public class StartupViewModel
      */
     public void init(@NonNull final Context context) {
         if (mStartTasks) {
+
+            upgrade(context);
+
             // from here on, we have access to our log file
             Logger.cycleLogs();
 
@@ -196,6 +201,16 @@ public class StartupViewModel
         }
     }
 
+    private void upgrade(@NonNull final Context context) {
+        // Just delete the obsolete dirs.
+        final File root = context.getExternalFilesDir(null);
+        // If the user created sub dirs (we did not), then this will fail... oh well.
+        //noinspection ResultOfMethodCallIgnored
+        Stream.of("tmp", "log", "Upgrades")
+              .map(s -> new File(root, s))
+              .filter(File::exists)
+              .forEach(File::delete);
+    }
 
     /**
      * Run a number of essential tasks (sequentially).

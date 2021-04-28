@@ -182,12 +182,13 @@ class Queue
 
                 case Failed:
                     final Exception e = task.getLastException();
-                    String msg = null;
+                    final String msg;
                     if (e != null) {
-                        msg = e.getLocalizedMessage();
+                        msg = e.toString();
+                    } else {
+                        msg = "exception==null?";
                     }
-                    taskQueueDAO
-                            .setTaskFailed(task, "Unhandled exception while running task: " + msg);
+                    taskQueueDAO.setTaskFailed(task, msg);
                     break;
             }
 

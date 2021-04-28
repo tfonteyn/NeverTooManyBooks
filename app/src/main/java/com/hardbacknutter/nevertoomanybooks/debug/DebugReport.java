@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -49,8 +49,8 @@ public final class DebugReport {
     /** Log tag. */
     private static final String TAG = "DebugReport";
 
-    /** Prefix for the filename of a database backup. Created in {@link AppDir#Temp}. */
-    private static final String DB_EXPORT_FILE_PREFIX = "DBDebug";
+    /** Prefix for the filename of a database backup. */
+    private static final String DB_FILE_PREFIX = "NTMBDebug";
 
     private DebugReport() {
     }
@@ -96,25 +96,27 @@ public final class DebugReport {
             Log.d(TAG, "sendDebugInfo|" + message);
         }
 
+        // Find all files of interest to send
+        final Collection<File> files = new ArrayList<>();
+
+        // Note we deliberately do NOT create a zip file with all files.
+        // This can make the email larger, but is friendlier for the user
+        // to remove files they do not want to send.
         try {
-            // Copy the database from the internal protected area to the temp dir.
+            // Copy the database from the internal protected area to the cache dir
+            // so we can create a valid Uri for it.
             final String fileName =
-                    DB_EXPORT_FILE_PREFIX
+                    DB_FILE_PREFIX
                     // User local zone - it's for THEIR reference.
                     + '-' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     + ".db";
-            final File dbFile = new File(AppDir.Temp.getDir(), fileName);
+            final File dbFile = new File(context.getCacheDir(), fileName);
             dbFile.deleteOnExit();
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
+            files.add(dbFile);
 
-            // Find all files of interest to send
-            final Collection<File> files = new ArrayList<>();
-
-            files.addAll(AppDir.Log.collectFiles(null));
-            files.addAll(AppDir.Upgrades.collectFiles(null));
-
-            files.addAll(AppDir.Temp.collectFiles(
-                    file -> file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));
+            files.addAll(FileUtils.collectFiles(ServiceLocator.getUpgradesDir(), null));
+            files.addAll(FileUtils.collectFiles(ServiceLocator.getLogDir(), null));
 
             // Build the attachment list
             final ArrayList<Uri> uriList = files

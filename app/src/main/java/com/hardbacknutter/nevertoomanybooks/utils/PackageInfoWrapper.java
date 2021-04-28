@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,10 +163,8 @@ public final class PackageInfoWrapper {
                     }
                 }
             }
-        } catch (@NonNull final NoSuchAlgorithmException
-                | RuntimeException e) {
-            final String msg = e.getLocalizedMessage();
-            return msg != null ? msg : e.toString();
+        } catch (@NonNull final NoSuchAlgorithmException | RuntimeException e) {
+            return e.toString();
         }
         return signedBy.toString();
     }

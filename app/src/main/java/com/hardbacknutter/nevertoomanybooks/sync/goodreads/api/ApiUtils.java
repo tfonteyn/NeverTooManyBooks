@@ -115,7 +115,7 @@ public final class ApiUtils {
                 .setThrottler(GoodreadsSearchEngine.THROTTLER);
 
 
-        final File tmpFile = imageDownloader.createTmpFile(
+        final File tmpFile = imageDownloader.getTempFile(
                 GoodreadsManager.FILENAME_SUFFIX,
                 String.valueOf(goodreadsData.getLong(DBKey.SID_GOODREADS_BOOK)), 0, size);
 

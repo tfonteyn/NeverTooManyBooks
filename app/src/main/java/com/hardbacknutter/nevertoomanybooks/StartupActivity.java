@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -47,9 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
@@ -158,10 +159,10 @@ public class StartupActivity
     }
 
     private void initStorage() {
-        final int storedVolumeIndex = AppDir.getVolume(this);
+        final int storedVolumeIndex = CoverDir.getVolume(this);
         final int actualVolumeIndex;
         try {
-            actualVolumeIndex = AppDir.initVolume(this, storedVolumeIndex);
+            actualVolumeIndex = CoverDir.initVolume(this, storedVolumeIndex);
 
         } catch (@NonNull final ExternalStorageException e) {
             onExternalStorageException(e);
@@ -197,7 +198,7 @@ public class StartupActivity
                             }
                             case 1: {
                                 // Just set the new location and continue startup
-                                AppDir.setVolume(this, actualVolumeIndex);
+                                CoverDir.setVolume(this, actualVolumeIndex);
                                 nextStage();
                                 break;
                             }
@@ -307,22 +308,16 @@ public class StartupActivity
     }
 
     private void onGenericException(@Nullable final Exception e) {
-        if (AppDir.Log.exists()) {
-            Logger.error(TAG, e, "");
-        }
+        Logger.error(TAG, e, "");
 
-        CharSequence text = null;
-        if (e != null) {
-            text = e.getLocalizedMessage();
-        }
-        if (text == null) {
-            text = getString(R.string.error_unknown_long, getString(R.string.lbl_send_debug));
-        }
+        final CharSequence msg = ExMsg.map(this, e)
+                                      .orElse(getString(R.string.error_unknown_long,
+                                                        getString(R.string.lbl_send_debug)));
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_error_24)
                 .setTitle(R.string.app_name)
-                .setMessage(text)
+                .setMessage(msg)
                 .setOnDismissListener(d -> finishAndRemoveTask())
                 .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
@@ -339,17 +334,12 @@ public class StartupActivity
     }
 
     private void onExternalStorageException(@NonNull final ExternalStorageException e) {
-        if (AppDir.Log.exists()) {
-            Logger.error(TAG, e, "");
-        }
-
-        final CharSequence msg = getString(R.string.error_storage_not_accessible_s,
-                                           e.getAppDir().toString());
+        Logger.error(TAG, e, "");
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_error_24)
                 .setTitle(R.string.app_name)
-                .setMessage(msg)
+                .setMessage(R.string.error_storage_not_accessible)
                 .setOnDismissListener(d -> finishAndRemoveTask())
                 .setPositiveButton(android.R.string.ok, (d, w) -> finishAndRemoveTask())
                 .create()

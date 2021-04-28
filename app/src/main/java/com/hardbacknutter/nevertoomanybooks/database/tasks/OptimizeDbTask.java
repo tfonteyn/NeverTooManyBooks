@@ -28,10 +28,10 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -70,13 +70,16 @@ public class OptimizeDbTask
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
         // Cleanup temp files. Out of precaution we only trash jpg files
-        FileUtils.deleteDirectory(AppDir.Temp.getDir(), file -> file.getName().endsWith(".jpg"),
+        FileUtils.deleteDirectory(CoverDir.getTemp(context),
+                                  file -> file.getName().endsWith(".jpg"),
                                   this);
 
-        ServiceLocator.getDb().optimize();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+
+        serviceLocator.getDb().optimize();
 
         if (ImageUtils.isImageCachingEnabled()) {
-            ServiceLocator.getCoversDb().optimize();
+            serviceLocator.getCoversDb().optimize();
         }
         return true;
     }

@@ -30,10 +30,12 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Hard coded not to fetch any images.
@@ -84,7 +86,7 @@ public class IsfdbGetBookTask
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
-            throws IOException, DiskFullException {
+            throws DiskFullException, ExternalStorageException, IOException, CredentialsException {
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);

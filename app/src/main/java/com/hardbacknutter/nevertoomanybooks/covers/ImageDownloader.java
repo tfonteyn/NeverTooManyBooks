@@ -37,11 +37,11 @@ import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -127,7 +127,7 @@ public class ImageDownloader {
     }
 
     /**
-     * Create a temporary file.
+     * Get a temporary file.
      *
      * @param source of the image (normally a SearchEngine specific code)
      * @param bookId (optional) either the native id, or the isbn
@@ -135,14 +135,14 @@ public class ImageDownloader {
      * @param size   (optional) size of the image
      *               Omitted if not set
      *
-     * @return temporary file in {@link AppDir#Temp}
+     * @return file
      */
     @AnyThread
     @NonNull
-    public File createTmpFile(@NonNull final String source,
-                              @Nullable final String bookId,
-                              @IntRange(from = 0, to = 1) final int cIdx,
-                              @Nullable final ImageFileInfo.Size size)
+    public File getTempFile(@NonNull final String source,
+                            @Nullable final String bookId,
+                            @IntRange(from = 0, to = 1) final int cIdx,
+                            @Nullable final ImageFileInfo.Size size)
             throws ExternalStorageException {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.
@@ -153,7 +153,7 @@ public class ImageDownloader {
                                 + "_" + (size != null ? size : "")
                                 + ".jpg";
 
-        return new File(AppDir.Temp.getDir(), filename);
+        return new File(CoverDir.getTemp(ServiceLocator.getAppContext()), filename);
     }
 
     /**
@@ -171,7 +171,7 @@ public class ImageDownloader {
     @WorkerThread
     public File fetch(@NonNull final String url,
                       @NonNull final File destination)
-            throws DiskFullException {
+            throws DiskFullException, ExternalStorageException {
         @Nullable
         final File savedFile;
 

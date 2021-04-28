@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -477,11 +478,9 @@ public class BookDaoHelper {
     /**
      * Called during {@link BookDaoImpl#insert(Context, Book, int)}
      * and {@link BookDaoImpl#update(Context, Book, int)}.
-     *
-     * @return {@code false} on failure
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean persistCovers() {
+    void persistCovers()
+            throws ExternalStorageException, IOException {
 
         final String uuid = mBook.getString(DBKey.KEY_BOOK_UUID);
 
@@ -509,14 +508,7 @@ public class BookDaoHelper {
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
-                    final File file = new File(fileSpec);
-                    try {
-                        mBook.persistCover(file, cIdx);
-                    } catch (@NonNull final IOException e) {
-                        Logger.error(TAG, e, "storeCovers|bookId=" + mBook.getId()
-                                             + "|cIdx=" + cIdx);
-                        return false;
-                    }
+                    mBook.persistCover(new File(fileSpec), cIdx);
                 }
 
                 mBook.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
@@ -528,7 +520,5 @@ public class BookDaoHelper {
                 }
             }
         }
-
-        return true;
     }
 }

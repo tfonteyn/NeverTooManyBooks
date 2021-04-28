@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -168,7 +169,7 @@ public class JsonRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, ExternalStorageException {
 
         mResults = new ImportResults();
 
@@ -279,7 +280,7 @@ public class JsonRecordReader
                            @NonNull final JSONObject root,
                            @NonNull final ImportHelper helper,
                            @NonNull final ProgressListener progressListener)
-            throws JSONException {
+            throws JSONException, ExternalStorageException {
 
         final JSONArray books = root.optJSONArray(RecordType.Books.getName());
         if (books == null || books.isEmpty()) {
@@ -299,7 +300,7 @@ public class JsonRecordReader
             progressListener.setMaxPos(books.length());
         }
 
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -378,7 +379,7 @@ public class JsonRecordReader
                                     @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 

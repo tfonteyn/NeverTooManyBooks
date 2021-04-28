@@ -205,7 +205,7 @@ public class CalibreContentServerReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws ImportException, IOException, DiskFullException {
+            throws ImportException, IOException, DiskFullException, ExternalStorageException {
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 

@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -88,7 +89,8 @@ public class SearchEditionsTask
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final IOException | SiteParsingException | RuntimeException e) {
+            } catch (@NonNull final IOException | SiteParsingException | CredentialsException
+                    | RuntimeException e) {
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
                 Logger.error(TAG, e, "site=" + site.toString());

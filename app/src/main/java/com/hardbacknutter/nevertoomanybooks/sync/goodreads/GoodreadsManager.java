@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.AddBookToShelfApiHandler;
@@ -58,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIsbnApi
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.
@@ -226,7 +228,9 @@ public class GoodreadsManager {
     public int sendOneBook(@NonNull final BookshelfDao bookshelfDao,
                            @NonNull final GoodreadsDao goodreadsDao,
                            @NonNull final DataHolder bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         final long bookId = bookData.getLong(DBKey.PK_ID);
 
@@ -402,7 +406,9 @@ public class GoodreadsManager {
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
@@ -430,7 +436,9 @@ public class GoodreadsManager {
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException {
+            throws SiteParsingException, IOException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mContext, mGoodreadsAuth);
@@ -450,11 +458,11 @@ public class GoodreadsManager {
      */
     @NonNull
     private GoodreadsShelves getShelves()
-            throws SiteParsingException, IOException {
+            throws SiteParsingException, IOException, CredentialsException {
 
         if (mShelvesList == null) {
-            final ShelvesListApiHandler handler =
-                    new ShelvesListApiHandler(mContext, mGoodreadsAuth);
+            final ShelvesListApiHandler handler = new ShelvesListApiHandler(mContext,
+                                                                            mGoodreadsAuth);
             mShelvesList = new GoodreadsShelves(handler.getAll());
         }
         return mShelvesList;
@@ -474,7 +482,7 @@ public class GoodreadsManager {
     private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
-            throws SiteParsingException, IOException {
+            throws SiteParsingException, IOException, CredentialsException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
@@ -495,7 +503,7 @@ public class GoodreadsManager {
      */
     private long addBookToShelf(final long grBookId,
                                 @NonNull final Collection<String> shelfNames)
-            throws SiteParsingException, IOException {
+            throws SiteParsingException, IOException, CredentialsException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
@@ -514,7 +522,7 @@ public class GoodreadsManager {
      */
     private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
-            throws SiteParsingException, IOException {
+            throws SiteParsingException, IOException, CredentialsException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mContext, mGoodreadsAuth);
@@ -534,7 +542,7 @@ public class GoodreadsManager {
      */
     @SuppressWarnings("unused")
     private long isbnToId(@NonNull final String isbn)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         if (mIsbnToIdApiHandler == null) {
             mIsbnToIdApiHandler = new IsbnToIdApiHandler(mContext, mGoodreadsAuth);

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.IntRange;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * A delegate class for handling a Goodreads enabled Book.
@@ -128,8 +130,12 @@ public class GoodreadsHandler {
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Snackbar.make(mView, GrStatus.getMessage(mView.getContext(), message.result),
-                          Snackbar.LENGTH_LONG).show();
+            final Context context = mView.getContext();
+            final String msg = ExMsg
+                    .map(context, message.result)
+                    .orElse(context.getString(R.string.error_network_site_access_failed,
+                                              context.getString(R.string.site_goodreads)));
+            Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
         }
     }
 

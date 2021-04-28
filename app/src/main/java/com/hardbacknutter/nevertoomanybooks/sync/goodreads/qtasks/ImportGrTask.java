@@ -176,8 +176,8 @@ public class ImportGrTask
             }
             return status;
 
-        } catch (@NonNull final CredentialsException | DiskFullException
-                | ExternalStorageException e) {
+        } catch (@NonNull final DiskFullException | ExternalStorageException
+                | CredentialsException e) {
             setLastException(e);
             return TaskStatus.Failed;
         }

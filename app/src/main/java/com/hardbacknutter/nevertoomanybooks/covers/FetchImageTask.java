@@ -91,20 +91,16 @@ class FetchImageTask
     @Override
     @WorkerThread
     protected ImageFileInfo doWork(@NonNull final Context context)
-            throws ExternalStorageException, DiskFullException {
-        // Exception handling here is a kludge.
-        // java.io.InterruptedIOException: thread interrupted
-        // CAN BE THROWN (we've SEEN it happen), but for some reason javac does not think so.
-        // Hence we need to catch the exceptions we really want to thrown,
-        // and catch all others.
+            throws DiskFullException, ExternalStorageException {
+        // We need to catch the exceptions we really want to thrown, but catch all others.
         try {
             return mFileManager.search(this, mIsbn, mCIdx, mSizes);
 
-        } catch (@NonNull final ExternalStorageException | DiskFullException e) {
+        } catch (@NonNull final DiskFullException | ExternalStorageException e) {
             throw e;
 
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-            // we failed, but we still need to return the isbn + null fileSpec
+        } catch (@NonNull final Exception ignore) {
+            // failing is ok, but we need to return the isbn + null fileSpec
             return new ImageFileInfo(mIsbn);
         }
     }

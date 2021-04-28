@@ -48,9 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
@@ -116,7 +117,7 @@ public abstract class ArchiveWriterAbstract
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws ExportException, IOException, ExternalStorageException {
 
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
@@ -331,7 +332,7 @@ public abstract class ArchiveWriterAbstract
      */
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, ExternalStorageException {
 
         progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 
@@ -339,11 +340,13 @@ public abstract class ArchiveWriterAbstract
         int delta = 0;
         long lastUpdate = 0;
 
+        final File coverDir = CoverDir.getDir(context);
+
         final String coverStr = context.getString(R.string.lbl_covers);
         for (final String filename : mResults.getCoverFileNames()) {
             // We're using jpg, png.. don't bother compressing.
             // Compressing might actually make some image files bigger!
-            putFile(filename, new File(AppDir.Covers.getDir(), filename), false);
+            putFile(filename, new File(coverDir, filename), false);
             exported++;
 
             delta++;
@@ -404,6 +407,6 @@ public abstract class ArchiveWriterAbstract
         @WorkerThread
         void writeCovers(@NonNull Context context,
                          @NonNull ProgressListener progressListener)
-                throws IOException;
+                throws IOException, ExternalStorageException;
     }
 }

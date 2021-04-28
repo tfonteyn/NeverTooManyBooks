@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
@@ -87,18 +88,19 @@ public abstract class BaseSetup
 
     @Before
     public void setup()
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         super.setup();
 
         final Context context = ServiceLocator.getLocalizedAppContext();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = serviceLocator.getDb();
         Constants.deleteTocs(db);
         Constants.deleteBooks(db);
         Constants.deleteAuthors(db);
         Constants.deletePublishers(db);
 
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final BookDao bookDao = serviceLocator.getBookDao();
         // all books will sit on the same shelf for now
         //Constants.deleteBookshelves(db);
         bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

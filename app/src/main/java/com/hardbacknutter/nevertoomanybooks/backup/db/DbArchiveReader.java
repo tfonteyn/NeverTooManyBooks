@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * A generic wrapper to read sqlite db files.
@@ -76,7 +77,7 @@ public class DbArchiveReader
      */
     public DbArchiveReader(@NonNull final Context context,
                            @NonNull final ImportHelper helper)
-            throws IOException {
+            throws IOException, ExternalStorageException {
 
         mHelper = helper;
 
@@ -129,7 +130,8 @@ public class DbArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException, IOException, DiskFullException {
+            throws InvalidArchiveException, ImportException, IOException,
+                   DiskFullException, ExternalStorageException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateReader == null) {

@@ -29,7 +29,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class GrStatus {
 
@@ -66,6 +65,7 @@ public class GrStatus {
     /** There is network connectivity but something went wrong. */
     public static final int FAILED_IO_EXCEPTION = 201;
     public static final int FAILED_DISK_FULL = 202;
+    public static final int FAILED_STORAGE_NOT_ACCESSIBLE = 203;
 
     @Status
     private final int mMessageId;
@@ -78,25 +78,29 @@ public class GrStatus {
     }
 
     public GrStatus(@Status final int messageId,
-                    @Nullable final Exception exception) {
+                    @Nullable final Exception e) {
         mMessageId = messageId;
-        mException = exception;
+        mException = e;
+    }
+
+    @Status
+    public int getStatus() {
+        return mMessageId;
     }
 
     @NonNull
-    public static String getMessage(@NonNull final Context context,
-                                    @Nullable final Exception exception) {
-        if (exception == null) {
-            // the task was cancelled before it started.
-            return context.getString(R.string.cancelled);
+    public String getMessage(@NonNull final Context context) {
+
+        if (mException != null) {
+            return getMessage(context, mMessageId) + ' ' + mException.getLocalizedMessage();
         } else {
-            return ExMsg.map(context, exception).orElse(context.getString(R.string.error_unknown));
+            return getMessage(context, mMessageId);
         }
     }
 
     @NonNull
-    private static String getString(@NonNull final Context context,
-                                    @Status final int errorCode) {
+    private String getMessage(@NonNull final Context context,
+                              @Status final int errorCode) {
         // We could have created an array or map... but we have a couple of special cases,
         // so just leaving this as a switch.
         switch (errorCode) {
@@ -105,11 +109,15 @@ public class GrStatus {
             case CANCELLED:
                 return context.getString(R.string.cancelled);
 
+
             case SUCCESS_AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);
+
             case SUCCESS_AUTHORIZATION_GRANTED:
                 return context.getString(R.string.info_site_authorization_successful,
                                          context.getString(R.string.site_goodreads));
+
+
             case FAILED_AUTHORIZATION:
                 return context.getString(R.string.error_site_authorization_failed,
                                          context.getString(R.string.site_goodreads));
@@ -123,48 +131,44 @@ public class GrStatus {
                 return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
 
+
             case SUCCESS_TASK_QUEUED:
                 return context.getString(R.string.gr_tq_task_has_been_queued);
+
             case FAILED_IMPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_import_task_is_already_queued);
+
             case FAILED_EXPORT_TASK_ALREADY_QUEUED:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
 
+
             case FAILED_BOOK_HAS_NO_ISBN:
                 return context.getString(R.string.warning_no_isbn_stored_for_book);
+
             case FAILED_BOOK_NOT_FOUND_ON_GOODREADS:
                 return context.getString(R.string.warning_no_matching_book_found);
+
             case FAILED_BOOK_NOT_FOUND_LOCALLY:
                 return context.getString(R.string.warning_book_not_found);
 
+
             case FAILED_NETWORK_UNAVAILABLE:
                 return context.getString(R.string.error_network_please_connect);
+
             case FAILED_IO_EXCEPTION:
                 return context.getString(R.string.error_network_site_access_failed,
                                          context.getString(R.string.site_goodreads));
             case FAILED_DISK_FULL:
                 return context.getString(R.string.error_storage_no_space_left);
 
+            case FAILED_STORAGE_NOT_ACCESSIBLE:
+                return context.getString(R.string.error_storage_not_accessible);
+
+
             case FAILED_UNEXPECTED_EXCEPTION:
             default:
                 return context.getString(R.string.error_unknown_long,
                                          context.getString(R.string.lbl_send_debug));
-
-        }
-    }
-
-    @Status
-    public int getStatus() {
-        return mMessageId;
-    }
-
-    @NonNull
-    public String getMessage(@NonNull final Context context) {
-
-        if (mException != null) {
-            return getString(context, mMessageId) + ' ' + mException.getLocalizedMessage();
-        } else {
-            return getString(context, mMessageId);
         }
     }
 
@@ -181,6 +185,7 @@ public class GrStatus {
              FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
              FAILED_IO_EXCEPTION,
              FAILED_DISK_FULL,
+             FAILED_STORAGE_NOT_ACCESSIBLE,
              FAILED_UNEXPECTED_EXCEPTION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -57,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorExce
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -252,10 +252,10 @@ public class Book
                                              @IntRange(from = 0, to = 1) final int cIdx) {
         final File coverDir;
         try {
-            coverDir = AppDir.Covers.getDir();
+            coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
         } catch (@NonNull final ExternalStorageException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "getUuidCoverFile", e);
+                Log.d(TAG, "getPersistedCoverFile", e);
             }
             return null;
         }
@@ -664,19 +664,17 @@ public class Book
      */
     public File persistCover(@NonNull final File downloadedFile,
                              @IntRange(from = 0, to = 1) final int cIdx)
-            throws IOException {
+            throws IOException, ExternalStorageException {
 
         final String uuid = getString(DBKey.KEY_BOOK_UUID);
         final String name;
         if (cIdx > 0) {
-            name = uuid + "_" + cIdx;
+            name = uuid + "_" + cIdx + ".jpg";
         } else {
-            name = uuid + "";
+            name = uuid + ".jpg";
         }
 
-        final File coverDir = AppDir.Covers.getDir();
-
-        final File destination = new File(coverDir, name + ".jpg");
+        final File destination = new File(CoverDir.getDir(ServiceLocator.getAppContext()), name);
         FileUtils.rename(downloadedFile, destination);
         return destination;
     }
@@ -734,7 +732,7 @@ public class Book
 
                 final File coverDir;
                 try {
-                    coverDir = AppDir.Covers.getDir();
+                    coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
                 } catch (@NonNull final ExternalStorageException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "getCoverFile", e);
@@ -768,8 +766,6 @@ public class Book
      * Create a temporary cover file for this book.
      * If there is a permanent cover, we get a <strong>copy of that one</strong>.
      * If there is no cover, we get a new File object with a temporary name.
-     * <p>
-     * Location: {@link AppDir#Temp}
      *
      * @param cIdx 0..n image index
      *
@@ -779,11 +775,12 @@ public class Book
      */
     @NonNull
     public File createTempCoverFile(@IntRange(from = 0, to = 1) final int cIdx)
-            throws IOException {
+            throws IOException, ExternalStorageException {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC in this method.
-        final File coverFile = new File(AppDir.Temp.getDir(), System.nanoTime() + ".jpg");
+        final File coverFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
+                                        System.nanoTime() + ".jpg");
 
         final File uuidFile = getCoverFile(cIdx);
         if (uuidFile != null && uuidFile.exists()) {
@@ -806,8 +803,8 @@ public class Book
     public void removeCover(@IntRange(from = 0, to = 1) final int cIdx) {
         try {
             setCover(cIdx, null);
-        } catch (@NonNull final IOException ignore) {
-            // ignore, won't happen with a 'null' input.
+        } catch (@NonNull final IOException | ExternalStorageException ignore) {
+            // safe to ignore, can't happen with a 'null' input.
         }
     }
 
@@ -823,7 +820,7 @@ public class Book
     @Nullable
     public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file)
-            throws IOException {
+            throws IOException, ExternalStorageException {
 
         if (mStage.getStage() == EntityStage.Stage.WriteAble
             || mStage.getStage() == EntityStage.Stage.Dirty) {
@@ -1128,7 +1125,7 @@ public class Book
         // We cannot send the cover AND the text; for now we send the text only.
 //        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 //        // prepare the front-cover to post
-//        File coverFile = AppDir.getCoverFile(context, uuid, 0);
+//        File coverFile = CoverDir.getCoverFile(context, uuid, 0);
 //        if (coverFile.exists()) {
 //            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
 //        }

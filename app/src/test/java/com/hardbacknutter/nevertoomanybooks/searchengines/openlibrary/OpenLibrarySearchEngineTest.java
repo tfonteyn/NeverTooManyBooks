@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,8 +70,7 @@ class OpenLibrarySearchEngineTest
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);
             mSearchEngine.handleResponse(json, new boolean[]{false, false}, mRawData);
-
-        } catch (@NonNull final IOException | JSONException e) {
+        } catch (IOException | ExternalStorageException | DiskFullException e) {
             fail(e);
         }
 

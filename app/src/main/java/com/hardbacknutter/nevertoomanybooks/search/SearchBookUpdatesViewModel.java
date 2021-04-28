@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -416,7 +417,7 @@ public class SearchBookUpdatesViewModel
             if (delta != null) {
                 try {
                     mBookDao.update(context, delta, 0);
-                } catch (@NonNull final DaoWriteException e) {
+                } catch (@NonNull final DaoWriteException | ExternalStorageException e) {
                     // ignore, but log it.
                     Logger.error(TAG, e);
                 }

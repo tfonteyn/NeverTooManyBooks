@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
@@ -104,7 +104,9 @@ public class ImportCollectionTask
     @Override
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context)
-            throws IOException, DaoWriteException, DiskFullException {
+            throws IOException, DaoWriteException,
+                   DiskFullException, ExternalStorageException,
+                   CredentialsException {
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_connecting));
@@ -113,8 +115,9 @@ public class ImportCollectionTask
         final String userId = loginHelper.login();
         mSearchEngine.setLoginHelper(loginHelper);
 
-        final SynchronizedDb db = ServiceLocator.getDb();
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final SynchronizedDb db = serviceLocator.getDb();
+        final BookDao bookDao = serviceLocator.getBookDao();
 
         final ImportCollection ic = new ImportCollection(context, new SyncConfig(), userId);
 
@@ -143,12 +146,12 @@ public class ImportCollectionTask
     private void processPage(@NonNull final Context context,
                              @NonNull final BookDao bookDao,
                              @NonNull final List<Bundle> page)
-            throws IOException, DaoWriteException, DiskFullException {
+            throws DiskFullException, ExternalStorageException, IOException,
+                   DaoWriteException, CredentialsException {
 
         for (final Bundle cData : page) {
             if (!isCancelled()) {
-                final long externalId = cData
-                        .getLong(DBKey.SID_STRIP_INFO);
+                final long externalId = cData.getLong(DBKey.SID_STRIP_INFO);
                 // lookup locally using the externalId column.
                 try (Cursor cursor = bookDao.fetchByKey(
                         DBKey.SID_STRIP_INFO, String.valueOf(externalId))) {
@@ -186,12 +189,7 @@ public class ImportCollectionTask
                         }
 
                         if (delta != null) {
-                            try {
-                                bookDao.update(context, delta, 0);
-                            } catch (@NonNull final DaoWriteException e) {
-                                // ignore, but log it.
-                                Logger.error(TAG, e);
-                            }
+                            bookDao.update(context, delta, 0);
                         }
 
                         mUpdated.add(book.getId());

@@ -76,7 +76,7 @@ class OwnedBookCreateApiHandler
      */
     public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws SiteParsingException, IOException {
+            throws SiteParsingException, IOException, CredentialsException {
 
         final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mContext, mGrAuth);
         final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());

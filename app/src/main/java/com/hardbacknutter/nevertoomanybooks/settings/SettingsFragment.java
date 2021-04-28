@@ -51,11 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -271,34 +271,38 @@ public class SettingsFragment
                     .setTitle(R.string.lbl_storage_volume)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
-                    .setSingleChoiceItems(items, 0, (d, w) -> mVolumeChangedOptionChosen = w)
+                    .setSingleChoiceItems(items, 1, (d, w) -> mVolumeChangedOptionChosen = w)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        switch (mVolumeChangedOptionChosen) {
-                            case 0: {
-                                setStorageVolume(newVolumeIndex);
-                                break;
-                            }
-                            case 1: {
-                                // check space and start the task
-                                if (!mVm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
-                                    //noinspection ConstantConditions
-                                    Snackbar.make(getView(), R.string.error_storage_not_writable,
-                                                  Snackbar.LENGTH_LONG).show();
-                                }
-                                break;
-                            }
-
-                            default:
-                                throw new IllegalStateException();
-                        }
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, w) ->
+                            onVolumeChangedOptionChosen(oldVolumeIndex, newVolumeIndex))
                     .create()
                     .show();
         }
 
         // Do not let the system update the preference value.
         return false;
+    }
+
+    private void onVolumeChangedOptionChosen(final int oldVolumeIndex,
+                                             final int newVolumeIndex) {
+        switch (mVolumeChangedOptionChosen) {
+            case 0: {
+                setStorageVolume(newVolumeIndex);
+                break;
+            }
+            case 1: {
+                // check space and start the task
+                //noinspection ConstantConditions
+                if (!mVm.moveData(getContext(), oldVolumeIndex, newVolumeIndex)) {
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.error_storage_not_writable,
+                                  Snackbar.LENGTH_LONG).show();
+                }
+                break;
+            }
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -395,7 +399,7 @@ public class SettingsFragment
         mStorageVolumePref.setValue(String.valueOf(volume));
         try {
             //noinspection ConstantConditions
-            AppDir.initVolume(getContext(), volume);
+            CoverDir.initVolume(getContext(), volume);
             return true;
 
         } catch (@NonNull final ExternalStorageException e) {

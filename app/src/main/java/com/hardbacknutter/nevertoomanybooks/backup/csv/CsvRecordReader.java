@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -62,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
@@ -153,7 +153,7 @@ public class CsvRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, ExternalStorageException {
 
         mResults = new ImportResults();
 
@@ -190,7 +190,7 @@ public class CsvRecordReader
                            @NonNull final ImportHelper helper,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
-            throws ImportException {
+            throws ImportException, ExternalStorageException {
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
@@ -215,7 +215,7 @@ public class CsvRecordReader
         // Count the nr of books in between progress updates.
         int delta = 0;
 
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -245,8 +245,7 @@ public class CsvRecordReader
                                 R.string.error_import_csv_column_count_mismatch, row));
                     }
 
-                    final Book book = mBookCoder.decode(context,
-                                                        csvColumnNames, csvDataRow);
+                    final Book book = mBookCoder.decode(context, csvColumnNames, csvDataRow);
 
                     // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
                     @Nullable
@@ -272,9 +271,7 @@ public class CsvRecordReader
                                        context.getString(R.string.error_import_csv_line, row));
 
                 } catch (@NonNull final ImportException e) {
-                    // an ImportException has a user-displayable message.
-                    handleRowException(row, e,
-                                       Objects.requireNonNull(e.getLocalizedMessage()));
+                    handleRowException(row, e, e.getUserMessage(context));
                 }
 
                 row++;
@@ -333,7 +330,7 @@ public class CsvRecordReader
                                     @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
@@ -408,7 +405,7 @@ public class CsvRecordReader
                                   @NonNull final ImportHelper helper,
                                   @NonNull final Book book,
                                   final long importNumericId)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         // Add the importNumericId back to the book.
         book.putLong(DBKey.PK_ID, importNumericId);
 
@@ -457,7 +454,7 @@ public class CsvRecordReader
 
     private void importBook(@NonNull final Context context,
                             final Book book)
-            throws DaoWriteException {
+            throws DaoWriteException, ExternalStorageException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
         final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);

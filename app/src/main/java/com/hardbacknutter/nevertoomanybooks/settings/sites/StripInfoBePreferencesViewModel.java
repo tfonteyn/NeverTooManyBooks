@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -89,7 +90,7 @@ public class StripInfoBePreferencesViewModel
         @Nullable
         @Override
         protected Boolean doWork(@NonNull final Context context)
-                throws IOException {
+                throws IOException, CredentialsException {
             final String url = SearchEngineRegistry
                     .getInstance()
                     .getByEngineId(SearchSites.STRIP_INFO_BE)

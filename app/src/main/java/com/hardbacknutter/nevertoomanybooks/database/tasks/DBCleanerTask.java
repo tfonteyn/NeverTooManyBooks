@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
- * Data cleaning. Done on each startup.
+ * Data cleaning. Done at app startup when deemed needed.
  */
 public class DBCleanerTask
         extends LTask<Boolean>

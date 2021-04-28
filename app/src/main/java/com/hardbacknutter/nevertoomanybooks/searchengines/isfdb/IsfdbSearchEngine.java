@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -254,7 +255,7 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -270,7 +271,7 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -289,7 +290,7 @@ public class IsfdbSearchEngine
                          @Nullable final String title,
                          @Nullable final String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                            + "ORDERBY=pub_title"
@@ -347,7 +348,7 @@ public class IsfdbSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
+            throws ExternalStorageException, DiskFullException, CredentialsException {
         try {
             final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
             if (!editions.isEmpty()) {
@@ -361,9 +362,6 @@ public class IsfdbSearchEngine
                     }
                 }
             }
-        } catch (@NonNull final ExternalStorageException e) {
-            throw e;
-
         } catch (@NonNull final IOException ignore) {
             // ignore
         }
@@ -381,7 +379,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         // transform the Edition list to a simple isbn list
         return fetchEditionsByIsbn(validIsbn)
@@ -557,7 +555,7 @@ public class IsfdbSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException {
         super.parse(document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(getContext());
@@ -1068,7 +1066,7 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     public List<Edition> fetchEditions(@NonNull final String url)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         final Document document = loadDocument(url);
         if (!isCancelled()) {
@@ -1090,7 +1088,7 @@ public class IsfdbSearchEngine
     @WorkerThread
     @NonNull
     List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
-            throws IOException {
+            throws IOException, CredentialsException {
         mIsbn = validIsbn;
 
         final String url = getSiteUrl() + String.format(EDITIONS_URL, validIsbn);
@@ -1190,7 +1188,7 @@ public class IsfdbSearchEngine
     void fetchByEdition(@NonNull final Edition edition,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
-            throws IOException, DiskFullException {
+            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
 
         final Document document = loadDocumentByEdition(edition);
         if (!isCancelled()) {
@@ -1200,7 +1198,7 @@ public class IsfdbSearchEngine
 
     @NonNull
     private Document loadDocumentByEdition(@NonNull final Edition edition)
-            throws IOException {
+            throws IOException, CredentialsException {
 
         // check if we already got the page
         final Document document = edition.getDocument();

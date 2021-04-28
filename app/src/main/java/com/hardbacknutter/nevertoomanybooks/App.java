@@ -26,6 +26,8 @@ import android.os.StrictMode;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.config.CoreConfigurationBuilder;
@@ -96,8 +98,9 @@ public class App
         final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                 .setResReportSendSuccessToast(R.string.acra_resReportSendSuccessToast)
                 .setResReportSendFailureToast(R.string.error_email_failed)
-                .setApplicationLogFileDir(Directory.EXTERNAL_FILES)
-                .setApplicationLogFile(Logger.LOG_PATH)
+                .setApplicationLogFileDir(Directory.FILES)
+                .setApplicationLogFile(
+                        ServiceLocator.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE)
                 .setApplicationLogFileLines(ACRA_LOGFILE_LINES)
                 // TODO: comment-out unneeded fields
                 .setReportContent(

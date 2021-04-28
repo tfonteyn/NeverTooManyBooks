@@ -316,7 +316,7 @@ class BooklistBuilder {
 
         tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {

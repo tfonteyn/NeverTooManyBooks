@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -115,10 +114,7 @@ public class DBHelper
     /** The database prepared statement cache size (default 25, max 100). */
     private static final String PK_STARTUP_DB_STMT_CACHE_SIZE = "db.stmt.cache.size";
 
-    /**
-     * Prefix for the filename of a database backup before doing an upgrade.
-     * Stored in {@link AppDir#Upgrades}.
-     */
+    /** Prefix for the filename of a database backup before doing an upgrade. */
     private static final String DB_UPGRADE_FILE_PREFIX = "DbUpgrade";
 
     /** SQL to get the names of all indexes. */
@@ -166,7 +162,7 @@ public class DBHelper
      * safe access to the database.
      */
     public static void recreateIndices() {
-        final SynchronizedDb db = ServiceLocator.getDb();
+        final SynchronizedDb db = ServiceLocator.getInstance().getDb();
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // It IS safe here to get the underlying database, as we're in a SyncLock.
@@ -652,7 +648,7 @@ public class DBHelper
         if (oldVersion != newVersion) {
             final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
-                final File destFile = new File(AppDir.Upgrades.getDir(), backup);
+                final File destFile = new File(ServiceLocator.getUpgradesDir(), backup);
                 // rename the existing file if there is one
                 if (destFile.exists()) {
                     final File destination = new File(destFile.getPath() + ".bak");
