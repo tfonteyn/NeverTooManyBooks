@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONException;
@@ -337,7 +337,10 @@ public class AmazonSearchEngine
 //    @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -354,7 +357,10 @@ public class AmazonSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
@@ -369,20 +375,20 @@ public class AmazonSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
-        try {
-            final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
-            final Document document = loadDocument(url);
-            if (!isCancelled()) {
-                final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
-                if (!imageList.isEmpty()) {
-                    // let the system resolve any path variations
-                    return new File(imageList.get(0)).getAbsolutePath();
-                }
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
+        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
+        final Document document = loadDocument(url);
+        if (!isCancelled()) {
+            final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
+            if (!imageList.isEmpty()) {
+                // let the system resolve any path variations
+                return new File(imageList.get(0)).getAbsolutePath();
             }
-        } catch (@NonNull final IOException | CredentialsException ignore) {
-            // ignore
         }
+
         return null;
     }
 
@@ -391,7 +397,7 @@ public class AmazonSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, ExternalStorageException, IOException {
         super.parse(document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(document.location().split("/")[2]);

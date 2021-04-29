@@ -49,10 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.AuthUserApiHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Handles all authentication for Goodreads access.
@@ -175,44 +175,6 @@ public class GoodreadsAuth {
                       .apply();
     }
 
-    /**
-     * Get the stored token values from prefs.
-     * This is token availability only, we don't check if they are valid here.
-     * <p>
-     * No network access.
-     *
-     * @return {@code true} if we have credentials.
-     *
-     * @throws IllegalStateException if the developer key is not present
-     */
-    @AnyThread
-    public boolean hasCredentials()
-            throws IllegalStateException {
-
-        // sanity check; see gradle.build
-        if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
-            // This should only happen if the developer forgot to add the Goodreads keys... (me)
-            Logger.warn(TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
-            if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException(DEV_KEY_NOT_AVAILABLE);
-            } else {
-                return false;
-            }
-        }
-
-        if (sAccessToken != null && !sAccessToken.isEmpty()
-            && sAccessSecret != null && !sAccessSecret.isEmpty()) {
-            return true;
-        }
-
-        // Get the stored token values from prefs
-        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
-        sAccessToken = global.getString(ACCESS_TOKEN, null);
-        sAccessSecret = global.getString(ACCESS_SECRET, null);
-
-        return sAccessToken != null && !sAccessToken.isEmpty()
-               && sAccessSecret != null && !sAccessSecret.isEmpty();
-    }
 
     /**
      * Return the public developer key, used for GET queries.
@@ -243,8 +205,11 @@ public class GoodreadsAuth {
         return sUserId;
     }
 
+
     /**
      * Convenience wrapper.
+     * <p>
+     * Network access if credentials need to be checked.
      *
      * @param context Current context
      *
@@ -253,8 +218,9 @@ public class GoodreadsAuth {
     @WorkerThread
     public void hasValidCredentialsOrThrow(@NonNull final Context context)
             throws CredentialsException {
-        if (!hasValidCredentials(context)) {
-            throw new CredentialsException(R.string.site_goodreads, "no valid credentials");
+        if (getCredentialStatus(context) != CredentialStatus.Valid) {
+            throw new CredentialsException(R.string.site_goodreads,
+                                           CredentialStatus.Invalid.toString());
         }
     }
 
@@ -265,32 +231,32 @@ public class GoodreadsAuth {
      * Network access if credentials need to be checked.
      * <p>
      * It is assumed that {@link SearchEngine#isAvailable()} has already been called.
-     * Developer reminder: do NOT throw Exceptions from here; fail with returning {@code false}.
-     * (unless we don't have a developer key installed)
+     * <p>
+     * Developer reminder: do NOT throw Exceptions from here.
+     * (unless we don't have a developer key installed: IllegalStateException)
      *
      * @param context Current context
      *
-     * @return {@code true} if the credentials have been validated with the website.
+     * @return current status
      *
      * @throws IllegalStateException if the developer key is not present
      */
+    @NonNull
     @WorkerThread
-    public boolean hasValidCredentials(@NonNull final Context context)
+    public CredentialStatus getCredentialStatus(@NonNull final Context context)
             throws IllegalStateException {
         // If credentials have already been accepted, don't re-check.
         if (sCredentialsValidated) {
-            return true;
+            return CredentialStatus.Valid;
         }
 
         // If we don't have credentials at all, just leave
         if (!hasCredentials()) {
-            return false;
+            return CredentialStatus.Missing;
         }
 
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
 
-        // should not be needed:
-        //sCredentialsValidated = false;
         try {
             final AuthUserApiHandler authUserApi = new AuthUserApiHandler(context, this);
             if (authUserApi.getAuthUser() != 0) {
@@ -305,8 +271,51 @@ public class GoodreadsAuth {
             sAccessToken = null;
         }
 
-        return sCredentialsValidated;
+        return sCredentialsValidated ? CredentialStatus.Valid : CredentialStatus.Invalid;
     }
+
+    /**
+     * Get the stored token values from prefs.
+     * This is token availability only, we don't check if they are valid here.
+     * <p>
+     * No network access.
+     *
+     * @return {@code true} if we have credentials.
+     *
+     * @throws IllegalStateException if the developer key is not present
+     */
+    @AnyThread
+    public boolean hasCredentials()
+            throws IllegalStateException {
+
+        // sanity check; see gradle.build
+        if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
+            // This should only happen if the developer forgot to add the Goodreads keys... (me)
+            Logger.warn(TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
+            if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException(DEV_KEY_NOT_AVAILABLE);
+            } else {
+                return false;
+            }
+        }
+
+        if (hasTokens()) {
+            return true;
+        }
+
+        // Get the stored token values from prefs
+        final SharedPreferences global = ServiceLocator.getGlobalPreferences();
+        sAccessToken = global.getString(ACCESS_TOKEN, null);
+        sAccessSecret = global.getString(ACCESS_SECRET, null);
+
+        return hasTokens();
+    }
+
+    private boolean hasTokens() {
+        return sAccessToken != null && !sAccessToken.isEmpty()
+               && sAccessSecret != null && !sAccessSecret.isEmpty();
+    }
+
 
     /**
      * Request authorization for this application, for the current user,
@@ -314,12 +323,12 @@ public class GoodreadsAuth {
      *
      * @return the authentication Uri to which the user should be send
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws IOException            on other failures
+     * @throws CredentialsException authentication failure
+     * @throws IOException          on other failures
      */
     @WorkerThread
     public Uri requestAuthorization()
-            throws AuthorizationException,
+            throws CredentialsException,
                    IOException {
 
         String authUrl;
@@ -333,8 +342,10 @@ public class GoodreadsAuth {
 
         } catch (@NonNull final OAuthCommunicationException e) {
             throw new IOException(e);
+
         } catch (@NonNull final OAuthMessageSignerException | OAuthNotAuthorizedException e) {
-            throw new AuthorizationException(e);
+            throw new CredentialsException(R.string.site_goodreads, e);
+
         } catch (@NonNull final OAuthExpectationFailedException e) {
             // this would be a bug
             throw new IllegalStateException(e);
@@ -366,12 +377,13 @@ public class GoodreadsAuth {
      *
      * @return {@code true} on success
      *
-     * @throws AuthorizationException with GoodReads
-     * @throws IOException            on other failures
+     * @throws CredentialsException authentication failure
+     * @throws IOException          on other failures
      */
     @WorkerThread
     boolean handleAuthenticationAfterAuthorization(@NonNull final Context context)
-            throws AuthorizationException, IOException {
+            throws CredentialsException,
+                   IOException {
 
         // Get the temporarily saved request tokens.
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
@@ -394,8 +406,10 @@ public class GoodreadsAuth {
 
         } catch (@NonNull final OAuthCommunicationException e) {
             throw new IOException(e);
+
         } catch (@NonNull final OAuthMessageSignerException | OAuthNotAuthorizedException e) {
-            throw new AuthorizationException(e);
+            throw new CredentialsException(R.string.site_goodreads, e);
+
         } catch (@NonNull final OAuthExpectationFailedException e) {
             // this would be a bug
             throw new IllegalStateException(e);
@@ -413,7 +427,7 @@ public class GoodreadsAuth {
               .apply();
 
         // and return success or failure.
-        return hasValidCredentials(context);
+        return getCredentialStatus(context) == CredentialStatus.Valid;
     }
 
     /**
@@ -473,17 +487,7 @@ public class GoodreadsAuth {
         }
     }
 
-    /**
-     * A wrapper around the OAuth exception so we can keep the use
-     * of the original local to this class.
-     */
-    public static class AuthorizationException
-            extends Exception {
-
-        private static final long serialVersionUID = 5691917497651682323L;
-
-        AuthorizationException(@NonNull final Throwable cause) {
-            super(cause);
-        }
+    public enum CredentialStatus {
+        Valid, Invalid, Missing
     }
 }

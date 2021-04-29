@@ -29,16 +29,18 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.SimpleXmlFilter.XmlListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -116,13 +118,13 @@ public class ReviewsListApiHandler
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws IOException on failures
      */
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
                                          mGrAuth.getUserId());

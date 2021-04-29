@@ -93,18 +93,18 @@ public class StartupViewModel
          */
         @Override
         public void onFinished(@NonNull final FinishedMessage<Boolean> message) {
-            cleanup(message.taskId);
+            cleanup(message.getTaskId());
         }
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<Boolean> message) {
-            cleanup(message.taskId);
+            cleanup(message.getTaskId());
         }
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
             // We don't care about the status; just finish
-            cleanup(message.taskId);
+            cleanup(message.getTaskId());
         }
 
         private void cleanup(final int taskId) {

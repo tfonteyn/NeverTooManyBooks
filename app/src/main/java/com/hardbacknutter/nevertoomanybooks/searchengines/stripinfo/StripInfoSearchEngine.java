@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -69,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -192,7 +192,10 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -213,7 +216,10 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -233,7 +239,10 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByBarcode(@NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
         // the search url is the same
         return searchByIsbn(barcode, fetchCovers);
     }

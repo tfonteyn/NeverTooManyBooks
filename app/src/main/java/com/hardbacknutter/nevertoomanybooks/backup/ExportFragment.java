@@ -47,7 +47,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -438,7 +437,7 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Exception e = message.requireResult();
 
             @StringRes
             final int title = mVm.getExportHelper().isBackup()
@@ -447,7 +446,7 @@ public class ExportFragment
 
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, e)
                                     .orElse(getString(R.string.error_storage_not_writable));
 
             //noinspection ConstantConditions
@@ -470,9 +469,9 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final ExportResults results = message.requireResult();
 
-            final List<String> items = extractExportedItems(message.result);
+            final List<String> items = extractExportedItems(results);
             if (items.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())

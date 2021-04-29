@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -71,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -255,7 +255,10 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -271,7 +274,10 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -290,7 +296,10 @@ public class IsfdbSearchEngine
                          @Nullable final String title,
                          @Nullable final String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                            + "ORDERBY=pub_title"
@@ -348,22 +357,22 @@ public class IsfdbSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException, CredentialsException {
-        try {
-            final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
-            if (!editions.isEmpty()) {
-                final Edition edition = editions.get(0);
-                final Document document = loadDocumentByEdition(edition);
-                if (!isCancelled()) {
-                    final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
-                    if (!imageList.isEmpty()) {
-                        // let the system resolve any path variations
-                        return new File(imageList.get(0)).getAbsolutePath();
-                    }
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
+
+        final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
+        if (!editions.isEmpty()) {
+            final Edition edition = editions.get(0);
+            final Document document = loadDocumentByEdition(edition);
+            if (!isCancelled()) {
+                final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
+                if (!imageList.isEmpty()) {
+                    // let the system resolve any path variations
+                    return new File(imageList.get(0)).getAbsolutePath();
                 }
             }
-        } catch (@NonNull final IOException ignore) {
-            // ignore
         }
         return null;
     }
@@ -555,7 +564,9 @@ public class IsfdbSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException {
         super.parse(document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(getContext());

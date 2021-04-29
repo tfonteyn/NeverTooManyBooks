@@ -179,29 +179,34 @@ public class CalibrePreferencesFragment
         mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-
     }
 
     private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
-        if (message.isNewEvent() && message.result != null) {
-            if (message.result) {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT).show();
-                getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
-            } else {
-                //For now we don't get here, instead we would be in onFailure.
-                // But keeping this here to guard against future changes in the task logic
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
+        if (message.isNewEvent()) {
+            final Boolean result = message.getResult();
+            if (result != null) {
+                if (result) {
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
+                            .show();
+                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
+                } else {
+                    //For now we don't get here, instead we would be in onFailure.
+                    // But keeping this here to guard against future changes in the task logic
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
+                }
             }
         }
     }
 
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
+            final Exception e = message.getResult();
+
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, e)
                                     .orElse(getString(R.string.error_unknown));
 
             new MaterialAlertDialogBuilder(context)

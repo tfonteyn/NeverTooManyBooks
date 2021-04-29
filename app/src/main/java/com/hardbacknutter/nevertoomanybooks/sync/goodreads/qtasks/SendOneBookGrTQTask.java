@@ -24,10 +24,7 @@ import android.database.Cursor;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
@@ -37,8 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
  * This is used during retrying a formerly failed book and is
  * <strong>initiated by the queue manager</strong>.
  */
-public class SendOneBookGrTask
-        extends SendBooksGrTaskBase {
+public class SendOneBookGrTQTask
+        extends SendBooksGrBaseTQTask {
 
     private static final long serialVersionUID = 3836442077648262220L;
 
@@ -51,31 +48,30 @@ public class SendOneBookGrTask
      * @param description for the task
      * @param bookId      Book to send
      */
-    public SendOneBookGrTask(@NonNull final String description,
-                             @IntRange(from = 1) final long bookId) {
+    public SendOneBookGrTQTask(@NonNull final String description,
+                               @IntRange(from = 1) final long bookId) {
         super(description);
         mBookId = bookId;
     }
 
     @Override
-    protected TaskStatus send(@NonNull final QueueManager queueManager,
-                              @NonNull final GoodreadsManager grManager) {
+    protected TaskStatus send(@NonNull final GoodreadsManager grManager) {
 
-        final GoodreadsDao grDao = grManager.getGoodreadsDao();
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+        final QueueManager queueManager = QueueManager.getInstance();
 
-        try (Cursor cursor = grDao.fetchBookForExport(mBookId)) {
+        try (Cursor cursor = grManager.getGoodreadsDao().fetchBookForExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return sendOneBook(queueManager, grManager, grDao, bookshelfDao, bookData);
+                return sendOneBook(queueManager, grManager, bookData);
             }
         }
+
         // No book to send is considered a success
         return TaskStatus.Success;
     }
 
     @Override
     public int getCategory() {
-        return GrBaseTask.CAT_EXPORT_ONE_BOOK;
+        return GrBaseTQTask.CAT_EXPORT_ONE_BOOK;
     }
 }

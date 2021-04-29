@@ -30,8 +30,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegisterBinding;
@@ -105,8 +103,9 @@ public class GoodreadsRegistrationActivity
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
+            final Exception e = message.getResult();
             final String msg = ExMsg
-                    .map(this, message.result)
+                    .map(this, e)
                     .orElse(getString(R.string.error_network_site_access_failed,
                                       getString(R.string.site_goodreads)));
             Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
@@ -115,11 +114,11 @@ public class GoodreadsRegistrationActivity
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            final GrStatus result = message.requireResult();
+            if (result.getStatus() == GrStatus.CREDENTIALS_MISSING) {
                 mVm.promptForAuthentication(this);
             } else {
-                Snackbar.make(mVb.getRoot(), message.result.getMessage(this),
+                Snackbar.make(mVb.getRoot(), result.getMessage(this),
                               Snackbar.LENGTH_LONG).show();
             }
         }

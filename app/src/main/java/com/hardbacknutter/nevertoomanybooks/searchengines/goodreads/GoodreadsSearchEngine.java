@@ -33,23 +33,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.xml.sax.SAXException;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.SearchBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIsbnApiHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -144,8 +145,9 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -157,7 +159,7 @@ public class GoodreadsSearchEngine
             final long grBookId = Long.parseLong(externalId);
             return mByIdApi.searchByExternalId(grBookId, fetchCovers, bookData);
 
-        } catch (@NonNull final HttpNotFoundException | NumberFormatException e) {
+        } catch (@NonNull final HttpNotFoundException | NumberFormatException | SAXException e) {
             // ignore
         }
         return bookData;
@@ -167,8 +169,9 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -179,7 +182,7 @@ public class GoodreadsSearchEngine
             }
             return mByIsbnApi.searchByIsbn(validIsbn, fetchCovers, bookData);
 
-        } catch (@NonNull final HttpNotFoundException ignore) {
+        } catch (@NonNull final HttpNotFoundException | SAXException ignore) {
             // ignore
         }
         return bookData;
@@ -192,8 +195,7 @@ public class GoodreadsSearchEngine
      *
      * @return first book found, or an empty bundle if none found.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on other failures
+     * @throws IOException on other failures
      */
     @NonNull
     @Override
@@ -203,8 +205,9 @@ public class GoodreadsSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -222,7 +225,7 @@ public class GoodreadsSearchEngine
                     }
                     return mByIdApi.searchByExternalId(grIdList.get(0), fetchCovers, bookData);
                 }
-            } catch (@NonNull final HttpNotFoundException ignore) {
+            } catch (@NonNull final HttpNotFoundException | SAXException ignore) {
                 // ignore
             }
         }
@@ -235,18 +238,23 @@ public class GoodreadsSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
-        if (!mGoodreadsAuth.hasValidCredentials(getContext())) {
+        if (mGoodreadsAuth.getCredentialStatus(getContext())
+            != GoodreadsAuth.CredentialStatus.Valid) {
             return null;
         }
+
         try {
             if (mByIsbnApi == null) {
                 mByIsbnApi = new ShowBookByIsbnApiHandler(getContext(), mGoodreadsAuth);
             }
             return mByIsbnApi.searchCoverByIsbn(validIsbn, new Bundle());
 
-        } catch (@NonNull final IOException | SiteParsingException ignore) {
+        } catch (@NonNull final HttpNotFoundException | SAXException ignore) {
             // ignore
         }
         return null;

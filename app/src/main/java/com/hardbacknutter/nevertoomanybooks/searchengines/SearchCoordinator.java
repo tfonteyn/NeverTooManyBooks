@@ -52,7 +52,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -201,27 +200,27 @@ public class SearchCoordinator
         @Override
         public void onFinished(@NonNull final FinishedMessage<Bundle> message) {
             // sanity check
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Bundle result = message.requireResult();
             synchronized (mSearchResults) {
-                mSearchResults.put(message.taskId, message.result);
+                mSearchResults.put(message.getTaskId(), result);
             }
-            onSearchTaskFinished(message.taskId, message.result);
+            onSearchTaskFinished(message.getTaskId(), result);
         }
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<Bundle> message) {
             synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(message.taskId, null);
+                mSearchFinishedMessages.put(message.getTaskId(), null);
             }
-            onSearchTaskFinished(message.taskId, message.result);
+            onSearchTaskFinished(message.getTaskId(), message.getResult());
         }
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
             synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(message.taskId, message.result);
+                mSearchFinishedMessages.put(message.getTaskId(), message.getResult());
             }
-            onSearchTaskFinished(message.taskId, null);
+            onSearchTaskFinished(message.getTaskId(), null);
         }
     };
     private DateParser mDateParser;

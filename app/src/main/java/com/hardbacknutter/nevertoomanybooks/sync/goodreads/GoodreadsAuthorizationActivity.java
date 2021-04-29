@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Trivial Activity to handle the callback URI.
@@ -73,7 +74,7 @@ public class GoodreadsAuthorizationActivity
                 Exception ex = null;
                 try {
                     res = new GoodreadsAuth().handleAuthenticationAfterAuthorization(context);
-                } catch (@NonNull final GoodreadsAuth.AuthorizationException | IOException e) {
+                } catch (@NonNull final CredentialsException | IOException e) {
                     ex = e;
                 }
 
@@ -91,7 +92,7 @@ public class GoodreadsAuthorizationActivity
 
     private void allDone(@NonNull final Context context,
                          final boolean result,
-                         @Nullable final Exception exception) {
+                         @Nullable final Exception e) {
 
         final Notifier notifier = ServiceLocator.getInstance().getNotifier();
         final String siteName = context.getString(R.string.site_goodreads);
@@ -103,7 +104,8 @@ public class GoodreadsAuthorizationActivity
             notifier.sendInfo(context, Notifier.ID_GOODREADS, intent, false,
                               R.string.info_authorized, msg);
 
-        } else if (exception != null) {
+        } else if (e != null) {
+            // This is for both CredentialsException | IOException
             final String msg = context.getString(
                     R.string.error_site_authorization_failed, siteName) + ' '
                                + context.getString(R.string.error_unknown_long,
@@ -111,13 +113,15 @@ public class GoodreadsAuthorizationActivity
 
             final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
             notifier.sendError(context, Notifier.ID_GOODREADS, intent, true,
-                               R.string.info_not_authorized, msg);
+                               R.string.error_authorization_failed, msg);
+
         } else {
+            // a simple 'no error' but we failed to login.
             final String msg = context.getString(
                     R.string.error_site_authentication_failed, siteName);
             final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
             notifier.sendError(context, Notifier.ID_GOODREADS, intent, true,
-                               R.string.info_not_authorized, msg);
+                               R.string.error_authentication_failed, msg);
         }
     }
 }

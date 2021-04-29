@@ -92,33 +92,34 @@ public class CoverBrowserViewModel
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
         @Override
         public void onFinished(@NonNull final FinishedMessage<ImageFileInfo> message) {
-            if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
+            final ImageFileInfo result = message.getResult();
+            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
-                mSelectedImage.setValue(message.result);
+                mSelectedImage.setValue(result);
             } else {
-                removeTask(message.taskId);
-                mGalleryImage.setValue(message.result);
+                removeTask(message.getTaskId());
+                mGalleryImage.setValue(result);
             }
         }
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<ImageFileInfo> message) {
-            if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
+            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);
             } else {
-                removeTask(message.taskId);
+                removeTask(message.getTaskId());
                 mGalleryImage.setValue(null);
             }
         }
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
-            if (message.taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
+            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);
             } else {
-                removeTask(message.taskId);
+                removeTask(message.getTaskId());
                 mGalleryImage.setValue(null);
             }
         }

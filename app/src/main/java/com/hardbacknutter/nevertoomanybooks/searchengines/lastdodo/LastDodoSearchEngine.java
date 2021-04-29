@@ -41,13 +41,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -104,7 +104,10 @@ public class LastDodoSearchEngine
     @NonNull
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -120,7 +123,10 @@ public class LastDodoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -330,7 +336,8 @@ public class LastDodoSearchEngine
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Bundle bookData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException {
         final Element images = document.getElementById("images_container");
         if (images != null) {
             final Elements aas = images.select("a");

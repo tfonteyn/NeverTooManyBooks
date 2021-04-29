@@ -32,10 +32,11 @@ import java.util.LinkedHashSet;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Fetch alternative edition isbn's.
@@ -74,23 +75,29 @@ public class SearchEditionsTask
     @NonNull
     @Override
     @WorkerThread
-    protected Collection<String> doWork(@NonNull final Context context) {
+    protected Collection<String> doWork(@NonNull final Context context)
+            throws NetworkUnavailableException {
+
         // keep the order, but eliminate duplicates.
         final Collection<String> isbnList = new LinkedHashSet<>();
         // Always add the original isbn!
         isbnList.add(mIsbn);
 
+        // Got internet?
+        if (!NetworkUtils.isNetworkAvailable()) {
+            throw new NetworkUnavailableException();
+        }
+
         for (final Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
             final SearchEngine searchEngine = site.getSearchEngine(this);
             try {
-                // can we reach the site at all ?
+                // can we reach the site ?
                 NetworkUtils.ping(searchEngine.getSiteUrl());
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final IOException | SiteParsingException | CredentialsException
-                    | RuntimeException e) {
+            } catch (@NonNull final IOException | CredentialsException | RuntimeException e) {
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
                 Logger.error(TAG, e, "site=" + site.toString());

@@ -78,8 +78,7 @@ public abstract class TQTask
      *
      * @return Status
      */
-    public abstract TaskStatus doWork(@NonNull final Context context,
-                                      @NonNull QueueManager queueManager);
+    public abstract TaskStatus doWork(@NonNull final Context context);
 
     @Override
     public long getId() {

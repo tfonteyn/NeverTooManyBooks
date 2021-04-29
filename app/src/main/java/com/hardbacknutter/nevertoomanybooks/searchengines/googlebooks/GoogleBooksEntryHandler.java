@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
@@ -277,6 +278,8 @@ class GoogleBooksEntryHandler
     /**
      * Start each XML element. Specifically identify when we are in the item
      * element and set the appropriate flag.
+     *
+     * @throws SAXException with potentially a {@link StorageException} embedded
      */
     @Override
     @CallSuper

@@ -31,8 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
@@ -41,8 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 /**
  * Background task class to send all books in the database to Goodreads.
  */
-public class SendBooksGrTask
-        extends SendBooksGrTaskBase {
+public class SendBooksGrTQTask
+        extends SendBooksGrBaseTQTask {
 
     private static final long serialVersionUID = -3922988908020406047L;
 
@@ -65,16 +63,16 @@ public class SendBooksGrTask
      * @param updatesOnly    {@code true} to send updated books only,
      *                       {@code false} for all books.
      */
-    public SendBooksGrTask(@NonNull final String description,
-                           final boolean fromLastBookId,
-                           final boolean updatesOnly) {
+    public SendBooksGrTQTask(@NonNull final String description,
+                             final boolean fromLastBookId,
+                             final boolean updatesOnly) {
         super(description);
         mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
     }
 
     /**
-     * Perform the main task. Called from within {@link GrBaseTask#doWork}
+     * Perform the main task. Called from within {@link GrBaseTQTask#doWork}
      * <p>
      * Deals with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
@@ -82,8 +80,9 @@ public class SendBooksGrTask
      * {@inheritDoc}
      */
     @Override
-    protected TaskStatus send(@NonNull final QueueManager queueManager,
-                              @NonNull final GoodreadsManager grManager) {
+    protected TaskStatus send(@NonNull final GoodreadsManager grManager) {
+
+        final QueueManager queueManager = QueueManager.getInstance();
 
         long lastBookSend;
         if (mFromLastBookId) {
@@ -92,18 +91,14 @@ public class SendBooksGrTask
             lastBookSend = 0;
         }
 
-        final GoodreadsDao grDao = grManager.getGoodreadsDao();
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-
-        try (Cursor cursor = grDao.fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
+        try (Cursor cursor = grManager.getGoodreadsDao()
+                                      .fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                final TaskStatus status = sendOneBook(queueManager, grManager,
-                                                      grDao, bookshelfDao,
-                                                      bookData);
+                final TaskStatus status = sendOneBook(queueManager, grManager, bookData);
                 // quit on any error
                 if (status != TaskStatus.Success) {
                     return status;
@@ -139,12 +134,13 @@ public class SendBooksGrTask
                                                   getNumberOfBooksSent(),
                                                   getNumberOfBooksWithoutIsbn(),
                                                   getNumberOfBooksNotFound()));
+
         return TaskStatus.Success;
     }
 
     @Override
     public int getCategory() {
-        return GrBaseTask.CAT_EXPORT;
+        return GrBaseTQTask.CAT_EXPORT;
     }
 
     /**

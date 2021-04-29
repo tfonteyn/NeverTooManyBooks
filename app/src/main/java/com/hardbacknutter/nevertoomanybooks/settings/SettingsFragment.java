@@ -43,7 +43,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -387,8 +386,7 @@ public class SettingsFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            if (setStorageVolume(message.result)) {
+            if (setStorageVolume(message.requireResult())) {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
             }
@@ -413,12 +411,9 @@ public class SettingsFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-
             final Context context = getContext();
-
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, message.requireResult())
                                     .orElse(getString(R.string.error_unknown));
 
             new MaterialAlertDialogBuilder(context)

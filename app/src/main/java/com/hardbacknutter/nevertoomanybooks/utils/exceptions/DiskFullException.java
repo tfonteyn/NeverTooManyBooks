@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Dev note: DO NOT make this an IOException (again)!
  */
 public class DiskFullException
-        extends Exception
-        implements LocalizedException {
+        extends StorageException {
 
     private static final long serialVersionUID = 5177125869592785634L;
 

@@ -42,30 +42,33 @@ public class GrStatus {
     public static final int SUCCESS_AUTHORIZATION_ALREADY_GRANTED = 4;
     public static final int SUCCESS_AUTHORIZATION_REQUESTED = 5;
 
-    /** There simply is no network available to use. */
-    public static final int FAILED_NETWORK_UNAVAILABLE = 100;
 
     /** Authorizing this application with Goodreads failed. */
-    public static final int FAILED_AUTHORIZATION = 101;
+    public static final int FAILED_AUTHORIZATION = 100;
+    /** There are no current credentials to use. */
+    public static final int CREDENTIALS_MISSING = 101;
     /** The (current) user credentials are not valid. i.e. Authentication failed. */
-    public static final int FAILED_CREDENTIALS = 102;
+    public static final int CREDENTIALS_INVALID = 102;
+
 
     /** The book has no ISBN! We can only lookup books with an ISBN. */
-    public static final int FAILED_BOOK_HAS_NO_ISBN = 103;
+    public static final int FAILED_BOOK_HAS_NO_ISBN = 200;
     /** A specific action to get a book failed to find it. */
-    public static final int FAILED_BOOK_NOT_FOUND_ON_GOODREADS = 104;
-    public static final int FAILED_BOOK_NOT_FOUND_LOCALLY = 105;
+    public static final int FAILED_BOOK_NOT_FOUND_ON_GOODREADS = 201;
+    public static final int FAILED_BOOK_NOT_FOUND_LOCALLY = 202;
 
-    public static final int FAILED_IMPORT_TASK_ALREADY_QUEUED = 106;
-    public static final int FAILED_EXPORT_TASK_ALREADY_QUEUED = 107;
+    public static final int FAILED_IMPORT_TASK_ALREADY_QUEUED = 300;
+    public static final int FAILED_EXPORT_TASK_ALREADY_QUEUED = 301;
 
 
     /** Not a clue what happened. */
-    public static final int FAILED_UNEXPECTED_EXCEPTION = 200;
+    public static final int FAILED_UNEXPECTED_EXCEPTION = 500;
     /** There is network connectivity but something went wrong. */
-    public static final int FAILED_IO_EXCEPTION = 201;
-    public static final int FAILED_DISK_FULL = 202;
-    public static final int FAILED_STORAGE_NOT_ACCESSIBLE = 203;
+    public static final int FAILED_IO_EXCEPTION = 501;
+    public static final int FAILED_DISK_FULL_EXCEPTION = 502;
+    public static final int FAILED_STORAGE_EXCEPTION = 503;
+    /** There simply is no network available to use. */
+    public static final int FAILED_NETWORK_UNAVAILABLE = 504;
 
     @Status
     private final int mMessageId;
@@ -127,7 +130,11 @@ public class GrStatus {
                 // not sure if this will be seen though
                 return context.getString(R.string.lbl_completed);
 
-            case FAILED_CREDENTIALS:
+
+            case CREDENTIALS_MISSING:
+                return context.getString(R.string.info_not_authorized);
+
+            case CREDENTIALS_INVALID:
                 return context.getString(R.string.error_site_authentication_failed,
                                          context.getString(R.string.site_goodreads));
 
@@ -158,10 +165,10 @@ public class GrStatus {
             case FAILED_IO_EXCEPTION:
                 return context.getString(R.string.error_network_site_access_failed,
                                          context.getString(R.string.site_goodreads));
-            case FAILED_DISK_FULL:
+            case FAILED_DISK_FULL_EXCEPTION:
                 return context.getString(R.string.error_storage_no_space_left);
 
-            case FAILED_STORAGE_NOT_ACCESSIBLE:
+            case FAILED_STORAGE_EXCEPTION:
                 return context.getString(R.string.error_storage_not_accessible);
 
 
@@ -172,20 +179,44 @@ public class GrStatus {
         }
     }
 
+    public enum SendBook {
+        Success(SUCCESS),
+        NoIsbn(FAILED_BOOK_HAS_NO_ISBN),
+        NotFound(FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
+
+        @Status
+        private final int mStatus;
+
+        SendBook(@Status final int status) {
+            mStatus = status;
+        }
+
+        public GrStatus getGrStatus() {
+            return new GrStatus(mStatus);
+        }
+
+        @Status
+        public int getStatus() {
+            return mStatus;
+        }
+    }
+
     @IntDef({SUCCESS,
              CANCELLED,
              SUCCESS_TASK_QUEUED,
              SUCCESS_AUTHORIZATION_GRANTED, SUCCESS_AUTHORIZATION_ALREADY_GRANTED,
              SUCCESS_AUTHORIZATION_REQUESTED,
              FAILED_NETWORK_UNAVAILABLE,
-             FAILED_AUTHORIZATION, FAILED_CREDENTIALS,
+             FAILED_AUTHORIZATION,
+             CREDENTIALS_MISSING, CREDENTIALS_INVALID,
              FAILED_BOOK_HAS_NO_ISBN,
              FAILED_BOOK_NOT_FOUND_LOCALLY,
              FAILED_BOOK_NOT_FOUND_ON_GOODREADS,
              FAILED_IMPORT_TASK_ALREADY_QUEUED, FAILED_EXPORT_TASK_ALREADY_QUEUED,
+
              FAILED_IO_EXCEPTION,
-             FAILED_DISK_FULL,
-             FAILED_STORAGE_NOT_ACCESSIBLE,
+             FAILED_DISK_FULL_EXCEPTION,
+             FAILED_STORAGE_EXCEPTION,
              FAILED_UNEXPECTED_EXCEPTION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Status {

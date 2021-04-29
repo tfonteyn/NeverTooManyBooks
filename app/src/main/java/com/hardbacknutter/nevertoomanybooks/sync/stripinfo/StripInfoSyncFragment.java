@@ -42,7 +42,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -170,12 +169,12 @@ public class StripInfoSyncFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Exception e = message.requireResult();
 
             final Context context = getContext();
 
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, e)
                                     .orElse(getString(R.string.error_storage_not_writable));
 
             new MaterialAlertDialogBuilder(context)
@@ -193,9 +192,8 @@ public class StripInfoSyncFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-
-            onImportCollectionFinished(R.string.progress_end_import_complete, message.result);
+            onImportCollectionFinished(R.string.progress_end_import_complete,
+                                       message.requireResult());
         }
     }
 
@@ -204,9 +202,10 @@ public class StripInfoSyncFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            if (message.result != null) {
+            final ImportCollectionTask.Outcome result = message.getResult();
+            if (result != null) {
                 onImportCollectionFinished(R.string.progress_end_import_partially_complete,
-                                           message.result);
+                                           result);
             } else {
                 Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();

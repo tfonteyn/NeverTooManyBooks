@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 /**
  * Value class holding Result data.
  *
@@ -30,24 +32,24 @@ import androidx.annotation.Nullable;
 public class FinishedMessage<Result>
         implements LiveDataEvent {
 
-    public static final String MISSING_TASK_RESULTS = "message.result";
+    private static final String MISSING_TASK_RESULTS = "message.result";
 
-    public final int taskId;
+    private final int mTaskId;
 
     /**
      * The result object from the task.
      * It can be {@code null} regardless of the task implementation.
      */
     @Nullable
-    public final Result result;
+    private final Result mResult;
 
     /** {@link LiveDataEvent}. */
     private boolean mHasBeenHandled;
 
     public FinishedMessage(final int taskId,
                            @Nullable final Result result) {
-        this.taskId = taskId;
-        this.result = result;
+        mTaskId = taskId;
+        mResult = result;
     }
 
     @Override
@@ -57,13 +59,27 @@ public class FinishedMessage<Result>
         return isNew;
     }
 
+    public int getTaskId() {
+        return mTaskId;
+    }
+
+    @Nullable
+    public Result getResult() {
+        return mResult;
+    }
+
+    @NonNull
+    public Result requireResult() {
+        return Objects.requireNonNull(mResult, MISSING_TASK_RESULTS);
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "FinishedMessage{"
                + "mHasBeenHandled=" + mHasBeenHandled
-               + ", taskId=" + taskId
-               + ", result=" + result
+               + ", taskId=" + mTaskId
+               + ", result=" + mResult
                + '}';
     }
 }

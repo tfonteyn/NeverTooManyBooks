@@ -31,12 +31,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Before we can access Goodreads, we must authorize our application to do so.
@@ -85,31 +87,27 @@ public class AuthTask
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context)
-            throws IOException {
+            throws IOException, CredentialsException {
 
-        try {
-            if (!NetworkUtils.isNetworkAvailable()) {
-                return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
-            }
-
-            final GoodreadsAuth grAuth = new GoodreadsAuth();
-            if (grAuth.hasValidCredentials(context)) {
-                return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_ALREADY_GRANTED);
-            }
-
-            // This step can take several seconds....
-            final Uri authUri = grAuth.requestAuthorization();
-            // Open the web page.
-            final Intent intent = new Intent(Intent.ACTION_VIEW, authUri);
-            // fix for running on Android 9+ for starting the new activity
-            // from a non-activity context
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-
-            return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_REQUESTED);
-
-        } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {
-            return new GrStatus(GrStatus.FAILED_AUTHORIZATION);
+        if (!NetworkUtils.isNetworkAvailable()) {
+            throw new NetworkUnavailableException();
         }
+
+        final GoodreadsAuth grAuth = new GoodreadsAuth();
+        if (grAuth.getCredentialStatus(context) == GoodreadsAuth.CredentialStatus.Valid) {
+            return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_ALREADY_GRANTED);
+        }
+
+        // This step can take several seconds....
+        final Uri authUri = grAuth.requestAuthorization();
+
+        // Open the web page.
+        final Intent intent = new Intent(Intent.ACTION_VIEW, authUri);
+        // fix for running on Android 9+ for starting the new activity
+        // from a non-activity context
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
+        return new GrStatus(GrStatus.SUCCESS_AUTHORIZATION_REQUESTED);
     }
 }

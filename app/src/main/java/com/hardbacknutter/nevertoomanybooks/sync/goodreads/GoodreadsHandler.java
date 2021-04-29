@@ -34,8 +34,6 @@ import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -109,12 +107,13 @@ public class GoodreadsHandler {
     private void onFinished(@NonNull final FinishedMessage<GrStatus> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+            final GrStatus result = message.requireResult();
+
+            if (result.getStatus() == GrStatus.CREDENTIALS_MISSING) {
                 mVm.promptForAuthentication(mView.getContext());
 
-            } else if (message.result.getStatus() != GrStatus.SUCCESS) {
-                Snackbar.make(mView, message.result.getMessage(mView.getContext()),
+            } else if (result.getStatus() != GrStatus.SUCCESS) {
+                Snackbar.make(mView, result.getMessage(mView.getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
         }
@@ -131,8 +130,9 @@ public class GoodreadsHandler {
         closeProgressDialog();
         if (message.isNewEvent()) {
             final Context context = mView.getContext();
+            final Exception e = message.getResult();
             final String msg = ExMsg
-                    .map(context, message.result)
+                    .map(context, e)
                     .orElse(context.getString(R.string.error_network_site_access_failed,
                                               context.getString(R.string.site_goodreads)));
             Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();

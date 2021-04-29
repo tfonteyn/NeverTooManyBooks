@@ -35,7 +35,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -123,9 +122,7 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
-        Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-
-        mVm.setLibraries(message.result);
+        mVm.setLibraries(message.requireResult());
         mLibraryArrayAdapter.notifyDataSetChanged();
 
         onLibrarySelected(0);
@@ -172,10 +169,12 @@ public class CalibreLibraryMappingFragment
 
     private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
 
+        final Exception e = message.getResult();
+
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        final String msg = ExMsg.map(context, message.result)
+        final String msg = ExMsg.map(context, e)
                                 .orElse(getString(R.string.error_network_site_access_failed,
                                                   CalibreContentServer.getHostUrl()));
         new MaterialAlertDialogBuilder(context)

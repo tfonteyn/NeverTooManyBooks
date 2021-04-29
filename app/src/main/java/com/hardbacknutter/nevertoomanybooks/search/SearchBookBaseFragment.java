@@ -40,7 +40,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -151,10 +150,9 @@ public abstract class SearchBookBaseFragment
     private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Bundle result = message.requireResult();
 
-            final String searchErrors = message.result
-                    .getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
             if (searchErrors != null) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
@@ -165,8 +163,8 @@ public abstract class SearchBookBaseFragment
                         .create()
                         .show();
 
-            } else if (!message.result.isEmpty()) {
-                onSearchResults(message.result);
+            } else if (!result.isEmpty()) {
+                onSearchResults(result);
 
             } else {
                 //noinspection ConstantConditions

@@ -539,8 +539,9 @@ public class EditBookTocFragment
         if (message.isNewEvent()) {
             // Stores the url's locally as the user might want to try the next in line
             mIsfdbEditions.clear();
-            if (message.result != null) {
-                mIsfdbEditions.addAll(message.result);
+            final List<Edition> result = message.getResult();
+            if (result != null) {
+                mIsfdbEditions.addAll(result);
             }
             searchIsfdb();
         }
@@ -548,7 +549,8 @@ public class EditBookTocFragment
 
     private void onIsfdbBook(@NonNull final FinishedMessage<Bundle> message) {
         if (message.isNewEvent()) {
-            if (message.result == null) {
+            final Bundle result = message.getResult();
+            if (result == null) {
                 Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show();
                 return;
@@ -557,8 +559,7 @@ public class EditBookTocFragment
             final Book book = mVm.getBook();
 
             // update the book with Series information that was gathered from the TOC
-            final List<Series> series =
-                    message.result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Series> series = result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (series != null && !series.isEmpty()) {
                 final ArrayList<Series> inBook =
                         book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
@@ -571,8 +572,7 @@ public class EditBookTocFragment
             }
 
             // update the book with the first publication date that was gathered from the TOC
-            final String bookFirstPublication =
-                    message.result.getString(DBKey.DATE_FIRST_PUBLICATION);
+            final String bookFirstPublication = result.getString(DBKey.DATE_FIRST_PUBLICATION);
             if (bookFirstPublication != null) {
                 if (book.getString(DBKey.DATE_FIRST_PUBLICATION).isEmpty()) {
                     book.putString(DBKey.DATE_FIRST_PUBLICATION, bookFirstPublication);
@@ -581,7 +581,7 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            mConfirmTocResultsLauncher.launch(message.result, !mIsfdbEditions.isEmpty());
+            mConfirmTocResultsLauncher.launch(result, !mIsfdbEditions.isEmpty());
         }
     }
 

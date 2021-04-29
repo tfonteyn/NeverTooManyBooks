@@ -42,8 +42,7 @@ public class LegacyTask
 
     // dummy implementation
     @Override
-    public TaskStatus doWork(@NonNull final Context context,
-                             @NonNull final QueueManager queueManager) {
+    public TaskStatus doWork(@NonNull final Context context) {
         return TaskStatus.Cancelled;
     }
 

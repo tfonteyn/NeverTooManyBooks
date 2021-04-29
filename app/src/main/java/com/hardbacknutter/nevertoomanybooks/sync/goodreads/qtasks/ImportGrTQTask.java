@@ -43,6 +43,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import org.xml.sax.SAXException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -57,8 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTa
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -82,11 +83,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
  * Reminder on dates: parsing website dates, use {@link DateTimeFormatter#parse}.
  * Dates from the local database, use {@link FullDateParser}.
  */
-public class ImportGrTask
-        extends GrBaseTask {
+public class ImportGrTQTask
+        extends GrBaseTQTask {
 
     /** Log tag. */
-    private static final String TAG = "GR.ImportGrTask";
+    private static final String TAG = "GR.ImportGrTQTask";
 
     /**
      * Number of books to retrieve in one batch; we are encouraged to make fewer calls, so
@@ -107,6 +108,8 @@ public class ImportGrTask
     private final boolean mIsSync;
     @NonNull
     private final DateParser mISODateParser;
+    @NonNull
+    private final Locale mUserLocale;
     /** Date at which this job processed the first page successfully. */
     @Nullable
     private LocalDateTime mStartDate;
@@ -121,9 +124,6 @@ public class ImportGrTask
     private transient Map<String, String> mBookshelfLookup;
     private transient AuthorTypeMapper mAuthorTypeMapper;
 
-    @NonNull
-    private final Locale mUserLocale;
-
     /**
      * Constructor.
      *
@@ -131,9 +131,9 @@ public class ImportGrTask
      * @param context     Current context
      * @param isSync      Flag indicating this job is a sync job
      */
-    public ImportGrTask(@NonNull final String description,
-                        @NonNull final Context context,
-                        final boolean isSync) {
+    public ImportGrTQTask(@NonNull final String description,
+                          @NonNull final Context context,
+                          final boolean isSync) {
 
         super(description);
 
@@ -160,16 +160,15 @@ public class ImportGrTask
     }
 
     @Override
-    public TaskStatus doWork(@NonNull final Context context,
-                             @NonNull final QueueManager queueManager) {
+    public TaskStatus doWork(@NonNull final Context context) {
         try {
             // Import part of the sync
-            final TaskStatus status = importReviews(context, queueManager);
+            final TaskStatus status = importReviews(context);
 
             // If it's a sync job, start the export part as a new task and save the last syn date
             if (mIsSync) {
                 final String desc = context.getString(R.string.gr_title_send_book);
-                final TQTask task = new SendBooksGrTask(desc, false, true);
+                final TQTask task = new SendBooksGrTQTask(desc, false, true);
                 QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
 
                 GoodreadsManager.setLastSyncDate(mStartDate);
@@ -192,13 +191,13 @@ public class ImportGrTask
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    private TaskStatus importReviews(@NonNull final Context context,
-                                     @NonNull final QueueManager queueManager)
+    private TaskStatus importReviews(@NonNull final Context context)
             throws CredentialsException, DiskFullException, ExternalStorageException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth();
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final QueueManager queueManager = QueueManager.getInstance();
 
         // the result from the API call for a single page.
         Bundle pageData;
@@ -233,7 +232,7 @@ public class ImportGrTask
                 if (mStartDate == null) {
                     mStartDate = startDate;
                 }
-            } catch (@NonNull final IOException | SiteParsingException e) {
+            } catch (@NonNull final IOException | SAXException e) {
                 setLastException(e);
                 return TaskStatus.Failed;
             }
@@ -703,7 +702,7 @@ public class ImportGrTask
 
     @Override
     public int getCategory() {
-        return GrBaseTask.CAT_IMPORT;
+        return GrBaseTQTask.CAT_IMPORT;
     }
 
     /**

@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -55,10 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * FIXME: 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
@@ -211,8 +210,8 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws StorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -246,8 +245,8 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws StorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -281,7 +280,10 @@ public class LibraryThingSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "large";
@@ -318,7 +320,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws SiteParsingException, IOException {
+            throws IOException, CredentialsException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
@@ -328,11 +330,14 @@ public class LibraryThingSearchEngine
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
-            // wrap parser exceptions in an IOException /
-            throw new SiteParsingException(getId(), e);
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+
+        } catch (@NonNull final SAXException e) {
+            // ignore
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "searchAlternativeEditions", e);
+            }
         }
         return handler.getResult();
     }
@@ -343,12 +348,11 @@ public class LibraryThingSearchEngine
      * @param url      to fetch
      * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failure
+     * @throws IOException on failure
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException {
+            throws IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingHandler handler = new LibraryThingHandler(bookData);
@@ -356,27 +360,28 @@ public class LibraryThingSearchEngine
 
         // Get it
         try (TerminatorConnection con = createConnection(url)) {
-
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+
+        } catch (@NonNull final SAXException e) {
+            // ignore
+
             final String msg = e.getMessage();
             // Horrible hack... but once again the underlying apache class makes life difficult.
             // Sure, the Locator could be used to see that the line==1 and column==0,
             // but other than that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new SiteParsingException(getId(), "LibraryThing v1 APIs disabled");
+                Log.d(TAG, "LibraryThing v1 APIs disabled");
             }
 
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fetchBook", e);
             }
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
-            // wrap other parser exceptions in an IOException /
-            throw new SiteParsingException(getId(), e);
+            return;
         }
 
         checkForSeriesNameInTitle(bookData);

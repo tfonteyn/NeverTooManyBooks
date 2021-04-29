@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTa
  * Base class for Goodreads tasks.
  * Defines the categories and the Goodreads specific extended-status field.
  */
-public abstract class GrBaseTask
+public abstract class GrBaseTQTask
         extends TQTask {
 
     /** We're only allowing a single import task to be scheduled/run at any time. */
@@ -49,7 +49,7 @@ public abstract class GrBaseTask
      *
      * @param description for the task
      */
-    GrBaseTask(@NonNull final String description) {
+    GrBaseTQTask(@NonNull final String description) {
         super(description);
     }
 
@@ -59,12 +59,14 @@ public abstract class GrBaseTask
         setLastException(e);
     }
 
+    void setLastExtStatus(@NonNull final GrStatus.SendBook status) {
+        mLastExtStatus = status.getStatus();
+        setLastException(null);
+    }
+
+
     @GrStatus.Status
     public int getLastExtStatus() {
         return mLastExtStatus;
-    }
-
-    void setLastExtStatus(@GrStatus.Status final int status) {
-        mLastExtStatus = status;
     }
 }

@@ -25,9 +25,9 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * book.isbn_to_id   —   Get Goodreads book IDs given ISBNs.
@@ -64,10 +64,11 @@ public class IsbnToIdApiHandler
      *
      * @return Goodreads book ID
      *
-     * @throws IOException on failures
+     * @throws CredentialsException if there are no valid credentials available
+     * @throws IOException          on failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws IOException {
+            throws CredentialsException, IOException {
 
         final String url = String.format(URL, isbn, mGrAuth.getDevKey());
         final String id = executeRawGet(url, true);

@@ -17,29 +17,50 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-
-import java.io.IOException;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
- * Should be thrown if the device has no network connectivity at all for whatever reason.
+ * Authentication.
  */
-public class NetworkUnavailableException
-        extends IOException
+public class CredentialsException
+        extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -700760397630146106L;
+    private static final long serialVersionUID = -8898712365307463338L;
+
+    /** The site. */
+    @StringRes
+    private final int mSiteResId;
+
+    public CredentialsException(@StringRes final int siteResId,
+                                @NonNull final Throwable cause) {
+        super(cause);
+        mSiteResId = siteResId;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param siteResId the site string res; which will be embedded in a default user message
+     * @param message   message
+     */
+    public CredentialsException(@StringRes final int siteResId,
+                                @NonNull final String message) {
+        super(message);
+        mSiteResId = siteResId;
+    }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_network_please_connect);
+        return context.getString(R.string.error_site_authentication_failed,
+                                 context.getString(mSiteResId));
     }
 }

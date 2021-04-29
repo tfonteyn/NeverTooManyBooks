@@ -27,19 +27,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class LibraryThingRegistrationViewModel
         extends ViewModel {
@@ -86,7 +86,7 @@ public class LibraryThingRegistrationViewModel
         @Override
         @WorkerThread
         protected Integer doWork(@NonNull final Context context)
-                throws DiskFullException, ExternalStorageException, CredentialsException {
+                throws StorageException, IOException, CredentialsException {
 
             final SearchEngine.CoverByIsbn ltm = (SearchEngine.CoverByIsbn) SearchEngineRegistry
                     .getInstance().createSearchEngine(SearchSites.LIBRARY_THING);
@@ -105,6 +105,7 @@ public class LibraryThingRegistrationViewModel
                 return result;
 
             } else {
+                // The sample ISBN code we use has become invalid...
                 return R.string.warning_image_not_found;
             }
         }

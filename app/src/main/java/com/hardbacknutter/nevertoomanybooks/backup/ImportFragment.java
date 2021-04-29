@@ -49,7 +49,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -362,7 +361,7 @@ public class ImportFragment
 
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
         if (message.isNewEvent()) {
-            mVm.setArchiveMetaData(message.result);
+            mVm.setArchiveMetaData(message.getResult());
             showArchiveDetails();
         }
     }
@@ -482,11 +481,11 @@ public class ImportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final Exception e = message.requireResult();
 
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, e)
                                     .orElse(getString(R.string.error_storage_not_writable));
 
             //noinspection ConstantConditions
@@ -504,8 +503,9 @@ public class ImportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            if (message.result != null) {
-                onImportFinished(R.string.progress_end_import_partially_complete, message.result);
+            final ImportResults result = message.getResult();
+            if (result != null) {
+                onImportFinished(R.string.progress_end_import_partially_complete, result);
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
@@ -525,9 +525,7 @@ public class ImportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-
-            onImportFinished(R.string.progress_end_import_complete, message.result);
+            onImportFinished(R.string.progress_end_import_complete, message.requireResult());
         }
     }
 

@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +36,13 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Handles downloading, checking and cleanup of files.
@@ -95,10 +95,10 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param caller  to check for any cancellations
-     * @param isbn    to search for, <strong>must</strong> be valid.
-     * @param cIdx    0..n image index
-     * @param sizes   a list of images sizes in order of preference
+     * @param caller to check for any cancellations
+     * @param isbn   to search for, <strong>must</strong> be valid.
+     * @param cIdx   0..n image index
+     * @param sizes  a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
@@ -108,7 +108,7 @@ public class FileManager {
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes)
-            throws DiskFullException, ExternalStorageException, CredentialsException {
+            throws StorageException, CredentialsException {
 
         final List<Site> enabledSites = Site.filterForEnabled(mSiteList);
 
@@ -157,9 +157,24 @@ public class FileManager {
                                        + "|size=" + size);
                         }
 
-                        @Nullable
-                        final String fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
-                                .searchCoverByIsbn(isbn, cIdx, size);
+                        String fileSpec = null;
+                        try {
+                            fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
+                                    .searchCoverByIsbn(isbn, cIdx, size);
+
+                        } catch (@NonNull final IOException e) {
+                            // ignore, don't let a single search break the loop.
+                            // disable it for THIS search
+                            currentSearchSites &= ~site.engineId;
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                                Log.d(TAG, "search|FAILED"
+                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|imageFileInfo=" + imageFileInfo,
+                                      e);
+                            }
+
+                        }
 
                         if (fileSpec != null) {
                             // we got a file

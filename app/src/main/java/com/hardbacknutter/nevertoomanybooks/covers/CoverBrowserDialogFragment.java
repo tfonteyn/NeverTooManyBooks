@@ -216,19 +216,19 @@ public class CoverBrowserDialogFragment
         Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
 
         if (message.isNewEvent()) {
-            if (message.result == null || message.result.isEmpty()) {
+            final Collection<String> result = message.getResult();
+
+            if (result == null || result.isEmpty()) {
                 mVb.progressBar.hide();
                 mVb.statusMessage.setText(R.string.warning_no_editions);
                 mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
-                return;
+            } else {
+                // set the list and trigger the adapter
+                mVm.setEditions(result);
+                mGalleryAdapter.notifyDataSetChanged();
+                // Show help message
+                mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
             }
-
-            // set the list and trigger the adapter
-            mVm.setEditions(message.result);
-            mGalleryAdapter.notifyDataSetChanged();
-
-            // Show help message
-            mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
         }
     }
 

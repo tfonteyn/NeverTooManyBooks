@@ -25,26 +25,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTask;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.ImportGrTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTQTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.ImportGrTQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Start a background task that imports books from Goodreads.
  * It can either import 'all' or 'sync' books.
  * <p>
  * We runs a network and authorization check first.
- * If successful, an actual GoodReads task {@link GrBaseTask}
+ * If successful, an actual GoodReads task {@link GrBaseTQTask}
  * is kicked of to do the real work.
  */
 public class ImportTask
-        extends LTask<GrStatus> {
+        extends GrTaskBase {
 
     /** Log tag. */
     private static final String TAG = "GR.ImportTask";
@@ -74,24 +74,22 @@ public class ImportTask
     @NonNull
     @Override
     @WorkerThread
-    protected GrStatus doWork(@NonNull final Context context) {
+    protected GrStatus doWork(@NonNull final Context context)
+            throws NetworkUnavailableException, CredentialsException {
 
-        if (!NetworkUtils.isNetworkAvailable()) {
-            return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
-        }
+        final QueueManager queueManager = QueueManager.getInstance();
 
         // Check that no other sync-related jobs are queued
-        if (QueueManager.getInstance().hasActiveTasks(GrBaseTask.CAT_IMPORT)) {
+        if (queueManager.hasActiveTasks(GrBaseTQTask.CAT_IMPORT)) {
             return new GrStatus(GrStatus.FAILED_IMPORT_TASK_ALREADY_QUEUED);
         }
-        if (QueueManager.getInstance().hasActiveTasks(GrBaseTask.CAT_EXPORT)) {
+        if (queueManager.hasActiveTasks(GrBaseTQTask.CAT_EXPORT)) {
             return new GrStatus(GrStatus.FAILED_EXPORT_TASK_ALREADY_QUEUED);
         }
 
-        // Make sure Goodreads is authorized for this app
         final GoodreadsAuth grAuth = new GoodreadsAuth();
-        if (!grAuth.hasValidCredentials(context)) {
-            return new GrStatus(GrStatus.FAILED_CREDENTIALS);
+        if (!checkCredentials(context, grAuth)) {
+            return new GrStatus(GrStatus.CREDENTIALS_MISSING);
         }
 
         if (isCancelled()) {
@@ -99,8 +97,8 @@ public class ImportTask
         }
 
         final String desc = context.getString(R.string.gr_title_sync_with_goodreads);
-        final TQTask task = new ImportGrTask(desc, context, mIsSync);
-        QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
+        final TQTask task = new ImportGrTQTask(desc, context, mIsSync);
+        queueManager.enqueueTask(QueueManager.Q_MAIN, task);
 
         return new GrStatus(GrStatus.SUCCESS_TASK_QUEUED);
     }

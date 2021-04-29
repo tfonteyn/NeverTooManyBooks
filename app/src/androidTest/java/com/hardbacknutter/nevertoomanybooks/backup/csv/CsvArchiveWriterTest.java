@@ -57,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -86,7 +86,7 @@ public class CsvArchiveWriterTest
     public void write()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException, ExportException,
-                   IOException, CertificateException, DiskFullException, ExternalStorageException {
+                   IOException, CertificateException, StorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");

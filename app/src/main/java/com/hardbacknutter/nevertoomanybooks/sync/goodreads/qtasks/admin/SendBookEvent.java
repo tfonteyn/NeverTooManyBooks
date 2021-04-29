@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
@@ -79,7 +79,7 @@ public class SendBookEvent
         final QueueManager qm = QueueManager.getInstance();
 
         final String desc = context.getString(R.string.gr_send_book_to_goodreads, mBookId);
-        final TQTask task = new SendOneBookGrTask(desc, mBookId);
+        final TQTask task = new SendOneBookGrTQTask(desc, mBookId);
         qm.enqueueTask(QueueManager.Q_SMALL_JOBS, task);
         qm.deleteEvent(getId());
     }

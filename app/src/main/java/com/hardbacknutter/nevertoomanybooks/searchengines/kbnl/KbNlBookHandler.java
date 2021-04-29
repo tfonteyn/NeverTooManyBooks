@@ -230,6 +230,7 @@ class KbNlBookHandler
         for (final String name : currentData) {
             sbTitle.append(name).append(" ");
         }
+
         final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
         mBookData.putString(DBKey.KEY_TITLE, cleanedTitle);
     }

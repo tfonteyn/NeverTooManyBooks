@@ -153,7 +153,7 @@ class Queue
         try {
             task.setLastException(null);
             mQueueManager.notifyTaskChange();
-            status = task.doWork(context, mQueueManager);
+            status = task.doWork(context);
 
         } catch (@NonNull final RuntimeException e) {
             // Don't overwrite exception set by handler

@@ -29,24 +29,21 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
-public abstract class SendBooksGrTaskBase
-        extends GrBaseTask {
+public abstract class SendBooksGrBaseTQTask
+        extends GrBaseTQTask {
 
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
@@ -65,7 +62,7 @@ public abstract class SendBooksGrTaskBase
      *
      * @param description for the task
      */
-    SendBooksGrTaskBase(@NonNull final String description) {
+    SendBooksGrBaseTQTask(@NonNull final String description) {
         super(description);
     }
 
@@ -82,16 +79,18 @@ public abstract class SendBooksGrTaskBase
     }
 
     @Override
-    public TaskStatus doWork(@NonNull final Context context,
-                             @NonNull final QueueManager queueManager) {
+    public TaskStatus doWork(@NonNull final Context context) {
         try {
-            // can we reach the site at all ?
+            // Check for internet every time. This task can be restarted at any time.
+            if (!NetworkUtils.isNetworkAvailable()) {
+                throw new NetworkUnavailableException();
+            }
+            // can we reach the site ?
             NetworkUtils.ping(GoodreadsManager.BASE_URL);
 
             final GoodreadsAuth grAuth = new GoodreadsAuth();
-            final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
-            if (grAuth.hasValidCredentials(context)) {
-                return send(queueManager, grManager);
+            if (grAuth.getCredentialStatus(context) == GoodreadsAuth.CredentialStatus.Valid) {
+                return send(new GoodreadsManager(context, grAuth));
             }
         } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.
@@ -106,62 +105,54 @@ public abstract class SendBooksGrTaskBase
     /**
      * Start the send process.
      *
-     * @param queueManager the QueueManager
-     * @param grManager    the Goodreads Manager
+     * @param grManager the Goodreads Manager
      *
      * @return Status
      */
-    protected abstract TaskStatus send(@NonNull QueueManager queueManager,
-                                       @NonNull GoodreadsManager grManager);
+    protected abstract TaskStatus send(@NonNull GoodreadsManager grManager);
 
     /**
      * Try to export one book.
      *
-     * @param grManager    the Goodreads Manager
-     * @param bookshelfDao Database Access
-     * @param bookData     the book data to send
+     * @param grManager the Goodreads Manager
+     * @param bookData  the book data to send
      *
      * @return Status
      */
     TaskStatus sendOneBook(@NonNull final QueueManager queueManager,
                            @NonNull final GoodreadsManager grManager,
-                           @NonNull final GoodreadsDao grDao,
-                           @NonNull final BookshelfDao bookshelfDao,
                            @NonNull final DataHolder bookData) {
 
         final long bookId = bookData.getLong(DBKey.PK_ID);
 
         try {
-            @GrStatus.Status
-            final int grStatus = grManager.sendOneBook(bookshelfDao, grDao, bookData);
-            setLastExtStatus(grStatus);
-            if (grStatus == GrStatus.SUCCESS) {
+            final GrStatus.SendBook status = grManager.sendBook(bookData);
+            setLastExtStatus(status);
+            if (status == GrStatus.SendBook.Success) {
                 mSent++;
-                grDao.setSyncDate(bookId);
+                grManager.getGoodreadsDao().setSyncDate(bookId);
                 return TaskStatus.Success;
 
-            } else if (grStatus == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {
+            } else if (status == GrStatus.SendBook.NoIsbn) {
                 mNoIsbn++;
                 storeEvent(new GrNoIsbnEvent(grManager.getContext(), bookId));
                 return TaskStatus.Failed;
+
+            } else if (status == GrStatus.SendBook.NotFound) {
+                mNotFound++;
+                storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
+                return TaskStatus.Failed;
             }
-
-        } catch (@NonNull final HttpNotFoundException | SiteParsingException e) {
-            setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
-            storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
-            mNotFound++;
-            return TaskStatus.Failed;
-
         } catch (@NonNull final CredentialsException e) {
-            setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
+            setLastExtStatus(GrStatus.CREDENTIALS_INVALID, e);
             // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final DiskFullException e) {
-            setLastExtStatus(GrStatus.FAILED_DISK_FULL, e);
+            setLastExtStatus(GrStatus.FAILED_DISK_FULL_EXCEPTION, e);
             // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final ExternalStorageException e) {
-            setLastExtStatus(GrStatus.FAILED_STORAGE_NOT_ACCESSIBLE, e);
+            setLastExtStatus(GrStatus.FAILED_STORAGE_EXCEPTION, e);
             // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final IOException e) {

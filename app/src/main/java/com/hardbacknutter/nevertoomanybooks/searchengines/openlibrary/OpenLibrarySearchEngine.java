@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -53,9 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
@@ -198,12 +200,23 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
-        fetchBook(url, fetchCovers, bookData);
+        try {
+            fetchBook(url, fetchCovers, bookData);
+
+        } catch (@NonNull final JSONException e) {
+            // ignore
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "searchByIsbn", e);
+            }
+        }
         return bookData;
     }
 
@@ -216,12 +229,23 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
-        fetchBook(url, fetchCovers, bookData);
+        try {
+            fetchBook(url, fetchCovers, bookData);
+
+        } catch (@NonNull final JSONException e) {
+            // ignore
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "searchByIsbn", e);
+            }
+        }
         return bookData;
     }
 
@@ -242,7 +266,10 @@ public class OpenLibrarySearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -266,10 +293,18 @@ public class OpenLibrarySearchEngine
     }
 
 
+    /**
+     * Fetch and parse.
+     *
+     * @throws JSONException on any failure to parse.
+     */
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   JSONException {
         // get and store the result into a string.
         final String response;
         try (TerminatorConnection con = createConnection(url);
@@ -282,12 +317,7 @@ public class OpenLibrarySearchEngine
         }
 
         // json-ify and handle.
-        try {
-            handleResponse(new JSONObject(response), fetchCovers, bookData);
-        } catch (@NonNull final JSONException e) {
-            throw new SiteParsingException(getId(), e);
-        }
-
+        handleResponse(new JSONObject(response), fetchCovers, bookData);
         checkForSeriesNameInTitle(bookData);
     }
 
@@ -438,17 +468,15 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     * @param jsonObject     the complete book record.
+     * @param jsonObject  the complete book record.
      * @param fetchCovers Set to {@code true} if we want to get covers
-     * @param bookData       Bundle to update
-     *
-     * @throws JSONException upon any error
+     * @param bookData    Bundle to update
      */
     @VisibleForTesting
     void handleResponse(@NonNull final JSONObject jsonObject,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
-            throws JSONException, ExternalStorageException, DiskFullException {
+            throws DiskFullException, ExternalStorageException {
 
         final Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
@@ -471,14 +499,12 @@ public class OpenLibrarySearchEngine
      * @param document    JSON result data
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
-     *
-     * @throws JSONException upon any error
      */
     private void parse(@NonNull final String validIsbn,
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
                        @NonNull final Bundle bookData)
-            throws JSONException, ExternalStorageException, DiskFullException {
+            throws DiskFullException, ExternalStorageException {
 
         final DateParser dateParser = new FullDateParser(getContext());
 
@@ -606,8 +632,7 @@ public class OpenLibrarySearchEngine
     }
 
     private void processIdentifiers(@NonNull final JSONObject element,
-                                    @NonNull final Bundle bookData)
-            throws JSONException {
+                                    @NonNull final Bundle bookData) {
 
         JSONArray a;
 

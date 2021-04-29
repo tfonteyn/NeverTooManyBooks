@@ -132,7 +132,7 @@ public class SearchBookUpdatesFragment
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
         mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
-                mVm.processOne(getContext(), message.result));
+                mVm.processOne(getContext(), message.getResult()));
         // User cancelled the update
         mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
@@ -309,12 +309,13 @@ public class SearchBookUpdatesFragment
     private void onAllDone(@NonNull final FinishedMessage<Bundle> message) {
         closeProgressDialog();
 
-        if (message.result != null) {
+        final Bundle result = message.getResult();
+        if (result != null) {
             // The result will contain:
             // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
             // UniqueId.BKEY_BOOK_MODIFIED, boolean
             // DBDefinitions.KEY_PK_ID, long (can be absent)
-            final Intent resultIntent = new Intent().putExtras(message.result);
+            final Intent resultIntent = new Intent().putExtras(result);
             //noinspection ConstantConditions
             getActivity().setResult(Activity.RESULT_OK, resultIntent);
         }
@@ -326,9 +327,11 @@ public class SearchBookUpdatesFragment
     private void onAbort(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
 
+        final Exception e = message.getResult();
+
         final Context context = getContext();
         //noinspection ConstantConditions
-        final String msg = ExMsg.map(context, message.result)
+        final String msg = ExMsg.map(context, e)
                                 .orElse(getString(R.string.error_unknown_long,
                                                   getString(R.string.lbl_send_debug)));
 

@@ -781,10 +781,8 @@ public class BooksOnBookshelfViewModel
         if (mBooklist != null) {
             mBooklist.close();
         }
-        // sanity check
-        Objects.requireNonNull(message.result, "message.result");
 
-        mBooklist = message.result.list;
+        mBooklist = message.requireResult().list;
 
         // Save a flag to say list was loaded at least once successfully
         mListHasBeenLoaded = true;

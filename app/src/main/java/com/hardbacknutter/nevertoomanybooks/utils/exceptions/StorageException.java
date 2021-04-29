@@ -17,45 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
-/**
- * Authentication.
- */
-public class CredentialsException
+@SuppressWarnings("WeakerAccess")
+public class StorageException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -8898712365307463338L;
+    private static final long serialVersionUID = 6521262373361215281L;
 
-    /** The site. */
-    @StringRes
-    private final int mSiteResId;
-
-    /**
-     * Constructor.
-     *
-     * @param siteResId the site string res; which will be embedded in a default user message
-     * @param message   message
-     */
-    public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final String message) {
+    public StorageException(@Nullable final String message) {
         super(message);
-        mSiteResId = siteResId;
+    }
+
+    public StorageException(@Nullable final String message,
+                            @Nullable final Throwable cause) {
+        super(message, cause);
+    }
+
+    public StorageException(@Nullable final Throwable cause) {
+        super(cause);
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_site_authentication_failed,
-                                 context.getString(mSiteResId));
+        return context.getString(R.string.error_storage_not_accessible);
     }
 }

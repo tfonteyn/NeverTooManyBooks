@@ -33,12 +33,12 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -178,12 +178,18 @@ public class SearchTask
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
-            throws DiskFullException, ExternalStorageException, CredentialsException,
-                   IOException,
-                   SiteParsingException {
+            throws StorageException, IOException, CredentialsException {
+
         publishProgress(1, mProgressTitle);
 
-        // can we reach the site at all ?
+        // Checking this each time a search starts is not needed...
+        // But it makes error handling slightly easier and doing
+        // it here offloads it from the UI thread.
+        if (!NetworkUtils.isNetworkAvailable()) {
+            throw new NetworkUnavailableException();
+        }
+
+        // can we reach the site ?
         NetworkUtils.ping(mSearchEngine.getSiteUrl());
 
         // sanity check, see #setFetchCovers
@@ -218,8 +224,7 @@ public class SearchTask
 
             default:
                 // we should never get here...
-                throw new IllegalArgumentException("SearchEngine "
-                                                   + mSearchEngine.getName()
+                throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName()
                                                    + " does not implement By=" + mBy);
         }
 

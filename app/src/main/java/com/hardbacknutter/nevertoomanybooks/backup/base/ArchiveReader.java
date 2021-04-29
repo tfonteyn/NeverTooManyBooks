@@ -31,8 +31,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public interface ArchiveReader
         extends Closeable {
@@ -52,7 +51,9 @@ public interface ArchiveReader
      */
     @WorkerThread
     default void validate(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException {
+            throws InvalidArchiveException,
+                   ImportException,
+                   IOException {
         // do nothing
     }
 
@@ -70,7 +71,10 @@ public interface ArchiveReader
     @Nullable
     @WorkerThread
     default ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, ImportException {
+            throws InvalidArchiveException,
+                   IOException,
+                   ImportException,
+                   StorageException {
         return null;
     }
 
@@ -92,8 +96,10 @@ public interface ArchiveReader
     @WorkerThread
     ImportResults read(@NonNull Context context,
                        @NonNull ProgressListener progressListener)
-            throws InvalidArchiveException, IOException,
-                   ImportException, DiskFullException, ExternalStorageException;
+            throws InvalidArchiveException,
+                   IOException,
+                   ImportException,
+                   StorageException;
 
     /**
      * Override if the implementation needs to close something.

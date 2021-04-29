@@ -81,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -214,12 +213,14 @@ public class XmlRecordReader
 
             final SAXParser parser = factory.newSAXParser();
             parser.parse(source, handler);
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+
+        } catch (@NonNull final SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fromXml", e);
             }
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
             // wrap parser exceptions in an ImportException /
             throw new ImportException(e);
         }

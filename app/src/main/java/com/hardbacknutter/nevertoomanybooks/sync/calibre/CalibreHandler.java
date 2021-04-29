@@ -303,10 +303,8 @@ public class CalibreHandler {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            final Uri uri = message.result;
             Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.lbl_read, v -> openBookUri(uri))
+                    .setAction(R.string.lbl_read, v -> openBookUri(message.requireResult()))
                     .show();
         }
     }
@@ -323,8 +321,10 @@ public class CalibreHandler {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
+            final Exception e = message.getResult();
+
             final Context context = mView.getContext();
-            final String msg = ExMsg.map(context, message.result)
+            final String msg = ExMsg.map(context, e)
                                     .orElse(context.getString(R.string.error_unknown));
 
             Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();

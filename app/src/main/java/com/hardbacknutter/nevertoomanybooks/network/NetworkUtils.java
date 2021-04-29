@@ -57,10 +57,10 @@ public final class NetworkUtils {
     /** Log tag. */
     private static final String TAG = "NetworkUtils";
 
-    /** Timeout for {@link #ping(String)}; the DNS address lookup. */
+    /** Timeout for {@link #ping(String)}; connection to the DNS server. */
     private static final long DNS_TIMEOUT_MS = 5_000L;
 
-    /** Timeout for {@link #ping(String)}; the actual connection to the host. */
+    /** Timeout for {@link #ping(String)}; connection to the host. */
     private static final int PING_TIMEOUT_MS = 5_000;
 
     private NetworkUtils() {
@@ -124,25 +124,21 @@ public final class NetworkUtils {
 
     /**
      * Low level check if a url is reachable.
+     * <p>
+     * A call to {@link #isNetworkAvailable()} should be made before calling this method.
      *
      * @param urlStr url to check
      *
-     * @throws NetworkUnavailableException if the network itself is unavailable
-     * @throws UnknownHostException        the IP address of a host could not be determined.
-     * @throws IOException                 if we cannot reach the site
-     * @throws SocketTimeoutException      on timeouts (both DNS and host itself)
+     * @throws UnknownHostException   the IP address of a host could not be determined.
+     * @throws IOException            if we cannot reach the site
+     * @throws SocketTimeoutException on timeouts (both DNS and host itself)
      */
     @WorkerThread
     public static void ping(@NonNull final String urlStr)
-            throws NetworkUnavailableException,
-                   UnknownHostException,
+            throws UnknownHostException,
                    IOException,
                    SocketTimeoutException,
                    MalformedURLException {
-
-        if (!isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
-        }
 
         final URL url = new URL(urlStr.toLowerCase(Locale.ROOT));
         final String host = url.getHost();
@@ -188,7 +184,8 @@ public final class NetworkUtils {
         @NonNull
         public InetAddress lookup(@NonNull final String host,
                                   final long timeoutMs)
-                throws NetworkUnavailableException,
+                throws IOException,
+                       SocketTimeoutException,
                        UnknownHostException {
 
             Future<InetAddress> future = null;
@@ -204,9 +201,13 @@ public final class NetworkUtils {
 
             } catch (@NonNull final ExecutionException e) {
                 // Shouldn't happen... flw
-                throw new NetworkUnavailableException("DNS lookup failed for: " + host, e);
+                throw new IOException("DNS lookup failed for: " + host, e);
 
-            } catch (@NonNull final TimeoutException | InterruptedException e) {
+            } catch (@NonNull final TimeoutException e) {
+                // wrap For simplicity
+                throw new SocketTimeoutException(host);
+
+            } catch (@NonNull final InterruptedException e) {
                 // wrap For simplicity
                 throw new UnknownHostException(host);
 

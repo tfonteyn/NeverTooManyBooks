@@ -46,8 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * This is the base for full-fledged archives which can contain
@@ -198,7 +197,7 @@ public abstract class ArchiveReaderAbstract
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
-                   IOException, DiskFullException, ExternalStorageException {
+                   IOException, StorageException {
 
         // Sanity check: the archive info should have been read during the validate phase
         Objects.requireNonNull(mArchiveMetaData, "info");
@@ -230,7 +229,7 @@ public abstract class ArchiveReaderAbstract
     private void readV4(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
-                   IOException, DiskFullException, ExternalStorageException {
+                   IOException, StorageException {
 
         ArchiveReaderRecord record = seek(RecordType.AutoDetect);
         while (record != null && !progressListener.isCancelled()) {
@@ -244,7 +243,7 @@ public abstract class ArchiveReaderAbstract
     private void readV2(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
-                   IOException, DiskFullException, ExternalStorageException {
+                   IOException, StorageException {
 
         final Set<RecordType> importEntries = mHelper.getImportEntries();
         try {
@@ -317,7 +316,7 @@ public abstract class ArchiveReaderAbstract
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
-                   IOException, DiskFullException, ExternalStorageException {
+                   IOException, StorageException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {

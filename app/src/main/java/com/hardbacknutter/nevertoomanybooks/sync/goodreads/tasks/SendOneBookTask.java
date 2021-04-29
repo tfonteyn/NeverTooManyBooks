@@ -30,21 +30,16 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUnauthorizedException;
-import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.SendOneBookGrTQTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -52,10 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
  * Start a background task that exports a single books to Goodreads.
  * This is used for sending single books, <strong>initiated by the user</strong>.
  * <p>
- * See also {@link SendOneBookGrTask}. The core of the task is (should be) identical.
+ * See also {@link SendOneBookGrTQTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
-        extends LTask<GrStatus> {
+        extends GrTaskBase {
 
     /** Log tag. */
     private static final String TAG = "GR.SendOneBookTask";
@@ -72,7 +67,6 @@ public class SendOneBookTask
         super(R.id.TASK_ID_GR_SEND_ONE_BOOK, TAG, taskListener);
     }
 
-
     /**
      * Start sending.
      *
@@ -87,60 +81,45 @@ public class SendOneBookTask
     @Override
     @WorkerThread
     protected GrStatus doWork(@NonNull final Context context)
-            throws DiskFullException, ExternalStorageException,
-                   IOException, SiteParsingException,
-                   CredentialsException {
+            throws NetworkUnavailableException,
+                   CredentialsException, IOException, HttpStatusException,
+                   DiskFullException, ExternalStorageException {
 
-        try {
-            if (!NetworkUtils.isNetworkAvailable()) {
-                return new GrStatus(GrStatus.FAILED_NETWORK_UNAVAILABLE);
-            }
+        final GoodreadsAuth grAuth = new GoodreadsAuth();
+        if (!checkCredentials(context, grAuth)) {
+            return new GrStatus(GrStatus.CREDENTIALS_MISSING);
+        }
 
-            final GoodreadsAuth grAuth = new GoodreadsAuth();
-            if (!grAuth.hasValidCredentials(context)) {
-                return new GrStatus(GrStatus.FAILED_CREDENTIALS);
-            }
+        if (isCancelled()) {
+            return new GrStatus(GrStatus.CANCELLED);
+        }
 
-            if (isCancelled()) {
-                return new GrStatus(GrStatus.CANCELLED);
-            }
+        final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
 
-            final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
-            final GoodreadsDao grDao = grManager.getGoodreadsDao();
-
-            try (Cursor cursor = grDao.fetchBookForExport(mBookId)) {
-                if (cursor.moveToFirst()) {
-                    if (isCancelled()) {
-                        return new GrStatus(GrStatus.CANCELLED);
-                    }
-                    publishProgress(1, context.getString(R.string.progress_msg_sending));
-
-                    final DataHolder bookData = new CursorRow(cursor);
-                    @GrStatus.Status
-                    final int status = grManager.sendOneBook(
-                            ServiceLocator.getInstance().getBookshelfDao(), grDao, bookData);
-
-                    if (status == GrStatus.SUCCESS) {
-                        // Record the update
-                        grDao.setSyncDate(mBookId);
-                    }
-                    return new GrStatus(status);
-
-                } else {
-                    // THIS REALLY SHOULD NOT HAPPEN: we did not find the book
-                    // in our database which we wanted to send
-                    if (BuildConfig.DEBUG /* always */) {
-                        throw new IllegalStateException("Book not found: bookId=" + mBookId);
-                    }
-                    return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY);
+        try (Cursor cursor = grManager.getGoodreadsDao().fetchBookForExport(mBookId)) {
+            if (cursor.moveToFirst()) {
+                if (isCancelled()) {
+                    return new GrStatus(GrStatus.CANCELLED);
                 }
+                publishProgress(1, context.getString(R.string.progress_msg_sending));
+
+                final DataHolder bookData = new CursorRow(cursor);
+
+                final GrStatus.SendBook status = grManager.sendBook(bookData);
+                if (status == GrStatus.SendBook.Success) {
+                    // Record the update
+                    grManager.getGoodreadsDao().setSyncDate(mBookId);
+                }
+                return status.getGrStatus();
+
+            } else {
+                // THIS REALLY SHOULD NOT HAPPEN: we did not find the book
+                // in our database which we wanted to send
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalStateException("Book not found: bookId=" + mBookId);
+                }
+                return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_LOCALLY);
             }
-
-        } catch (@NonNull final HttpUnauthorizedException e) {
-            throw new CredentialsException(R.string.site_goodreads, "HttpUnauthorizedException");
-
-        } catch (@NonNull final HttpNotFoundException e) {
-            return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
         }
     }
 }

@@ -35,21 +35,21 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
  * <p>
  * 2020-01-04: "http://opc4.kb.nl" is not available on https.
  * see "src/main/res/xml/network_security_config.xml"
+ * URGENT: test new https url
  */
 public class KbNlSearchEngine
         extends SearchEngineBase
@@ -104,7 +105,9 @@ public class KbNlSearchEngine
                                               SearchSites.KB_NL,
                                               R.string.site_kb_nl,
                                               PREF_KEY,
-                                              "http://opc4.kb.nl")
+                                              "https://opc-kb.oclc.org/"
+                                              //"http://opc4.kb.nl"
+        )
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("KB")
                 .setSupportsMultipleCoverSizes(true)
@@ -115,8 +118,8 @@ public class KbNlSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException,
-                   DiskFullException, ExternalStorageException,
+            throws StorageException,
+                   IOException,
                    CredentialsException {
 
         final Bundle bookData = new Bundle();
@@ -124,7 +127,7 @@ public class KbNlSearchEngine
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final KbNlBookHandler handler = new KbNlBookHandler(bookData);
+        final DefaultHandler handler = new KbNlBookHandler(bookData);
 
         try (TerminatorConnection con = createConnection(url)) {
             // Don't follow redirects, so we get the XML instead of the rendered page
@@ -133,28 +136,29 @@ public class KbNlSearchEngine
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            checkForSeriesNameInTitle(bookData);
+
+            if (isCancelled()) {
+                return bookData;
+            }
+
+            if (fetchCovers[0]) {
+                final ArrayList<String> list = searchBestCoverByIsbn(validIsbn, 0);
+                if (!list.isEmpty()) {
+                    bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
+                }
+            }
+
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+
+        } catch (@NonNull final SAXException e) {
+            // ignore
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "searchByIsbn", e);
             }
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
-            // wrap parser exceptions in an IOException /
-            throw new SiteParsingException(getId(), e);
         }
 
-        checkForSeriesNameInTitle(bookData);
-
-        if (isCancelled()) {
-            return bookData;
-        }
-
-        if (fetchCovers[0]) {
-            final ArrayList<String> list = searchBestCoverByIsbn(validIsbn, 0);
-            if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
-        }
         return bookData;
     }
 
@@ -170,7 +174,10 @@ public class KbNlSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException,
+                   ExternalStorageException,
+                   IOException,
+                   CredentialsException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "large";

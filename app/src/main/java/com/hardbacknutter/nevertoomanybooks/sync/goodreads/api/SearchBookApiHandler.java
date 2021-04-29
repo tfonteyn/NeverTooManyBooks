@@ -31,12 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -85,7 +87,8 @@ public class SearchBookApiHandler
     @NonNull
     @WorkerThread
     public List<Long> searchBookIds(@NonNull final String query)
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         // clear for a new search
         mGrIdList.clear();

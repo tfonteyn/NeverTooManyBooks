@@ -41,13 +41,15 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -107,6 +109,14 @@ public class ImportCollectionTask
             throws IOException, DaoWriteException,
                    DiskFullException, ExternalStorageException,
                    CredentialsException {
+
+        // Got internet?
+        if (!NetworkUtils.isNetworkAvailable()) {
+            throw new NetworkUnavailableException();
+        }
+
+        // can we reach the site ?
+        NetworkUtils.ping(mSearchEngine.getSiteUrl());
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_connecting));

@@ -29,15 +29,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsShelf;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 
 /**
@@ -87,7 +89,6 @@ public class ReviewEditApiHandler
      *                        //@param privateNotes (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
      * @throws IOException on failures
      */
     public void update(final long reviewId,
@@ -97,7 +98,8 @@ public class ReviewEditApiHandler
                        @IntRange(from = 0, to = 5) final int rating,
                        //@Nullable final String privateNotes,
                        @Nullable final String review)
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         final String url = String.format(URL, reviewId);
         final Map<String, String> parameters = new HashMap<>();

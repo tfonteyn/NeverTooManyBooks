@@ -29,13 +29,13 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTask;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.GrBaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTaskCursorRow;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 
 /**
- * Holder to maintain {@link GrBaseTask} views.
+ * Holder to maintain {@link GrBaseTQTask} views.
  */
 public class TaskViewHolder
         extends BaseViewHolder {
@@ -66,7 +66,7 @@ public class TaskViewHolder
     }
 
     public void bind(@NonNull final TQTaskCursorRow rowData,
-                     @NonNull final GrBaseTask task) {
+                     @NonNull final GrBaseTQTask task) {
 
         final Context context = itemView.getContext();
 

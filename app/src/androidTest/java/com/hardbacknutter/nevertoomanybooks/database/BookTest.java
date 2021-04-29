@@ -157,8 +157,8 @@ public class BookTest {
         final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter);
         assertTrue(NEED_TWO_FILE, files.size() > 1);
 
-        prepareCover(context, coverDir, files, 0);
-        prepareCover(context, coverDir, files, 1);
+        prepareCover(coverDir, files, 0);
+        prepareCover(coverDir, files, 1);
 
         assertTrue(mBookshelf[0].getId() > 0);
         assertTrue(mAuthor[0].getId() > 0);
@@ -173,11 +173,10 @@ public class BookTest {
      *
      * @throws IOException on failure
      */
-    private void prepareCover(@NonNull final Context context,
-                              @NonNull final File coverDir,
+    private void prepareCover(@NonNull final File coverDir,
                               @NonNull final List<File> files,
                               final int cIdx)
-            throws IOException, ExternalStorageException {
+            throws IOException {
 
         mOriginalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
         final File srcFile = new File(mOriginalImageFileName[cIdx]);
@@ -317,7 +316,7 @@ public class BookTest {
          * Add the second cover of the read-only book
          */
         final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter);
-        prepareCover(context, coverDir, files, 1);
+        prepareCover(coverDir, files, 1);
 
         book.setCover(1, new File(tempDir, Constants.COVER[1]));
 

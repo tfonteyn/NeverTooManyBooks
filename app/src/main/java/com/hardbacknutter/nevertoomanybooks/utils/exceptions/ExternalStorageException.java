@@ -30,8 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Thrown when external storage media is not available.
  */
 public class ExternalStorageException
-        extends Exception
-        implements LocalizedException {
+        extends StorageException {
 
     private static final long serialVersionUID = 2553728112905906864L;
 

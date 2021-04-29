@@ -55,10 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Base class for all Goodreads handler classes.
@@ -100,15 +99,15 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failures
+     * @throws IOException on failures
      */
     @WorkerThread
     void executeGet(@NonNull final String url,
                     @Nullable final Map<String, String> parameterMap,
                     final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws IOException, SiteParsingException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -151,15 +150,15 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failures
+     * @throws IOException on failures
      */
     @WorkerThread
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
@@ -206,20 +205,16 @@ public abstract class ApiHandler {
      * @param request        to execute
      * @param requestHandler (optional) handler for the parser
      *
-     * @throws HttpUnauthorizedException on login failure
-     * @throws HttpNotFoundException     the URL was not found
-     * @throws HttpStatusException       on other HTTP failures
-     * @throws IOException               on other failures
+     * @throws CredentialsException  on login failure
+     * @throws HttpNotFoundException the URL was not found
+     * @throws HttpStatusException   on other HTTP failures
+     * @throws IOException           on other failures
      */
     @WorkerThread
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
-            throws HttpUnauthorizedException,
-                   HttpNotFoundException,
-                   HttpStatusException,
-                   IOException,
-                   SiteParsingException {
-
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
         try {
             HttpUtils.checkResponseCode(request, R.string.site_goodreads);
 
@@ -228,19 +223,12 @@ public abstract class ApiHandler {
                 final SAXParser parser = factory.newSAXParser();
                 parser.parse(is, requestHandler);
             }
-
         } catch (@NonNull final HttpUnauthorizedException e) {
             GoodreadsAuth.invalidateCredentials();
-            throw e;
+            throw new CredentialsException(R.string.site_goodreads, e);
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "parseResponse", e);
-            }
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
-            // wrap parser exceptions in an IOException /
-            throw new SiteParsingException(SearchSites.GOODREADS, e);
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
 
         } finally {
             request.disconnect();
@@ -255,19 +243,17 @@ public abstract class ApiHandler {
      *
      * @return the raw text output.
      *
-     * @throws HttpUnauthorizedException on login failure
-     * @throws HttpNotFoundException     the URL was not found
-     * @throws HttpStatusException       on other HTTP failures
-     * @throws IOException               on other failures
+     * @throws CredentialsException  on login failure
+     * @throws HttpNotFoundException the URL was not found
+     * @throws HttpStatusException   on other HTTP failures
+     * @throws IOException           on other failures
      */
     @NonNull
     @WorkerThread
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws HttpUnauthorizedException,
-                   HttpNotFoundException,
-                   HttpStatusException,
-                   IOException {
+            throws CredentialsException, IOException,
+                   HttpNotFoundException, HttpStatusException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
@@ -305,7 +291,7 @@ public abstract class ApiHandler {
 
         } catch (@NonNull final HttpUnauthorizedException e) {
             GoodreadsAuth.invalidateCredentials();
-            throw e;
+            throw new CredentialsException(R.string.site_goodreads, e);
 
         } finally {
             request.disconnect();

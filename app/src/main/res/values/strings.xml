@@ -113,8 +113,7 @@
 
     <!-- ####################################################################################### -->
     <!-- ========== HTTP(S) error messages; copied from:
-         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/
-            res/res/values/strings.xml"
+         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/res/res/values/strings.xml"
     -->
     <!-- ####################################################################################### -->
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->

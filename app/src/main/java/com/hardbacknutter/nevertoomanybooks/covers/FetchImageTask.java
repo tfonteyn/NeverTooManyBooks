@@ -30,8 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Fetch an image from the {@link FileManager}.
@@ -91,12 +90,12 @@ class FetchImageTask
     @Override
     @WorkerThread
     protected ImageFileInfo doWork(@NonNull final Context context)
-            throws DiskFullException, ExternalStorageException {
+            throws StorageException {
         // We need to catch the exceptions we really want to thrown, but catch all others.
         try {
             return mFileManager.search(this, mIsbn, mCIdx, mSizes);
 
-        } catch (@NonNull final DiskFullException | ExternalStorageException e) {
+        } catch (@NonNull final StorageException e) {
             throw e;
 
         } catch (@NonNull final Exception ignore) {

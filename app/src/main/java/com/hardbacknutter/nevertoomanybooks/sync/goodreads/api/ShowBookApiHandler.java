@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -42,15 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
@@ -282,13 +284,14 @@ public abstract class ShowBookApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failures
+     * @throws IOException on failures
      */
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException,
+                   DiskFullException, ExternalStorageException {
 
         mBookData = bookData;
 
@@ -310,14 +313,15 @@ public abstract class ShowBookApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws IOException on failures
      */
     @NonNull
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException,
+                   DiskFullException, ExternalStorageException {
 
         mBookData = bookData;
 

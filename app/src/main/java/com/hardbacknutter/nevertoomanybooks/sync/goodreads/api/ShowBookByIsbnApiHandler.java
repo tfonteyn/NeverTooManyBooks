@@ -27,10 +27,13 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import org.xml.sax.SAXException;
+
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -69,14 +72,15 @@ public class ShowBookByIsbnApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on other failures
+     * @throws IOException on other failures
      */
     @NonNull
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException,
+                   DiskFullException, ExternalStorageException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchBook(url, fetchCovers, bookData);
@@ -90,13 +94,14 @@ public class ShowBookByIsbnApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException             on other failures
+     * @throws IOException on other failures
      */
     @Nullable
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException, DiskFullException, ExternalStorageException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException,
+                   DiskFullException, ExternalStorageException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchCoverImage(url, bookData);

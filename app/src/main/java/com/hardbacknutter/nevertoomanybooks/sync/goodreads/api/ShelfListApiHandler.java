@@ -30,13 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.network.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsShelf;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -45,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  *
  * <a href="https://www.goodreads.com/api/index#shelves.list">shelves.list</a>
  */
-public class ShelvesListApiHandler
+public class ShelfListApiHandler
         extends ApiHandler {
 
     private static final String URL = GoodreadsManager.BASE_URL + "/shelf/list.xml?"
@@ -63,8 +65,8 @@ public class ShelvesListApiHandler
      *
      * @throws CredentialsException if there are no valid credentials available
      */
-    public ShelvesListApiHandler(@NonNull final Context context,
-                                 @NonNull final GoodreadsAuth grAuth)
+    public ShelfListApiHandler(@NonNull final Context context,
+                               @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
         super(context, grAuth);
         mGrAuth.hasValidCredentialsOrThrow(context);
@@ -77,12 +79,12 @@ public class ShelvesListApiHandler
      *
      * @return unmodifiableMap
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failures
+     * @throws IOException on failures
      */
     @NonNull
     public Map<String, GoodreadsShelf> getAll()
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         final Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -115,12 +117,12 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
+     * @throws IOException on failures
      */
     @NonNull
     private Bundle get(final int page)
-            throws SiteParsingException, IOException {
+            throws CredentialsException, IOException, SAXException,
+                   HttpNotFoundException, HttpStatusException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, mGrAuth.getUserId());
 

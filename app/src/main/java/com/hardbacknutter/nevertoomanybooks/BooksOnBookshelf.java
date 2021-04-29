@@ -1546,8 +1546,7 @@ public class BooksOnBookshelf
 
             mVm.onBuildFinished(message);
 
-            Objects.requireNonNull(message.result, "message.result");
-            displayList(message.result.targetRows);
+            displayList(message.requireResult().targetRows);
         }
     }
 

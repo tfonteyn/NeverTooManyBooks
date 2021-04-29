@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 import android.content.Context;
 import android.system.Os;
 import android.system.OsConstants;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,6 +97,8 @@ public final class ExMsg {
             msg = ((LocalizedException) e).getUserMessage(context);
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
+            // we're supposed to catch all JSONException!
+            Log.e(TAG, "Please report if seen", e);
             msg = context.getString(R.string.error_unknown_long,
                                     context.getString(R.string.lbl_send_debug));
 

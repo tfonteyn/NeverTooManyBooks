@@ -66,7 +66,7 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, ExportException, CertificateException, ExternalStorageException {
+            throws IOException, ExportException, CertificateException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");

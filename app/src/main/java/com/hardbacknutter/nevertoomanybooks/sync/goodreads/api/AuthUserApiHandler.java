@@ -26,11 +26,12 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -79,7 +80,8 @@ public class AuthUserApiHandler
             // Return user found.
             return mUserId;
 
-        } catch (@NonNull final IOException | SiteParsingException | RuntimeException ignore) {
+        } catch (@NonNull final IOException | SAXException | CredentialsException
+                | RuntimeException ignore) {
             return 0;
         }
     }

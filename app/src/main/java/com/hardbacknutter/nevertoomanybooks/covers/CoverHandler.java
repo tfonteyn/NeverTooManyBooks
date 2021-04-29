@@ -80,7 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -225,14 +224,13 @@ public class CoverHandler {
         mVm = new ViewModelProvider(viewModelStoreOwner)
                 .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
 
-        mVm.onFinished().observe(lifecycleOwner, event -> {
+        mVm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + event);
+                Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + message);
             }
             hideProgress();
-            if (event.isNewEvent()) {
-                Objects.requireNonNull(event.result, FinishedMessage.MISSING_TASK_RESULTS);
-                onAfterTransform(event.result);
+            if (message.isNewEvent()) {
+                onAfterTransform(message.requireResult());
             }
         });
     }

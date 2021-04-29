@@ -44,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SiteParsingException;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SAXHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
@@ -96,13 +96,19 @@ public class GoogleBooksSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException {
+            throws StorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        fetchBook(url, fetchCovers, bookData);
+        try {
+            fetchBook(url, fetchCovers, bookData);
+        } catch (@NonNull final SAXException ignore) {
+            // ignore
+        }
         return bookData;
     }
 
@@ -114,7 +120,9 @@ public class GoogleBooksSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws SiteParsingException, IOException {
+            throws StorageException,
+                   IOException,
+                   CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -126,7 +134,11 @@ public class GoogleBooksSearchEngine
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            fetchBook(url, fetchCovers, bookData);
+            try {
+                fetchBook(url, fetchCovers, bookData);
+            } catch (@NonNull final SAXException ignore) {
+                // ignore
+            }
         }
         return bookData;
     }
@@ -139,13 +151,12 @@ public class GoogleBooksSearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @throws SiteParsingException on a decoding/parsing of data issue
-     * @throws IOException          on failure
+     * @throws IOException on failure
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws SiteParsingException, IOException {
+            throws StorageException, IOException, SAXException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -178,14 +189,21 @@ public class GoogleBooksSearchEngine
                 checkForSeriesNameInTitle(bookData);
             }
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+        } catch (@NonNull final ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+
+        } catch (@NonNull final SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fetchBook", e);
             }
-            // unwrap SAXException which are really IOExceptions
-            SAXHelper.unwrapIOException(e);
-            // wrap parser exceptions in an IOException /
-            throw new SiteParsingException(getId(), e);
+
+            // unwrap SAXException if possible
+            final Exception embedded = e.getException();
+            if (embedded instanceof StorageException) {
+                throw (StorageException) embedded;
+            }
+
+            throw e;
         }
     }
 
