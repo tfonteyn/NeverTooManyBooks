@@ -182,6 +182,7 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
+    public static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
 
 
     /** Make a backup. */
@@ -623,8 +624,8 @@ public class BooksOnBookshelf
     private void createFabMenu(@NonNull final SharedPreferences global) {
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
-        // mVb.fab4SearchExternalId
-        mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.isShowTab(global));
+        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID).setEnabled(
+                EditBookExternalIdFragment.isShowTab(global));
     }
 
     /**
@@ -1472,6 +1473,8 @@ public class BooksOnBookshelf
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         updateSyncMenuVisibility(global);
+        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID).setEnabled(
+                EditBookExternalIdFragment.isShowTab(global));
 
         // Initialize/Update the list of bookshelves
         mVm.reloadBookshelfList(this);
