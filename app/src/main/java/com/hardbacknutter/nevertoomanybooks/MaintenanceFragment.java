@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 @Keep
 public class MaintenanceFragment
@@ -132,7 +132,7 @@ public class MaintenanceFragment
             try {
                 bytes = purge(bookUuidList, false);
 
-            } catch (@NonNull final ExternalStorageException | SecurityException e) {
+            } catch (@NonNull final CoverStorageException | SecurityException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(getString(R.string.error_storage_not_accessible)));
@@ -152,7 +152,7 @@ public class MaintenanceFragment
                         try {
                             purge(bookUuidList, true);
 
-                        } catch (@NonNull final ExternalStorageException | SecurityException e) {
+                        } catch (@NonNull final CoverStorageException | SecurityException e) {
                             StandardDialogs.showError(context, ExMsg
                                     .map(context, e)
                                     .orElse(getString(R.string.error_storage_not_accessible)));
@@ -273,7 +273,7 @@ public class MaintenanceFragment
      */
     private long purge(@NonNull final Collection<String> bookUuidList,
                        final boolean reallyDelete)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         // check for orphaned cover files
         final FileFilter coverFilter = file -> {
@@ -293,7 +293,7 @@ public class MaintenanceFragment
     }
 
     private long count(@Nullable final FileFilter coverFilter)
-            throws ExternalStorageException {
+            throws CoverStorageException {
         final Context context = getContext();
         //noinspection ConstantConditions
         return FileUtils.getUsedSpace(ServiceLocator.getLogDir(), null)
@@ -303,7 +303,7 @@ public class MaintenanceFragment
     }
 
     private long delete(@Nullable final FileFilter coverFilter)
-            throws ExternalStorageException {
+            throws CoverStorageException {
         final Context context = getContext();
         //noinspection ConstantConditions
         return FileUtils.deleteDirectory(ServiceLocator.getLogDir(), null, null)
@@ -332,7 +332,7 @@ public class MaintenanceFragment
 
             Snackbar.make(mVb.getRoot(), "Now quit the app", Snackbar.LENGTH_LONG).show();
 
-        } catch (@NonNull final ExternalStorageException | SecurityException e) {
+        } catch (@NonNull final CoverStorageException | SecurityException e) {
             //noinspection ConstantConditions
             StandardDialogs.showError(context, ExMsg
                     .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));

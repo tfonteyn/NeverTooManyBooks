@@ -130,9 +130,8 @@ public class JsoupLoader {
                          "REQUESTED|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
             }
 
-            // URGENT: the logic is not very clear.... why use a Function if we orElseThrow?
             try (TerminatorConnection con = connectionProducer.apply(mDocRequestUrl)
-                                                              .orElseThrow(IOException::new)) {
+                                                              .orElseThrow(NetworkException::new)) {
                 mDoc = doGet(con);
                 return mDoc;
 
@@ -166,7 +165,6 @@ public class JsoupLoader {
                 if (attempts == 0) {
                     throw e;
                 }
-
             } catch (@NonNull final IOException e) {
                 mDoc = null;
 
@@ -178,7 +176,7 @@ public class JsoupLoader {
         }
 
         // Shouldn't get here ... flw
-        throw new IOException("All attempts failed");
+        throw new NetworkException("All attempts failed");
     }
 
     @NonNull

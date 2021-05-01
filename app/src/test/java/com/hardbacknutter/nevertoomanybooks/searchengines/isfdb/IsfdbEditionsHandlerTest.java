@@ -33,8 +33,10 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -98,7 +100,7 @@ class IsfdbEditionsHandlerTest
         Document document = null;
         try {
             document = mSearchEngine.loadDocument(path);
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }
         assertNotNull(document);
@@ -121,7 +123,7 @@ class IsfdbEditionsHandlerTest
         Document document = null;
         try {
             document = mSearchEngine.loadDocument(path);
-        } catch (@NonNull final IOException e) {
+        } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }
         assertNotNull(document);

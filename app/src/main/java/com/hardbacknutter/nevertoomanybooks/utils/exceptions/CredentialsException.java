@@ -57,6 +57,13 @@ public class CredentialsException
         mSiteResId = siteResId;
     }
 
+    public CredentialsException(@StringRes final int siteResId,
+                                @NonNull final String message,
+                                @NonNull final Throwable cause) {
+        super(message, cause);
+        mSiteResId = siteResId;
+    }
+
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {

@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Preprocess a Book for storage. This class does not access to database.
@@ -480,7 +480,7 @@ public class BookDaoHelper {
      * and {@link BookDaoImpl#update(Context, Book, int)}.
      */
     void persistCovers()
-            throws ExternalStorageException, IOException {
+            throws CoverStorageException, IOException {
 
         final String uuid = mBook.getString(DBKey.KEY_BOOK_UUID);
 

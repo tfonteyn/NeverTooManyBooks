@@ -50,9 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -69,6 +69,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
  * <p>
  * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
+ * <p>
+ * The searches can throw 3 Exceptions:
+ * <ul>
+ *     <li>{@link CredentialsException}: We cannot authenticate to the site,
+ *                                       the user MUST take action on NOW.</li>
+ *     <li>{@link StorageException}: Specific local storage issues,
+ *                                   the user MUST take action on NOW.</li>
+ *     <li>{@link SearchException}: The embedded Exception has the details,
+ *                                  should be reported to the user, but action is optional.</li>
+ * </ul>
  */
 public interface SearchEngine {
 
@@ -311,8 +321,8 @@ public interface SearchEngine {
      *
      * @return File fileSpec, or {@code null} on failure
      *
-     * @throws DiskFullException        on...
-     * @throws ExternalStorageException on...
+     * @throws DiskFullException     on...
+     * @throws CoverStorageException The covers directory is not available
      */
     @WorkerThread
     @Nullable
@@ -320,7 +330,7 @@ public interface SearchEngine {
                              @Nullable final String bookId,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException, CoverStorageException {
 
         final SearchEngineConfig config = getConfig();
 
@@ -369,15 +379,13 @@ public interface SearchEngine {
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
-         *
-         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
                                   @NonNull boolean[] fetchCovers)
                 throws StorageException,
-                       IOException,
+                       SearchException,
                        CredentialsException;
     }
 
@@ -393,15 +401,13 @@ public interface SearchEngine {
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
-         *
-         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchCovers)
                 throws StorageException,
-                       IOException,
+                       SearchException,
                        CredentialsException;
 
         /**
@@ -438,15 +444,13 @@ public interface SearchEngine {
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
-         *
-         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
                                @NonNull boolean[] fetchCovers)
                 throws StorageException,
-                       IOException,
+                       SearchException,
                        CredentialsException;
     }
 
@@ -474,8 +478,6 @@ public interface SearchEngine {
          *                    The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
-         *
-         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
@@ -485,7 +487,7 @@ public interface SearchEngine {
                       @Nullable String publisher,
                       @NonNull boolean[] fetchCovers)
                 throws StorageException,
-                       IOException,
+                       SearchException,
                        CredentialsException;
     }
 
@@ -506,8 +508,6 @@ public interface SearchEngine {
          * @param size      of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
-         *
-         * @throws StorageException on...
          */
         @WorkerThread
         @Nullable
@@ -515,7 +515,7 @@ public interface SearchEngine {
                                  @IntRange(from = 0, to = 1) int cIdx,
                                  @Nullable ImageFileInfo.Size size)
                 throws StorageException,
-                       IOException,
+                       SearchException,
                        CredentialsException;
 
         /**
@@ -530,17 +530,12 @@ public interface SearchEngine {
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
          * is meant to be stored into the book-data as a parcelable array;
          * and it allows extending to multiple images at a future time)
-         *
-         * @throws DiskFullException        on...
-         * @throws ExternalStorageException on...
          */
         @WorkerThread
         @NonNull
         default ArrayList<String> searchBestCoverByIsbn(@NonNull final String validIsbn,
                                                         @IntRange(from = 0, to = 1) final int cIdx)
-                throws StorageException,
-                       IOException,
-                       CredentialsException {
+                throws StorageException, SearchException, CredentialsException {
 
             final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
@@ -566,12 +561,10 @@ public interface SearchEngine {
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
-         *
-         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
-                throws IOException, CredentialsException;
+                throws CredentialsException, SearchException;
     }
 }

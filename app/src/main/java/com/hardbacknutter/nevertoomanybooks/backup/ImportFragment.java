@@ -486,7 +486,7 @@ public class ImportFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, e)
-                                    .orElse(getString(R.string.error_storage_not_writable));
+                                    .orElse(getString(R.string.error_unknown));
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(context)

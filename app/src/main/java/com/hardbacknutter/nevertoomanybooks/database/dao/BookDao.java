@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public interface BookDao {
 
@@ -99,7 +99,7 @@ public interface BookDao {
     long insert(@NonNull Context context,
                 @NonNull Book /* in/out */ book,
                 @BookFlags int flags)
-            throws DaoWriteException, ExternalStorageException;
+            throws CoverStorageException, DaoWriteException;
 
     /**
      * Update the given {@link Book}.
@@ -118,7 +118,7 @@ public interface BookDao {
     void update(@NonNull Context context,
                 @NonNull Book book,
                 @BookFlags int flags)
-            throws DaoWriteException, ExternalStorageException;
+            throws CoverStorageException, DaoWriteException;
 
     /**
      * Delete the given book (and its covers).

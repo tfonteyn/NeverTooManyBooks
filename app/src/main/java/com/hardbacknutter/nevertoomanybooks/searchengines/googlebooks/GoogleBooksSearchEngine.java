@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -37,14 +36,13 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -96,19 +94,13 @@ public class GoogleBooksSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws StorageException,
-                   IOException,
-                   CredentialsException {
+            throws StorageException, SearchException {
 
         final Bundle bookData = new Bundle();
 
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
-        try {
-            fetchBook(url, fetchCovers, bookData);
-        } catch (@NonNull final SAXException ignore) {
-            // ignore
-        }
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -120,9 +112,7 @@ public class GoogleBooksSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws StorageException,
-                   IOException,
-                   CredentialsException {
+            throws StorageException, SearchException {
 
         final Bundle bookData = new Bundle();
 
@@ -134,11 +124,7 @@ public class GoogleBooksSearchEngine
                                + "intitle%3A" + encodeSpaces(title)
                                + "%2B"
                                + "inauthor%3A" + encodeSpaces(author);
-            try {
-                fetchBook(url, fetchCovers, bookData);
-            } catch (@NonNull final SAXException ignore) {
-                // ignore
-            }
+            fetchBook(url, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -150,13 +136,11 @@ public class GoogleBooksSearchEngine
      * @param fetchCovers Set to {@code true} if we want to get covers
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @throws IOException on failure
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws StorageException, IOException, SAXException {
+            throws StorageException, SearchException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -185,26 +169,20 @@ public class GoogleBooksSearchEngine
                 try (TerminatorConnection con = createConnection(oneBookUrl)) {
                     parser.parse(con.getInputStream(), handler);
                 }
-
-                checkForSeriesNameInTitle(bookData);
             }
-
-        } catch (@NonNull final ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-
         } catch (@NonNull final SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "fetchBook", e);
-            }
-
             // unwrap SAXException if possible
             final Exception embedded = e.getException();
             if (embedded instanceof StorageException) {
                 throw (StorageException) embedded;
             }
+            throw new SearchException(getName(), e);
 
-            throw e;
+        } catch (@NonNull final ParserConfigurationException | IOException e) {
+            throw new SearchException(getName(), e);
         }
+
+        checkForSeriesNameInTitle(bookData);
     }
 
     /**

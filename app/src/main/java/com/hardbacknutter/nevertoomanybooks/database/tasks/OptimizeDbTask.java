@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Run 'PRAGMA optimize' on our databases.
@@ -65,7 +65,7 @@ public class OptimizeDbTask
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 

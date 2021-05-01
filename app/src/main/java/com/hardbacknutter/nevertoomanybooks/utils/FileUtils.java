@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Class to wrap common storage related functions.
@@ -98,7 +98,7 @@ public final class FileUtils {
     @NonNull
     public static File copy(@Nullable final InputStream is,
                             @NonNull final File destFile)
-            throws IOException, ExternalStorageException {
+            throws CoverStorageException, FileNotFoundException, IOException {
         if (is == null) {
             throw new FileNotFoundException("InputStream was NULL");
         }
@@ -261,7 +261,8 @@ public final class FileUtils {
      * @param source      File to rename
      * @param destination new name
      *
-     * @throws IOException on failure
+     * @throws FileNotFoundException if the source does not exist
+     * @throws IOException           on failure
      */
     public static void rename(@NonNull final File source,
                               @NonNull final File destination)
@@ -271,14 +272,13 @@ public final class FileUtils {
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.e(TAG, "renameOrThrow|source==destination=="
-                              + source.getAbsolutePath(), new Throwable()
-                        );
+                              + source.getAbsolutePath(), new Throwable());
             }
             return;
         }
 
         if (!source.exists()) {
-            throw new IOException(ERROR_SOURCE_MISSING + source);
+            throw new FileNotFoundException(ERROR_SOURCE_MISSING + source);
         }
 
         try {
@@ -471,15 +471,16 @@ public final class FileUtils {
      * convert invalid characters.
      *
      * <ul>Combines the hidden methods:
-     *  <li>android.os.FileUtils#buildValidFatFilename</li>
-     *  <li>android.os.FileUtils#buildValidExtFilename</li>
-     *  <li>android.os.FileUtils#trimFilename</li>
+     *  <li>{@link android.os.FileUtils}#buildValidFatFilename</li>
+     *  <li>{@link android.os.FileUtils}#buildValidExtFilename</li>
+     *  <li>{@link android.os.FileUtils}#trimFilename</li>
      * </ul>
      */
+    @NonNull
     public static String buildValidFilename(@Nullable final String name)
-            throws IOException {
+            throws FileNotFoundException {
         if (name == null || name.isEmpty() || ".".equals(name) || "..".equals(name)) {
-            throw new IOException("invalid name: " + name);
+            throw new FileNotFoundException();
         }
 
         final StringBuilder sb = new StringBuilder(name.length());

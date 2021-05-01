@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -335,7 +335,7 @@ public abstract class ArchiveWriterAbstract
      */
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
-            throws ExternalStorageException, IOException {
+            throws CoverStorageException, IOException {
 
         progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 

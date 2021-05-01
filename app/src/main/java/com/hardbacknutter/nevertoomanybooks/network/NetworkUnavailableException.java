@@ -22,20 +22,26 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-
-import java.io.IOException;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
  * Should be thrown if the device has no network connectivity at all for whatever reason.
  */
 public class NetworkUnavailableException
-        extends IOException
-        implements LocalizedException {
+        extends NetworkException {
 
-    private static final long serialVersionUID = -700760397630146106L;
+    private static final long serialVersionUID = 769176879601492110L;
+
+    public NetworkUnavailableException(@NonNull final String message) {
+        super(message);
+    }
+
+    public NetworkUnavailableException(@NonNull final String message,
+                                       @Nullable final Throwable cause) {
+        super(message, cause);
+    }
 
     @NonNull
     @Override

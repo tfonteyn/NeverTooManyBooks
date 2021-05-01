@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ public class WrappedMap<K, V>
     @NonNull
     private final Map<K, V> m;
 
-    protected WrappedMap(@NonNull final Map<K, V> m) {
+    WrappedMap(@NonNull final Map<K, V> m) {
         this.m = m;
     }
 

@@ -178,7 +178,7 @@ public class SearchTask
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
-            throws StorageException, IOException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException, IOException {
 
         publishProgress(1, mProgressTitle);
 
@@ -186,7 +186,7 @@ public class SearchTask
         // But it makes error handling slightly easier and doing
         // it here offloads it from the UI thread.
         if (!NetworkUtils.isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(this.getClass().getName());
         }
 
         // can we reach the site ?

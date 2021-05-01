@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
@@ -68,7 +69,7 @@ public class LanguageDaoImpl
             // The cursor is distinct, but we need to make sure code->name does not create
             // duplicates (very unlikely, but not impossible)
             final Set<String> set = new LinkedHashSet<>();
-            final Languages languages = Languages.getInstance();
+            final Languages languages = ServiceLocator.getInstance().getLanguages();
 
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);

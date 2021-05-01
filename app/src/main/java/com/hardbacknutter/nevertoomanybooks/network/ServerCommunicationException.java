@@ -17,42 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
-
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.network;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+public class ServerCommunicationException
+        extends NetworkException {
 
-/**
- * Thrown when external storage media is not available.
- */
-public class ExternalStorageException
-        extends StorageException {
+    private static final long serialVersionUID = 6749228883164538875L;
 
-    private static final long serialVersionUID = 2553728112905906864L;
-
-    public ExternalStorageException(@Nullable final String message) {
+    public ServerCommunicationException(@NonNull final String message) {
         super(message);
     }
 
-    public ExternalStorageException(@Nullable final String message,
-                                    @Nullable final Throwable cause) {
+    public ServerCommunicationException(@NonNull final String message,
+                                        @NonNull final Throwable cause) {
         super(message, cause);
     }
 
-    /**
-     * The default user displayable message.
-     *
-     * @param context Current context
-     *
-     * @return text
-     */
-    @NonNull
-    @Override
-    public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_writable);
+    public ServerCommunicationException(@NonNull final Throwable cause) {
+        super(cause);
     }
 }

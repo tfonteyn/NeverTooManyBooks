@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
@@ -99,7 +99,7 @@ public class BookTest {
      */
     @Before
     public void setup()
-            throws IOException, ExternalStorageException {
+            throws IOException, CoverStorageException {
 
         mBookshelfList.clear();
         mAuthorList.clear();
@@ -198,7 +198,7 @@ public class BookTest {
      */
     @Test
     public void book()
-            throws DaoWriteException, IOException, ExternalStorageException {
+            throws DaoWriteException, IOException, CoverStorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
@@ -334,7 +334,7 @@ public class BookTest {
 
     @Test
     public void showBookVM()
-            throws DaoWriteException, ExternalStorageException, IOException {
+            throws DaoWriteException, CoverStorageException, IOException {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         mBook[0] = prepareAndInsertBook(context, bookDao);
@@ -359,7 +359,7 @@ public class BookTest {
      */
     private Book prepareAndInsertBook(@NonNull final Context context,
                                       @NonNull final BookDao db)
-            throws DaoWriteException, ExternalStorageException, IOException {
+            throws DaoWriteException, CoverStorageException, IOException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
@@ -390,7 +390,7 @@ public class BookTest {
     }
 
     private void checkBookAfterInitialInsert(final Book book)
-            throws ExternalStorageException {
+            throws CoverStorageException {
         final Context context = ServiceLocator.getLocalizedAppContext();
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());

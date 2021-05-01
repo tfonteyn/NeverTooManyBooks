@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -162,7 +162,7 @@ public class FileManager {
                             fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
                                     .searchCoverByIsbn(isbn, cIdx, size);
 
-                        } catch (@NonNull final IOException e) {
+                        } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.
                             // disable it for THIS search
                             currentSearchSites &= ~site.engineId;

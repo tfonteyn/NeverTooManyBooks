@@ -26,8 +26,8 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Build the dedicated SharedPreferences file with the language mappings.
@@ -54,7 +54,7 @@ public class BuildLanguageMappingsTask
     @Override
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
-        Languages.getInstance().createLanguageMappingCache(context);
+        ServiceLocator.getInstance().getLanguages().createLanguageMappingCache(context);
         return true;
     }
 }

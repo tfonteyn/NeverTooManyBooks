@@ -82,8 +82,9 @@ public class DBCleaner {
                           @NonNull final Locale userLocale) {
 
 
-        final LanguageDao languageDao = ServiceLocator.getInstance().getLanguageDao();
-        final Languages langHelper = Languages.getInstance();
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final LanguageDao languageDao = serviceLocator.getLanguageDao();
+        final Languages langHelper = serviceLocator.getLanguages();
 
         for (final String lang : languageDao.getList()) {
             if (lang != null && !lang.isEmpty()) {

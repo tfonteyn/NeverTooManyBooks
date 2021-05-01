@@ -57,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIdApiHa
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookByIsbnApiHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.
@@ -226,8 +226,8 @@ public class GoodreadsManager {
      */
     @WorkerThread
     public GrStatus.SendBook sendBook(@NonNull final DataHolder bookData)
-            throws CredentialsException, IOException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpStatusException {
 
         final long bookId = bookData.getLong(DBKey.PK_ID);
 
@@ -427,9 +427,8 @@ public class GoodreadsManager {
     private Bundle getBookById(final long grBookId,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         if (mShowBookByIdApiHandler == null) {
             mShowBookByIdApiHandler = new ShowBookByIdApiHandler(mContext, mGoodreadsAuth);
@@ -452,9 +451,8 @@ public class GoodreadsManager {
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchCovers,
                                  @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mContext, mGoodreadsAuth);

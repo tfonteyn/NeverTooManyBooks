@@ -131,8 +131,7 @@ public final class SearchEngineConfig {
 
         } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(mClass
-                                            + " must implement SearchEngine(int)", e);
+            throw new IllegalStateException(mClass + " must implement SearchEngine(int)", e);
         }
     }
 

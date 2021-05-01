@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,9 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -289,9 +290,8 @@ public abstract class ShowBookApiHandler
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         mBookData = bookData;
 
@@ -319,9 +319,8 @@ public abstract class ShowBookApiHandler
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         mBookData = bookData;
 
@@ -379,9 +378,10 @@ public abstract class ShowBookApiHandler
             String source = mBookData.getString(DBKey.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
-                source = Languages.getInstance().getISO3FromCode(source);
+                final Languages languages = ServiceLocator.getInstance().getLanguages();
+                source = languages.getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
-                source = Languages.getInstance().toBibliographic(mUserLocale, source);
+                source = languages.toBibliographic(mUserLocale, source);
                 // store the iso3
                 mBookData.putString(DBKey.KEY_LANGUAGE, source);
             }

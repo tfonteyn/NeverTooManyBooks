@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -119,7 +119,7 @@ public class CropImageActivity
                 Snackbar.make(mVb.coverImage0, R.string.error_storage_no_space_left,
                               Snackbar.LENGTH_LONG).show();
             }
-        } catch (@NonNull final IOException | ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException | IOException e) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(R.string.error_storage_not_accessible)

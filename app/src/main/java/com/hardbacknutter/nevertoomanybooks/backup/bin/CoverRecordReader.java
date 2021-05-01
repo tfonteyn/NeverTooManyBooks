@@ -38,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * FIXME: currently we import covers without checking if we actually have the book.
@@ -61,7 +61,7 @@ public class CoverRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws ExternalStorageException, DiskFullException {
+            throws DiskFullException, CoverStorageException {
 
         final ImportResults results = new ImportResults();
 

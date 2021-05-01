@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public final class ImportHelper {
 
@@ -223,7 +223,7 @@ public final class ImportHelper {
                    ImportException,
                    IOException,
                    CertificateException,
-                   ExternalStorageException {
+                   CoverStorageException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");

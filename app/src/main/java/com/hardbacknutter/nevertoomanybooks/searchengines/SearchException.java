@@ -22,58 +22,47 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
-/**
- * Used to wrap site specific parsing exceptions.
- * <p>
- * Either the remote end gave us garbage, or the data format changed and we failed to decode it.
- * <p>
- * Dev note: DO NOT make this an IOException (again)!
- */
-public class SiteParsingException
+public class SearchException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -6026123597563696379L;
+    private static final long serialVersionUID = -6801167882310671147L;
 
     /** The site that caused the issue. */
-    @SearchSites.EngineId
-    private final int mSiteResId;
+    @NonNull
+    private final String mSiteName;
 
-    public SiteParsingException(@SearchSites.EngineId final int siteId,
-                                @NonNull final Throwable cause) {
+    public SearchException(@NonNull final String siteName,
+                           @NonNull final Throwable cause) {
         super(cause);
-        mSiteResId = siteId;
+        mSiteName = siteName;
     }
 
-    public SiteParsingException(@SearchSites.EngineId final int siteId,
-                                @NonNull final String message) {
+    public SearchException(@NonNull final String siteName,
+                           @NonNull final String message) {
         super(message);
-        mSiteResId = siteId;
-    }
-
-    @Nullable
-    @Override
-    public String getMessage() {
-        return "SiteResId=" + mSiteResId + ": " + super.getMessage();
+        mSiteName = siteName;
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        //TODO: look at cause and give more details
-        return context.getString(R.string.error_network_site_has_problems);
+        return context.getString(R.string.error_search_x_failed_y, mSiteName,
+                                 ExMsg.map(context, getCause())
+                                      .orElse(context.getString(R.string.error_unknown)));
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "SiteParsingException{"
-               + "mSiteResId=" + mSiteResId
+        return "SearchException{"
+               + "mSiteName='" + mSiteName + '\''
+               + super.toString()
                + '}';
     }
 }

@@ -25,12 +25,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -63,7 +63,7 @@ public class IsfdbGetEditionsTask
     @Override
     @WorkerThread
     protected List<Edition> doWork(@NonNull final Context context)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);

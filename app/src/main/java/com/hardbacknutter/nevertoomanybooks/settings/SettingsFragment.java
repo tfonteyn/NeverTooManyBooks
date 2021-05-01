@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Global settings page.
@@ -400,7 +400,7 @@ public class SettingsFragment
             CoverDir.initVolume(getContext(), volume);
             return true;
 
-        } catch (@NonNull final ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             // This should never happen... flw
             StandardDialogs.showError(getContext(), R.string.error_storage_not_accessible);
             return false;
@@ -414,7 +414,8 @@ public class SettingsFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, message.requireResult())
-                                    .orElse(getString(R.string.error_unknown));
+                                    .orElse(getString(R.string.error_unknown_long,
+                                                      getString(R.string.lbl_send_debug)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)

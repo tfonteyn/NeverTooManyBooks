@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -66,7 +66,7 @@ public class ZipArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, ExternalStorageException {
+            throws DaoWriteException, CoverStorageException {
         super.setup();
         final Context context = ServiceLocator.getLocalizedAppContext();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();

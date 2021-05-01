@@ -27,13 +27,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
@@ -86,7 +86,7 @@ public class LibraryThingRegistrationViewModel
         @Override
         @WorkerThread
         protected Integer doWork(@NonNull final Context context)
-                throws StorageException, IOException, CredentialsException {
+                throws StorageException, SearchException, CredentialsException {
 
             final SearchEngine.CoverByIsbn ltm = (SearchEngine.CoverByIsbn) SearchEngineRegistry
                     .getInstance().createSearchEngine(SearchSites.LIBRARY_THING);

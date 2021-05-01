@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
 
@@ -131,6 +132,9 @@ public final class ServiceLocator {
     @Nullable
     private Styles mStyles;
 
+    /** NOT an interface. Cannot be injected. The underlying {@link LanguageDao} can be injected. */
+    @Nullable
+    private Languages mLanguages;
 
     /** NOT an interface but CAN be injected for testing. */
     @Nullable
@@ -292,6 +296,16 @@ public final class ServiceLocator {
             }
         }
         return mStyles;
+    }
+
+    @NonNull
+    public Languages getLanguages() {
+        synchronized (this) {
+            if (mLanguages == null) {
+                mLanguages = new Languages();
+            }
+        }
+        return mLanguages;
     }
 
 

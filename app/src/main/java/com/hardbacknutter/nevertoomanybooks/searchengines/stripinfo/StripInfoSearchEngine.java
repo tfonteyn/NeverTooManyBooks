@@ -49,6 +49,7 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -62,15 +63,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionForm;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -173,12 +174,16 @@ public class StripInfoSearchEngine
     @NonNull
     @Override
     public Document loadDocument(@NonNull final String url)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         if (StripInfoAuth.isLoginToSearch()) {
             if (mLoginHelper == null) {
                 mLoginHelper = new StripInfoAuth(getSiteUrl());
-                mLoginHelper.login();
+                try {
+                    mLoginHelper.login();
+                } catch (@NonNull final IOException e) {
+                    throw new SearchException(getName(), e);
+                }
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
@@ -192,10 +197,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -216,10 +218,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -239,10 +238,7 @@ public class StripInfoSearchEngine
     @Override
     public Bundle searchByBarcode(@NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
         // the search url is the same
         return searchByIsbn(barcode, fetchCovers);
     }
@@ -258,15 +254,13 @@ public class StripInfoSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
-     *
-     * @throws IOException on failure
      */
     @WorkerThread
     @VisibleForTesting
     void parseMultiResult(@NonNull final Document document,
                           @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -305,7 +299,7 @@ public class StripInfoSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, SearchException {
         super.parse(document, fetchCovers, bookData);
 
         // extracted from the page header.
@@ -527,7 +521,7 @@ public class StripInfoSearchEngine
     private void processCover(@NonNull final Document document,
                               @IntRange(from = 0, to = 1) final int cIdx,
                               @NonNull final Bundle bookData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final String isbn = bookData.getString(DBKey.KEY_ISBN);
         final String url = parseCover(document, cIdx);
@@ -589,7 +583,7 @@ public class StripInfoSearchEngine
     private String saveCover(@Nullable final String isbn,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @NonNull final String url)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
         // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
@@ -905,7 +899,8 @@ public class StripInfoSearchEngine
         final int found = processText(td, DBKey.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
+            lang = ServiceLocator.getInstance().getLanguages()
+                                 .getISO3FromDisplayName(getLocale(), lang);
             bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
         return found;

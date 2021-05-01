@@ -53,10 +53,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -210,13 +211,12 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws StorageException,
-                   IOException,
-                   CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "id", externalId);
+
         fetchBook(url, bookData);
 
         if (isCancelled()) {
@@ -245,13 +245,12 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws StorageException,
-                   IOException,
-                   CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "isbn", validIsbn);
+
         fetchBook(url, bookData);
 
         if (isCancelled()) {
@@ -280,10 +279,7 @@ public class LibraryThingSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "large";
@@ -320,7 +316,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws IOException, CredentialsException {
+            throws SearchException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
@@ -330,14 +326,8 @@ public class LibraryThingSearchEngine
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 
-        } catch (@NonNull final ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-
-        } catch (@NonNull final SAXException e) {
-            // ignore
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "searchAlternativeEditions", e);
-            }
+        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
+            throw new SearchException(getName(), e);
         }
         return handler.getResult();
     }
@@ -347,12 +337,10 @@ public class LibraryThingSearchEngine
      *
      * @param url      to fetch
      * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @throws IOException on failure
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final Bundle bookData)
-            throws IOException {
+            throws SearchException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingHandler handler = new LibraryThingHandler(bookData);
@@ -362,9 +350,6 @@ public class LibraryThingSearchEngine
         try (TerminatorConnection con = createConnection(url)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
-
-        } catch (@NonNull final ParserConfigurationException e) {
-            throw new IllegalStateException(e);
 
         } catch (@NonNull final SAXException e) {
             // ignore
@@ -378,10 +363,10 @@ public class LibraryThingSearchEngine
                 Log.d(TAG, "LibraryThing v1 APIs disabled");
             }
 
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "fetchBook", e);
-            }
-            return;
+            throw new SearchException(getName(), e);
+
+        } catch (@NonNull final ParserConfigurationException | IOException e) {
+            throw new SearchException(getName(), e);
         }
 
         checkForSeriesNameInTitle(bookData);

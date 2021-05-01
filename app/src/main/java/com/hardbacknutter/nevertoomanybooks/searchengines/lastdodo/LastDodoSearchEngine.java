@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.jsoup.nodes.Document;
@@ -35,6 +34,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -45,11 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
@@ -104,10 +104,7 @@ public class LastDodoSearchEngine
     @NonNull
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -123,10 +120,7 @@ public class LastDodoSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -147,14 +141,12 @@ public class LastDodoSearchEngine
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
-     *
-     * @throws IOException on failure
      */
     @WorkerThread
     private void parseMultiResult(@NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.cw-lot_content");
@@ -174,7 +166,7 @@ public class LastDodoSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, SearchException {
         super.parse(document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -336,8 +328,7 @@ public class LastDodoSearchEngine
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Bundle bookData)
-            throws DiskFullException,
-                   ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
         final Element images = document.getElementById("images_container");
         if (images != null) {
             final Elements aas = images.select("a");
@@ -465,7 +456,8 @@ public class LastDodoSearchEngine
         processText(td, DBKey.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = Languages.getInstance().getISO3FromDisplayName(getLocale(), lang);
+            lang = ServiceLocator.getInstance().getLanguages()
+                                 .getISO3FromDisplayName(getLocale(), lang);
             bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
     }

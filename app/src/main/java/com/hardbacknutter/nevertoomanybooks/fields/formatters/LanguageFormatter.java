@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
  * FieldFormatter for language fields.
@@ -56,7 +56,8 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return Languages.getInstance().getDisplayNameFromISO3(context, rawValue);
+            return ServiceLocator.getInstance().getLanguages()
+                                 .getDisplayNameFromISO3(context, rawValue);
         }
     }
 
@@ -69,6 +70,7 @@ public class LanguageFormatter
     @Override
     public String extract(@NonNull final Context context,
                           @NonNull final String text) {
-        return Languages.getInstance().getISO3FromDisplayName(mLocale, text);
+        return ServiceLocator.getInstance().getLanguages()
+                             .getISO3FromDisplayName(mLocale, text);
     }
 }

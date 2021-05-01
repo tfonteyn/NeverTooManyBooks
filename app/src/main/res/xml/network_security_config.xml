@@ -21,27 +21,20 @@
 
 <network-security-config xmlns:tools="http://schemas.android.com/tools"
     tools:keep="@xml/network_security_config">
-    <!-- Starting with Android 9 (API level 28), cleartext support is disabled by default. -->
     <domain-config cleartextTrafficPermitted="true">
-        <!-- but these domains don't yet support https. 2020-01-04. -->
+        <!-- No https - Last checked: 2021-04-26. -->
         <domain includeSubdomains="true">isfdb.org</domain>
-        <domain includeSubdomains="true">kb.nl</domain>
-        <!-- RELEASE: remove this.
-            The developers home network unprotected Calibre Content Server for testing... -->
-        <domain includeSubdomains="true">192.168.0.202</domain>
 
         <!-- Added 2020-07-08.
         http://ecx.images-amazon.com/images/I/41lQH44CfyL.jpg
 
-        Manually changing urls to https results in:
-
-         D/ImageUtils: saveImage|e=Hostname ecx.images-amazon.com not verified:
-        certificate: sha1/Q7se2uhRtdUO5KQJKV/3LI2dCl8=
-        DN: CN=*.cloudfront.net,O=Amazon.com\, Inc.,L=Seattle,ST=Washington,C=US
-        subjectAltNames: [cloudfront.net, *.cloudfront.net]
-
+        Manually changing urls to https results in certificate errors
         Allowing cleartext as a workaround.
         -->
         <domain includeSubdomains="true">images-amazon.com</domain>
+
+        <!-- RELEASE: remove this.
+            The developers home network unprotected Calibre Content Server for testing... -->
+        <domain includeSubdomains="true">192.168.0.202</domain>
     </domain-config>
 </network-security-config>

@@ -196,19 +196,23 @@ public final class NetworkUtils {
                 if (inetAddress == null) {
                     throw new UnknownHostException(host);
                 }
-
                 return inetAddress;
 
             } catch (@NonNull final ExecutionException e) {
-                // Shouldn't happen... flw
-                throw new IOException("DNS lookup failed for: " + host, e);
+                // unwrap if we can
+                if (e.getCause() instanceof IOException) {
+                    throw (IOException) e.getCause();
+                }
+                // Shouldn't happen... flw...
+                throw new NetworkUnavailableException("DNS lookup failed for: " + host,
+                                                      e.getCause());
 
             } catch (@NonNull final TimeoutException e) {
-                // wrap For simplicity
+                // re-throw as if it's coming from the network call.
                 throw new SocketTimeoutException(host);
 
             } catch (@NonNull final InterruptedException e) {
-                // wrap For simplicity
+                // re-throw as if it's coming from the network call.
                 throw new UnknownHostException(host);
 
             } finally {

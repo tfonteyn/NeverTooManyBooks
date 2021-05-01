@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public class ImageDownloader {
 
@@ -143,7 +143,7 @@ public class ImageDownloader {
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
                             @Nullable final ImageFileInfo.Size size)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.
         final String filename = System.currentTimeMillis()
@@ -171,7 +171,7 @@ public class ImageDownloader {
     @WorkerThread
     public File fetch(@NonNull final String url,
                       @NonNull final File destination)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
         @Nullable
         final File savedFile;
 

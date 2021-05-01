@@ -77,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -473,7 +472,8 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_language);
                 } else {
-                    return Languages.getInstance().getDisplayNameFromISO3(context, text);
+                    return ServiceLocator.getInstance().getLanguages()
+                                         .getDisplayNameFromISO3(context, text);
                 }
             }
             case BooklistGroup.CONDITION: {

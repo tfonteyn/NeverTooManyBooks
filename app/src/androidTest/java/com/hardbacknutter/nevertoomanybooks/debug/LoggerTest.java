@@ -31,7 +31,7 @@ import org.junit.Test;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -43,7 +43,7 @@ public class LoggerTest {
 
     @Test
     public void cycleLogs()
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         final Context context = ServiceLocator.getAppContext();
 

@@ -199,9 +199,7 @@ class KbNlBookHandler
                 break;
 
             default:
-                // to many...
-//                Logger.warn(this, "processEntry",
-//                            "currentLabel=" + currentLabel);
+                // ignore
                 break;
         }
     }

@@ -40,10 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
  *      <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
  * </ul>
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
- * <p>
- * Singleton.
  */
-public final class Languages {
+public class Languages {
 
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
@@ -54,35 +52,19 @@ public final class Languages {
     public static final String LANGUAGE_MAP = "language2iso3";
     /** Prefix added to the iso code for the 'done' flag in the language cache. */
     private static final String LANG_CREATED_PREFIX = "___";
-    /** Singleton. */
-    private static Languages sInstance;
+
     @NonNull
     private final Map<String, String> mLang3ToLang2Map;
 
     /**
-     * Constructor. Use {@link #getInstance()}.
+     * Constructor.
      */
-    private Languages() {
+    public Languages() {
         final String[] languages = Locale.getISOLanguages();
         mLang3ToLang2Map = new HashMap<>(languages.length);
         for (final String language : languages) {
             final Locale locale = new Locale(language);
             mLang3ToLang2Map.put(locale.getISO3Language(), language);
-        }
-    }
-
-    /**
-     * Get/create the singleton instance.
-     *
-     * @return instance
-     */
-    @NonNull
-    public static Languages getInstance() {
-        synchronized (Languages.class) {
-            if (sInstance == null) {
-                sInstance = new Languages();
-            }
-            return sInstance;
         }
     }
 

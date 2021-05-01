@@ -27,7 +27,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -53,41 +52,24 @@ public final class ExMsg {
     @NonNull
     public static Optional<String> map(@NonNull final Context context,
                                        @Nullable final Throwable e) {
-        String msg = getMsg(context, e);
-        if (msg == null && e instanceof IOException) {
-            // handle a LIMITED set of IO exceptions
-            msg = getIOExMsg(context, (IOException) e);
+        if (e != null) {
+            String msg = getMsg(context, e);
 
-            if (msg == null) {
-                // Handle encapsulated exceptions last.
+            if (msg == null && e.getCause() != null) {
+                // Handle encapsulated exceptions
                 msg = getMsg(context, e.getCause());
             }
-        }
 
-        if (msg != null) {
-            return Optional.of(msg);
+            if (msg != null) {
+                return Optional.of(msg);
+            }
         }
-
         return Optional.empty();
     }
 
     @Nullable
-    private static String getIOExMsg(@NonNull final Context context,
-                                     @NonNull final IOException e) {
-        String msg = null;
-
-
-
-        return msg;
-    }
-
-    @Nullable
     private static String getMsg(@NonNull final Context context,
-                                 @Nullable final Throwable e) {
-        if (e == null) {
-            return null;
-        }
-
+                                 @NonNull final Throwable e) {
         String msg = null;
 
         //FIXME: review some of these error message and improve them
@@ -113,6 +95,9 @@ public final class ExMsg {
                    || e instanceof java.sql.SQLException) {
             msg = context.getString(R.string.error_unknown_long,
                                     context.getString(R.string.lbl_send_debug));
+
+        } else if (e instanceof java.io.EOFException) {
+            msg = context.getString(R.string.error_network_failed_try_again);
 
         } else if (e instanceof java.net.SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);

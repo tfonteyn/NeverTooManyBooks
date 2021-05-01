@@ -21,9 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+
+import javax.net.ssl.SSLException;
 
 import org.junit.Test;
 
@@ -39,7 +41,7 @@ public class CalibreContentServerTest {
 
     @Test
     public void filenames()
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException, FileNotFoundException {
 
         final ArrayList<Author> authors = new ArrayList<>();
         authors.add(Author.from("Arthur C. Clarke"));

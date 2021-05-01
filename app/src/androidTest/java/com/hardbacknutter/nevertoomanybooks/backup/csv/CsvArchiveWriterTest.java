@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -74,7 +74,7 @@ public class CsvArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, ExternalStorageException {
+            throws DaoWriteException, CoverStorageException {
         super.setup();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {

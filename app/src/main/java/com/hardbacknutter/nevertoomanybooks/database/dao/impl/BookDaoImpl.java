@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -185,7 +185,7 @@ public class BookDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Book /* in/out */ book,
                        @BookFlags final int flags)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -249,7 +249,7 @@ public class BookDaoImpl
             try {
                 bookDaoHelper.persistCovers();
 
-            } catch (@NonNull final ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw e;
@@ -279,7 +279,7 @@ public class BookDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @BookFlags final int flags)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -326,7 +326,7 @@ public class BookDaoImpl
                 try {
                     bookDaoHelper.persistCovers();
 
-                } catch (@NonNull final ExternalStorageException e) {
+                } catch (@NonNull final CoverStorageException e) {
                     throw e;
 
                 } catch (@NonNull final IOException e) {

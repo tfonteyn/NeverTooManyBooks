@@ -61,8 +61,7 @@ public abstract class SearchEngineBase
      * TODO: we probably call checkForSeriesNameInTitle for sites that don't need it.
      * <p>
      * It's static so we can use it from
-     * {@link com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookApiHandler}
-     * until that one is converted.
+     * {@link com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookApiHandler}.
      *
      * @param bookData Bundle to update
      */

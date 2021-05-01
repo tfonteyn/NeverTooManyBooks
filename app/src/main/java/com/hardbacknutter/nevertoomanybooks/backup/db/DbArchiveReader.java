@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -77,7 +77,7 @@ public class DbArchiveReader
      */
     public DbArchiveReader(@NonNull final Context context,
                            @NonNull final ImportHelper helper)
-            throws IOException, ExternalStorageException {
+            throws CoverStorageException, IOException {
 
         mHelper = helper;
 

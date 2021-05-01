@@ -112,12 +112,11 @@ android {
 
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
     // 2021-02-16 world wide:
-    // 10.0     44.47
-    // 9.0      65.76
-    // 8.1      75.65
-    // 8.0      80.82
-    // 7.1      83.9
-    // 7.0      88.16
+    // 11.0     12.38
+    // 10.0     51.05
+    // 9.0      69.09
+    // 8.1      78.27
+    // 8.0      82.62
 
     // Android Studio 'new project' page (has not been updated since at least 2020-04-11)
     //  A       API     %
@@ -125,8 +124,6 @@ android {
     //  9       28      39.5
     //  8.1     27      53.5
     //  8       26      60.8
-    //  7.1     25      66.2
-    //  7       24      73.7
 
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
@@ -162,7 +159,9 @@ android {
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
 
         // Dutch.
-        buildConfigField('boolean', 'ENABLE_KB_NL', 'true')
+        // 2021-04: the site has changed technology and our engine no longer works.
+        // Disabled for now.
+        buildConfigField('boolean', 'ENABLE_KB_NL', 'false')
         // Dutch.
         buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
         // Dutch.
@@ -202,6 +201,8 @@ android {
             buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'true')
             // under development
             buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'true')
+            // under development; adapting to the new site format.
+            buildConfigField('boolean', 'ENABLE_KB_NL', 'true')
         }
     }
 

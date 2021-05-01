@@ -66,8 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -205,7 +205,7 @@ public class CalibreContentServerReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws ImportException, IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, ImportException, IOException {
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
@@ -315,7 +315,7 @@ public class CalibreContentServerReader
     private void handleBook(@NonNull final Context context,
                             @NonNull final CalibreLibraryDao libraryDao,
                             @NonNull final JSONObject calibreBook)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if the book exists in our database, and fetch it's id.
@@ -384,7 +384,7 @@ public class CalibreContentServerReader
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,
                                  @NonNull final Book localBook)
-            throws JSONException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
         localBook.putInt(DBKey.KEY_CALIBRE_BOOK_ID, calibreBookId);

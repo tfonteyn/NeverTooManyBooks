@@ -50,8 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Single Activity to be the 'Main' activity for the app.
@@ -164,7 +164,7 @@ public class StartupActivity
         try {
             actualVolumeIndex = CoverDir.initVolume(this, storedVolumeIndex);
 
-        } catch (@NonNull final ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             onExternalStorageException(e);
             return;
         }
@@ -300,8 +300,8 @@ public class StartupActivity
         @Nullable
         final Exception e = message.getResult();
 
-        if (e instanceof ExternalStorageException) {
-            onExternalStorageException((ExternalStorageException) e);
+        if (e instanceof CoverStorageException) {
+            onExternalStorageException((CoverStorageException) e);
         } else {
             onGenericException(e);
         }
@@ -333,7 +333,7 @@ public class StartupActivity
                 .show();
     }
 
-    private void onExternalStorageException(@NonNull final ExternalStorageException e) {
+    private void onExternalStorageException(@NonNull final CoverStorageException e) {
         Logger.error(TAG, e, "");
 
         new MaterialAlertDialogBuilder(this)

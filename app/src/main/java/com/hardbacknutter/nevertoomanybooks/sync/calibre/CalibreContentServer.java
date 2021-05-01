@@ -91,8 +91,8 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -1032,7 +1032,7 @@ public class CalibreContentServer {
     @Nullable
     public File getCover(final int calibreId,
                          @NonNull final String coverUrl)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         if (mImageDownloader == null) {
             mImageDownloader = new ImageDownloader()
@@ -1188,7 +1188,7 @@ public class CalibreContentServer {
                                  @NonNull final Book book,
                                  @NonNull final Uri folder,
                                  final boolean creating)
-            throws IOException {
+            throws FileNotFoundException {
 
         // we're not assuming ANYTHING....
         final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
@@ -1237,7 +1237,7 @@ public class CalibreContentServer {
     @NonNull
     String createFilename(@NonNull final Context context,
                           @NonNull final Book book)
-            throws IOException {
+            throws FileNotFoundException {
         String seriesPrefix = "";
         final Series primarySeries = book.getPrimarySeries();
         if (primarySeries != null) {
@@ -1251,15 +1251,16 @@ public class CalibreContentServer {
     @VisibleForTesting
     @NonNull
     String createAuthorDirectoryName(@NonNull final Book book)
-            throws IOException {
+            throws FileNotFoundException {
         final Author primaryAuthor = book.getPrimaryAuthor();
         if (primaryAuthor == null) {
             // This should never happen... flw
-            throw new IOException("primaryAuthor was null");
+            throw new FileNotFoundException("primaryAuthor was null");
         }
 
         String authorDirectory = FileUtils.buildValidFilename(
                 primaryAuthor.getFormattedName(false));
+
         // A little extra nastiness... if our name ends with a '.'
         // then Android, in its infinite wisdom, will remove it
         // If we escape it, Android will turn it into a '_'

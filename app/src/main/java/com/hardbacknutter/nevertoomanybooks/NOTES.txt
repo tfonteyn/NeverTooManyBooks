@@ -1,5 +1,7 @@
 Supported Android versions:
 
+* v2.1.0 requires Android 8.0 (API 26)
+* v2.0.0 requires Android 7.0 (API 24)
 * v1.2.0 requires Android 7.0 (API 24)
 * v1.1.2 runs on Android 6.0 (API 23)
 

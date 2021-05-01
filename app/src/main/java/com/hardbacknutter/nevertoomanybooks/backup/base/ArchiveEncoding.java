@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Archive encoding (formats) (partially) supported.
@@ -334,7 +334,7 @@ public enum ArchiveEncoding
                    IOException,
                    CertificateException,
                    ImportException,
-                   ExternalStorageException {
+                   CoverStorageException {
 
         final ArchiveReader reader;
         switch (this) {

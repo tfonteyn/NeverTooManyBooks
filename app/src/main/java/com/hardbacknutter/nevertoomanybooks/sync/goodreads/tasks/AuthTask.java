@@ -90,7 +90,7 @@ public class AuthTask
             throws IOException, CredentialsException {
 
         if (!NetworkUtils.isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(this.getClass().getName());
         }
 
         final GoodreadsAuth grAuth = new GoodreadsAuth();

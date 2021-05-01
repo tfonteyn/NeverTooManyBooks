@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * The hosting activity for editing a book.
@@ -235,7 +235,7 @@ public class EditBookActivity
             mVm.saveBook(this);
             setResultsAndFinish();
 
-        } catch (@NonNull final DaoWriteException | ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException | DaoWriteException e) {
             Logger.error(TAG, e);
             StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }

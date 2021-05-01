@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -153,11 +154,11 @@ class ImportCollection {
     @Nullable
     List<Bundle> fetchPage(@NonNull final Context context,
                            @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws SearchException, IOException {
 
         mCurrentPage++;
         if (!hasMore()) {
-            throw new IOException("Can't fetch more pages");
+            throw new SearchException(mSearchEngine.getName(), "Can't fetch more pages");
         }
 
         progressListener.publishProgress(1, context.getString(
@@ -168,6 +169,7 @@ class ImportCollection {
 
         final Document currentDocument = mJsoupLoader
                 .loadDocument(url, mSearchEngine.createConnectionProducer());
+
         final Element root = currentDocument.getElementById("collectionContent");
         if (root != null) {
             if (mCurrentPage == 1) {
@@ -187,7 +189,7 @@ class ImportCollection {
 
     private void parseMaxPages(@NonNull final Element root,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws SearchException {
         final Element last = root.select("div.pagination > a").last();
         if (last != null) {
             try {
@@ -199,11 +201,11 @@ class ImportCollection {
                 return;
 
             } catch (@NonNull final NumberFormatException e) {
-                throw new IOException("Unable to read page number", e);
+                throw new SearchException(mSearchEngine.getName(), "Unable to read page number");
             }
         }
 
-        throw new IOException("No page numbers");
+        throw new SearchException(mSearchEngine.getName(), "No page numbers");
     }
 
     /**

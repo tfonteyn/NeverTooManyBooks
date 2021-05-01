@@ -32,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -58,15 +57,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -95,15 +93,17 @@ public class AmazonSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
+    private static final String WWW_AMAZON_COM = "https://www.amazon.com";
+
     /** Preferences prefix. */
     private static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
-
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
     /** Website character encoding. */
     private static final String UTF_8 = "UTF-8";
+
     /**
      * The search url.
      *
@@ -118,6 +118,7 @@ public class AmazonSearchEngine
     private static final String SEARCH_SUFFIX = "/gp/search?index=books";
     /** Param 1: external book ID; the ASIN/ISBN. */
     private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
+
     /**
      * Parse "some text; more text (some more text)" into "some text" and "some more text".
      * <p>
@@ -178,7 +179,7 @@ public class AmazonSearchEngine
                                               SearchSites.AMAZON,
                                               R.string.site_amazon,
                                               PREF_KEY,
-                                              "https://www.amazon.com")
+                                              WWW_AMAZON_COM)
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN
@@ -191,9 +192,7 @@ public class AmazonSearchEngine
     @NonNull
     private static String getAmazonUrl() {
         //noinspection ConstantConditions
-        return ServiceLocator.getGlobalPreferences()
-                             .getString(PK_HOST_URL, SearchEngineRegistry
-                                     .getInstance().getByEngineId(SearchSites.AMAZON).getSiteUrl());
+        return ServiceLocator.getGlobalPreferences().getString(PK_HOST_URL, WWW_AMAZON_COM);
     }
 
     /**
@@ -219,8 +218,8 @@ public class AmazonSearchEngine
             if (!cAuthor.isEmpty()) {
                 try {
                     fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
-                } catch (@NonNull final UnsupportedEncodingException e) {
-                    Logger.error(TAG, e, "Unable to add author to URL");
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
                 }
             }
         }
@@ -229,8 +228,8 @@ public class AmazonSearchEngine
             if (!cSeries.isEmpty()) {
                 try {
                     fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
-                } catch (@NonNull final UnsupportedEncodingException e) {
-                    Logger.error(TAG, e, "Unable to add series to URL");
+                } catch (@NonNull final UnsupportedEncodingException ignore) {
+                    // ignore
                 }
             }
         }
@@ -278,8 +277,8 @@ public class AmazonSearchEngine
         if (!isbn.isEmpty()) {
             try {
                 fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
-            } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(TAG, e, "Unable to add isbn to URL");
+            } catch (@NonNull final UnsupportedEncodingException ignore) {
+                // ignore
             }
         }
 
@@ -337,10 +336,7 @@ public class AmazonSearchEngine
 //    @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -349,7 +345,6 @@ public class AmazonSearchEngine
         if (!isCancelled()) {
             parse(document, fetchCovers, bookData);
         }
-
         return bookData;
     }
 
@@ -357,10 +352,7 @@ public class AmazonSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
@@ -375,10 +367,8 @@ public class AmazonSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(url);
         if (!isCancelled()) {
@@ -388,7 +378,6 @@ public class AmazonSearchEngine
                 return new File(imageList.get(0)).getAbsolutePath();
             }
         }
-
         return null;
     }
 
@@ -397,7 +386,7 @@ public class AmazonSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, ExternalStorageException, IOException {
+            throws DiskFullException, CoverStorageException, SearchException {
         super.parse(document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(document.location().split("/")[2]);
@@ -530,7 +519,8 @@ public class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    data = Languages.getInstance().getISO3FromDisplayName(siteLocale, data);
+                    data = ServiceLocator.getInstance().getLanguages()
+                                         .getISO3FromDisplayName(siteLocale, data);
                     bookData.putString(DBKey.KEY_LANGUAGE, data);
                     break;
 
@@ -647,7 +637,7 @@ public class AmazonSearchEngine
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final Element coverElement = document.selectFirst("img#imgBlkFront");
         String url;

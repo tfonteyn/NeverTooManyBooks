@@ -65,14 +65,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * See notes in the package-info.java file.
@@ -255,10 +256,7 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -274,10 +272,7 @@ public class IsfdbSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
@@ -296,10 +291,7 @@ public class IsfdbSearchEngine
                          @Nullable final String title,
                          @Nullable final String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                            + "ORDERBY=pub_title"
@@ -310,44 +302,48 @@ public class IsfdbSearchEngine
 
         int index = 0;
         String args = "";
-
-        if (author != null && !author.isEmpty()) {
-            index++;
-            args += "&USE_" + index + "=author_canonical"
-                    + "&O_" + index + "=contains"
-                    + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
-        }
-
-        if (title != null && !title.isEmpty()) {
-            index++;
-            args += "&USE_" + index + "=pub_title"
-                    + "&O_" + index + "=contains"
-                    + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
-        }
-
-        // as per user settings.
-        if (ServiceLocator.getGlobalPreferences().getBoolean(PK_USE_PUBLISHER, false)) {
-            if (publisher != null && !publisher.isEmpty()) {
-                index++;
-                args += "&USE_" + index + "=pub_publisher"
-                        + "&O_" + index + "=contains"
-                        + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
-            }
-        }
-
-        // there is support for up to 6 search terms.
-        // &USE_4=pub_title&O_4=exact&TERM_4=
-        // &USE_5=pub_title&O_5=exact&TERM_5=
-        // &USE_6=pub_title&O_6=exact&TERM_6=
-
         final Bundle bookData = new Bundle();
 
-        // sanity check: any data to search for?
-        if (!args.isEmpty()) {
-            final List<Edition> editions = fetchEditions(url + args);
-            if (!editions.isEmpty()) {
-                fetchByEdition(editions.get(0), fetchCovers, bookData);
+        try {
+            if (author != null && !author.isEmpty()) {
+                index++;
+                args += "&USE_" + index + "=author_canonical"
+                        + "&O_" + index + "=contains"
+                        + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
             }
+
+            if (title != null && !title.isEmpty()) {
+                index++;
+                args += "&USE_" + index + "=pub_title"
+                        + "&O_" + index + "=contains"
+                        + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+            }
+
+            // as per user settings.
+            if (ServiceLocator.getGlobalPreferences().getBoolean(PK_USE_PUBLISHER, false)) {
+                if (publisher != null && !publisher.isEmpty()) {
+                    index++;
+                    args += "&USE_" + index + "=pub_publisher"
+                            + "&O_" + index + "=contains"
+                            + "&TERM_" + index + "=" + URLEncoder
+                                    .encode(publisher, CHARSET_ENCODE_URL);
+                }
+            }
+
+            // there is support for up to 6 search terms.
+            // &USE_4=pub_title&O_4=exact&TERM_4=
+            // &USE_5=pub_title&O_5=exact&TERM_5=
+            // &USE_6=pub_title&O_6=exact&TERM_6=
+
+            // sanity check: any data to search for?
+            if (!args.isEmpty()) {
+                final List<Edition> editions = fetchEditions(url + args);
+                if (!editions.isEmpty()) {
+                    fetchByEdition(editions.get(0), fetchCovers, bookData);
+                }
+            }
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getName(), e);
         }
         return bookData;
     }
@@ -357,10 +353,7 @@ public class IsfdbSearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
         if (!editions.isEmpty()) {
@@ -388,7 +381,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         // transform the Edition list to a simple isbn list
         return fetchEditionsByIsbn(validIsbn)
@@ -564,9 +557,7 @@ public class IsfdbSearchEngine
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException {
+            throws DiskFullException, CoverStorageException, SearchException {
         super.parse(document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(getContext());
@@ -985,7 +976,6 @@ public class IsfdbSearchEngine
                 // very unlikely
                 if (title == null) {
                     title = "";
-                    Logger.warn(TAG, "getTocList|no title for li=" + li);
                 }
 
                 // scan for first occurrence of "• (1234)"
@@ -1019,7 +1009,7 @@ public class IsfdbSearchEngine
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code
@@ -1070,20 +1060,16 @@ public class IsfdbSearchEngine
      * @param url A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
-     *
-     * @throws IOException on failure
      */
-    @SuppressWarnings("WeakerAccess")
     @WorkerThread
     @NonNull
-    public List<Edition> fetchEditions(@NonNull final String url)
-            throws IOException, CredentialsException {
+    private List<Edition> fetchEditions(@NonNull final String url)
+            throws SearchException, CredentialsException {
 
         final Document document = loadDocument(url);
         if (!isCancelled()) {
             return parseEditions(document);
         }
-
         return new ArrayList<>();
     }
 
@@ -1093,13 +1079,11 @@ public class IsfdbSearchEngine
      * @param validIsbn to get editions for. MUST be valid.
      *
      * @return list of editions found, can be empty, but never {@code null}
-     *
-     * @throws IOException on failure
      */
     @WorkerThread
     @NonNull
     List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
         mIsbn = validIsbn;
 
         final String url = getSiteUrl() + String.format(EDITIONS_URL, validIsbn);
@@ -1192,14 +1176,12 @@ public class IsfdbSearchEngine
      * @param edition     to get
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
-     *
-     * @throws IOException on failure
      */
     @WorkerThread
     void fetchByEdition(@NonNull final Edition edition,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException, CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Document document = loadDocumentByEdition(edition);
         if (!isCancelled()) {
@@ -1209,7 +1191,7 @@ public class IsfdbSearchEngine
 
     @NonNull
     private Document loadDocumentByEdition(@NonNull final Edition edition)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
 
         // check if we already got the page
         final Document document = edition.getDocument();

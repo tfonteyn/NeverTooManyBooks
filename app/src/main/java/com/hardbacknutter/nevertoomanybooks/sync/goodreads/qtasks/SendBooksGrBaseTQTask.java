@@ -38,9 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public abstract class SendBooksGrBaseTQTask
         extends GrBaseTQTask {
@@ -83,7 +83,7 @@ public abstract class SendBooksGrBaseTQTask
         try {
             // Check for internet every time. This task can be restarted at any time.
             if (!NetworkUtils.isNetworkAvailable()) {
-                throw new NetworkUnavailableException();
+                throw new NetworkUnavailableException(this.getClass().getName());
             }
             // can we reach the site ?
             NetworkUtils.ping(GoodreadsManager.BASE_URL);
@@ -143,15 +143,11 @@ public abstract class SendBooksGrBaseTQTask
                 storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
                 return TaskStatus.Failed;
             }
-        } catch (@NonNull final CredentialsException e) {
-            setLastExtStatus(GrStatus.CREDENTIALS_INVALID, e);
-            // Requeue, so we can retry after the user corrects this
-
         } catch (@NonNull final DiskFullException e) {
             setLastExtStatus(GrStatus.FAILED_DISK_FULL_EXCEPTION, e);
             // Requeue, so we can retry after the user corrects this
 
-        } catch (@NonNull final ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException e) {
             setLastExtStatus(GrStatus.FAILED_STORAGE_EXCEPTION, e);
             // Requeue, so we can retry after the user corrects this
 
@@ -162,6 +158,10 @@ public abstract class SendBooksGrBaseTQTask
                 setRetryDelay(FIVE_MINUTES);
             }
             // Requeue
+
+        } catch (@NonNull final CredentialsException e) {
+            setLastExtStatus(GrStatus.CREDENTIALS_INVALID, e);
+            // Requeue, so we can retry after the user corrects this
 
         } catch (@NonNull final RuntimeException e) {
             // catch all, as we REALLY don't want the whole task to fail.

@@ -207,7 +207,8 @@ public class CalibrePreferencesFragment
             final Context context = getContext();
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, e)
-                                    .orElse(getString(R.string.error_unknown));
+                                    .orElse(getString(R.string.error_network_site_access_failed,
+                                                      getString(R.string.site_calibre)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)

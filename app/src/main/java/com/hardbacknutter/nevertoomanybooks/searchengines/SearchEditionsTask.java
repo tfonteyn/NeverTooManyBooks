@@ -85,7 +85,7 @@ public class SearchEditionsTask
 
         // Got internet?
         if (!NetworkUtils.isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(this.getClass().getName());
         }
 
         for (final Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
@@ -97,10 +97,13 @@ public class SearchEditionsTask
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final IOException | CredentialsException | RuntimeException e) {
-                // Silently ignore individual failures, we'll return what we get from
-                // the sites that worked.
-                Logger.error(TAG, e, "site=" + site.toString());
+            } catch (@NonNull final IOException | CredentialsException | SearchException
+                    | RuntimeException e) {
+                // Silently ignore individual failures,
+                // we'll return what we get from the sites that worked.
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.d(TAG, "site=" + site.toString(), e);
+                }
             }
         }
         return isbnList;

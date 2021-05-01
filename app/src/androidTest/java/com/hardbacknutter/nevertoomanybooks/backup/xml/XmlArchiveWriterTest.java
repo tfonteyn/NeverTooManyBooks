@@ -41,7 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -56,7 +57,7 @@ public class XmlArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, ExternalStorageException {
+            throws DaoWriteException, CoverStorageException {
         super.setup();
         mBookInDb = ServiceLocator.getInstance().getBookDao().count();
         if (mBookInDb < 10) {
@@ -66,7 +67,7 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, ExportException, CertificateException {
+            throws IOException, ExportException, CertificateException, StorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");

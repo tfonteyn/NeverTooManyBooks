@@ -31,7 +31,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -95,8 +94,10 @@ public class EditLanguageDialogFragment
                 @NonNull final String currentText) {
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
-        final String iso = Languages.getInstance().getISO3FromDisplayName(userLocale, currentText);
+        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final String iso = serviceLocator.getLanguages()
+                                         .getISO3FromDisplayName(userLocale, currentText);
 
-        ServiceLocator.getInstance().getLanguageDao().rename(originalText, iso);
+        serviceLocator.getLanguageDao().rename(originalText, iso);
     }
 }

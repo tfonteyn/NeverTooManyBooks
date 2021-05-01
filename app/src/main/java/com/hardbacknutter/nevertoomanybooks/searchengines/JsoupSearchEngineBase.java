@@ -38,9 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -92,15 +92,17 @@ public abstract class JsoupSearchEngineBase
      * @param url to load
      *
      * @return the document
-     *
-     * @throws IOException on any failure
      */
     @WorkerThread
     @NonNull
     public Document loadDocument(@NonNull final String url)
-            throws IOException, CredentialsException {
+            throws SearchException, CredentialsException {
+        try {
+            return mJsoupLoader.loadDocument(url, createConnectionProducer());
 
-        return mJsoupLoader.loadDocument(url, createConnectionProducer());
+        } catch (@NonNull final IOException e) {
+            throw new SearchException(getName(), e);
+        }
     }
 
     /**
@@ -113,8 +115,6 @@ public abstract class JsoupSearchEngineBase
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
-     *
-     * @throws IOException on failure
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
@@ -122,7 +122,7 @@ public abstract class JsoupSearchEngineBase
     public void parse(@NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws IOException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, SearchException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.
         // But this way is more future oriented... maybe we'll need/can share more logic/data

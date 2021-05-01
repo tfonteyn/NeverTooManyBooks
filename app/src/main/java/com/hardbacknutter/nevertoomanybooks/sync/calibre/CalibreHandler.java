@@ -324,8 +324,10 @@ public class CalibreHandler {
             final Exception e = message.getResult();
 
             final Context context = mView.getContext();
-            final String msg = ExMsg.map(context, e)
-                                    .orElse(context.getString(R.string.error_unknown));
+            final String msg = ExMsg
+                    .map(context, e)
+                    .orElse(context.getString(R.string.error_network_site_access_failed,
+                                              CalibreContentServer.getHostUrl()));
 
             Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
         }

@@ -33,9 +33,9 @@ import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
@@ -78,9 +78,8 @@ public class ShowBookByIsbnApiHandler
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchBook(url, fetchCovers, bookData);
@@ -99,9 +98,8 @@ public class ShowBookByIsbnApiHandler
     @Nullable
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @NonNull final Bundle bookData)
-            throws CredentialsException, IOException, SAXException,
-                   HttpNotFoundException, HttpStatusException,
-                   DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, IOException, CredentialsException,
+                   HttpNotFoundException, HttpStatusException, SAXException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchCoverImage(url, bookData);

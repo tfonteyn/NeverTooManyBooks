@@ -44,14 +44,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * A simple task wrapping {@link ImportCollection}.
@@ -106,13 +107,12 @@ public class ImportCollectionTask
     @Override
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context)
-            throws IOException, DaoWriteException,
-                   DiskFullException, ExternalStorageException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException,
+                   DaoWriteException, IOException {
 
         // Got internet?
         if (!NetworkUtils.isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(this.getClass().getName());
         }
 
         // can we reach the site ?
@@ -156,8 +156,8 @@ public class ImportCollectionTask
     private void processPage(@NonNull final Context context,
                              @NonNull final BookDao bookDao,
                              @NonNull final List<Bundle> page)
-            throws DiskFullException, ExternalStorageException, IOException,
-                   DaoWriteException, CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException,
+                   DaoWriteException {
 
         for (final Bundle cData : page) {
             if (!isCancelled()) {
@@ -227,7 +227,7 @@ public class ImportCollectionTask
     @WorkerThread
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
                                     @NonNull final Bundle cData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
         final String url = cData.getString(ImportCollection.BKEY_FRONT_COVER_URL);
         if (url != null) {
             final String fileSpec = mSearchEngine

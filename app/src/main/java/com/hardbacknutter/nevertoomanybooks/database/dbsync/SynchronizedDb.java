@@ -50,8 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * API 28   3.22.0
  * API 27   3.19.4
  * API 26   3.18.2
- * API 25   3.9.2
- * API 24   3.9.2
  * <p>
  * But some device manufacturers include different versions of SQLite on their devices.
  */

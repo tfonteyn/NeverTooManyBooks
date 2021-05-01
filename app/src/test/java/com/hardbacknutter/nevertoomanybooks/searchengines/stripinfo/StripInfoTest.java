@@ -42,9 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -447,7 +447,7 @@ class StripInfoTest
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         try {
             mSearchEngine.parseMultiResult(document, new boolean[]{false, false}, mRawData);
-        } catch (@NonNull final IOException | DiskFullException | ExternalStorageException
+        } catch (@NonNull final DiskFullException | CoverStorageException | IOException
                 | CredentialsException e) {
             fail(e);
         }

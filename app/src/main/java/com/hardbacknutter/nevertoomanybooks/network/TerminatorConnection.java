@@ -270,8 +270,10 @@ public final class TerminatorConnection
                 } else {
                     // throw any real error code without retrying.
                     close();
-                    throw new IOException("response: " + mRequest.getResponseCode()
-                                          + ' ' + mRequest.getResponseMessage());
+                    throw new HttpStatusException(0,
+                                                  mRequest.getResponseCode(),
+                                                  mRequest.getResponseMessage(),
+                                                  mRequest.getURL());
                 }
 
                 // these exceptions CAN be retried
@@ -304,7 +306,7 @@ public final class TerminatorConnection
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "open|giving up|url=`" + mRequest.getURL() + '`');
         }
-        throw new IOException("Giving up");
+        throw new NetworkException("Giving up");
     }
 
 

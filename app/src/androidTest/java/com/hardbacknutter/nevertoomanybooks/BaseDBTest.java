@@ -25,14 +25,14 @@ import org.junit.Before;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public abstract class BaseDBTest {
 
     @Before
     @CallSuper
     public void setup()
-            throws DaoWriteException, ExternalStorageException {
+            throws DaoWriteException, CoverStorageException {
 
         CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
         ServiceLocator.getInstance().initialiseDb(ServiceLocator.getGlobalPreferences());

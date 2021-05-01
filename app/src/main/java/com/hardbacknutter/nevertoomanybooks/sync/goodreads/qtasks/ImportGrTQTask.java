@@ -71,9 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTa
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
@@ -175,7 +175,7 @@ public class ImportGrTQTask
             }
             return status;
 
-        } catch (@NonNull final DiskFullException | ExternalStorageException
+        } catch (@NonNull final DiskFullException | CoverStorageException
                 | CredentialsException e) {
             setLastException(e);
             return TaskStatus.Failed;
@@ -192,7 +192,7 @@ public class ImportGrTQTask
      * @throws CredentialsException if there are no valid credentials available
      */
     private TaskStatus importReviews(@NonNull final Context context)
-            throws CredentialsException, DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException, CredentialsException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth();
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
@@ -294,7 +294,7 @@ public class ImportGrTQTask
     private void processReview(@NonNull final Context context,
                                @NonNull final BookDao bookDao,
                                @NonNull final Bundle review)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final long grBookId = review.getLong(DBKey.SID_GOODREADS_BOOK);
 
@@ -401,7 +401,7 @@ public class ImportGrTQTask
     private Book buildBook(@NonNull final Context context,
                            @NonNull final Book localData,
                            @NonNull final Bundle goodreadsData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         // The Book will'll populate with the delta data, and return from this method.
         final Book delta = new Book();

@@ -72,7 +72,7 @@ abstract class GrTaskBase
 
         // Got internet?
         if (!NetworkUtils.isNetworkAvailable()) {
-            throw new NetworkUnavailableException();
+            throw new NetworkUnavailableException(this.getClass().getName());
         }
 
         switch (grAuth.getCredentialStatus(context)) {

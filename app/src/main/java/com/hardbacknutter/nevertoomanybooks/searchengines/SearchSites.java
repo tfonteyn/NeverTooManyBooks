@@ -27,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.googlebooks.GoogleBooksSearchEngine;
@@ -37,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryTh
 import com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
@@ -177,8 +177,8 @@ public final class SearchSites {
         // Certain sites are only enabled by default if the device or user set language
         // matches the site language.
         // Dutch websites:
-        final boolean enableIfDutch = Languages.getInstance()
-                                               .isLang(systemLocale, userLocale, "nld");
+        final boolean enableIfDutch = ServiceLocator.getInstance().getLanguages()
+                                                    .isLang(systemLocale, userLocale, "nld");
 
         //NEWTHINGS: add new search engine: add to the 3 lists as needed.
 

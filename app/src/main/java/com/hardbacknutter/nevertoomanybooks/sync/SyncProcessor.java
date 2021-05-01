@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public final class SyncProcessor {
 
@@ -277,7 +277,7 @@ public final class SyncProcessor {
             try {
                 book.persistCover(new File(fileSpec), cIdx);
 
-            } catch (@NonNull final IOException | ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 Logger.error(TAG, e, "processCoverImage|uuid="

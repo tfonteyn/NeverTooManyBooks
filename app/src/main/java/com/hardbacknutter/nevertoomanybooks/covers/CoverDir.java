@@ -36,7 +36,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * The movable external directory for covers.
@@ -79,11 +79,11 @@ public final class CoverDir {
      *
      * @return directory
      *
-     * @throws ExternalStorageException if the Shared Storage media is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     public static File getDir(@NonNull final Context context)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         final int volume = getVolume(context);
 
@@ -94,7 +94,7 @@ public final class CoverDir {
             || externalFilesDirs.length < volume
             || externalFilesDirs[volume] == null
             || !externalFilesDirs[volume].exists()) {
-            throw new ExternalStorageException("No volume: " + volume);
+            throw new CoverStorageException("No volume: " + volume);
         }
 
         return externalFilesDirs[volume];
@@ -106,11 +106,11 @@ public final class CoverDir {
      *
      * @return directory
      *
-     * @throws ExternalStorageException if the Shared Storage media is not available
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     public static File getTemp(@NonNull final Context context)
-            throws ExternalStorageException {
+            throws CoverStorageException {
         return new File(getDir(context), DIR_TMP);
     }
 
@@ -126,11 +126,11 @@ public final class CoverDir {
      *
      * @return the actual volume
      *
-     * @throws ExternalStorageException on any failure.
+     * @throws CoverStorageException The covers directory is not available
      */
     public static int initVolume(@NonNull final Context context,
                                  final int volume)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         final StorageManager storage = (StorageManager)
                 context.getSystemService(Context.STORAGE_SERVICE);
@@ -175,14 +175,14 @@ public final class CoverDir {
                 //noinspection ResultOfMethodCallIgnored
                 mif.createNewFile();
             } catch (@NonNull final IOException | SecurityException e) {
-                throw new ExternalStorageException("Failed to write .nomedia", e);
+                throw new CoverStorageException("Failed to write .nomedia", e);
             }
         }
 
         // Make sure we can get the directory, and create the sub directory if needed
         final File tmpDir = new File(coverDir, DIR_TMP);
         if (!(tmpDir.isDirectory() || tmpDir.mkdirs())) {
-            throw new ExternalStorageException("No tmp directory");
+            throw new CoverStorageException("No tmp directory");
         }
 
         return actualVolume;

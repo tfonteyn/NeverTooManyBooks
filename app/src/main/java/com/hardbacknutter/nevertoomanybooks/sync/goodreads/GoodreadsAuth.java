@@ -39,6 +39,7 @@ import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.network.NetworkException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.AuthUserApiHandler;
@@ -56,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 
 /**
  * Handles all authentication for Goodreads access.
+ * <p>
+ * All "oauth.signpost" usage should be restricted to this class.
  */
 public class GoodreadsAuth {
 
@@ -340,15 +344,9 @@ public class GoodreadsAuth {
         try {
             authUrl = mProvider.retrieveRequestToken(mConsumer, AUTHORIZATION_CALLBACK);
 
-        } catch (@NonNull final OAuthCommunicationException e) {
-            throw new IOException(e);
-
-        } catch (@NonNull final OAuthMessageSignerException | OAuthNotAuthorizedException e) {
-            throw new CredentialsException(R.string.site_goodreads, e);
-
-        } catch (@NonNull final OAuthExpectationFailedException e) {
-            // this would be a bug
-            throw new IllegalStateException(e);
+        } catch (@NonNull final OAuthException e) {
+            rethrowOAuthCommunicationException(e);
+            throw new NetworkException(e);
         }
 
         // Some urls come back without a scheme, add it to make a valid URL
@@ -404,15 +402,9 @@ public class GoodreadsAuth {
         try {
             mProvider.retrieveAccessToken(mConsumer, null);
 
-        } catch (@NonNull final OAuthCommunicationException e) {
-            throw new IOException(e);
-
-        } catch (@NonNull final OAuthMessageSignerException | OAuthNotAuthorizedException e) {
-            throw new CredentialsException(R.string.site_goodreads, e);
-
-        } catch (@NonNull final OAuthExpectationFailedException e) {
-            // this would be a bug
-            throw new IllegalStateException(e);
+        } catch (@NonNull final OAuthException e) {
+            rethrowOAuthCommunicationException(e);
+            throw new NetworkException(e);
         }
 
         // Cache and save the tokens
@@ -438,15 +430,14 @@ public class GoodreadsAuth {
      * @throws IOException on failure
      */
     public void signGetRequest(@NonNull final HttpURLConnection request)
-            throws IOException {
+            throws NetworkException, IOException, CredentialsException {
 
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
         try {
             mConsumer.sign(request);
-        } catch (@NonNull final OAuthMessageSignerException
-                | OAuthExpectationFailedException
-                | OAuthCommunicationException e) {
-            throw new IOException(e);
+        } catch (@NonNull final OAuthException e) {
+            rethrowOAuthCommunicationException(e);
+            throw new NetworkException(e);
         }
     }
 
@@ -460,7 +451,7 @@ public class GoodreadsAuth {
      */
     public void signPostRequest(@NonNull final HttpURLConnection request,
                                 @Nullable final Map<String, String> parameterMap)
-            throws IOException {
+            throws NetworkException, IOException, CredentialsException {
 
         if (parameterMap != null) {
             // https://zewaren.net/oauth-java.html
@@ -480,10 +471,49 @@ public class GoodreadsAuth {
         mConsumer.setTokenWithSecret(sAccessToken, sAccessSecret);
         try {
             mConsumer.sign(request);
-        } catch (@NonNull final OAuthMessageSignerException
-                | OAuthExpectationFailedException
-                | OAuthCommunicationException e) {
-            throw new IOException(e);
+        } catch (@NonNull final OAuthException e) {
+            rethrowOAuthCommunicationException(e);
+            throw new NetworkException(e);
+        }
+    }
+
+    /**
+     * OAuthCommunicationException;
+     * ==> NetworkException, IOException
+     * <p>
+     * OAuthExpectationFailedException;
+     * OAuthMessageSignerException;
+     * OAuthNotAuthorizedException;
+     * ==> CredentialsException
+     *
+     * @param e one of the above
+     */
+    private void rethrowOAuthCommunicationException(@NonNull final OAuthException e)
+            throws CredentialsException, NetworkException, IOException {
+
+        if (e instanceof OAuthCommunicationException) {
+            // if server communication failed:
+            // Can be thrown as the result of an HTTP response error (no cause)
+            // Can wrap IOException
+            // Can wrap Exception
+            final Throwable cause = e.getCause();
+            final String message = e.getMessage() != null ? e.getMessage()
+                                                          : "OAuthCommunicationException";
+
+            if (cause == null) {
+                throw new NetworkException(message);
+
+            } else if (cause instanceof IOException) {
+                throw (IOException) cause;
+
+            } else {
+                throw new NetworkException("OAuthCommunicationException", cause);
+            }
+
+        } else if (e instanceof OAuthMessageSignerException
+                   || e instanceof OAuthExpectationFailedException
+                   || e instanceof OAuthNotAuthorizedException) {
+            throw new CredentialsException(R.string.site_goodreads, e);
         }
     }
 

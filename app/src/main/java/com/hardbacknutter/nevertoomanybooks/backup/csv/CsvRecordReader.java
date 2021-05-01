@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
@@ -153,7 +153,7 @@ public class CsvRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, ExternalStorageException {
+            throws CoverStorageException, ImportException, IOException {
 
         mResults = new ImportResults();
 
@@ -190,7 +190,7 @@ public class CsvRecordReader
                            @NonNull final ImportHelper helper,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
-            throws ImportException, ExternalStorageException {
+            throws CoverStorageException, ImportException {
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
@@ -330,7 +330,7 @@ public class CsvRecordReader
                                     @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
@@ -405,7 +405,7 @@ public class CsvRecordReader
                                   @NonNull final ImportHelper helper,
                                   @NonNull final Book book,
                                   final long importNumericId)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
         // Add the importNumericId back to the book.
         book.putLong(DBKey.PK_ID, importNumericId);
 
@@ -454,7 +454,7 @@ public class CsvRecordReader
 
     private void importBook(@NonNull final Context context,
                             final Book book)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
         final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);

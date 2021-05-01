@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  * <p>
  * TODO: merge the two separate caches.
  */
-public final class Styles {
+public class Styles {
 
     /**
      * Preference for the current default style UUID to use.

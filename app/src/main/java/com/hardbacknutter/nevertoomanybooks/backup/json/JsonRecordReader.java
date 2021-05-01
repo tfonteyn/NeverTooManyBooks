@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -169,7 +169,7 @@ public class JsonRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, ExternalStorageException {
+            throws CoverStorageException, ImportException, IOException {
 
         mResults = new ImportResults();
 
@@ -213,7 +213,6 @@ public class JsonRecordReader
                         readBooks(context, root, helper, progressListener);
                     }
                 }
-//                }
             } catch (@NonNull final JSONException e) {
                 throw new ImportException(context.getString(R.string.error_import_failed), e);
 
@@ -280,7 +279,7 @@ public class JsonRecordReader
                            @NonNull final JSONObject root,
                            @NonNull final ImportHelper helper,
                            @NonNull final ProgressListener progressListener)
-            throws JSONException, ExternalStorageException {
+            throws CoverStorageException, JSONException {
 
         final JSONArray books = root.optJSONArray(RecordType.Books.getName());
         if (books == null || books.isEmpty()) {
@@ -379,7 +378,7 @@ public class JsonRecordReader
                                     @NonNull final ImportHelper helper,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DaoWriteException, ExternalStorageException {
+            throws CoverStorageException, DaoWriteException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 

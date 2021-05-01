@@ -26,28 +26,33 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public class StorageException
-        extends Exception
-        implements LocalizedException {
+/**
+ * Thrown when external storage media is not available.
+ */
+public class CoverStorageException
+        extends StorageException {
 
-    private static final long serialVersionUID = 6521262373361215281L;
+    private static final long serialVersionUID = 2553728112905906864L;
 
-    public StorageException(@Nullable final String message) {
+    public CoverStorageException(@Nullable final String message) {
         super(message);
     }
 
-    public StorageException(@Nullable final String message,
-                            @Nullable final Throwable cause) {
+    public CoverStorageException(@Nullable final String message,
+                                 @Nullable final Throwable cause) {
         super(message, cause);
     }
 
-    public StorageException(@Nullable final Throwable cause) {
-        super(cause);
-    }
-
+    /**
+     * The default user displayable message.
+     *
+     * @param context Current context
+     *
+     * @return text
+     */
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        return context.getString(R.string.error_storage_not_accessible);
+        return context.getString(R.string.error_storage_not_writable);
     }
 }

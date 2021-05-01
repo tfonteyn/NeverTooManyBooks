@@ -83,8 +83,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * A delegate class for handling a displayed Cover.
@@ -364,10 +364,10 @@ public class CoverHandler {
                         // destination
                         getTempFile()));
 
-            } catch (@NonNull final IOException | ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
             return true;
 
@@ -375,10 +375,10 @@ public class CoverHandler {
             try {
                 editPicture(context, book.createTempCoverFile(mCIdx));
 
-            } catch (@NonNull final IOException | ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
             return true;
 
@@ -450,7 +450,7 @@ public class CoverHandler {
         if (srcFile.exists()) {
             try {
                 mBookSupplier.get().setCover(mCIdx, srcFile);
-            } catch (@NonNull final IOException | ExternalStorageException ignore) {
+            } catch (@NonNull final CoverStorageException | IOException ignore) {
                 // safe to ignore, we just checked existence...
             }
         } else {
@@ -468,7 +468,7 @@ public class CoverHandler {
      */
     private void editPicture(@NonNull final Context context,
                              @NonNull final File srcFile)
-            throws ExternalStorageException {
+            throws CoverStorageException {
 
         final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
@@ -539,10 +539,10 @@ public class CoverHandler {
                     mVm.execute(new TransFormTask.Transformation(file).setScale(true));
                     return;
                 }
-            } catch (@NonNull final ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
         }
 
@@ -565,7 +565,7 @@ public class CoverHandler {
                 showProgress();
                 mVm.execute(new TransFormTask.Transformation(file).setScale(true));
 
-            } catch (@NonNull final IOException | ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException | IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);
                 }
@@ -595,10 +595,10 @@ public class CoverHandler {
                 final Uri uri = GenericFileProvider.createUri(context, dstFile);
                 mTakePictureLauncher.launch(uri);
 
-            } catch (@NonNull final ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
 
         } else {
@@ -613,10 +613,10 @@ public class CoverHandler {
             try {
                 file = getTempFile();
 
-            } catch (@NonNull final ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
 
             if (file != null && file.exists()) {
@@ -664,10 +664,10 @@ public class CoverHandler {
             showProgress();
             mVm.execute(new TransFormTask.Transformation(srcFile).setRotation(angle));
 
-        } catch (@NonNull final IOException | ExternalStorageException e) {
+        } catch (@NonNull final CoverStorageException | IOException e) {
             StandardDialogs.showError(context, ExMsg
                     .map(context, e)
-                    .orElse(context.getString(R.string.error_storage_not_accessible)));
+                    .orElse(context.getString(R.string.error_unknown)));
         }
     }
 
@@ -703,10 +703,10 @@ public class CoverHandler {
                         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
                         return;
                 }
-            } catch (@NonNull final IOException | ExternalStorageException e) {
+            } catch (@NonNull final CoverStorageException | IOException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
-                        .orElse(context.getString(R.string.error_storage_not_accessible)));
+                        .orElse(context.getString(R.string.error_unknown)));
             }
         }
 
@@ -723,7 +723,7 @@ public class CoverHandler {
      */
     @NonNull
     private File getTempFile()
-            throws ExternalStorageException {
+            throws CoverStorageException {
         return new File(CoverDir.getTemp(mView.getContext()), TAG + "_" + mCIdx + ".jpg");
     }
 
@@ -733,7 +733,7 @@ public class CoverHandler {
     private void removeTempFile() {
         try {
             FileUtils.delete(getTempFile());
-        } catch (@NonNull final ExternalStorageException ignore) {
+        } catch (@NonNull final CoverStorageException ignore) {
             // safe to ignore, just a delete
         }
     }

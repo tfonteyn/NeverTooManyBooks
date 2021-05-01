@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -54,12 +52,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -200,23 +198,13 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
-        try {
-            fetchBook(url, fetchCovers, bookData);
 
-        } catch (@NonNull final JSONException e) {
-            // ignore
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "searchByIsbn", e);
-            }
-        }
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -229,23 +217,13 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException, SearchException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
-        try {
-            fetchBook(url, fetchCovers, bookData);
 
-        } catch (@NonNull final JSONException e) {
-            // ignore
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "searchByIsbn", e);
-            }
-        }
+        fetchBook(url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -266,10 +244,7 @@ public class OpenLibrarySearchEngine
     public String searchCoverByIsbn(@NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   CredentialsException {
+            throws DiskFullException, CoverStorageException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -301,23 +276,26 @@ public class OpenLibrarySearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws DiskFullException,
-                   ExternalStorageException,
-                   IOException,
-                   JSONException {
-        // get and store the result into a string.
-        final String response;
-        try (TerminatorConnection con = createConnection(url);
-             InputStream is = con.getInputStream()) {
-            response = readResponseStream(is);
+            throws DiskFullException, CoverStorageException, SearchException {
+        try {
+            // get and store the result into a string.
+            final String response;
+            try (TerminatorConnection con = createConnection(url);
+                 InputStream is = con.getInputStream()) {
+                response = readResponseStream(is);
+            }
+
+            if (isCancelled()) {
+                return;
+            }
+
+            // json-ify and handle.
+            handleResponse(new JSONObject(response), fetchCovers, bookData);
+
+        } catch (@NonNull final JSONException | IOException e) {
+            throw new SearchException(getName(), e);
         }
 
-        if (isCancelled()) {
-            return;
-        }
-
-        // json-ify and handle.
-        handleResponse(new JSONObject(response), fetchCovers, bookData);
         checkForSeriesNameInTitle(bookData);
     }
 
@@ -476,7 +454,7 @@ public class OpenLibrarySearchEngine
     void handleResponse(@NonNull final JSONObject jsonObject,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
@@ -504,7 +482,7 @@ public class OpenLibrarySearchEngine
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
                        @NonNull final Bundle bookData)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final DateParser dateParser = new FullDateParser(getContext());
 
@@ -680,7 +658,7 @@ public class OpenLibrarySearchEngine
                                           @NonNull final String validIsbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         final ArrayList<String> list = new ArrayList<>();
 

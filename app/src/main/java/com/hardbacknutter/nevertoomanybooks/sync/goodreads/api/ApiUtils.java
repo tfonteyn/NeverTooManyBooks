@@ -33,8 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.searchengines.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public final class ApiUtils {
 
@@ -88,7 +88,7 @@ public final class ApiUtils {
     public static String handleThumbnail(@NonNull final Bundle goodreadsData,
                                          @NonNull final String keyLargeImageUrl,
                                          @NonNull final String keySmallImageUrl)
-            throws DiskFullException, ExternalStorageException {
+            throws DiskFullException, CoverStorageException {
 
         // first check what the "best" image is that we have.
         final String largeImage = goodreadsData.getString(keyLargeImageUrl);

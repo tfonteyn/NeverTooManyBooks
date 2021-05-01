@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -301,7 +301,7 @@ class GoogleBooksEntryHandler
                 try {
                     fileSpec = mSearchEngine
                             .saveImage(url, mBookData.getString(DBKey.KEY_ISBN), 0, null);
-                } catch (@NonNull final DiskFullException | ExternalStorageException e) {
+                } catch (@NonNull final DiskFullException | CoverStorageException e) {
                     throw new SAXException(e);
                 }
 
