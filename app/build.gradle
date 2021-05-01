@@ -128,7 +128,7 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         // see NOTES.txt
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 30
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -156,12 +156,14 @@ android {
                 '"' + LocalDateTime.now(ZoneOffset.UTC)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
 
+
         buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
 
         // Dutch.
         // 2021-04: the site has changed technology and our engine no longer works.
         // Disabled for now.
         buildConfigField('boolean', 'ENABLE_KB_NL', 'false')
+
         // Dutch.
         buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
         // Dutch.

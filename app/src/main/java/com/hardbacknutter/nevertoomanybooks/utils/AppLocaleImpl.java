@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -91,11 +90,6 @@ public final class AppLocaleImpl
         // Update the Android usage of Locale - this MUST be done each and every time!
         final Configuration deltaConfig = new Configuration();
         deltaConfig.setLocale(sPreferredLocale);
-        if (Build.VERSION.SDK_INT < 26) {
-            // Workaround for platform bug on SDK < 26
-            // (https://issuetracker.google.com/issues/140607881)
-            deltaConfig.fontScale = 0f;
-        }
         final Context localizedContext = context.createConfigurationContext(deltaConfig);
 
         if (changed) {

@@ -26,7 +26,6 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -112,38 +111,33 @@ public final class NotifierImpl
 
     private void createChannels(@NonNull final Context context,
                                 @NonNull final NotificationManager notificationManager) {
-        //Notification channels should only be created for devices running Android 26
-        if (Build.VERSION.SDK_INT >= 26) {
-            final List<NotificationChannel> channels = new ArrayList<>();
-            channels.add(new NotificationChannel(
-                    Notifier.CHANNEL_ERROR,
-                    context.getString(R.string.notification_channel_error),
-                    NotificationManager.IMPORTANCE_HIGH));
-            channels.add(new NotificationChannel(
-                    Notifier.CHANNEL_WARNING,
-                    context.getString(R.string.notification_channel_warn),
-                    NotificationManager.IMPORTANCE_DEFAULT));
-            channels.add(new NotificationChannel(
-                    Notifier.CHANNEL_INFO,
-                    context.getString(R.string.notification_channel_info),
-                    NotificationManager.IMPORTANCE_LOW));
+        final List<NotificationChannel> channels = new ArrayList<>();
+        channels.add(new NotificationChannel(
+                Notifier.CHANNEL_ERROR,
+                context.getString(R.string.notification_channel_error),
+                NotificationManager.IMPORTANCE_HIGH));
+        channels.add(new NotificationChannel(
+                Notifier.CHANNEL_WARNING,
+                context.getString(R.string.notification_channel_warn),
+                NotificationManager.IMPORTANCE_DEFAULT));
+        channels.add(new NotificationChannel(
+                Notifier.CHANNEL_INFO,
+                context.getString(R.string.notification_channel_info),
+                NotificationManager.IMPORTANCE_LOW));
 
-            notificationManager.createNotificationChannels(channels);
-        }
+        notificationManager.createNotificationChannels(channels);
     }
 
     @Override
     public void onLocaleChanged(@NonNull final Context context) {
         //  When the locale changes, update the NotificationManager channel names.
-        if (Build.VERSION.SDK_INT >= 26) {
-            final NotificationManager notificationManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.getNotificationChannel(Notifier.CHANNEL_ERROR)
-                               .setName(context.getString(R.string.notification_channel_error));
-            notificationManager.getNotificationChannel(Notifier.CHANNEL_WARNING)
-                               .setName(context.getString(R.string.notification_channel_warn));
-            notificationManager.getNotificationChannel(Notifier.CHANNEL_INFO)
-                               .setName(context.getString(R.string.notification_channel_info));
-        }
+        final NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.getNotificationChannel(Notifier.CHANNEL_ERROR)
+                           .setName(context.getString(R.string.notification_channel_error));
+        notificationManager.getNotificationChannel(Notifier.CHANNEL_WARNING)
+                           .setName(context.getString(R.string.notification_channel_warn));
+        notificationManager.getNotificationChannel(Notifier.CHANNEL_INFO)
+                           .setName(context.getString(R.string.notification_channel_info));
     }
 }

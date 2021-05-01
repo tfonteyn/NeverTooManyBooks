@@ -223,7 +223,7 @@ public final class CoverDir {
         //      getState=mounted
         final List<StorageVolume> storageVolumes = storage.getStorageVolumes();
         for (final StorageVolume sv : storageVolumes) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= 30) {
                 Logger.d(TAG, "init",
                          "uuid=" + sv.getUuid()
                          + "|sv.getDescription=" + sv.getDescription(context)
