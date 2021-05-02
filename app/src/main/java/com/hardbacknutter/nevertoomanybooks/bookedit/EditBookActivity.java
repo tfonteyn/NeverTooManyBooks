@@ -63,7 +63,7 @@ public class EditBookActivity
     /** Host for the tabbed fragments. */
     private TabAdapter mTabAdapter;
     /** View model. Must be in the Activity scope. */
-    private EditBookFragmentViewModel mVm;
+    private EditBookViewModel mVm;
     /** View Binding. */
     private ActivityEditBookBinding mVb;
 
@@ -77,7 +77,7 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(this).get(EditBookViewModel.class);
         mVm.init(this, getIntent().getExtras());
 
         mTabAdapter = new TabAdapter(this);

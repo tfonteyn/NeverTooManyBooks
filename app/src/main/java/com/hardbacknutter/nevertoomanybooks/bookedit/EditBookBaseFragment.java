@@ -103,7 +103,7 @@ public abstract class EditBookBaseFragment
             };
 
     /** The view model. */
-    EditBookFragmentViewModel mVm;
+    EditBookViewModel mVm;
 
     private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
             new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
@@ -169,7 +169,7 @@ public abstract class EditBookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Fields fields = getFields();
         if (fields.isEmpty()) {

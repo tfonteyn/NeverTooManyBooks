@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
-public class EditBookFragmentViewModel
+public class EditBookViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
