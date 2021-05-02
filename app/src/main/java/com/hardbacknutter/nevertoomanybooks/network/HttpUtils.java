@@ -47,17 +47,16 @@ public final class HttpUtils {
     public static final String CONTENT_TYPE_FORM_URL_ENCODED =
             "application/x-www-form-urlencoded; charset=UTF-8";
 
-
     /** HTTP Request Header. */
     static final String USER_AGENT = "User-Agent";
     /**
-     * RELEASE: Chrome 2021-03-13. Continuously update to latest version.
+     * RELEASE: Chrome 2021-05-01. Continuously update to latest version.
      * Some sites don't return full data unless the user agent is set to a valid browser.
      */
     static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/88.0.4324.190 Safari/537.36";
+            + " Chrome/90.0.4430.93 Safari/537.36";
 
 
     /** HTTP Response Header. */
