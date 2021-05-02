@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditions
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
-public class EditBookTocFragmentViewModel
+public class EditBookTocViewModel
         extends ViewModel {
 
     private final IsfdbGetEditionsTask mIsfdbGetEditionsTask = new IsfdbGetEditionsTask();

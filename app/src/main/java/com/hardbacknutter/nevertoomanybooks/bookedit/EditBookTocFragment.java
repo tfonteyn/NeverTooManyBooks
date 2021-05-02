@@ -193,7 +193,7 @@ public class EditBookTocFragment
         return mVb.getRoot();
     }
 
-    private EditBookTocFragmentViewModel mEditTocVm;
+    private EditBookTocViewModel mEditTocVm;
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -201,7 +201,7 @@ public class EditBookTocFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mEditTocVm = new ViewModelProvider(this).get(EditBookTocFragmentViewModel.class);
+        mEditTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
         mEditTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
         mEditTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
