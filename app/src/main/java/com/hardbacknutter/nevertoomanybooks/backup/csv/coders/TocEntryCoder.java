@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,6 +111,6 @@ public class TocEntryCoder
                 return new TocEntry(author, title, matcher.group(1));
             }
         }
-        return new TocEntry(author, title, null);
+        return new TocEntry(author, title);
     }
 }

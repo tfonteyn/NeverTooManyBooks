@@ -376,7 +376,7 @@ public class LastDodoSearchEngine
             final ArrayList<TocEntry> toc = new ArrayList<>();
             section = section.nextElementSibling();
             for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
-                toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text(), null));
+                toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text()));
             }
             return toc;
         }

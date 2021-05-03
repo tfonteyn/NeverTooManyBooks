@@ -83,6 +83,17 @@ public class TocEntry
     /**
      * Constructor.
      *
+     * @param author Author of title
+     * @param title  Title
+     */
+    public TocEntry(@NonNull final Author author,
+                    @NonNull final String title) {
+        this(author, title, new PartialDate(null));
+    }
+
+    /**
+     * Constructor.
+     *
      * @param author               Author of title
      * @param title                Title
      * @param firstPublicationDate year of first publication
@@ -90,9 +101,22 @@ public class TocEntry
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title,
                     @Nullable final String firstPublicationDate) {
+        this(author, title, new PartialDate(firstPublicationDate));
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param author               Author of title
+     * @param title                Title
+     * @param firstPublicationDate year of first publication
+     */
+    public TocEntry(@NonNull final Author author,
+                    @NonNull final String title,
+                    @NonNull final PartialDate firstPublicationDate) {
         mAuthor = author;
         mTitle = title.trim();
-        mFirstPublicationDate = new PartialDate(firstPublicationDate);
+        mFirstPublicationDate = firstPublicationDate;
         mBookCount = 1;
     }
 

@@ -569,7 +569,7 @@ public class OpenLibrarySearchEngine
                 element = a.optJSONObject(ai);
                 final String title = element.optString("title");
                 if (!title.isEmpty()) {
-                    toc.add(new TocEntry(authors.get(0), title, null));
+                    toc.add(new TocEntry(authors.get(0), title));
                 }
             }
 

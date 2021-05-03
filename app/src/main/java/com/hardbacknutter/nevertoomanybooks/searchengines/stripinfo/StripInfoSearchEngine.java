@@ -679,7 +679,7 @@ public class StripInfoSearchEngine
                                 } else {
                                     author = mAuthors.get(0);
                                 }
-                                final TocEntry tocEntry = new TocEntry(author, title, null);
+                                final TocEntry tocEntry = new TocEntry(author, title);
                                 toc.add(tocEntry);
                             }
                         }
