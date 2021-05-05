@@ -25,6 +25,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.ProgressOverlayBinding;
 
@@ -48,6 +49,13 @@ public class ProgressDelegate {
 
     @NonNull
     public ProgressDelegate setTitle(@NonNull final CharSequence title) {
+        mVb.progressTitle.setText(title);
+        mVb.progressTitle.setVisibility(View.VISIBLE);
+        return this;
+    }
+
+    @NonNull
+    public ProgressDelegate setTitle(@StringRes final int title) {
         mVb.progressTitle.setText(title);
         mVb.progressTitle.setVisibility(View.VISIBLE);
         return this;

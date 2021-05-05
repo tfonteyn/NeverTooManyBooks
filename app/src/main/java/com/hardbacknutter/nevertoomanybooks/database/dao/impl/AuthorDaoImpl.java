@@ -413,9 +413,9 @@ public class AuthorDaoImpl
     public ArrayList<Long> getBookIds(final long authorId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(
-                SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
-                new String[]{String.valueOf(authorId), String.valueOf(bookshelfId)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
+                                          new String[]{String.valueOf(authorId),
+                                                       String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -553,8 +553,7 @@ public class AuthorDaoImpl
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mDb.compileStatement(
-                COUNT_TOC_ENTRIES)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_TOC_ENTRIES)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }

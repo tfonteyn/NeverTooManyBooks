@@ -53,8 +53,6 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.cert.CertificateException;
@@ -120,14 +118,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -171,9 +167,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    public static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
-
     /** {@link FragmentResultListener} request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
@@ -182,25 +178,38 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
-    public static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
-
-
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
+
+    /** Bring up the synchronization options. */
+    @Nullable
+    private ActivityResultLauncher<Void> mGoodreadsSyncLauncher;
+    /** Delegate for Goodreads. */
+    @Nullable
+    private GoodreadsHandler mGoodreadsHandler;
+
+    @Nullable
+    private AmazonHandler mAmazonHandler;
+
+    /** Bring up the synchronization options. */
+    @Nullable
+    private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
+
+
     /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Void> mCalibreSettingsLauncher =
-            registerForActivityResult(new CalibreSettingsContract(), aVoid -> {});
+    @Nullable
+    private ActivityResultLauncher<Void> mCalibreSettingsLauncher;
+
     /** Bring up the synchronization options. */
-    private final ActivityResultLauncher<Void> mGoodreadsSyncLauncher =
-            registerForActivityResult(new GoodreadsSyncContract(), aVoid -> {});
-    /** Bring up the synchronization options. */
-    private final ActivityResultLauncher<Void> mStripInfoSyncLauncher =
-            registerForActivityResult(new StripInfoSyncContract(), data -> {});
+    @Nullable
+    private ActivityResultLauncher<Void> mCalibreSyncLauncher;
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+
+
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
@@ -282,13 +291,7 @@ public class BooksOnBookshelf
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
-    /** Bring up the synchronization options. */
-    private final ActivityResultLauncher<Void> mCalibreSyncLauncher =
-            registerForActivityResult(new CalibreSyncContract(), data -> {
-                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
-                    mVm.setForceRebuildInOnResume(true);
-                }
-            });
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
     /** View Binding. */
@@ -373,8 +376,6 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** Delegate for Goodreads. */
-    private GoodreadsHandler mGoodreadsHandler;
     /**
      * Listener for clicks on the list.
      */
@@ -482,7 +483,8 @@ public class BooksOnBookshelf
 
         createFragmentResultListeners();
         createViewModel();
-        createDelegates();
+        createSyncDelegates(global);
+        mAmazonHandler = new AmazonHandler(this);
 
         createBookshelfSpinner();
         createBooklist(global);
@@ -528,16 +530,44 @@ public class BooksOnBookshelf
         mVm.onFinished().observe(this, this::onBuildFinished);
     }
 
-    private void createDelegates() {
-        try {
-            mCalibreHandler = new CalibreHandler(this);
-            mCalibreHandler.onViewCreated(this, mVb.getRoot());
-        } catch (@NonNull final SSLException | CertificateException ignore) {
-            // ignore
+    /**
+     * Create the optional {@link Sync} launcher and delegates.
+     *
+     * @param global Global preferences
+     */
+    private void createSyncDelegates(@NonNull final SharedPreferences global) {
+
+        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+            mCalibreSyncLauncher =
+                    registerForActivityResult(new CalibreSyncContract(), data -> {
+                        if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                            mVm.setForceRebuildInOnResume(true);
+                        }
+                    });
+
+            mCalibreSettingsLauncher = registerForActivityResult(
+                    new CalibreSettingsContract(), aVoid -> {});
+
+            try {
+                mCalibreHandler = new CalibreHandler(this);
+                mCalibreHandler.onViewCreated(this, mVb.getRoot());
+            } catch (@NonNull final SSLException | CertificateException ignore) {
+                // ignore
+            }
         }
 
-        mGoodreadsHandler = new GoodreadsHandler();
-        mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
+        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
+            mGoodreadsSyncLauncher = registerForActivityResult(
+                    new GoodreadsSyncContract(), aVoid -> {});
+
+            mGoodreadsHandler = new GoodreadsHandler();
+            mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
+        }
+
+        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
+            mStripInfoSyncLauncher = registerForActivityResult(
+                    new StripInfoSyncContract(), data -> {});
+        }
     }
 
     private void createBooklist(@NonNull final SharedPreferences global) {
@@ -633,10 +663,7 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
-        getNavigationMenuItem(R.id.nav_sync).setVisible(
-                CalibreContentServer.isSyncEnabled(global)
-                || GoodreadsManager.isSyncEnabled(global)
-                || StripInfoAuth.isSyncEnabled(global));
+        getNavigationMenuItem(R.id.nav_sync).setVisible(Sync.isAnyEnabled(global));
     }
 
     /**
@@ -763,16 +790,25 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsManager.isSyncEnabled(global));
+                Book book = null;
+                if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
+                    book = Objects.requireNonNull(mVm.getBook(rowData));
+                    //noinspection ConstantConditions
+                    mGoodreadsHandler.prepareMenu(menu, book);
+                }
 
-                if (mCalibreHandler != null) {
-                    final Book book = Objects.requireNonNull(mVm.getBook(rowData));
-                    mCalibreHandler.prepareMenu(menu, book, global);
+                if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+                    if (book == null) {
+                        book = Objects.requireNonNull(mVm.getBook(rowData));
+                    }
+                    //noinspection ConstantConditions
+                    mCalibreHandler.prepareMenu(menu, book);
                 }
 
                 MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
-                MenuHelper.prepareOptionalMenus(menu, rowData);
+
+                //noinspection ConstantConditions
+                mAmazonHandler.prepareMenu(menu, rowData);
                 break;
             }
             case BooklistGroup.AUTHOR: {
@@ -783,7 +819,8 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                MenuHelper.prepareOptionalMenus(menu, rowData);
+                //noinspection ConstantConditions
+                mAmazonHandler.prepareMenu(menu, rowData);
                 break;
             }
             case BooklistGroup.SERIES: {
@@ -796,7 +833,8 @@ public class BooksOnBookshelf
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    MenuHelper.prepareOptionalMenus(menu, rowData);
+                    //noinspection ConstantConditions
+                    mAmazonHandler.prepareMenu(menu, rowData);
                 }
                 break;
             }
@@ -898,14 +936,17 @@ public class BooksOnBookshelf
         // first check the non-row menus.
 
         if (itemId == R.id.MENU_SYNC_CALIBRE) {
+            //noinspection ConstantConditions
             mCalibreSyncLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_SYNC_GOODREADS) {
+            //noinspection ConstantConditions
             mGoodreadsSyncLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_SYNC_STRIP_INFO) {
+            //noinspection ConstantConditions
             mStripInfoSyncLauncher.launch(null);
             return true;
         }
@@ -959,26 +1000,19 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_CALIBRE_READ) {
-            if (mCalibreHandler != null) {
-                final Book book = mVm.getBook(rowData);
-                // Sanity check
-                if (book != null) {
-                    mCalibreHandler.read(book);
-                }
-            }
+            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
+            //noinspection ConstantConditions
+            mCalibreHandler.read(book);
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            if (mCalibreHandler != null) {
-                final Book book = mVm.getBook(rowData);
-                // Sanity check
-                if (book != null) {
-                    mCalibreHandler.download(book);
-                }
-            }
+            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
+            //noinspection ConstantConditions
+            mCalibreHandler.download(book);
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            //noinspection ConstantConditions
             mCalibreSettingsLauncher.launch(null);
             return true;
 
@@ -1004,13 +1038,6 @@ public class BooksOnBookshelf
             }
             return true;
 
-        } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
-            Snackbar.make(mVb.list, R.string.progress_msg_connecting,
-                          Snackbar.LENGTH_LONG).show();
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
-            mGoodreadsHandler.sendBook(bookId);
-            return true;
-
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
                 mUpdateBookLauncher.launch(mVm.getBook(rowData));
@@ -1033,7 +1060,7 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_SERIES_EDIT) {
-            final Series series = mVm.getSeries(rowData);
+            final Series series = Series.getSeries(rowData);
             if (series != null) {
                 EditSeriesDialogFragment.launch(this, series);
             }
@@ -1050,7 +1077,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_SERIES_DELETE) {
-            final Series series = mVm.getSeries(rowData);
+            final Series series = Series.getSeries(rowData);
             if (series != null) {
                 StandardDialogs.deleteSeries(this, series, () -> {
                     mVm.delete(this, series);
@@ -1067,7 +1094,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
-            final Author author = mVm.getAuthor(rowData);
+            final Author author = Author.getAuthor(rowData);
             if (author != null) {
                 EditAuthorDialogFragment.launch(this, author);
             }
@@ -1140,30 +1167,6 @@ public class BooksOnBookshelf
             EditLocationDialogFragment.launch(this, rowData.getString(DBKey.KEY_LOCATION));
             return true;
 
-            /* ********************************************************************************** */
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = mVm.getAuthor(rowData);
-            if (author != null) {
-                AmazonSearchEngine.startSearchActivity(this, author, null);
-            }
-            return true;
-
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = mVm.getSeries(rowData);
-            if (series != null) {
-                AmazonSearchEngine.startSearchActivity(this, null, series);
-            }
-            return true;
-
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = mVm.getAuthor(rowData);
-            final Series series = mVm.getSeries(rowData);
-            if (author != null && series != null) {
-                AmazonSearchEngine.startSearchActivity(this, author, series);
-            }
-            return true;
-
-            /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
             setNodeState(rowData, BooklistNode.NEXT_STATE_EXPANDED,
                          mVm.getCurrentStyle(this).getGroups().size());
@@ -1175,6 +1178,14 @@ public class BooksOnBookshelf
             if (node != null) {
                 displayList(node);
             }
+            return true;
+        }
+
+        if (mGoodreadsHandler != null && mGoodreadsHandler.onItemSelected(itemId, rowData)) {
+            return true;
+        }
+
+        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, rowData)) {
             return true;
         }
 
@@ -1230,15 +1241,6 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.nav_sync) {
             showSyncMenu();
-            //mCalibreSyncLauncher.launch(null);
-//            final PopupMenu popupMenu = new PopupMenu(this, mVb.progressBar);
-//            popupMenu.inflate(R.menu.book);
-//            popupMenu.setOnMenuItemClickListener(item -> false);
-//            if (Build.VERSION.SDK_INT >= 29) {
-//                popupMenu.setForceShowIcon(true);
-//            }
-//            popupMenu.show();
-
             return true;
         }
 
@@ -1249,17 +1251,17 @@ public class BooksOnBookshelf
         final Menu menu = MenuPicker.createMenu(this);
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (CalibreContentServer.isSyncEnabled(global)) {
+        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
                 .setIcon(R.drawable.ic_baseline_cloud_24);
         }
 
-        if (GoodreadsManager.isSyncEnabled(global)) {
+        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_GOODREADS, 0, R.string.site_goodreads)
                 .setIcon(R.drawable.ic_goodreads);
         }
 
-        if (StripInfoAuth.isSyncEnabled(global)) {
+        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
                 .setIcon(R.drawable.ic_stripinfo);
         }

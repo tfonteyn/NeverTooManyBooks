@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -38,6 +39,7 @@ public class CalibreLibraryMappingViewModel
 
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
     private CalibreLibrary mCurrentLibrary;
+    private boolean mExtInstalled;
 
     @NonNull
     List<Bookshelf> getBookshelfList() {
@@ -49,14 +51,21 @@ public class CalibreLibraryMappingViewModel
         return mLibraries;
     }
 
-    public void setLibraries(@NonNull final ArchiveMetaData result) {
+    void setMetaData(@NonNull final ArchiveMetaData result) {
         // at this moment, all server libs have been synced with our database
         // and are mapped to a valid bookshelf
 
         mLibraries.clear();
+        final Bundle bundle = result.getBundle();
         mLibraries.addAll(Objects.requireNonNull(
-                result.getBundle().getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
+                bundle.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
                 "mLibraries"));
+
+        mExtInstalled = bundle.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
+    }
+
+    boolean isExtInstalled() {
+        return mExtInstalled;
     }
 
     @NonNull

@@ -12,6 +12,13 @@ The reason seems related to https://developer.android.com/studio/build/multidex.
 Not fixing.
 
 ----------------------------------------------------------------------------------------------------
+Amazon...
+ * Goodreads is owned by Amazon and is shutting their API down.
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
+ * TODO: remove the LibraryThing code; later on the Goodreads code...
+ * and maybe all usage of Amazon....
+
+----------------------------------------------------------------------------------------------------
 ENHANCE: a note for the records... there is far to much hardcoded dependencies between
     classes. True injection of dependencies is nearly absent making testing needlessly complicated.
     A service locator for the dao's will be introduced to ease the pain

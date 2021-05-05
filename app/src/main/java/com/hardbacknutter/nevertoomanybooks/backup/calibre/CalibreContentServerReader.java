@@ -196,6 +196,8 @@ public class CalibreContentServerReader
         // and the full list
         bundle.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
                                       mServer.getLibraries());
+        bundle.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
+                          mServer.isCalibreExtensionInstalled());
 
         return archiveMetaData;
     }

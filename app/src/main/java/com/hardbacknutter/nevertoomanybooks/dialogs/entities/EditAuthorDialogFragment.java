@@ -67,11 +67,7 @@ public class EditAuthorDialogFragment
     private Author mAuthor;
 
     /** Current edit. */
-    private String mFamilyName;
-    /** Current edit. */
-    private String mGivenNames;
-    /** Current edit. */
-    private boolean mIsComplete;
+    private Author mCurrentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -107,16 +103,12 @@ public class EditAuthorDialogFragment
                                          "KEY_FK_AUTHOR");
 
         if (savedInstanceState == null) {
-            mFamilyName = mAuthor.getFamilyName();
-            mGivenNames = mAuthor.getGivenNames();
-            mIsComplete = mAuthor.isComplete();
+            mCurrentEdit = new Author(mAuthor.getFamilyName(),
+                                      mAuthor.getGivenNames(),
+                                      mAuthor.isComplete());
         } else {
             //noinspection ConstantConditions
-            mFamilyName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
-            //noinspection ConstantConditions
-            mGivenNames = savedInstanceState.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
-            mIsComplete = savedInstanceState.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE,
-                                                        false);
+            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
         }
     }
 
@@ -141,11 +133,11 @@ public class EditAuthorDialogFragment
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES));
 
-        mVb.familyName.setText(mFamilyName);
+        mVb.familyName.setText(mCurrentEdit.getFamilyName());
         mVb.familyName.setAdapter(familyNameAdapter);
-        mVb.givenNames.setText(mGivenNames);
+        mVb.givenNames.setText(mCurrentEdit.getGivenNames());
         mVb.givenNames.setAdapter(givenNameAdapter);
-        mVb.cbxIsComplete.setChecked(mIsComplete);
+        mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
 
         // don't requestFocus() as we have multiple fields.
     }
@@ -163,21 +155,20 @@ public class EditAuthorDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mFamilyName.isEmpty()) {
+        if (mCurrentEdit.getFamilyName().isEmpty()) {
             showError(mVb.lblFamilyName, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mAuthor.getFamilyName().equals(mFamilyName)
-            && mAuthor.getGivenNames().equals(mGivenNames)
-            && mAuthor.isComplete() == mIsComplete) {
+        if (mAuthor.getFamilyName().equals(mCurrentEdit.getFamilyName())
+            && mAuthor.getGivenNames().equals(mCurrentEdit.getGivenNames())
+            && mAuthor.isComplete() == mCurrentEdit.isComplete()) {
             return true;
         }
 
         // store changes
-        mAuthor.setName(mFamilyName, mGivenNames);
-        mAuthor.setComplete(mIsComplete);
+        mAuthor.copyFrom(mCurrentEdit, false);
 
         final Context context = getContext();
 
@@ -231,17 +222,15 @@ public class EditAuthorDialogFragment
     }
 
     private void viewToModel() {
-        mFamilyName = mVb.familyName.getText().toString().trim();
-        mGivenNames = mVb.givenNames.getText().toString().trim();
-        mIsComplete = mVb.cbxIsComplete.isChecked();
+        mCurrentEdit.setName(mVb.familyName.getText().toString().trim(),
+                             mVb.givenNames.getText().toString().trim());
+        mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(DBKey.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE, mIsComplete);
+        outState.putParcelable(DBKey.FK_AUTHOR, mCurrentEdit);
     }
 
     @Override

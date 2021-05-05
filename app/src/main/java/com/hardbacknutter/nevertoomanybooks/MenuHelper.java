@@ -39,9 +39,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
@@ -52,69 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public final class MenuHelper {
 
     private MenuHelper() {
-    }
-
-    /**
-     * Called from a details screen. i.e. the data comes from a {@link Book}.
-     *
-     * @param menu to add to
-     * @param book data to use
-     */
-    public static void prepareOptionalMenus(@NonNull final Menu menu,
-                                            @NonNull final Book book) {
-
-        final boolean hasAuthor = !book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST).isEmpty();
-        final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_LIST).isEmpty();
-
-        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
-    }
-
-    /**
-     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
-     *
-     * @param menu    to add to
-     * @param rowData data to use
-     */
-    static void prepareOptionalMenus(@NonNull final Menu menu,
-                                     @NonNull final DataHolder rowData) {
-
-        final boolean hasAuthor;
-        if (rowData.contains(DBKey.FK_AUTHOR)) {
-            hasAuthor = rowData.getLong(DBKey.FK_AUTHOR) > 0;
-        } else {
-            hasAuthor = false;
-        }
-
-        final boolean hasSeries;
-        if (rowData.contains(DBKey.FK_SERIES)) {
-            hasSeries = rowData.getLong(DBKey.FK_SERIES) > 0;
-        } else {
-            hasSeries = false;
-        }
-
-        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
-    }
-
-    private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,
-                                                  final boolean hasAuthor,
-                                                  final boolean hasSeries) {
-
-        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
-        if (subMenuItem == null) {
-            return;
-        }
-
-        final boolean show = hasAuthor || hasSeries;
-        subMenuItem.setVisible(show);
-        if (show) {
-            final SubMenu sm = subMenuItem.getSubMenu();
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-              .setVisible(hasAuthor);
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-              .setVisible(hasAuthor && hasSeries);
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-              .setVisible(hasSeries);
-        }
     }
 
     static void setupSearchActionView(@NonNull final Activity activity,

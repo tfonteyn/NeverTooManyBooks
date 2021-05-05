@@ -67,7 +67,7 @@ public class EditBookPublisherListDialogFragment
             TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookFragmentViewModel mVm;
+    private EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -127,7 +127,7 @@ public class EditBookPublisherListDialogFragment
         mVb = DialogEditBookPublisherListBinding.bind(view);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
@@ -327,7 +327,7 @@ public class EditBookPublisherListDialogFragment
         private String mRequestKey;
 
         @SuppressWarnings("FieldCanBeLocal")
-        private EditBookFragmentViewModel mVm;
+        private EditBookViewModel mVm;
 
         /** Displayed for info only. */
         @Nullable
@@ -339,7 +339,7 @@ public class EditBookPublisherListDialogFragment
         private Publisher mPublisher;
 
         /** Current edit. */
-        private String mName;
+        private Publisher mCurrentEdit;
 
         /**
          * No-arg constructor for OS use.
@@ -384,10 +384,10 @@ public class EditBookPublisherListDialogFragment
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
-                mName = mPublisher.getName();
+                mCurrentEdit = new Publisher(mPublisher.getName());
             } else {
                 //noinspection ConstantConditions
-                mName = savedInstanceState.getString(DBKey.KEY_PUBLISHER_NAME);
+                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
             }
         }
 
@@ -400,13 +400,14 @@ public class EditBookPublisherListDialogFragment
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
-            mVb.name.setText(mName);
+
+            mVb.name.setText(mCurrentEdit.getName());
             mVb.name.setAdapter(nameAdapter);
         }
 
@@ -425,27 +426,24 @@ public class EditBookPublisherListDialogFragment
             viewToModel();
 
             // basic check only, we're doing more extensive checks later on.
-            if (mName.isEmpty()) {
+            if (mCurrentEdit.getName().isEmpty()) {
                 showError(mVb.lblName, R.string.vldt_non_blank_required);
                 return false;
             }
 
-            // Create a new Publisher as a holder for all changes.
-            final Publisher tmpPublisher = Publisher.from(mName);
-
             EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mPublisher, tmpPublisher);
+                    .setResult(this, mRequestKey, mPublisher, mCurrentEdit);
             return true;
         }
 
         private void viewToModel() {
-            mName = mVb.name.getText().toString().trim();
+            mCurrentEdit.setName(mVb.name.getText().toString().trim());
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBKey.KEY_PUBLISHER_NAME, mName);
+            outState.putParcelable(DBKey.FK_PUBLISHER, mCurrentEdit);
         }
 
         @Override

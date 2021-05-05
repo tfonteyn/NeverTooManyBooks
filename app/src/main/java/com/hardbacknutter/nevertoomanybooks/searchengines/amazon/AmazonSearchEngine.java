@@ -19,9 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -102,7 +99,7 @@ public class AmazonSearchEngine
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
     /** Website character encoding. */
-    private static final String UTF_8 = "UTF-8";
+    static final String CHARSET = "UTF-8";
 
     /**
      * The search url.
@@ -115,7 +112,8 @@ public class AmazonSearchEngine
      *      <li>&field-keywords</li>
      * </ul>
      */
-    private static final String SEARCH_SUFFIX = "/gp/search?index=books";
+    static final String SEARCH_SUFFIX = "/gp/search?index=books";
+
     /** Param 1: external book ID; the ASIN/ISBN. */
     private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
 
@@ -190,77 +188,9 @@ public class AmazonSearchEngine
     }
 
     @NonNull
-    private static String getAmazonUrl() {
+    static String getAmazonUrl() {
         //noinspection ConstantConditions
         return ServiceLocator.getGlobalPreferences().getString(PK_HOST_URL, WWW_AMAZON_COM);
-    }
-
-    /**
-     * Start an intent to search for an author and/or series on the Amazon website.
-     *
-     * @param context Current context
-     * @param author  to search for
-     * @param series  to search for
-     */
-    public static void startSearchActivity(@NonNull final Context context,
-                                           @Nullable final Author author,
-                                           @Nullable final Series series) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (author == null && series == null) {
-                throw new IllegalArgumentException("both author and series are null");
-            }
-        }
-
-        String fields = "";
-
-        if (author != null) {
-            final String cAuthor = encodeSearchString(author.getFormattedName(true));
-            if (!cAuthor.isEmpty()) {
-                try {
-                    fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
-            }
-        }
-        if (series != null) {
-            final String cSeries = encodeSearchString(series.getTitle());
-            if (!cSeries.isEmpty()) {
-                try {
-                    fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
-                } catch (@NonNull final UnsupportedEncodingException ignore) {
-                    // ignore
-                }
-            }
-        }
-
-        // Start the intent even if for some reason the fields string is empty.
-        // If we don't the user will not see anything happen / we'ld need to popup
-        // an explanation why we cannot search.
-        final String url = getAmazonUrl() + SEARCH_SUFFIX + fields.trim();
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-    }
-
-    @NonNull
-    private static String encodeSearchString(@Nullable final String search) {
-        if (search == null || search.isEmpty()) {
-            return "";
-        }
-
-        final StringBuilder out = new StringBuilder(search.length());
-        char prev = ' ';
-        for (final char curr : search.toCharArray()) {
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-                prev = curr;
-            } else {
-                if (!Character.isWhitespace(prev)) {
-                    out.append(' ');
-                }
-                prev = ' ';
-            }
-        }
-        return out.toString().trim();
     }
 
     /**
@@ -276,7 +206,7 @@ public class AmazonSearchEngine
         String fields = "";
         if (!isbn.isEmpty()) {
             try {
-                fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
+                fields += "&field-isbn=" + URLEncoder.encode(isbn, CHARSET);
             } catch (@NonNull final UnsupportedEncodingException ignore) {
                 // ignore
             }

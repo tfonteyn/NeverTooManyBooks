@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -452,6 +453,31 @@ public class Author
         }
 
         return entityMerger.isListModified();
+    }
+
+    /**
+     * Extract the Author from the given Booklist row data.
+     *
+     * @param rowData with data
+     *
+     * @return Author, or {@code null} if the row contains no Author id.
+     */
+    @Nullable
+    public static Author getAuthor(@NonNull final DataHolder rowData) {
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        if (rowData.contains(DBKey.FK_AUTHOR)) {
+            final long id = rowData.getLong(DBKey.FK_AUTHOR);
+            if (id > 0) {
+                return authorDao.getById(id);
+            }
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            final List<Author> authors = authorDao.getAuthorsByBookId(
+                    rowData.getLong(DBKey.FK_BOOK));
+            if (!authors.isEmpty()) {
+                return authors.get(0);
+            }
+        }
+        return null;
     }
 
     @Override

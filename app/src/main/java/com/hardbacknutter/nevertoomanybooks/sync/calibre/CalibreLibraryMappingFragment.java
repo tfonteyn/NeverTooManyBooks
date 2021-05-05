@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
@@ -100,6 +101,8 @@ public class CalibreLibraryMappingFragment
             mVb.bookshelf.setText(bookshelf.getName());
         });
 
+        mVb.infExtNotInstalled.setOnClickListener(StandardDialogs::infoPopup);
+
         mVb.btnCreate.setOnClickListener(btn -> {
             try {
                 btn.setEnabled(false);
@@ -122,11 +125,13 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
-        mVm.setLibraries(message.requireResult());
+        mVm.setMetaData(message.requireResult());
         mLibraryArrayAdapter.notifyDataSetChanged();
 
         onLibrarySelected(0);
         mVb.getRoot().setVisibility(View.VISIBLE);
+
+        mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,

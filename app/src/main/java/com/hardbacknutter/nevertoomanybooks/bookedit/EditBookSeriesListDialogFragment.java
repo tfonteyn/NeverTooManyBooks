@@ -66,7 +66,7 @@ public class EditBookSeriesListDialogFragment
     private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookFragmentViewModel mVm;
+    private EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -127,7 +127,7 @@ public class EditBookSeriesListDialogFragment
         mVb = DialogEditBookSeriesListBinding.bind(view);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
@@ -341,11 +341,12 @@ public class EditBookSeriesListDialogFragment
         private String mRequestKey;
 
         @SuppressWarnings("FieldCanBeLocal")
-        private EditBookFragmentViewModel mVm;
+        private EditBookViewModel mVm;
 
         /** Displayed for info only. */
         @Nullable
         private String mBookTitle;
+
         /** View Binding. */
         private DialogEditBookSeriesBinding mVb;
 
@@ -353,11 +354,7 @@ public class EditBookSeriesListDialogFragment
         private Series mSeries;
 
         /** Current edit. */
-        private String mTitle;
-        /** Current edit. */
-        private boolean mIsComplete;
-        /** Current edit. */
-        private String mNumber;
+        private Series mCurrentEdit;
 
         /**
          * No-arg constructor for OS use.
@@ -402,16 +399,11 @@ public class EditBookSeriesListDialogFragment
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
-                mTitle = mSeries.getTitle();
-                mIsComplete = mSeries.isComplete();
-                mNumber = mSeries.getNumber();
+                mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
+                mCurrentEdit.setNumber(mSeries.getNumber());
             } else {
                 //noinspection ConstantConditions
-                mTitle = savedInstanceState.getString(DBKey.FK_SERIES);
-                mIsComplete = savedInstanceState
-                        .getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE, false);
-                //noinspection ConstantConditions
-                mNumber = savedInstanceState.getString(DBKey.KEY_BOOK_NUM_IN_SERIES);
+                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
             }
         }
 
@@ -419,23 +411,23 @@ public class EditBookSeriesListDialogFragment
         public void onViewCreated(@NonNull final View view,
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
             mVb = DialogEditBookSeriesBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             //noinspection ConstantConditions
-            final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
+            final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
-            mVb.seriesTitle.setText(mTitle);
-            mVb.seriesTitle.setAdapter(nameAdapter);
 
-            mVb.cbxIsComplete.setChecked(mIsComplete);
-            mVb.seriesNum.setText(mNumber);
+            mVb.seriesTitle.setText(mCurrentEdit.getTitle());
+            mVb.seriesTitle.setAdapter(titleAdapter);
+            mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
+
+            mVb.seriesNum.setText(mCurrentEdit.getNumber());
         }
 
         @Override
@@ -453,34 +445,28 @@ public class EditBookSeriesListDialogFragment
             viewToModel();
 
             // basic check only, we're doing more extensive checks later on.
-            if (mTitle.isEmpty()) {
+            if (mCurrentEdit.getTitle().isEmpty()) {
                 showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
                 return false;
             }
 
-            // Create a new Series as a holder for all changes.
-            final Series tmpSeries = new Series(mTitle);
-            tmpSeries.setComplete(mIsComplete);
-            tmpSeries.setNumber(mNumber);
-
             EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mSeries, tmpSeries);
+                    .setResult(this, mRequestKey, mSeries, mCurrentEdit);
             return true;
         }
 
         private void viewToModel() {
-            mTitle = mVb.seriesTitle.getText().toString().trim();
+            mCurrentEdit.setTitle(mVb.seriesTitle.getText().toString().trim());
+            mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
+
             //noinspection ConstantConditions
-            mNumber = mVb.seriesNum.getText().toString().trim();
-            mIsComplete = mVb.cbxIsComplete.isChecked();
+            mCurrentEdit.setNumber(mVb.seriesNum.getText().toString().trim());
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBKey.FK_SERIES, mTitle);
-            outState.putBoolean(DBKey.BOOL_SERIES_IS_COMPLETE, mIsComplete);
-            outState.putString(DBKey.KEY_BOOK_NUM_IN_SERIES, mNumber);
+            outState.putParcelable(DBKey.FK_SERIES, mCurrentEdit);
         }
 
         @Override

@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.BookSender;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
@@ -42,7 +43,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 public class SendBooksGrTQTask
         extends SendBooksGrBaseTQTask {
 
-    private static final long serialVersionUID = -3922988908020406047L;
+    /**
+     * Warning: 2021-05-04: class changed for the post-2.0 update; i.e. new serialVersionUID
+     * which means any previously serialized task will be invalid.
+     */
+    private static final long serialVersionUID = -7532912487907603072L;
 
     /** Flag: send only starting from the last book we did earlier, or all books. */
     private final boolean mFromLastBookId;
@@ -80,25 +85,24 @@ public class SendBooksGrTQTask
      * {@inheritDoc}
      */
     @Override
-    protected TaskStatus send(@NonNull final GoodreadsManager grManager) {
-
-        final QueueManager queueManager = QueueManager.getInstance();
+    protected TaskStatus send(@NonNull final Context context,
+                              @NonNull final BookSender bookSender) {
 
         long lastBookSend;
         if (mFromLastBookId) {
-            lastBookSend = grManager.getLastBookIdSend();
+            lastBookSend = GoodreadsManager.getLastBookIdSend();
         } else {
             lastBookSend = 0;
         }
 
-        try (Cursor cursor = grManager.getGoodreadsDao()
-                                      .fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
+        try (Cursor cursor = ServiceLocator.getInstance().getGoodreadsDao()
+                                           .fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                final TaskStatus status = sendOneBook(queueManager, grManager, bookData);
+                final TaskStatus status = sendOneBook(context, bookSender, bookData);
                 // quit on any error
                 if (status != TaskStatus.Success) {
                     return status;
@@ -113,7 +117,7 @@ public class SendBooksGrTQTask
                     resetRetryCounter();
                 }
 
-                queueManager.updateTask(this);
+                QueueManager.getInstance().updateTask(this);
 
                 if (isCancelled()) {
                     return TaskStatus.Cancelled;
@@ -122,9 +126,8 @@ public class SendBooksGrTQTask
         }
 
         // store the last book id we updated; used to reduce future (needless) checks.
-        grManager.putLastBookIdSend(lastBookSend);
+        GoodreadsManager.putLastBookIdSend(lastBookSend);
 
-        final Context context = grManager.getContext();
         final Intent intent = new Intent(context, BooksOnBookshelf.class);
         ServiceLocator.getInstance().getNotifier()
                       .sendInfo(context, Notifier.ID_GOODREADS, intent, false,

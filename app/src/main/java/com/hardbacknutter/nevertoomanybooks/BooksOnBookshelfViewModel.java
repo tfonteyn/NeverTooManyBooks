@@ -45,11 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -564,56 +561,6 @@ public class BooksOnBookshelfViewModel
         final long bookId = rowData.getLong(DBKey.FK_BOOK);
         if (bookId > 0) {
             return Book.from(bookId, mBookDao);
-        }
-        return null;
-    }
-
-    /**
-     * Get the Author for the given row.
-     *
-     * @param rowData with data
-     *
-     * @return Author, or {@code null} if the row contains no Author id.
-     */
-    @Nullable
-    Author getAuthor(@NonNull final DataHolder rowData) {
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        if (rowData.contains(DBKey.FK_AUTHOR)) {
-            final long id = rowData.getLong(DBKey.FK_AUTHOR);
-            if (id > 0) {
-                return authorDao.getById(id);
-            }
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final List<Author> authors = authorDao.getAuthorsByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
-            if (!authors.isEmpty()) {
-                return authors.get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the Series for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Series, or {@code null} if the row contains no Series id.
-     */
-    @Nullable
-    Series getSeries(@NonNull final DataHolder rowData) {
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-        if (rowData.contains(DBKey.FK_SERIES)) {
-            final long id = rowData.getLong(DBKey.FK_SERIES);
-            if (id > 0) {
-                return seriesDao.getById(rowData.getLong(DBKey.FK_SERIES));
-            }
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final ArrayList<Series> series = seriesDao.getSeriesByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
-            if (!series.isEmpty()) {
-                return series.get(0);
-            }
         }
         return null;
     }

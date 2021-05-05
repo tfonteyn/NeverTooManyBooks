@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.BookSender;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TQTask;
 
@@ -39,7 +40,12 @@ public abstract class GrBaseTQTask
     /** But we can schedule multiple single-book export times at any time. */
     public static final int CAT_EXPORT_ONE_BOOK = 3;
 
-    private static final long serialVersionUID = 6014113427811967096L;
+    /**
+     * Warning: 2021-05-04: class changed for the post-2.0 update; i.e. new serialVersionUID
+     * which means any previously serialized task will be invalid.
+     */
+    private static final long serialVersionUID = -7521238728593656035L;
+
 
     @GrStatus.Status
     private int mLastExtStatus;
@@ -59,7 +65,7 @@ public abstract class GrBaseTQTask
         setLastException(e);
     }
 
-    void setLastExtStatus(@NonNull final GrStatus.SendBook status) {
+    void setLastExtStatus(@NonNull final BookSender.Status status) {
         mLastExtStatus = status.getStatus();
         setLastException(null);
     }

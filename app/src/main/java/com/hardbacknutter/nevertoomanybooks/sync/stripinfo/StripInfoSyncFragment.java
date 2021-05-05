@@ -107,6 +107,14 @@ public class StripInfoSyncFragment
                 .setPositiveButton(R.string.action_go, (d, w) -> mVm.startImport())
                 .create()
                 .show());
+
+        mVb.btnSendUpdatedBooks.setOnClickListener(v -> {
+
+        });
+
+        mVb.btnSendAllBooks.setOnClickListener(v -> {
+
+        });
     }
 
     @Override
@@ -145,10 +153,17 @@ public class StripInfoSyncFragment
     private void onProgress(@NonNull final ProgressMessage message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
+                @StringRes
+                final int title;
+                if (message.taskId == R.id.TASK_ID_IMPORT) {
+                    title = R.string.lbl_importing;
+                } else {
+                    title = R.string.lbl_exporting;
+                }
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(
                         getActivity().findViewById(R.id.progress_frame))
-                        .setTitle(getString(R.string.lbl_importing))
+                        .setTitle(title)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
                         .show(getActivity().getWindow());

@@ -50,6 +50,7 @@ import java.security.cert.X509Certificate;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
@@ -67,7 +68,7 @@ public class CalibrePreferencesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final SwitchPreference sp = findPreference(CalibreContentServer.PK_ENABLED);
+                    final SwitchPreference sp = findPreference(CalibreHandler.PK_ENABLED);
                     //noinspection ConstantConditions
                     if (sp.isChecked()) {
                         //noinspection ConstantConditions

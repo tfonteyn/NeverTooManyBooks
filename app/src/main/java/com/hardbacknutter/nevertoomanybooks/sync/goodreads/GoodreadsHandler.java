@@ -21,8 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.sync.goodreads;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.view.Menu;
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +38,9 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -46,6 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  */
 public class GoodreadsHandler {
 
+    /** Whether to show any Goodreads sync menus at all. */
+    private static final String PK_ENABLED = GoodreadsManager.PREF_KEY + ".enabled";
+
+    /** The hosting Activity. */
     private Activity mActivity;
 
     /** The host view; used for context, resources, Snackbar. */
@@ -55,6 +65,17 @@ public class GoodreadsHandler {
     private ProgressDelegate mProgressDelegate;
 
     private GoodreadsHandlerViewModel mVm;
+
+    /**
+     * Check if SYNC menus should be shown at all. This does not affect searching.
+     *
+     * @param global Global preferences
+     *
+     * @return {@code true} if menus should be shown
+     */
+    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PK_ENABLED, false);
+    }
 
     /**
      * Initializer for use from within an Activity.
@@ -98,6 +119,32 @@ public class GoodreadsHandler {
         mVm.onFailure().observe(lifecycleOwner, this::onFailure);
         mVm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
+
+    public void prepareMenu(@NonNull final Menu menu,
+                            @NonNull final Book book) {
+        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
+            .setVisible(true);
+    }
+
+    public boolean onItemSelected(@IdRes final int menuItemId,
+                                  @NonNull final Book book) {
+        if (menuItemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
+            sendBook(book.getId());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean onItemSelected(@IdRes final int menuItemId,
+                                  @NonNull final DataHolder rowData) {
+        if (menuItemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            sendBook(bookId);
+            return true;
+        }
+        return false;
+    }
+
 
     public void sendBook(@IntRange(from = 1) final long bookId) {
         Snackbar.make(mView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();

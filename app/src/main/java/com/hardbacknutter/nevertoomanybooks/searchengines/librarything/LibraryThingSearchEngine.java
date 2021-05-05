@@ -61,11 +61,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * FIXME: 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
+ * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
  * Searching for alternative editions still works.
  * The code for this site is kept up to date but not tested.
- * We might have to switch the html scraping.
- * <p>
+ *
+ * Goodreads is owned by Amazon and is shutting their API down.
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
+ * TODO: remove the LibraryThing code.
+ *
  * <p>
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
  * <p>

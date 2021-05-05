@@ -56,6 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
+ * <p>
+ * Goodreads is owned by Amazon and is shutting their API down.
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
+ * TODO: remove the Goodreads code.
  */
 public class GoodreadsSearchEngine
         extends SearchEngineBase

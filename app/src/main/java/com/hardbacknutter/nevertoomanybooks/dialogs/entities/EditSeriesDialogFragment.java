@@ -67,9 +67,7 @@ public class EditSeriesDialogFragment
     private Series mSeries;
 
     /** Current edit. */
-    private String mTitle;
-    /** Current edit. */
-    private boolean mIsComplete;
+    private Series mCurrentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -105,13 +103,10 @@ public class EditSeriesDialogFragment
                                          "KEY_FK_SERIES");
 
         if (savedInstanceState == null) {
-            mTitle = mSeries.getTitle();
-            mIsComplete = mSeries.isComplete();
+            mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBKey.FK_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE,
-                                                        false);
+            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_SERIES);
         }
     }
 
@@ -122,14 +117,14 @@ public class EditSeriesDialogFragment
         mVb = DialogEditSeriesBinding.bind(view);
 
         //noinspection ConstantConditions
-        final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
+        final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getSeriesDao().getNames());
 
-        mVb.seriesTitle.setText(mTitle);
-        mVb.seriesTitle.setAdapter(adapter);
-        mVb.cbxIsComplete.setChecked(mIsComplete);
+        mVb.seriesTitle.setText(mCurrentEdit.getTitle());
+        mVb.seriesTitle.setAdapter(titleAdapter);
+        mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
 
         // don't requestFocus() as we have multiple fields.
     }
@@ -147,20 +142,19 @@ public class EditSeriesDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mTitle.isEmpty()) {
+        if (mCurrentEdit.getTitle().isEmpty()) {
             showError(mVb.lblSeriesTitle, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mSeries.getTitle().equals(mTitle)
-            && mSeries.isComplete() == mIsComplete) {
+        if (mSeries.getTitle().equals(mCurrentEdit.getTitle())
+            && mSeries.isComplete() == mCurrentEdit.isComplete()) {
             return true;
         }
 
         // store changes
-        mSeries.setTitle(mTitle);
-        mSeries.setComplete(mIsComplete);
+        mSeries.copyFrom(mCurrentEdit, false);
 
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -214,15 +208,14 @@ public class EditSeriesDialogFragment
     }
 
     private void viewToModel() {
-        mTitle = mVb.seriesTitle.getText().toString().trim();
-        mIsComplete = mVb.cbxIsComplete.isChecked();
+        mCurrentEdit.setTitle(mVb.seriesTitle.getText().toString().trim());
+        mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.KEY_SERIES_TITLE, mTitle);
-        outState.putBoolean(DBKey.BOOL_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putParcelable(DBKey.FK_SERIES, mCurrentEdit);
     }
 
     @Override

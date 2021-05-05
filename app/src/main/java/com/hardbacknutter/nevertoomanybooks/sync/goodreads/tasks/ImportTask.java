@@ -97,7 +97,7 @@ public class ImportTask
         }
 
         final String desc = context.getString(R.string.gr_title_sync_with_goodreads);
-        final TQTask task = new ImportGrTQTask(desc, context, mIsSync);
+        final TQTask task = new ImportGrTQTask(desc, mIsSync);
         queueManager.enqueueTask(QueueManager.Q_MAIN, task);
 
         return new GrStatus(GrStatus.SUCCESS_TASK_QUEUED);

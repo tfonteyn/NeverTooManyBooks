@@ -60,9 +60,6 @@ public class StripInfoAuth {
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
 
-    /** Whether to show any sync menus at all. */
-    private static final String PK_ENABLED = PREF_KEY + ".enabled";
-
     private static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
@@ -96,22 +93,6 @@ public class StripInfoAuth {
 
         // Setup BEFORE doing first request!
         mCookieManager = ServiceLocator.getInstance().getCookieManager();
-    }
-
-    /**
-     * Check if SYNC menus should be shown at all. This does not affect searching.
-     *
-     * @param global Global preferences
-     *
-     * @return {@code true} if menus should be shown
-     */
-    @AnyThread
-    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
-        if (BuildConfig.ENABLE_STRIP_INFO_LOGIN) {
-            return global.getBoolean(PK_ENABLED, true);
-        } else {
-            return false;
-        }
     }
 
     /**

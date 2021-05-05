@@ -103,8 +103,7 @@ public class EditTocEntryDialogFragment
             //noinspection ConstantConditions
             mTitle = savedInstanceState.getString(DBKey.KEY_TITLE);
             //noinspection ConstantConditions
-            mFirstPublicationDate = savedInstanceState
-                    .getParcelable(DBKey.DATE_FIRST_PUBLICATION);
+            mFirstPublicationDate = savedInstanceState.getParcelable(DBKey.DATE_FIRST_PUBLICATION);
             //noinspection ConstantConditions
             mAuthorName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FORMATTED);
 

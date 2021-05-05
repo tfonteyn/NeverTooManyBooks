@@ -87,10 +87,10 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -116,15 +116,19 @@ public class ShowBookFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Void> mCalibreSettingsLauncher =
-            registerForActivityResult(new CalibreSettingsContract(), aVoid -> { });
+    @Nullable
+    private ActivityResultLauncher<Void> mCalibreSettingsLauncher;
 
     /** Delegate for Goodreads. */
+    @Nullable
     private GoodreadsHandler mGoodreadsHandler;
 
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+
+    @Nullable
+    private AmazonHandler mAmazonHandler;
 
     /** View model. */
     private ShowBookViewModel mVm;
@@ -188,6 +192,10 @@ public class ShowBookFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection ConstantConditions
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -197,18 +205,10 @@ public class ShowBookFragment
         mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
-        //noinspection ConstantConditions
         mVm.init(getContext(), requireArguments());
 
-        try {
-            mCalibreHandler = new CalibreHandler(getContext());
-            mCalibreHandler.onViewCreated(this);
-        } catch (@NonNull final SSLException | CertificateException ignore) {
-            // ignore
-        }
-
-        mGoodreadsHandler = new GoodreadsHandler();
-        mGoodreadsHandler.onViewCreated(this);
+        createSyncDelegates(global);
+        mAmazonHandler = new AmazonHandler(getContext());
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -217,8 +217,56 @@ public class ShowBookFragment
         fab.setOnClickListener(v -> mEditBookLauncher.launch(
                 mVm.getBookAtPosition(mVb.pager.getCurrentItem()).getId()));
 
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        createCoverDelegates(global);
+
+        mPagerAdapter = new ShowBookPagerAdapter(getContext(), getChildFragmentManager(),
+                                                 mVm, mCoverHandler);
+        mVb.pager.setAdapter(mPagerAdapter);
+        mVb.pager.setCurrentItem(mVm.getInitialPagerPosition(), false);
+        mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(final int position) {
+                setActivityTitle(mVm.getBookAtPosition(position));
+            }
+        });
+
+        if (savedInstanceState == null) {
+            //noinspection ConstantConditions
+            TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
+        }
+    }
+
+    /**
+     * Create the optional {@link Sync} launcher and delegates.
+     *
+     * @param global Global preferences
+     */
+    private void createSyncDelegates(@NonNull final SharedPreferences global) {
+
+        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+            mCalibreSettingsLauncher = registerForActivityResult(
+                    new CalibreSettingsContract(), aVoid -> {});
+
+            try {
+                //noinspection ConstantConditions
+                mCalibreHandler = new CalibreHandler(getContext());
+                mCalibreHandler.onViewCreated(this);
+            } catch (@NonNull final SSLException | CertificateException ignore) {
+                // ignore
+            }
+        }
+
+        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
+            mGoodreadsHandler = new GoodreadsHandler();
+            mGoodreadsHandler.onViewCreated(this);
+        }
+
+        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
+
+        }
+    }
+
+    private void createCoverDelegates(@NonNull final SharedPreferences global) {
         final Resources res = getResources();
 
         if (mVm.isCoverUsed(global, 0)) {
@@ -241,22 +289,6 @@ public class ShowBookFragment
             mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
-        }
-
-        mPagerAdapter = new ShowBookPagerAdapter(getContext(), getChildFragmentManager(),
-                                                 mVm, mCoverHandler);
-        mVb.pager.setAdapter(mPagerAdapter);
-        mVb.pager.setCurrentItem(mVm.getInitialPagerPosition(), false);
-        mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(final int position) {
-                setActivityTitle(mVm.getBookAtPosition(position));
-            }
-        });
-
-        if (savedInstanceState == null) {
-            //noinspection ConstantConditions
-            TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
         }
     }
 
@@ -302,15 +334,20 @@ public class ShowBookFragment
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
-        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsManager.isSyncEnabled(global));
+        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
+            //noinspection ConstantConditions
+            mGoodreadsHandler.prepareMenu(menu, book);
+        }
 
-        if (mCalibreHandler != null) {
-            mCalibreHandler.prepareMenu(menu, book, global);
+        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+            //noinspection ConstantConditions
+            mCalibreHandler.prepareMenu(menu, book);
         }
 
         MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
-        MenuHelper.prepareOptionalMenus(menu, book);
+
+        //noinspection ConstantConditions
+        mAmazonHandler.prepareMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -359,24 +396,18 @@ public class ShowBookFragment
             startActivity(book.getShareIntent(context));
             return true;
 
-        } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
-            mGoodreadsHandler.sendBook(book.getId());
-            return true;
-
         } else if (itemId == R.id.MENU_CALIBRE_READ) {
-            if (mCalibreHandler != null) {
-                mCalibreHandler.read(book);
-            }
+            //noinspection ConstantConditions
+            mCalibreHandler.read(book);
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            if (mCalibreHandler != null) {
-                // Reminder: no need to check the book as the menu is only shown for valid books.
-                mCalibreHandler.download(book);
-            }
+            //noinspection ConstantConditions
+            mCalibreHandler.download(book);
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+            //noinspection ConstantConditions
             mCalibreSettingsLauncher.launch(null);
             return true;
 
@@ -384,29 +415,13 @@ public class ShowBookFragment
             mUpdateBookLauncher.launch(book);
             return true;
 
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = book.getPrimaryAuthor();
-            if (author != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, author, null);
-            }
-            return true;
+        }
 
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = book.getPrimarySeries();
-            if (series != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, null, series);
-            }
+        if (mGoodreadsHandler != null && mGoodreadsHandler.onItemSelected(itemId, book)) {
             return true;
+        }
 
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = book.getPrimaryAuthor();
-            final Series series = book.getPrimarySeries();
-            if (author != null && series != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, author, series);
-            }
+        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
             return true;
         }
 

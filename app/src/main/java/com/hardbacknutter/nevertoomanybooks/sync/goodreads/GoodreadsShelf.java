@@ -23,9 +23,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShelfListApiHandler;
 
 public class GoodreadsShelf {
@@ -56,8 +61,8 @@ public class GoodreadsShelf {
      *
      * @return blessed name
      */
-    public static String canonicalizeName(@NonNull final Locale locale,
-                                          @NonNull final String name) {
+    static String canonicalizeName(@NonNull final Locale locale,
+                                   @NonNull final String name) {
         final StringBuilder canonical = new StringBuilder();
         final String lcName = name.toLowerCase(locale);
         for (int i = 0; i < lcName.length(); i++) {
@@ -69,6 +74,19 @@ public class GoodreadsShelf {
             }
         }
         return canonical.toString();
+    }
+
+    public static Map<String, String> createMapper(@NonNull final Locale userLocale) {
+        final List<Bookshelf> bookshelves =
+                ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final Map<String, String> map = new HashMap<>(bookshelves.size());
+        for (final Bookshelf bookshelf : bookshelves) {
+            final String bookshelfName = bookshelf.getName();
+            map.put(
+                    canonicalizeName(userLocale, bookshelfName),
+                    bookshelfName);
+        }
+        return map;
     }
 
     @NonNull

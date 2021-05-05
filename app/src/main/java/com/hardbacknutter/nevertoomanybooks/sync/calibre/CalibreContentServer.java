@@ -155,18 +155,18 @@ public class CalibreContentServer {
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
 
+    public static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
+
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
 
     /** Preferences prefix. */
-    private static final String PREF_KEY = "calibre";
+    static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
-    /** Whether to show any sync menus at all. */
-    public static final String PK_ENABLED = PREF_KEY + ".enabled";
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
     /**
@@ -258,18 +258,6 @@ public class CalibreContentServer {
             //noinspection ConstantConditions
             mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
         }
-    }
-
-    /**
-     * Check if SYNC menus should be shown at all. This does not affect searching.
-     *
-     * @param global Global preferences
-     *
-     * @return {@code true} if menus should be shown
-     */
-    @AnyThread
-    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
-        return global.getBoolean(PK_ENABLED, true);
     }
 
     /**
@@ -542,7 +530,7 @@ public class CalibreContentServer {
 
     @SuppressWarnings("unused")
     @AnyThread
-    boolean isCalibreExtensionInstalled() {
+    public boolean isCalibreExtensionInstalled() {
         return mCalibreExtensionInstalled;
     }
 

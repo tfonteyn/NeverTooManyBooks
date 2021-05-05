@@ -85,7 +85,6 @@ public class LoaneeDaoImpl
     @Override
     public boolean setLoanee(@NonNull final Book book,
                              @Nullable final String loanee) {
-
         final boolean success = setLoaneeInternal(book.getId(), loanee);
         if (success) {
             touch(book);
@@ -104,12 +103,10 @@ public class LoaneeDaoImpl
      */
     private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
                                       @Nullable final String loanee) {
-
         boolean success = false;
 
         if (loanee == null || loanee.isEmpty()) {
-            try (SynchronizedStatement stmt = mDb
-                    .compileStatement(DELETE_BY_BOOK_ID)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
                 success = stmt.executeUpdateDelete() == 1;
             }
@@ -117,8 +114,7 @@ public class LoaneeDaoImpl
 
             final String current = getLoaneeByBookId(bookId);
             if (current == null || current.isEmpty()) {
-                try (SynchronizedStatement stmt = mDb
-                        .compileStatement(INSERT)) {
+                try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
                     success = stmt.executeInsert() > 0;

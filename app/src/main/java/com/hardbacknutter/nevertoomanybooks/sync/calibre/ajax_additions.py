@@ -1,5 +1,7 @@
 Installing the Calibre extension:
 
+$CROOT=/usr/lib/calibre/
+
 Edit  $CROOT/calibre/srv/ajax.py, and look for the line
 
     from calibre.srv.errors import HTTPNotFound, BookNotFound

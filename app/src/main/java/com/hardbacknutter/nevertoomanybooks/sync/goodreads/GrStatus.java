@@ -179,28 +179,6 @@ public class GrStatus {
         }
     }
 
-    public enum SendBook {
-        Success(SUCCESS),
-        NoIsbn(FAILED_BOOK_HAS_NO_ISBN),
-        NotFound(FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
-
-        @Status
-        private final int mStatus;
-
-        SendBook(@Status final int status) {
-            mStatus = status;
-        }
-
-        public GrStatus getGrStatus() {
-            return new GrStatus(mStatus);
-        }
-
-        @Status
-        public int getStatus() {
-            return mStatus;
-        }
-    }
-
     @IntDef({SUCCESS,
              CANCELLED,
              SUCCESS_TASK_QUEUED,

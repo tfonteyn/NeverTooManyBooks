@@ -79,6 +79,7 @@ public class EditLenderDialogFragment
     private long mBookId;
     /** Displayed for info. */
     private String mBookTitle;
+
     /**
      * The person who currently has the book.
      * Will be {@code null} if the book is available.
@@ -86,14 +87,16 @@ public class EditLenderDialogFragment
      * {@link DBKey#KEY_LOANEE} in savedInstanceState.
      */
     @Nullable
-    private String mOriginalLoanee;
+    private String mLoanee;
+
     /**
      * The loanee being edited.
      * <p>
      * {@link #SIS_NEW_LOANEE} in savedInstanceState.
      */
     @Nullable
-    private String mLoanee;
+    private String mCurrentEdit;
+
     private ArrayList<String> mPeople;
     private ExtArrayAdapter<String> mAdapter;
 
@@ -132,11 +135,11 @@ public class EditLenderDialogFragment
         mBookTitle = Objects.requireNonNull(args.getString(DBKey.KEY_TITLE), "KEY_TITLE");
 
         if (savedInstanceState == null) {
-            mOriginalLoanee = loaneeDao.getLoaneeByBookId(mBookId);
-            mLoanee = mOriginalLoanee;
+            mLoanee = loaneeDao.getLoaneeByBookId(mBookId);
+            mCurrentEdit = mLoanee;
         } else {
-            mOriginalLoanee = savedInstanceState.getString(DBKey.KEY_LOANEE);
-            mLoanee = savedInstanceState.getString(SIS_NEW_LOANEE);
+            mLoanee = savedInstanceState.getString(DBKey.KEY_LOANEE);
+            mCurrentEdit = savedInstanceState.getString(SIS_NEW_LOANEE);
         }
     }
 
@@ -153,7 +156,7 @@ public class EditLenderDialogFragment
         mAdapter = new ExtArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
                                          ExtArrayAdapter.FilterType.Diacritic, mPeople);
         mVb.lendTo.setAdapter(mAdapter);
-        mVb.lendTo.setText(mLoanee);
+        mVb.lendTo.setText(mCurrentEdit);
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
@@ -168,6 +171,7 @@ public class EditLenderDialogFragment
         mVb.lendTo.requestFocus();
     }
 
+    // TODO: store the Contacts.LOOKUP_KEY for later.
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private void addContacts() {
         // LinkedHashSet to remove duplicates
@@ -175,8 +179,7 @@ public class EditLenderDialogFragment
         //noinspection ConstantConditions
         final ContentResolver cr = getContext().getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                                      new String[]{ContactsContract.Contacts._ID,
-                                                   ContactsContract.Contacts.LOOKUP_KEY,
+                                      new String[]{ContactsContract.Contacts.LOOKUP_KEY,
                                                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
                                       null, null, null)) {
             if (cursor != null) {
@@ -210,36 +213,36 @@ public class EditLenderDialogFragment
 
         // anything actually changed ?
         //noinspection ConstantConditions
-        if (mLoanee.equalsIgnoreCase(mOriginalLoanee)) {
+        if (mCurrentEdit.equalsIgnoreCase(mLoanee)) {
             return true;
         }
 
         final boolean success;
-        if (mLoanee.isEmpty()) {
+        if (mCurrentEdit.isEmpty()) {
             // return the book
             success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
         } else {
             // lend book, reluctantly...
-            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
+            success = ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mCurrentEdit);
         }
 
         if (success) {
-            Launcher.setResult(this, mRequestKey, mBookId, mLoanee);
+            Launcher.setResult(this, mRequestKey, mBookId, mCurrentEdit);
             return true;
         }
         return false;
     }
 
     private void viewToModel() {
-        mLoanee = mVb.lendTo.getText().toString().trim();
+        mCurrentEdit = mVb.lendTo.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         // store the original loanee to avoid a trip to the database
-        outState.putString(DBKey.KEY_LOANEE, mOriginalLoanee);
-        outState.putString(SIS_NEW_LOANEE, mLoanee);
+        outState.putString(DBKey.KEY_LOANEE, mLoanee);
+        outState.putString(SIS_NEW_LOANEE, mCurrentEdit);
     }
 
     @Override

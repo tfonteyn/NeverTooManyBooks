@@ -30,11 +30,13 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.network.HttpStatusException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.BookSender;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
@@ -95,8 +97,10 @@ public class SendOneBookTask
         }
 
         final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
+        final BookSender bookSender = new BookSender(context, grManager);
 
-        try (Cursor cursor = grManager.getGoodreadsDao().fetchBookForExport(mBookId)) {
+        try (Cursor cursor = ServiceLocator.getInstance().getGoodreadsDao()
+                                           .fetchBookForExport(mBookId)) {
             if (cursor.moveToFirst()) {
                 if (isCancelled()) {
                     return new GrStatus(GrStatus.CANCELLED);
@@ -104,13 +108,7 @@ public class SendOneBookTask
                 publishProgress(1, context.getString(R.string.progress_msg_sending));
 
                 final DataHolder bookData = new CursorRow(cursor);
-
-                final GrStatus.SendBook status = grManager.sendBook(bookData);
-                if (status == GrStatus.SendBook.Success) {
-                    // Record the update
-                    grManager.getGoodreadsDao().setSyncDate(mBookId);
-                }
-                return status.getGrStatus();
+                return bookSender.send(bookData).getGrStatus();
 
             } else {
                 // THIS REALLY SHOULD NOT HAPPEN: we did not find the book

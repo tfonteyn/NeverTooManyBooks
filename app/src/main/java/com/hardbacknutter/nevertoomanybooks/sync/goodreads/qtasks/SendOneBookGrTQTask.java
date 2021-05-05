@@ -19,15 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.BookSender;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -37,7 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.Queu
 public class SendOneBookGrTQTask
         extends SendBooksGrBaseTQTask {
 
-    private static final long serialVersionUID = 3836442077648262220L;
+    /**
+     * Warning: 2021-05-04: class changed for the post-2.0 update; i.e. new serialVersionUID
+     * which means any previously serialized task will be invalid.
+     */
+    private static final long serialVersionUID = 6164921249779178323L;
 
     /** id of book to send. */
     private final long mBookId;
@@ -55,14 +60,14 @@ public class SendOneBookGrTQTask
     }
 
     @Override
-    protected TaskStatus send(@NonNull final GoodreadsManager grManager) {
+    protected TaskStatus send(@NonNull final Context context,
+                              @NonNull final BookSender bookSender) {
 
-        final QueueManager queueManager = QueueManager.getInstance();
-
-        try (Cursor cursor = grManager.getGoodreadsDao().fetchBookForExport(mBookId)) {
+        try (Cursor cursor = ServiceLocator.getInstance().getGoodreadsDao()
+                                           .fetchBookForExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return sendOneBook(queueManager, grManager, bookData);
+                return sendOneBook(context, bookSender, bookData);
             }
         }
 

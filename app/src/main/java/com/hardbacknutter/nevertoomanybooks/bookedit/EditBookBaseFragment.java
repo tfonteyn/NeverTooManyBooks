@@ -58,12 +58,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragm
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
@@ -116,6 +115,8 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
+    @Nullable
+    private AmazonHandler mAmazonHandler;
 
     /**
      * Init all Fields, and add them the fields collection.
@@ -169,6 +170,9 @@ public abstract class EditBookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
+        mAmazonHandler = new AmazonHandler(getContext());
+
+        //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         final Fields fields = getFields();
@@ -200,7 +204,9 @@ public abstract class EditBookBaseFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mVm.getBook();
         MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
-        MenuHelper.prepareOptionalMenus(menu, book);
+
+        //noinspection ConstantConditions
+        mAmazonHandler.prepareMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -216,30 +222,9 @@ public abstract class EditBookBaseFragment
             //noinspection ConstantConditions
             ((EditBookActivity) getActivity()).prepareSave(true);
             return true;
+        }
 
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = book.getPrimaryAuthor();
-            if (author != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, author, null);
-            }
-            return true;
-
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = book.getPrimarySeries();
-            if (series != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, null, series);
-            }
-            return true;
-
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = book.getPrimaryAuthor();
-            final Series series = book.getPrimarySeries();
-            if (author != null && series != null) {
-                //noinspection ConstantConditions
-                AmazonSearchEngine.startSearchActivity(context, author, series);
-            }
+        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
             return true;
         }
 

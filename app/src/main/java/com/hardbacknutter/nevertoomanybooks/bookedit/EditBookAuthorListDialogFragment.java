@@ -74,7 +74,7 @@ public class EditBookAuthorListDialogFragment
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookFragmentViewModel mVm;
+    private EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -135,7 +135,7 @@ public class EditBookAuthorListDialogFragment
         mVb = DialogEditBookAuthorListBinding.bind(view);
 
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
@@ -362,18 +362,23 @@ public class EditBookAuthorListDialogFragment
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditAuthorForBookDialog";
         private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
         /**
          * We create a list of all the Type checkboxes for easy handling.
          * The key is the Type.
          */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
+
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
+
         @SuppressWarnings("FieldCanBeLocal")
-        private EditBookFragmentViewModel mVm;
+        private EditBookViewModel mVm;
+
         /** Displayed for info only. */
         @Nullable
         private String mBookTitle;
+
         /** View Binding. */
         private DialogEditBookAuthorBinding mVb;
 
@@ -381,14 +386,7 @@ public class EditBookAuthorListDialogFragment
         private Author mAuthor;
 
         /** Current edit. */
-        private String mFamilyName;
-        /** Current edit. */
-        private String mGivenNames;
-        /** Current edit. */
-        private boolean mIsComplete;
-        /** Current edit. */
-        @Author.Type
-        private int mType;
+        private Author mCurrentEdit;
 
         /**
          * No-arg constructor for OS use.
@@ -434,18 +432,13 @@ public class EditBookAuthorListDialogFragment
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
-                mFamilyName = mAuthor.getFamilyName();
-                mGivenNames = mAuthor.getGivenNames();
-                mIsComplete = mAuthor.isComplete();
-                mType = mAuthor.getType();
+                mCurrentEdit = new Author(mAuthor.getFamilyName(),
+                                          mAuthor.getGivenNames(),
+                                          mAuthor.isComplete());
+                mCurrentEdit.setType(mAuthor.getType());
             } else {
                 //noinspection ConstantConditions
-                mFamilyName = savedInstanceState.getString(DBKey.KEY_AUTHOR_FAMILY_NAME);
-                //noinspection ConstantConditions
-                mGivenNames = savedInstanceState.getString(DBKey.KEY_AUTHOR_GIVEN_NAMES);
-                mIsComplete = savedInstanceState.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE,
-                                                            false);
-                mType = savedInstanceState.getInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_AUTHOR);
             }
         }
 
@@ -453,30 +446,30 @@ public class EditBookAuthorListDialogFragment
         public void onViewCreated(@NonNull final View view,
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            //noinspection ConstantConditions
-            final SharedPreferences global = PreferenceManager
-                    .getDefaultSharedPreferences(getContext());
-
             mVb = DialogEditBookAuthorBinding.bind(view);
+
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+            //noinspection ConstantConditions
             final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorFamilyNames());
-            mVb.familyName.setText(mFamilyName);
-            mVb.familyName.setAdapter(familyNameAdapter);
 
             final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorGivenNames());
-            mVb.givenNames.setText(mGivenNames);
+
+            mVb.familyName.setText(mCurrentEdit.getFamilyName());
+            mVb.familyName.setAdapter(familyNameAdapter);
+            mVb.givenNames.setText(mCurrentEdit.getGivenNames());
             mVb.givenNames.setAdapter(givenNameAdapter);
+            mVb.cbxIsComplete.setChecked(mCurrentEdit.isComplete());
 
-            mVb.cbxIsComplete.setChecked(mIsComplete);
-
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(getContext());
             final boolean useAuthorType =
                     DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
@@ -500,13 +493,14 @@ public class EditBookAuthorListDialogFragment
                 mTypeButtons.put(Author.TYPE_COVER_INKING, mVb.cbxAuthorTypeCoverInking);
                 mTypeButtons.put(Author.TYPE_COVER_COLORIST, mVb.cbxAuthorTypeCoverColorist);
 
-                if (mType == Author.TYPE_UNKNOWN) {
+                if (mCurrentEdit.getType() == Author.TYPE_UNKNOWN) {
                     setTypeEnabled(false);
 
                 } else {
                     setTypeEnabled(true);
                     for (int i = 0; i < mTypeButtons.size(); i++) {
-                        mTypeButtons.valueAt(i).setChecked((mType & mTypeButtons.keyAt(i)) != 0);
+                        mTypeButtons.valueAt(i).setChecked((mCurrentEdit.getType()
+                                                            & mTypeButtons.keyAt(i)) != 0);
                     }
                 }
             }
@@ -541,44 +535,39 @@ public class EditBookAuthorListDialogFragment
             viewToModel();
 
             // basic check only, we're doing more extensive checks later on.
-            if (mFamilyName.isEmpty()) {
+            if (mCurrentEdit.getFamilyName().isEmpty()) {
                 showError(mVb.lblFamilyName, R.string.vldt_non_blank_required);
                 return false;
             }
 
-            // Create a new Author as a holder for all changes.
-            final Author tmpAuthor = new Author(mFamilyName, mGivenNames);
-            tmpAuthor.setComplete(mIsComplete);
-            if (mVb.btnUseAuthorType.isChecked()) {
-                tmpAuthor.setType(mType);
-            } else {
-                tmpAuthor.setType(Author.TYPE_UNKNOWN);
+            // invalidate the type if needed
+            if (!mVb.btnUseAuthorType.isChecked()) {
+                mCurrentEdit.setType(Author.TYPE_UNKNOWN);
             }
 
             EditBookBaseFragment.EditItemLauncher
-                    .setResult(this, mRequestKey, mAuthor, tmpAuthor);
+                    .setResult(this, mRequestKey, mAuthor, mCurrentEdit);
             return true;
         }
 
         private void viewToModel() {
-            mFamilyName = mVb.familyName.getText().toString().trim();
-            mGivenNames = mVb.givenNames.getText().toString().trim();
-            mIsComplete = mVb.cbxIsComplete.isChecked();
-            mType = Author.TYPE_UNKNOWN;
+            mCurrentEdit.setName(mVb.familyName.getText().toString().trim(),
+                                 mVb.givenNames.getText().toString().trim());
+            mCurrentEdit.setComplete(mVb.cbxIsComplete.isChecked());
+
+            int type = Author.TYPE_UNKNOWN;
             for (int i = 0; i < mTypeButtons.size(); i++) {
                 if (mTypeButtons.valueAt(i).isChecked()) {
-                    mType |= mTypeButtons.keyAt(i);
+                    type |= mTypeButtons.keyAt(i);
                 }
             }
+            mCurrentEdit.setType(type);
         }
 
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBKey.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-            outState.putString(DBKey.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-            outState.putBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE, mIsComplete);
-            outState.putInt(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
+            outState.putParcelable(DBKey.FK_AUTHOR, mCurrentEdit);
         }
 
         @Override

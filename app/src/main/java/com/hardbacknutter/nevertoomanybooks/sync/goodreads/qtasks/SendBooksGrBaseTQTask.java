@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.sync.goodreads.BookSender;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GrStatus;
@@ -42,13 +43,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
+
 public abstract class SendBooksGrBaseTQTask
         extends GrBaseTQTask {
 
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
 
-    private static final long serialVersionUID = -7348431827842548151L;
+    /**
+     * Warning: 2021-05-04: class changed for the post-2.0 update; i.e. new serialVersionUID
+     * which means any previously serialized task will be invalid.
+     */
+    private static final long serialVersionUID = -6222656909387195872L;
+
 
     /** Number of books without ISBN. */
     private int mNoIsbn;
@@ -90,7 +97,10 @@ public abstract class SendBooksGrBaseTQTask
 
             final GoodreadsAuth grAuth = new GoodreadsAuth();
             if (grAuth.getCredentialStatus(context) == GoodreadsAuth.CredentialStatus.Valid) {
-                return send(new GoodreadsManager(context, grAuth));
+
+                final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
+                final BookSender bookSender = new BookSender(context, grManager);
+                return send(context, bookSender);
             }
         } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.
@@ -105,42 +115,41 @@ public abstract class SendBooksGrBaseTQTask
     /**
      * Start the send process.
      *
-     * @param grManager the Goodreads Manager
+     * @param context Current context
      *
      * @return Status
      */
-    protected abstract TaskStatus send(@NonNull GoodreadsManager grManager);
+    protected abstract TaskStatus send(@NonNull final Context context,
+                                       @NonNull final BookSender bookSender);
 
     /**
      * Try to export one book.
      *
-     * @param grManager the Goodreads Manager
-     * @param bookData  the book data to send
+     * @param context  Current context
+     * @param bookData the book data to send
      *
      * @return Status
      */
-    TaskStatus sendOneBook(@NonNull final QueueManager queueManager,
-                           @NonNull final GoodreadsManager grManager,
+    TaskStatus sendOneBook(@NonNull final Context context,
+                           @NonNull final BookSender bookSender,
                            @NonNull final DataHolder bookData) {
-
-        final long bookId = bookData.getLong(DBKey.PK_ID);
-
         try {
-            final GrStatus.SendBook status = grManager.sendBook(bookData);
+            final BookSender.Status status = bookSender.send(bookData);
             setLastExtStatus(status);
-            if (status == GrStatus.SendBook.Success) {
+            if (status == BookSender.Status.Success) {
                 mSent++;
-                grManager.getGoodreadsDao().setSyncDate(bookId);
                 return TaskStatus.Success;
 
-            } else if (status == GrStatus.SendBook.NoIsbn) {
+            } else if (status == BookSender.Status.NoIsbn) {
                 mNoIsbn++;
-                storeEvent(new GrNoIsbnEvent(grManager.getContext(), bookId));
+                final long bookId = bookData.getLong(DBKey.PK_ID);
+                storeEvent(new GrNoIsbnEvent(context, bookId));
                 return TaskStatus.Failed;
 
-            } else if (status == GrStatus.SendBook.NotFound) {
+            } else if (status == BookSender.Status.NotFound) {
                 mNotFound++;
-                storeEvent(new GrNoMatchEvent(grManager.getContext(), bookId));
+                final long bookId = bookData.getLong(DBKey.PK_ID);
+                storeEvent(new GrNoMatchEvent(context, bookId));
                 return TaskStatus.Failed;
             }
         } catch (@NonNull final DiskFullException e) {
@@ -169,7 +178,7 @@ public abstract class SendBooksGrBaseTQTask
             // Requeue
         }
 
-        queueManager.updateTask(this);
+        QueueManager.getInstance().updateTask(this);
         return TaskStatus.Requeue;
     }
 

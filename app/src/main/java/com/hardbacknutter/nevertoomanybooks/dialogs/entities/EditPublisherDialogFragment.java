@@ -67,7 +67,7 @@ public class EditPublisherDialogFragment
     private Publisher mPublisher;
 
     /** Current edit. */
-    private String mName;
+    private Publisher mCurrentEdit;
 
     /**
      * No-arg constructor for OS use.
@@ -103,10 +103,10 @@ public class EditPublisherDialogFragment
                                             "KEY_FK_PUBLISHER");
 
         if (savedInstanceState == null) {
-            mName = mPublisher.getName();
+            mCurrentEdit = new Publisher(mPublisher.getName());
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBKey.KEY_PUBLISHER_NAME);
+            mCurrentEdit = savedInstanceState.getParcelable(DBKey.FK_PUBLISHER);
         }
     }
 
@@ -118,12 +118,13 @@ public class EditPublisherDialogFragment
         mVb = DialogEditPublisherBinding.bind(view);
 
         //noinspection ConstantConditions
-        final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
+        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getPublisherDao().getNames());
-        mVb.publisher.setText(mName);
-        mVb.publisher.setAdapter(adapter);
+
+        mVb.publisher.setText(mCurrentEdit.getName());
+        mVb.publisher.setAdapter(nameAdapter);
 
         mVb.publisher.requestFocus();
     }
@@ -141,18 +142,20 @@ public class EditPublisherDialogFragment
 
     private boolean saveChanges() {
         viewToModel();
-        if (mName.isEmpty()) {
+
+        // basic check only, we're doing more extensive checks later on.
+        if (mCurrentEdit.getName().isEmpty()) {
             showError(mVb.lblPublisher, R.string.vldt_non_blank_required);
             return false;
         }
 
         // anything actually changed ?
-        if (mPublisher.getName().equals(mName)) {
+        if (mPublisher.getName().equals(mCurrentEdit.getName())) {
             return true;
         }
 
         // store changes
-        mPublisher.setName(mName);
+        mPublisher.copyFrom(mCurrentEdit);
 
         final Context context = getContext();
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -209,13 +212,13 @@ public class EditPublisherDialogFragment
     }
 
     private void viewToModel() {
-        mName = mVb.publisher.getText().toString().trim();
+        mCurrentEdit.setName(mVb.publisher.getText().toString().trim());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBKey.KEY_PUBLISHER_NAME, mName);
+        outState.putParcelable(DBKey.FK_PUBLISHER, mCurrentEdit);
     }
 
     @Override

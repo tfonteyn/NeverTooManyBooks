@@ -30,6 +30,7 @@ import android.view.View;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -62,8 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  */
 public class CalibreHandler {
 
-    /** Log tag. */
-    private static final String TAG = "CalibreHandler";
+    /** Whether to show any sync menus at all. */
+    public static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
 
     /** The Calibre API object. */
     @NonNull
@@ -71,6 +72,7 @@ public class CalibreHandler {
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
+
     /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
@@ -96,6 +98,18 @@ public class CalibreHandler {
     public CalibreHandler(@NonNull final Context context)
             throws CertificateException, SSLException {
         mServer = new CalibreContentServer(context);
+    }
+
+    /**
+     * Check if SYNC menus should be shown at all.
+     *
+     * @param global Global preferences
+     *
+     * @return {@code true} if menus should be shown
+     */
+    @AnyThread
+    public static boolean isSyncEnabled(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PK_ENABLED, false);
     }
 
     /**
@@ -160,16 +174,13 @@ public class CalibreHandler {
     /**
      * Add a Calibre submenu with read/download/settings options as appropriate for the given Book.
      *
-     * @param menu   to add to
-     * @param book   to use
-     * @param global Global preferences
+     * @param menu to add to
+     * @param book to use
      */
     public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final Book book,
-                            @NonNull final SharedPreferences global) {
+                            @NonNull final Book book) {
 
-        final boolean calibre = CalibreContentServer.isSyncEnabled(global)
-                                && !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
+        final boolean calibre = !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
 
         menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
         if (calibre) {

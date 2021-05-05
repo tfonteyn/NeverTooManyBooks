@@ -57,7 +57,6 @@
     <Button
         android:id="@+id/btn_send_updated_books"
         style="@style/Button.Menu"
-        android:visibility="gone"
         android:text="@string/menu_send_updated"
         app:icon="@drawable/ic_baseline_send_24"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +66,6 @@
     <Button
         android:id="@+id/btn_send_all_books"
         style="@style/Button.Menu"
-        android:visibility="gone"
         android:text="@string/menu_send_all"
         app:icon="@drawable/ic_baseline_cloud_upload_24"
         app:layout_constraintStart_toStartOf="parent"

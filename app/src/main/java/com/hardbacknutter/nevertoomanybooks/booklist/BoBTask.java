@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 
 /**
@@ -165,7 +165,7 @@ public class BoBTask
             }
 
             // Add Calibre bridging data ?
-            if (CalibreContentServer.isSyncEnabled(global)) {
+            if (CalibreHandler.isSyncEnabled(global)) {
                 addCalibreDomains(builder);
             }
 

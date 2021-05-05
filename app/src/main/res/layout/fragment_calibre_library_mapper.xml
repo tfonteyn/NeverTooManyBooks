@@ -36,6 +36,17 @@
         android:text="@string/lbl_library"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseCompatTextViewDrawableXml"
+        />
+
+    <ImageButton
+        android:id="@+id/inf_ext_not_installed"
+        style="@style/InfoButton"
+        android:contentDescription="@string/lbl_calibre_content_server_extension_info"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/header"
+        app:layout_constraintStart_toEndOf="@id/header"
+        tools:visibility="visible"
         />
 
     <com.google.android.material.textfield.TextInputLayout

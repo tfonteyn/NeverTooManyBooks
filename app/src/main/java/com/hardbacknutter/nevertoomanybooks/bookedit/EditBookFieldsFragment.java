@@ -40,8 +40,6 @@ import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.progressindicator.CircularProgressIndicator;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -140,25 +138,7 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
-        final Resources res = getResources();
-
-        if (mVm.isCoverUsed(global, 0)) {
-            createCoverHandler(0,
-                               res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
-                               res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
-                               mVb.coverOperationProgressBar);
-        } else {
-            mVb.coverImage0.setVisibility(View.GONE);
-        }
-
-        if (mVm.isCoverUsed(global, 1)) {
-            createCoverHandler(1,
-                               res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
-                               res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
-                               mVb.coverOperationProgressBar);
-        } else {
-            mVb.coverImage1.setVisibility(View.GONE);
-        }
+        createCoverDelegates(global);
 
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
@@ -204,19 +184,42 @@ public class EditBookFieldsFragment
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
     }
 
-    private void createCoverHandler(final int cIdx,
-                                    final int maxWidth,
-                                    final int maxHeight,
-                                    @NonNull final CircularProgressIndicator progressIndicator) {
-        mCoverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight);
-        mCoverHandler[cIdx].onViewCreated(this);
-        mCoverHandler[cIdx].setProgressView(progressIndicator);
-        mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
+    private void createCoverDelegates(@NonNull final SharedPreferences global) {
+        final Resources res = getResources();
 
-        //noinspection ConstantConditions
-        mCoverHandler[cIdx].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
-        //noinspection ConstantConditions
-        mCoverHandler[cIdx].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+        if (mVm.isCoverUsed(global, 0)) {
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
+
+            mCoverHandler[0] = new CoverHandler(this, 0, maxWidth, maxHeight);
+            mCoverHandler[0].onViewCreated(this);
+            mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
+            mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
+
+            //noinspection ConstantConditions
+            mCoverHandler[0].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
+            //noinspection ConstantConditions
+            mCoverHandler[0].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+        } else {
+            mVb.coverImage0.setVisibility(View.GONE);
+        }
+
+        if (mVm.isCoverUsed(global, 1)) {
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
+
+            mCoverHandler[1] = new CoverHandler(this, 1, maxWidth, maxHeight);
+            mCoverHandler[1].onViewCreated(this);
+            mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
+            mCoverHandler[1].setBookSupplier(() -> mVm.getBook());
+
+            //noinspection ConstantConditions
+            mCoverHandler[1].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
+            //noinspection ConstantConditions
+            mCoverHandler[1].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+        } else {
+            mVb.coverImage1.setVisibility(View.GONE);
+        }
     }
 
     @Override
