@@ -507,19 +507,6 @@
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
 
     <!-- ####################################################################################### -->
-    <!-- ========== Library Thing specific ========== -->
-    <!-- ####################################################################################### -->
-    <string name="lt_info">
-        This application is enhanced by using LibraryThing as a source of information about
-        book series, as well as a source of alternate covers. To use these features you need
-        to register with LibraryThing (free) and request a LibraryThing developer key (also free).
-    </string>
-    <string name="lt_url_text_dev_key">Request developer key</string>
-    <string name="lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
-    <string name="lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
-    <string name="lt_key_is_incorrect">Your LibraryThing Developer Key was incorrect, or we could not connect to verify.</string>
-
-    <!-- ####################################################################################### -->
     <!-- ========== ISFDB specific ========== -->
     <!-- ####################################################################################### -->
     <!-- Some functionality is limited to the ISFDB web site only.
@@ -1710,8 +1697,6 @@
     <string name="X_progress_msg_n_covers_processed_m_missing" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
 
-    <string name="X_lt_url_text_register">Register with LibraryThing</string>
-
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
@@ -1726,6 +1711,18 @@
     <string name="X_lbl_select_image">Select image…</string>
     <string name="X_hardware">Hardware</string>
     <string name="X_software">Software</string>
+
+
+    <string name="X_lt_info">
+        This application is enhanced by using LibraryThing as a source of information about
+        book series, as well as a source of alternate covers. To use these features you need
+        to register with LibraryThing (free) and request a LibraryThing developer key (also free).
+    </string>
+    <string name="X_lt_url_text_register">Register with LibraryThing</string>
+    <string name="X_lt_url_text_dev_key">Request developer key</string>
+    <string name="X_lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
+    <string name="X_lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
+    <string name="X_lt_key_is_incorrect">Your LibraryThing Developer Key was incorrect, or we could not connect to verify.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->

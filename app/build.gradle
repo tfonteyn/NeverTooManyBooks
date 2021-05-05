@@ -169,11 +169,6 @@ android {
         // Dutch.
         buildConfigField('boolean', 'ENABLE_STRIP_INFO', 'true')
 
-        // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
-        // searches and "Temporarily down on images.
-        // Confirmed in LT forums; The entire API is currently disabled because of work on LT2.
-        buildConfigField('boolean', 'ENABLE_LIBRARY_THING', 'false')
-        // but the alternative edition link still works (for now?).
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
         // under development

@@ -327,11 +327,11 @@
     <string name="list_and">και</string>
     <string name="list_element">• %s</string>
     <string name="list_element_name_colon_value">• %1$s: %2$s</string>
-    <string name="lt_info">Αυτή η εφαρμογή ενισχύεται με τη χρήστη του LibraryThing σαν πηγή πληροφοριών για σειρές βιβλίων καθώς και ενναλλακτικών εξωφύλλων. Για πρόσβαση σε αυτές τις λειτουργίες απαιτείται εγγραφή στο LibraryThing (δωρεάν) και απόκτηση κλειδιού developer(επίσης δωρεάν).</string>
-    <string name="lt_key_is_correct">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
-    <string name="lt_key_is_incorrect">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
-    <string name="lt_lbl_key">Όταν αποκτήσετε κλειδί developer, μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
-    <string name="lt_url_text_dev_key">Αίτημα κλειδιού προγραμματιστή</string>
+    <string name="X_lt_info">Αυτή η εφαρμογή ενισχύεται με τη χρήστη του LibraryThing σαν πηγή πληροφοριών για σειρές βιβλίων καθώς και ενναλλακτικών εξωφύλλων. Για πρόσβαση σε αυτές τις λειτουργίες απαιτείται εγγραφή στο LibraryThing (δωρεάν) και απόκτηση κλειδιού developer(επίσης δωρεάν).</string>
+    <string name="X_lt_key_is_correct">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
+    <string name="X_lt_key_is_incorrect">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
+    <string name="X_lt_lbl_key">Όταν αποκτήσετε κλειδί developer, μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
+    <string name="X_lt_url_text_dev_key">Αίτημα κλειδιού προγραμματιστή</string>
     <string name="X_lt_url_text_register">Εγγραφή με LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>

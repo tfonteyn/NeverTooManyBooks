@@ -85,13 +85,6 @@
             android:title="@string/site_isfdb">
         </Preference>
 
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LibraryThingPreferencesFragment"
-            android:icon="@drawable/ic_librarything"
-            android:key="psk_search_site_library_thing"
-            android:title="@string/site_library_thing">
-        </Preference>
-
         <!-- under development - disabled in release. -->
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"

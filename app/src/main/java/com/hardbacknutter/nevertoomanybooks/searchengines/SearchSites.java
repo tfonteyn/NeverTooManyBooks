@@ -144,7 +144,7 @@ public final class SearchSites {
             registry.add(GoogleBooksSearchEngine.createConfig());
         }
 
-        if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+        if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
             registry.add(LibraryThingSearchEngine.createConfig());
         }
 
@@ -199,10 +199,6 @@ public final class SearchSites {
                     type.addSite(GOOGLE_BOOKS);
                 }
 
-                if (BuildConfig.ENABLE_LIBRARY_THING) {
-                    type.addSite(LIBRARY_THING);
-                }
-
                 type.addSite(ISFDB);
 
                 // Dutch.
@@ -234,11 +230,6 @@ public final class SearchSites {
                 // Dutch.
                 if (BuildConfig.ENABLE_KB_NL) {
                     type.addSite(KB_NL, enableIfDutch);
-                }
-
-                if (BuildConfig.ENABLE_LIBRARY_THING) {
-                    // Disabled by default as this site lacks many covers.
-                    type.addSite(LIBRARY_THING, false);
                 }
 
                 // Disabled by default as this site lacks many covers.

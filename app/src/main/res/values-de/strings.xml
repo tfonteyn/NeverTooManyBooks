@@ -369,11 +369,11 @@
     <string name="list_and">und</string>
     <string name="list_element">• %s</string>
     <string name="list_element_name_colon_value">• %1$s: %2$s</string>
-    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Buchumschläge. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
-    <string name="lt_key_is_correct">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
-    <string name="lt_key_is_incorrect">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
-    <string name="lt_lbl_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben, geben Sie diesen unten ein.</string>
-    <string name="lt_url_text_dev_key">Entwicklerschlüssel anfordern</string>
+    <string name="X_lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Buchumschläge. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
+    <string name="X_lt_key_is_correct">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
+    <string name="X_lt_key_is_incorrect">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
+    <string name="X_lt_lbl_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben, geben Sie diesen unten ein.</string>
+    <string name="X_lt_url_text_dev_key">Entwicklerschlüssel anfordern</string>
     <string name="X_lt_url_text_register">Registrieren Sie sich bei LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_amazon_books_by_author_in_series">Bücher nach Autor/Serie</string>

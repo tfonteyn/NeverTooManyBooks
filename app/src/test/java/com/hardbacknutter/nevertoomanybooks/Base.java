@@ -199,7 +199,6 @@ public class Base {
                         .putBoolean("search.site.isfdb.data.enabled", true)
                         .putBoolean("search.site.kbnl.data.enabled", true)
                         .putBoolean("search.site.lastdodo.data.enabled", true)
-                        .putBoolean("search.site.librarything.data.enabled", false)
                         .putBoolean("search.site.openlibrary.data.enabled", true)
                         .putBoolean("search.site.stripinfo.data.enabled", false)
 

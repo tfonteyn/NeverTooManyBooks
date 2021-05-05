@@ -326,11 +326,11 @@
     <string name="list_and">and</string>
     <string name="list_element">• %s</string>
     <string name="list_element_name_colon_value">• %1$s: %2$s</string>
-    <string name="lt_info">>Bu uygulama kitap serileri hakkında bilgi almak ve ek kapakları indirmek üzere LibraryThing\'den yararlanır. Bu özellikleri kullanmak için LibraryThing\'e kayıt olmanız (ücretsiz) ve LibraryThing geliştirici anahtarı almanız gerekmektedir (yine ücretsiz).</string>
-    <string name="lt_key_is_correct">LibraryThing geliştirici anahtarınız geçerli.</string>
-    <string name="lt_key_is_incorrect">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
-    <string name="lt_lbl_key">Geliştirici anahtarını aldığınızda yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
-    <string name="lt_url_text_dev_key">Geliştirici anahtarı iste</string>
+    <string name="X_lt_info">>Bu uygulama kitap serileri hakkında bilgi almak ve ek kapakları indirmek üzere LibraryThing\'den yararlanır. Bu özellikleri kullanmak için LibraryThing\'e kayıt olmanız (ücretsiz) ve LibraryThing geliştirici anahtarı almanız gerekmektedir (yine ücretsiz).</string>
+    <string name="X_lt_key_is_correct">LibraryThing geliştirici anahtarınız geçerli.</string>
+    <string name="X_lt_key_is_incorrect">Ya LibraryThing geliştirici anahtarınız yanlış ya da biz doğrulama için ağa bağlanamadık.</string>
+    <string name="X_lt_lbl_key">Geliştirici anahtarını aldığınızda yalnızca aşağıdaki alana girin, sonrasında bu anahtar ek verileri almak için kullanılacaktır.</string>
+    <string name="X_lt_url_text_dev_key">Geliştirici anahtarı iste</string>
     <string name="X_lt_url_text_register">LibraryThing\'e kayıt ol</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Uygulama hakkında</string>

@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
-    private static final String PSK_SEARCH_SITE_LIBRARY_THING = "psk_search_site_library_thing";
     private static final String PSK_SEARCH_SITE_STRIP_INFO_BE = "psk_search_site_stripinfo_be";
 
     @Override
@@ -42,10 +41,6 @@ public class SearchInternetPreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_LIBRARY_THING)
-                .setVisible(BuildConfig.ENABLE_LIBRARY_THING);
 
         //noinspection ConstantConditions
         findPreference(PSK_SEARCH_SITE_STRIP_INFO_BE)

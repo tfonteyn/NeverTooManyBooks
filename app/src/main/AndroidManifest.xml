@@ -143,10 +143,6 @@
         <activity android:name=".settings.SettingsHostActivity" />
         <activity android:name=".settings.SearchAdminActivity" />
 
-        <activity
-            android:name=".searchengines.librarything.LibraryThingRegistrationActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
         <activity android:name=".sync.goodreads.GoodreadsRegistrationActivity" />
 
         <!--

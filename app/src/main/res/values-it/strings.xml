@@ -324,11 +324,11 @@
     <string name="list_and">e</string>
     <string name="list_element">• %s</string>
     <string name="list_element_name_colon_value">• %1$s: %2$s</string>
-    <string name="lt_info">Questa applicazione utilizza LibraryThing come fonte ulteriore di informazioni sulle serie dei libri e per reperire copertine alternative. Per utilizzare LibraryThing è necessario essere registrati (è gratuita) e richiedere la chiave sviluppatore LibraryThing (anch\'essa gratuita).</string>
-    <string name="lt_key_is_correct">Chiave sviluppatore LibraryThing valida.</string>
-    <string name="lt_key_is_incorrect">Chiave sviluppatore LibraryThing errata, o impossibile connettersi alla rete per verificarla.</string>
-    <string name="lt_lbl_key">Una volta ottenuta la chiave sviluppatore, inseriscila qui sotto e verrà utilizzata per ottenere dati aggiuntivi.</string>
-    <string name="lt_url_text_dev_key">Richiedi la chiave sviluppatore</string>
+    <string name="X_lt_info">Questa applicazione utilizza LibraryThing come fonte ulteriore di informazioni sulle serie dei libri e per reperire copertine alternative. Per utilizzare LibraryThing è necessario essere registrati (è gratuita) e richiedere la chiave sviluppatore LibraryThing (anch\'essa gratuita).</string>
+    <string name="X_lt_key_is_correct">Chiave sviluppatore LibraryThing valida.</string>
+    <string name="X_lt_key_is_incorrect">Chiave sviluppatore LibraryThing errata, o impossibile connettersi alla rete per verificarla.</string>
+    <string name="X_lt_lbl_key">Una volta ottenuta la chiave sviluppatore, inseriscila qui sotto e verrà utilizzata per ottenere dati aggiuntivi.</string>
+    <string name="X_lt_url_text_dev_key">Richiedi la chiave sviluppatore</string>
     <string name="X_lt_url_text_register">Registrati su LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Riguardo questa app</string>

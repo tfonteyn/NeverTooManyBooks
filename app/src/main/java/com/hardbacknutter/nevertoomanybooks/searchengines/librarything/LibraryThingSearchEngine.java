@@ -19,22 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-
-import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -42,83 +32,34 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.network.Throttler;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
- * Searching for alternative editions still works.
- * The code for this site is kept up to date but not tested.
- *
+ * Confirmed in LT forums; The entire API is currently disabled because of work on LT2.
+ * <p>
  * Goodreads is owned by Amazon and is shutting their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
- * TODO: remove the LibraryThing code.
- *
- * <p>
- * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
- * <p>
- * The basic URLs are:
- * <p>
- * Covers via ISBN: http://covers.librarything.com/devkey/{DEVKEY}/{SIZE}/isbn/{ISBN}
- * with size: large,medium,small
- * <br>
- * <p>
- * REST api: <a href="http://www.librarything.com/services/rest/documentation/1.1/">
- * http://www.librarything.com/services/rest/documentation/1.1/</a>
- * <p>
- * Details via ISBN:
- * http://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork
- * &apikey={DEVKEY}&isbn={ISBN}
- *
- * <p>
- * xml see {@link SearchCoordinator#search} header
+ * 2020-05-05: removed all non-functional code.
+ * We can still:
+ * - Search for alternative editions.
+ * - View books on the site for which we previously stored a native id.
+ * Keep in mind that the LT id can also be gathered from other sites (e.g. OpenLibrary)
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
-        implements SearchEngine.ByIsbn,
-                   SearchEngine.ByExternalId,
-                   SearchEngine.CoverByIsbn,
+        implements SearchEngine.ViewBookByExternalId,
                    SearchEngine.AlternativeEditions {
 
     /** Preferences prefix. */
     private static final String PREF_KEY = "librarything";
-
-    /** Preference that contains the dev key for the user. Type: {@code String}. */
-    static final String PK_DEV_KEY = PREF_KEY + ".dev_key";
-
-    /** Log tag. */
-    private static final String TAG = "LibraryThingSE";
-
-    /**
-     * book details urls.
-     * <p>
-     * param 1: dev-key; param 2: search-key; param 3: value
-     */
-    private static final String BOOK_URL =
-            "/services/rest/1.1/?method=librarything.ck.getwork&apikey=%1$s&%2$s=%3$s";
-    /** param 1: dev-key; param 2: size; param 3: isbn. */
-    private static final String COVER_BY_ISBN_URL =
-            "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
-
-    /** LibraryThing usage rules: only send one request a second. */
-    private static final Throttler THROTTLER = new Throttler(1_000);
-
-    private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -143,166 +84,14 @@ public class LibraryThingSearchEngine
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
 
-                .setStaticThrottler(THROTTLER)
                 .build();
     }
 
-    /**
-     * external users (to this class) should call this before doing any searches.
-     *
-     * @return {@code true} if there is a developer key configured.
-     */
-    private static boolean hasKey() {
-        final boolean hasKey = !getDevKey().isEmpty();
-        if (BuildConfig.DEBUG && !hasKey) {
-            Log.d(TAG, "hasKey|key not available");
-        }
-        return hasKey;
-    }
-
-    /**
-     * Get the dev key.
-     *
-     * @return the dev key, CAN BE EMPTY but never {@code null}
-     */
-    @NonNull
-    private static String getDevKey() {
-        final String key = ServiceLocator.getGlobalPreferences().getString(PK_DEV_KEY, null);
-        if (key != null && !key.isEmpty()) {
-            return DEV_KEY_PATTERN.matcher(key).replaceAll("");
-        }
-        return "";
-    }
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + String.format("/work/%1$s", externalId);
-    }
-
-    @Override
-    public boolean isAvailable() {
-        return hasKey();
-    }
-
-    @Override
-    public boolean promptToRegister(@NonNull final Context context,
-                                    final boolean required,
-                                    @Nullable final String callerIdString,
-                                    @Nullable final Consumer<RegistrationAction> onResult) {
-        // sanity check
-        if (isAvailable()) {
-            return false;
-        }
-
-        return showRegistrationDialog(context, required, callerIdString, action -> {
-            if (action == RegistrationAction.Register) {
-                context.startActivity(new Intent(context, LibraryThingRegistrationActivity.class));
-
-            } else if (onResult != null) {
-                onResult.accept(action);
-            }
-        });
-    }
-
-    /**
-     * Dev-key needed for this call.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Bundle searchByExternalId(@NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-
-        final Bundle bookData = new Bundle();
-
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "id", externalId);
-
-        fetchBook(url, bookData);
-
-        if (isCancelled()) {
-            return bookData;
-        }
-
-        if (fetchCovers[0]) {
-            final String isbnStr = bookData.getString(DBKey.KEY_ISBN);
-            if (isbnStr != null && !isbnStr.isEmpty()) {
-                final ArrayList<String> list = searchBestCoverByIsbn(isbnStr, 0);
-                if (!list.isEmpty()) {
-                    bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-                }
-            }
-        }
-
-        return bookData;
-    }
-
-    /**
-     * Dev-key needed for this call.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
-                               @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
-
-        final Bundle bookData = new Bundle();
-
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(), "isbn", validIsbn);
-
-        fetchBook(url, bookData);
-
-        if (isCancelled()) {
-            return bookData;
-        }
-
-        if (fetchCovers[0]) {
-            final ArrayList<String> list = searchBestCoverByIsbn(validIsbn, 0);
-            if (!list.isEmpty()) {
-                bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
-            }
-        }
-
-        return bookData;
-    }
-
-    /**
-     * ENHANCE: See if we can get the alternate user-contributed images from LibraryThing.
-     * The latter are often the best source but at present could only be obtained by HTML scraping.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @Nullable
-    @WorkerThread
-    @Override
-    public String searchCoverByIsbn(@NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException {
-        final String sizeParam;
-        if (size == null) {
-            sizeParam = "large";
-        } else {
-            switch (size) {
-                case Small:
-                    sizeParam = "small";
-                    break;
-                case Medium:
-                    sizeParam = "medium";
-                    break;
-                case Large:
-                default:
-                    sizeParam = "large";
-                    break;
-            }
-        }
-
-        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(), sizeParam, validIsbn);
-        return saveImage(url, validIsbn, cIdx, size);
     }
 
     /**
@@ -333,45 +122,5 @@ public class LibraryThingSearchEngine
             throw new SearchException(getName(), e);
         }
         return handler.getResult();
-    }
-
-    /**
-     * Fetch a book by url.
-     *
-     * @param url      to fetch
-     * @param bookData Bundle to update <em>(passed in to allow mocking)</em>
-     */
-    private void fetchBook(@NonNull final String url,
-                           @NonNull final Bundle bookData)
-            throws SearchException {
-
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final LibraryThingHandler handler = new LibraryThingHandler(bookData);
-//        final XmlDumpParser handler = new XmlDumpParser();
-
-        // Get it
-        try (TerminatorConnection con = createConnection(url)) {
-            final SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
-
-        } catch (@NonNull final SAXException e) {
-            // ignore
-
-            final String msg = e.getMessage();
-            // Horrible hack... but once again the underlying apache class makes life difficult.
-            // Sure, the Locator could be used to see that the line==1 and column==0,
-            // but other than that it does not seem possible to get full details.
-            if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
-                // 2020-03-27. Started getting "APIs Temporarily disabled"
-                Log.d(TAG, "LibraryThing v1 APIs disabled");
-            }
-
-            throw new SearchException(getName(), e);
-
-        } catch (@NonNull final ParserConfigurationException | IOException e) {
-            throw new SearchException(getName(), e);
-        }
-
-        checkForSeriesNameInTitle(bookData);
     }
 }

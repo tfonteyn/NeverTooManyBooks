@@ -327,11 +327,11 @@
     <string name="list_and">y</string>
     <string name="list_element">• %s</string>
     <string name="list_element_name_colon_value">• %1$s: %2$s</string>
-    <string name="lt_info">Está aplicación utiliza LibraryThing como fuente de información sobre series de libros, así como para portadas alternativas. Para poder utilizar estas opciones necesita estar registrado en LibraryThing (gratis) y solicitar una clave de desarrollador de LibraryThing (también gratuita).</string>
-    <string name="lt_key_is_correct">Su clave de desarrollador de LibraryThing es válida.</string>
-    <string name="lt_key_is_incorrect">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
-    <string name="lt_lbl_key">Una vez obtenga la clave de desarrollador, introdúzcala a continuación. Se utilizará para obtener datos adicionales.</string>
-    <string name="lt_url_text_dev_key">Solicitar clave de desarrollador</string>
+    <string name="X_lt_info">Está aplicación utiliza LibraryThing como fuente de información sobre series de libros, así como para portadas alternativas. Para poder utilizar estas opciones necesita estar registrado en LibraryThing (gratis) y solicitar una clave de desarrollador de LibraryThing (también gratuita).</string>
+    <string name="X_lt_key_is_correct">Su clave de desarrollador de LibraryThing es válida.</string>
+    <string name="X_lt_key_is_incorrect">Su clave de desarrollador de LibraryThing es incorrecta, o no se  ha podido contactar para verificarla.</string>
+    <string name="X_lt_lbl_key">Una vez obtenga la clave de desarrollador, introdúzcala a continuación. Se utilizará para obtener datos adicionales.</string>
+    <string name="X_lt_url_text_dev_key">Solicitar clave de desarrollador</string>
     <string name="X_lt_url_text_register">Registro en LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Acerca de esta App</string>
