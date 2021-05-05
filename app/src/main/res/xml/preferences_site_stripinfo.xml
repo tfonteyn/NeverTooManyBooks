@@ -30,7 +30,7 @@
             android:key="stripinfo.enabled"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/enabled" />
+            android:title="@string/menu_enable_sync_options" />
 
         <EditTextPreference
             android:defaultValue=""

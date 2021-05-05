@@ -29,7 +29,7 @@
             android:key="calibre.enabled"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/enabled" />
+            android:title="@string/menu_enable_sync_options" />
 
         <Preference
             android:dependency="calibre.enabled"

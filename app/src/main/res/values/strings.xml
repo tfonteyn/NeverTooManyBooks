@@ -1040,6 +1040,8 @@
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="menu_view_book_at">View on…</string>
 
+    <!-- Whether the menu/options for a particular 'Sync' site are enabled or hidden. -->
+    <string name="menu_enable_sync_options">Enable sync options</string>
 
     <!-- booklist screen - context menu for Author/Series/... -->
     <string name="menu_set_complete">Set “complete”</string>
@@ -1764,5 +1766,7 @@
     <string name="lbl_edit_settings">Edit settings</string>
 
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
+    <string name="lbl_exporting">Exporting</string>
+    <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
 
 </resources>
