@@ -118,10 +118,13 @@ public final class MenuHelper {
         if (oConfig.isPresent()) {
             final Domain domain = oConfig.get().getExternalIdDomain();
             if (domain != null) {
-                final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
-                        Site.Type.Data.getSite(oConfig.get().getEngineId()).getSearchEngine();
+                final SearchEngine.ViewBookByExternalId searchEngine =
+                        (SearchEngine.ViewBookByExternalId)
+                                Site.Type.Data.getSite(oConfig.get().getEngineId())
+                                              .getSearchEngine();
 
-                final String url = searchEngine.createUrl(rowData.getString(domain.getName()));
+                final String externalId = rowData.getString(domain.getName());
+                final String url = searchEngine.createBrowserUrl(externalId);
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }

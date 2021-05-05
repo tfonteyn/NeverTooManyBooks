@@ -361,17 +361,6 @@ public interface SearchEngine {
             extends SearchEngine {
 
         /**
-         * Create a url to search the website with the external id.
-         *
-         * @param externalId to search for
-         *
-         * @return url
-         */
-        @AnyThread
-        @NonNull
-        String createUrl(@NonNull String externalId);
-
-        /**
          * Called by the {@link SearchCoordinator#search}.
          *
          * @param externalId  the external id (as a String) for this particular search site.
@@ -387,6 +376,21 @@ public interface SearchEngine {
                 throws StorageException,
                        SearchException,
                        CredentialsException;
+    }
+
+    interface ViewBookByExternalId
+            extends SearchEngine {
+
+        /**
+         * Create a url to open a book on the website with the external id.
+         *
+         * @param externalId to open
+         *
+         * @return url
+         */
+        @AnyThread
+        @NonNull
+        String createBrowserUrl(@NonNull String externalId);
     }
 
     /** Optional. Every engine should really implement this. */

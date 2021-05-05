@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.ByBarcode {
 
     /**
@@ -161,7 +162,7 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 

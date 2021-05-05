@@ -110,6 +110,7 @@ public class OpenLibrarySearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByIsbn {
 
     /**
@@ -190,7 +191,7 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + "/books/" + externalId;
     }
 

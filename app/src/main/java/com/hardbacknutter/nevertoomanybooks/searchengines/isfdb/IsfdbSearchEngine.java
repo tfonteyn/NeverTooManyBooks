@@ -86,6 +86,7 @@ public class IsfdbSearchEngine
         implements SearchEngine.ByText,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
@@ -248,7 +249,7 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + CGI_BIN + URL_PL_CGI + "?" + externalId;
     }
 

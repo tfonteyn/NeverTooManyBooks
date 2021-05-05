@@ -65,6 +65,7 @@ public class GoodreadsSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId,
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
@@ -114,7 +115,7 @@ public class GoodreadsSearchEngine
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + "/book/show/" + externalId;
     }
 

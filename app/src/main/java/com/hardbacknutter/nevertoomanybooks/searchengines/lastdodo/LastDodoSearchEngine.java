@@ -57,7 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
-                   SearchEngine.ByExternalId {
+                   SearchEngine.ByExternalId,
+                   SearchEngine.ViewBookByExternalId {
 
     /**
      * Param 1: external book ID; really a 'long'.
@@ -97,7 +98,7 @@ public class LastDodoSearchEngine
 
     @NonNull
     @Override
-    public String createUrl(@NonNull final String externalId) {
+    public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
     }
 
