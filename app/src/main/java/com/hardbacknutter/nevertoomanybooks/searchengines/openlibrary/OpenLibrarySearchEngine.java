@@ -92,8 +92,8 @@ import com.hardbacknutter.org.json.JSONObject;
  *          The response seems to (mostly?) contain the same info as from 'data' but with
  *          additional fields. Some fields have a different schema: "identifiers" with
  *          "data" has sub object with all identifiers (including isbn).
- *          But "identifiers" with "detail" has no isbn's.
- *          Instead isbn's are on the same level as "identifiers" itself.<br>
+ *          But "identifiers" with "detail" has no isbn number.
+ *          Instead isbn numbers are on the same level as "identifiers" itself.<br>
  *          PRO: contains language and series tags!
  *      </li>
  * </ul>

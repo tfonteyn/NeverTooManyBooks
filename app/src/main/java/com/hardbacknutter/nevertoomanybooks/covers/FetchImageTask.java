@@ -82,8 +82,8 @@ class FetchImageTask
         mFileManager = fileManager;
     }
 
-    public boolean start() {
-        return execute();
+    public void start() {
+        execute();
     }
 
     @NonNull

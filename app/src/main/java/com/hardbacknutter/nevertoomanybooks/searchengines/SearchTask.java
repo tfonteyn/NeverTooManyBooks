@@ -170,8 +170,8 @@ public class SearchTask
         }
     }
 
-    boolean startSearch() {
-        return execute();
+    void startSearch() {
+        execute();
     }
 
     @NonNull

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,12 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.xml;
+package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.function.Consumer;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -39,44 +37,22 @@ public class ElementContext {
     /** Attributes on this tag. */
     @NonNull
     private final Attributes mAttributes;
-
-    /** not used for now. */
-    @SuppressWarnings("unused")
-    @NonNull
-    private final String mUri;
-
-    /** not used for now. */
-    @SuppressWarnings("unused")
-    @NonNull
-    private final String mQName;
-
     /** the inner-tag text. */
     @NonNull
     private final String mText;
-
-    /** the mBody/text between start and end of the tag. */
+    /** the body/text between start and end of the tag. */
     private String mBody;
-
     /** filter on this tag. */
     @Nullable
     private XmlFilter mFilter;
 
     /**
-     * the user argument fed into the {@link XmlFilter#setStartAction(Consumer, Object)}
-     * and {@link XmlFilter#setEndAction(Consumer, Object)}.
-     */
-    @Nullable
-    private Object mUserArg;
-
-    /**
      * @param filter to use for this tag.
      */
-    ElementContext(@NonNull final XmlFilter filter) {
+    public ElementContext(@NonNull final XmlFilter filter) {
         mFilter = filter;
-        // the others as per SAX promises, see full constructor java doc.
-        mUri = "";
+
         mLocalName = "";
-        mQName = "";
         mAttributes = new AttributesImpl();
         mText = "";
     }
@@ -84,29 +60,19 @@ public class ElementContext {
     /**
      * Same arguments coming from the SAX Handler + the current inter-tag text.
      *
-     * @param uri        The Namespace URI, or the empty string if the
-     *                   element has no Namespace URI or if Namespace
-     *                   processing is not being performed.
      * @param localName  The local name (without prefix), or the
      *                   empty string if Namespace processing is not being
      *                   performed.
-     * @param qName      The qualified name (with prefix), or the
-     *                   empty string if qualified names are not available.
      * @param attributes The mAttributes attached to the element.  If
      *                   there are no mAttributes, it shall be an empty
      *                   Attributes object.
      * @param text       current inter-tag text
      */
-    ElementContext(@NonNull final String uri,
-                   @NonNull final String localName,
-                   @NonNull final String qName,
-                   @NonNull final Attributes attributes,
-                   @NonNull final String text) {
-        mUri = uri;
+    public ElementContext(@NonNull final String localName,
+                          @NonNull final Attributes attributes,
+                          @NonNull final String text) {
         mLocalName = localName;
-        mQName = qName;
         mAttributes = attributes;
-
         mText = text;
     }
 
@@ -142,16 +108,6 @@ public class ElementContext {
      */
     public void setBody(@NonNull final String body) {
         mBody = body.trim();
-    }
-
-    @Nullable
-    public Object getUserArg() {
-        return mUserArg;
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public void setUserArg(@Nullable final Object userArg) {
-        mUserArg = userArg;
     }
 
     /**

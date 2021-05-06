@@ -105,12 +105,10 @@ abstract class TaskBase<Result>
      * Execute the task.
      * Protected access to force implementations to have a "good method name" to start the task.
      *
-     * @return {@code true} if the task was started.
-     *
      * @throws IllegalStateException if already/still running.
      */
     @UiThread
-    protected boolean execute() {
+    protected void execute() {
         synchronized (this) {
             if (mStatus != Status.Created && mStatus != Status.Finished) {
                 throw new IllegalStateException("task already running");
@@ -139,8 +137,6 @@ abstract class TaskBase<Result>
 
             mStatus = Status.Finished;
         });
-
-        return true;
     }
 
     /**

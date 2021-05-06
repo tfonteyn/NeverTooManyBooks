@@ -461,7 +461,7 @@ public final class ParseUtils {
     }
 
     /**
-     * Normalize a given string to contain only ASCII characters for flexible text comparision.
+     * Normalize a given string to contain only ASCII characters for flexible text comparison.
      *
      * @param text to normalize
      *

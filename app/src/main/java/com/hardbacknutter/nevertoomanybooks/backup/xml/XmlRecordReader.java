@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,9 +53,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -76,13 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
  * <ul>Supports:
@@ -105,9 +98,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class XmlRecordReader
         implements RecordReader {
 
-    /** Log tag. */
-    private static final String TAG = "XmlRecordReader";
-
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD = "Unable to process XML ";
 
     @Nullable
@@ -122,7 +112,7 @@ public class XmlRecordReader
     @NonNull
     private final Set<RecordType> mImportEntriesAllowed;
     /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
-    private TagInfo mTag;
+    private TagInfo mCurrentTag;
 
     /**
      * Constructor.
@@ -189,21 +179,10 @@ public class XmlRecordReader
                          @NonNull final EntityReader<String> accessor)
             throws ImportException, IOException {
 
-        // we need an uber-root to hang our tree on.
-        final XmlFilter rootFilter = new XmlFilter("");
-
-        // Current version filters
-        buildFilters(rootFilter, accessor);
-
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final XmlResponseParser handler = new XmlResponseParser(rootFilter);
+        final DefaultHandler handler = new XmlFilterHandler(buildFilters(accessor));
 
         try {
-            // Alternative which saves us from having to use BufferedReaderNoClose
-//            final String content = record.asString();
-//            final StringReader reader = new StringReader(content);
-//            final InputSource source = new InputSource(reader);
-
             // Don't close this stream
             final InputStream is = record.getInputStream();
             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -218,156 +197,139 @@ public class XmlRecordReader
             throw new IllegalStateException(e);
 
         } catch (@NonNull final SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "fromXml", e);
-            }
             // wrap parser exceptions in an ImportException /
             throw new ImportException(e);
         }
     }
 
-    private void buildFilters(@NonNull final XmlFilter rootFilter,
-                              @NonNull final EntityReader<String> accessor) {
+    private XmlFilter buildFilters(@NonNull final EntityReader<String> accessor) {
         final String listRootElement = accessor.getRootTag();
         final String rootElement = accessor.getElementTag();
+
         // used to read in Set/List data
         final Collection<String> currentStringList = new ArrayList<>();
 
+        final XmlFilter rootFilter = new XmlFilter();
         // A new element under the root
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement)
-                 .setStartAction(elementContext -> {
-                     // use as top-tag
-                     mTag = new TagInfo(elementContext);
-                     // we only have a version on the top tag, not on every tag.
-                     final String version = elementContext.getAttributes()
-                                                          .getValue(XmlUtils.ATTR_VERSION);
-
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Log.d(TAG, "fromXml|NEW-ELEMENT"
-                                    + "|localName=" + elementContext.getLocalName()
-                                    + "|tag=" + mTag);
-                     }
-                     accessor.startElement(version == null ? 0 : Integer.parseInt(version), mTag);
-                 })
-                 .setEndAction(elementContext -> accessor.endElement());
+        rootFilter.addFilter(listRootElement, rootElement)
+                  .setStartAction(elementContext -> {
+                      // use as top-tag
+                      mCurrentTag = new TagInfo(elementContext);
+                      // we only have a version on the top tag, not on every tag.
+                      final String version = elementContext.getAttributes()
+                                                           .getValue(XmlUtils.ATTR_VERSION);
+                      accessor.startElement(version == null ? 0 : Integer.parseInt(version),
+                                            mCurrentTag);
+                  })
+                  .setEndAction(elementContext -> accessor.endElement());
 
         // typed tag starts. for both attribute and body based elements.
         final Consumer<ElementContext> startTypedTag = elementContext -> {
-            mTagStack.push(mTag);
-            mTag = new TagInfo(elementContext);
+            mTagStack.push(mCurrentTag);
+            mCurrentTag = new TagInfo(elementContext);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "fromXml|startTypedTag"
-                           + "|localName=" + elementContext.getLocalName()
-                           + "|tag=" + mTag);
-            }
             // if we have a value attribute, this tag is done. Handle here.
-            if (mTag.value != null) {
-                switch (mTag.type) {
+            if (mCurrentTag.value != null) {
+                switch (mCurrentTag.type) {
                     case XmlUtils.TAG_STRING:
                         // attribute Strings are encoded.
-                        accessor.putString(mTag.name, XmlUtils.decode(mTag.value));
+                        accessor.putString(mCurrentTag.name, XmlUtils.decode(mCurrentTag.value));
                         break;
 
                     case XmlUtils.TAG_BOOLEAN:
-                        accessor.putBoolean(mTag.name, Boolean.parseBoolean(mTag.value));
+                        accessor.putBoolean(mCurrentTag.name, Boolean.parseBoolean(
+                                mCurrentTag.value));
                         break;
 
                     case XmlUtils.TAG_INT:
-                        accessor.putInt(mTag.name, Integer.parseInt(mTag.value));
+                        accessor.putInt(mCurrentTag.name, Integer.parseInt(mCurrentTag.value));
                         break;
 
                     case XmlUtils.TAG_LONG:
-                        accessor.putLong(mTag.name, Long.parseLong(mTag.value));
+                        accessor.putLong(mCurrentTag.name, Long.parseLong(mCurrentTag.value));
                         break;
 
                     case XmlUtils.TAG_FLOAT:
-                        accessor.putFloat(mTag.name,
-                                          ParseUtils.parseFloat(mTag.value, mUserLocale));
+                        accessor.putFloat(mCurrentTag.name, ParseUtils.parseFloat(
+                                mCurrentTag.value, mUserLocale));
                         break;
 
                     case XmlUtils.TAG_DOUBLE:
-                        accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value,
-                                                                             mUserLocale));
+                        accessor.putDouble(mCurrentTag.name, ParseUtils.parseDouble(
+                                mCurrentTag.value, mUserLocale));
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
-                mTag = mTagStack.pop();
+                mCurrentTag = mTagStack.pop();
             }
         };
 
         // the end of a typed tag with a body
         final Consumer<ElementContext> endTypedTag = elementContext -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "fromXml|endTypedTag"
-                           + "|localName=" + elementContext.getLocalName()
-                           + "|tag=" + mTag);
-            }
             try {
-                switch (mTag.type) {
+                switch (mCurrentTag.type) {
                     case XmlUtils.TAG_STRING:
                         // body Strings use CDATA
-                        accessor.putString(mTag.name, elementContext.getBody());
+                        accessor.putString(mCurrentTag.name, elementContext.getBody());
                         break;
 
                     case XmlUtils.TAG_SET:
-                        accessor.putStringSet(mTag.name, currentStringList);
+                        accessor.putStringSet(mCurrentTag.name, currentStringList);
                         // cleanup, ready for the next Set
                         currentStringList.clear();
                         break;
 
                     case XmlUtils.TAG_LIST:
-                        accessor.putStringList(mTag.name, currentStringList);
+                        accessor.putStringList(mCurrentTag.name, currentStringList);
                         // cleanup, ready for the next List
                         currentStringList.clear();
                         break;
 
                     case XmlUtils.TAG_SERIALIZABLE:
-                        accessor.putSerializable(mTag.name, Base64.decode(elementContext.getBody(),
-                                                                          Base64.DEFAULT));
+                        accessor.putSerializable(mCurrentTag.name,
+                                                 Base64.decode(elementContext.getBody(),
+                                                               Base64.DEFAULT));
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
-                mTag = mTagStack.pop();
+                mCurrentTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mTag.name
-                                           + '(' + mTag.type + ')', e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mCurrentTag.name
+                                           + '(' + mCurrentTag.type + ')', e);
             }
         };
 
         // typed tags that only use a value attribute only need action on the start of a tag
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_BOOLEAN)
-                 .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_INT)
-                 .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_LONG)
-                 .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_FLOAT)
-                 .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_DOUBLE)
-                 .setStartAction(startTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_BOOLEAN)
+                  .setStartAction(startTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_INT)
+                  .setStartAction(startTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LONG)
+                  .setStartAction(startTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_FLOAT)
+                  .setStartAction(startTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_DOUBLE)
+                  .setStartAction(startTypedTag);
 
         // typed tags that have bodies.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_STRING)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_SET)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_LIST)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_SERIALIZABLE)
-                 .setStartAction(startTypedTag)
-                 .setEndAction(endTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_STRING)
+                  .setStartAction(startTypedTag)
+                  .setEndAction(endTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_SET)
+                  .setStartAction(startTypedTag)
+                  .setEndAction(endTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LIST)
+                  .setStartAction(startTypedTag)
+                  .setEndAction(endTypedTag);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_SERIALIZABLE)
+                  .setStartAction(startTypedTag)
+                  .setEndAction(endTypedTag);
 
         /*
          * The RecordWriter is generating List/Set tags with String/Int sub tags properly,
@@ -375,48 +337,35 @@ public class XmlRecordReader
          */
         // set/list elements with attributes.
         final Consumer<ElementContext> startElementInCollection = elementContext -> {
-            mTagStack.push(mTag);
-            mTag = new TagInfo(elementContext);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "fromXml|startElementInCollection"
-                           + "|localName=" + elementContext.getLocalName()
-                           + "|tag=" + mTag);
-            }
+            mTagStack.push(mCurrentTag);
+            mCurrentTag = new TagInfo(elementContext);
 
             // if we have a value attribute, this tag is done. Handle here.
-            if (mTag.value != null) {
+            if (mCurrentTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
-                switch (mTag.type) {
+                switch (mCurrentTag.type) {
                     case XmlUtils.TAG_BOOLEAN:
                     case XmlUtils.TAG_INT:
                     case XmlUtils.TAG_LONG:
                     case XmlUtils.TAG_FLOAT:
                     case XmlUtils.TAG_DOUBLE:
-                        currentStringList.add(mTag.value);
+                        currentStringList.add(mCurrentTag.value);
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
-                mTag = mTagStack.pop();
+                mCurrentTag = mTagStack.pop();
             }
         };
 
         // set/list elements with bodies.
         final Consumer<ElementContext> endElementInCollection = elementContext -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "fromXml|endElementInCollection"
-                           + "|localName=`" + elementContext.getLocalName()
-                           + "|tag=" + mTag);
-            }
-
             // handle tags with bodies.
             try {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
-                switch (mTag.type) {
+                switch (mCurrentTag.type) {
                     // No support for list/set inside a list/set (no point)
                     case XmlUtils.TAG_SERIALIZABLE:
                         // serializable is indeed just added as a string...
@@ -427,37 +376,34 @@ public class XmlRecordReader
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
-                mTag = mTagStack.pop();
+                mCurrentTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mTag, e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mCurrentTag, e);
             }
         };
 
 
         // Set<String>. The String's are body based.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.TAG_SET, XmlUtils.TAG_STRING)
-                 .setStartAction(startElementInCollection)
-                 .setEndAction(endElementInCollection);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_SET, XmlUtils.TAG_STRING)
+                  .setStartAction(startElementInCollection)
+                  .setEndAction(endElementInCollection);
         // List<String>. The String's are body based.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.TAG_LIST, XmlUtils.TAG_STRING)
-                 .setStartAction(startElementInCollection)
-                 .setEndAction(endElementInCollection);
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LIST, XmlUtils.TAG_STRING)
+                  .setStartAction(startElementInCollection)
+                  .setEndAction(endElementInCollection);
 
-        // Set<Integer>. The int's are attribute based.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.TAG_SET, XmlUtils.TAG_INT)
-                 .setStartAction(startElementInCollection);
-        // List<Integer>. The int's are attribute based.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlUtils.TAG_LIST, XmlUtils.TAG_INT)
-                 .setStartAction(startElementInCollection);
+        // Set<Integer>. The ints are attribute based.
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_SET, XmlUtils.TAG_INT)
+                  .setStartAction(startElementInCollection);
+        // List<Integer>. The ints are attribute based.
+        rootFilter.addFilter(listRootElement, rootElement, XmlUtils.TAG_LIST, XmlUtils.TAG_INT)
+                  .setStartAction(startElementInCollection);
+
+        return rootFilter;
     }
 
     /**
@@ -485,13 +431,17 @@ public class XmlRecordReader
          * @param version of the XML schema for this element, or 0 if not present
          * @param tag     the info about the top tag
          */
-        void startElement(int version,
-                          @NonNull TagInfo tag);
+        default void startElement(final int version,
+                                  @NonNull final TagInfo tag) {
+
+        }
 
         /**
          * Callback at the end of each element in the list.
          */
-        void endElement();
+        default void endElement() {
+
+        }
 
         /**
          * Subtag of an element consisting of name/value pairs for each potentially supported type.
@@ -575,7 +525,6 @@ public class XmlRecordReader
         @Nullable
         final String value;
 
-
         /**
          * Constructor.
          *
@@ -593,8 +542,8 @@ public class XmlRecordReader
             if (idStr != null) {
                 try {
                     tmpId = Integer.parseInt(idStr);
-                } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(TAG, e, "attr=" + name, "idStr=" + idStr);
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
                 }
             }
             id = tmpId;
@@ -638,15 +587,6 @@ public class XmlRecordReader
         @NonNull
         public String getElementTag() {
             return RecordType.MetaData.getName();
-        }
-
-        @Override
-        public void startElement(final int version,
-                                 @NonNull final TagInfo tag) {
-        }
-
-        @Override
-        public void endElement() {
         }
 
         @Override
@@ -722,15 +662,6 @@ public class XmlRecordReader
         @NonNull
         public String getElementTag() {
             return RecordType.Preferences.getName();
-        }
-
-        @Override
-        public void startElement(final int version,
-                                 @NonNull final TagInfo tag) {
-        }
-
-        @Override
-        public void endElement() {
         }
 
         @Override
@@ -853,8 +784,6 @@ public class XmlRecordReader
                 // backwards compatibility
                 uuid = tag.name;
             }
-
-            SanityCheck.requireValue(uuid, "uuid");
 
             if (BuiltinStyle.isBuiltin(uuid)) {
                 //noinspection ConstantConditions

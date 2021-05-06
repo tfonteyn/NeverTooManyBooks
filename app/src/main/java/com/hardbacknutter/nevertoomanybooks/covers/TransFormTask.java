@@ -66,10 +66,9 @@ public class TransFormTask
         super(R.id.TASK_ID_IMAGE_TRANSFORMATION, TAG);
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    boolean transform(@NonNull final Transformation transformation) {
+    void transform(@NonNull final Transformation transformation) {
         mTransformation = transformation;
-        return execute();
+        execute();
     }
 
     @NonNull

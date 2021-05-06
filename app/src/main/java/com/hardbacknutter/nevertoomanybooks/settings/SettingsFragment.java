@@ -335,7 +335,7 @@ public class SettingsFragment
      * Change the icon color depending on the preference being scheduled for change on restart.
      * <p>
      * TODO: this is not ideal as it does not explain to the user WHY the color is changed
-     * Check if its's possible to overlay the icon with another icon (showing e.g. a clock)
+     * Check if it's possible to overlay the icon with another icon (showing e.g. a clock)
      *
      * @param preference   to modify
      * @param schedulerKey to reflect

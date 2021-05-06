@@ -50,7 +50,6 @@ public class StyleSharedPreferences
      *
      * @deprecated will be removed soon.
      */
-    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     private static final String OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED = "style.booklist.preferred";
 

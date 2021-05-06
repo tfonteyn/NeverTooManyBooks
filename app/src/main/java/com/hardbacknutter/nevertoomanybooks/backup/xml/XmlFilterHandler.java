@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.xml;
-
-import android.util.Log;
+package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -30,22 +28,8 @@ import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-
-/**
- * Base class for parsing the output any web request that returns an XML response.
- * <strong>Note:</strong> this does not include general web page parsing since they often
- * do not conform to XML formatting standards.
- * <p>
- * This class is used with the {@link XmlFilter} class to call user-defined code at
- * specific points in an XML file.
- */
-public class XmlResponseParser
+public class XmlFilterHandler
         extends DefaultHandler {
-
-    /** Log tag. */
-    private static final String TAG = "XmlResponseParser";
 
     /** Temporary storage for inter-tag text. */
     @SuppressWarnings("StringBufferField")
@@ -58,7 +42,7 @@ public class XmlResponseParser
      *
      * @param rootFilter Filter tree to use
      */
-    public XmlResponseParser(@NonNull final XmlFilter rootFilter) {
+    XmlFilterHandler(@NonNull final XmlFilter rootFilter) {
         // Build the root context and add to hierarchy.
         final ElementContext tag = new ElementContext(rootFilter);
         mParents.add(tag);
@@ -73,12 +57,8 @@ public class XmlResponseParser
                              @NonNull final String localName,
                              @NonNull final String qName,
                              @NonNull final Attributes attributes) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-            Log.d(TAG, "startElement|localName=`" + localName + '`');
-        }
         // Create a new context for this new tag saving the current inter-tag text for later
-        final ElementContext tag = new ElementContext(uri, localName, qName, attributes,
+        final ElementContext tag = new ElementContext(localName, attributes,
                                                       mBuilder.toString());
 
         // Get the current element

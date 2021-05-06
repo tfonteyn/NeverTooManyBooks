@@ -111,7 +111,7 @@ public class HtmlFormatter<T>
         // Only do web & email links. Most likely all we'll ever need.
         Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
-        // Add back the HTML spannable's
+        // Add the HTML spannable elements back
         for (final URLSpan span : currentSpans) {
             buffer.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), 0);
         }

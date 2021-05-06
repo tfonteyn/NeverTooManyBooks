@@ -526,7 +526,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *      <updated>2019-07-17T09:02:42.000Z</updated>
  *      <category scheme='http://schemas.google.com/g/2005#kind'
  *              term='http://schemas.google.com/books/2008#volume'/>
- *      <title type='text'>Kavin's World</title>
+ *      <title type='text'>World</title>
  *      <link rel='http://schemas.google.com/books/2008/thumbnail' type='image/x-unknown'
  *          href='http://books.google.com/books/content?id=Tp0sOVqefewC&amp;printsec=frontcover
  *          &amp;img=1&amp;zoom=5&amp;edge=curl&amp;source=gbs_gdata'/>

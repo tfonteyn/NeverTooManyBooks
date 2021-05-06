@@ -201,7 +201,7 @@ public class SearchBookByTextFragment
         //sanity check
         final String titleSearchText = mCoordinator.getTitleSearchText();
         if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_one_field,
+            Snackbar.make(mVb.getRoot(), R.string.warning_requires_at_least_1_field,
                           Snackbar.LENGTH_LONG).show();
             return false;
         }

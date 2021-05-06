@@ -446,7 +446,7 @@ public class CalibreContentServer {
             }
 
             // If we have vl info, process it
-            // If we don't; the library will keep any vl's defined previously
+            // If we don't; the library will keep any vl defined previously
             if (vlibs != null) {
                 processVirtualLibraries(libraryDao, library, vlibs);
             }

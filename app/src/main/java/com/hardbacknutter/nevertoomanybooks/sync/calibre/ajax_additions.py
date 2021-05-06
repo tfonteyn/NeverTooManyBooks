@@ -1,8 +1,6 @@
 Installing the Calibre extension:
 
-$CROOT=/usr/lib/calibre/
-
-Edit  $CROOT/calibre/srv/ajax.py, and look for the line
+Edit  /usr/lib/calibre/calibre/srv/ajax.py, and look for the line
 
     from calibre.srv.errors import HTTPNotFound, BookNotFound
 
@@ -12,7 +10,7 @@ Edit  $CROOT/calibre/srv/ajax.py, and look for the line
 
 At the end of the file:
 - REPLACE the endpoint '/ajax/library-info'
-- ADD the endpoint '/ntmb/virtual-libraries-for-books...
+- ADD the endpoint '/ntmb/virtual-libraries-for-books'
 
 Recompile (either with 'python2' or 'python3' depending on platform)
     python2 -m py_compile ajax.py

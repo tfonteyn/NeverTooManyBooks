@@ -61,7 +61,8 @@ class SingleFileDownloadTask
         if (mBook.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             return false;
         }
-        return execute();
+        execute();
+        return true;
     }
 
     @NonNull

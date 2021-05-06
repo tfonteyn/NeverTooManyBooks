@@ -96,7 +96,7 @@ public class EditBookPublicationFragment
 
         final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
 
-        // These FieldFormatter's can be shared between multiple fields.
+        // These FieldFormatters can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
 
 

@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
- * Fetch alternative edition isbn's.
+ * Fetch alternative edition isbn numbers.
  * <p>
  * The sites are contacted one by one, in the order as set in user preferences.
  */

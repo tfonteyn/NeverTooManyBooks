@@ -64,7 +64,7 @@ public class EditBookExternalIdFragment
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
-        // These FieldFormatter's can be shared between multiple fields.
+        // These FieldFormatters can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
         fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter, true),

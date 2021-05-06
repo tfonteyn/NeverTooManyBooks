@@ -537,7 +537,7 @@ public class EditBookTocFragment
      */
     private void onIsfdbEditions(@NonNull final FinishedMessage<List<Edition>> message) {
         if (message.isNewEvent()) {
-            // Stores the url's locally as the user might want to try the next in line
+            // Stores the urls locally as the user might want to try the next in line
             mIsfdbEditions.clear();
             final List<Edition> result = message.getResult();
             if (result != null) {

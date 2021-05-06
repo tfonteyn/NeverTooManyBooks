@@ -58,9 +58,9 @@ public class ArchiveReaderTask
      * @param helper import configuration
      */
     @UiThread
-    public boolean start(@NonNull final ImportHelper helper) {
+    public void start(@NonNull final ImportHelper helper) {
         mHelper = helper;
-        return execute();
+        execute();
     }
 
     @NonNull

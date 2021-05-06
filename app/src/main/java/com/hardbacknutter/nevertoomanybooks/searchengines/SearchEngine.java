@@ -564,7 +564,7 @@ public interface SearchEngine {
          *
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
-         * @return a list of isbn's of alternative editions of our original isbn, can be empty.
+         * @return a list of isbn numbers for alternative editions of the original, can be empty.
          */
         @WorkerThread
         @NonNull

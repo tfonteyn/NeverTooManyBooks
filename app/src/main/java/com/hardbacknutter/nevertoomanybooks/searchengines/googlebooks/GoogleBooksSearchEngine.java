@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
  * <p>
- * The url's and xml formats used here are deprecated (but still works fine)
+ * The urls and xml formats used here are deprecated (but still works fine)
  * https://developers.google.com/gdata/docs/directory
  * https://developers.google.com/gdata/docs/2.0/reference
  * <p>

@@ -372,7 +372,6 @@ public class SearchCoordinator
      *                    The key is the engine id,
      *                    The value us the value of the external domain for that engine
      */
-    @SuppressWarnings("WeakerAccess")
     public void setExternalIds(@Nullable final SparseArray<String> externalIds) {
         mExternalIdSearchText = externalIds;
     }
@@ -401,7 +400,6 @@ public class SearchCoordinator
      * @param strictIsbn     Flag: set to {@link false} to allow invalid isbn numbers
      *                       to be passed to the searches
      */
-    @SuppressWarnings("WeakerAccess")
     public void setIsbnSearchText(@NonNull final String isbnSearchText,
                                   final boolean strictIsbn) {
         mIsbnSearchText = isbnSearchText;
@@ -692,7 +690,8 @@ public class SearchCoordinator
             Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName());
         }
 
-        return task.startSearch();
+        task.startSearch();
+        return true;
     }
 
     /**
@@ -807,7 +806,7 @@ public class SearchCoordinator
                 accumulateList(key, siteData);
 
             } else {
-                //FIXME: doing this will for example put the goodreads LONG id in the bundle
+                //FIXME: doing this will for example put a LONG id in the bundle
                 // as a String. This is as-designed, but you do get an Exception in the log
                 // when the data gets to the EditBook formatters. Harmless, but not clean.
 

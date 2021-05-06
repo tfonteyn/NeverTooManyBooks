@@ -650,7 +650,7 @@ public class StripInfoSearchEngine
                     // <h4>Dit is een bundeling. De inhoud komt uit volgende strips:</h4>
                     final Node header = sectionContent.selectFirst("h4");
                     if (header != null && header.toString().contains("bundeling")) {
-                        // the div's inside Element 'row' should now contain the TOC.
+                        // the div elements inside 'row' should now contain the TOC.
                         final ArrayList<TocEntry> toc = new ArrayList<>();
                         for (final Element entry : sectionContent.select("div div")) {
                             String number = null;

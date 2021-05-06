@@ -323,7 +323,7 @@ public class Series
             }
         }
 
-        // did't match the specific pattern, handle as normal.
+        // didn't match the specific pattern, handle as normal.
         return from(text);
     }
 

@@ -286,7 +286,7 @@ public class Booklist
 
     /**
      * Expand or collapse <strong>all</strong> nodes.
-     * The internal cursor will be null'd but it's still the clients responsibility
+     * The internal cursor will be set to {@code null} but it's still the clients responsibility
      * to refresh their adapter.
      *
      * @param topLevel the desired top-level which must be kept visible

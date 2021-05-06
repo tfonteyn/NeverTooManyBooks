@@ -59,9 +59,9 @@ public class ArchiveWriterTask
      *
      * @param exportHelper with uri/options
      */
-    public boolean start(@NonNull final ExportHelper exportHelper) {
+    public void start(@NonNull final ExportHelper exportHelper) {
         mHelper = exportHelper;
-        return execute();
+        execute();
     }
 
     @NonNull

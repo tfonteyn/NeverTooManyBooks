@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils.xml;
+package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,13 +33,11 @@ import java.util.function.Consumer;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 /**
- * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
- * thrown away but we do need to ensure we get the tags from the right context. The XmlFilter
- * objects build a tree of filters and XmlHandler objects that make this process more manageable.
+ * The XmlFilter objects build a tree of filters and XmlHandler objects
+ * that make this process more manageable.
  */
-public class XmlFilter {
+final class XmlFilter {
 
-    private static final String NO_FILTERS = "no filters";
     /** The tag for this specific filter. */
     @NonNull
     private final String mTagName;
@@ -52,89 +50,61 @@ public class XmlFilter {
     /** Action to perform, if any, when the associated tag is started. */
     @Nullable
     private Consumer<ElementContext> mStartAction;
-    /** Optional parameter put in context before action is called. */
-    @Nullable
-    private Object mStartArg;
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
     private Consumer<ElementContext> mEndAction;
-    /** Optional parameter put in context before action is called. */
-    @Nullable
-    private Object mEndArg;
+
+    /**
+     * Constructor for the root tag.
+     */
+    XmlFilter() {
+        mTagName = "";
+    }
 
     /**
      * Constructor.
      *
      * @param pattern The tag that this filter handles
      */
-    public XmlFilter(@NonNull final String pattern) {
+    private XmlFilter(@NonNull final String pattern) {
         mTagName = pattern;
     }
 
     /**
-     * Static method to add a filter to a passed tree and return the matching XmlFilter.
+     * Add a filter to the tree and return the matching XmlFilter.
      *
-     * @param root    Root XmlFilter object.
      * @param filters Names of tags to add to tree, if not present.
      *
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    public static XmlFilter buildFilter(@NonNull final XmlFilter root,
-                                        @NonNull final String... filters) {
+    public XmlFilter addFilter(@NonNull final String... filters) {
         if (filters.length <= 0) {
-            throw new IllegalArgumentException(NO_FILTERS);
+            throw new IllegalArgumentException();
         }
-        return buildFilter(root, 0, Arrays.asList(filters).iterator());
+        return addFilter(Arrays.asList(filters).iterator());
     }
 
     /**
-     * Static method to add a filter to a passed tree and return the matching XmlFilter.
-     *
-     * @param root    Root XmlFilter object.
-     * @param filters Names of tags to add to tree, if not present.
-     *
-     * @return The filter matching the final tag name passed.
-     */
-    @NonNull
-    public static XmlFilter buildFilter(@NonNull final XmlFilter root,
-                                        @NonNull final Collection<String> filters) {
-        if (filters.isEmpty()) {
-            throw new IllegalArgumentException(NO_FILTERS);
-        }
-        return buildFilter(root, 0, filters.iterator());
-    }
-
-    /**
-     * Internal implementation of method to add a filter to a passed tree and return
+     * Internal implementation of method to add a filter to the tree and return
      * the matching XmlFilter.
      * This is called recursively to process the filter list.
      *
-     * @param root     Root XmlFilter object.
-     * @param depth    Recursion depth
      * @param iterator Names of tags to add to tree, if not present.
      *
      * @return The filter matching the final tag name passed.
      */
     @NonNull
-    private static XmlFilter buildFilter(@NonNull final XmlFilter root,
-                                         final int depth,
-                                         @NonNull final Iterator<String> iterator) {
-        //if (!root.matches(filters[depth]))
-        //    throw new RuntimeException("Filter at depth=" + depth +
-        //                               " does not match first filter parameter");
-
+    private XmlFilter addFilter(@NonNull final Iterator<String> iterator) {
         final String curr = iterator.next();
-        XmlFilter sub = root.getSubFilter(curr);
+        XmlFilter sub = getSubFilter(curr);
         if (sub == null) {
             sub = new XmlFilter(curr);
-            root.addFilter(sub);
+            addFilter(sub);
         }
         if (iterator.hasNext()) {
-            // We are still finding leaf
-            return buildFilter(sub, depth + 1, iterator);
+            return sub.addFilter(iterator);
         } else {
-            // At end
             return sub;
         }
     }
@@ -157,7 +127,7 @@ public class XmlFilter {
      * @param context Current ElementContext
      */
     @Nullable
-    XmlFilter getSubFilter(@NonNull final ElementContext context) {
+    public XmlFilter getSubFilter(@NonNull final ElementContext context) {
         return getSubFilter(context.getLocalName());
     }
 
@@ -183,9 +153,8 @@ public class XmlFilter {
      *
      * @param context Current ElementContext
      */
-    void processStart(@NonNull final ElementContext context) {
+    public void processStart(@NonNull final ElementContext context) {
         if (mStartAction != null) {
-            context.setUserArg(mStartArg);
             mStartAction.accept(context);
         }
     }
@@ -195,9 +164,8 @@ public class XmlFilter {
      *
      * @param context Current ElementContext
      */
-    void processEnd(@NonNull final ElementContext context) {
+    public void processEnd(@NonNull final ElementContext context) {
         if (mEndAction != null) {
-            context.setUserArg(mEndArg);
             mEndAction.accept(context);
         }
     }
@@ -221,17 +189,7 @@ public class XmlFilter {
      */
     @NonNull
     public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction) {
-        return setStartAction(startAction, null);
-    }
-
-    @NonNull
-    public XmlFilter setStartAction(@NonNull final Consumer<ElementContext> startAction,
-                                    @Nullable final Object userArg) {
-        if (mStartAction != null) {
-            throw new IllegalStateException("Start Action already set");
-        }
         mStartAction = startAction;
-        mStartArg = userArg;
         return this;
     }
 
@@ -245,17 +203,7 @@ public class XmlFilter {
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction) {
-        return setEndAction(endAction, null);
-    }
-
-    @NonNull
-    public XmlFilter setEndAction(@NonNull final Consumer<ElementContext> endAction,
-                                  @Nullable final Object userArg) {
-        if (mEndAction != null) {
-            throw new IllegalStateException("End Action already set");
-        }
         mEndAction = endAction;
-        mEndArg = userArg;
         return this;
     }
 

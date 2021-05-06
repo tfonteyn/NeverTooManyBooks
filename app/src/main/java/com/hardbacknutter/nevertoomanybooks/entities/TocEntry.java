@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * Represent a single title within an TOC(Anthology).
  * <p>
  * <strong>Note:</strong>
- * these are always insert/update'd ONLY when a book is insert/update'd
+ * these are always inserted/updated ONLY when a book is inserted/updated
  * Hence writes are always a {@code List<TocEntry>} in one go.
  * This circumvents the 'position' column as the update will simply insert in-order
  * and auto increment the position.
