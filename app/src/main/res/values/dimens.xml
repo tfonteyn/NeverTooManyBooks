@@ -160,7 +160,5 @@
          Should/can be overridden in bigger-screen dimen.xml files.
     -->
     <dimen name="large_menu_button">296dp</dimen>
-    <!-- optional info text shown above the button. Wider than the button on bigger screens. -->
-    <dimen name="large_menu_button_info">296dp</dimen>
 
 </resources>

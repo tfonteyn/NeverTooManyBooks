@@ -26,8 +26,6 @@
          This is based on 4WVGA 4.0" -->
     <dimen name="screen_min_width">520dp</dimen>
 
-    <dimen name="large_menu_button_info">420dp</dimen>
-
     <dimen name="progress_margin_top">50dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 

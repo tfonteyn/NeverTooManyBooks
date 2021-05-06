@@ -31,7 +31,4 @@
     <dimen name="screen_min_width">340dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 
-    <dimen name="large_menu_button_info">350dp</dimen>
-
-
 </resources>

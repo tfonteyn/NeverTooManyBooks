@@ -25,9 +25,5 @@
     land: w683dp h387dp
     -->
 <resources>
-
-    <dimen name="large_menu_button_info">380dp</dimen>
-
     <dimen name="progress_width">380dp</dimen>
-
 </resources>
