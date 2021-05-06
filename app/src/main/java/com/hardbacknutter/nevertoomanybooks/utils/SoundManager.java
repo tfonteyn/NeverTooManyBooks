@@ -22,13 +22,18 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
-import android.media.AudioManager;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
 public final class SoundManager {
+
+    private static final AudioAttributes mAA = new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build();
 
     private SoundManager() {
     }
@@ -38,7 +43,7 @@ public final class SoundManager {
         try {
             final AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             final MediaPlayer player = new MediaPlayer();
-            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            player.setAudioAttributes(mAA);
             // When the beep has finished playing, rewind to queue up another one.
             player.setOnCompletionListener(MediaPlayer::release);
             player.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
