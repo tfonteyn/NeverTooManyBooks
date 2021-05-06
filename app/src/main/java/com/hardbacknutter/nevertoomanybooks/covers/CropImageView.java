@@ -46,7 +46,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -588,7 +587,7 @@ public class CropImageView
             mDrawRectF.set(mDrawRect);
             path.addRect(mDrawRectF, Path.Direction.CW);
 
-            canvas.clipPath(path, Region.Op.DIFFERENCE);
+            canvas.clipOutPath(path);
             canvas.drawRect(mImageViewDrawingRect, mFocusPaint);
             canvas.restore();
             canvas.drawPath(path, mOutlinePaint);
