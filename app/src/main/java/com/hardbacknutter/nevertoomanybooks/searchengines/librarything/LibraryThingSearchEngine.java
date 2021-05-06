@@ -19,11 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,6 +33,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -43,9 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 /**
  * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
- * Confirmed in LT forums; The entire API is currently disabled because of work on LT2.
- * <p>
- * Goodreads is owned by Amazon and is shutting their API down.
+ * Confirmed in LT forums; The entire API is currently disabled.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
  * 2020-05-05: removed all non-functional code.
  * We can still:
@@ -122,5 +123,73 @@ public class LibraryThingSearchEngine
             throw new SearchException(getName(), e);
         }
         return handler.getResult();
+    }
+
+    /**
+     * Parser Handler to collect the edition data.
+     * <p>
+     * http://www.librarything.com/api/thingISBN/{ISBN}
+     * <p>
+     * Typical request output:
+     * <pre>
+     *     {@code
+     *   <?xml version="1.0" encoding="utf-8"?>
+     *   <idlist>
+     *     <isbn>0380014300</isbn>
+     *     <isbn>0839824270</isbn>
+     *     <isbn>0722194390</isbn>
+     *     <isbn>0783884257</isbn>
+     *     ...etc...
+     *     <isbn>2207301907</isbn>
+     *   </idlist>
+     *   }
+     * </pre>
+     */
+    private static class LibraryThingEditionHandler
+            extends DefaultHandler {
+
+        /** isbn tag in an editions xml response. */
+        private static final String XML_ISBN = "isbn";
+
+        /** XML content. */
+        @SuppressWarnings("StringBufferField")
+        private final StringBuilder mBuilder = new StringBuilder();
+        /** List of ISBN numbers for all found editions. */
+        private final List<String> mIsbnList = new ArrayList<>();
+
+        /**
+         * Get the results.
+         *
+         * @return the list with ISBN numbers.
+         */
+        @NonNull
+        public List<String> getResult() {
+            return mIsbnList;
+        }
+
+        @Override
+        @CallSuper
+        public void endElement(@NonNull final String uri,
+                               @NonNull final String localName,
+                               @NonNull final String qName) {
+
+            if (localName.equalsIgnoreCase(XML_ISBN)) {
+                mIsbnList.add(mBuilder.toString());
+            }
+
+            // Always reset the length. This is not entirely the right thing to do, but works
+            // because we always want strings from the lowest level (leaf) XML elements.
+            // To be completely correct, we should maintain a stack of builders that are pushed and
+            // popped as each startElement/endElement is called. But lets not be pedantic for now.
+            mBuilder.setLength(0);
+        }
+
+        @Override
+        @CallSuper
+        public void characters(final char[] ch,
+                               final int start,
+                               final int length) {
+            mBuilder.append(ch, start, length);
+        }
     }
 }
