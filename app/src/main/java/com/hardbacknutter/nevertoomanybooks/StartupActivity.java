@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -276,8 +275,6 @@ public class StartupActivity
     private void startMainActivity() {
         // Any future hot start will skip the startup tasks
         ((App) getApplication()).setHotStart();
-        // Create and start the Goodreads QueueManager (only if not already running).
-        QueueManager.start();
         // Remove the weak self-reference
         sStartupActivity.clear();
         // and hand over to the real main activity

@@ -42,7 +42,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_goodreads,site_isfdb,site_last_dodo_nl,site_library_thing,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_amazon,site_isfdb,site_last_dodo_nl,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
@@ -65,11 +65,11 @@
             />
 
         <RadioButton
-            android:id="@+id/site_goodreads"
+            android:id="@+id/site_open_library"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_goodreads"
+            android:text="@string/site_open_library"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
@@ -83,33 +83,7 @@
             android:text="@string/site_isfdb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_goodreads"
-            />
-
-        <!-- fully functional, but the data returned by LT (on its own) is rather lacking
-            hence disabling this one -->
-        <RadioButton
-            android:id="@+id/site_library_thing"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_library_thing"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_isfdb"
-            tools:visibility="visible"
-            />
-
-        <RadioButton
-            android:id="@+id/site_open_library"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_open_library"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_library_thing"
+            app:layout_constraintTop_toBottomOf="@id/site_open_library"
             />
 
         <RadioButton
@@ -120,7 +94,7 @@
             android:text="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_open_library"
+            app:layout_constraintTop_toBottomOf="@id/site_isfdb"
             />
 
         <RadioButton

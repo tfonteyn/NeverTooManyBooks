@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFrom
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GoodreadsSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
@@ -123,7 +122,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -182,13 +180,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
-
-    /** Bring up the synchronization options. */
-    @Nullable
-    private ActivityResultLauncher<Void> mGoodreadsSyncLauncher;
-    /** Delegate for Goodreads. */
-    @Nullable
-    private GoodreadsHandler mGoodreadsHandler;
 
     @Nullable
     private AmazonHandler mAmazonHandler;
@@ -556,14 +547,6 @@ public class BooksOnBookshelf
             }
         }
 
-        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
-            mGoodreadsSyncLauncher = registerForActivityResult(
-                    new GoodreadsSyncContract(), aVoid -> {});
-
-            mGoodreadsHandler = new GoodreadsHandler();
-            mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
-        }
-
         if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
             mStripInfoSyncLauncher = registerForActivityResult(
                     new StripInfoSyncContract(), data -> {});
@@ -790,17 +773,8 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                Book book = null;
-                if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
-                    book = Objects.requireNonNull(mVm.getBook(rowData));
-                    //noinspection ConstantConditions
-                    mGoodreadsHandler.prepareMenu(menu, book);
-                }
-
                 if (Sync.isEnabled(global, Sync.Site.Calibre)) {
-                    if (book == null) {
-                        book = Objects.requireNonNull(mVm.getBook(rowData));
-                    }
+                    final Book book = Objects.requireNonNull(mVm.getBook(rowData));
                     //noinspection ConstantConditions
                     mCalibreHandler.prepareMenu(menu, book);
                 }
@@ -938,11 +912,6 @@ public class BooksOnBookshelf
         if (itemId == R.id.MENU_SYNC_CALIBRE) {
             //noinspection ConstantConditions
             mCalibreSyncLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_GOODREADS) {
-            //noinspection ConstantConditions
-            mGoodreadsSyncLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_SYNC_STRIP_INFO) {
@@ -1181,10 +1150,6 @@ public class BooksOnBookshelf
             return true;
         }
 
-        if (mGoodreadsHandler != null && mGoodreadsHandler.onItemSelected(itemId, rowData)) {
-            return true;
-        }
-
         if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, rowData)) {
             return true;
         }
@@ -1254,11 +1219,6 @@ public class BooksOnBookshelf
         if (Sync.isEnabled(global, Sync.Site.Calibre)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
                 .setIcon(R.drawable.ic_baseline_cloud_24);
-        }
-
-        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
-            menu.add(Menu.NONE, R.id.MENU_SYNC_GOODREADS, 0, R.string.site_goodreads)
-                .setIcon(R.drawable.ic_goodreads);
         }
 
         if (Sync.isEnabled(global, Sync.Site.StripInfo)) {

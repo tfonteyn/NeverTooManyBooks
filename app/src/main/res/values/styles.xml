@@ -820,16 +820,6 @@
         <item name="android:src">@drawable/ic_outline_info_24</item>
     </style>
 
-    <!-- Goodreads task/event error message. -->
-    <style name="GoodreadsErrorMessage">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorError</item>
-        <item name="android:focusable">false</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
-    </style>
-
     <!-- Override for the default to allow 2 lines of text. -->
     <style name="App.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:maxLines">2</item>

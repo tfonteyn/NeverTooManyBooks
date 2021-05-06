@@ -350,7 +350,6 @@ public class Book
         // Do not copy these specific dates.
         // KEY_BOOK_DATE_ADDED
         // KEY_DATE_LAST_UPDATED
-        // KEY_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(DBKey.KEY_TITLE, getString(DBKey.KEY_TITLE));
         bookData.putString(DBKey.KEY_ISBN, getString(DBKey.KEY_ISBN));

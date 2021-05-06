@@ -512,10 +512,6 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.attr(key, book.getString(key)));
                 }
                 //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-                writer.write(XmlUtils.attr(
-                        DBKey.UTC_DATE_LAST_SYNC_GOODREADS,
-                        book.getString(DBKey.UTC_DATE_LAST_SYNC_GOODREADS)));
-
 
                 // cross-linked with the loanee table
                 writer.write(XmlUtils.attr(DBKey.KEY_LOANEE, book.getString(DBKey.KEY_LOANEE)));

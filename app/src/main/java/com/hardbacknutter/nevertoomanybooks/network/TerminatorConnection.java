@@ -61,8 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * So...we will use a background thread to kill the connection after a set timeout.
  * <p>
- * Note that the Goodreads classes and image download use the standard HttpURLConnection directly.
- * <p>
  * TODO: add support for POST and signing
  */
 @WorkerThread

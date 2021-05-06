@@ -114,10 +114,8 @@ public final class SearchSites {
     static final String DATA_RELIABILITY_ORDER =
             ISFDB
             + "," + STRIP_INFO_BE
-            + "," + GOODREADS
             + "," + AMAZON
             + "," + GOOGLE_BOOKS
-            + "," + LIBRARY_THING
             + "," + LAST_DODO
             + "," + KB_NL
             + "," + OPEN_LIBRARY;
@@ -193,8 +191,6 @@ public final class SearchSites {
             case Data: {
                 type.addSite(AMAZON);
 
-                type.addSite(GOODREADS);
-
                 if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
                     type.addSite(GOOGLE_BOOKS);
                 }
@@ -222,8 +218,6 @@ public final class SearchSites {
                 // Only add sites here that implement {@link SearchEngine.CoverByIsbn}.
 
                 type.addSite(AMAZON);
-
-                type.addSite(GOODREADS);
 
                 type.addSite(ISFDB);
 

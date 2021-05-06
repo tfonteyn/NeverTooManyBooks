@@ -31,13 +31,6 @@
         tools:visible="true" />
 
     <item
-        android:id="@+id/sync_goodreads"
-        android:icon="@drawable/ic_goodreads"
-        android:title="@string/site_goodreads"
-        android:visible="false"
-        tools:visible="true" />
-
-    <item
         android:id="@+id/sync_stripinfo"
         android:icon="@drawable/ic_stripinfo"
         android:title="@string/site_stripinfo_be"

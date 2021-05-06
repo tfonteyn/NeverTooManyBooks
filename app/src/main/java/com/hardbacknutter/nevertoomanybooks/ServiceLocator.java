@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
@@ -68,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CoverCacheDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FormatDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.FtsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GenreDaoImpl;
-import com.hardbacknutter.nevertoomanybooks.database.dao.impl.GoodreadsDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LanguageDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LoaneeDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.LocationDaoImpl;
@@ -80,21 +77,12 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.TaskQueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
 
-/**
- * The use and definition of DAO in this project has a long history.
- * Migrating to 'best practices' has been an ongoing effort but is at best a far future goal.
- * The main issue is that all testing must be done with the emulator as we can't easily
- * inject mock doa's for now.
- * <p>
- * This class is the next step as we can mock Context/db/dao classes before running a test.
- */
 public final class ServiceLocator {
 
     /**
@@ -123,10 +111,6 @@ public final class ServiceLocator {
     /** NOT an interface. Cannot be injected. */
     @Nullable
     private CoversDbHelper mCoversDbHelper;
-
-    /** NOT an interface. Cannot be injected. */
-    @Nullable
-    private SQLiteOpenHelper mTaskQueueDBHelper;
 
     /** NOT an interface. Cannot be injected. The underlying {@link StyleDao} can be injected. */
     @Nullable
@@ -168,8 +152,6 @@ public final class ServiceLocator {
     private FtsDao mFtsDao;
     @Nullable
     private GenreDao mGenreDao;
-    @Nullable
-    private GoodreadsDao mGoodreadsDao;
     @Nullable
     private LanguageDao mLanguageDao;
     @Nullable
@@ -407,17 +389,6 @@ public final class ServiceLocator {
         return mCoversDbHelper.getDb();
     }
 
-    @NonNull
-    public SQLiteOpenHelper getTaskQueueDBHelper() {
-        synchronized (this) {
-            if (mTaskQueueDBHelper == null) {
-                mTaskQueueDBHelper = new TaskQueueDBHelper(mAppContext);
-            }
-        }
-        return mTaskQueueDBHelper;
-    }
-
-
     public boolean isCollationCaseSensitive() {
         //noinspection ConstantConditions
         return mDBHelper.isCollationCaseSensitive();
@@ -426,7 +397,6 @@ public final class ServiceLocator {
     void deleteDatabases(@NonNull final Context context) {
         context.deleteDatabase(DBHelper.DATABASE_NAME);
         context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
-        context.deleteDatabase(TaskQueueDBHelper.DATABASE_NAME);
     }
 
 
@@ -566,22 +536,6 @@ public final class ServiceLocator {
     public void setGenreDao(@Nullable final GenreDao dao) {
         mGenreDao = dao;
     }
-
-    @NonNull
-    public GoodreadsDao getGoodreadsDao() {
-        synchronized (this) {
-            if (mGoodreadsDao == null) {
-                mGoodreadsDao = new GoodreadsDaoImpl();
-            }
-        }
-        return mGoodreadsDao;
-    }
-
-    @VisibleForTesting
-    public void setGoodreadsDao(@Nullable final GoodreadsDao dao) {
-        mGoodreadsDao = dao;
-    }
-
 
     @NonNull
     public LanguageDao getLanguageDao() {

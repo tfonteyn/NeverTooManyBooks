@@ -92,7 +92,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_MENU
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.KEY_STYLE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
 
 /**
@@ -583,7 +582,6 @@ public class DBHelper
         body += eidSb.toString();
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-        body += UTC_DATE_LAST_SYNC_GOODREADS + "=''";
 
         body += " WHERE " + PK_ID + "=NEW." + PK_ID + ";\n"
                 + " END";
@@ -801,11 +799,13 @@ public class DBHelper
         }
         if (oldVersion < 16) {
             TBL_STRIPINFO_COLLECTION.create(db, true);
+
+            context.deleteDatabase("taskqueue.db");
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
-        // 1. change DOM_UTC_LAST_SYNC_DATE_GOODREADS -> See note in the DBDefinitions class.
-        // 2. remove the column "clb_uuid"
+        // 1. remove the column "books.clb_uuid"
+        // 2. remove the column "books.last_goodreads_sync_date"
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
@@ -840,6 +840,10 @@ public class DBHelper
 
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
+                         .remove("tips.tip.BOOKLIST_STYLES_EDITOR")
+                         .remove("tips.tip.BOOKLIST_STYLE_GROUPS")
+                         .remove("tips.tip.BOOKLIST_STYLE_PROPERTIES")
+
                          .remove("bookList.style.preferred.order")
 
                          .remove("booklist.top.rowId")
@@ -854,7 +858,15 @@ public class DBHelper
                          .remove("edit.book.tab.authSer")
                          .remove("edit.book.tab.nativeId")
                          .remove("fields.visibility.bookshelf")
+                         .remove("goodreads.enabled")
+                         .remove("goodreads.showMenu")
+                         .remove("goodreads.search.collect.genre")
+                         .remove("goodreads.AccessToken.Token")
+                         .remove("goodreads.AccessToken.Secret")
+                         .remove("librarything.dev_key")
                          .remove("scanner.preferred")
+                         .remove("search.site.goodreads.data.enabled")
+                         .remove("search.site.goodreads.covers.enabled")
                          .remove("startup.lastVersion")
                          .remove("tmp.edit.book.tab.authSer")
                          .apply();

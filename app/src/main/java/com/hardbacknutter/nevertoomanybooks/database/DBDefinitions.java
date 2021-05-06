@@ -45,12 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  * <ul>Main database:
  *  <li>{@link #DOM_UTC_ADDED}</li>
  *  <li>{@link #DOM_UTC_LAST_UPDATED}</li>
- *  <li>{@link #DOM_GOODREADS_UTC_LAST_SYNC_DATE}</li>
- * </ul>
- * <ul>TaskQueue (Goodreads) database; TaskQueueDBHelper.
- *   <li>#KEY_UTC_QUEUED_DATETIME</li>
- *   <li>#KEY_UTC_RETRY_DATETIME</li>
- *   <li>#KEY_UTC_EVENT_DATETIME</li>
  * </ul>
  * <ul>Covers cache database:
  *   <li>{@link CoversDbHelper}#DOM_UTC_DATETIME}</li>
@@ -287,8 +281,6 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_ESID_GOODREADS_BOOK;
-    /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_GOODREADS_UTC_LAST_SYNC_DATE;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_ESID_ISFDB;
     /** {@link #TBL_BOOKS}. */
@@ -846,26 +838,6 @@ public final class DBDefinitions {
         //NEWTHINGS: adding a new search engine: optional: add specific/extra domains.
 
         /* ======================================================================================
-         *  Goodreads synchronization domains
-         * ====================================================================================== */
-
-        DOM_GOODREADS_UTC_LAST_SYNC_DATE =
-                new Domain.Builder(DBKey.UTC_DATE_LAST_SYNC_GOODREADS, ColumnInfo.TYPE_DATETIME)
-                        .notNull()
-                        // The default of 0000-00-00 is not needed.
-                        .withDefault("'0000-00-00'")
-                        .build();
-
-        // It SHOULD be:
-        //      new Domain.Builder(DBKey.UTC_DATE_LAST_SYNC_GOODREADS,
-        //                         ColumnInfo.TYPE_DATETIME)
-        //              .notNull()
-        //              .withDefaultEmptyString()
-        //              .build();
-        // As modifying the schema requires copying the entire books table,
-        // we just leave it as is for now until we have a more urgent need to recreate that table.
-
-        /* ======================================================================================
          *  StripInfo.be synchronization domains
          * ====================================================================================== */
         DOM_STRIP_INFO_BE_COLLECTION_ID =
@@ -1179,7 +1151,6 @@ public final class DBDefinitions {
                             DOM_ESID_LAST_DODO_NL,
                             //NEWTHINGS: adding a new search engine:
                             // optional: add engine specific DOM
-                            DOM_GOODREADS_UTC_LAST_SYNC_DATE,
 
                             // internal data
                             DOM_BOOK_UUID,

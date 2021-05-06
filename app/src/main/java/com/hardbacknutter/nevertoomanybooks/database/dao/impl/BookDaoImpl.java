@@ -136,7 +136,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.PRICE_PAID_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.SID_STRIP_INFO;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_GOODREADS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO;
 import static com.hardbacknutter.nevertoomanybooks.database.DBKey.UTC_DATE_LAST_UPDATED;
 
@@ -829,7 +828,7 @@ public class BookDaoImpl
 
                 // create the book<->TocEntry link.
                 //
-                // As we delete all links before insert/update'ng above, we normally
+                // As we delete all links before insert/updating above, we normally
                 // *always* need to re-create the link here.
                 // However, this will fail if we inserted "The Universe" and updated "Universe, The"
                 // as the former will be stored as "Universe, The" so conflicting with the latter.
@@ -1266,7 +1265,7 @@ public class BookDaoImpl
             static {
                 // Developer: adding fields ? Now is a good time to update {@link Book#duplicate}/
                 // Note we could use TBL_BOOKS.dot("*")
-                // We'ld fetch the unneeded TITLE_OB field, but that would be ok.
+                // We'd fetch the unneeded TITLE_OB field, but that would be ok.
                 // Nevertheless, listing the fields here gives a better understanding
 
                 SQL_BOOK = SELECT_ + TBL_BOOKS.dotAs(
@@ -1285,15 +1284,14 @@ public class BookDaoImpl
                         BOOL_READ, DATE_READ_START, DATE_READ_END,
                         DATE_ACQUIRED, PRICE_PAID, PRICE_PAID_CURRENCY,
                         // added/updated
-                        UTC_DATE_ADDED, UTC_DATE_LAST_UPDATED,
-
+                        UTC_DATE_ADDED, UTC_DATE_LAST_UPDATED
                         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-                        UTC_DATE_LAST_SYNC_GOODREADS)
+                                                    )
 
                            + ',' + TBL_BOOKS.dotAs(
                         SearchEngineRegistry.getInstance().getExternalIdDomains())
 
-                           // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
+                           // COALESCE nulls to "" for the LEFT OUTER JOINed LOANEE name
                            + ",COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')"
                            + _AS_ + KEY_LOANEE
 

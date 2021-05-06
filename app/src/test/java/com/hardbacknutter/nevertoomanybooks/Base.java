@@ -194,7 +194,6 @@ public class Base {
                         .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
                         // random some at true, some at false.
                         .putBoolean("search.site.amazon.data.enabled", true)
-                        .putBoolean("search.site.goodreads.data.enabled", true)
                         .putBoolean("search.site.googlebooks.data.enabled", false)
                         .putBoolean("search.site.isfdb.data.enabled", true)
                         .putBoolean("search.site.kbnl.data.enabled", true)

@@ -249,7 +249,6 @@ public class SearchBookByIsbnFragment
         mScannerStarted = false;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
-            // Goodreads best books of 2020
             final String[] testCodes = {
                     // random == 0 -> cancel scanning
                     null,

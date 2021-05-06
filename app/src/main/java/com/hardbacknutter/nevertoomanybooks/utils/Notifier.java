@@ -36,7 +36,6 @@ public interface Notifier
 
     /** Notification id. */
     int ID_GENERIC = 0;
-    int ID_GOODREADS = 1;
 
     /** RequestCode. For now, we always use 0. */
     int RC_DEFAULT = 0;
@@ -108,7 +107,7 @@ public interface Notifier
               @StringRes int titleId,
               @NonNull CharSequence message);
 
-    @IntDef({ID_GENERIC, ID_GOODREADS})
+    @IntDef(ID_GENERIC)
     @Retention(RetentionPolicy.SOURCE)
     @interface NotificationId {
 

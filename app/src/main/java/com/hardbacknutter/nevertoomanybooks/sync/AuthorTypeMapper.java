@@ -125,16 +125,10 @@ public class AuthorTypeMapper {
         MAPPER.put("testi", TYPE_WRITER);
         MAPPER.put("disegni", TYPE_ARTIST);
 
-        // Current (2020-06-30) strings have been seen on Goodreads.
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.
         // Will need to add them when/as they show up.
         // Maybe better if this is done in an external file on a per language basis ?
-        // Maybe some day see if we can pull a full list from Goodreads?
-
-        // More Goodreads:
-        // Visual Art
-        // Design
     }
 
     public int map(@NonNull final Locale locale,

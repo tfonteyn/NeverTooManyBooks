@@ -119,7 +119,6 @@ public class DBCleaner {
         final String[] columns = new String[]{
                 DBKey.UTC_DATE_LAST_UPDATED,
                 DBKey.UTC_DATE_ADDED,
-                DBKey.UTC_DATE_LAST_SYNC_GOODREADS
         };
 
         final Pattern T = Pattern.compile("T");

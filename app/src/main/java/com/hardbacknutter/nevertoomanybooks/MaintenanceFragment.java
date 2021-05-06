@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -315,11 +314,6 @@ public class MaintenanceFragment
     private void onDeleteAll() {
         final Context context = getContext();
         try {
-            //FIXME: we should stop any active tasks + the qm itself
-            final QueueManager qm = QueueManager.getInstance();
-            qm.deleteTasksOlderThan(0);
-            qm.deleteEventsOlderThan(0);
-
             //FIXME: delete all style xml files
             ServiceLocator.getInstance().getStyles().clearCache();
 

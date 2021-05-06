@@ -31,19 +31,11 @@
         >
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_column2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.33"
-            />
-
-        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/indent_column3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.66"
+            app:layout_constraintGuide_percent="0.50"
             />
 
         <TextView
@@ -59,7 +51,7 @@
             android:id="@+id/sites_group"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:constraint_referenced_ids="site_amazon,site_goodreads,site_isfdb,site_last_dodo_nl,site_library_thing,site_open_library,site_strip_info_be"
+            app:constraint_referenced_ids="site_amazon,site_isfdb,site_last_dodo_nl,site_open_library,site_strip_info_be"
             tools:ignore="MissingConstraints"
             />
 
@@ -67,29 +59,17 @@
                 optional: external id KEY add a RadioButton widget
                 and add the name to the ConstraintRadioGroup#constraint_referenced_ids. -->
 
+        <!-- Amazon search is disabled. -->
         <RadioButton
-            android:id="@+id/site_goodreads"
+            android:id="@+id/site_amazon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_goodreads"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
+            android:text="@string/site_amazon"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/indent_column3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
-            />
-
-        <!-- fully functional, but the data returned by LT (on its own) is rather lacking
-            hence disabling this one -->
-        <RadioButton
-            android:id="@+id/site_library_thing"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_library_thing"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_goodreads"
             tools:visibility="visible"
             />
 
@@ -99,24 +79,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_open_library"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
+            app:layout_constraintEnd_toEndOf="@id/indent_column3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_library_thing"
-            />
-
-
-        <!-- Amazon search is disabled. For books the user can/should use the isbn search.-->
-        <RadioButton
-            android:id="@+id/site_amazon"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin_start"
-            android:text="@string/site_amazon"
-            android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/indent_column3"
-            app:layout_constraintStart_toEndOf="@id/indent_column2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site"
-            tools:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/site_amazon"
             />
 
         <RadioButton
@@ -125,11 +90,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_isfdb"
-            app:layout_constraintEnd_toStartOf="@id/indent_column3"
-            app:layout_constraintStart_toEndOf="@id/indent_column2"
-            app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            app:layout_constraintEnd_toEndOf="@id/indent_column3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/site_open_library"
             />
-
 
         <RadioButton
             android:id="@+id/site_strip_info_be"
@@ -137,9 +101,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_column3"
-            app:layout_constraintTop_toBottomOf="@id/lbl_site"
+            app:layout_constraintEnd_toEndOf="@id/indent_column3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/site_isfdb"
             />
 
         <RadioButton
@@ -148,28 +112,19 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_column3"
+            app:layout_constraintEnd_toEndOf="@id/indent_column3"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="site_goodreads,site_library_thing,site_open_library,site_amazon,site_isfdb,site_strip_info_be,site_last_dodo_nl"
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
             style="@style/TIL.EditText.ExternalId"
+            android:hint="@string/lbl_site_book_id"
             android:paddingStart="@dimen/field_margin_inline"
             android:paddingEnd="@dimen/field_margin_inline"
-            android:hint="@string/lbl_site_book_id"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
+            app:layout_constraintStart_toEndOf="@id/indent_column3"
+            app:layout_constraintTop_toBottomOf="@id/lbl_site"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -190,8 +145,8 @@
             style="@style/Button.Action.Submit"
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_baseline_search_24"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_external_id"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_external_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

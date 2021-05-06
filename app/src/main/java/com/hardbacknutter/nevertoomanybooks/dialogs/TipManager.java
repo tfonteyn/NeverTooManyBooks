@@ -98,10 +98,6 @@ public final class TipManager {
                 tip = new Tip(id, "background_tasks");
             } else if (id == R.string.tip_background_task_events) {
                 tip = new Tip(id, "background_task_events");
-            } else if (id == R.string.gr_info_no_isbn) {
-                tip = new Tip(id, "gr_explain_no_isbn");
-            } else if (id == R.string.gr_info_no_match) {
-                tip = new Tip(id, "gr_explain_no_match");
             } else if (id == R.string.tip_autorotate_camera_images) {
                 tip = new Tip(id, "autorotate_camera_images");
             } else if (id == R.string.tip_view_only_help) {

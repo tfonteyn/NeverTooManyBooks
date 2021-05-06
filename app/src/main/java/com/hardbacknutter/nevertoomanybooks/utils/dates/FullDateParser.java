@@ -72,7 +72,7 @@ public class FullDateParser
             "dd-MMM-yy",
             "dd-MMMM-yy",
 
-            // Used by Goodreads; Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
+            // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
             "EEE MMM dd HH:mm:ss ZZZZ yyyy",
 
             // Used by Amazon; e.g. "12 jan. 2017"

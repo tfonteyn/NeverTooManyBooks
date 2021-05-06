@@ -90,7 +90,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResForm
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -118,10 +117,6 @@ public class ShowBookFragment
     /** Calibre preferences screen. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSettingsLauncher;
-
-    /** Delegate for Goodreads. */
-    @Nullable
-    private GoodreadsHandler mGoodreadsHandler;
 
     /** Delegate for Calibre. */
     @Nullable
@@ -256,11 +251,6 @@ public class ShowBookFragment
             }
         }
 
-        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
-            mGoodreadsHandler = new GoodreadsHandler();
-            mGoodreadsHandler.onViewCreated(this);
-        }
-
         if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
 
         }
@@ -333,11 +323,6 @@ public class ShowBookFragment
         final boolean isAvailable = mVm.isAvailable(mVb.pager.getCurrentItem());
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
-
-        if (Sync.isEnabled(global, Sync.Site.Goodreads)) {
-            //noinspection ConstantConditions
-            mGoodreadsHandler.prepareMenu(menu, book);
-        }
 
         if (Sync.isEnabled(global, Sync.Site.Calibre)) {
             //noinspection ConstantConditions
@@ -415,10 +400,6 @@ public class ShowBookFragment
             mUpdateBookLauncher.launch(book);
             return true;
 
-        }
-
-        if (mGoodreadsHandler != null && mGoodreadsHandler.onItemSelected(itemId, book)) {
-            return true;
         }
 
         if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
@@ -567,7 +548,7 @@ public class ShowBookFragment
         private Fields initFields(@NonNull final Context context) {
 
             final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-            // These FieldFormatter's can be shared between multiple fields.
+            // These FieldFormatters can be shared between multiple fields.
             final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
             final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true, true);
             final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);

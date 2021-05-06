@@ -54,8 +54,6 @@
     <string name="name_colon_value">%1$s: %2$s</string>
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
     <string name="list_element">• %s</string>
-    <!-- combining 'list_element' and 'name_colon_value' -->
-    <string name="list_element_name_colon_value">• %1$s: %2$s</string>
 
     <!-- "name #nr" -->
     <string name="name_hash_nr">%1$s #%2$d</string>
@@ -232,8 +230,11 @@
     <string name="warning_select_at_least_1_group">Select at least one group.</string>
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
 
-    <string name="warning_requires_at_least_one_field">At least one field must not be blank.</string>
+    <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
+
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
+    <string name="warning_requires_isbn_alt">No ISBN stored for book</string>
+
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
 
     <string name="warning_cannot_delete_1st_bs">Cannot Delete the 1st Bookshelf.</string>
@@ -241,7 +242,8 @@
     <string name="warning_already_in_list">Already in the list!</string>
 
     <string name="warning_no_matching_book_found">No matching book found</string>
-    <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
+    <string name="warning_no_matching_book_found_long">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
+
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
 
     <!-- These must end with a dot. -->
@@ -286,9 +288,6 @@
 
     <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
-    <string name="legacy_record">Obsolete record #%1$d</string>
-    <string name="legacy_description">This record is obsolete and can not be recovered. It is advisable to delete it.</string>
-
     <!-- ####################################################################################### -->
     <!-- ========== authorization/authentication messages ========== -->
     <!-- ####################################################################################### -->
@@ -316,7 +315,6 @@
     <string name="confirm_continue">Are you sure you want to continue ?</string>
 
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
-    <string name="confirm_unsaved_edits2">You have unsaved changes. Are you sure you want to continue?</string>
 
     <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
@@ -428,8 +426,6 @@
     <string name="tip_reset_all">Reset tips</string>
     <string name="tip_reset_done">Tips have been reset</string>
 
-    <string name="tip_book_not_found">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
-
     <string name="tip_book_search_by_text">
         Adding books by ISBN is much more accurate than adding by author and title and is generally preferred.
         Please remember you can sometimes find the correct barcode on the inside front cover.
@@ -523,103 +519,6 @@
     <string name="amazon_ellipsis">Amazon…</string>
 
     <!-- ####################################################################################### -->
-    <!-- ========== Goodreads specific ========== -->
-    <!-- ####################################################################################### -->
-
-    <!-- dialog title and task description -->
-    <string name="gr_title_send_book">Send books to Goodreads</string>
-    <!-- dialog title, admin menu selection and task description -->
-    <string name="gr_title_sync_with_goodreads">Synchronize with Goodreads</string>
-
-    <!-- book and book list menu options -->
-    <string name="gr_send_to_goodreads">Send to Goodreads</string>
-
-    <string name="gr_pt_collect_genre">Use popular bookshelf names as book genres</string>
-
-    <!-- Dialog title and (big) button -->
-    <string name="gr_auth_blurb_part1">
-        Goodreads is a web site whose stated mission is “to help people find and share books they
-        love”. They have an extensive database of books and reviews, and if you are a registered
-        Goodreads user, &APP_NAME; can export your books, shelves and reviews to Goodreads
-        and import your books, shelves and reviews from Goodreads. &APP_NAME; is a stand-alone
-        application and does not require Goodreads, but if you are interested you can register at:
-    </string>
-    <string name="gr_auth_blurb_part2">
-        Once you are registered, or if you are already a Goodreads user, you can authorize
-        &APP_NAME; access your Goodreads data by pressing the button below.
-        It will take you to a web page where you will need to login to Goodreads and authorize
-        this application. We will never see your password, and you can disable access via the
-        Goodreads website. Due to the vagaries of the web, you may end up on a blank web page.
-        Just tap the back button to return here!
-    </string>
-    <string name="gr_auth_blurb_part3">But remember…there is no need to do any of this: &APP_NAME; works just fine without it!</string>
-    <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
-    <string name="gr_auth_blurb_part4">
-        It looks like you have already authorized this app. If you would like to delete the
-        credentials from this device, then you can do so by pressing the button below. But it is
-        also important to delete the application\'s registration on the Goodreads website as well.
-    </string>
-
-    <string name="gr_authorization_needed">
-        This action can not be completed until this application is authorized on the Goodreads website.
-        Once you have authorized this application, please retry.\n\nDo you want to authorize it now?
-    </string>
-    <string name="gr_authorization_already_granted">It looks like you have already authorized this application. All Goodreads functions should already be available.</string>
-
-    <string name="gr_send_book_to_goodreads">Send book %1$d to Goodreads</string>
-    <string name="gr_info_send_all_books_results">%1$d books processed: %2$d sent successfully, %3$d without ISBN and %4$d with ISBN but not found in Goodreads</string>
-
-    <string name="gr_info_send_books">
-        This will send your library to Goodreads.\n
-        \nYou can choose to send all of your books, or only the books you have updated
-        since they were last copied to or from Goodreads (including all books that have
-        not been sent yet) or you can cancel the update.\n
-        \nIf you have never sent any books then there is no difference between the first
-        two options.
-    </string>
-    <string name="gr_info_no_isbn">
-        The selected book does not have an ISBN; it is not possible to automatically synchronize
-        it with Goodreads. The simplest solution is to:\n
-        \n(1) delete the book from &APP_NAME;\n
-        \n(2) add the book in Goodreads manually via their web interface\n
-        \n(3) Synchronize with Goodreads\n
-        \nThis will result in the book being recreated in &APP_NAME; and the two will remain
-        linked from that point onwards.
-    </string>
-    <!-- TODO: “Retry” should be a parameter. But that means modifying the Tip class -->
-    <string name="gr_info_no_match">
-        The ISBN of the selected book could not be found on Goodreads. There are two possible
-        causes for this: either the data for the book is wrong (you should check the ISBN),
-        or the book is not in Goodreads.\n
-        \nIf you make any changes to the data in &APP_NAME;, just press the “Retry” button
-        and check to see if the	resulting background task succeeds.\n
-        \nIf the data looks correct and the book is still not found, then a book with that ISBN
-        needs to be added to Goodreads manually via their website. Once that is done, you can
-        retry sending the book.
-    </string>
-
-    <!-- ####################################################################################### -->
-    <!-- == GoodReads Task & Event related == -->
-    <!-- ####################################################################################### -->
-
-    <string name="gr_tq_title_task_errors">Task Errors</string>
-    <string name="gr_tq_menu_delete_event">Delete Event</string>
-    <string name="gr_tq_menu_delete_task">Delete Task</string>
-    <string name="gr_tq_menu_background_tasks">Background Tasks</string>
-    <string name="gr_tq_btn_cleanup_old_tasks">Cleanup Old Tasks</string>
-    <string name="gr_tq_btn_cleanup_old_events">Cleanup Old Events</string>
-    <string name="gr_tq_task_has_been_queued">Task has been queued</string>
-    <string name="gr_tq_export_task_is_already_queued">An export task is already queued and must complete before this task can run</string>
-    <string name="gr_tq_import_task_is_already_queued">An import task is already queued and must complete before this task can run</string>
-    <string name="gr_tq_show_events_ellipsis">Show events…</string>
-    <string name="gr_tq_retry_x_of_y_next_at_z" tools:ignore="PluralsCandidate">Retry %1$d of %2$d next at %3$s</string>
-    <string name="gr_tq_occurred_at">(occurred at %1$s)</string>
-    <string name="gr_tq_last_error_e">Last Error: %1$s</string>
-    <string name="gr_tq_generic_task_info">Task ID %1$d, Queued at %2$s</string>
-    <string name="gr_tq_events_recorded" tools:ignore="PluralsCandidate">(%1$d events recorded)</string>
-
-
-    <!-- ####################################################################################### -->
     <!-- == Global preference settings - TODO: prune duplicate strings == -->
     <!-- ####################################################################################### -->
 
@@ -658,8 +557,6 @@
      with a lowercase character.
     -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
-
-    <string name="pg_internet_search">Web Searches</string>
 
     <!-- Preference Category -->
     <string name="pg_booklist">Booklists</string>
@@ -1154,10 +1051,6 @@
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
     <!-- ####################################################################################### -->
-    <!-- LibraryThing etc. require the user to configure a personal key -->
-    <string name="hint_developer_key">Developer Key</string>
-    <!-- Goodreads search specific -->
-    <string name="hint_search_text">Text and/or ISBN</string>
 
     <!-- generic place holder text for preference fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
@@ -1653,10 +1546,6 @@
         variety of other preferences that will be applied to all your styles when possible.
     </string>
 
-    <string name="X_lbl_about_special_thanks">Special Thanks</string>
-
-    <!-- hint shown when the user invokes the standard search form (single line, top of screen) -->
-
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
 
@@ -1705,24 +1594,7 @@
     <!-- [VERIFIED] -->
     <string name="X_use_default_setting">Use default values</string>
 
-    <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
-    <string name="X_gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
-
     <string name="X_lbl_select_image">Select image…</string>
-    <string name="X_hardware">Hardware</string>
-    <string name="X_software">Software</string>
-
-
-    <string name="X_lt_info">
-        This application is enhanced by using LibraryThing as a source of information about
-        book series, as well as a source of alternate covers. To use these features you need
-        to register with LibraryThing (free) and request a LibraryThing developer key (also free).
-    </string>
-    <string name="X_lt_url_text_register">Register with LibraryThing</string>
-    <string name="X_lt_url_text_dev_key">Request developer key</string>
-    <string name="X_lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
-    <string name="X_lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
-    <string name="X_lt_key_is_incorrect">Your LibraryThing Developer Key was incorrect, or we could not connect to verify.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
@@ -1737,9 +1609,6 @@
     <string name="lbl_login_to_search">Login to search</string>
     <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
     <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-
-    <string name="btn_import_collection">Import collection</string>
-    <string name="btn_import_new_books">Import new books</string>
 
     <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>
 

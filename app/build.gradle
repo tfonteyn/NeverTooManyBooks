@@ -71,23 +71,6 @@ if (project.hasProperty("NeverTooManyBooks.signing")
 
 /*
     $HOME/.gradle/gradle.properties:
-    NeverTooManyBooks.apiKeys=$HOME/blah/blah/NeverTooManyBooks.apiKeys
-
-    $HOME/blah/blah/NeverTooManyBooks.apiKeys:
-    android {
-        defaultConfig {
-            buildConfigField('String', 'GOODREADS_PUBLIC_KEY', '"realKey"')
-            buildConfigField('String', 'GOODREADS_PRIVATE_KEY', '"realSecret"')
-        }
-    }
- */
-if (project.hasProperty("NeverTooManyBooks.apiKeys")
-        && new File(project.property("NeverTooManyBooks.apiKeys")).exists()) {
-    apply from: project.property("NeverTooManyBooks.apiKeys")
-}
-
-/*
-    $HOME/.gradle/gradle.properties:
     NeverTooManyBooks.email=$HOME/blah/blah/NeverTooManyBooks.email
 
     $HOME/blah/blah/NeverTooManyBooks.email:
@@ -132,13 +115,6 @@ android {
         targetSdkVersion 30
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
-        // API key placeholders. Their values should be empty, i.e. '""'.
-        // The real values are in "NeverTooManyBooks.apiKeys"; see above
-        if (getBuildConfigFields().get('GOODREADS_PUBLIC_KEY') == null) {
-            buildConfigField('String', 'GOODREADS_PUBLIC_KEY', '""')
-            buildConfigField('String', 'GOODREADS_PRIVATE_KEY', '""')
-        }
 
         // Email address placeholders. Their values should be empty, i.e. '""'.
         // The real values are in "NeverTooManyBooks.email"; see above
@@ -281,9 +257,6 @@ dependencies {
     implementation 'ch.acra:acra-mail:5.7.0'
     implementation 'ch.acra:acra-toast:5.7.0'
     implementation 'ch.acra:acra-dialog:5.7.0'
-
-    // OAuth for Goodreads secure access. https://github.com/mttkay/signpost
-    implementation 'oauth.signpost:signpost-core:2.1.1'
 
     // Tar file support for backups
     // http://commons.apache.org/proper/commons-compress/

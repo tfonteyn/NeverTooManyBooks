@@ -59,9 +59,6 @@ public abstract class SearchEngineBase
      * <p>
      * This default implementation is fine for most engines but not always needed.
      * TODO: we probably call checkForSeriesNameInTitle for sites that don't need it.
-     * <p>
-     * It's static so we can use it from
-     * {@link com.hardbacknutter.nevertoomanybooks.sync.goodreads.api.ShowBookApiHandler}.
      *
      * @param bookData Bundle to update
      */
@@ -83,9 +80,7 @@ public abstract class SearchEngineBase
                         seriesList = new ArrayList<>();
                     }
 
-                    // add to the TOP of the list. This is based on translated books/comics
-                    // on Goodreads where the Series is in the original language, but the
-                    // Series name embedded in the title is in the same language as the title.
+                    // add to the TOP of the list.
                     seriesList.add(0, Series.from(seriesTitleWithNumber));
 
                     // store Series back

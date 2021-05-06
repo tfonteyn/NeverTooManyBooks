@@ -85,15 +85,6 @@ public final class DBKey {
     /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
     public static final String SID_LCCN = "lccn_book_id";
 
-
-    /**
-     * {@link DBDefinitions#TBL_BOOKS}.
-     * Goodreads synchronization.
-     * <p>
-     * UTC DateTime stamp.
-     */
-    public static final String UTC_DATE_LAST_SYNC_GOODREADS = "last_goodreads_sync_date";
-
     /**
      * {@link DBDefinitions#TBL_BOOKS}.
      * Stripinfo.be synchronization.

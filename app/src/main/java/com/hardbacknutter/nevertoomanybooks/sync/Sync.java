@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 
 /**
@@ -41,8 +40,6 @@ public final class Sync {
         switch (site) {
             case Calibre:
                 return CalibreHandler.isSyncEnabled(global);
-            case Goodreads:
-                return GoodreadsHandler.isSyncEnabled(global);
             case StripInfo:
                 return StripInfoHandler.isSyncEnabled(global);
 
@@ -53,21 +50,17 @@ public final class Sync {
 
     public static boolean isAnyEnabled(@NonNull final SharedPreferences global) {
         return CalibreHandler.isSyncEnabled(global)
-               || GoodreadsHandler.isSyncEnabled(global)
                || StripInfoHandler.isSyncEnabled(global);
     }
 
     public enum Site {
         Calibre,
-        Goodreads,
         StripInfo;
 
         public boolean isEnabled(@NonNull final SharedPreferences global) {
             switch (this) {
                 case Calibre:
                     return CalibreHandler.isSyncEnabled(global);
-                case Goodreads:
-                    return GoodreadsHandler.isSyncEnabled(global);
                 case StripInfo:
                     return StripInfoHandler.isSyncEnabled(global);
 

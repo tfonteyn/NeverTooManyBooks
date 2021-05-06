@@ -47,7 +47,6 @@
  * Status on 2020-09-26:
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#UTC_DATE_ADDED}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#UTC_DATE_LAST_UPDATED}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBKey#UTC_DATE_LAST_SYNC_GOODREADS}
  * and
  * {@link com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper}#CKEY_UTC_DATETIME
  * <p>

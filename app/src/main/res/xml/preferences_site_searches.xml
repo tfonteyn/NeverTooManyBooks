@@ -72,13 +72,6 @@
         </Preference>
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment"
-            android:icon="@drawable/ic_goodreads"
-            android:key="psk_search_site_goodreads"
-            android:title="@string/site_goodreads">
-        </Preference>
-
-        <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
             android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_isfdb"

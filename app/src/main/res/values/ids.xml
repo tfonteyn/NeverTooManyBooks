@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -45,13 +45,7 @@
     <!-- Updating fields from the internet. We keep each field usage directly on the field selector. -->
     <item name="TAG_FIELD_USAGE" type="id" />
 
-    <!-- Tagging a (sub) View in a list with the Goodreads 'Work' it represents. -->
-    <item name="TAG_GR_WORK" type="id" />
     <!-- END View tags -->
-
-    <!-- generic ids for the Goodreads taskqueue component. -->
-    <item name="LEGACY_VIEW_1" type="id" />
-    <item name="LEGACY_VIEW_2" type="id" />
 
     <!-- The 'name' field on the edit-style fragment. -->
     <item name="STYLE_NAME_VIEW" type="id" />

@@ -36,8 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.GoodreadsSyncFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.goodreads.qtasks.admin.TaskAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncFragment;
 
 /**
@@ -70,13 +68,11 @@ public class FragmentHostActivity
         sMap.put(PreferredStylesFragment.TAG, PreferredStylesFragment.class);
 
         sMap.put(CalibreSyncFragment.TAG, CalibreSyncFragment.class);
-        sMap.put(GoodreadsSyncFragment.TAG, GoodreadsSyncFragment.class);
         sMap.put(StripInfoSyncFragment.TAG, StripInfoSyncFragment.class);
 
         sMap.put(AboutFragment.TAG, AboutFragment.class);
 
         sMap.put(MaintenanceFragment.TAG, MaintenanceFragment.class);
-        sMap.put(TaskAdminFragment.TAG, TaskAdminFragment.class);
     }
 
     @Override

@@ -64,12 +64,4 @@
     <item name="TASK_ID_DB_REBUILD_INDEXES" type="id" />
     <item name="TASK_ID_DB_REBUILD_FTS" type="id" />
     <item name="TASK_ID_DB_REBUILD_TITLE_OB" type="id" />
-
-
-    <!-- Goodreads. -->
-    <item name="TASK_ID_GR_REQUEST_AUTH" type="id" />
-    <item name="TASK_ID_GR_SEND_ONE_BOOK" type="id" />
-    <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
-    <item name="TASK_ID_GR_IMPORT" type="id" />
-    <item name="TASK_ID_GR_GET_WORKS" type="id" />
 </resources>

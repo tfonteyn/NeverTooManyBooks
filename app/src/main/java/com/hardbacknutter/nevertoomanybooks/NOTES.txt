@@ -15,14 +15,8 @@ Not fixing.
 Amazon...
  * Goodreads is owned by Amazon and is shutting their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
- * TODO: remove the LibraryThing code; later on the Goodreads code...
- * and maybe all usage of Amazon....
 
 ----------------------------------------------------------------------------------------------------
-ENHANCE: a note for the records... there is far to much hardcoded dependencies between
-    classes. True injection of dependencies is nearly absent making testing needlessly complicated.
-    A service locator for the dao's will be introduced to ease the pain
-
 ENHANCE: (Calibre) tags... implement a full tag system in our own database.
  * bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
  * and then define some tags as being shelves ?
@@ -38,30 +32,16 @@ TODO: move Location, Format ... to separate tables ?
 
 ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
 
-TODO: task-queue - minimalistic traditional database backed 'MessageQueue' like product
-    Only used by the GoodReads api where it does make sense to have 'survivable' tasks.
-    Hardcoded defaults clean up dead tasks after 7 days.
-    WorkManager sounds like a good replacement.
-
 ----------------------------------------------------------------------------------------------------
 
 Issues checked: 834 down to 677 (inc)
 
 New fields:
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/813 - detailed authorship and original title/language
-==> LibraryThing seems to have fields for original title/language. Needs investigating.
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/799 - original title (for translations, so also original language)
-==> superseded by 813
-
-General:
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
-==> there is the concept of 'private notes' in Goodreads, but they do not seem to in the REST API.
 
 Searches
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - WorldCat support
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn,
     and then redo the search WITH the isbn
@@ -72,6 +52,7 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/834 - 820..834: all screen orientation change issues
 https://github.com/eleybourn/Book-Catalogue/issues/809 - same as 740
+https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images
 https://github.com/eleybourn/Book-Catalogue/issues/800 - Bulk edit (language,publisher)
 https://github.com/eleybourn/Book-Catalogue/issues/779 - Unneeded comma at end of line in CSV export
 https://github.com/eleybourn/Book-Catalogue/issues/770 - Set as read from long press
@@ -112,7 +93,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list 
 https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
 https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
 
-https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images
---> images now in private app files folder. Having them in public storage is to slippery
-    considering android permissions and the direction Google pushes them.
-
+https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads notes
+-> Goodreads is removing their public API.
+https://github.com/eleybourn/Book-Catalogue/issues/546 - WorldCat support
+-> their 2.0 API is... no, just no.

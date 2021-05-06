@@ -49,7 +49,6 @@ public final class FormatMapper
         MAPPER.put("audio cd", R.string.book_format_audiobook);
         MAPPER.put("unknown", R.string.unknown);
 
-        // Goodreads, not already listed above.
         MAPPER.put("mass market paperback", R.string.book_format_paperback);
         MAPPER.put("paperback", R.string.book_format_paperback);
         MAPPER.put("hardcover", R.string.book_format_hardcover);

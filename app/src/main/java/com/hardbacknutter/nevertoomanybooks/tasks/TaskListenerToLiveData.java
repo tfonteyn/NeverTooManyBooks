@@ -27,7 +27,6 @@ import androidx.lifecycle.MutableLiveData;
  * A gateway between an {@link LTask} and {@link MutableLiveData} clients.
  * <p>
  * Mainly used to provide multiple {@link LTask} with a single {@link MutableLiveData} client.
- * The Goodreads tasks are (for now) the only users of this object.
  * It's limited to a single result type which does not make it universally usable for now.
  *
  * @param <Result> type of the task result

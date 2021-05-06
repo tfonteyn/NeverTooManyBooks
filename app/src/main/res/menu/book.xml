@@ -79,13 +79,6 @@
         android:title="@string/whichSendApplication" />
 
     <item
-        android:id="@id/MENU_BOOK_SEND_TO_GOODREADS"
-        android:icon="@drawable/ic_goodreads"
-        android:orderInCategory="@integer/MENU_ORDER_SEND_TO_GOODREADS"
-        android:title="@string/gr_send_to_goodreads"
-        android:visible="false" />
-
-    <item
         android:id="@id/SUBMENU_CALIBRE"
         android:orderInCategory="@integer/MENU_ORDER_CALIBRE"
         android:icon="@drawable/ic_baseline_cloud_24"

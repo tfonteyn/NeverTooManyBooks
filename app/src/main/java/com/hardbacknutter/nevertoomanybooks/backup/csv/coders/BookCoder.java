@@ -171,8 +171,6 @@ public class BookCoder {
             columnLabels.append(COMMA).append('"').append(domain.getName()).append('"');
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-        columnLabels.append(COMMA).append('"')
-                    .append(DBKey.UTC_DATE_LAST_SYNC_GOODREADS).append('"');
 
         return columnLabels.toString();
     }
@@ -242,8 +240,6 @@ public class BookCoder {
             line.add(encode(book.getString(domain.getName())));
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
-
-        line.add(encode(book.getString(DBKey.UTC_DATE_LAST_SYNC_GOODREADS)));
 
         return line.toString();
     }
