@@ -34,78 +34,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test the variations of currency location (before/after), currency symbol/code,
  * decimal separator and thousands separator.
  */
-class MoneyFormatterTest
+class MoneyFormatterTestJDK
         extends Base {
 
     @Test
-    void format00() {
+    void formatUS() {
         setLocale(Locale.US);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
         assertEquals("$1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
-    }
-
-    @Test
-    void format01() {
-        setLocale(Locale.UK);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("USD1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
-    }
-
-    @Test
-    void format02() {
-        setLocale(Locale.GERMANY);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 USD", f.format(mContext, new Money(1234.50d, Money.USD)));
-    }
-
-    @Test
-    void format10() {
-        setLocale(Locale.US);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("GBP1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
-    }
-
-    @Test
-    void format11() {
-        setLocale(Locale.UK);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
         assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
-    }
-
-    @Test
-    void format12() {
-        setLocale(Locale.GERMANY);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 GBP", f.format(mContext, new Money(1234.50d, Money.GBP)));
-    }
-
-    @Test
-    void format20() {
-        setLocale(Locale.US);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("EUR1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
-    }
-
-    @Test
-    void format21() {
-        setLocale(Locale.UK);
-        //noinspection ConstantConditions
-        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
         assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 
     @Test
-    void format22() {
+    void formatUK() {
+        setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("US$1,234.50", f.format(mContext, new Money(1234.50d, Money.USD)));
+        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, Money.GBP)));
+        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, Money.EUR)));
+    }
+
+    @Test
+    void formatGERMANY() {
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("1.234,50 $", f.format(mContext, new Money(1234.50d, Money.USD)));
+        assertEquals("1.234,50 £", f.format(mContext, new Money(1234.50d, Money.GBP)));
         assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 }

@@ -59,7 +59,8 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         final String filename = "/amazon/0575090677.html";
 
-        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Bone Silence", mRawData.getString(DBKey.KEY_TITLE));
         assertEquals("978-0575090675", mRawData.getString(DBKey.KEY_ISBN));
@@ -91,7 +92,8 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         final String filename = "/amazon/1473210208.html";
 
-        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBKey.KEY_TITLE));
         assertEquals("978-1473210202", mRawData.getString(DBKey.KEY_ISBN));
@@ -125,7 +127,8 @@ class AmazonHtmlHandlerTest
         final String locationHeader = "https://www.amazon.fr/gp/product/2205057332";
         final String filename = "/amazon/2205057332.html";
 
-        loadData(mSearchEngine, UTF_8, locationHeader, filename, new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, UTF_8, locationHeader, filename,
+                 new boolean[]{false, false});
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
                      mRawData.getString(DBKey.KEY_TITLE));

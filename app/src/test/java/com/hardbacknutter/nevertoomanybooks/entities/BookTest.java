@@ -231,9 +231,6 @@ class BookTest
 
         assertEquals("0.0",
                      DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
-        assertEquals("0000-00-00",
-                     DBDefinitions.DOM_GOODREADS_UTC_LAST_SYNC_DATE.getDefault(), INVALID_DEFAULT);
-
     }
 
     /** Domain: text, default "". */
@@ -244,7 +241,6 @@ class BookTest
         book.put(DBKey.DATE_READ_START, "");
         book.put(DBKey.DATE_READ_END, null);
 
-        book.put(DBKey.UTC_DATE_LAST_SYNC_GOODREADS, null);
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
@@ -259,9 +255,6 @@ class BookTest
         // text, default "". A null is removed.
         assertFalse(book.contains(DBKey.DATE_READ_END));
 
-        // text, default "0000-00-00". A null is removed.
-        assertFalse(book.contains(DBKey.UTC_DATE_LAST_SYNC_GOODREADS));
-
         assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
         assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));
     }
@@ -273,7 +266,6 @@ class BookTest
         book.put(DBKey.DATE_READ_START, "");
         book.put(DBKey.DATE_READ_END, null);
 
-        book.put(DBKey.UTC_DATE_LAST_SYNC_GOODREADS, null);
         book.putDouble(DBKey.PRICE_LISTED, 12.34);
         book.putDouble(DBKey.PRICE_PAID, 0);
 
@@ -287,9 +279,6 @@ class BookTest
 
         // text, default "". A null is replaced by the default
         assertEquals("", book.getString(DBKey.DATE_READ_END));
-
-        // text, default "". A null is replaced by the default
-        assertEquals("0000-00-00", book.getString(DBKey.UTC_DATE_LAST_SYNC_GOODREADS));
 
         assertEquals(12.34d, book.getDouble(DBKey.PRICE_LISTED));
         assertEquals(0d, book.getDouble(DBKey.PRICE_PAID));

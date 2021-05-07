@@ -99,7 +99,7 @@ class IsfdbEditionsHandlerTest
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
         Document document = null;
         try {
-            document = mSearchEngine.loadDocument(path);
+            document = mSearchEngine.loadDocument(mContext, path);
         } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }
@@ -122,7 +122,7 @@ class IsfdbEditionsHandlerTest
         final String path = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
         Document document = null;
         try {
-            document = mSearchEngine.loadDocument(path);
+            document = mSearchEngine.loadDocument(mContext, path);
         } catch (@NonNull final SearchException | CredentialsException e) {
             fail(e);
         }

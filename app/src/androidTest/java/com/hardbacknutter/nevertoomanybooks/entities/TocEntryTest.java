@@ -63,7 +63,7 @@ public class TocEntryTest
 
 
         // keep, position 0, merged with next entry with the same title
-        tocEntry = new TocEntry(author0, "title 1", null);
+        tocEntry = new TocEntry(author0, "title 1");
         list.add(tocEntry);
 
         // keep, position 1
@@ -75,7 +75,7 @@ public class TocEntryTest
         list.add(tocEntry);
 
         // discard in favour of position 1
-        tocEntry = new TocEntry(author0, "title 2", null);
+        tocEntry = new TocEntry(author0, "title 2");
         list.add(tocEntry);
 
         final boolean modified = TocEntry.pruneList(list, context, false, Locale.getDefault());

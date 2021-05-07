@@ -71,7 +71,8 @@ class OpenLibrarySearchEngineTest
             assertNotNull(is);
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);
-            mSearchEngine.handleResponse(json, new boolean[]{false, false}, mRawData);
+            mSearchEngine.handleResponse(mContext, json,
+                                         new boolean[]{false, false}, mRawData);
         } catch (@NonNull final DiskFullException | CoverStorageException | IOException e) {
             fail(e);
         }

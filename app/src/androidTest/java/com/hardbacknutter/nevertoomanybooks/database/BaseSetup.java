@@ -208,13 +208,13 @@ public abstract class BaseSetup
         publisherList.add(publisher[2]);
         book[4].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         tocList.clear();
-        tocEntry[0] = new TocEntry(author[1], TOC_TITLE + "0", null);
+        tocEntry[0] = new TocEntry(author[1], TOC_TITLE + "0");
         tocList.add(tocEntry[0]);
-        tocEntry[1] = new TocEntry(author[1], TOC_TITLE + "1", null);
+        tocEntry[1] = new TocEntry(author[1], TOC_TITLE + "1");
         tocList.add(tocEntry[1]);
-        tocEntry[2] = new TocEntry(author[2], TOC_TITLE + "2", null);
+        tocEntry[2] = new TocEntry(author[2], TOC_TITLE + "2");
         tocList.add(tocEntry[2]);
-        tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3", null);
+        tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3");
         tocList.add(tocEntry[3]);
         book[4].putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
         bookId[4] = bookDao.insert(context, book[4], 0);

@@ -24,12 +24,14 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.LocaleList;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
@@ -52,11 +54,13 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
@@ -87,6 +91,11 @@ public class Base {
 
     private Locale mJdkLocale;
 
+    @BeforeAll
+    static void startUp() {
+        Logger.isJUnitTest = true;
+    }
+
     /**
      * @param locale0 to use for
      *                JDK
@@ -95,12 +104,6 @@ public class Base {
     public void setLocale(@NonNull final Locale locale0) {
         mLocale0 = locale0;
         Locale.setDefault(mLocale0);
-    }
-
-
-    @BeforeAll
-    static void startUp() {
-        Logger.isJUnitTest = true;
     }
 
     @AfterEach
@@ -131,6 +134,16 @@ public class Base {
 
         when(mContext.getResources()).thenReturn(mResources);
 
+        when(mContext.getExternalFilesDirs(eq(Environment.DIRECTORY_PICTURES))).thenAnswer(
+                (Answer<File[]>) invocation -> {
+                    final String tmpDir = System.getProperty("java.io.tmpdir");
+                    final File[] dirs = new File[1];
+                    dirs[0] = new File(tmpDir, "Pictures");
+                    //noinspection ResultOfMethodCallIgnored
+                    dirs[0].mkdir();
+                    return dirs;
+                });
+
         // Global prefs
         when(mContext.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
                 .thenReturn(mMockPreferences);
@@ -145,6 +158,7 @@ public class Base {
 
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         when(mConfiguration.getLocales()).thenReturn(mLocaleList);
+        doNothing().when(mConfiguration).setLocale(any(Locale.class));
 
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 

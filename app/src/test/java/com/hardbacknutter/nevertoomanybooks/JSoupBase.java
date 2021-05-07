@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -41,7 +43,8 @@ public class JSoupBase
         extends Base {
 
     /** Helper: Load the data from the given file, and populate {@link #mRawData} */
-    protected void loadData(@NonNull final JsoupSearchEngineBase searchEngine,
+    protected void loadData(@NonNull final Context context,
+                            @NonNull final JsoupSearchEngineBase searchEngine,
                             @NonNull final String charsetName,
                             @NonNull final String locationHeader,
                             @NonNull final String filename,
@@ -54,7 +57,7 @@ public class JSoupBase
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            searchEngine.parse(document, fetchCovers, mRawData);
+            searchEngine.parse(context, document, fetchCovers, mRawData);
 
             assertFalse(mRawData.isEmpty());
 

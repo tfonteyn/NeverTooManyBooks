@@ -72,8 +72,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
         final String filename = "/isfdb/112781.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                 locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Like Nothing on Earth", mRawData.getString(DBKey.KEY_TITLE));
         assertEquals(112781L, mRawData.getLong(DBKey.SID_ISFDB));
@@ -141,8 +141,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
         final String filename = "/isfdb/431964.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                 locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Mort", mRawData.getString(DBKey.KEY_TITLE));
         assertEquals(431964L, mRawData.getLong(DBKey.SID_ISFDB));
@@ -196,8 +196,8 @@ class IsfdbBookHandlerTest
         final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?542125";
         final String filename = "/isfdb/542125.html";
 
-        loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
-                 new boolean[]{false, false});
+        loadData(mContext, mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE,
+                 locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("The Shepherd's Crown", mRawData.getString(DBKey.KEY_TITLE));
         assertEquals(542125L, mRawData.getLong(DBKey.SID_ISFDB));
