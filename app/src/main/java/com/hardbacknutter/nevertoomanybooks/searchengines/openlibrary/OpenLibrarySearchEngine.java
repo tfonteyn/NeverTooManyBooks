@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -197,7 +198,8 @@ public class OpenLibrarySearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final String externalId,
+    public Bundle searchByExternalId(@NonNull final Context context,
+                                     @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException {
 
@@ -205,7 +207,7 @@ public class OpenLibrarySearchEngine
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
-        fetchBook(url, fetchCovers, bookData);
+        fetchBook(context, url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -216,7 +218,8 @@ public class OpenLibrarySearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException {
 
@@ -224,7 +227,7 @@ public class OpenLibrarySearchEngine
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 
-        fetchBook(url, fetchCovers, bookData);
+        fetchBook(context, url, fetchCovers, bookData);
         return bookData;
     }
 
@@ -242,7 +245,8 @@ public class OpenLibrarySearchEngine
     @Nullable
     @Override
     @WorkerThread
-    public String searchCoverByIsbn(@NonNull final String validIsbn,
+    public String searchCoverByIsbn(@NonNull final Context context,
+                                    @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
             throws DiskFullException, CoverStorageException {
@@ -274,7 +278,8 @@ public class OpenLibrarySearchEngine
      *
      * @throws JSONException on any failure to parse.
      */
-    private void fetchBook(@NonNull final String url,
+    private void fetchBook(@NonNull final Context context,
+                           @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {
@@ -291,7 +296,7 @@ public class OpenLibrarySearchEngine
             }
 
             // json-ify and handle.
-            handleResponse(new JSONObject(response), fetchCovers, bookData);
+            handleResponse(context, new JSONObject(response), fetchCovers, bookData);
 
         } catch (@NonNull final JSONException | IOException e) {
             throw new SearchException(getName(), e);
@@ -447,12 +452,14 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
+     * @param context Current context
      * @param jsonObject  the complete book record.
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
      */
     @VisibleForTesting
-    void handleResponse(@NonNull final JSONObject jsonObject,
+    void handleResponse(@NonNull final Context context,
+                        @NonNull final JSONObject jsonObject,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException {
@@ -463,7 +470,7 @@ public class OpenLibrarySearchEngine
             final String topLevelKey = it.next();
             final String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                parse(data[1],
+                parse(context, data[1],
                       jsonObject.getJSONObject(topLevelKey),
                       fetchCovers,
                       bookData);
@@ -474,18 +481,20 @@ public class OpenLibrarySearchEngine
     /**
      * Parse the results, and build the bookData bundle.
      *
+     * @param context     Current context
      * @param validIsbn   of the book
      * @param document    JSON result data
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
      */
-    private void parse(@NonNull final String validIsbn,
+    private void parse(@NonNull final Context context,
+                       @NonNull final String validIsbn,
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
                        @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException {
 
-        final DateParser dateParser = new FullDateParser(getContext());
+        final DateParser dateParser = new FullDateParser(context);
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
@@ -540,7 +549,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("publish_date");
         if (!s.isEmpty()) {
-            final LocalDateTime date = dateParser.parse(s, getLocale());
+            final LocalDateTime date = dateParser.parse(s, getLocale(context));
             if (date != null) {
                 bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));

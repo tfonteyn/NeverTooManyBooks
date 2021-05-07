@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -125,7 +126,8 @@ public class KbNlSearchEngine
     }
 
     @NonNull
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
@@ -156,7 +158,7 @@ public class KbNlSearchEngine
         }
 
         if (fetchCovers[0]) {
-            final ArrayList<String> list = searchBestCoverByIsbn(validIsbn, 0);
+            final ArrayList<String> list = searchBestCoverByIsbn(context, validIsbn, 0);
             if (!list.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
             }
@@ -173,7 +175,8 @@ public class KbNlSearchEngine
      */
     @Nullable
     @Override
-    public String searchCoverByIsbn(@NonNull final String validIsbn,
+    public String searchCoverByIsbn(@NonNull final Context context,
+                                    @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
             throws DiskFullException, CoverStorageException {

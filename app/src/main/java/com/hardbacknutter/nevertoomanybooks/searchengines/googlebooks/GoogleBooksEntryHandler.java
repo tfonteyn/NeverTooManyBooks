@@ -254,12 +254,12 @@ class GoogleBooksEntryHandler
      */
     GoogleBooksEntryHandler(@NonNull final SearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
-                            @NonNull final Bundle bookData) {
+                            @NonNull final Bundle bookData,
+                            @NonNull final Locale locale) {
         mSearchEngine = searchEngine;
         mFetchCovers = fetchCovers;
         mBookData = bookData;
-
-        mLocale = mSearchEngine.getLocale();
+        mLocale = locale;
     }
 
     /**

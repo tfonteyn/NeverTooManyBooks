@@ -754,7 +754,7 @@ public class SearchCoordinator
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
                 }
-                accumulateSiteData(searchEngine.getLocale(), siteData);
+                accumulateSiteData(searchEngine.getLocale(context), siteData);
             }
         }
 

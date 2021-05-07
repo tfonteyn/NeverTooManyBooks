@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
@@ -95,16 +96,18 @@ public class FileManager {
      * The first Site which has an image is accepted.
      * <p>
      *
-     * @param caller to check for any cancellations
-     * @param isbn   to search for, <strong>must</strong> be valid.
-     * @param cIdx   0..n image index
-     * @param sizes  a list of images sizes in order of preference
+     * @param context Current context
+     * @param caller  to check for any cancellations
+     * @param isbn    to search for, <strong>must</strong> be valid.
+     * @param cIdx    0..n image index
+     * @param sizes   a list of images sizes in order of preference
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec.
      */
     @NonNull
     @WorkerThread
-    public ImageFileInfo search(@NonNull final Canceller caller,
+    public ImageFileInfo search(@NonNull final Context context,
+                                @NonNull final Canceller caller,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes)
@@ -160,7 +163,7 @@ public class FileManager {
                         String fileSpec = null;
                         try {
                             fileSpec = ((SearchEngine.CoverByIsbn) searchEngine)
-                                    .searchCoverByIsbn(isbn, cIdx, size);
+                                    .searchCoverByIsbn(context, isbn, cIdx, size);
 
                         } catch (@NonNull final SearchException e) {
                             // ignore, don't let a single search break the loop.

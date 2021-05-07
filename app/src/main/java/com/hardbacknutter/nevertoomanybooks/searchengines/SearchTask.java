@@ -42,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Searches a single {@link SearchEngine}.
- * <p>
- * When a context is needed, this class should call {@link SearchEngine#getContext()}
- * to ensure it runs/uses in the same context as the engine it is using.
  */
 public class SearchTask
         extends LTask<Bundle> {
@@ -56,9 +53,6 @@ public class SearchTask
 
     /** Log tag. */
     private static final String TAG = "SearchTask";
-
-    /** progress title. e.g. "Searching Amazon". */
-    private final String mProgressTitle;
 
     @NonNull
     private final SearchEngine mSearchEngine;
@@ -102,10 +96,6 @@ public class SearchTask
 
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
-
-        final Context context = mSearchEngine.getContext();
-        mProgressTitle = context.getString(R.string.progress_msg_searching_site,
-                                           searchEngine.getName());
     }
 
     void setSearchBy(@By final int by) {
@@ -180,7 +170,8 @@ public class SearchTask
     protected Bundle doWork(@NonNull final Context context)
             throws StorageException, SearchException, CredentialsException, IOException {
 
-        publishProgress(1, mProgressTitle);
+        publishProgress(1, context.getString(R.string.progress_msg_searching_site,
+                                             mSearchEngine.getName()));
 
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
@@ -202,24 +193,24 @@ public class SearchTask
             case BY_EXTERNAL_ID:
                 SanityCheck.requireValue(mExternalId, "mExternalId");
                 bookData = ((SearchEngine.ByExternalId) mSearchEngine)
-                        .searchByExternalId(mExternalId, mFetchCovers);
+                        .searchByExternalId(context, mExternalId, mFetchCovers);
                 break;
 
             case BY_ISBN:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(mIsbnStr, mFetchCovers);
+                        .searchByIsbn(context, mIsbnStr, mFetchCovers);
                 break;
 
             case BY_BARCODE:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                        .searchByBarcode(mIsbnStr, mFetchCovers);
+                        .searchByBarcode(context, mIsbnStr, mFetchCovers);
                 break;
 
             case BY_TEXT:
                 bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(mIsbnStr, mAuthor, mTitle, mPublisher, mFetchCovers);
+                        .search(context, mIsbnStr, mAuthor, mTitle, mPublisher, mFetchCovers);
                 break;
 
             default:

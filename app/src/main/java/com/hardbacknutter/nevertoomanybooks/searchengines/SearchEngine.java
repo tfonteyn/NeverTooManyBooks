@@ -95,15 +95,6 @@ public interface SearchEngine {
     int getId();
 
     /**
-     * The <strong>localised Application</strong> context.
-     *
-     * @return <strong>localised Application</strong> context.
-     */
-    @AnyThread
-    @NonNull
-    Context getContext();
-
-    /**
      * Get the configuration for this engine.
      *
      * @return config
@@ -138,11 +129,13 @@ public interface SearchEngine {
      * Override if the Locale needs to be user configurable.
      * (Presumably depending on the site url: see {@link AmazonSearchEngine} for an example)
      *
+     * @param context Current context
+     *
      * @return site locale
      */
     @AnyThread
     @NonNull
-    Locale getLocale();
+    Locale getLocale(@NonNull Context context);
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -363,6 +356,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
+         * @param context     Current context
          * @param externalId  the external id (as a String) for this particular search site.
          * @param fetchCovers Set to {@code true} if we want to get covers
          *                    The array is guaranteed to have at least one element.
@@ -371,7 +365,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByExternalId(@NonNull String externalId,
+        Bundle searchByExternalId(@NonNull Context context,
+                                  @NonNull String externalId,
                                   @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -400,6 +395,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
+         * @param context     Current context
          * @param validIsbn   to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
          *                    The array is guaranteed to have at least one element.
@@ -408,7 +404,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByIsbn(@NonNull String validIsbn,
+        Bundle searchByIsbn(@NonNull Context context,
+                            @NonNull String validIsbn,
                             @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -443,6 +440,7 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
+         * @param context     Current context
          * @param barcode     to search for, <strong>will</strong> be valid.
          * @param fetchCovers Set to {@code true} if we want to get covers
          *                    The array is guaranteed to have at least one element.
@@ -451,7 +449,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByBarcode(@NonNull String barcode,
+        Bundle searchByBarcode(@NonNull Context context,
+                               @NonNull String barcode,
                                @NonNull boolean[] fetchCovers)
                 throws StorageException,
                        SearchException,
@@ -472,6 +471,7 @@ public interface SearchEngine {
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
+         * @param context     Current context
          * @param code        isbn, barcode or generic code to search for
          * @param author      to search for
          * @param title       to search for
@@ -485,7 +485,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle search(@Nullable String code,
+        Bundle search(@NonNull Context context,
+                      @Nullable String code,
                       @Nullable String author,
                       @Nullable String title,
                       @Nullable String publisher,
@@ -507,6 +508,7 @@ public interface SearchEngine {
          * <p>
          * See {@link #searchBestCoverByIsbn} for sites with support for multiple cover sizes.
          *
+         * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.
          * @param cIdx      0..n image index
          * @param size      of image to get.
@@ -515,7 +517,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @Nullable
-        String searchCoverByIsbn(@NonNull String validIsbn,
+        String searchCoverByIsbn(@NonNull Context context,
+                                 @NonNull String validIsbn,
                                  @IntRange(from = 0, to = 1) int cIdx,
                                  @Nullable ImageFileInfo.Size size)
                 throws StorageException,
@@ -528,6 +531,7 @@ public interface SearchEngine {
          * will try to get an image in order of large, medium, small.
          * i.e. the 'best' image being the largest we can find.
          *
+         * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.
          * @param cIdx      0..n image index
          *
@@ -537,16 +541,20 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        default ArrayList<String> searchBestCoverByIsbn(@NonNull final String validIsbn,
+        default ArrayList<String> searchBestCoverByIsbn(@NonNull final Context context,
+                                                        @NonNull final String validIsbn,
                                                         @IntRange(from = 0, to = 1) final int cIdx)
                 throws StorageException, SearchException, CredentialsException {
 
             final ArrayList<String> list = new ArrayList<>();
-            String fileSpec = searchCoverByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Large);
+            String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
+                                                ImageFileInfo.Size.Large);
             if (fileSpec == null && getConfig().supportsMultipleCoverSizes()) {
-                fileSpec = searchCoverByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Medium);
+                fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
+                                             ImageFileInfo.Size.Medium);
                 if (fileSpec == null) {
-                    fileSpec = searchCoverByIsbn(validIsbn, cIdx, ImageFileInfo.Size.Small);
+                    fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
+                                                 ImageFileInfo.Size.Small);
                 }
             }
             if (fileSpec != null) {
@@ -562,13 +570,15 @@ public interface SearchEngine {
         /**
          * Find alternative editions (their ISBN) for the given ISBN.
          *
+         * @param context   Current context
          * @param validIsbn to search for, <strong>must</strong> be valid.
          *
          * @return a list of isbn numbers for alternative editions of the original, can be empty.
          */
         @WorkerThread
         @NonNull
-        List<String> searchAlternativeEditions(@NonNull String validIsbn)
+        List<String> searchAlternativeEditions(@NonNull Context context,
+                                               @NonNull String validIsbn)
                 throws CredentialsException, SearchException;
     }
 }

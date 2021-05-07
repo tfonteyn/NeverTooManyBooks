@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.lastdodo;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
@@ -103,33 +104,35 @@ public class LastDodoSearchEngine
     }
 
     @NonNull
-    public Bundle searchByExternalId(@NonNull final String externalId,
+    public Bundle searchByExternalId(@NonNull final Context context,
+                                     @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
-            parse(document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             // it's ALWAYS multi-result, even if only one result is returned.
-            parseMultiResult(document, fetchCovers, bookData);
+            parseMultiResult(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -139,12 +142,14 @@ public class LastDodoSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
      *
+     * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
      */
     @WorkerThread
-    private void parseMultiResult(@NonNull final Document document,
+    private void parseMultiResult(@NonNull final Context context,
+                                  @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
@@ -154,9 +159,9 @@ public class LastDodoSearchEngine
         if (section != null) {
             final Element urlElement = section.selectFirst("a");
             if (urlElement != null) {
-                final Document redirected = loadDocument(urlElement.attr("href"));
+                final Document redirected = loadDocument(context, urlElement.attr("href"));
                 if (!isCancelled()) {
-                    parse(redirected, fetchCovers, bookData);
+                    parse(context, redirected, fetchCovers, bookData);
                 }
             }
         }
@@ -164,11 +169,12 @@ public class LastDodoSearchEngine
 
     @Override
     @VisibleForTesting
-    public void parse(@NonNull final Document document,
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {
-        super.parse(document, fetchCovers, bookData);
+        super.parse(context, document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
         String tmpSeriesNr = null;
@@ -262,7 +268,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Taal / dialect:":
-                    processLanguage(td, bookData);
+                    processLanguage(context, td, bookData);
                     break;
 
                 case "Soort:":
@@ -452,13 +458,14 @@ public class LastDodoSearchEngine
 
     }
 
-    private void processLanguage(@NonNull final Element td,
+    private void processLanguage(@NonNull final Context context,
+                                 @NonNull final Element td,
                                  @NonNull final Bundle bookData) {
         processText(td, DBKey.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = ServiceLocator.getInstance().getLanguages()
-                                 .getISO3FromDisplayName(getLocale(), lang);
+                                 .getISO3FromDisplayName(getLocale(context), lang);
             bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
     }

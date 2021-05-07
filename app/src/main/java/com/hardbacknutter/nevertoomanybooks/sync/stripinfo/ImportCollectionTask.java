@@ -182,7 +182,8 @@ public class ImportCollectionTask
                             // The back cover is not available on the collection page
                             // Do a full download.
                             final Bundle bookData = mSearchEngine
-                                    .searchByExternalId(String.valueOf(externalId), coversWanted);
+                                    .searchByExternalId(context, String.valueOf(externalId),
+                                                        coversWanted);
 
                             // Extract the delta from the *bookData*
                             delta = mSyncProcessor.process(context, book.getId(), book,
@@ -208,7 +209,8 @@ public class ImportCollectionTask
                     } else {
                         // It's a new book, do a full download.
                         final Bundle bookData = mSearchEngine
-                                .searchByExternalId(String.valueOf(externalId), mCoversForNewBooks);
+                                .searchByExternalId(context, String.valueOf(externalId),
+                                                    mCoversForNewBooks);
 
                         final Book book = Book.from(bookData);
                         book.ensureBookshelf(context);

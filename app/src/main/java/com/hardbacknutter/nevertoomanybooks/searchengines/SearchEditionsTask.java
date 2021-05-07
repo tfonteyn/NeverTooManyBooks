@@ -95,7 +95,7 @@ public class SearchEditionsTask
                 NetworkUtils.ping(searchEngine.getSiteUrl());
 
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                        .searchAlternativeEditions(mIsbn));
+                                        .searchAlternativeEditions(context, mIsbn));
 
             } catch (@NonNull final IOException | CredentialsException | SearchException
                     | RuntimeException e) {

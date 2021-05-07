@@ -69,6 +69,6 @@ public class IsfdbGetEditionsTask
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
-        return searchEngine.fetchEditionsByIsbn(mIsbn);
+        return searchEngine.fetchEditionsByIsbn(context, mIsbn);
     }
 }

@@ -95,11 +95,11 @@ public class IsfdbGetBookTask
         final boolean[] fetchCovers = {false, false};
         if (mEdition != null) {
             final Bundle bookData = new Bundle();
-            searchEngine.fetchByEdition(mEdition, fetchCovers, bookData);
+            searchEngine.fetchByEdition(context, mEdition, fetchCovers, bookData);
             return bookData;
 
         } else if (mIsfdbId != 0) {
-            return searchEngine.searchByExternalId(String.valueOf(mIsfdbId), fetchCovers);
+            return searchEngine.searchByExternalId(context, String.valueOf(mIsfdbId), fetchCovers);
 
         } else {
             throw new IllegalStateException("how did we get here?");

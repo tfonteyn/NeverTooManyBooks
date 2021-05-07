@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -89,13 +90,15 @@ public abstract class JsoupSearchEngineBase
     /**
      * Load the url into a parsed {@link org.jsoup.nodes.Document}.
      *
-     * @param url to load
+     * @param context Current context
+     * @param url     to load
      *
      * @return the document
      */
     @WorkerThread
     @NonNull
-    public Document loadDocument(@NonNull final String url)
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url)
             throws SearchException, CredentialsException {
         try {
             return mJsoupLoader.loadDocument(url, createConnectionProducer());
@@ -112,6 +115,7 @@ public abstract class JsoupSearchEngineBase
      * Implementations <strong>must</strong> call this super first
      * to ensure cached data is purged.
      *
+     * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
@@ -119,7 +123,8 @@ public abstract class JsoupSearchEngineBase
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     @CallSuper
-    public void parse(@NonNull final Document document,
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {

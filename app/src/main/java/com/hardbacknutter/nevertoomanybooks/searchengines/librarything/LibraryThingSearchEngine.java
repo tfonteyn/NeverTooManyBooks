@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.librarything;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -108,7 +110,8 @@ public class LibraryThingSearchEngine
     @WorkerThread
     @NonNull
     @Override
-    public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
+    public List<String> searchAlternativeEditions(@NonNull final Context context,
+                                                  @NonNull final String validIsbn)
             throws SearchException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();

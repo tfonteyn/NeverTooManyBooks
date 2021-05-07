@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.amazon;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -223,20 +224,22 @@ public class AmazonSearchEngine
 
     @NonNull
     @Override
-    public Locale getLocale() {
+    public Locale getLocale(@NonNull final Context context) {
         // Derive the Locale from the user configured url.
-        return getLocale(getSiteUrl());
+        return getLocale(context, getSiteUrl());
     }
 
     /**
      * Derive the Locale from the actual url.
      *
+     * @param context Current context
      * @param baseUrl to digest
      *
      * @return Locale matching the url root domain
      */
     @NonNull
-    private Locale getLocale(@NonNull final String baseUrl) {
+    private Locale getLocale(@NonNull final Context context,
+                             @NonNull final String baseUrl) {
 
         final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
         switch (root) {
@@ -250,7 +253,7 @@ public class AmazonSearchEngine
             default:
                 // other amazon sites are (should be ?) just the country code.
                 final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(getContext(), root);
+                                                    .getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale", "locale=" + locale);
                 }
@@ -264,43 +267,46 @@ public class AmazonSearchEngine
      */
     @NonNull
 //    @Override
-    public Bundle searchByExternalId(@NonNull final String externalId,
+    public Bundle searchByExternalId(@NonNull final Context context,
+                                     @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
-            parse(document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final ISBN tmp = new ISBN(validIsbn);
         if (tmp.isIsbn10Compat()) {
-            return searchByExternalId(tmp.asText(ISBN.TYPE_ISBN10), fetchCovers);
+            return searchByExternalId(context, tmp.asText(ISBN.TYPE_ISBN10), fetchCovers);
         } else {
-            return searchByExternalId(validIsbn, fetchCovers);
+            return searchByExternalId(context, validIsbn, fetchCovers);
         }
     }
 
     @Nullable
     @Override
-    public String searchCoverByIsbn(@NonNull final String validIsbn,
+    public String searchCoverByIsbn(@NonNull final Context context,
+                                    @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             final ArrayList<String> imageList = parseCovers(document, validIsbn, 0);
             if (!imageList.isEmpty()) {
@@ -313,13 +319,14 @@ public class AmazonSearchEngine
 
     @Override
     @VisibleForTesting
-    public void parse(@NonNull final Document document,
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {
-        super.parse(document, fetchCovers, bookData);
+        super.parse(context, document, fetchCovers, bookData);
 
-        final Locale siteLocale = getLocale(document.location().split("/")[2]);
+        final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
 
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)

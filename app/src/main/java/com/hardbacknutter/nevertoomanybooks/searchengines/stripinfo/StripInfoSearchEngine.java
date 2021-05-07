@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -174,7 +175,8 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public Document loadDocument(@NonNull final String url)
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url)
             throws SearchException, CredentialsException {
 
         if (StripInfoAuth.isLoginToSearch()) {
@@ -188,24 +190,25 @@ public class StripInfoSearchEngine
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
-            mCollectionForm = new CollectionForm(getContext(), new SyncConfig());
+            mCollectionForm = new CollectionForm(context, new SyncConfig());
         }
 
-        return super.loadDocument(url);
+        return super.loadDocument(context, url);
     }
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final String externalId,
+    public Bundle searchByExternalId(@NonNull final Context context,
+                                     @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
-            parse(document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
@@ -217,19 +220,20 @@ public class StripInfoSearchEngine
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             if (isMultiResult(document)) {
-                parseMultiResult(document, fetchCovers, bookData);
+                parseMultiResult(context, document, fetchCovers, bookData);
             } else {
-                parse(document, fetchCovers, bookData);
+                parse(context, document, fetchCovers, bookData);
             }
         }
         return bookData;
@@ -237,11 +241,12 @@ public class StripInfoSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByBarcode(@NonNull final String barcode,
+    public Bundle searchByBarcode(@NonNull final Context context,
+                                  @NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
         // the search url is the same
-        return searchByIsbn(barcode, fetchCovers);
+        return searchByIsbn(context, barcode, fetchCovers);
     }
 
     private boolean isMultiResult(@NonNull final Document document) {
@@ -252,13 +257,15 @@ public class StripInfoSearchEngine
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
      *
+     * @param context     Current context
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
      */
     @WorkerThread
     @VisibleForTesting
-    void parseMultiResult(@NonNull final Document document,
+    void parseMultiResult(@NonNull final Context context,
+                          @NonNull final Document document,
                           @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
@@ -272,11 +279,11 @@ public class StripInfoSearchEngine
             //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
             final Element urlElement = section.selectFirst(A_HREF_STRIP);
             if (urlElement != null) {
-                final Document redirected = loadDocument(urlElement.attr("href"));
+                final Document redirected = loadDocument(context, urlElement.attr("href"));
                 if (!isCancelled()) {
                     // prevent looping.
                     if (!isMultiResult(redirected)) {
-                        parse(redirected, fetchCovers, bookData);
+                        parse(context, redirected, fetchCovers, bookData);
                     }
                 }
                 return;
@@ -297,11 +304,12 @@ public class StripInfoSearchEngine
     }
 
     @Override
-    public void parse(@NonNull final Document document,
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {
-        super.parse(document, fetchCovers, bookData);
+        super.parse(context, document, fetchCovers, bookData);
 
         // extracted from the page header.
         final String primarySeriesTitle = processPrimarySeriesTitle(document);
@@ -383,7 +391,7 @@ public class StripInfoSearchEngine
                                 break;
 
                             case "Taal":
-                                i += processLanguage(td, bookData);
+                                i += processLanguage(context, td, bookData);
                                 break;
 
                             case "Collectie":
@@ -454,7 +462,7 @@ public class StripInfoSearchEngine
             mSeries.add(0, series);
         }
 
-        final ArrayList<TocEntry> toc = parseToc(document);
+        final ArrayList<TocEntry> toc = parseToc(context, document);
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
@@ -634,12 +642,15 @@ public class StripInfoSearchEngine
      * <p>
      * This is not practical in the scope of this application.
      *
+     *
+     * @param context Current context
      * @param document to parse
      *
      * @return the toc list
      */
     @Nullable
-    private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
+    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
+                                         @NonNull final Document document) {
         for (final Element section : document.select("div.c12")) {
             final Element divs = section.selectFirst("div");
             if (divs != null) {
@@ -676,7 +687,7 @@ public class StripInfoSearchEngine
                             if (title != null && !title.isEmpty()) {
                                 final Author author;
                                 if (mAuthors.isEmpty()) {
-                                    author = Author.createUnknownAuthor(getContext());
+                                    author = Author.createUnknownAuthor(context);
                                 } else {
                                     author = mAuthors.get(0);
                                 }
@@ -895,13 +906,14 @@ public class StripInfoSearchEngine
         return 0;
     }
 
-    private int processLanguage(@NonNull final Element td,
+    private int processLanguage(@NonNull final Context context,
+                                @NonNull final Element td,
                                 @NonNull final Bundle bookData) {
         final int found = processText(td, DBKey.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBKey.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = ServiceLocator.getInstance().getLanguages()
-                                 .getISO3FromDisplayName(getLocale(), lang);
+                                 .getISO3FromDisplayName(getLocale(context), lang);
             bookData.putString(DBKey.KEY_LANGUAGE, lang);
         }
         return found;

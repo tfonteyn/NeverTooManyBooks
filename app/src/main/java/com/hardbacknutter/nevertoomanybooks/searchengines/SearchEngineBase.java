@@ -100,12 +100,6 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public Context getContext() {
-        return ServiceLocator.getLocalizedAppContext();
-    }
-
-    @NonNull
-    @Override
     public SearchEngineConfig getConfig() {
         return mConfig;
     }
@@ -113,7 +107,8 @@ public abstract class SearchEngineBase
     @NonNull
     @Override
     public String getName() {
-        return getContext().getString(mConfig.getLabelId());
+        // A site name is locale independent
+        return ServiceLocator.getAppContext().getString(mConfig.getLabelId());
     }
 
     @NonNull
@@ -124,7 +119,7 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public Locale getLocale() {
+    public Locale getLocale(@NonNull final Context context) {
         return mConfig.getLocale();
     }
 

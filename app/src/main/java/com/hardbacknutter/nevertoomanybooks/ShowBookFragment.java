@@ -91,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -124,6 +125,8 @@ public class ShowBookFragment
 
     @Nullable
     private AmazonHandler mAmazonHandler;
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookOnWebsiteHandler;
 
     /** View model. */
     private ShowBookViewModel mVm;
@@ -204,6 +207,7 @@ public class ShowBookFragment
 
         createSyncDelegates(global);
         mAmazonHandler = new AmazonHandler(getContext());
+        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(getContext());
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -329,7 +333,8 @@ public class ShowBookFragment
             mCalibreHandler.prepareMenu(menu, book);
         }
 
-        MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
+        //noinspection ConstantConditions
+        mViewBookOnWebsiteHandler.prepareMenu(menu, book);
 
         //noinspection ConstantConditions
         mAmazonHandler.prepareMenu(menu, book);
@@ -407,7 +412,7 @@ public class ShowBookFragment
         }
 
         //noinspection ConstantConditions
-        if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
+        if (mViewBookOnWebsiteHandler.onItemSelected(item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);

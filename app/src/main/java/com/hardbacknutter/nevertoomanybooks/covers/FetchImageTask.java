@@ -93,7 +93,7 @@ class FetchImageTask
             throws StorageException {
         // We need to catch the exceptions we really want to thrown, but catch all others.
         try {
-            return mFileManager.search(this, mIsbn, mCIdx, mSizes);
+            return mFileManager.search(context, this, mIsbn, mCIdx, mSizes);
 
         } catch (@NonNull final StorageException e) {
             throw e;

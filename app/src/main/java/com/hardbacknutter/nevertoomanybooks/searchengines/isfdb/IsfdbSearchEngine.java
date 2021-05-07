@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -255,31 +256,33 @@ public class IsfdbSearchEngine
 
     @NonNull
     @Override
-    public Bundle searchByExternalId(@NonNull final String externalId,
+    public Bundle searchByExternalId(@NonNull final Context context,
+                                     @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
-            parse(document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final String validIsbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
         final Bundle bookData = new Bundle();
 
-        final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
+        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
         if (!editions.isEmpty()) {
-            fetchByEdition(editions.get(0), fetchCovers, bookData);
+            fetchByEdition(context, editions.get(0), fetchCovers, bookData);
         }
         return bookData;
     }
@@ -287,7 +290,8 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@Nullable final /* not supported */ String code,
+    public Bundle search(@NonNull final Context context,
+                         @Nullable final /* not supported */ String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
@@ -338,9 +342,9 @@ public class IsfdbSearchEngine
 
             // sanity check: any data to search for?
             if (!args.isEmpty()) {
-                final List<Edition> editions = fetchEditions(url + args);
+                final List<Edition> editions = fetchEditions(context, url + args);
                 if (!editions.isEmpty()) {
-                    fetchByEdition(editions.get(0), fetchCovers, bookData);
+                    fetchByEdition(context, editions.get(0), fetchCovers, bookData);
                 }
             }
         } catch (@NonNull final IOException e) {
@@ -351,15 +355,16 @@ public class IsfdbSearchEngine
 
     @Nullable
     @Override
-    public String searchCoverByIsbn(@NonNull final String validIsbn,
+    public String searchCoverByIsbn(@NonNull final Context context,
+                                    @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final List<Edition> editions = fetchEditionsByIsbn(validIsbn);
+        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
         if (!editions.isEmpty()) {
             final Edition edition = editions.get(0);
-            final Document document = loadDocumentByEdition(edition);
+            final Document document = loadDocumentByEdition(context, edition);
             if (!isCancelled()) {
                 final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
                 if (!imageList.isEmpty()) {
@@ -381,11 +386,12 @@ public class IsfdbSearchEngine
      */
     @NonNull
     @Override
-    public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
+    public List<String> searchAlternativeEditions(@NonNull final Context context,
+                                                  @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
 
         // transform the Edition list to a simple isbn list
-        return fetchEditionsByIsbn(validIsbn)
+        return fetchEditionsByIsbn(context, validIsbn)
                 .stream()
                 .map(Edition::getIsbn)
                 .filter(Objects::nonNull)
@@ -555,13 +561,14 @@ public class IsfdbSearchEngine
      * {@inheritDoc}
      */
     @Override
-    public void parse(@NonNull final Document document,
+    public void parse(@NonNull final Context context,
+                      @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException {
-        super.parse(document, fetchCovers, bookData);
+        super.parse(context, document, fetchCovers, bookData);
 
-        final DateParser dateParser = new FullDateParser(getContext());
+        final DateParser dateParser = new FullDateParser(context);
 
         final Elements allContentBoxes = document.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
@@ -623,7 +630,7 @@ public class IsfdbSearchEngine
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
-                    final LocalDateTime date = dateParser.parse(tmpString, getLocale());
+                    final LocalDateTime date = dateParser.parse(tmpString, getLocale(context));
                     if (date != null) {
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
@@ -666,7 +673,7 @@ public class IsfdbSearchEngine
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    final Money money = new Money(getLocale(), tmpString);
+                    final Money money = new Money(getLocale(context), tmpString);
                     if (money.getCurrency() != null) {
                         bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
                         bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
@@ -759,7 +766,7 @@ public class IsfdbSearchEngine
         //ENHANCE: the site is adding language to the data.. revisit. For now, default to English
         bookData.putString(DBKey.KEY_LANGUAGE, "eng");
 
-        final ArrayList<TocEntry> toc = parseToc(document);
+        final ArrayList<TocEntry> toc = parseToc(context, document);
         if (!toc.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
@@ -845,12 +852,14 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      *
+     * @param context  Current context
      * @param document to parse
      *
      * @return the toc list
      */
     @WorkerThread
-    private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
+    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
+                                         @NonNull final Document document) {
 
         final boolean addSeriesFromToc = ServiceLocator.getGlobalPreferences()
                                                        .getBoolean(PK_SERIES_FROM_TOC, false);
@@ -972,7 +981,7 @@ public class IsfdbSearchEngine
                 //      Appendixes (Dune)</a> • essay by uncredited
                 // </li>
                 if (author == null) {
-                    author = Author.createUnknownAuthor(getContext());
+                    author = Author.createUnknownAuthor(context);
                 }
                 // very unlikely
                 if (title == null) {
@@ -1058,16 +1067,18 @@ public class IsfdbSearchEngine
     /**
      * Get the list with {@link Edition} information for the given url.
      *
-     * @param url A fully qualified ISFDB search url
+     * @param context Current context
+     * @param url     A fully qualified ISFDB search url
      *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @WorkerThread
     @NonNull
-    private List<Edition> fetchEditions(@NonNull final String url)
+    private List<Edition> fetchEditions(@NonNull final Context context,
+                                        @NonNull final String url)
             throws SearchException, CredentialsException {
 
-        final Document document = loadDocument(url);
+        final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             return parseEditions(document);
         }
@@ -1077,18 +1088,20 @@ public class IsfdbSearchEngine
     /**
      * Get the list with {@link Edition} information for the given isbn.
      *
+     * @param context   Current context
      * @param validIsbn to get editions for. MUST be valid.
      *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @WorkerThread
     @NonNull
-    List<Edition> fetchEditionsByIsbn(@NonNull final String validIsbn)
+    List<Edition> fetchEditionsByIsbn(@NonNull final Context context,
+                                      @NonNull final String validIsbn)
             throws SearchException, CredentialsException {
         mIsbn = validIsbn;
 
         final String url = getSiteUrl() + String.format(EDITIONS_URL, validIsbn);
-        return fetchEditions(url);
+        return fetchEditions(context, url);
     }
 
     /**
@@ -1174,24 +1187,27 @@ public class IsfdbSearchEngine
     /**
      * Fetch a book.
      *
+     * @param context     Current context
      * @param edition     to get
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      */
     @WorkerThread
-    void fetchByEdition(@NonNull final Edition edition,
+    void fetchByEdition(@NonNull final Context context,
+                        @NonNull final Edition edition,
                         @NonNull final boolean[] fetchCovers,
                         @NonNull final Bundle bookData)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final Document document = loadDocumentByEdition(edition);
+        final Document document = loadDocumentByEdition(context, edition);
         if (!isCancelled()) {
-            parse(document, fetchCovers, bookData);
+            parse(context, document, fetchCovers, bookData);
         }
     }
 
     @NonNull
-    private Document loadDocumentByEdition(@NonNull final Edition edition)
+    private Document loadDocumentByEdition(@NonNull final Context context,
+                                           @NonNull final Edition edition)
             throws SearchException, CredentialsException {
 
         // check if we already got the page
@@ -1202,7 +1218,7 @@ public class IsfdbSearchEngine
 
         // go get it.
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, edition.getIsfdbId());
-        return loadDocument(url);
+        return loadDocument(context, url);
     }
 
 
