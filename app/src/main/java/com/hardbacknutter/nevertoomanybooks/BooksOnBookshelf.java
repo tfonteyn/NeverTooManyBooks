@@ -121,7 +121,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
-import com.hardbacknutter.nevertoomanybooks.sync.Sync;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncSite;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
@@ -179,34 +179,29 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** Make a backup. */
-    private final ActivityResultLauncher<ExportContract.Input> mExportLauncher =
+    private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
 
     @Nullable
     private AmazonHandler mAmazonHandler;
-    /** Do an import. */
-    private final ActivityResultLauncher<ImportContract.Input> mImportLauncher =
-            registerForActivityResult(new ImportContract(), this::onImportFinished);
-
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
-
-
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-
-
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+    /** Do an import. */
+    private final ActivityResultLauncher<Void> mImportLauncher =
+            registerForActivityResult(new ImportContract(), this::onImportFinished);
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
             registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
@@ -523,13 +518,13 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Create the optional {@link Sync} launcher and delegates.
+     * Create the optional launcher and delegates.
      *
      * @param global Global preferences
      */
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
-        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+        if (SyncSite.CalibreCS.isEnabled(global)) {
             mCalibreSyncLauncher = registerForActivityResult(new CalibreSyncContract(), data -> {
                 if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
                     mVm.setForceRebuildInOnResume(true);
@@ -544,7 +539,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
+        if (SyncSite.StripInfo.isEnabled(global)) {
             mStripInfoSyncLauncher = registerForActivityResult(
                     new StripInfoSyncContract(), data -> {
                         if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
@@ -647,7 +642,7 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
-        getNavigationMenuItem(R.id.nav_sync).setVisible(Sync.isAnyEnabled(global));
+        getNavigationMenuItem(R.id.nav_sync).setVisible(SyncSite.isAnyEnabled(global));
     }
 
     /**
@@ -774,7 +769,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+                if (SyncSite.CalibreCS.isEnabled(global)) {
                     final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
                     //noinspection ConstantConditions
                     mCalibreHandler.prepareMenu(menu, book);
@@ -1206,12 +1201,12 @@ public class BooksOnBookshelf
         final Menu menu = MenuPicker.createMenu(this);
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+        if (SyncSite.CalibreCS.isEnabled(global)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
                 .setIcon(R.drawable.ic_baseline_cloud_24);
         }
 
-        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
+        if (SyncSite.StripInfo.isEnabled(global)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
                 .setIcon(R.drawable.ic_stripinfo);
         }

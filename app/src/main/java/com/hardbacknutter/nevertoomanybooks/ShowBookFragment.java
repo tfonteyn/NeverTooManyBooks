@@ -90,7 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResForm
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.sync.Sync;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncSite;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
@@ -234,13 +234,13 @@ public class ShowBookFragment
     }
 
     /**
-     * Create the optional {@link Sync} launcher and delegates.
+     * Create the optional launcher and delegates.
      *
      * @param global Global preferences
      */
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
-        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+        if (SyncSite.CalibreCS.isEnabled(global)) {
             try {
                 //noinspection ConstantConditions
                 mCalibreHandler = new CalibreHandler(getContext());
@@ -250,7 +250,7 @@ public class ShowBookFragment
             }
         }
 
-        if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
+        if (SyncSite.StripInfo.isEnabled(global)) {
 
         }
     }
@@ -323,7 +323,7 @@ public class ShowBookFragment
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
-        if (Sync.isEnabled(global, Sync.Site.Calibre)) {
+        if (SyncSite.CalibreCS.isEnabled(global)) {
             //noinspection ConstantConditions
             mCalibreHandler.prepareMenu(menu, book);
         }
