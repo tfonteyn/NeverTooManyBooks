@@ -75,7 +75,7 @@ public class CollectionOnSite {
      * in a private key. The caller should determine if the cover is actually wanted
      * (and download it) when the collection data is being processed!
      */
-    public static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
+    static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
 
     private static final String ROW_ID_ATTR = "showIfInCollection-";
     private static final int ROW_ID_ATTR_LEN = ROW_ID_ATTR.length();
@@ -135,10 +135,10 @@ public class CollectionOnSite {
      * @param userId  as extracted from the auth Cookie.
      */
     @AnyThread
-    public CollectionOnSite(@NonNull final Context context,
-                            @NonNull final StripInfoSearchEngine searchEngine,
-                            @NonNull final String userId,
-                            @NonNull final StripInfoSyncConfig config) {
+    CollectionOnSite(@NonNull final Context context,
+                     @NonNull final StripInfoSearchEngine searchEngine,
+                     @NonNull final String userId,
+                     @NonNull final StripInfoSyncConfig config) {
         mUserId = userId;
         mSearchEngine = searchEngine;
         mJsoupLoader = new JsoupLoader();
