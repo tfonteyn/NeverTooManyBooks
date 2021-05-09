@@ -168,8 +168,9 @@ public class StripInfoSearchEngine
     }
 
     public void setLoginHelper(@NonNull final StripInfoAuth loginHelper) {
-        SanityCheck.requireValue(loginHelper.getUserId(), "no userid?");
-
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(loginHelper.getUserId(), "not logged in?");
+        }
         mLoginHelper = loginHelper;
     }
 
@@ -185,6 +186,7 @@ public class StripInfoSearchEngine
                 try {
                     mLoginHelper.login();
                 } catch (@NonNull final IOException e) {
+                    mLoginHelper = null;
                     throw new SearchException(getName(context), e);
                 }
             }
@@ -449,7 +451,7 @@ public class StripInfoSearchEngine
         }
 
         // are we logged in ? Then look for any user data.
-        if (mLoginHelper != null && mLoginHelper.getUserId() != null) {
+        if (mLoginHelper != null) {
             processUserdata(document, bookData, externalId);
         }
 
@@ -642,8 +644,7 @@ public class StripInfoSearchEngine
      * <p>
      * This is not practical in the scope of this application.
      *
-     *
-     * @param context Current context
+     * @param context  Current context
      * @param document to parse
      *
      * @return the toc list

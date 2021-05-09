@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
@@ -84,10 +85,6 @@ public class StripInfoAuth {
     @NonNull
     private final CookieManager mCookieManager;
 
-    /** Parsed from the Cookie. */
-    @Nullable
-    private String mUserId;
-
     public StripInfoAuth(@NonNull final String siteUrl) {
         mSiteUrl = siteUrl;
 
@@ -111,28 +108,90 @@ public class StripInfoAuth {
     }
 
     /**
-     * Initialises the global {@link CookieManager} and performs a login
-     * using the stored credentials.
+     * Check if the username is configured. We take this as the configuration being valid.
+     *
+     * @return {@code true} if at least the username has been setup in preferences
+     */
+    @AnyThread
+    public static boolean isUsernameSet() {
+        //noinspection ConstantConditions
+        return !ServiceLocator.getGlobalPreferences()
+                              .getString(PK_HOST_USER, "")
+                              .isEmpty();
+    }
+
+    /**
+     * The user id for the <strong>current</strong> session.
+     * <p>
+     * In the website html sometimes referred to as "member".
+     *
+     * @return user id or {@code null}
+     */
+    @Nullable
+    public String getUserId() {
+        return getUserId(mCookieManager).orElse(null);
+    }
+
+    @NonNull
+    private Optional<String> getUserId(@NonNull final CookieManager cookieManager) {
+        final Optional<HttpCookie> oCookie =
+                cookieManager.getCookieStore()
+                             .getCookies()
+                             .stream()
+                             .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
+                                          && COOKIE_SI_USERDATA.equals(c.getName()))
+                             .findFirst();
+
+        if (oCookie.isPresent()) {
+            final HttpCookie cookie = oCookie.get();
+            if (!cookie.hasExpired()) {
+                try {
+                    final String cookieValue = URLDecoder.decode(cookie.getValue(), UTF_8);
+                    // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
+                    final JSONObject jsonCookie = new JSONObject(cookieValue);
+                    final String userId = jsonCookie.optString("userid");
+                    if (userId != null && !userId.isEmpty()) {
+                        return Optional.of(userId);
+                    }
+                } catch (@NonNull final UnsupportedEncodingException | JSONException e) {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Logger.e(TAG, "cookie.getValue()=" + cookie.getValue(), e);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Performs a login using the stored credentials.
      *
      * @return the valid user id
      *
      * @throws CredentialsException on login failure
      * @throws IOException          on any other failure
      */
+    @NonNull
     public String login()
             throws IOException, CredentialsException {
-        mUserId = null;
 
+        // Always FIRST check the configuration for having a username/password.
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
         final String username = global.getString(PK_HOST_USER, "");
         final String password = global.getString(PK_HOST_PASS, "");
-
-        // Sanity check
         //noinspection ConstantConditions
         if (username.isEmpty() || password.isEmpty()) {
             throw new CredentialsException(R.string.site_stripinfo_be, "missing password");
         }
 
+        // Secondly check if we're already logged in ?
+        String userId = getUserId(mCookieManager).orElse(null);
+        if (userId != null) {
+            global.edit().putString(PK_HOST_USER_ID, userId).apply();
+            return userId;
+        }
+
+        // Prepare to login...
         StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
         final HttpURLConnection request = (HttpURLConnection)
@@ -148,7 +207,7 @@ public class StripInfoAuth {
 
         // explicit connect for clarity
         request.connect();
-
+        // send the login form
         try (OutputStream os = request.getOutputStream();
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw)) {
@@ -159,46 +218,14 @@ public class StripInfoAuth {
         // the server always sends a 200 OK, but do a sanity check
         HttpUtils.checkResponseCode(request, R.string.site_stripinfo_be);
 
-        // The presence of the cookie gives us the real status.
-        final Optional<HttpCookie> optional = mCookieManager
-                .getCookieStore().getCookies()
-                .stream()
-                .filter(c -> COOKIE_DOMAIN.equals(c.getDomain())
-                             && COOKIE_SI_USERDATA.equals(c.getName()))
-                .findFirst();
-
         request.disconnect();
 
-        if (optional.isPresent()) {
-            final HttpCookie cookie = optional.get();
-            try {
-                final String cookieValue = URLDecoder.decode(cookie.getValue(), UTF_8);
-                // {"userid":"66","password":"blah","settings":{"acceptCookies":true}}
-                final JSONObject jsonCookie = new JSONObject(cookieValue);
-                final String userId = jsonCookie.optString("userid");
-                if (userId != null && !userId.isEmpty()) {
-                    mUserId = userId;
-                    // store as String. We don't need to know it's a number.
-                    global.edit().putString(PK_HOST_USER_ID, mUserId).apply();
-                    return mUserId;
-                }
-            } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.e(TAG, "cookie.getValue()=" + cookie.getValue(), e);
-            }
+        userId = getUserId(mCookieManager).orElse(null);
+        if (userId != null) {
+            global.edit().putString(PK_HOST_USER_ID, userId).apply();
+            return userId;
         }
-        mUserId = null;
-        throw new CredentialsException(R.string.site_stripinfo_be, "cookie has no user data");
-    }
 
-    /**
-     * The user id for the <strong>current</strong> session.
-     * <p>
-     * In the website html sometimes referred to as "member".
-     *
-     * @return user id or {@code null}
-     */
-    @Nullable
-    public String getUserId() {
-        return mUserId;
+        throw new CredentialsException(R.string.site_stripinfo_be, "login failed");
     }
 }
