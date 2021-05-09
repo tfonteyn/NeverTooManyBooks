@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 import android.os.Build;
@@ -65,13 +65,9 @@ public class ArchiveMetaData {
 
     /**
      * Constructor used while reading from an Archive.
-     */
-    public ArchiveMetaData() {
-        mInfo = new Bundle();
-    }
-
-    /**
-     * Constructor used while reading from an Archive.
+     * <p>
+     * The bundle is passed in to allow an Archive reader to construct it
+     * at runtime + to allow testing.
      */
     public ArchiveMetaData(@NonNull final Bundle from) {
         mInfo = from;
@@ -89,7 +85,7 @@ public class ArchiveMetaData {
                                          final int version,
                                          @NonNull final ExportResults data) {
 
-        final ArchiveMetaData metaData = new ArchiveMetaData();
+        final ArchiveMetaData metaData = new ArchiveMetaData(new Bundle());
         // Pure info/debug information
         metaData.mInfo.putInt(INFO_ARCHIVER_VERSION, version);
         metaData.mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
@@ -137,7 +133,7 @@ public class ArchiveMetaData {
      *
      * @return archive version
      */
-    int getArchiveVersion() {
+    public int getArchiveVersion() {
         return mInfo.getInt(INFO_ARCHIVER_VERSION);
     }
 

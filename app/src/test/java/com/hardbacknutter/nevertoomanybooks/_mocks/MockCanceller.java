@@ -25,11 +25,6 @@ public class MockCanceller
         implements Canceller {
 
     @Override
-    public boolean cancel() {
-        return false;
-    }
-
-    @Override
     public boolean isCancelled() {
         return false;
     }

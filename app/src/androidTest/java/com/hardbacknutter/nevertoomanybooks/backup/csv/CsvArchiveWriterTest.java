@@ -47,12 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -140,7 +140,7 @@ public class CsvArchiveWriterTest
                        "MODIFIED" + book.getString(DBKey.KEY_PRIVATE_NOTES));
         bookDao.update(context, book, 0);
 
-        final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
         importHelper.setImportEntry(RecordType.Books, true);
 
         importHelper.setNewBooksOnly();

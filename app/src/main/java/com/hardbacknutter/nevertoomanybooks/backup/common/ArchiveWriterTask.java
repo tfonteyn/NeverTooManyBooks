@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 
@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -68,7 +67,7 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws ExportException, IOException, CertificateException, StorageException {
+            throws ExportException, IOException, StorageException {
 
         ExportResults results = null;
         //noinspection ConstantConditions

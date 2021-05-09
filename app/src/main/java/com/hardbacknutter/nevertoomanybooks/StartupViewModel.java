@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.Backup;
+import com.hardbacknutter.nevertoomanybooks.backup.common.Backup;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;

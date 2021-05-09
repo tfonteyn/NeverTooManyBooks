@@ -36,11 +36,11 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -78,7 +78,7 @@ public class JsonArchiveReader
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
-                    mHelper.getUriInfo(context).getDisplayName(context), is);
+                    mHelper.getUriInfo().getDisplayName(context), is);
 
             return recordReader.read(context, record, mHelper, progressListener);
         } finally {

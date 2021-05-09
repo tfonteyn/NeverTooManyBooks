@@ -108,11 +108,7 @@ public class StripInfoSyncFragment
                 .create()
                 .show());
 
-        mVb.btnSendUpdatedBooks.setOnClickListener(v -> {
-
-        });
-
-        mVb.btnSendAllBooks.setOnClickListener(v -> {
+        mVb.btnExport.setOnClickListener(v -> {
 
         });
     }

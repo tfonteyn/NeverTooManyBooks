@@ -57,20 +57,17 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
-import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ImportFragment
         extends BaseFragment {
@@ -151,7 +148,6 @@ public class ImportFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
-        mVm.init(getArguments());
 
         mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
@@ -245,8 +241,6 @@ public class ImportFragment
                 case Tar:
                 case SqLiteDb:
                 case Json:
-                case CalibreCS:
-                case StripInfo:
                     showOptions();
                     break;
 
@@ -341,15 +335,6 @@ public class ImportFragment
                 mVb.cbxStyles.setVisibility(View.GONE);
                 break;
             }
-            case CalibreCS:
-            case StripInfo: {
-                mVb.cbxBooks.setEnabled(false);
-                mVb.cbxBooks.setVisibility(View.VISIBLE);
-                mVb.cbxCovers.setVisibility(View.VISIBLE);
-                mVb.cbxStyles.setVisibility(View.GONE);
-                mVb.cbxPrefs.setVisibility(View.GONE);
-                break;
-            }
             case Xml: {
                 // shouldn't even get here
                 onImportNotSupported(R.string.error_import_file_not_supported);
@@ -369,116 +354,42 @@ public class ImportFragment
 
     /**
      * Display the name of the archive + any valid data we can get from the archive.
-     * <p>
-     * All visibility for the archiveContent + calibreLibrary is handled here.
      */
     private void showArchiveDetails() {
         final ImportHelper helper = mVm.getImportHelper();
 
         //noinspection ConstantConditions
-        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName(getContext()));
+        mVb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
 
         final ArchiveMetaData metaData = mVm.getArchiveMetaData();
-        if (metaData != null) {
-            // got data, we'll fill this field, SHOW it
-            mVb.archiveContent.setVisibility(View.VISIBLE);
-            switch (helper.getEncoding()) {
-                case CalibreCS: {
-                    mVb.lblCalibreLibrary.setVisibility(View.VISIBLE);
-                    showCalibreMetaData(metaData);
-                    break;
-                }
-                case StripInfo: {
-                    mVb.lblCalibreLibrary.setVisibility(View.GONE);
-                    // no info to show yet
-                    break;
-                }
-                case Zip:
-                case Csv:
-                case Json:
-                case Xml:
-                case SqLiteDb:
-                case Tar:
-                default: {
-                    mVb.lblCalibreLibrary.setVisibility(View.GONE);
-                    showArchiveMetaData(metaData);
-                    break;
-                }
-            }
-        } else {
-            // no metadata at all, REMOVE the calibre field, HIDE the content field
-            mVb.lblCalibreLibrary.setVisibility(View.GONE);
+        if (metaData == null) {
             mVb.archiveContent.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void showArchiveMetaData(@NonNull final ArchiveMetaData metaData) {
-        // some stats of what's inside the archive
-        final StringJoiner archiveContent = new StringJoiner("\n");
-
-        final LocalDateTime creationDate = metaData.getCreatedLocalDate();
-
-        if (creationDate != null) {
-            //noinspection ConstantConditions
-            archiveContent.add(getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_created),
-                                         DateUtils.toDisplay(getContext(), creationDate)));
-        }
-        if (metaData.hasBookCount()) {
-            archiveContent.add(getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_books),
-                                         String.valueOf(metaData.getBookCount())));
-        }
-
-        if (metaData.hasCoverCount()) {
-            archiveContent.add(getString(R.string.name_colon_value,
-                                         getString(R.string.lbl_covers),
-                                         String.valueOf(metaData.getCoverCount())));
-        }
-        mVb.archiveContent.setText(archiveContent.toString());
-    }
-
-    private void showCalibreMetaData(@NonNull final ArchiveMetaData metaData) {
-
-        final ArrayList<CalibreLibrary> libraries = metaData
-                .getBundle().getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST);
-
-        //noinspection ConstantConditions
-        if (libraries.size() == 1) {
-            onCalibreLibrarySelected(libraries.get(0));
-
         } else {
-            //noinspection ConstantConditions
-            final ExtArrayAdapter<CalibreLibrary> adapter =
-                    new EntityArrayAdapter<>(getContext(), libraries);
+            mVb.archiveContent.setVisibility(View.VISIBLE);
 
-            mVb.calibreLibrary.setAdapter(adapter);
-            mVb.calibreLibrary.setOnItemClickListener(
-                    (av, v, position, id) -> onCalibreLibrarySelected(libraries.get(position)));
+            // some stats of what's inside the archive
+            final StringJoiner archiveContent = new StringJoiner("\n");
 
-            @Nullable
-            final CalibreLibrary selectedLibrary = mVm
-                    .getImportHelper().getExtraArgs()
-                    .getParcelable(CalibreContentServer.BKEY_LIBRARY);
-            if (selectedLibrary != null) {
-                onCalibreLibrarySelected(selectedLibrary);
-            } else {
-                final CalibreLibrary defaultLibrary = metaData
-                        .getBundle().getParcelable(CalibreContentServer.BKEY_LIBRARY);
-                //noinspection ConstantConditions
-                onCalibreLibrarySelected(defaultLibrary);
+            final LocalDateTime creationDate = metaData.getCreatedLocalDate();
+
+            if (creationDate != null) {
+                archiveContent.add(getString(R.string.name_colon_value,
+                                             getString(R.string.lbl_created),
+                                             DateUtils.toDisplay(getContext(), creationDate)));
             }
-        }
-    }
-
-    private void onCalibreLibrarySelected(@NonNull final CalibreLibrary library) {
-        mVb.calibreLibrary.setText(library.getName(), false);
-
-        mVb.archiveContent.setText(getString(R.string.name_colon_value,
+            if (metaData.hasBookCount()) {
+                archiveContent.add(getString(R.string.name_colon_value,
                                              getString(R.string.lbl_books),
-                                             String.valueOf(library.getTotalBooks())));
-        mVm.getImportHelper().getExtraArgs()
-           .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
+                                             String.valueOf(metaData.getBookCount())));
+            }
+
+            if (metaData.hasCoverCount()) {
+                archiveContent.add(getString(R.string.name_colon_value,
+                                             getString(R.string.lbl_covers),
+                                             String.valueOf(metaData.getCoverCount())));
+            }
+            mVb.archiveContent.setText(archiveContent.toString());
+        }
     }
 
     private void onImportNotSupported(@StringRes final int stringResId) {

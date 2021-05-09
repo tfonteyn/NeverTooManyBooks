@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,16 +29,16 @@ import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
 
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
@@ -55,9 +54,6 @@ public final class ImportHelper {
     @NonNull
     private final Set<RecordType> mImportEntries = EnumSet.noneOf(RecordType.class);
 
-    /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle mExtraArgs = new Bundle();
-
     /**
      * New Books/Covers are always imported
      * (if {@link RecordType#Books} is set obviously).
@@ -68,7 +64,7 @@ public final class ImportHelper {
     private UriInfo mUriInfo;
 
     /**
-     * Private constructor. Use the factory methods instead.
+     * Private constructor. Use the factory method instead.
      *
      * @param uri      to read from
      * @param encoding which the uri uses
@@ -81,7 +77,7 @@ public final class ImportHelper {
     }
 
     /**
-     * Constructor using a generic Uri. The encoding will be determined from the Uri.
+     * Constructor. The encoding will be determined from the Uri.
      *
      * @param context Current context
      * @param uri     to read from
@@ -89,26 +85,13 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static ImportHelper withFile(@NonNull final Context context,
-                                        @NonNull final Uri uri)
+    public static ImportHelper newInstance(@NonNull final Context context,
+                                           @NonNull final Uri uri)
             throws FileNotFoundException, InvalidArchiveException {
+
         final ArchiveEncoding encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new InvalidArchiveException(uri.toString()));
 
-        return new ImportHelper(uri, encoding);
-    }
-
-    /**
-     * Constructor for a Remote server.
-     *
-     * @param uri      for the server.
-     * @param encoding i.e. the remote server to use
-     */
-    static ImportHelper withRemoteServer(@NonNull final Uri uri,
-                                         @NonNull final ArchiveEncoding encoding) {
-        if (!encoding.isRemoteServer()) {
-            throw new IllegalStateException("Not a remote server");
-        }
         return new ImportHelper(uri, encoding);
     }
 
@@ -148,13 +131,6 @@ public final class ImportHelper {
                 setNewAndUpdatedBooks();
                 break;
 
-            case CalibreCS:
-            case StripInfo:
-                mImportEntries.add(RecordType.Books);
-                mImportEntries.add(RecordType.Cover);
-                setNewAndUpdatedBooks();
-                break;
-
             case Xml:
             default:
                 break;
@@ -174,20 +150,12 @@ public final class ImportHelper {
     /**
      * Get the {@link UriInfo} of the archive (based on the Uri/Encoding).
      *
-     * @param context Current context
-     *
      * @return info
      */
     @NonNull
-    public UriInfo getUriInfo(@NonNull final Context context) {
+    public UriInfo getUriInfo() {
         if (mUriInfo == null) {
-            if (mEncoding.isRemoteServer()) {
-                final String displayName = context.getString(mEncoding.getLabel());
-                mUriInfo = new UriInfo(mUri, displayName, 0);
-
-            } else {
-                mUriInfo = new UriInfo(mUri);
-            }
+            mUriInfo = new UriInfo(mUri);
         }
         return mUriInfo;
     }
@@ -212,7 +180,6 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws ImportException         on a decoding/parsing of data issue
      * @throws IOException             on other failures
-     * @throws CertificateException    on failures related to a user installed CA.
      * @throws SSLException            on secure connection failures
      */
     @NonNull
@@ -221,7 +188,6 @@ public final class ImportHelper {
             throws InvalidArchiveException,
                    ImportException,
                    IOException,
-                   CertificateException,
                    CoverStorageException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
@@ -229,11 +195,6 @@ public final class ImportHelper {
             }
         }
         return mEncoding.createReader(context, this);
-    }
-
-    @NonNull
-    public Bundle getExtraArgs() {
-        return mExtraArgs;
     }
 
     public void setImportEntry(@NonNull final RecordType recordType,
@@ -250,7 +211,6 @@ public final class ImportHelper {
         return mImportEntries;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public boolean isNewBooksOnly() {
         return mUpdateOption == Updates.Skip;
     }
@@ -271,7 +231,6 @@ public final class ImportHelper {
         return mUpdateOption == Updates.OnlyNewer;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public void setNewAndUpdatedBooks() {
         mUpdateOption = Updates.OnlyNewer;
     }
@@ -288,7 +247,6 @@ public final class ImportHelper {
                + ", mArchiveEncoding=" + mEncoding
                + ", mImportEntries=" + mImportEntries
                + ", mUpdates=" + mUpdateOption
-               + ", mExtraArgs=" + mExtraArgs
                + '}';
     }
 

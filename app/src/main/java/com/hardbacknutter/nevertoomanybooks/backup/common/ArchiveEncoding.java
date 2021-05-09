@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 import android.net.Uri;
@@ -25,21 +25,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -54,14 +50,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
- * Archive encoding (formats) (partially) supported. Either file-based or remote server based.
+ * Archive encoding (formats) (partially) supported.
  * <p>
  * This is the top level, i.e. the actual file we read/write.
  * Handled by {@link ArchiveReader} and {@link ArchiveWriter}.
@@ -69,21 +62,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
-    Zip(".zip", R.string.lbl_archive_type_backup_zip),
+    Zip(".zip"),
     /** Books as a CSV file; full support for export/import. */
-    Csv(".csv", R.string.lbl_archive_type_csv),
+    Csv(".csv"),
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
-    Json(".json", R.string.lbl_archive_type_json),
+    Json(".json"),
     /** XML <strong>Export only</strong>. */
-    Xml(".xml", R.string.lbl_archive_type_xml),
+    Xml(".xml"),
     /** Database. */
-    SqLiteDb(".db", R.string.lbl_archive_type_db),
+    SqLiteDb(".db"),
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar", R.string.lbl_archive_type_backup_tar),
-    /** A Calibre Content Server. */
-    CalibreCS(null, R.string.lbl_calibre_content_server),
-    /** StripInfo web site. */
-    StripInfo(null, R.string.site_stripinfo_be);
+    Tar(".tar");
 
     /** {@link Parcelable}. */
     public static final Creator<ArchiveEncoding> CREATOR = new Creator<ArchiveEncoding>() {
@@ -99,33 +88,21 @@ public enum ArchiveEncoding
             return new ArchiveEncoding[size];
         }
     };
+
     /* Log tag. */
     private static final String TAG = "ArchiveEncoding";
-    /** The (optional) preset encoding to pass to export/import. */
-    public static final String BKEY_ENCODING = TAG + ":encoding";
-    /** The (optional) preset URL to pass to export/import. */
-    public static final String BKEY_URL = TAG + ":url";
 
-    /**
-     * The proposed archive filename extension to write to.
-     * Will be {@code null} for archives which are not files; e.g. a remote server.
-     */
-    @Nullable
+    /** The <strong>proposed</strong> archive filename extension to write to. */
+    @NonNull
     private final String mFileExt;
-
-    @StringRes
-    private final int mLabel;
 
     /**
      * Constructor.
      *
      * @param fileExt to use as the proposed archive filename extension
-     *                or {@code null} for remote server "archives"
      */
-    ArchiveEncoding(@Nullable final String fileExt,
-                    @StringRes final int label) {
+    ArchiveEncoding(@NonNull final String fileExt) {
         mFileExt = fileExt;
-        mLabel = label;
     }
 
     /**
@@ -143,7 +120,6 @@ public enum ArchiveEncoding
 
         final String scheme = uri.getScheme();
         if (scheme != null && scheme.startsWith("http")) {
-            // not supported for now... intention is to add detection for remote servers.
             throw new IllegalStateException();
         }
 
@@ -249,11 +225,6 @@ public enum ArchiveEncoding
         return Optional.empty();
     }
 
-
-    public boolean isFile() {
-        return mFileExt != null;
-    }
-
     /**
      * Get the <strong>proposed</strong> archive file extension for writing an output file.
      *
@@ -261,20 +232,7 @@ public enum ArchiveEncoding
      */
     @NonNull
     public String getFileExt() {
-        if (!isFile()) {
-            throw new IllegalStateException("Not a file");
-        }
         return mFileExt;
-    }
-
-    public boolean isRemoteServer() {
-        return mFileExt == null;
-    }
-
-    /** A short label. Used in drop down menus and similar. */
-    @StringRes
-    public int getLabel() {
-        return mLabel;
     }
 
     /**
@@ -284,16 +242,11 @@ public enum ArchiveEncoding
      * @param helper  writer configuration
      *
      * @return a new writer
-     *
-     * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @NonNull
     public ArchiveWriter createWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws CertificateException,
-                   SSLException,
-                   FileNotFoundException {
+            throws FileNotFoundException {
 
         switch (this) {
             case Zip:
@@ -310,9 +263,6 @@ public enum ArchiveEncoding
 
             case Json:
                 return new JsonArchiveWriter(helper);
-
-            case CalibreCS:
-                return new CalibreContentServerWriter(context, helper);
 
             case Tar:
                 // writing to tar is no longer supported
@@ -332,7 +282,6 @@ public enum ArchiveEncoding
      *
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws ImportException         on a decoding/parsing of data issue
-     * @throws CertificateException    on failures related to a user installed CA.
      * @throws SSLException            on secure connection failures
      * @throws IOException             on other failures
      */
@@ -342,7 +291,6 @@ public enum ArchiveEncoding
                                       @NonNull final ImportHelper helper)
             throws InvalidArchiveException,
                    ImportException,
-                   CertificateException,
                    IOException,
                    CoverStorageException {
 
@@ -366,14 +314,6 @@ public enum ArchiveEncoding
 
             case Json:
                 reader = new JsonArchiveReader(helper);
-                break;
-
-            case CalibreCS:
-                reader = new CalibreContentServerReader(context, helper);
-                break;
-
-            case StripInfo:
-                reader = new StripInfoReader(helper);
                 break;
 
             case Xml:

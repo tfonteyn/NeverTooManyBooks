@@ -72,7 +72,7 @@ public class StartupActivity
     private int mVolumeChangedOptionChosen;
 
     /** Make a backup; when done, move to the next startup stage. */
-    private final ActivityResultLauncher<ExportContract.Input> mExportLauncher =
+    private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> nextStage());
 
     /**

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 
@@ -27,7 +27,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
@@ -68,7 +67,6 @@ public class ArchiveReadMetaDataTask
     @WorkerThread
     protected ArchiveMetaData doWork(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException,
-                   CertificateException,
                    StorageException {
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {

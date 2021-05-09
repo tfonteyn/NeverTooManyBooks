@@ -20,14 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -60,10 +56,8 @@ public class StripInfoSyncViewModel
      * Pseudo constructor.
      *
      * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+    public void init(@NonNull final Context context) {
         if (mImportCollectionTask == null) {
             mImportCollectionTask = new ImportCollectionTask();
 

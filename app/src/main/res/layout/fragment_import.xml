@@ -57,44 +57,13 @@
         tools:text="archive name"
         />
 
-    <!-- lbl_calibre_library *OR* archive_content is shown.-->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_calibre_library"
-        style="@style/ExposedDropdownMenu"
-        android:layout_marginTop="@dimen/section_margin_top"
-        android:hint="@string/lbl_library"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/archive_name"
-        app:layout_constraintTop_toBottomOf="@id/archive_name"
-        tools:visibility="visible"
-        >
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/calibre_library"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor"
-            tools:text="@sample/data.json/library/name"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_top"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="archive_name,lbl_calibre_library"
-        />
-
     <TextView
         android:id="@+id/archive_content"
         style="@style/Text.Body"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="@id/archive_name"
-        app:layout_constraintTop_toBottomOf="@id/barrier_top"
+        app:layout_constraintTop_toBottomOf="@id/archive_name"
         tools:ignore="SelectableText"
         tools:text="Books: 123\nCovers: 456"
         />

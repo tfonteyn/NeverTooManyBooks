@@ -71,7 +71,7 @@ public class EditBookViewModel
         implements ResultIntentOwner {
 
     /** Log tag. */
-    private static final String TAG = "EditBookFragmentVM";
+    private static final String TAG = "EditBookViewModel";
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull

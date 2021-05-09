@@ -35,11 +35,11 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 
 /**
  * Implementation of ZIP-specific reader functions.

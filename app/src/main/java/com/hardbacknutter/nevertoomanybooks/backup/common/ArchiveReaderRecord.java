@@ -17,16 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 
 /**
  * Interface provided by every record read from an archive file.

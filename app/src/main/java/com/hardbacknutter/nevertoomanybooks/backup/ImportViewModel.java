@@ -23,12 +23,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -36,13 +34,10 @@ import java.io.FileNotFoundException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReadMetaDataTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 
@@ -59,37 +54,15 @@ public class ImportViewModel
     /** The import configuration. */
     @Nullable
     private ImportHelper mImportHelper;
-    private boolean mInitWasCalled;
     @Nullable
     private ArchiveMetaData mArchiveMetaData;
-
-    /**
-     * Pseudo constructor.
-     *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     */
-    public void init(@Nullable final Bundle args) {
-        if (!mInitWasCalled) {
-            mInitWasCalled = true;
-            if (args != null) {
-                // Remote server Uri
-                final String url = args.getString(ArchiveEncoding.BKEY_URL);
-                if (url != null) {
-                    // If we have a url, then we MUST have an encoding (and vice-versa)
-                    final ArchiveEncoding encoding = Objects.requireNonNull(
-                            args.getParcelable(ArchiveEncoding.BKEY_ENCODING));
-                    mImportHelper = ImportHelper.withRemoteServer(Uri.parse(url), encoding);
-                }
-            }
-        }
-    }
 
     @NonNull
     ImportHelper createImportHelper(@NonNull final Context context,
                                     @NonNull final Uri uri)
             throws InvalidArchiveException, FileNotFoundException {
 
-        mImportHelper = ImportHelper.withFile(context, uri);
+        mImportHelper = ImportHelper.newInstance(context, uri);
         return mImportHelper;
     }
 
@@ -159,23 +132,7 @@ public class ImportViewModel
      * @return {@code true} if the "Go" button should be made available
      */
     boolean isReadyToGo() {
-        if (mImportHelper != null) {
-            if (mImportHelper.getEncoding() == ArchiveEncoding.CalibreCS) {
-                @Nullable
-                final CalibreLibrary selectedLibrary =
-                        mImportHelper.getExtraArgs()
-                                     .getParcelable(CalibreContentServer.BKEY_LIBRARY);
-                return selectedLibrary != null && selectedLibrary.getTotalBooks() > 0;
-
-            } else if (mImportHelper.getEncoding() == ArchiveEncoding.StripInfo) {
-                // no other checks yet
-                return true;
-            }
-            return false;
-        } else {
-            // File-based: the presence of the meta data indicates we can read the file
-            return mArchiveMetaData != null;
-        }
+        return mArchiveMetaData != null;
     }
 
     @NonNull

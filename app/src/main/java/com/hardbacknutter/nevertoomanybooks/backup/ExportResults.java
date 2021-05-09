@@ -29,7 +29,8 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 
 /**
  * Value class to report back what was exported.

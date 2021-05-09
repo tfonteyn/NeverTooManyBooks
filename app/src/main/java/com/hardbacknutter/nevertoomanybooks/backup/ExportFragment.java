@@ -47,19 +47,18 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
@@ -88,19 +87,12 @@ public class ExportFragment
     /** View Binding. */
     private FragmentExportBinding mVb;
     @Nullable
-    private ArchiveEncoding mPresetEncoding;
-    @Nullable
     private ProgressDelegate mProgressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        final Bundle args = getArguments();
-        if (args != null) {
-            mPresetEncoding = args.getParcelable(ArchiveEncoding.BKEY_ENCODING);
-        }
     }
 
     @Nullable
@@ -144,44 +136,24 @@ public class ExportFragment
     private void showQuickOptions() {
         final ExportHelper helper = mVm.getExportHelper();
 
-        if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            helper.setEncoding(mPresetEncoding);
+        // set the default; a backup to archive
+        helper.setEncoding(ArchiveEncoding.Zip);
 
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setTitle(mPresetEncoding.getLabel())
-                    .setMessage(R.string.action_synchronize)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                    .setNeutralButton(R.string.btn_options, (d, w) -> {
-                        d.dismiss();
-                        showOptions();
-                    })
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        d.dismiss();
-                        exportToRemoteServer();
-                    })
-                    .create()
-                    .show();
-        } else {
-            // set the default; a backup to archive
-            helper.setEncoding(ArchiveEncoding.Zip);
-
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setTitle(R.string.lbl_backup)
-                    .setMessage(R.string.txt_export_backup_all)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                    .setNeutralButton(R.string.btn_options, (d, w) -> {
-                        d.dismiss();
-                        showOptions();
-                    })
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        d.dismiss();
-                        exportPickUri();
-                    })
-                    .create()
-                    .show();
-        }
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(R.string.lbl_backup)
+                .setMessage(R.string.txt_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                .setNeutralButton(R.string.btn_options, (d, w) -> {
+                    d.dismiss();
+                    showOptions();
+                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    exportPickUri();
+                })
+                .create()
+                .show();
     }
 
     @Override
@@ -199,12 +171,7 @@ public class ExportFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
             if (mVm.getExportHelper().getExporterEntries().size() > 1) {
-                if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-                    // WARNING: hardcoded for now as we only have this one.
-                    exportToRemoteServer();
-                } else {
-                    exportPickUri();
-                }
+                exportPickUri();
             }
             return true;
         }
@@ -229,59 +196,35 @@ public class ExportFragment
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
                 .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
 
-        if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
-            helper.setEncoding(mPresetEncoding);
+        mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
+        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mVm.getExportHelper().setExportEntry(RecordType.Books, isChecked);
+            mVb.rbBooksGroup.setEnabled(isChecked);
+        });
 
-            mVb.grpArchive.setVisibility(View.GONE);
-            mVb.grpServer.setVisibility(View.VISIBLE);
+        //noinspection ConstantConditions
+        final Pair<Integer, ArrayList<String>> fo = mVm.getFormatOptions(getContext());
+        final int initialPos = fo.first;
+        final ArrayList<String> list = fo.second;
 
-            mVb.cbxBooks.setChecked(true);
-            mVb.cbxBooks.setEnabled(true);
+        final ExtArrayAdapter<String> archiveFormatAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Passthrough, list);
+        mVb.archiveFormat.setAdapter(archiveFormatAdapter);
+        mVb.archiveFormat.setOnItemClickListener(
+                (parent, view, position, id) -> updateFormatSelection(
+                        mVm.getEncoding(position)));
 
-            mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
-
-            mVb.lblRemoteServer.setText(mPresetEncoding.getLabel());
-            mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
-                    (v, isChecked) ->
-                            mVm.getExportHelper().getExtraArgs()
-                               .putBoolean(CalibreContentServerWriter.BKEY_DELETE_LOCAL_BOOKS,
-                                           isChecked));
-        } else {
-            mVb.grpArchive.setVisibility(View.VISIBLE);
-            mVb.grpServer.setVisibility(View.GONE);
-
-            mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
-            mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                mVm.getExportHelper().setExportEntry(RecordType.Books, isChecked);
-                mVb.rbBooksGroup.setEnabled(isChecked);
-            });
-
-            //noinspection ConstantConditions
-            final Pair<Integer, ArrayList<String>> fo = mVm.getFormatOptions(getContext());
-            final int initialPos = fo.first;
-            final ArrayList<String> list = fo.second;
-
-            final ExtArrayAdapter<String> archiveFormatAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
-                    ExtArrayAdapter.FilterType.Passthrough, list);
-            mVb.archiveFormat.setAdapter(archiveFormatAdapter);
-            mVb.archiveFormat.setOnItemClickListener(
-                    (parent, view, position, id) -> updateFormatSelection(
-                            mVm.getEncoding(position)));
-
-            mVb.archiveFormat.setText(list.get(initialPos), false);
-            updateFormatSelection(helper.getEncoding());
-        }
+        mVb.archiveFormat.setText(list.get(initialPos), false);
+        updateFormatSelection(helper.getEncoding());
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    /** Only called for File-based exports. */
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
         final ExportHelper helper = mVm.getExportHelper();
 
-        //noinspection EnumSwitchStatementWhichMissesCases
         switch (encoding) {
             case Zip: {
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
@@ -382,6 +325,7 @@ public class ExportFragment
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
+            case Tar:
             default:
                 throw new IllegalArgumentException(encoding.toString());
         }
@@ -407,15 +351,6 @@ public class ExportFragment
         if (uri != null) {
             mVm.startExport(uri);
         }
-    }
-
-    private void exportToRemoteServer() {
-        final ExportHelper helper = mVm.getExportHelper();
-        helper.setExportEntry(RecordType.Styles, false);
-        helper.setExportEntry(RecordType.Preferences, false);
-        helper.setExportEntry(RecordType.Certificates, false);
-
-        mVm.startExport(null);
     }
 
     private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
@@ -487,54 +422,41 @@ public class ExportFragment
 
                 final ExportHelper helper = mVm.getExportHelper();
 
-                if (helper.getEncoding().isRemoteServer()) {
-                    //noinspection ConstantConditions
-                    new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_baseline_info_24)
-                            .setTitle(R.string.progress_end_export_successful)
-                            .setMessage(itemList)
-                            .setPositiveButton(R.string.action_done, (d, w)
-                                    -> getActivity().finish())
-                            .create()
-                            .show();
-                } else {
 
-                    @StringRes
-                    final int title = helper.isBackup() ? R.string.progress_end_backup_successful
-                                                        : R.string.progress_end_export_successful;
+                @StringRes
+                final int title = helper.isBackup() ? R.string.progress_end_backup_successful
+                                                    : R.string.progress_end_export_successful;
 
-                    //noinspection ConstantConditions
-                    final MaterialAlertDialogBuilder dialogBuilder =
-                            new MaterialAlertDialogBuilder(getContext())
-                                    .setIcon(R.drawable.ic_baseline_info_24)
-                                    .setTitle(title)
-                                    .setPositiveButton(R.string.action_done, (d, w)
-                                            -> getActivity().finish());
+                //noinspection ConstantConditions
+                final MaterialAlertDialogBuilder dialogBuilder =
+                        new MaterialAlertDialogBuilder(getContext())
+                                .setIcon(R.drawable.ic_baseline_info_24)
+                                .setTitle(title)
+                                .setPositiveButton(R.string.action_done, (d, w)
+                                        -> getActivity().finish());
 
-                    final StringBuilder msg = new StringBuilder(itemList);
+                final StringBuilder msg = new StringBuilder(itemList);
 
-                    final Uri fileUri = Objects.requireNonNull(helper.getFileUri(), "fileUri");
-                    final UriInfo uriInfo = new UriInfo(fileUri);
-                    final long size = uriInfo.getSize(getContext());
+                final UriInfo uriInfo = new UriInfo(helper.getFileUri());
+                final long size = uriInfo.getSize(getContext());
 
-                    // We cannot get the folder name for the file.
-                    // FIXME: We need to change the descriptive string not to include the folder.
-                    msg.append("\n\n")
-                       .append(getString(R.string.progress_end_export_report, "",
-                                         uriInfo.getDisplayName(getContext()),
-                                         FileUtils.formatFileSize(getContext(), size)));
+                // We cannot get the folder name for the file.
+                // FIXME: We need to change the descriptive string not to include the folder.
+                msg.append("\n\n")
+                   .append(getString(R.string.progress_end_export_report, "",
+                                     uriInfo.getDisplayName(getContext()),
+                                     FileUtils.formatFileSize(getContext(), size)));
 
-                    if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
-                        msg.append("\n\n").append(getString(R.string.confirm_email_file));
+                if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
+                    msg.append("\n\n").append(getString(R.string.confirm_email_file));
 
-                        dialogBuilder.setNeutralButton(R.string.btn_email, (d, w) ->
-                                onExportEmail(uriInfo.getUri(), itemList));
-                    }
-
-                    dialogBuilder.setMessage(msg)
-                                 .create()
-                                 .show();
+                    dialogBuilder.setNeutralButton(R.string.btn_email, (d, w) ->
+                            onExportEmail(uriInfo.getUri(), itemList));
                 }
+
+                dialogBuilder.setMessage(msg)
+                             .create()
+                             .show();
             }
         }
     }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -32,25 +31,19 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ExportContract
-        extends ActivityResultContract<ExportContract.Input, Boolean> {
+        extends ActivityResultContract<Void, Boolean> {
 
     private static final String TAG = "ExportContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final ExportContract.Input input) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
+                               @Nullable final Void aVoid) {
+        return new Intent(context, FragmentHostActivity.class)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-        if (input != null) {
-            intent.putExtra(ArchiveEncoding.BKEY_ENCODING, (Parcelable) input.archiveEncoding);
-            intent.putExtra(ArchiveEncoding.BKEY_URL, input.url);
-        }
-        return intent;
     }
 
     @Override
@@ -62,19 +55,5 @@ public class ExportContract
         }
 
         return intent != null && resultCode == Activity.RESULT_OK;
-    }
-
-    public static class Input {
-
-        @Nullable
-        final ArchiveEncoding archiveEncoding;
-        @Nullable
-        final String url;
-
-        public Input(@Nullable final ArchiveEncoding archiveEncoding,
-                     @Nullable final String url) {
-            this.archiveEncoding = archiveEncoding;
-            this.url = url;
-        }
     }
 }

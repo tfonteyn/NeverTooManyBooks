@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,17 +33,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
@@ -57,9 +54,8 @@ public class ExportHelper {
     /** What is going to be exported. */
     @NonNull
     private final Set<RecordType> mExportEntries;
-    /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle mExtraArgs = new Bundle();
-    /** Picked by the user; file Uri where we write to; will be {@code null} for remote servers. */
+
+    /** Picked by the user; file Uri where we write to. */
     @Nullable
     private Uri mFileUri;
     /** Set by the user; defaults to ZIP. */
@@ -110,12 +106,12 @@ public class ExportHelper {
         return mArchiveEncoding == ArchiveEncoding.Zip;
     }
 
-    @Nullable
+    @NonNull
     public Uri getFileUri() {
-        return mFileUri;
+        return Objects.requireNonNull(mFileUri, "mFileUri");
     }
 
-    public void setFileUri(@Nullable final Uri fileUri) {
+    public void setFileUri(@NonNull final Uri fileUri) {
         mFileUri = fileUri;
     }
 
@@ -125,15 +121,10 @@ public class ExportHelper {
      * @param context Current context
      *
      * @return a new writer
-     *
-     * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws CertificateException,
-                   SSLException,
-                   FileNotFoundException {
+            throws FileNotFoundException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mFileUri, "uri");
@@ -143,11 +134,6 @@ public class ExportHelper {
         }
 
         return mArchiveEncoding.createWriter(context, this);
-    }
-
-    @NonNull
-    public Bundle getExtraArgs() {
-        return mExtraArgs;
     }
 
     private File getTempFile(@NonNull final Context context) {
@@ -182,20 +168,18 @@ public class ExportHelper {
             throws IOException {
         Objects.requireNonNull(mFileUri, "uri");
 
-        if (getEncoding().isFile()) {
-            // The output file is now properly closed, export it to the user Uri
-            final File tmpOutput = getTempFile(context);
+        // The output file is now properly closed, export it to the user Uri
+        final File tmpOutput = getTempFile(context);
 
-            try (InputStream is = new FileInputStream(tmpOutput);
-                 OutputStream os = context.getContentResolver().openOutputStream(mFileUri)) {
-                if (os != null) {
-                    FileUtils.copy(is, os);
-                }
+        try (InputStream is = new FileInputStream(tmpOutput);
+             OutputStream os = context.getContentResolver().openOutputStream(mFileUri)) {
+            if (os != null) {
+                FileUtils.copy(is, os);
             }
-
-            // cleanup
-            FileUtils.delete(tmpOutput);
         }
+
+        // cleanup
+        FileUtils.delete(tmpOutput);
     }
 
     /**
@@ -244,7 +228,6 @@ public class ExportHelper {
                + ", mUri=" + mFileUri
                + ", mArchiveEncoding=" + mArchiveEncoding
                + ", mIncremental=" + mIncremental
-               + ", mExtraArgs=" + mExtraArgs
                + '}';
     }
 }

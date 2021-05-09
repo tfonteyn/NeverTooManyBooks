@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * @param <Result> the type of the result of the background computation.
  */
 abstract class TaskBase<Result>
-        implements Canceller, ProgressListener {
+        implements ProgressListener {
 
     /** Identifies the task. Passed back in all messages. */
     private final int mTaskId;
