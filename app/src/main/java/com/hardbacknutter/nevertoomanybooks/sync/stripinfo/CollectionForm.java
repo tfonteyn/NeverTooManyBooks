@@ -85,7 +85,7 @@ public class CollectionForm
      */
     @AnyThread
     public CollectionForm(@NonNull final Context context,
-                          @NonNull final SyncConfig config) {
+                          @NonNull final StripInfoSyncConfig config) {
         super(context, config);
 
         mIdLocation = FF_LOCATIE;

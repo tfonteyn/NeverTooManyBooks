@@ -1488,7 +1488,8 @@
     <string name="lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
 
     <!-- Text in a dropdown menu. Must be fairly short. -->
-    <string name="lbl_archive_type_backup">Backup (.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Backup (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
 

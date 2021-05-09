@@ -478,6 +478,9 @@ public class BookDaoHelper {
     /**
      * Called during {@link BookDaoImpl#insert(Context, Book, int)}
      * and {@link BookDaoImpl#update(Context, Book, int)}.
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on failure
      */
     void persistCovers()
             throws CoverStorageException, IOException {

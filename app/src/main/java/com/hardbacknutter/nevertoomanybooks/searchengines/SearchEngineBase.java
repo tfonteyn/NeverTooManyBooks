@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -106,9 +105,8 @@ public abstract class SearchEngineBase
 
     @NonNull
     @Override
-    public String getName() {
-        // A site name is locale independent
-        return ServiceLocator.getAppContext().getString(mConfig.getLabelId());
+    public String getName(@NonNull final Context context) {
+        return context.getString(mConfig.getLabelId());
     }
 
     @NonNull

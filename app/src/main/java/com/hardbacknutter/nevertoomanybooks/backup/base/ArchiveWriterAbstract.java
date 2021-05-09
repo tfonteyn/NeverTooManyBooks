@@ -331,7 +331,8 @@ public abstract class ArchiveWriterAbstract
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
      *
-     * @throws IOException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on failure
      */
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)

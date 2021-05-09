@@ -31,6 +31,7 @@ import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -52,6 +53,8 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
@@ -214,6 +217,49 @@ public class CalibreHandler {
             menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
             menu.findItem(R.id.MENU_CALIBRE_SETTINGS).setVisible(false);
         }
+    }
+
+    /**
+     * Called from a details screen. i.e. the data comes from a {@link Book}.
+     *
+     * @param menuItemId to check
+     * @param book       data to use
+     */
+    public boolean onItemSelected(@IdRes final int menuItemId,
+                                  @NonNull final Book book) {
+        if (menuItemId == R.id.MENU_CALIBRE_READ) {
+            read(book);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
+            download(book);
+            return true;
+
+        }
+        return false;
+    }
+
+    /**
+     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
+     *
+     * @param menuItemId to check
+     * @param rowData    data to use
+     */
+    public boolean onItemSelected(@IdRes final int menuItemId,
+                                  @NonNull final DataHolder rowData) {
+
+        if (menuItemId == R.id.MENU_CALIBRE_READ) {
+            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            read(book);
+            return true;
+
+        } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
+            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            download(book);
+            return true;
+
+        }
+        return false;
     }
 
     /**

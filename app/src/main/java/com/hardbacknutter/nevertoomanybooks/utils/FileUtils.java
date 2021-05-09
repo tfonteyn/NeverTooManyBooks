@@ -92,6 +92,7 @@ public final class FileUtils {
      *
      * @return File written to (the one passed in)
      *
+     * @throws CoverStorageException The covers directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on failure
      */

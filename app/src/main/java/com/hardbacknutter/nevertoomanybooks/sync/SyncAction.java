@@ -20,18 +20,36 @@
 package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
-public enum SyncAction {
+public enum SyncAction
+        implements Parcelable {
     // NEVER change the order, we store the ordinal in SharedPreferences.
     Skip(R.string.action_skip),
     CopyIfBlank(R.string.lbl_field_usage_copy_if_blank),
     Append(R.string.lbl_field_usage_append),
     Overwrite(R.string.lbl_field_usage_overwrite);
+
+    /** {@link Parcelable}. */
+    public static final Creator<SyncAction> CREATOR = new Creator<SyncAction>() {
+        @Override
+        @NonNull
+        public SyncAction createFromParcel(@NonNull final Parcel in) {
+            return values()[in.readInt()];
+        }
+
+        @Override
+        @NonNull
+        public SyncAction[] newArray(final int size) {
+            return new SyncAction[size];
+        }
+    };
 
     private final int mLabelId;
 
@@ -85,5 +103,17 @@ public enum SyncAction {
     @StringRes
     int getLabelId() {
         return mLabelId;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(this.ordinal());
     }
 }

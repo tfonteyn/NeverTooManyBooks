@@ -68,7 +68,7 @@ public class StripInfoSyncViewModel
             mImportCollectionTask = new ImportCollectionTask();
 
             //ENHANCE: make these user configurable. The simple fields are CopyIfBlank
-            mSyncProcessor = new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
+            mSyncProcessor = new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
                     .add(R.string.site_stripinfo_be, DBKey.SID_STRIP_INFO)
 
                     .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])

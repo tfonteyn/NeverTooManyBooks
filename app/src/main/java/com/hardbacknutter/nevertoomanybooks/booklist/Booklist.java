@@ -404,12 +404,10 @@ public class Booklist
 
         } else {
             // Make them all visible
-            //noinspection SimplifyStreamApiCallChains
-            nodeList.stream().forEach(this::ensureNodeIsVisible);
+            nodeList.forEach(this::ensureNodeIsVisible);
 
             // Recalculate all positions
-            //noinspection SimplifyStreamApiCallChains
-            nodeList.stream().forEach(this::findAndSetListPosition);
+            nodeList.forEach(this::findAndSetListPosition);
 
             return nodeList;
         }

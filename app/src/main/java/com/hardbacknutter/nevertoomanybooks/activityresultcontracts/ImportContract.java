@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -32,22 +33,23 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ImportContract
-        extends ActivityResultContract<String, ImportResults> {
+        extends ActivityResultContract<ImportContract.Input, ImportResults> {
 
     private static final String TAG = "ImportContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final String url) {
+                               @Nullable final ImportContract.Input input) {
         final Intent intent = new Intent(context, FragmentHostActivity.class)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
-        if (url != null) {
-            intent.putExtra(ImportViewModel.BKEY_URL, url);
+        if (input != null) {
+            intent.putExtra(ArchiveEncoding.BKEY_ENCODING, (Parcelable) input.archiveEncoding);
+            intent.putExtra(ArchiveEncoding.BKEY_URL, input.url);
         }
         return intent;
     }
@@ -64,5 +66,19 @@ public class ImportContract
             return null;
         }
         return intent.getParcelableExtra(ImportResults.BKEY_IMPORT_RESULTS);
+    }
+
+    public static class Input {
+
+        @Nullable
+        final ArchiveEncoding archiveEncoding;
+        @Nullable
+        final String url;
+
+        public Input(@Nullable final ArchiveEncoding archiveEncoding,
+                     @Nullable final String url) {
+            this.archiveEncoding = archiveEncoding;
+            this.url = url;
+        }
     }
 }

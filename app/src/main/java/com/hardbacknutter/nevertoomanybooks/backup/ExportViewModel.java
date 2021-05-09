@@ -24,6 +24,7 @@ import android.net.Uri;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
@@ -50,11 +50,11 @@ public class ExportViewModel
                           ArchiveEncoding.SqLiteDb);
 
     private static final int[] ENCODING_RES_IDS = {
-            R.string.lbl_archive_type_backup,
-            R.string.lbl_archive_type_csv,
-            R.string.lbl_archive_type_json,
-            R.string.lbl_archive_type_xml,
-            R.string.lbl_archive_type_db};
+            ArchiveEncoding.Zip.getLabel(),
+            ArchiveEncoding.Csv.getLabel(),
+            ArchiveEncoding.Json.getLabel(),
+            ArchiveEncoding.Xml.getLabel(),
+            ArchiveEncoding.SqLiteDb.getLabel()};
 
     /** Export configuration. */
     @NonNull
@@ -137,8 +137,8 @@ public class ExportViewModel
         return mArchiveWriterTask.isRunning();
     }
 
-    void startExport(@NonNull final Uri uri) {
-        mExportHelper.setUri(uri);
+    void startExport(@Nullable final Uri uri) {
+        mExportHelper.setFileUri(uri);
         mArchiveWriterTask.start(mExportHelper);
     }
 

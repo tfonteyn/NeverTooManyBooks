@@ -136,6 +136,8 @@ public class ImageDownloader {
      *               Omitted if not set
      *
      * @return file
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     @AnyThread
     @NonNull
@@ -165,7 +167,7 @@ public class ImageDownloader {
      *
      * @return Downloaded File, or {@code null} on failure
      *
-     * @throws DiskFullException on...
+     * @throws CoverStorageException The covers directory is not available
      */
     @Nullable
     @WorkerThread

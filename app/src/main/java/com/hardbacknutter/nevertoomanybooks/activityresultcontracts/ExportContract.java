@@ -36,18 +36,19 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ExportContract
-        extends ActivityResultContract<ArchiveEncoding, Boolean> {
+        extends ActivityResultContract<ExportContract.Input, Boolean> {
 
     private static final String TAG = "ExportContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final ArchiveEncoding encoding) {
+                               @Nullable final ExportContract.Input input) {
         final Intent intent = new Intent(context, FragmentHostActivity.class)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-        if (encoding != null) {
-            intent.putExtra(ExportFragment.BKEY_ENCODING, (Parcelable) encoding);
+        if (input != null) {
+            intent.putExtra(ArchiveEncoding.BKEY_ENCODING, (Parcelable) input.archiveEncoding);
+            intent.putExtra(ArchiveEncoding.BKEY_URL, input.url);
         }
         return intent;
     }
@@ -61,5 +62,19 @@ public class ExportContract
         }
 
         return intent != null && resultCode == Activity.RESULT_OK;
+    }
+
+    public static class Input {
+
+        @Nullable
+        final ArchiveEncoding archiveEncoding;
+        @Nullable
+        final String url;
+
+        public Input(@Nullable final ArchiveEncoding archiveEncoding,
+                     @Nullable final String url) {
+            this.archiveEncoding = archiveEncoding;
+            this.url = url;
+        }
     }
 }

@@ -104,7 +104,7 @@ public abstract class JsoupSearchEngineBase
             return mJsoupLoader.loadDocument(url, createConnectionProducer());
 
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
     }
 
@@ -119,6 +119,8 @@ public abstract class JsoupSearchEngineBase
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread

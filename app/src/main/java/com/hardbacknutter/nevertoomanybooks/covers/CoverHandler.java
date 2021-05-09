@@ -465,6 +465,8 @@ public class CoverHandler {
      *
      * @param context Current context
      * @param srcFile to edit
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     private void editPicture(@NonNull final Context context,
                              @NonNull final File srcFile)
@@ -720,6 +722,8 @@ public class CoverHandler {
      * Get the temporary file.
      *
      * @return file
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     @NonNull
     private File getTempFile()

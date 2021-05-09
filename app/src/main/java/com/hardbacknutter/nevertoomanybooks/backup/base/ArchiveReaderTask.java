@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -68,7 +69,8 @@ public class ArchiveReaderTask
     @WorkerThread
     protected ImportResults doWork(@NonNull final Context context)
             throws InvalidArchiveException, ImportException,
-                   IOException, CertificateException, StorageException {
+                   IOException, CertificateException, StorageException,
+                   CredentialsException {
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
             return reader.read(context, this);

@@ -110,7 +110,7 @@ public interface SearchEngine {
      */
     @AnyThread
     @NonNull
-    String getName();
+    String getName(@NonNull Context context);
 
     /**
      * Get the site url.
@@ -314,7 +314,6 @@ public interface SearchEngine {
      *
      * @return File fileSpec, or {@code null} on failure
      *
-     * @throws DiskFullException     on...
      * @throws CoverStorageException The covers directory is not available
      */
     @WorkerThread

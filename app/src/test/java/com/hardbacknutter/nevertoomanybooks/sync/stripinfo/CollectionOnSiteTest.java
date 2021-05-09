@@ -46,6 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class ImportCollectionTest
+class CollectionOnSiteTest
         extends JSoupBase {
 
     private static final String UTF_8 = "UTF-8";
@@ -68,22 +71,22 @@ class ImportCollectionTest
     private static final String userId = "666";
 
     private final ProgressListener mLogger =
-            new TestProgressListener("ImportCollectionTest");
+            new TestProgressListener("CollectionOnSiteTest");
 
     private final Bookshelf mOwnedBookshelf = new Bookshelf(
             "owned", BuiltinStyle.DEFAULT_UUID);
     private final Bookshelf mWishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
     @Mock
-    SyncConfig mSyncConfig;
+    StripInfoSyncConfig mStripInfoSyncConfig;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        when(mSyncConfig.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
-        when(mSyncConfig.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
+        when(mStripInfoSyncConfig.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
+        when(mStripInfoSyncConfig.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
     }
 
     @Test
@@ -93,7 +96,11 @@ class ImportCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
         final String filename = "/stripinfo/collection.html";
 
-        final ImportCollection ic = new ImportCollection(mContext, mSyncConfig, userId);
+        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
+                .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
+
+        final CollectionOnSite cos = new CollectionOnSite(mContext, searchEngine, userId,
+                                                          mStripInfoSyncConfig);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -105,7 +112,7 @@ class ImportCollectionTest
 
             // should call this... but we can't as it uses "new Bundle()"
             //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(ic, document);
+            final List<Bundle> collection = parseHere(cos, document);
 
             assertEquals(25, collection.size());
 
@@ -140,7 +147,11 @@ class ImportCollectionTest
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/3/0000";
         final String filename = "/stripinfo/collection-last-page.html";
 
-        final ImportCollection ic = new ImportCollection(mContext, mSyncConfig, userId);
+        final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
+                .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
+
+        final CollectionOnSite cos = new CollectionOnSite(mContext, searchEngine, userId,
+                                                          mStripInfoSyncConfig);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -152,7 +163,7 @@ class ImportCollectionTest
 
             // should call this... but we can't as it uses "new Bundle()"
             //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(ic, document);
+            final List<Bundle> collection = parseHere(cos, document);
 
             assertEquals(1, collection.size());
 
@@ -162,7 +173,7 @@ class ImportCollectionTest
     }
 
     @NonNull
-    private List<Bundle> parseHere(@NonNull final ImportCollection ic,
+    private List<Bundle> parseHere(@NonNull final CollectionOnSite ic,
                                    @NonNull final Document document) {
 
         final Element root = document.getElementById("collectionContent");

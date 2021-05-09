@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -48,9 +50,24 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
-public final class SyncProcessor {
+public final class SyncProcessor
+        implements Parcelable {
+
+    /** {@link Parcelable}. */
+    public static final Creator<SyncProcessor> CREATOR = new Creator<SyncProcessor>() {
+        @Override
+        public SyncProcessor createFromParcel(@NonNull final Parcel in) {
+            return new SyncProcessor(in);
+        }
+
+        @Override
+        public SyncProcessor[] newArray(final int size) {
+            return new SyncProcessor[size];
+        }
+    };
 
     private static final String TAG = "SyncProcessor";
 
@@ -59,6 +76,25 @@ public final class SyncProcessor {
 
     private SyncProcessor(@NonNull final Map<String, SyncField> fields) {
         mFields = fields;
+    }
+
+    protected SyncProcessor(@NonNull final Parcel in) {
+        final List<SyncField> list = new ArrayList<>();
+        ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
+
+        mFields = new LinkedHashMap<>();
+        list.forEach(syncField -> mFields.put(syncField.key, syncField));
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        ParcelUtils.writeParcelableList(dest, new ArrayList<>(mFields.values()), flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**
@@ -348,7 +384,7 @@ public final class SyncProcessor {
         }
     }
 
-    public static class Config {
+    public static class Builder {
 
         @NonNull
         private final String mPreferencePrefix;
@@ -358,7 +394,7 @@ public final class SyncProcessor {
         private final Map<String, SyncField> mFields = new LinkedHashMap<>();
         private final Map<String, String> mRelatedFields = new LinkedHashMap<>();
 
-        public Config(@NonNull final String preferencePrefix) {
+        public Builder(@NonNull final String preferencePrefix) {
             mPreferencePrefix = preferencePrefix;
             mGlobalPref = ServiceLocator.getGlobalPreferences();
         }
@@ -432,8 +468,8 @@ public final class SyncProcessor {
          *
          * @return {@code this} (for chaining)
          */
-        public Config add(@StringRes final int labelId,
-                          @NonNull final String key) {
+        public Builder add(@StringRes final int labelId,
+                           @NonNull final String key) {
             return add(labelId, key, SyncAction.CopyIfBlank);
         }
 
@@ -447,9 +483,9 @@ public final class SyncProcessor {
          *
          * @return {@code this} (for chaining)
          */
-        public Config add(@StringRes final int labelId,
-                          @NonNull final String key,
-                          @NonNull final SyncAction defaultAction) {
+        public Builder add(@StringRes final int labelId,
+                           @NonNull final String key,
+                           @NonNull final SyncAction defaultAction) {
 
             if (DBKey.isUsed(mGlobalPref, key)) {
                 final SyncAction action = SyncAction
@@ -472,9 +508,9 @@ public final class SyncProcessor {
          *
          * @return {@code this} (for chaining)
          */
-        public Config addList(@StringRes final int labelId,
-                              @NonNull final String prefKey,
-                              @NonNull final String key) {
+        public Builder addList(@StringRes final int labelId,
+                               @NonNull final String prefKey,
+                               @NonNull final String key) {
 
             if (DBKey.isUsed(mGlobalPref, prefKey)) {
                 final SyncAction action = SyncAction
@@ -493,8 +529,8 @@ public final class SyncProcessor {
          *
          * @return {@code this} (for chaining)
          */
-        public Config addRelatedField(@NonNull final String key,
-                                      @NonNull final String relatedKey) {
+        public Builder addRelatedField(@NonNull final String key,
+                                       @NonNull final String relatedKey) {
             // Don't check on key being present in mFields here. We'll do that at usage time.
             //This allows out-of-order adding.
             mRelatedFields.put(key, relatedKey);

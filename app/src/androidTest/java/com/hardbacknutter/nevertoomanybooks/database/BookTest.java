@@ -126,8 +126,8 @@ public class BookTest {
         assertNotNull(NEED_A_TEMP_DIRECTORY, tempDir);
 
         // empty the temp dir
-        //noinspection SimplifyStreamApiCallChains,ResultOfMethodCallIgnored
-        FileUtils.collectFiles(tempDir, mJpgFilter).stream().forEach(File::delete);
+        //noinspection ResultOfMethodCallIgnored
+        FileUtils.collectFiles(tempDir, mJpgFilter).forEach(File::delete);
 
 
         mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

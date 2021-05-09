@@ -172,7 +172,8 @@
     <string name="lbl_archive_format">Formaat</string>
     <string name="lbl_archive_is_export_only">Dit is alleen voor het exporteren van gegevens; importeren wordt niet ondersteund.</string>
     <string name="lbl_archive_type_backup_info">Volledig back-up- / herstelarchief</string>
-    <string name="lbl_archive_type_backup">Backup kopie ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Backup kopie (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Backup kopie (.tar)</string>
     <string name="lbl_archive_type_csv_info">Export van de boeken naar een CSV-bestand</string>
     <string name="lbl_archive_type_csv">Boeken (.csv)</string>
     <string name="lbl_archive_type_db">Databasebestand (.db)</string>

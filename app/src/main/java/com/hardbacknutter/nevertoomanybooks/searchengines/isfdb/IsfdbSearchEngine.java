@@ -348,7 +348,7 @@ public class IsfdbSearchEngine
                 }
             }
         } catch (@NonNull final IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
         return bookData;
     }

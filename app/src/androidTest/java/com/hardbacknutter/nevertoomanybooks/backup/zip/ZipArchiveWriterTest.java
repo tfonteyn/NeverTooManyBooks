@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -80,7 +81,7 @@ public class ZipArchiveWriterTest
     public void write()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, StorageException {
+                   IOException, CertificateException, StorageException, CredentialsException {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
@@ -96,7 +97,7 @@ public class ZipArchiveWriterTest
                 RecordType.Certificates,
                 RecordType.Styles);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
-        exportHelper.setUri(Uri.fromFile(file));
+        exportHelper.setFileUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
@@ -134,6 +135,7 @@ public class ZipArchiveWriterTest
         assertEquals(0, importResults.booksCreated);
         assertEquals(exportCount, importResults.booksUpdated);
         assertEquals(0, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
 
     }
 }

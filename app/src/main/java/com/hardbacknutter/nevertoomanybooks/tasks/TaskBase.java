@@ -159,7 +159,6 @@ abstract class TaskBase<Result>
 
     protected abstract void onFailure(@NonNull Exception e);
 
-    @Override
     @AnyThread
     public boolean cancel() {
         mIsCancelled.set(true);

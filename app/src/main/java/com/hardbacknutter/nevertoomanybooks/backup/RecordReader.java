@@ -67,8 +67,9 @@ public interface RecordReader
      *
      * @return {@link ImportResults}
      *
-     * @throws ImportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws ImportException  on a decoding/parsing of data issue
+     * @throws StorageException there is an issue with the storage media
+     * @throws IOException      on failure
      */
     @NonNull
     ImportResults read(@NonNull Context context,

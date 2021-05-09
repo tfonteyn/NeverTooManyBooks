@@ -285,7 +285,8 @@ public class EditBookViewModel
      *
      * @param context Current context
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     void saveBook(@NonNull final Context context)
             throws CoverStorageException, DaoWriteException {

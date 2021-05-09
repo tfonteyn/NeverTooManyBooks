@@ -123,7 +123,7 @@ public class CoverRecordReader
                         throw new DiskFullException(e.getCause());
                     }
                     // we don't want to quit importing just because one cover fails.
-                    results.coversSkipped++;
+                    results.coversFailed++;
                 }
             }
         }

@@ -32,6 +32,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
@@ -92,7 +93,9 @@ public class SearchTask
      */
     SearchTask(@NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(searchEngine.getId(), TAG + ' ' + searchEngine.getName(), taskListener);
+        super(searchEngine.getId(),
+              TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
+              taskListener);
 
         mSearchEngine = searchEngine;
         mSearchEngine.setCaller(this);
@@ -171,7 +174,7 @@ public class SearchTask
             throws StorageException, SearchException, CredentialsException, IOException {
 
         publishProgress(1, context.getString(R.string.progress_msg_searching_site,
-                                             mSearchEngine.getName()));
+                                             mSearchEngine.getName(context)));
 
         // Checking this each time a search starts is not needed...
         // But it makes error handling slightly easier and doing
@@ -215,7 +218,7 @@ public class SearchTask
 
             default:
                 // we should never get here...
-                throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName()
+                throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName(context)
                                                    + " does not implement By=" + mBy);
         }
 

@@ -157,7 +157,8 @@
     <string name="lbl_anthology">Antologie</string>
     <string name="lbl_archive_type_csv">Knihy (.csv)</string>
     <string name="lbl_archive_type_csv_info">Export knih do souboru CSV</string>
-    <string name="lbl_archive_type_backup">Záložní kopie (.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Záložní kopie (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Záložní kopie (.tar)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_xml">Export XML (.xml)</string>
     <string name="lbl_archive_type_json">Export JSON (.json)</string>

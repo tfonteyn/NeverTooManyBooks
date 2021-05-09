@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +85,7 @@ public class JsonArchiveWriterTest
     public void styles()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, StorageException {
+                   IOException, CertificateException, StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-styles.json");
@@ -96,7 +97,7 @@ public class JsonArchiveWriterTest
         final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Styles);
 
         exportHelper.setEncoding(ArchiveEncoding.Json);
-        exportHelper.setUri(Uri.fromFile(file));
+        exportHelper.setFileUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
@@ -129,7 +130,7 @@ public class JsonArchiveWriterTest
             throws ImportException, DaoWriteException,
                    InvalidArchiveException,
                    IOException, CertificateException, ExportException,
-                   StorageException {
+                   StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-books.json");
@@ -149,7 +150,7 @@ public class JsonArchiveWriterTest
         );
 
         exportHelper.setEncoding(ArchiveEncoding.Json);
-        exportHelper.setUri(Uri.fromFile(file));
+        exportHelper.setFileUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
@@ -196,6 +197,7 @@ public class JsonArchiveWriterTest
         assertEquals(0, importResults.booksUpdated);
         // we skipped the updated book
         assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
 
 
         importHelper.setImportEntry(RecordType.Books, true);
@@ -216,5 +218,6 @@ public class JsonArchiveWriterTest
         assertEquals(mBookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
     }
 }

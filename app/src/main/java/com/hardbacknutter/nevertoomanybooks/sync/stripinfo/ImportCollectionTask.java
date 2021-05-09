@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
 /**
- * A simple task wrapping {@link ImportCollection}.
+ * A simple task wrapping {@link CollectionOnSite}.
  * <p>
  * No options for now, just fetch all books in the user collection on the site.
  * This includes:
@@ -107,8 +107,12 @@ public class ImportCollectionTask
     @Override
     @WorkerThread
     protected Outcome doWork(@NonNull final Context context)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException,
-                   DaoWriteException, IOException {
+            throws DiskFullException,
+                   CoverStorageException,
+                   SearchException,
+                   CredentialsException,
+                   DaoWriteException,
+                   IOException {
 
         // Got internet?
         if (!NetworkUtils.isNetworkAvailable()) {
@@ -129,10 +133,11 @@ public class ImportCollectionTask
         final SynchronizedDb db = serviceLocator.getDb();
         final BookDao bookDao = serviceLocator.getBookDao();
 
-        final ImportCollection ic = new ImportCollection(context, new SyncConfig(), userId);
+        final CollectionOnSite cos = new CollectionOnSite(context, mSearchEngine, userId,
+                                                          new StripInfoSyncConfig());
 
-        while (ic.hasMore() && !isCancelled()) {
-            final List<Bundle> page = ic.fetchPage(context, this);
+        while (cos.hasMore() && !isCancelled()) {
+            final List<Bundle> page = cos.fetchPage(context, this);
             if (page != null && !page.isEmpty()) {
                 // We're committing by page.
                 Synchronizer.SyncLock txLock = null;
@@ -156,7 +161,10 @@ public class ImportCollectionTask
     private void processPage(@NonNull final Context context,
                              @NonNull final BookDao bookDao,
                              @NonNull final List<Bundle> page)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException,
+            throws DiskFullException,
+                   CoverStorageException,
+                   SearchException,
+                   CredentialsException,
                    DaoWriteException {
 
         for (final Bundle cData : page) {
@@ -229,8 +237,9 @@ public class ImportCollectionTask
     @WorkerThread
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
                                     @NonNull final Bundle cData)
-            throws DiskFullException, CoverStorageException {
-        final String url = cData.getString(ImportCollection.BKEY_FRONT_COVER_URL);
+            throws DiskFullException,
+                   CoverStorageException {
+        final String url = cData.getString(CollectionOnSite.BKEY_FRONT_COVER_URL);
         if (url != null) {
             final String fileSpec = mSearchEngine
                     .saveImage(url, String.valueOf(externalId), 0, null);

@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Class to manage a set of related data.
- * It's basically an extended Bundle.
+ * It's basically an extended Bundle with support for validators, Money and Bit types, parsing, ...
  *
  * <ul>
  *      <li>mRawData: stores the actual data</li>

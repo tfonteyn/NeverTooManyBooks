@@ -37,13 +37,21 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 
 /**
  * Starting point for sending and importing books with Calibre.
+ * <p>
+ * Synchronization is done using
+ * <ul>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.backup.RecordReader}</li>
+ *     <li>{@link com.hardbacknutter.nevertoomanybooks.backup.RecordWriter}</li>
+ * </ul>
+ * <p>
+ * The user can specify the usual import/export options for new and/or updated books.
+ * We do not support updating single books, nor a list of book ids.
  */
 @Keep
 public class CalibreSyncFragment
@@ -81,7 +89,7 @@ public class CalibreSyncFragment
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putString(ImportViewModel.BKEY_URL, url);
+                args.putString(ArchiveEncoding.BKEY_URL, url);
 
                 final Fragment fragment = new CalibreLibraryMappingFragment();
                 fragment.setArguments(args);
@@ -99,7 +107,8 @@ public class CalibreSyncFragment
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putString(ImportViewModel.BKEY_URL, url);
+                args.putString(ArchiveEncoding.BKEY_URL, url);
+                args.putParcelable(ArchiveEncoding.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
 
                 final Fragment fragment = new ImportFragment();
                 fragment.setArguments(args);
@@ -117,7 +126,7 @@ public class CalibreSyncFragment
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putParcelable(ExportFragment.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
+                args.putParcelable(ArchiveEncoding.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
 
                 final Fragment fragment = new ExportFragment();
                 fragment.setArguments(args);

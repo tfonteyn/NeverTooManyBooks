@@ -47,6 +47,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,12 +55,11 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
@@ -73,8 +73,6 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
-    /** The (optional) preset encoding when this fragment starts. */
-    public static final String BKEY_ENCODING = TAG + ":encoding";
 
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
@@ -101,7 +99,7 @@ public class ExportFragment
 
         final Bundle args = getArguments();
         if (args != null) {
-            mPresetEncoding = args.getParcelable(BKEY_ENCODING);
+            mPresetEncoding = args.getParcelable(ArchiveEncoding.BKEY_ENCODING);
         }
     }
 
@@ -151,7 +149,7 @@ public class ExportFragment
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setTitle(mPresetEncoding.getRemoteServerDescriptionResId())
+                    .setTitle(mPresetEncoding.getLabel())
                     .setMessage(R.string.action_synchronize)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setNeutralButton(R.string.btn_options, (d, w) -> {
@@ -160,8 +158,7 @@ public class ExportFragment
                     })
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         d.dismiss();
-                        // WARNING: hardcoded for now as we only have this one.
-                        exportToCalibre();
+                        exportToRemoteServer();
                     })
                     .create()
                     .show();
@@ -204,7 +201,7 @@ public class ExportFragment
             if (mVm.getExportHelper().getExporterEntries().size() > 1) {
                 if (mPresetEncoding != null && mPresetEncoding.isRemoteServer()) {
                     // WARNING: hardcoded for now as we only have this one.
-                    exportToCalibre();
+                    exportToRemoteServer();
                 } else {
                     exportPickUri();
                 }
@@ -243,14 +240,12 @@ public class ExportFragment
 
             mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
 
-            mVb.lblRemoteServer.setText(mPresetEncoding.getRemoteServerDescriptionResId());
+            mVb.lblRemoteServer.setText(mPresetEncoding.getLabel());
             mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
                     (v, isChecked) ->
-                            mVm.getExportHelper()
-                               .getExtraArgs()
+                            mVm.getExportHelper().getExtraArgs()
                                .putBoolean(CalibreContentServerWriter.BKEY_DELETE_LOCAL_BOOKS,
                                            isChecked));
-
         } else {
             mVb.grpArchive.setVisibility(View.VISIBLE);
             mVb.grpServer.setVisibility(View.GONE);
@@ -281,6 +276,7 @@ public class ExportFragment
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
+    /** Only called for File-based exports. */
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
         final ExportHelper helper = mVm.getExportHelper();
@@ -413,13 +409,13 @@ public class ExportFragment
         }
     }
 
-    private void exportToCalibre() {
+    private void exportToRemoteServer() {
         final ExportHelper helper = mVm.getExportHelper();
         helper.setExportEntry(RecordType.Styles, false);
         helper.setExportEntry(RecordType.Preferences, false);
         helper.setExportEntry(RecordType.Certificates, false);
 
-        mVm.startExport(Uri.parse(CalibreContentServer.getHostUrl()));
+        mVm.startExport(null);
     }
 
     private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
@@ -517,7 +513,8 @@ public class ExportFragment
 
                     final StringBuilder msg = new StringBuilder(itemList);
 
-                    final UriInfo uriInfo = new UriInfo(helper.getUri());
+                    final Uri fileUri = Objects.requireNonNull(helper.getFileUri(), "fileUri");
+                    final UriInfo uriInfo = new UriInfo(fileUri);
                     final long size = uriInfo.getSize(getContext());
 
                     // We cannot get the folder name for the file.

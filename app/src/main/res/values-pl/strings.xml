@@ -157,7 +157,8 @@
     <string name="lbl_anthology">Antologia</string>
     <string name="lbl_archive_type_csv">Książki (.csv)</string>
     <string name="lbl_archive_type_csv_info">Eksport książek do pliku CSV</string>
-    <string name="lbl_archive_type_backup">Kopia zapasowa ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Kopia zapasowa (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Kopia zapasowa (.tar)</string>
     <string name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
     <string name="lbl_archive_type_xml">Eksport XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML.</string>

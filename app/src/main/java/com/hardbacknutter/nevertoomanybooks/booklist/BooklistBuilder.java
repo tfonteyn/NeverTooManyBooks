@@ -978,8 +978,7 @@ class BooklistBuilder {
             }
 
             // Add LEFT OUTER JOIN tables as needed
-            //noinspection SimplifyStreamApiCallChains
-            mLeftOuterJoins.stream().forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
+            mLeftOuterJoins.forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
 
             return sql.toString();
         }

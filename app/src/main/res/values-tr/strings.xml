@@ -159,7 +159,8 @@
     <string name="lbl_anthology">Seçmeler</string>
     <string name="lbl_archive_type_csv">Kitaplar (.csv)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
-    <string name="lbl_archive_type_backup">Yedek kopya ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Yedek kopya (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Yedek kopya (.tar)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (.xml)</string>
     <string name="lbl_archive_type_json">JSON dışa aktarma (.json)</string>

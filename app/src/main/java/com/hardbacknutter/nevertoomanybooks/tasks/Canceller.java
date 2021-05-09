@@ -24,25 +24,13 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 /**
  * A minimalistic interface for a Task (or similar, e.g. {@link SearchCoordinator})
  * which can be passed to another class.
- * <p>
- * The latter can then check if it should quit (if the caller was cancelled,
- * or e.g. upon an error, tell the caller it wants to cancel.
  */
 public interface Canceller {
 
     /**
-     * Request cancellation.
-     *
-     * @return {@code false} if the task could not be cancelled,
-     * typically because it has already completed normally;
-     * {@code true} otherwise
-     */
-    boolean cancel();
-
-    /**
      * Check if the task is or should be cancelled.
      *
-     * @return {@code true} if task was cancelled before it completed
+     * @return {@code true} if the task was cancelled before it completed
      */
     boolean isCancelled();
 }

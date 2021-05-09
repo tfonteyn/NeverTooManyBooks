@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -50,7 +49,6 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
-import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -63,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
@@ -117,6 +116,8 @@ public abstract class EditBookBaseFragment
             fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
     @Nullable
     private AmazonHandler mAmazonHandler;
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookOnWebsiteHandler;
 
     /**
      * Init all Fields, and add them the fields collection.
@@ -170,6 +171,7 @@ public abstract class EditBookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
+        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(getContext());
         mAmazonHandler = new AmazonHandler(getContext());
 
         //noinspection ConstantConditions
@@ -203,8 +205,8 @@ public abstract class EditBookBaseFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mVm.getBook();
-        MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
-
+        //noinspection ConstantConditions
+        mViewBookOnWebsiteHandler.prepareMenu(menu, book);
         //noinspection ConstantConditions
         mAmazonHandler.prepareMenu(menu, book);
 
@@ -214,7 +216,6 @@ public abstract class EditBookBaseFragment
     @CallSuper
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final Context context = getContext();
         final Book book = mVm.getBook();
         final int itemId = item.getItemId();
 
@@ -229,7 +230,7 @@ public abstract class EditBookBaseFragment
         }
 
         //noinspection ConstantConditions
-        if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
+        if (mViewBookOnWebsiteHandler.onItemSelected(item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);

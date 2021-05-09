@@ -24,27 +24,16 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.widget.SearchView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import java.util.Optional;
-
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 public final class MenuHelper {
@@ -65,72 +54,6 @@ public final class MenuHelper {
                     new ComponentName(activity, BooksOnBookshelf.class.getName()));
             searchView.setSearchableInfo(si);
         }
-    }
-
-    /**
-     * Populate the OpenOnWebsiteMenu sub menu (if present) for a book
-     * with the sites for which the book has a valid external-id.
-     *
-     * @param menu       root menu
-     * @param dataHolder the row data
-     */
-    public static void prepareViewBookOnWebsiteMenu(@NonNull final Menu menu,
-                                                    @NonNull final DataHolder dataHolder) {
-
-        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
-        if (subMenuItem == null) {
-            return;
-        }
-
-        final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
-        final SubMenu subMenu = subMenuItem.getSubMenu();
-        boolean subMenuVisible = false;
-        for (int i = 0; i < subMenu.size(); i++) {
-            final MenuItem menuItem = subMenu.getItem(i);
-            boolean visible = false;
-
-            final Optional<SearchEngineConfig> oConfig =
-                    registry.getByMenuId(menuItem.getItemId());
-            if (oConfig.isPresent()) {
-                final Domain domain = oConfig.get().getExternalIdDomain();
-                if (domain != null) {
-                    final String value = dataHolder.getString(domain.getName());
-                    if (!value.isEmpty() && !"0".equals(value)) {
-                        visible = true;
-                    }
-                }
-            }
-
-            menuItem.setVisible(visible);
-            if (visible) {
-                subMenuVisible = true;
-            }
-        }
-        subMenuItem.setVisible(subMenuVisible);
-    }
-
-    public static boolean handleViewBookOnWebsiteMenu(@NonNull final Context context,
-                                                      @IdRes final int menuItemId,
-                                                      @NonNull final DataHolder rowData) {
-
-        final Optional<SearchEngineConfig> oConfig = SearchEngineRegistry
-                .getInstance().getByMenuId(menuItemId);
-        if (oConfig.isPresent()) {
-            final Domain domain = oConfig.get().getExternalIdDomain();
-            if (domain != null) {
-                final SearchEngine.ViewBookByExternalId searchEngine =
-                        (SearchEngine.ViewBookByExternalId)
-                                Site.Type.Data.getSite(oConfig.get().getEngineId())
-                                              .getSearchEngine();
-
-                final String externalId = rowData.getString(domain.getName());
-                final String url = searchEngine.createBrowserUrl(externalId);
-                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                return true;
-            }
-
-        }
-        return false;
     }
 
     /**

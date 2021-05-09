@@ -69,7 +69,7 @@ abstract class CollectionBaseParser {
 
     @AnyThread
     CollectionBaseParser(@NonNull final Context context,
-                         @NonNull final SyncConfig config) {
+                         @NonNull final StripInfoSyncConfig config) {
 
         mOwnedBooksBookshelf = config.getOwnedBooksBookshelf(context);
         mWishListBookshelf = config.getWishListBookshelf(context);

@@ -31,6 +31,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public interface ArchiveReader
@@ -99,7 +100,8 @@ public interface ArchiveReader
             throws InvalidArchiveException,
                    IOException,
                    ImportException,
-                   StorageException;
+                   StorageException,
+                   CredentialsException;
 
     /**
      * Override if the implementation needs to close something.

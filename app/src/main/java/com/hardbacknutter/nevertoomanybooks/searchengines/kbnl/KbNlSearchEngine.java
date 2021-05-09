@@ -148,7 +148,7 @@ public class KbNlSearchEngine
             parser.parse(con.getInputStream(), handler);
 
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
 
         checkForSeriesNameInTitle(bookData);

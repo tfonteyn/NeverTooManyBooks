@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -86,7 +87,7 @@ public class CsvArchiveWriterTest
     public void write()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException, ExportException,
-                   IOException, CertificateException, StorageException {
+                   IOException, CertificateException, StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");
@@ -97,7 +98,7 @@ public class CsvArchiveWriterTest
 
         final ExportHelper exportHelper = new ExportHelper(RecordType.Books);
         exportHelper.setEncoding(ArchiveEncoding.Csv);
-        exportHelper.setUri(Uri.fromFile(file));
+        exportHelper.setFileUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
@@ -159,6 +160,7 @@ public class CsvArchiveWriterTest
         assertEquals(0, importResults.booksUpdated);
         // we skipped the updated book
         assertEquals(exportCount - 1, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
 
 
         importHelper.setImportEntry(RecordType.Books, true);
@@ -178,5 +180,6 @@ public class CsvArchiveWriterTest
         assertEquals(mBookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
+        assertEquals(0, importResults.booksFailed);
     }
 }

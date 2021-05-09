@@ -50,11 +50,6 @@ public class ImportViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
-    /** Log tag. */
-    private static final String TAG = "ImportViewModel";
-
-    public static final String BKEY_URL = TAG + ":url";
-
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
@@ -77,10 +72,13 @@ public class ImportViewModel
         if (!mInitWasCalled) {
             mInitWasCalled = true;
             if (args != null) {
-                final String url = args.getString(BKEY_URL);
+                // Remote server Uri
+                final String url = args.getString(ArchiveEncoding.BKEY_URL);
                 if (url != null) {
-                    mImportHelper = ImportHelper.withRemoteServer(
-                            Uri.parse(url), ArchiveEncoding.CalibreCS);
+                    // If we have a url, then we MUST have an encoding (and vice-versa)
+                    final ArchiveEncoding encoding = Objects.requireNonNull(
+                            args.getParcelable(ArchiveEncoding.BKEY_ENCODING));
+                    mImportHelper = ImportHelper.withRemoteServer(Uri.parse(url), encoding);
                 }
             }
         }
@@ -161,12 +159,21 @@ public class ImportViewModel
      * @return {@code true} if the "Go" button should be made available
      */
     boolean isReadyToGo() {
-        if (mImportHelper != null && mImportHelper.getEncoding() == ArchiveEncoding.CalibreCS) {
-            @Nullable
-            final CalibreLibrary selectedLibrary = mImportHelper.getExtraArgs().getParcelable(
-                    CalibreContentServer.BKEY_LIBRARY);
-            return selectedLibrary != null && selectedLibrary.getTotalBooks() > 0;
+        if (mImportHelper != null) {
+            if (mImportHelper.getEncoding() == ArchiveEncoding.CalibreCS) {
+                @Nullable
+                final CalibreLibrary selectedLibrary =
+                        mImportHelper.getExtraArgs()
+                                     .getParcelable(CalibreContentServer.BKEY_LIBRARY);
+                return selectedLibrary != null && selectedLibrary.getTotalBooks() > 0;
+
+            } else if (mImportHelper.getEncoding() == ArchiveEncoding.StripInfo) {
+                // no other checks yet
+                return true;
+            }
+            return false;
         } else {
+            // File-based: the presence of the meta data indicates we can read the file
             return mArchiveMetaData != null;
         }
     }

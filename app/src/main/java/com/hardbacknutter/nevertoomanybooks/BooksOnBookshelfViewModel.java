@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -547,54 +546,6 @@ public class BooksOnBookshelfViewModel
     BooklistCursor getNewListCursor() {
         Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.getNewListCursor();
-    }
-
-    /**
-     * Get the Book for the given row.
-     *
-     * @param rowData with data
-     *
-     * @return Book, or {@code null} if the row contains no Book id.
-     */
-    @Nullable
-    Book getBook(@NonNull final DataHolder rowData) {
-        final long bookId = rowData.getLong(DBKey.FK_BOOK);
-        if (bookId > 0) {
-            return Book.from(bookId, mBookDao);
-        }
-        return null;
-    }
-
-    /**
-     * Get the Publisher for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Publisher, or {@code null} if the row contains no Publisher id.
-     */
-    @Nullable
-    Publisher getPublisher(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBKey.FK_PUBLISHER);
-        if (id > 0) {
-            return ServiceLocator.getInstance().getPublisherDao().getById(id);
-        }
-        return null;
-    }
-
-    /**
-     * Get the Bookshelf for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Bookshelf, or {@code null} if the row contains no Bookshelf id.
-     */
-    @Nullable
-    Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBKey.FK_BOOKSHELF);
-        if (id > 0) {
-            return ServiceLocator.getInstance().getBookshelfDao().getById(id);
-        }
-        return null;
     }
 
     @NonNull

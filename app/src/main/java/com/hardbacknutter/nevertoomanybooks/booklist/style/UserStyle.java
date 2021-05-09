@@ -75,16 +75,16 @@ public class UserStyle
     /**
      * Constructor for styles <strong>loaded from database</strong>.
      *
-     * @param context    Current context
-     * @param dataHolder with data
+     * @param context Current context
+     * @param rowData with data
      */
     private UserStyle(@NonNull final Context context,
-                      @NonNull final DataHolder dataHolder) {
-        super(context, dataHolder.getString(DBKey.KEY_STYLE_UUID), true);
+                      @NonNull final DataHolder rowData) {
+        super(context, rowData.getString(DBKey.KEY_STYLE_UUID), true);
 
-        mId = dataHolder.getLong(DBKey.PK_ID);
-        mIsPreferred = dataHolder.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
-        mMenuPosition = dataHolder.getInt(DBKey.KEY_STYLE_MENU_POSITION);
+        mId = rowData.getLong(DBKey.PK_ID);
+        mIsPreferred = rowData.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED);
+        mMenuPosition = rowData.getInt(DBKey.KEY_STYLE_MENU_POSITION);
 
         initPrefs(true);
     }
@@ -144,8 +144,8 @@ public class UserStyle
     }
 
     public static UserStyle createFromDatabase(@NonNull final Context context,
-                                               @NonNull final DataHolder dataHolder) {
-        return new UserStyle(context, dataHolder);
+                                               @NonNull final DataHolder rowData) {
+        return new UserStyle(context, rowData);
     }
 
     public static UserStyle createFromImport(@NonNull final Context context,

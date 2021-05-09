@@ -38,7 +38,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -73,7 +72,7 @@ public class StartupActivity
     private int mVolumeChangedOptionChosen;
 
     /** Make a backup; when done, move to the next startup stage. */
-    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
+    private final ActivityResultLauncher<ExportContract.Input> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> nextStage());
 
     /**

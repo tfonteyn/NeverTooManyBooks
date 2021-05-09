@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,22 +41,23 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 public class CalibreLibrary
         extends LibraryBase {
 
-    public static final Creator<CalibreLibrary> CREATOR =
-            new Creator<CalibreLibrary>() {
-                @Override
-                public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
-                    return new CalibreLibrary(in);
-                }
+    /** {@link Parcelable}. */
+    public static final Creator<CalibreLibrary> CREATOR = new Creator<CalibreLibrary>() {
+        @Override
+        public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
+            return new CalibreLibrary(in);
+        }
 
-                @Override
-                public CalibreLibrary[] newArray(final int size) {
-                    return new CalibreLibrary[size];
-                }
-            };
+        @Override
+        public CalibreLibrary[] newArray(final int size) {
+            return new CalibreLibrary[size];
+        }
+    };
 
     /** The physical Calibre library STRING id. */
     @NonNull
     private final String mLibraryStringId;
+
     /**
      * The custom fields <strong>present</strong> on the server.
      * This will be a subset of the supported fields from {@link CustomFields}.
@@ -64,7 +66,10 @@ public class CalibreLibrary
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private final Set<CustomFields.Field> mCustomFields = new HashSet<>();
+
+    /** The list of virtual libs in this library. */
     private final ArrayList<CalibreVirtualLibrary> mVirtualLibraries = new ArrayList<>();
+
     /** The physical Calibre library uuid. */
     @NonNull
     private String mUuid;
@@ -112,12 +117,12 @@ public class CalibreLibrary
         //noinspection ConstantConditions
         mLastSyncDate = in.readString();
 
-        ParcelUtils.readParcelableList(in, mVirtualLibraries, getClass().getClassLoader());
-
+        ParcelUtils.readParcelableList(in, mVirtualLibraries,
+                                       CalibreVirtualLibrary.class.getClassLoader());
 
         mTotalBooks = in.readInt();
         //noinspection ConstantConditions
-        Arrays.stream(in.readParcelableArray(getClass().getClassLoader()))
+        Arrays.stream(in.readParcelableArray(CustomFields.Field.class.getClassLoader()))
               .forEach(field -> mCustomFields.add((CustomFields.Field) field));
     }
 
@@ -135,18 +140,6 @@ public class CalibreLibrary
         mUuid = uuid;
     }
 
-    public void setLastSyncDate(@NonNull final String lastSyncDate) {
-        mLastSyncDate = lastSyncDate;
-    }
-
-    public void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
-        if (lastSyncDate != null) {
-            mLastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else {
-            mLastSyncDate = "";
-        }
-    }
-
     @NonNull
     public String getLastSyncDateAsString() {
         return mLastSyncDate;
@@ -159,6 +152,18 @@ public class CalibreLibrary
         }
 
         return null;
+    }
+
+    public void setLastSyncDate(@NonNull final String lastSyncDate) {
+        mLastSyncDate = lastSyncDate;
+    }
+
+    public void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+        if (lastSyncDate != null) {
+            mLastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else {
+            mLastSyncDate = "";
+        }
     }
 
     public int getTotalBooks() {

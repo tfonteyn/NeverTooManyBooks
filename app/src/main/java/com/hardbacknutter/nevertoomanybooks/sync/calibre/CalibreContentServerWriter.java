@@ -17,10 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.calibre;
+package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -53,10 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
@@ -103,7 +100,8 @@ public class CalibreContentServerWriter
             throws CertificateException, SSLException {
 
         mHelper = helper;
-        mServer = new CalibreContentServer(context, mHelper.getUri());
+        mServer = new CalibreContentServer(context,
+                                           Uri.parse(CalibreContentServer.getHostUrl()));
 
         mDoCovers = mHelper.getExporterEntries().contains(RecordType.Cover);
 

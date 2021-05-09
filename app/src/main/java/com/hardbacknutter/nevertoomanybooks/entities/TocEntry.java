@@ -149,11 +149,11 @@ public class TocEntry
     private TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
-        mAuthor = in.readParcelable(getClass().getClassLoader());
+        mAuthor = in.readParcelable(Author.class.getClassLoader());
         //noinspection ConstantConditions
         mTitle = in.readString();
         //noinspection ConstantConditions
-        mFirstPublicationDate = in.readParcelable(getClass().getClassLoader());
+        mFirstPublicationDate = in.readParcelable(PartialDate.class.getClassLoader());
 
         mBookCount = in.readInt();
     }

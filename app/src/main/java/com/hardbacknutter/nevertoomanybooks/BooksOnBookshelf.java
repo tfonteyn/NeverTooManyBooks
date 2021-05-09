@@ -67,7 +67,6 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
@@ -82,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyn
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
@@ -113,16 +111,20 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
@@ -177,21 +179,20 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** Make a backup. */
-    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
+    private final ActivityResultLauncher<ExportContract.Input> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
 
     @Nullable
     private AmazonHandler mAmazonHandler;
+    /** Do an import. */
+    private final ActivityResultLauncher<ImportContract.Input> mImportLauncher =
+            registerForActivityResult(new ImportContract(), this::onImportFinished);
 
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
 
-
-    /** Calibre preferences screen. */
-    @Nullable
-    private ActivityResultLauncher<Void> mCalibreSettingsLauncher;
 
     /** Bring up the synchronization options. */
     @Nullable
@@ -279,9 +280,8 @@ public class BooksOnBookshelf
                     }
                 }
             });
-    /** Do an import. */
-    private final ActivityResultLauncher<String> mImportLauncher =
-            registerForActivityResult(new ImportContract(), this::onImportFinished);
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookHandler;
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
@@ -476,6 +476,7 @@ public class BooksOnBookshelf
         createViewModel();
         createSyncDelegates(global);
         mAmazonHandler = new AmazonHandler(this);
+        mViewBookHandler = new ViewBookOnWebsiteHandler(this);
 
         createBookshelfSpinner();
         createBooklist(global);
@@ -529,15 +530,11 @@ public class BooksOnBookshelf
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
         if (Sync.isEnabled(global, Sync.Site.Calibre)) {
-            mCalibreSyncLauncher =
-                    registerForActivityResult(new CalibreSyncContract(), data -> {
-                        if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
-                            mVm.setForceRebuildInOnResume(true);
-                        }
-                    });
-
-            mCalibreSettingsLauncher = registerForActivityResult(
-                    new CalibreSettingsContract(), aVoid -> {});
+            mCalibreSyncLauncher = registerForActivityResult(new CalibreSyncContract(), data -> {
+                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                    mVm.setForceRebuildInOnResume(true);
+                }
+            });
 
             try {
                 mCalibreHandler = new CalibreHandler(this);
@@ -549,7 +546,11 @@ public class BooksOnBookshelf
 
         if (Sync.isEnabled(global, Sync.Site.StripInfo)) {
             mStripInfoSyncLauncher = registerForActivityResult(
-                    new StripInfoSyncContract(), data -> {});
+                    new StripInfoSyncContract(), data -> {
+                        if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                            mVm.setForceRebuildInOnResume(true);
+                        }
+                    });
         }
     }
 
@@ -774,12 +775,13 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 if (Sync.isEnabled(global, Sync.Site.Calibre)) {
-                    final Book book = Objects.requireNonNull(mVm.getBook(rowData));
+                    final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
                     //noinspection ConstantConditions
                     mCalibreHandler.prepareMenu(menu, book);
                 }
 
-                MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
+                //noinspection ConstantConditions
+                mViewBookHandler.prepareMenu(menu, rowData);
 
                 //noinspection ConstantConditions
                 mAmazonHandler.prepareMenu(menu, rowData);
@@ -934,8 +936,10 @@ public class BooksOnBookshelf
 
         final DataHolder rowData = new CursorRow(cursor);
 
+
         if (itemId == R.id.MENU_BOOK_EDIT) {
-            mEditByIdLauncher.launch(rowData.getLong(DBKey.FK_BOOK));
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            mEditByIdLauncher.launch(bookId);
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
@@ -950,17 +954,15 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Book book = mVm.getBook(rowData);
-            if (book != null) {
-                mDuplicateLauncher.launch(book.duplicate());
-            }
+            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            mDuplicateLauncher.launch(book.duplicate());
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_SET_READ
                    || itemId == R.id.MENU_BOOK_SET_UNREAD) {
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             // toggle the read status
             final boolean status = !rowData.getBoolean(DBKey.BOOL_READ);
-            final long bookId = rowData.getLong(DBKey.FK_BOOK);
             if (mVm.setBookRead(bookId, status)) {
                 onBookChange(RowChangeListener.BOOK_READ, bookId);
             }
@@ -968,21 +970,11 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
-        } else if (itemId == R.id.MENU_CALIBRE_READ) {
-            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
-            //noinspection ConstantConditions
-            mCalibreHandler.read(book);
-            return true;
-
-        } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
-            //noinspection ConstantConditions
-            mCalibreHandler.download(book);
-            return true;
-
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            //noinspection ConstantConditions
-            mCalibreSettingsLauncher.launch(null);
+            final Intent intent = new Intent(this, SettingsHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                              CalibrePreferencesFragment.TAG);
+            startActivity(intent);
             return true;
 
             /* ********************************************************************************** */
@@ -1001,15 +993,14 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_SHARE) {
-            final Book book = mVm.getBook(rowData);
-            if (book != null) {
-                startActivity(book.getShareIntent(this));
-            }
+            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            startActivity(book.getShareIntent(this));
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                mUpdateBookLauncher.launch(mVm.getBook(rowData));
+                final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+                mUpdateBookLauncher.launch(book);
                 return true;
             }
 
@@ -1029,10 +1020,8 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_SERIES_EDIT) {
-            final Series series = Series.getSeries(rowData);
-            if (series != null) {
-                EditSeriesDialogFragment.launch(this, series);
-            }
+            final Series series = Objects.requireNonNull(DataHolderUtils.getSeries(rowData));
+            EditSeriesDialogFragment.launch(this, series);
             return true;
 
         } else if (itemId == R.id.MENU_SERIES_SET_COMPLETE
@@ -1046,13 +1035,11 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_SERIES_DELETE) {
-            final Series series = Series.getSeries(rowData);
-            if (series != null) {
-                StandardDialogs.deleteSeries(this, series, () -> {
-                    mVm.delete(this, series);
-                    onRowChange(RowChangeListener.SERIES, series.getId());
-                });
-            }
+            final Series series = Objects.requireNonNull(DataHolderUtils.getSeries(rowData));
+            StandardDialogs.deleteSeries(this, series, () -> {
+                mVm.delete(this, series);
+                onRowChange(RowChangeListener.SERIES, series.getId());
+            });
             return true;
 
             /* ********************************************************************************** */
@@ -1063,10 +1050,8 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
-            final Author author = Author.getAuthor(rowData);
-            if (author != null) {
-                EditAuthorDialogFragment.launch(this, author);
-            }
+            final Author author = Objects.requireNonNull(DataHolderUtils.getAuthor(rowData));
+            EditAuthorDialogFragment.launch(this, author);
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
@@ -1081,38 +1066,35 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_PUBLISHER_EDIT) {
-            final Publisher publisher = mVm.getPublisher(rowData);
-            if (publisher != null) {
-                EditPublisherDialogFragment.launch(this, publisher);
-            }
+            final Publisher publisher = Objects.requireNonNull(
+                    DataHolderUtils.getPublisher(rowData));
+            EditPublisherDialogFragment.launch(this, publisher);
             return true;
 
         } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
-            final Publisher publisher = mVm.getPublisher(rowData);
-            if (publisher != null) {
-                StandardDialogs.deletePublisher(this, publisher, () -> {
-                    mVm.delete(this, publisher);
-                    onRowChange(RowChangeListener.PUBLISHER, publisher.getId());
-                });
-            }
+            final Publisher publisher = Objects.requireNonNull(
+                    DataHolderUtils.getPublisher(rowData));
+            StandardDialogs.deletePublisher(this, publisher, () -> {
+                mVm.delete(this, publisher);
+                onRowChange(RowChangeListener.PUBLISHER, publisher.getId());
+            });
+
             return true;
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
-            final Bookshelf bookshelf = mVm.getBookshelf(rowData);
-            if (bookshelf != null) {
-                mEditBookshelfLauncher.launch(bookshelf);
-            }
+            final Bookshelf bookshelf = Objects.requireNonNull(
+                    DataHolderUtils.getBookshelf(rowData));
+            mEditBookshelfLauncher.launch(bookshelf);
             return true;
 
         } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
-            final Bookshelf bookshelf = mVm.getBookshelf(rowData);
-            if (bookshelf != null) {
-                StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
-                    mVm.delete(bookshelf);
-                    onRowChange(RowChangeListener.BOOKSHELF, bookshelf.getId());
-                });
-            }
+            final Bookshelf bookshelf = Objects.requireNonNull(
+                    DataHolderUtils.getBookshelf(rowData));
+            StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
+                mVm.delete(bookshelf);
+                onRowChange(RowChangeListener.BOOKSHELF, bookshelf.getId());
+            });
             return true;
 
             /* ********************************************************************************** */
@@ -1150,11 +1132,19 @@ public class BooksOnBookshelf
             return true;
         }
 
+        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(itemId, rowData)) {
+            return true;
+        }
+
         if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, rowData)) {
             return true;
         }
 
-        return MenuHelper.handleViewBookOnWebsiteMenu(this, itemId, rowData);
+        if (mViewBookHandler != null && mViewBookHandler.onItemSelected(itemId, rowData)) {
+            return true;
+        }
+
+        return false;
     }
 
     private void onFabMenuItemSelected(@IdRes final int itemId) {

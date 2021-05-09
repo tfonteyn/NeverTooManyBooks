@@ -59,9 +59,9 @@ public class ExportHelper {
     private final Set<RecordType> mExportEntries;
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle mExtraArgs = new Bundle();
-    /** Picked by the user; where we write to. */
+    /** Picked by the user; file Uri where we write to; will be {@code null} for remote servers. */
     @Nullable
-    private Uri mUri;
+    private Uri mFileUri;
     /** Set by the user; defaults to ZIP. */
     @NonNull
     private ArchiveEncoding mArchiveEncoding = ArchiveEncoding.Zip;
@@ -110,13 +110,13 @@ public class ExportHelper {
         return mArchiveEncoding == ArchiveEncoding.Zip;
     }
 
-    @NonNull
-    public Uri getUri() {
-        return Objects.requireNonNull(mUri, "uri");
+    @Nullable
+    public Uri getFileUri() {
+        return mFileUri;
     }
 
-    public void setUri(@NonNull final Uri uri) {
-        mUri = uri;
+    public void setFileUri(@Nullable final Uri fileUri) {
+        mFileUri = fileUri;
     }
 
     /**
@@ -136,7 +136,7 @@ public class ExportHelper {
                    FileNotFoundException {
 
         if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(mUri, "uri");
+            Objects.requireNonNull(mFileUri, "uri");
             if (mExportEntries.isEmpty()) {
                 throw new IllegalStateException("mExportEntries.isEmpty()");
             }
@@ -180,14 +180,14 @@ public class ExportHelper {
      */
     public void onSuccess(@NonNull final Context context)
             throws IOException {
-        Objects.requireNonNull(mUri, "uri");
+        Objects.requireNonNull(mFileUri, "uri");
 
         if (getEncoding().isFile()) {
             // The output file is now properly closed, export it to the user Uri
             final File tmpOutput = getTempFile(context);
 
             try (InputStream is = new FileInputStream(tmpOutput);
-                 OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
+                 OutputStream os = context.getContentResolver().openOutputStream(mFileUri)) {
                 if (os != null) {
                     FileUtils.copy(is, os);
                 }
@@ -241,7 +241,7 @@ public class ExportHelper {
     public String toString() {
         return "ExportHelper{"
                + "mExportEntities=" + mExportEntries
-               + ", mUri=" + mUri
+               + ", mUri=" + mFileUri
                + ", mArchiveEncoding=" + mArchiveEncoding
                + ", mIncremental=" + mIncremental
                + ", mExtraArgs=" + mExtraArgs

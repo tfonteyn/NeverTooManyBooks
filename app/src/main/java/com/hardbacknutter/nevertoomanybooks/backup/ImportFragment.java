@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -163,7 +162,7 @@ public class ImportFragment
         mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
         if (mVm.hasUri()) {
-            // if we already have a uri when called,
+            // if we already have a uri when called (from getArguments()),
             // or e.g. after a screen rotation, just show the screen/options again
             showOptions();
         } else {
@@ -247,6 +246,7 @@ public class ImportFragment
                 case SqLiteDb:
                 case Json:
                 case CalibreCS:
+                case StripInfo:
                     showOptions();
                     break;
 
@@ -341,7 +341,8 @@ public class ImportFragment
                 mVb.cbxStyles.setVisibility(View.GONE);
                 break;
             }
-            case CalibreCS: {
+            case CalibreCS:
+            case StripInfo: {
                 mVb.cbxBooks.setEnabled(false);
                 mVb.cbxBooks.setVisibility(View.VISIBLE);
                 mVb.cbxCovers.setVisibility(View.VISIBLE);
@@ -381,13 +382,28 @@ public class ImportFragment
         if (metaData != null) {
             // got data, we'll fill this field, SHOW it
             mVb.archiveContent.setVisibility(View.VISIBLE);
-
-            if (helper.getEncoding() == ArchiveEncoding.CalibreCS) {
-                mVb.lblCalibreLibrary.setVisibility(View.VISIBLE);
-                showCalibreMetaData(metaData);
-            } else {
-                mVb.lblCalibreLibrary.setVisibility(View.GONE);
-                showArchiveMetaData(metaData);
+            switch (helper.getEncoding()) {
+                case CalibreCS: {
+                    mVb.lblCalibreLibrary.setVisibility(View.VISIBLE);
+                    showCalibreMetaData(metaData);
+                    break;
+                }
+                case StripInfo: {
+                    mVb.lblCalibreLibrary.setVisibility(View.GONE);
+                    // no info to show yet
+                    break;
+                }
+                case Zip:
+                case Csv:
+                case Json:
+                case Xml:
+                case SqLiteDb:
+                case Tar:
+                default: {
+                    mVb.lblCalibreLibrary.setVisibility(View.GONE);
+                    showArchiveMetaData(metaData);
+                    break;
+                }
             }
         } else {
             // no metadata at all, REMOVE the calibre field, HIDE the content field
@@ -442,8 +458,7 @@ public class ImportFragment
 
             @Nullable
             final CalibreLibrary selectedLibrary = mVm
-                    .getImportHelper()
-                    .getExtraArgs()
+                    .getImportHelper().getExtraArgs()
                     .getParcelable(CalibreContentServer.BKEY_LIBRARY);
             if (selectedLibrary != null) {
                 onCalibreLibrarySelected(selectedLibrary);
@@ -462,8 +477,7 @@ public class ImportFragment
         mVb.archiveContent.setText(getString(R.string.name_colon_value,
                                              getString(R.string.lbl_books),
                                              String.valueOf(library.getTotalBooks())));
-        mVm.getImportHelper()
-           .getExtraArgs()
+        mVm.getImportHelper().getExtraArgs()
            .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
     }
 

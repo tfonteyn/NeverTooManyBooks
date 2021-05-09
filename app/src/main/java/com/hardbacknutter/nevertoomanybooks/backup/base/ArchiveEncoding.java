@@ -43,8 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerReader;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
@@ -56,11 +54,14 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
- * Archive encoding (formats) (partially) supported.
+ * Archive encoding (formats) (partially) supported. Either file-based or remote server based.
  * <p>
  * This is the top level, i.e. the actual file we read/write.
  * Handled by {@link ArchiveReader} and {@link ArchiveWriter}.
@@ -68,19 +69,21 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
-    Zip(".zip"),
+    Zip(".zip", R.string.lbl_archive_type_backup_zip),
     /** Books as a CSV file; full support for export/import. */
-    Csv(".csv"),
+    Csv(".csv", R.string.lbl_archive_type_csv),
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
-    Json(".json"),
+    Json(".json", R.string.lbl_archive_type_json),
     /** XML <strong>Export only</strong>. */
-    Xml(".xml"),
+    Xml(".xml", R.string.lbl_archive_type_xml),
     /** Database. */
-    SqLiteDb(".db"),
+    SqLiteDb(".db", R.string.lbl_archive_type_db),
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar"),
+    Tar(".tar", R.string.lbl_archive_type_backup_tar),
     /** A Calibre Content Server. */
-    CalibreCS(null);
+    CalibreCS(null, R.string.lbl_calibre_content_server),
+    /** StripInfo web site. */
+    StripInfo(null, R.string.site_stripinfo_be);
 
     /** {@link Parcelable}. */
     public static final Creator<ArchiveEncoding> CREATOR = new Creator<ArchiveEncoding>() {
@@ -98,6 +101,11 @@ public enum ArchiveEncoding
     };
     /* Log tag. */
     private static final String TAG = "ArchiveEncoding";
+    /** The (optional) preset encoding to pass to export/import. */
+    public static final String BKEY_ENCODING = TAG + ":encoding";
+    /** The (optional) preset URL to pass to export/import. */
+    public static final String BKEY_URL = TAG + ":url";
+
     /**
      * The proposed archive filename extension to write to.
      * Will be {@code null} for archives which are not files; e.g. a remote server.
@@ -105,14 +113,19 @@ public enum ArchiveEncoding
     @Nullable
     private final String mFileExt;
 
+    @StringRes
+    private final int mLabel;
+
     /**
      * Constructor.
      *
      * @param fileExt to use as the proposed archive filename extension
      *                or {@code null} for remote server "archives"
      */
-    ArchiveEncoding(@Nullable final String fileExt) {
+    ArchiveEncoding(@Nullable final String fileExt,
+                    @StringRes final int label) {
         mFileExt = fileExt;
+        mLabel = label;
     }
 
     /**
@@ -258,13 +271,10 @@ public enum ArchiveEncoding
         return mFileExt == null;
     }
 
+    /** A short label. Used in drop down menus and similar. */
     @StringRes
-    public int getRemoteServerDescriptionResId() {
-        if (!isRemoteServer()) {
-            throw new IllegalStateException("Not a remote server");
-        }
-        // WARNING: hardcoded for now as we only have one of these.
-        return R.string.lbl_calibre_content_server;
+    public int getLabel() {
+        return mLabel;
     }
 
     /**
@@ -322,18 +332,18 @@ public enum ArchiveEncoding
      *
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws ImportException         on a decoding/parsing of data issue
-     * @throws IOException             on other failures
      * @throws CertificateException    on failures related to a user installed CA.
      * @throws SSLException            on secure connection failures
+     * @throws IOException             on other failures
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
             throws InvalidArchiveException,
-                   IOException,
-                   CertificateException,
                    ImportException,
+                   CertificateException,
+                   IOException,
                    CoverStorageException {
 
         final ArchiveReader reader;
@@ -360,6 +370,10 @@ public enum ArchiveEncoding
 
             case CalibreCS:
                 reader = new CalibreContentServerReader(context, helper);
+                break;
+
+            case StripInfo:
+                reader = new StripInfoReader(helper);
                 break;
 
             case Xml:

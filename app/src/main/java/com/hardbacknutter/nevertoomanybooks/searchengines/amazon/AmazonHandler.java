@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 public class AmazonHandler {
@@ -88,6 +89,32 @@ public class AmazonHandler {
     }
 
     /**
+     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
+     *
+     * @param menu    to add to
+     * @param rowData data to use
+     */
+    public void prepareMenu(@NonNull final Menu menu,
+                            @NonNull final DataHolder rowData) {
+
+        final boolean hasAuthor;
+        if (rowData.contains(DBKey.FK_AUTHOR)) {
+            hasAuthor = rowData.getLong(DBKey.FK_AUTHOR) > 0;
+        } else {
+            hasAuthor = false;
+        }
+
+        final boolean hasSeries;
+        if (rowData.contains(DBKey.FK_SERIES)) {
+            hasSeries = rowData.getLong(DBKey.FK_SERIES) > 0;
+        } else {
+            hasSeries = false;
+        }
+
+        prepareMenu(menu, hasAuthor, hasSeries);
+    }
+
+    /**
      * Called from a details screen. i.e. the data comes from a {@link Book}.
      *
      * @param menuItemId to check
@@ -122,33 +149,6 @@ public class AmazonHandler {
         return false;
     }
 
-
-    /**
-     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
-     *
-     * @param menu    to add to
-     * @param rowData data to use
-     */
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final DataHolder rowData) {
-
-        final boolean hasAuthor;
-        if (rowData.contains(DBKey.FK_AUTHOR)) {
-            hasAuthor = rowData.getLong(DBKey.FK_AUTHOR) > 0;
-        } else {
-            hasAuthor = false;
-        }
-
-        final boolean hasSeries;
-        if (rowData.contains(DBKey.FK_SERIES)) {
-            hasSeries = rowData.getLong(DBKey.FK_SERIES) > 0;
-        } else {
-            hasSeries = false;
-        }
-
-        prepareMenu(menu, hasAuthor, hasSeries);
-    }
-
     /**
      * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
      *
@@ -159,22 +159,22 @@ public class AmazonHandler {
                                   @NonNull final DataHolder rowData) {
 
         if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = Author.getAuthor(rowData);
+            final Author author = DataHolderUtils.getAuthor(rowData);
             if (author != null) {
                 startSearchActivity(author, null);
             }
             return true;
 
         } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = Series.getSeries(rowData);
+            final Series series = DataHolderUtils.getSeries(rowData);
             if (series != null) {
                 startSearchActivity(null, series);
             }
             return true;
 
         } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = Author.getAuthor(rowData);
-            final Series series = Series.getSeries(rowData);
+            final Author author = DataHolderUtils.getAuthor(rowData);
+            final Series series = DataHolderUtils.getSeries(rowData);
             if (author != null && series != null) {
                 startSearchActivity(author, series);
             }

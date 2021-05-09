@@ -658,7 +658,8 @@ public class Book
      *
      * @return The persisted file
      *
-     * @throws IOException on any failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on any failure
      * @see #getPersistedCoverFile(int)
      */
     public File persistCover(@NonNull final File downloadedFile,
@@ -815,6 +816,9 @@ public class Book
      * @param file cover file or {@code null} to delete the cover
      *
      * @return the File after processing (either original, or a renamed/moved file)
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @throws IOException           on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable

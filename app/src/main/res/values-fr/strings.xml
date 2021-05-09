@@ -175,7 +175,8 @@
     <string name="lbl_archive_format">Format</string>
     <string name="lbl_archive_is_export_only">Ceci est uniquement pour l\'exportation de données; l\'importation n\'est pas prise en charge.</string>
     <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
-    <string name="lbl_archive_type_backup">Copie de sauvegarde ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Copie de sauvegarde (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
     <string name="lbl_archive_type_csv_info">Exportation des livres vers un fichier CSV</string>
     <string name="lbl_archive_type_csv">Livres (.csv)</string>
     <string name="lbl_archive_type_db">Fichier de base de données (.db)</string>

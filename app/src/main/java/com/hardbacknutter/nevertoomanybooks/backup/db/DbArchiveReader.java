@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -72,7 +73,7 @@ public class DbArchiveReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws FileNotFoundException if the uri cannot be accessed
+     * @throws CoverStorageException The covers directory is not available
      * @throws IOException           on failure to copy the database file
      */
     public DbArchiveReader(@NonNull final Context context,
@@ -132,7 +133,7 @@ public class DbArchiveReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException, IOException,
-                   StorageException {
+                   StorageException, CredentialsException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateReader == null) {

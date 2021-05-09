@@ -152,9 +152,7 @@ public class BookCoder {
 
         mExternalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
-        //noinspection SimplifyStreamApiCallChains
         ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries()
-                      .stream()
                       .forEach(library -> {
                           mCalibreLibraryId2StrMap.put(library.getId(),
                                                        library.getLibraryStringId());

@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionForm;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.SyncConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -185,12 +185,12 @@ public class StripInfoSearchEngine
                 try {
                     mLoginHelper.login();
                 } catch (@NonNull final IOException e) {
-                    throw new SearchException(getName(), e);
+                    throw new SearchException(getName(context), e);
                 }
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
-            mCollectionForm = new CollectionForm(context, new SyncConfig());
+            mCollectionForm = new CollectionForm(context, new StripInfoSyncConfig());
         }
 
         return super.loadDocument(context, url);

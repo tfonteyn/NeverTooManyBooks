@@ -269,6 +269,8 @@ public class MaintenanceFragment
      *                     {@code false} to only sum file sizes in bytes
      *
      * @return the total size in bytes of purgeable/purged files.
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     private long purge(@NonNull final Collection<String> bookUuidList,
                        final boolean reallyDelete)

@@ -115,26 +115,20 @@ public class SearchCoordinator
             mSearchCoordinatorFinished = new MutableLiveData<>();
 
     /** List of Tasks being managed by *this* object. */
-    @NonNull
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    @NonNull
     private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
     /** Mappers to apply. */
-    @NonNull
     private final Collection<Mapper> mMappers = new ArrayList<>();
-
     private final CoverFilter mCoverFilter = new CoverFilter();
 
     /** Accumulates the last message from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    @NonNull
     private final Map<Integer, Exception>
             mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    @NonNull
     private final Map<Integer, ProgressMessage> mSearchProgressMessages = new HashMap<>();
 
 
@@ -261,7 +255,6 @@ public class SearchCoordinator
      *
      * @return {@code true}
      */
-    @Override
     public boolean cancel() {
         mIsCancelled = true;
         synchronized (mActiveTasks) {
@@ -687,7 +680,8 @@ public class SearchCoordinator
             mActiveTasks.add(task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName());
+            Log.d(TAG, "startSearch|searchEngine="
+                       + searchEngine.getName(ServiceLocator.getAppContext()));
         }
 
         task.startSearch();
@@ -752,7 +746,8 @@ public class SearchCoordinator
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
             if (siteData != null && !siteData.isEmpty()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
+                    Log.d(TAG, "accumulateSiteData|searchEngine="
+                               + searchEngine.getName(context));
                 }
                 accumulateSiteData(searchEngine.getLocale(context), siteData);
             }

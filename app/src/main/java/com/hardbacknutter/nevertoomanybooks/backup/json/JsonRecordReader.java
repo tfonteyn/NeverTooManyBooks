@@ -236,10 +236,8 @@ public class JsonRecordReader
         final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
         if (jsonRoot != null) {
             final Styles styles = ServiceLocator.getInstance().getStyles();
-            //noinspection SimplifyStreamApiCallChains
             new ListStyleCoder(context)
                     .decode(jsonRoot)
-                    .stream()
                     .forEach(styles::updateOrInsert);
             mResults.styles = jsonRoot.length();
         }
@@ -327,7 +325,7 @@ public class JsonRecordReader
 
                 } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
-                    mResults.booksSkipped++;
+                    mResults.booksFailed++;
                     mResults.failedLinesMessage.add(
                             context.getString(R.string.error_import_csv_line, row));
                     mResults.failedLinesNr.add(row);
@@ -372,7 +370,8 @@ public class JsonRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
                                     @NonNull final ImportHelper helper,

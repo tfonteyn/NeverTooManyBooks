@@ -431,8 +431,7 @@ public class SearchBookByIsbnFragment
             mVb.queue.removeAllViews();
         }
 
-        //noinspection SimplifyStreamApiCallChains
-        mVm.getScanQueue().stream().forEachOrdered(code -> {
+        mVm.getScanQueue().forEach(code -> {
             //noinspection ConstantConditions
             final Chip chip = new Chip(getContext(), null, R.attr.appChipQueueStyle);
             // RTL-friendly Chip Layout

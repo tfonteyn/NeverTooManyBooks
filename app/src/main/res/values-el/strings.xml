@@ -158,7 +158,8 @@
     <string name="lbl_anthology">Ανθολογία</string>
     <string name="lbl_archive_type_csv">βιβλία (.csv)</string>
     <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>
-    <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">Αντίγραφο ασφαλείας (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">Αντίγραφο ασφαλείας (.tar)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_xml">Εξαγωγή XML (.xml)</string>
     <string name="lbl_archive_type_json">Εξαγωγή JSON (.json)</string>

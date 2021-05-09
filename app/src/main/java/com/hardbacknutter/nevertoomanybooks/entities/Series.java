@@ -26,7 +26,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
@@ -34,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -425,31 +423,6 @@ public class Series
         }
 
         return entityMerger.isListModified();
-    }
-
-    /**
-     * Extract the Series from the given Booklist row data.
-     *
-     * @param rowData with book data
-     *
-     * @return Series, or {@code null} if the row contains no Series id.
-     */
-    @Nullable
-    public static Series getSeries(@NonNull final DataHolder rowData) {
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-        if (rowData.contains(DBKey.FK_SERIES)) {
-            final long id = rowData.getLong(DBKey.FK_SERIES);
-            if (id > 0) {
-                return seriesDao.getById(rowData.getLong(DBKey.FK_SERIES));
-            }
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final ArrayList<Series> series = seriesDao.getSeriesByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
-            if (!series.isEmpty()) {
-                return series.get(0);
-            }
-        }
-        return null;
     }
 
     @Override

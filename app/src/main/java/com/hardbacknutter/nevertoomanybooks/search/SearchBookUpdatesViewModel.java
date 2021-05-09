@@ -76,8 +76,12 @@ public class SearchBookUpdatesViewModel
     private final Book mCurrentBook = new Book();
 
     /** The configuration on which fields to update and how. */
-    private SyncProcessor.Config mSyncConfig;
-    /** The final configuration build from {@link #mSyncConfig}, ready to start processing. */
+    private SyncProcessor.Builder mSyncProcessorBuilder;
+
+    /**
+     * The final configuration build from {@link #mSyncProcessorBuilder},
+     * ready to start processing.
+     */
     @Nullable
     private SyncProcessor mSyncProcessor;
 
@@ -143,16 +147,16 @@ public class SearchBookUpdatesViewModel
                 mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
             }
 
-            mSyncConfig = createSyncProcessorBuilder();
+            mSyncProcessorBuilder = createSyncProcessorBuilder();
         }
     }
 
     /**
      * Entries are displayed in the order they are added here.
      */
-    private SyncProcessor.Config createSyncProcessorBuilder() {
-        final SyncProcessor.Config config =
-                new SyncProcessor.Config(SYNC_PROCESSOR_PREFIX)
+    private SyncProcessor.Builder createSyncProcessorBuilder() {
+        final SyncProcessor.Builder builder =
+                new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
                         // DBKey.PREFS_IS_USED_COVER is the SharedPreference key indicating
                         // the Action needed for this field.
                         // The actual file names are in the Book.BKEY_TMP_FILE_SPEC array.
@@ -192,16 +196,16 @@ public class SearchBookUpdatesViewModel
         for (final SearchEngineConfig seConfig : SearchEngineRegistry.getInstance().getAll()) {
             final Domain domain = seConfig.getExternalIdDomain();
             if (domain != null) {
-                config.add(seConfig.getLabelId(), domain.getName(), SyncAction.Overwrite);
+                builder.add(seConfig.getLabelId(), domain.getName(), SyncAction.Overwrite);
             }
         }
 
-        return config;
+        return builder;
     }
 
     @NonNull
     Collection<SyncField> getFieldSyncList() {
-        return mSyncConfig.getFieldSyncList();
+        return mSyncProcessorBuilder.getFieldSyncList();
     }
 
     /**
@@ -217,7 +221,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user wants ALL covers
-        return mSyncConfig.getSyncAction(DBKey.COVER_IS_USED[0]) == SyncAction.Overwrite;
+        return mSyncProcessorBuilder.getSyncAction(DBKey.COVER_IS_USED[0]) == SyncAction.Overwrite;
     }
 
     /**
@@ -227,8 +231,8 @@ public class SearchBookUpdatesViewModel
      * @param action to set
      */
     void setCoverSyncAction(@NonNull final SyncAction action) {
-        mSyncConfig.setSyncAction(DBKey.COVER_IS_USED[0], action);
-        mSyncConfig.setSyncAction(DBKey.COVER_IS_USED[1], action);
+        mSyncProcessorBuilder.setSyncAction(DBKey.COVER_IS_USED[0], action);
+        mSyncProcessorBuilder.setSyncAction(DBKey.COVER_IS_USED[1], action);
     }
 
     /**
@@ -247,14 +251,14 @@ public class SearchBookUpdatesViewModel
      * Write current settings to the user preferences.
      */
     void writePreferences() {
-        mSyncConfig.writePreferences();
+        mSyncProcessorBuilder.writePreferences();
     }
 
     /**
      * Reset current usage back to defaults, and write to preferences.
      */
     void resetPreferences() {
-        mSyncConfig.resetPreferences();
+        mSyncProcessorBuilder.resetPreferences();
     }
 
     /**
@@ -266,7 +270,7 @@ public class SearchBookUpdatesViewModel
      */
     boolean startSearch(@NonNull final Context context) {
 
-        mSyncProcessor = mSyncConfig.build();
+        mSyncProcessor = mSyncProcessorBuilder.build();
 
         mCurrentProgressCounter = 0;
 

@@ -123,7 +123,7 @@ public class LibraryThingSearchEngine
             parser.parse(con.getInputStream(), handler);
 
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
         return handler.getResult();
     }

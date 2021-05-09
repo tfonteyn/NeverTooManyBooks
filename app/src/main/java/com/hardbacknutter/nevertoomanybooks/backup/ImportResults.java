@@ -72,8 +72,10 @@ public class ImportResults
     public int booksCreated;
     /** #books we updated. */
     public int booksUpdated;
-    /** #books we skipped. (yes, we could use failedLinesNr.size()) */
+    /** #books we skipped for NON-failure reasons. */
     public int booksSkipped;
+    /** #books which explicitly failed. */
+    public int booksFailed;
 
     /** The total #covers that were present in the import data. */
     public int coversProcessed;
@@ -81,8 +83,10 @@ public class ImportResults
     public int coversCreated;
     /** #covers we updated. */
     public int coversUpdated;
-    /** #covers we skipped. */
+    /** #covers we skipped for NON-failure reasons. */
     public int coversSkipped;
+    /** # covers which explicitly failed. */
+    public int coversFailed;
 
     /** #styles we imported. */
     public int styles;
@@ -104,11 +108,13 @@ public class ImportResults
         booksCreated = in.readInt();
         booksUpdated = in.readInt();
         booksSkipped = in.readInt();
+        booksFailed = in.readInt();
 
         coversProcessed = in.readInt();
         coversCreated = in.readInt();
         coversUpdated = in.readInt();
         coversSkipped = in.readInt();
+        coversFailed = in.readInt();
 
         styles = in.readInt();
         preferences = in.readInt();
@@ -123,11 +129,13 @@ public class ImportResults
         booksCreated += results.booksCreated;
         booksUpdated += results.booksUpdated;
         booksSkipped += results.booksSkipped;
+        booksFailed += results.booksFailed;
 
         coversProcessed += results.coversProcessed;
         coversCreated += results.coversCreated;
         coversUpdated += results.coversUpdated;
         coversSkipped += results.coversSkipped;
+        coversFailed += results.coversFailed;
 
         styles += results.styles;
         preferences += results.preferences;
@@ -144,11 +152,13 @@ public class ImportResults
         dest.writeInt(booksCreated);
         dest.writeInt(booksUpdated);
         dest.writeInt(booksSkipped);
+        dest.writeInt(booksFailed);
 
         dest.writeInt(coversProcessed);
         dest.writeInt(coversCreated);
         dest.writeInt(coversUpdated);
         dest.writeInt(coversSkipped);
+        dest.writeInt(coversFailed);
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
@@ -171,11 +181,13 @@ public class ImportResults
                + ", booksCreated=" + booksCreated
                + ", booksUpdated=" + booksUpdated
                + ", booksSkipped=" + booksSkipped
+               + ", booksFailed=" + booksFailed
 
                + ", coversProcessed=" + coversProcessed
                + ", coversCreated=" + coversCreated
                + ", coversUpdated=" + coversUpdated
                + ", coversSkipped=" + coversSkipped
+               + ", coversFailed=" + coversFailed
 
                + ", styles=" + styles
                + ", preferences=" + preferences

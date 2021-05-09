@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -26,22 +29,34 @@ import androidx.annotation.StringRes;
  * How to handle a data field when updating the entity it belongs to.
  * e.g. skip it, overwrite the value, etc...
  */
-public final class SyncField {
+public final class SyncField
+        implements Parcelable {
+
+    /** {@link Parcelable}. */
+    public static final Creator<SyncField> CREATOR = new Creator<SyncField>() {
+        @Override
+        @NonNull
+        public SyncField createFromParcel(@NonNull final Parcel in) {
+            return new SyncField(in);
+        }
+
+        @Override
+        @NonNull
+        public SyncField[] newArray(final int size) {
+            return new SyncField[size];
+        }
+    };
 
     @NonNull
     public final String key;
-
     /** label to show to the user. */
     @StringRes
     private final int mLabelId;
-
     /** Default usage at creation time. */
     @NonNull
     private final SyncAction mDefaultAction;
-
     /** Is the field capable of appending extra data. It can be a true List, or i.e a String. */
     private final boolean mCanAppend;
-
     /** how to use this field. */
     @NonNull
     private SyncAction mSyncAction;
@@ -65,6 +80,32 @@ public final class SyncField {
         mCanAppend = canAppend;
         mDefaultAction = defaultAction;
         mSyncAction = action;
+    }
+
+    protected SyncField(@NonNull final Parcel in) {
+        //noinspection ConstantConditions
+        key = in.readString();
+        mLabelId = in.readInt();
+        mCanAppend = in.readByte() != 0;
+        //noinspection ConstantConditions
+        mDefaultAction = in.readParcelable(SyncAction.class.getClassLoader());
+        //noinspection ConstantConditions
+        mSyncAction = in.readParcelable(SyncAction.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(key);
+        dest.writeInt(mLabelId);
+        dest.writeByte((byte) (mCanAppend ? 1 : 0));
+        dest.writeParcelable(mDefaultAction, flags);
+        dest.writeParcelable(mSyncAction, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**

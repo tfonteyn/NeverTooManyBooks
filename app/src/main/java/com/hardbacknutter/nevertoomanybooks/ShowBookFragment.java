@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -54,7 +55,6 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSettingsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -88,6 +88,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.Sync;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -115,10 +117,6 @@ public class ShowBookFragment
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
-    /** Calibre preferences screen. */
-    @Nullable
-    private ActivityResultLauncher<Void> mCalibreSettingsLauncher;
-
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -126,7 +124,7 @@ public class ShowBookFragment
     @Nullable
     private AmazonHandler mAmazonHandler;
     @Nullable
-    private ViewBookOnWebsiteHandler mViewBookOnWebsiteHandler;
+    private ViewBookOnWebsiteHandler mViewBookHandler;
 
     /** View model. */
     private ShowBookViewModel mVm;
@@ -207,7 +205,7 @@ public class ShowBookFragment
 
         createSyncDelegates(global);
         mAmazonHandler = new AmazonHandler(getContext());
-        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(getContext());
+        mViewBookHandler = new ViewBookOnWebsiteHandler(getContext());
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -243,9 +241,6 @@ public class ShowBookFragment
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
         if (Sync.isEnabled(global, Sync.Site.Calibre)) {
-            mCalibreSettingsLauncher = registerForActivityResult(
-                    new CalibreSettingsContract(), aVoid -> {});
-
             try {
                 //noinspection ConstantConditions
                 mCalibreHandler = new CalibreHandler(getContext());
@@ -334,7 +329,7 @@ public class ShowBookFragment
         }
 
         //noinspection ConstantConditions
-        mViewBookOnWebsiteHandler.prepareMenu(menu, book);
+        mViewBookHandler.prepareMenu(menu, book);
 
         //noinspection ConstantConditions
         mAmazonHandler.prepareMenu(menu, book);
@@ -386,19 +381,11 @@ public class ShowBookFragment
             startActivity(book.getShareIntent(context));
             return true;
 
-        } else if (itemId == R.id.MENU_CALIBRE_READ) {
-            //noinspection ConstantConditions
-            mCalibreHandler.read(book);
-            return true;
-
-        } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            //noinspection ConstantConditions
-            mCalibreHandler.download(book);
-            return true;
-
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            //noinspection ConstantConditions
-            mCalibreSettingsLauncher.launch(null);
+            final Intent intent = new Intent(getContext(), SettingsHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                              CalibrePreferencesFragment.TAG);
+            startActivity(intent);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -407,12 +394,15 @@ public class ShowBookFragment
 
         }
 
+        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(itemId, book)) {
+            return true;
+        }
+
         if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
             return true;
         }
 
-        //noinspection ConstantConditions
-        if (mViewBookOnWebsiteHandler.onItemSelected(item.getItemId(), book)) {
+        if (mViewBookHandler != null && mViewBookHandler.onItemSelected(item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);

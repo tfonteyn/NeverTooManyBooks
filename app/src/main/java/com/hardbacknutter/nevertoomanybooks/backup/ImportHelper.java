@@ -105,7 +105,6 @@ public final class ImportHelper {
      * @param encoding i.e. the remote server to use
      */
     static ImportHelper withRemoteServer(@NonNull final Uri uri,
-                                         @SuppressWarnings("SameParameterValue")
                                          @NonNull final ArchiveEncoding encoding) {
         if (!encoding.isRemoteServer()) {
             throw new IllegalStateException("Not a remote server");
@@ -150,6 +149,7 @@ public final class ImportHelper {
                 break;
 
             case CalibreCS:
+            case StripInfo:
                 mImportEntries.add(RecordType.Books);
                 mImportEntries.add(RecordType.Cover);
                 setNewAndUpdatedBooks();
@@ -182,8 +182,7 @@ public final class ImportHelper {
     public UriInfo getUriInfo(@NonNull final Context context) {
         if (mUriInfo == null) {
             if (mEncoding.isRemoteServer()) {
-                final String displayName =
-                        context.getString(mEncoding.getRemoteServerDescriptionResId());
+                final String displayName = context.getString(mEncoding.getLabel());
                 mUriInfo = new UriInfo(mUri, displayName, 0);
 
             } else {

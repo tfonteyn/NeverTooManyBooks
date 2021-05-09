@@ -182,10 +182,10 @@ public class GoogleBooksSearchEngine
             if (embedded instanceof StorageException) {
                 throw (StorageException) embedded;
             }
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
 
         checkForSeriesNameInTitle(bookData);

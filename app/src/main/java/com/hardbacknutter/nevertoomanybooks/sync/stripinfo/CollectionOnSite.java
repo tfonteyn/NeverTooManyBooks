@@ -42,20 +42,31 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * Fetches and parses the user collection list from the site.
  * This includes visiting each page, and parsing the specific collection data.
  * These are NOT full-book data sets.
+ * <p>
+ * This class provides a simple loop/fetch:
+ *
+ * <pre>
+ *     {@code
+ *          while (cos.hasMore()) {
+ *              List<Bundle> page = cos.fetchPage(...);
+ *              ...
+ *          }
+ *     }
+ * </pre>
+ * <p>
+ * Processing the page itself is up to the caller.
  */
-class ImportCollection {
+public class CollectionOnSite {
 
-    private static final String TAG = "ImportCollection";
+    private static final String TAG = "CollectionOnSite";
 
     /**
      * The collection page only provides a link to the front cover.
@@ -64,7 +75,7 @@ class ImportCollection {
      * in a private key. The caller should determine if the cover is actually wanted
      * (and download it) when the collection data is being processed!
      */
-    static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
+    public static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
 
     private static final String ROW_ID_ATTR = "showIfInCollection-";
     private static final int ROW_ID_ATTR_LEN = ROW_ID_ATTR.length();
@@ -110,7 +121,7 @@ class ImportCollection {
     @NonNull
     private final String mUserId;
     @NonNull
-    private final SearchEngine mSearchEngine;
+    private final StripInfoSearchEngine mSearchEngine;
     @NonNull
     private final RowParser mRowParser;
 
@@ -124,17 +135,17 @@ class ImportCollection {
      * @param userId  as extracted from the auth Cookie.
      */
     @AnyThread
-    ImportCollection(@NonNull final Context context,
-                     @NonNull final SyncConfig config,
-                     @NonNull final String userId) {
+    public CollectionOnSite(@NonNull final Context context,
+                            @NonNull final StripInfoSearchEngine searchEngine,
+                            @NonNull final String userId,
+                            @NonNull final StripInfoSyncConfig config) {
         mUserId = userId;
-        mSearchEngine = SearchEngineRegistry.getInstance()
-                                            .createSearchEngine(SearchSites.STRIP_INFO_BE);
+        mSearchEngine = searchEngine;
         mJsoupLoader = new JsoupLoader();
         mRowParser = new RowParser(context, config);
     }
 
-    boolean hasMore() {
+    public boolean hasMore() {
         // haven't started yet, or there are more pages.
         return mCurrentPage == 0 || mMaxPages > mCurrentPage;
     }
@@ -152,13 +163,13 @@ class ImportCollection {
     @SuppressLint("DefaultLocale")
     @WorkerThread
     @Nullable
-    List<Bundle> fetchPage(@NonNull final Context context,
-                           @NonNull final ProgressListener progressListener)
+    public List<Bundle> fetchPage(@NonNull final Context context,
+                                  @NonNull final ProgressListener progressListener)
             throws SearchException, IOException {
 
         mCurrentPage++;
         if (!hasMore()) {
-            throw new SearchException(mSearchEngine.getName(), "Can't fetch more pages");
+            throw new SearchException(mSearchEngine.getName(context), "Can't fetch more pages");
         }
 
         progressListener.publishProgress(1, context.getString(
@@ -173,7 +184,7 @@ class ImportCollection {
         final Element root = currentDocument.getElementById("collectionContent");
         if (root != null) {
             if (mCurrentPage == 1) {
-                parseMaxPages(root, progressListener);
+                parseMaxPages(context, root, progressListener);
             }
             return parsePage(root);
         }
@@ -187,7 +198,8 @@ class ImportCollection {
         return null;
     }
 
-    private void parseMaxPages(@NonNull final Element root,
+    private void parseMaxPages(@NonNull final Context context,
+                               @NonNull final Element root,
                                @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element last = root.select("div.pagination > a").last();
@@ -201,11 +213,12 @@ class ImportCollection {
                 return;
 
             } catch (@NonNull final NumberFormatException e) {
-                throw new SearchException(mSearchEngine.getName(), "Unable to read page number");
+                throw new SearchException(mSearchEngine.getName(context),
+                                          "Unable to read page number");
             }
         }
 
-        throw new SearchException(mSearchEngine.getName(), "No page numbers");
+        throw new SearchException(mSearchEngine.getName(context), "No page numbers");
     }
 
     /**
@@ -275,7 +288,7 @@ class ImportCollection {
          */
         @AnyThread
         RowParser(@NonNull final Context context,
-                  @NonNull final SyncConfig config) {
+                  @NonNull final StripInfoSyncConfig config) {
             super(context, config);
         }
 

@@ -157,7 +157,8 @@
     <string name="lbl_anthology">Антология</string>
     <string name="lbl_archive_type_csv">книги (.csv)</string>
     <string name="lbl_archive_type_csv_info">Экспорт книг в файл CSV</string>
-    <string name="lbl_archive_type_backup">резервная копия ((.zip)</string>
+    <string name="lbl_archive_type_backup_zip">резервная копия (.zip)</string>
+    <string name="lbl_archive_type_backup_tar">резервная копия (.tar)</string>
     <string name="lbl_archive_type_backup_info">Полное резервное копирование / восстановление архива</string>
     <string name="lbl_archive_type_xml">Экспорт XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Все данные в формате XML.</string>

@@ -299,7 +299,7 @@ public class OpenLibrarySearchEngine
             handleResponse(context, new JSONObject(response), fetchCovers, bookData);
 
         } catch (@NonNull final JSONException | IOException e) {
-            throw new SearchException(getName(), e);
+            throw new SearchException(getName(context), e);
         }
 
         checkForSeriesNameInTitle(bookData);

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.calibre;
+package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
@@ -61,10 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CustomFields;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.Identifier;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -73,8 +69,7 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * Dev Note: while most plumbing to use multiple libraries is in place,
- * right now we only support the default library.
+ * Import books from the given library.
  *
  * <ul>Supports custom columns:
  *     <li>read (boolean)</li>
@@ -119,9 +114,6 @@ public class CalibreContentServerReader
     private final String mEBookString;
     /** cached localized progress string. */
     @NonNull
-    private final String mProgressMessage;
-    /** cached localized progress string. */
-    @NonNull
     private final String mBooksString;
 
     @NonNull
@@ -162,7 +154,6 @@ public class CalibreContentServerReader
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     private void initServer(@NonNull final Context context)
@@ -208,6 +199,9 @@ public class CalibreContentServerReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws DiskFullException, CoverStorageException, ImportException, IOException {
+
+        final String progressMessage =
+                context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
         final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
@@ -283,7 +277,7 @@ public class CalibreContentServerReader
                             handleBook(context, libraryDao, calibreBook);
                             mResults.booksProcessed++;
 
-                            final String msg = String.format(mProgressMessage,
+                            final String msg = String.format(progressMessage,
                                                              mBooksString,
                                                              mResults.booksCreated,
                                                              mResults.booksUpdated,
@@ -313,6 +307,8 @@ public class CalibreContentServerReader
      *
      * @param context     Current context
      * @param calibreBook the book data to import
+     *
+     * @throws CoverStorageException The covers directory is not available
      */
     private void handleBook(@NonNull final Context context,
                             @NonNull final CalibreLibraryDao libraryDao,
@@ -370,7 +366,7 @@ public class CalibreContentServerReader
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
             Logger.error(TAG, e);
-            mResults.booksSkipped++;
+            mResults.booksFailed++;
         }
     }
 
@@ -381,7 +377,8 @@ public class CalibreContentServerReader
      * @param calibreBook the book data to import
      * @param localBook   the local book to add the data to
      *
-     * @throws JSONException upon any error
+     * @throws CoverStorageException The covers directory is not available
+     * @throws JSONException         upon any error
      */
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,

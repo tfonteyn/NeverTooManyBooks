@@ -93,7 +93,8 @@ public interface BookDao {
      *
      * @return the row id of the newly inserted row
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
@@ -113,7 +114,8 @@ public interface BookDao {
      *                May contain extra data which will be ignored.
      * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     void update(@NonNull Context context,
                 @NonNull Book book,

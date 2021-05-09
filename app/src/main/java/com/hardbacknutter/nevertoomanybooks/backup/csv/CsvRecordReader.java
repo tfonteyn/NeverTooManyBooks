@@ -304,7 +304,7 @@ public class CsvRecordReader
     private void handleRowException(final int row,
                                     @NonNull final Exception e,
                                     @NonNull final String msg) {
-        mResults.booksSkipped++;
+        mResults.booksFailed++;
         mResults.failedLinesMessage.add(msg);
         mResults.failedLinesNr.add(row);
 
@@ -324,7 +324,8 @@ public class CsvRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
                                     @NonNull final ImportHelper helper,
@@ -399,7 +400,8 @@ public class CsvRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DaoWriteException on failure
+     * @throws CoverStorageException The covers directory is not available
+     * @throws DaoWriteException     on failure
      */
     private void importBookWithId(@NonNull final Context context,
                                   @NonNull final ImportHelper helper,
