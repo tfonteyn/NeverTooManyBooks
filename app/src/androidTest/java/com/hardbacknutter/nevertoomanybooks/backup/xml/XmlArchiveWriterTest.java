@@ -26,7 +26,6 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +66,7 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, ExportException, CertificateException, StorageException {
+            throws IOException, ExportException, StorageException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");
@@ -80,9 +79,9 @@ public class XmlArchiveWriterTest
         // The XmlArchiveWriter is hardcoded to always/only write Books.
         final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Books);
         exportHelper.setEncoding(ArchiveEncoding.Xml);
-        exportHelper.setFileUri(Uri.fromFile(file));
+        exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception

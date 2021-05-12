@@ -26,7 +26,6 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 import org.junit.Before;
@@ -85,7 +84,7 @@ public class JsonArchiveWriterTest
     public void styles()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, StorageException, CredentialsException {
+                   IOException, StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-styles.json");
@@ -97,9 +96,9 @@ public class JsonArchiveWriterTest
         final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Styles);
 
         exportHelper.setEncoding(ArchiveEncoding.Json);
-        exportHelper.setFileUri(Uri.fromFile(file));
+        exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
@@ -114,8 +113,8 @@ public class JsonArchiveWriterTest
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
         final ImportResults importResults;
 
-        importHelper.setImportEntry(RecordType.Styles, true);
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        importHelper.setRecordType(RecordType.Styles, true);
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);
@@ -129,7 +128,7 @@ public class JsonArchiveWriterTest
     public void books()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException,
-                   IOException, CertificateException, ExportException,
+                   IOException, ExportException,
                    StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
@@ -150,9 +149,9 @@ public class JsonArchiveWriterTest
         );
 
         exportHelper.setEncoding(ArchiveEncoding.Json);
-        exportHelper.setFileUri(Uri.fromFile(file));
+        exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
@@ -179,11 +178,11 @@ public class JsonArchiveWriterTest
         bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        importHelper.setImportEntry(RecordType.Books, true);
-        importHelper.setNewBooksOnly();
+        importHelper.setRecordType(RecordType.Books, true);
+        importHelper.setUpdateOption(ImportHelper.Updates.Skip);
 
         ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);
@@ -200,10 +199,10 @@ public class JsonArchiveWriterTest
         assertEquals(0, importResults.booksFailed);
 
 
-        importHelper.setImportEntry(RecordType.Books, true);
-        importHelper.setAllBooks();
+        importHelper.setRecordType(RecordType.Books, true);
+        importHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
 
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);

@@ -59,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class CollectionOnSiteTest
+class UserCollectionTest
         extends JSoupBase {
 
     private static final String UTF_8 = "UTF-8";
@@ -71,22 +71,22 @@ class CollectionOnSiteTest
     private static final String userId = "666";
 
     private final ProgressListener mLogger =
-            new TestProgressListener("CollectionOnSiteTest");
+            new TestProgressListener("UserCollectionTest");
 
     private final Bookshelf mOwnedBookshelf = new Bookshelf(
             "owned", BuiltinStyle.DEFAULT_UUID);
     private final Bookshelf mWishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
     @Mock
-    StripInfoSyncConfig mStripInfoSyncConfig;
+    Bookshelfmapper mBookshelfmapper;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        when(mStripInfoSyncConfig.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
-        when(mStripInfoSyncConfig.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
+        when(mBookshelfmapper.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
+        when(mBookshelfmapper.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
     }
 
     @Test
@@ -99,8 +99,8 @@ class CollectionOnSiteTest
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
-        final CollectionOnSite cos = new CollectionOnSite(mContext, searchEngine, userId,
-                                                          mStripInfoSyncConfig);
+        final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
+                                                     mBookshelfmapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -112,7 +112,7 @@ class CollectionOnSiteTest
 
             // should call this... but we can't as it uses "new Bundle()"
             //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(cos, document);
+            final List<Bundle> collection = parseHere(uc, document);
 
             assertEquals(25, collection.size());
 
@@ -150,8 +150,8 @@ class CollectionOnSiteTest
         final StripInfoSearchEngine searchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
-        final CollectionOnSite cos = new CollectionOnSite(mContext, searchEngine, userId,
-                                                          mStripInfoSyncConfig);
+        final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
+                                                     mBookshelfmapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -163,7 +163,7 @@ class CollectionOnSiteTest
 
             // should call this... but we can't as it uses "new Bundle()"
             //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(cos, document);
+            final List<Bundle> collection = parseHere(uc, document);
 
             assertEquals(1, collection.size());
 
@@ -173,7 +173,7 @@ class CollectionOnSiteTest
     }
 
     @NonNull
-    private List<Bundle> parseHere(@NonNull final CollectionOnSite ic,
+    private List<Bundle> parseHere(@NonNull final UserCollection ic,
                                    @NonNull final Document document) {
 
         final Element root = document.getElementById("collectionContent");

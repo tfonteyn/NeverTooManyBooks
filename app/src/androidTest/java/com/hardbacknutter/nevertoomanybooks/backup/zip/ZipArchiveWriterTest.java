@@ -26,7 +26,6 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 @MediumTest
 public class ZipArchiveWriterTest
@@ -81,7 +79,7 @@ public class ZipArchiveWriterTest
     public void write()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, CertificateException, StorageException, CredentialsException {
+                   IOException, StorageException, CredentialsException {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
@@ -97,9 +95,9 @@ public class ZipArchiveWriterTest
                 RecordType.Certificates,
                 RecordType.Styles);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
-        exportHelper.setFileUri(Uri.fromFile(file));
+        exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
@@ -114,13 +112,13 @@ public class ZipArchiveWriterTest
         final long exportCount = exportResults.getBookCount();
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        importHelper.setImportEntry(RecordType.Books, true);
+        importHelper.setRecordType(RecordType.Books, true);
 
         // The default, fail if the default was changed without changing this test!
-        assertTrue(importHelper.isNewAndUpdatedBooks());
+        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
 
         final ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNotNull(archiveMetaData);

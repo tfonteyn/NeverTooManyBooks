@@ -59,7 +59,7 @@ public class ExportViewModel
     /** Export configuration. */
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
-    private final ArchiveWriterTask mArchiveWriterTask = new ArchiveWriterTask();
+    private final ArchiveWriterTask mWriterTask = new ArchiveWriterTask();
     private boolean mQuickOptionsAlreadyShown;
 
     @NonNull
@@ -115,36 +115,36 @@ public class ExportViewModel
 
     @NonNull
     LiveData<ProgressMessage> onProgress() {
-        return mArchiveWriterTask.onProgressUpdate();
+        return mWriterTask.onProgressUpdate();
     }
 
     @NonNull
     LiveData<FinishedMessage<ExportResults>> onExportCancelled() {
-        return mArchiveWriterTask.onCancelled();
+        return mWriterTask.onCancelled();
     }
 
     @NonNull
     LiveData<FinishedMessage<Exception>> onExportFailure() {
-        return mArchiveWriterTask.onFailure();
+        return mWriterTask.onFailure();
     }
 
     @NonNull
     LiveData<FinishedMessage<ExportResults>> onExportFinished() {
-        return mArchiveWriterTask.onFinished();
+        return mWriterTask.onFinished();
     }
 
     boolean isExportRunning() {
-        return mArchiveWriterTask.isRunning();
+        return mWriterTask.isRunning();
     }
 
     void startExport(@NonNull final Uri uri) {
-        mExportHelper.setFileUri(uri);
-        mArchiveWriterTask.start(mExportHelper);
+        mExportHelper.setUri(uri);
+        mWriterTask.start(mExportHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {
-        if (taskId == mArchiveWriterTask.getTaskId()) {
-            mArchiveWriterTask.cancel();
+        if (taskId == mWriterTask.getTaskId()) {
+            mWriterTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

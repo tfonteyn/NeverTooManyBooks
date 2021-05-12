@@ -51,22 +51,22 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * This includes visiting each page, and parsing the specific collection data.
  * These are NOT full-book data sets.
  * <p>
- * This class provides a simple loop/fetch:
+ * Use this class with a simple loop/fetch:
  *
  * <pre>
  *     {@code
- *          while (cos.hasMore()) {
- *              List<Bundle> page = cos.fetchPage(...);
+ *          while (uc.hasMore()) {
+ *              List<Bundle> page = uc.fetchPage(...);
  *              ...
  *          }
  *     }
  * </pre>
  * <p>
- * Processing the page itself is up to the caller.
+ * Processing the page itself is then up to the caller.
  */
-public class CollectionOnSite {
+public class UserCollection {
 
-    private static final String TAG = "CollectionOnSite";
+    private static final String TAG = "UserCollection";
 
     /**
      * The collection page only provides a link to the front cover.
@@ -77,6 +77,7 @@ public class CollectionOnSite {
      */
     static final String BKEY_FRONT_COVER_URL = TAG + ":front_cover_url";
 
+    /** Prefix used by the site attributes. */
     private static final String ROW_ID_ATTR = "showIfInCollection-";
     private static final int ROW_ID_ATTR_LEN = ROW_ID_ATTR.length();
 
@@ -135,10 +136,10 @@ public class CollectionOnSite {
      * @param userId  as extracted from the auth Cookie.
      */
     @AnyThread
-    CollectionOnSite(@NonNull final Context context,
-                     @NonNull final StripInfoSearchEngine searchEngine,
-                     @NonNull final String userId,
-                     @NonNull final StripInfoSyncConfig config) {
+    UserCollection(@NonNull final Context context,
+                   @NonNull final StripInfoSearchEngine searchEngine,
+                   @NonNull final String userId,
+                   @NonNull final Bookshelfmapper config) {
         mUserId = userId;
         mSearchEngine = searchEngine;
         mJsoupLoader = new JsoupLoader();
@@ -288,10 +289,17 @@ public class CollectionOnSite {
          */
         @AnyThread
         RowParser(@NonNull final Context context,
-                  @NonNull final StripInfoSyncConfig config) {
+                  @NonNull final Bookshelfmapper config) {
             super(context, config);
         }
 
+        /**
+         * Parse the form ('root') and put the results into the 'destBundle'.
+         *
+         * @param root         Element to parse
+         * @param destBundle   to store the results in
+         * @param collectionId website book collection-id
+         */
         @AnyThread
         public void parse(@NonNull final Element root,
                           @NonNull final Bundle destBundle,

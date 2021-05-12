@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -45,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -101,25 +100,18 @@ import com.hardbacknutter.org.json.JSONTokener;
  * </ol>
  */
 public class JsonRecordReader
-        implements RecordReader {
+        extends BaseRecordReader {
+
+    /** log error string. */
+    private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
     /** Log tag. */
     private static final String TAG = "JsonRecordReader";
-    /** log error string. */
-    private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
-    /** cached localized "Books" string. */
-    @NonNull
-    private final String mBooksString;
-    @NonNull
-    private final String mProgressMessage;
+
     @NonNull
     private final JsonCoder<Book> mBookCoder;
     @NonNull
     private final Set<RecordType> mImportEntriesAllowed;
-    private ImportResults mResults;
 
     /**
      * Constructor.
@@ -132,13 +124,10 @@ public class JsonRecordReader
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
-        mBookDao = ServiceLocator.getInstance().getBookDao();
+        super(context);
         mImportEntriesAllowed = importEntriesAllowed;
 
         mBookCoder = new BookCoder(context);
-
-        mBooksString = context.getString(R.string.lbl_books);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     @Override
@@ -362,81 +351,5 @@ public class JsonRecordReader
         }
         // minus 1 to compensate for the last increment
         mResults.booksProcessed = row - 1;
-    }
-
-    /**
-     * insert or update a single book which has a <strong>valid UUID</strong>.
-     *
-     * @param context Current context
-     * @param book    to import
-     *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
-     */
-    private void importBookWithUuid(@NonNull final Context context,
-                                    @NonNull final ImportHelper helper,
-                                    @NonNull final Book book,
-                                    final long importNumericId)
-            throws CoverStorageException, DaoWriteException {
-        // Verified to be valid earlier.
-        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
-
-        // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
-        if (databaseBookId > 0) {
-            // The book exists in our database (matching UUID).
-
-            // Explicitly set the EXISTING id on the book
-            // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBKey.PK_ID, databaseBookId);
-
-            // UPDATE the existing book (if allowed).
-            final ImportHelper.Updates updateOption = helper.getUpdateOption();
-            if (updateOption == ImportHelper.Updates.Overwrite
-                ||
-                (updateOption == ImportHelper.Updates.OnlyNewer
-                 && mBookDao.isImportNewer(databaseBookId, book))) {
-
-                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                mResults.booksUpdated++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
-                               + "|update|" + book.getTitle());
-                }
-
-            } else {
-                mResults.booksSkipped++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
-                               + "|skipped|" + book.getTitle());
-                }
-            }
-
-        } else {
-            // The book does NOT exist in our database (no match for the UUID), insert it.
-
-            // If we have an importBookId, and it does not already exist, we reuse it.
-            if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBKey.PK_ID, importNumericId);
-            }
-
-            // the Book object will contain:
-            // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
-            // - NO id, OR an id which does not exist in the database yet.
-            // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mBookDao.insert(context, book,
-                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "UUID=" + uuid
-                           + "|importNumericId=" + importNumericId
-                           + "|insert=" + insId
-                           + "|" + book.getTitle());
-            }
-        }
     }
 }

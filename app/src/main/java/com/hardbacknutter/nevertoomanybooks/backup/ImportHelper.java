@@ -44,15 +44,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 
 public final class ImportHelper {
 
+    /** <strong>What</strong> is going to be imported. */
+    @NonNull
+    private final Set<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
     /** <strong>Where</strong> we read from. */
     @NonNull
     private final Uri mUri;
     /** <strong>How</strong> to read from the Uri. */
     @NonNull
     private final ArchiveEncoding mEncoding;
-    /** <strong>What</strong> is going to be imported. */
-    @NonNull
-    private final Set<RecordType> mImportEntries = EnumSet.noneOf(RecordType.class);
+
 
     /**
      * New Books/Covers are always imported
@@ -73,7 +74,7 @@ public final class ImportHelper {
                          @NonNull final ArchiveEncoding encoding) {
         mUri = uri;
         mEncoding = encoding;
-        initWithDefault();
+        initWithDefault(encoding);
     }
 
     /**
@@ -95,40 +96,37 @@ public final class ImportHelper {
         return new ImportHelper(uri, encoding);
     }
 
-    private void initWithDefault() {
-        mImportEntries.clear();
-        mImportEntries.add(RecordType.MetaData);
+    private void initWithDefault(@NonNull final ArchiveEncoding encoding) {
+        mRecordTypes.clear();
+        mRecordTypes.add(RecordType.MetaData);
 
-        switch (mEncoding) {
+        switch (encoding) {
             case Csv:
-                // Default: new books and sync updates
-                mImportEntries.add(RecordType.Books);
-                setNewAndUpdatedBooks();
+                mRecordTypes.add(RecordType.Books);
+                mUpdateOption = Updates.OnlyNewer;
                 break;
 
             case Zip:
             case Tar:
-                // Default: update all entries and sync updates
-                mImportEntries.add(RecordType.Styles);
-                mImportEntries.add(RecordType.Preferences);
-                mImportEntries.add(RecordType.Certificates);
-                mImportEntries.add(RecordType.Books);
-                mImportEntries.add(RecordType.Cover);
-                setNewAndUpdatedBooks();
+                mRecordTypes.add(RecordType.Styles);
+                mRecordTypes.add(RecordType.Preferences);
+                mRecordTypes.add(RecordType.Certificates);
+                mRecordTypes.add(RecordType.Books);
+                mRecordTypes.add(RecordType.Cover);
+                mUpdateOption = Updates.OnlyNewer;
                 break;
 
             case SqLiteDb:
-                // Default: new books only
-                mImportEntries.add(RecordType.Books);
-                setNewBooksOnly();
+                mRecordTypes.add(RecordType.Books);
+                mUpdateOption = Updates.Skip;
                 break;
 
             case Json:
-                mImportEntries.add(RecordType.Styles);
-                mImportEntries.add(RecordType.Preferences);
-                mImportEntries.add(RecordType.Certificates);
-                mImportEntries.add(RecordType.Books);
-                setNewAndUpdatedBooks();
+                mRecordTypes.add(RecordType.Styles);
+                mRecordTypes.add(RecordType.Preferences);
+                mRecordTypes.add(RecordType.Certificates);
+                mRecordTypes.add(RecordType.Books);
+                mUpdateOption = Updates.OnlyNewer;
                 break;
 
             case Xml:
@@ -184,59 +182,40 @@ public final class ImportHelper {
      */
     @NonNull
     @WorkerThread
-    public ArchiveReader createArchiveReader(@NonNull final Context context)
+    public ArchiveReader createReader(@NonNull final Context context)
             throws InvalidArchiveException,
                    ImportException,
                    IOException,
                    CoverStorageException {
         if (BuildConfig.DEBUG /* always */) {
-            if (mImportEntries.isEmpty()) {
+            if (mRecordTypes.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");
             }
         }
         return mEncoding.createReader(context, this);
     }
 
-    public void setImportEntry(@NonNull final RecordType recordType,
-                               final boolean isSet) {
+    public void setRecordType(@NonNull final RecordType recordType,
+                              final boolean isSet) {
         if (isSet) {
-            mImportEntries.add(recordType);
+            mRecordTypes.add(recordType);
         } else {
-            mImportEntries.remove(recordType);
+            mRecordTypes.remove(recordType);
         }
     }
 
     @NonNull
-    public Set<RecordType> getImportEntries() {
-        return mImportEntries;
+    public Set<RecordType> getRecordTypes() {
+        return mRecordTypes;
     }
 
-    public boolean isNewBooksOnly() {
-        return mUpdateOption == Updates.Skip;
-    }
-
-    public void setNewBooksOnly() {
-        mUpdateOption = Updates.Skip;
-    }
-
-    public boolean isAllBooks() {
-        return mUpdateOption == Updates.Overwrite;
-    }
-
-    public void setAllBooks() {
-        mUpdateOption = Updates.Overwrite;
-    }
-
-    public boolean isNewAndUpdatedBooks() {
-        return mUpdateOption == Updates.OnlyNewer;
-    }
-
-    public void setNewAndUpdatedBooks() {
-        mUpdateOption = Updates.OnlyNewer;
-    }
-
+    @NonNull
     public Updates getUpdateOption() {
         return mUpdateOption;
+    }
+
+    public void setUpdateOption(@NonNull final Updates updateOption) {
+        mUpdateOption = updateOption;
     }
 
     @Override
@@ -244,9 +223,9 @@ public final class ImportHelper {
     public String toString() {
         return "ImportHelper{"
                + "mUri=" + mUri
-               + ", mArchiveEncoding=" + mEncoding
-               + ", mImportEntries=" + mImportEntries
-               + ", mUpdates=" + mUpdateOption
+               + ", mEncoding=" + mEncoding
+               + ", mRecordTypes=" + mRecordTypes
+               + ", mUpdateOption=" + mUpdateOption
                + '}';
     }
 

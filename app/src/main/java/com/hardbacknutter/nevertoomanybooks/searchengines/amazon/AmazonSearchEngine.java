@@ -91,17 +91,8 @@ public class AmazonSearchEngine
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
-    private static final String WWW_AMAZON_COM = "https://www.amazon.com";
-
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "amazon";
-    /** Type: {@code String}. */
-    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
-    /** Log tag. */
-    private static final String TAG = "AmazonSearchEngine";
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
-
     /**
      * The search url.
      *
@@ -114,7 +105,12 @@ public class AmazonSearchEngine
      * </ul>
      */
     static final String SEARCH_SUFFIX = "/gp/search?index=books";
-
+    /** Preferences prefix. */
+    private static final String PREF_KEY = "amazon";
+    /** Type: {@code String}. */
+    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
+    /** Log tag. */
+    private static final String TAG = "AmazonSearchEngine";
     /** Param 1: external book ID; the ASIN/ISBN. */
     private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
 
@@ -173,12 +169,19 @@ public class AmazonSearchEngine
         mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
+    @NonNull
+    static String getAmazonUrl() {
+        //noinspection ConstantConditions
+        return ServiceLocator.getGlobalPreferences()
+                             .getString(PK_HOST_URL, "https://www.amazon.com");
+    }
+
     public static SearchEngineConfig createConfig() {
         return new SearchEngineConfig.Builder(AmazonSearchEngine.class,
                                               SearchSites.AMAZON,
                                               R.string.site_amazon,
                                               PREF_KEY,
-                                              WWW_AMAZON_COM)
+                                              getAmazonUrl())
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN
@@ -186,12 +189,6 @@ public class AmazonSearchEngine
 //                .setDomainViewId(R.id.site_amazon)
 //                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
                 .build();
-    }
-
-    @NonNull
-    static String getAmazonUrl() {
-        //noinspection ConstantConditions
-        return ServiceLocator.getGlobalPreferences().getString(PK_HOST_URL, WWW_AMAZON_COM);
     }
 
     /**
@@ -214,12 +211,6 @@ public class AmazonSearchEngine
         }
 
         return getSiteUrl() + SEARCH_SUFFIX + fields.trim();
-    }
-
-    @NonNull
-    @Override
-    public String getSiteUrl() {
-        return getAmazonUrl();
     }
 
     @NonNull

@@ -71,7 +71,7 @@ public class ArchiveWriterTask
 
         ExportResults results = null;
         //noinspection ConstantConditions
-        try (ArchiveWriter writer = mHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = mHelper.createWriter(context)) {
             results = writer.write(context, this);
 
         } catch (@NonNull final IOException e) {

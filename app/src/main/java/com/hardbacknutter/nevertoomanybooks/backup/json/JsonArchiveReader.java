@@ -74,7 +74,7 @@ public class JsonArchiveReader
         }
 
         try (RecordReader recordReader = new JsonRecordReader(
-                context, mHelper.getImportEntries())) {
+                context, mHelper.getRecordTypes())) {
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(

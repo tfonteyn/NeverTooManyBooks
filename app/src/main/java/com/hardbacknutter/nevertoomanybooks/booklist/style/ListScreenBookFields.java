@@ -27,8 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.core.math.MathUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -254,7 +252,6 @@ public class ListScreenBookFields
                 PK_LOCATION,
                 PK_RATING,
                 PK_BOOKSHELVES})
-    @Retention(RetentionPolicy.SOURCE)
     @interface Key {
 
     }

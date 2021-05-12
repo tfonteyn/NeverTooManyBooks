@@ -17,62 +17,67 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * Input: {@link ImportHelper}.
- * Output: {@link ImportResults}.
+ * Input: {@link SyncWriterConfig}.
+ * Output: {@link SyncWriterResults}.
  */
-public class ArchiveReaderTask
-        extends MTask<ImportResults> {
+public class SyncWriterTask
+        extends MTask<SyncWriterResults> {
 
     /** Log tag. */
-    private static final String TAG = "ArchiveReaderTask";
+    private static final String TAG = "SyncWriterTask";
 
-    /** import configuration. */
-    private ImportHelper mHelper;
+    /** Server to sync with */
+    private SyncServer mSyncServer;
+    /** export configuration. */
+    @Nullable
+    private SyncWriterConfig mConfig;
 
-    public ArchiveReaderTask() {
-        super(R.id.TASK_ID_IMPORT, TAG);
+    public SyncWriterTask() {
+        super(R.id.TASK_ID_EXPORT, TAG);
     }
 
     /**
      * Start the task.
      *
-     * @param helper import configuration
+     * @param syncServer to sync with
+     * @param config     configuration
      */
-    @UiThread
-    public void start(@NonNull final ImportHelper helper) {
-        mHelper = helper;
+    public void start(@NonNull final SyncServer syncServer,
+                      @NonNull final SyncWriterConfig config) {
+        mSyncServer = syncServer;
+        mConfig = config;
         execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
-    protected ImportResults doWork(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException,
-                   CredentialsException {
+    protected SyncWriterResults doWork(@NonNull final Context context)
+            throws ExportException,
+                   IOException,
+                   CertificateException,
+                   StorageException {
 
-        try (ArchiveReader reader = mHelper.createReader(context)) {
-            return reader.read(context, this);
+        //noinspection ConstantConditions
+        try (SyncWriter writer = mSyncServer.createWriter(context, mConfig)) {
+            return writer.write(context, this);
         }
     }
 }

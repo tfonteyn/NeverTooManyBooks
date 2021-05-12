@@ -105,7 +105,7 @@ public abstract class ArchiveReaderAbstract
     private RecordReader mCoverReader;
     /** The INFO data read from the start of the archive. */
     @Nullable
-    private ArchiveMetaData mArchiveMetaData;
+    private ArchiveMetaData mMetaData;
 
     /**
      * Constructor.
@@ -125,12 +125,12 @@ public abstract class ArchiveReaderAbstract
     @Override
     public void validate(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException {
-        if (mArchiveMetaData == null) {
-            mArchiveMetaData = readMetaData(context);
+        if (mMetaData == null) {
+            mMetaData = readMetaData(context);
         }
 
         // the info block will/can do more checks.
-        mArchiveMetaData.validate();
+        mMetaData.validate();
     }
 
     @NonNull
@@ -153,7 +153,7 @@ public abstract class ArchiveReaderAbstract
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException {
-        if (mArchiveMetaData == null) {
+        if (mMetaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
                 throw new InvalidArchiveException(ERROR_INVALID_HEADER);
@@ -163,7 +163,7 @@ public abstract class ArchiveReaderAbstract
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
                         .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
-                    mArchiveMetaData = recordReader.readMetaData(record);
+                    mMetaData = recordReader.readMetaData(record);
                 }
             }
 
@@ -171,10 +171,10 @@ public abstract class ArchiveReaderAbstract
             closeInputStream();
         }
 
-        if (mArchiveMetaData == null) {
+        if (mMetaData == null) {
             throw new InvalidArchiveException(ERROR_INVALID_HEADER);
         }
-        return mArchiveMetaData;
+        return mMetaData;
     }
 
     /**
@@ -204,13 +204,13 @@ public abstract class ArchiveReaderAbstract
                    IOException, StorageException {
 
         // Sanity check: the archive info should have been read during the validate phase
-        Objects.requireNonNull(mArchiveMetaData, "info");
+        Objects.requireNonNull(mMetaData, "info");
 
-        if (mHelper.getImportEntries().contains(RecordType.Cover)) {
+        if (mHelper.getRecordTypes().contains(RecordType.Cover)) {
             mCoverReader = new CoverRecordReader();
         }
 
-        final int archiveVersion = mArchiveMetaData.getArchiveVersion();
+        final int archiveVersion = mMetaData.getArchiveVersion();
         switch (archiveVersion) {
             case 4:
                 // future...
@@ -249,17 +249,17 @@ public abstract class ArchiveReaderAbstract
             throws InvalidArchiveException, ImportException,
                    IOException, StorageException {
 
-        final Set<RecordType> importEntries = mHelper.getImportEntries();
+        final Set<RecordType> importEntries = mHelper.getRecordTypes();
         try {
             final boolean readBooks = importEntries.contains(RecordType.Books);
             final boolean readCovers = importEntries.contains(RecordType.Cover);
             final boolean readCertificates = importEntries.contains(RecordType.Certificates);
 
             //noinspection ConstantConditions
-            int estimatedSteps = 1 + mArchiveMetaData.getBookCount();
+            int estimatedSteps = 1 + mMetaData.getBookCount();
             if (readCovers) {
-                if (mArchiveMetaData.hasCoverCount()) {
-                    estimatedSteps += mArchiveMetaData.getCoverCount();
+                if (mMetaData.hasCoverCount()) {
+                    estimatedSteps += mMetaData.getCoverCount();
                 } else {
                     // We don't have a count, so assume each book has 1 cover.
                     estimatedSteps *= 2;
@@ -340,7 +340,7 @@ public abstract class ArchiveReaderAbstract
             } else {
                 // everything else, keep it clean and create a new reader for each entry.
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mHelper.getImportEntries())) {
+                        .get().createReader(context, mHelper.getRecordTypes())) {
 
                     mResults.add(recordReader.read(context, record, mHelper, progressListener));
                 }

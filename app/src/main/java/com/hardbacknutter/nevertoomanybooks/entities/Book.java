@@ -196,6 +196,7 @@ public class Book
      *
      * @return new instance
      */
+    @NonNull
     public static Book from(@IntRange(from = 1) final long bookId,
                             @NonNull final BookDao bookDao) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
@@ -216,6 +217,7 @@ public class Book
      *
      * @return new instance
      */
+    @NonNull
     public static Book from(@NonNull final Cursor bookCursor) {
         final Book book = new Book();
         final int idCol = bookCursor.getColumnIndex(DBKey.PK_ID);
@@ -229,11 +231,14 @@ public class Book
      *
      * @param bookData data bundle to use for the Book
      *
-     * @return new instance
+     * @return new instance; flagged as {@link EntityStage.Stage#Dirty}
      */
+    @NonNull
     public static Book from(@NonNull final Bundle bookData) {
         final Book book = new Book();
         book.putAll(bookData);
+        // has unsaved data, hence 'Dirty'
+        book.setStage(EntityStage.Stage.Dirty);
         return book;
     }
 

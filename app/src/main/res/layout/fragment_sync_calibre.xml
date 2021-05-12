@@ -54,7 +54,7 @@
         />
 
     <Button
-        android:id="@+id/btn_send_updated_books"
+        android:id="@+id/btn_export"
         style="@style/Button.Menu"
         android:text="@string/action_export"
         app:icon="@drawable/ic_baseline_cloud_upload_24"

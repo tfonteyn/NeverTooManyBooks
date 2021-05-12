@@ -44,11 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -61,7 +57,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.org.json.JSONArray;
@@ -69,7 +71,16 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * Import books from the given library.
+ * Import books from the <strong>given/single</strong> library.
+ * <p>
+ * If the user asked for "new and updated books" only,
+ * the 'last-sync-date' from the library is used to only fetch books added/modified
+ * later then this timestamp FROM THE SERVER.
+ * <p>
+ * Each remote book is compared to the local book 'last-modified' date to
+ * decide to update it or not.
+ *
+ * <p>
  *
  * <ul>Supports custom columns:
  *     <li>read (boolean)</li>
@@ -91,7 +102,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * For now overwrite/skip is a bit ad-hoc.
  */
 public class CalibreContentServerReader
-        implements ArchiveReader {
+        implements SyncReader {
 
     /** Log tag. */
     private static final String TAG = "CalibreServerReader";
@@ -106,9 +117,11 @@ public class CalibreContentServerReader
     /** A text "null" as value. Should be considered an error. */
     private static final String VALUE_IS_NULL = "null";
 
-    private final boolean mDoNewAndUpdatedBooks;
-    private final boolean mDoAllBooks;
+    @NonNull
+    private final SyncReaderConfig.Updates mUpdateOption;
+
     private final boolean mDoCovers;
+
     /** cached localized "eBooks" string. */
     @NonNull
     private final String mEBookString;
@@ -118,50 +131,49 @@ public class CalibreContentServerReader
 
     @NonNull
     private final BookDao mBookDao;
+    @NonNull
+    private final CalibreLibraryDao mCalibreLibraryDao;
 
     @NonNull
     private final CalibreContentServer mServer;
     @NonNull
-    private final ImportHelper mHelper;
+    private final DateParser mDateParser = new ISODateParser();
     /** The physical library from which we'll be importing. */
     @Nullable
     private CalibreLibrary mLibrary;
-
-    private ImportResults mResults;
+    private SyncReaderResults mResults;
 
     /**
      * Constructor.
      *
      * @param context Current context
-     * @param helper  import configuration
+     * @param config  import configuration
      *
      * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
-                                      @NonNull final ImportHelper helper)
+                                      @NonNull final SyncReaderConfig config)
             throws CertificateException, SSLException {
 
+        mUpdateOption = config.getUpdateOption();
+        //ENHANCE: add support for SyncProcessor
+
+        mDoCovers = config.getImportEntries().contains(RecordType.Cover);
+        mLibrary = config.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+
+        mServer = new CalibreContentServer(context);
         mBookDao = ServiceLocator.getInstance().getBookDao();
-
-        mHelper = helper;
-        mServer = new CalibreContentServer(context, mHelper.getUri());
-
-        mDoCovers = mHelper.getImportEntries().contains(RecordType.Cover);
-
-        mDoNewAndUpdatedBooks = mHelper.isNewAndUpdatedBooks();
-        mDoAllBooks = mHelper.isAllBooks();
+        mCalibreLibraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
     }
 
-    private void initServer(@NonNull final Context context)
+    private void initLibrary(@NonNull final Context context)
             throws IOException, JSONException {
 
         mServer.readMetaData(context);
-
-        mLibrary = mHelper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
         if (mLibrary == null) {
             mLibrary = mServer.getDefaultLibrary();
         }
@@ -170,18 +182,17 @@ public class CalibreContentServerReader
     @Nullable
     @Override
     @WorkerThread
-    public ArchiveMetaData readMetaData(@NonNull final Context context)
+    public SyncReaderMetaData readMetaData(@NonNull final Context context)
             throws ImportException, IOException {
 
         try {
-            initServer(context);
+            initLibrary(context);
         } catch (@NonNull final JSONException e) {
             throw new ImportException(e);
         }
 
-        final ArchiveMetaData archiveMetaData = new ArchiveMetaData();
+        final Bundle bundle = new Bundle();
 
-        final Bundle bundle = archiveMetaData.getBundle();
         // the requested (or default) library
         bundle.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
         // and the full list
@@ -190,33 +201,30 @@ public class CalibreContentServerReader
         bundle.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
                           mServer.isCalibreExtensionInstalled());
 
-        return archiveMetaData;
+        return new SyncReaderMetaData(bundle);
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public ImportResults read(@NonNull final Context context,
-                              @NonNull final ProgressListener progressListener)
+    public SyncReaderResults read(@NonNull final Context context,
+                                  @NonNull final ProgressListener progressListener)
             throws DiskFullException, CoverStorageException, ImportException, IOException {
 
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
-        final CalibreLibraryDao libraryDao = ServiceLocator.getInstance().getCalibreLibraryDao();
-
-        mResults = new ImportResults();
+        mResults = new SyncReaderResults();
 
         progressListener.setIndeterminate(true);
-        progressListener.publishProgress(
-                0, context.getString(R.string.progress_msg_connecting));
+        progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
         try {
             // Always (re)read the meta data here.
             // Don't assume we still have the same instance as when readMetaData was called.
-            initServer(context);
+            initLibrary(context);
 
             //noinspection ConstantConditions
             final int totalNum = mLibrary.getTotalBooks();
@@ -226,7 +234,11 @@ public class CalibreContentServerReader
             boolean valid;
 
             String query = null;
-            if (!mHelper.isAllBooks()) {
+            // If we want new-books-only (Updates.Skip)
+            // or new-books-and-updates (Updates.OnlyNewer),
+            // we limit the fetch to the last-sync-date.
+            if (mUpdateOption == SyncReaderConfig.Updates.Skip
+                || mUpdateOption == SyncReaderConfig.Updates.OnlyNewer) {
                 // last_modified:">2021-01-15"
                 // Due to rounding, we might get some books we don't need, but that's ok.
                 final LocalDateTime lastSyncDate = mLibrary.getLastSyncDate();
@@ -239,8 +251,10 @@ public class CalibreContentServerReader
             do {
                 final JSONObject root;
                 if (query == null) {
+                    // all-books
                     root = mServer.getBookIds(mLibrary.getLibraryStringId(), NUM, offset);
                 } else {
+                    // search based on the last-sync-date
                     root = mServer.search(mLibrary.getLibraryStringId(), NUM, offset, query);
                 }
 
@@ -252,11 +266,13 @@ public class CalibreContentServerReader
                             CalibreContentServer.RESPONSE_TAG_TOTAL_NUM));
 
                     num = root.getInt(CalibreContentServer.RESPONSE_TAG_NUM);
+                    // the list of books (id only) returned by the server
                     final JSONArray bookIds = root.optJSONArray(
                             CalibreContentServer.RESPONSE_TAG_BOOK_IDS);
 
                     valid = bookIds != null && !bookIds.isEmpty();
                     if (valid) {
+                        // with the above book-ids, get the full book objects
                         final JSONObject bookList = mServer.getBooks(mLibrary.getLibraryStringId(),
                                                                      bookIds);
                         final JSONObject bookListVirtualLibs =
@@ -274,9 +290,9 @@ public class CalibreContentServerReader
                                                 bookListVirtualLibs.getJSONArray(key));
                             }
 
-                            handleBook(context, libraryDao, calibreBook);
-                            mResults.booksProcessed++;
+                            handleBook(context, calibreBook);
 
+                            mResults.booksProcessed++;
                             final String msg = String.format(progressMessage,
                                                              mBooksString,
                                                              mResults.booksCreated,
@@ -297,7 +313,7 @@ public class CalibreContentServerReader
         // always set the sync date!
         mLibrary.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
 
-        libraryDao.update(mLibrary);
+        mCalibreLibraryDao.update(mLibrary);
 
         return mResults;
     }
@@ -311,62 +327,106 @@ public class CalibreContentServerReader
      * @throws CoverStorageException The covers directory is not available
      */
     private void handleBook(@NonNull final Context context,
-                            @NonNull final CalibreLibraryDao libraryDao,
                             @NonNull final JSONObject calibreBook)
             throws DiskFullException, CoverStorageException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
-            // check if the book exists in our database, and fetch it's id.
-            final long databaseBookId = libraryDao.getBookIdFromCalibreUuid(calibreUuid);
+            // check if we already have the calibre book in the local database
+            final long databaseBookId = mCalibreLibraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (databaseBookId > 0) {
-                final Book book = Book.from(databaseBookId, mBookDao);
-
-                // UPDATE the existing book (if allowed). Check the sync option FIRST!
-                if ((mDoNewAndUpdatedBooks && mBookDao.isImportNewer(databaseBookId, book))
-                    || mDoAllBooks) {
-
-                    book.setStage(EntityStage.Stage.Dirty);
-                    copyCalibreData(context, calibreBook, book);
-
-                    mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                   | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-
-                    mResults.booksUpdated++;
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                        Log.d(TAG, "calibreUuid=" + calibreUuid
-                                   + "|databaseBookId=" + databaseBookId
-                                   + "|update|" + book.getTitle());
+                // yes, we do - handle the update according to the users choice
+                switch (mUpdateOption) {
+                    case Overwrite: {
+                        // Get the full local book data; overwrite it with remote data
+                        // as needed, and update. We don't use a delta.
+                        final Book book = Book.from(databaseBookId, mBookDao);
+                        updateBook(context, calibreBook, book);
+                        break;
                     }
+                    case OnlyNewer: {
+                        // Get the full local book data; overwrite it with remote data
+                        // as needed, and update. We don't use a delta.
+                        final Book book = Book.from(databaseBookId, mBookDao);
+                        // Should always be Non Null
+                        final LocalDateTime localDate = mDateParser.parse(
+                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                        // Should not be null, but paranoia
+                        final LocalDateTime remoteDate = mDateParser.parse(
+                                calibreBook.getString(CalibreBook.LAST_MODIFIED));
 
-                } else {
-                    mResults.booksSkipped++;
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                        Log.d(TAG, "calibreUuid=" + calibreUuid
-                                   + "|databaseBookId=" + databaseBookId
-                                   + "|skipped|" + book.getTitle());
+                        if (localDate != null && remoteDate != null
+                            && remoteDate.isAfter(localDate)) {
+
+                            updateBook(context, calibreBook, book);
+
+                        } else {
+                            mResults.booksFailed++;
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+                                Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
+                                           + "|" + mUpdateOption
+                                           + "|FAIL|book=" + book.getId() + "|" + book.getTitle());
+                            }
+                        }
+                        break;
+                    }
+                    case Skip: {
+                        mResults.booksSkipped++;
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+                            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
+                                       + "|" + mUpdateOption);
+                        }
+                        break;
                     }
                 }
             } else {
-                final Book book = new Book();
-                book.setStage(EntityStage.Stage.Dirty);
-                // it's an eBook - duh!
-                book.putString(DBKey.KEY_FORMAT, mEBookString);
-                copyCalibreData(context, calibreBook, book);
-
-                final long insId = mBookDao
-                        .insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
-                mResults.booksCreated++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
-                    Log.d(TAG, "calibreUuid=" + calibreUuid
-                               + "|insert=" + insId
-                               + "|" + book.getTitle());
-                }
+                insertBook(context, calibreBook);
             }
-
         } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
             Logger.error(TAG, e);
             mResults.booksFailed++;
+        }
+    }
+
+    private void updateBook(@NonNull final Context context,
+                            @NonNull final JSONObject calibreBook,
+                            @NonNull final Book book)
+            throws DiskFullException, CoverStorageException, DaoWriteException {
+
+        book.setStage(EntityStage.Stage.Dirty);
+        copyCalibreData(context, calibreBook, book);
+
+        mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                       | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        mResults.booksUpdated++;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
+                       + "|" + mUpdateOption
+                       + "|UPDATE|book=" + book.getId() + "|" + book.getTitle());
+        }
+    }
+
+    private void insertBook(@NonNull final Context context,
+                            @NonNull final JSONObject calibreBook)
+            throws DiskFullException, CoverStorageException, DaoWriteException {
+
+        // It's a new book; construct it using the calibre server data and insert it into the db
+        final Book book = new Book();
+        book.setStage(EntityStage.Stage.Dirty);
+        // it's an eBook - duh!
+        book.putString(DBKey.KEY_FORMAT, mEBookString);
+        copyCalibreData(context, calibreBook, book);
+        // sanity check, the book should always/already be on the mapped shelf.
+        book.ensureBookshelf(context);
+
+        mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        mResults.booksCreated++;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+            Log.d(TAG, "calibreUuid=" + calibreBook.getString(CalibreBook.UUID)
+                       + "|" + mUpdateOption
+                       + "|INSERT|book=" + book.getId() + "|" + book.getTitle());
         }
     }
 

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 import org.junit.Before;
@@ -87,7 +86,7 @@ public class CsvArchiveWriterTest
     public void write()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException, ExportException,
-                   IOException, CertificateException, StorageException, CredentialsException {
+                   IOException, StorageException, CredentialsException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");
@@ -98,9 +97,9 @@ public class CsvArchiveWriterTest
 
         final ExportHelper exportHelper = new ExportHelper(RecordType.Books);
         exportHelper.setEncoding(ArchiveEncoding.Csv);
-        exportHelper.setFileUri(Uri.fromFile(file));
+        exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
             exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
@@ -141,12 +140,12 @@ public class CsvArchiveWriterTest
         bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        importHelper.setImportEntry(RecordType.Books, true);
+        importHelper.setRecordType(RecordType.Books, true);
 
-        importHelper.setNewBooksOnly();
+        importHelper.setUpdateOption(ImportHelper.Updates.Skip);
 
         ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);
@@ -163,9 +162,9 @@ public class CsvArchiveWriterTest
         assertEquals(0, importResults.booksFailed);
 
 
-        importHelper.setImportEntry(RecordType.Books, true);
-        importHelper.setAllBooks();
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
+        importHelper.setRecordType(RecordType.Books, true);
+        importHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
+        try (ArchiveReader reader = importHelper.createReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);

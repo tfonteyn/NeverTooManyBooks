@@ -384,6 +384,14 @@ public final class SyncProcessor
         }
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "SyncProcessor{"
+               + "mFields=" + mFields
+               + '}';
+    }
+
     public static class Builder {
 
         @NonNull

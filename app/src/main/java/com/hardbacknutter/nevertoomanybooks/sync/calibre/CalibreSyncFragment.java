@@ -35,23 +35,19 @@ import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncCalibreBinding;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 
 /**
  * Starting point for sending and importing books with Calibre.
  * <p>
- * Synchronization is done using
- * <ul>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.backup.RecordReader}</li>
- *     <li>{@link com.hardbacknutter.nevertoomanybooks.backup.RecordWriter}</li>
- * </ul>
- * <p>
  * The user can specify the usual import/export options for new and/or updated books.
- * We do not support updating single books, nor a list of book ids.
+ * We do not yet support updating single books, nor a list of book ids.
+ * <p>
+ * The sync-date is set on the <strong>Library</strong> and NOT on individual books.
  */
 @Keep
 public class CalibreSyncFragment
@@ -89,7 +85,7 @@ public class CalibreSyncFragment
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putString(ArchiveEncoding.BKEY_URL, url);
+                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
 
                 final Fragment fragment = new CalibreLibraryMappingFragment();
                 fragment.setArguments(args);
@@ -102,39 +98,36 @@ public class CalibreSyncFragment
             }
         });
         mVb.btnImport.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl();
-            if (url.isEmpty()) {
+            if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putString(ArchiveEncoding.BKEY_URL, url);
-                args.putParcelable(ArchiveEncoding.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
+                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
 
-                final Fragment fragment = new ImportFragment();
+                final Fragment fragment = new SyncReaderFragment();
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
-                  .addToBackStack(ImportFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, ImportFragment.TAG)
+                  .addToBackStack(SyncReaderFragment.TAG)
+                  .replace(R.id.main_fragment, fragment, SyncReaderFragment.TAG)
                   .commit();
             }
         });
-        mVb.btnSendUpdatedBooks.setOnClickListener(v -> {
-            final String url = CalibreContentServer.getHostUrl();
-            if (url.isEmpty()) {
+        mVb.btnExport.setOnClickListener(v -> {
+            if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
                 final Bundle args = new Bundle();
-                args.putParcelable(ArchiveEncoding.BKEY_ENCODING, ArchiveEncoding.CalibreCS);
+                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
 
-                final Fragment fragment = new ExportFragment();
+                final Fragment fragment = new SyncWriterFragment();
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
-                  .addToBackStack(ExportFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, ExportFragment.TAG)
+                  .addToBackStack(SyncWriterFragment.TAG)
+                  .replace(R.id.main_fragment, fragment, SyncWriterFragment.TAG)
                   .commit();
             }
         });

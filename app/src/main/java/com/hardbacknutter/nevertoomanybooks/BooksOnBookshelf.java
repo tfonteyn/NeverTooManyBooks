@@ -121,7 +121,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncSite;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
@@ -178,27 +178,31 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
+
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
 
-
-    @Nullable
-    private AmazonHandler mAmazonHandler;
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
+
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+    /** Delegate for Amazon. */
+    @Nullable
+    private AmazonHandler mAmazonHandler;
+
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
@@ -524,7 +528,7 @@ public class BooksOnBookshelf
      */
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
-        if (SyncSite.CalibreCS.isEnabled(global)) {
+        if (SyncServer.CalibreCS.isEnabled(global)) {
             mCalibreSyncLauncher = registerForActivityResult(new CalibreSyncContract(), data -> {
                 if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
                     mVm.setForceRebuildInOnResume(true);
@@ -539,7 +543,7 @@ public class BooksOnBookshelf
             }
         }
 
-        if (SyncSite.StripInfo.isEnabled(global)) {
+        if (SyncServer.StripInfo.isEnabled(global)) {
             mStripInfoSyncLauncher = registerForActivityResult(
                     new StripInfoSyncContract(), data -> {
                         if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
@@ -642,7 +646,7 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
-        getNavigationMenuItem(R.id.nav_sync).setVisible(SyncSite.isAnyEnabled(global));
+        getNavigationMenuItem(R.id.nav_sync).setVisible(SyncServer.isAnyEnabled(global));
     }
 
     /**
@@ -769,7 +773,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                if (SyncSite.CalibreCS.isEnabled(global)) {
+                if (SyncServer.CalibreCS.isEnabled(global)) {
                     final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
                     //noinspection ConstantConditions
                     mCalibreHandler.prepareMenu(menu, book);
@@ -1201,12 +1205,12 @@ public class BooksOnBookshelf
         final Menu menu = MenuPicker.createMenu(this);
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (SyncSite.CalibreCS.isEnabled(global)) {
+        if (SyncServer.CalibreCS.isEnabled(global)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
                 .setIcon(R.drawable.ic_baseline_cloud_24);
         }
 
-        if (SyncSite.StripInfo.isEnabled(global)) {
+        if (SyncServer.StripInfo.isEnabled(global)) {
             menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
                 .setIcon(R.drawable.ic_stripinfo);
         }

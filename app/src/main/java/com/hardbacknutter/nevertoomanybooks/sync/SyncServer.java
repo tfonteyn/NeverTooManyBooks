@@ -33,44 +33,51 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
 
-public enum SyncSite
+public enum SyncServer
         implements Parcelable {
 
     /** A Calibre Content Server. */
-    CalibreCS(R.string.lbl_calibre_content_server),
+    CalibreCS(R.string.lbl_calibre_content_server, true),
     /** StripInfo web site. */
-    StripInfo(R.string.site_stripinfo_be);
+    StripInfo(R.string.site_stripinfo_be, false);
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncSite> CREATOR = new Creator<SyncSite>() {
+    public static final Creator<SyncServer> CREATOR = new Creator<SyncServer>() {
         @Override
         @NonNull
-        public SyncSite createFromParcel(@NonNull final Parcel in) {
+        public SyncServer createFromParcel(@NonNull final Parcel in) {
             return values()[in.readInt()];
         }
 
         @Override
         @NonNull
-        public SyncSite[] newArray(final int size) {
-            return new SyncSite[size];
+        public SyncServer[] newArray(final int size) {
+            return new SyncServer[size];
         }
     };
     /* Log tag. */
-    private static final String TAG = "SyncSite";
+    private static final String TAG = "SyncServer";
     /** The (optional) preset encoding to pass to export/import. */
     public static final String BKEY_SITE = TAG + ":encoding";
     @StringRes
     private final int mLabel;
 
-    SyncSite(@StringRes final int label) {
+    private final boolean mHasLastUpdateDateField;
+
+    SyncServer(@StringRes final int label,
+               final boolean hasLastUpdateDateField) {
         mLabel = label;
+        mHasLastUpdateDateField = hasLastUpdateDateField;
     }
 
 
@@ -97,11 +104,15 @@ public enum SyncSite
         }
     }
 
+    public boolean hasLastUpdateDateField() {
+        return mHasLastUpdateDateField;
+    }
+
     /**
      * Create an {@link SyncWriter} based on the type.
      *
      * @param context Current context
-     * @param helper  writer configuration
+     * @param config  writer configuration
      *
      * @return a new writer
      *
@@ -110,17 +121,24 @@ public enum SyncSite
      */
     @NonNull
     public SyncWriter createWriter(@NonNull final Context context,
-                                   @NonNull final SyncExportHelper helper)
+                                   @NonNull final SyncWriterConfig config)
             throws CertificateException,
                    SSLException {
 
+        if (BuildConfig.DEBUG /* always */) {
+            if (config.getExporterEntries().isEmpty()) {
+                throw new IllegalStateException("getExporterEntries().isEmpty()");
+            }
+        }
+
         switch (this) {
             case CalibreCS:
-                return new CalibreContentServerWriter(context, helper);
+                return new CalibreContentServerWriter(context, config);
 
             case StripInfo:
+                return new StripInfoWriter(config);
+
             default:
-                // reminder:do NOT use a InvalidSyncSiteException which is for readers only.
                 throw new IllegalStateException(SyncWriter.ERROR_NO_WRITER_AVAILABLE);
         }
     }
@@ -129,37 +147,41 @@ public enum SyncSite
      * Create an {@link SyncReader} based on the type.
      *
      * @param context Current context
-     * @param helper  import configuration
+     * @param config  import configuration
      *
      * @return a new reader
      *
-     * @throws InvalidSyncSiteException on failure to produce a supported reader
-     * @throws ImportException          on a decoding/parsing of data issue
-     * @throws CertificateException     on failures related to a user installed CA.
-     * @throws SSLException             on secure connection failures
-     * @throws IOException              on other failures
+     * @throws ImportException      on a decoding/parsing of data issue
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
+     * @throws IOException          on other failures
      */
     @NonNull
     @WorkerThread
     public SyncReader createReader(@NonNull final Context context,
-                                   @NonNull final SyncImportHelper helper)
-            throws InvalidSyncSiteException,
-                   ImportException,
+                                   @NonNull final SyncReaderConfig config)
+            throws ImportException,
                    CertificateException,
                    IOException {
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (config.getImportEntries().isEmpty()) {
+                throw new IllegalStateException("getImportEntries() is empty");
+            }
+        }
 
         final SyncReader reader;
         switch (this) {
             case CalibreCS:
-                reader = new CalibreContentServerReader(context, helper);
+                reader = new CalibreContentServerReader(context, config);
                 break;
 
             case StripInfo:
-                //reader = new StripInfoReader(helper);
-                //break;
+                reader = new StripInfoReader(context, config);
+                break;
 
             default:
-                throw new InvalidSyncSiteException(SyncReader.ERROR_NO_READER_AVAILABLE);
+                throw new IllegalStateException(SyncReader.ERROR_NO_READER_AVAILABLE);
         }
 
         reader.validate(context);

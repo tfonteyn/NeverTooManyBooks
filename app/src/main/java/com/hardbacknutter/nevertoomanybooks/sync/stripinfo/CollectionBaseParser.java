@@ -51,11 +51,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 abstract class CollectionBaseParser {
 
     /** Delegate common Element handling. */
-    final JSoupHelper mJSoupHelper = new JSoupHelper();
+    private final JSoupHelper mJSoupHelper = new JSoupHelper();
     @Nullable
-    final Bookshelf mWishListBookshelf;
+    private final Bookshelf mWishListBookshelf;
     @Nullable
     private final Bookshelf mOwnedBooksBookshelf;
+
     String mIdOwned;
     String mIdRead;
     String mIdWanted;
@@ -69,10 +70,10 @@ abstract class CollectionBaseParser {
 
     @AnyThread
     CollectionBaseParser(@NonNull final Context context,
-                         @NonNull final StripInfoSyncConfig config) {
+                         @NonNull final Bookshelfmapper bookshelfmapper) {
 
-        mOwnedBooksBookshelf = config.getOwnedBooksBookshelf(context);
-        mWishListBookshelf = config.getWishListBookshelf(context);
+        mOwnedBooksBookshelf = bookshelfmapper.getOwnedBooksBookshelf(context);
+        mWishListBookshelf = bookshelfmapper.getWishListBookshelf(context);
     }
 
     @AnyThread

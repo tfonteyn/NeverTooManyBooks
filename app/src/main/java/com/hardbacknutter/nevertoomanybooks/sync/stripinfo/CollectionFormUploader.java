@@ -19,13 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.math.MathUtils;
@@ -43,23 +39,34 @@ import java.nio.charset.StandardCharsets;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Handles the userdata FORM from the individual book side ajax panel.
+ * <p>
+ * URGENT: hook up the delete / setRead ... with BoB/ShowBook etc...
  */
-public class CollectionForm
-        extends CollectionBaseParser {
+public class CollectionFormUploader {
+
+    /** Local ref for convenience. */
+    private static final String FORM_URL = StripInfoSearchEngine.COLLECTION_FORM_URL;
+
+    /**
+     * Send a FORM to the site. Used to either upload the full set of
+     * collection details, or just upload the 'score' (rating).
+     */
+    private static final String MODE_SEND_FORM = "form";
+
+    private static final String FORM_MODE = "mode";
+    private static final String FORM_NAME = "frmName";
 
     private static final String FF_LOCATIE = "locatie";
     private static final String FF_OPMERKING = "opmerking";
@@ -68,59 +75,12 @@ public class CollectionForm
     private static final String FF_DRUK = "druk";
     private static final String FF_AANKOOP_PRIJS = "aankoopPrijs";
     private static final String FF_AANTAL = "aantal";
+
     private static final String FF_STRIP_ID = "stripId";
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
-    private static final String FF_MODE = "mode";
-    private static final String FF_FRM_NAME = "frmName";
 
-    private static final String FORM_URL = "/ajax_collectie.php";
-
-    @NonNull
-    private final String mPostUrl;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    @AnyThread
-    public CollectionForm(@NonNull final Context context,
-                          @NonNull final StripInfoSyncConfig config) {
-        super(context, config);
-
-        mIdLocation = FF_LOCATIE;
-        mIdNotes = FF_OPMERKING;
-        mIdDateAcquired = FF_AANKOOP_DATUM;
-        mIdRating = FF_SCORE;
-        mIdEdition = FF_DRUK;
-        mIdPricePaid = FF_AANKOOP_PRIJS;
-        mIdAmount = FF_AANTAL;
-
-        mPostUrl = SearchEngineRegistry.getInstance()
-                                       .getByEngineId(SearchSites.STRIP_INFO_BE)
-                                       .getSiteUrl() + FORM_URL;
-    }
-
-    @WorkerThread
-    public void parse(@NonNull final Element root,
-                      @NonNull final Bundle destBundle,
-                      @IntRange(from = 1) final long externalId,
-                      @IntRange(from = 1) final long collectionId)
-            throws IOException {
-
-        mIdOwned = "stripCollectieInBezit-" + externalId;
-        mIdRead = "stripCollectieGelezen-" + externalId;
-        mIdWanted = "stripCollectieInWishlist-" + externalId;
-
-        parseFlags(root, destBundle);
-
-        final Document form = getForm("detail", externalId, collectionId);
-        parseDetails(form, destBundle);
-
-        // Add as last one in case of errors thrown
-        destBundle.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
-    }
-
+    /** Delegate common Element handling. */
+    private final JSoupHelper mJSoupHelper = new JSoupHelper();
 
     /**
      * Set or reset the flag/checkbox 'In Bezit'.
@@ -183,44 +143,6 @@ public class CollectionForm
     }
 
     @WorkerThread
-    private void setBooleanByMode(@NonNull final Book book,
-                                  @NonNull final String mode)
-            throws IOException, IllegalArgumentException {
-
-        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
-        if (externalId == 0) {
-            throw new IllegalArgumentException("externalId == 0");
-        }
-
-        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
-        if (collectionId == 0) {
-            final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
-                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, "")
-                    .appendQueryParameter(FF_MODE, mode)
-                    .build()
-                    .getEncodedQuery();
-            //noinspection ConstantConditions
-            final Document responseForm = doPost(postBody);
-            collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
-            book.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
-
-            book.setStage(EntityStage.Stage.Dirty);
-
-        } else {
-            final String postBody = new Uri.Builder()
-                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
-                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                    .appendQueryParameter(FF_MODE, mode)
-                    .build()
-                    .getEncodedQuery();
-            //noinspection ConstantConditions
-            doPost(postBody);
-        }
-    }
-
-
-    @WorkerThread
     public void setRating(@NonNull final Book book)
             throws IOException, IllegalArgumentException {
 
@@ -239,12 +161,17 @@ public class CollectionForm
 
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FF_MODE, "form")
-                .appendQueryParameter(FF_FRM_NAME, "collScore")
+                .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
+                .appendQueryParameter(FORM_NAME, "collScore")
                 .build()
                 .getEncodedQuery();
         //noinspection ConstantConditions
         doPost(postBody);
+    }
+
+    @AnyThread
+    private String ratingToSite(@NonNull final Book book) {
+        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.KEY_RATING) * 2, 0, 10));
     }
 
     /**
@@ -310,17 +237,12 @@ public class CollectionForm
         final String postBody = builder
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FF_MODE, "form")
-                .appendQueryParameter(FF_FRM_NAME, "collDetail")
+                .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
+                .appendQueryParameter(FORM_NAME, "collDetail")
                 .build()
                 .getEncodedQuery();
         //noinspection ConstantConditions
         doPost(postBody);
-    }
-
-    @AnyThread
-    private String ratingToSite(@NonNull final Book book) {
-        return String.valueOf(MathUtils.clamp(book.getFloat(DBKey.KEY_RATING) * 2, 0, 10));
     }
 
     @WorkerThread
@@ -329,25 +251,35 @@ public class CollectionForm
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
-            throw new IllegalArgumentException("externalId == 0");
+            throw new IllegalArgumentException("externalId=0");
         }
 
         final long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
         if (collectionId == 0) {
-            throw new IllegalArgumentException("collectionId == 0");
+            throw new IllegalArgumentException("collectionId=0");
         }
 
         // We first get the delete-form to make sure the server still has our book
         // (and to mimic the browser work flow).
-        final Document form = getForm("delete", externalId, collectionId);
+        String postBody = new Uri.Builder()
+                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                .appendQueryParameter(FORM_MODE, "delete")
+                // no "frmName" used here
+                .build()
+                .getEncodedQuery();
+
+        //noinspection ConstantConditions
+        final Document form = doPost(postBody);
+
         if (externalId == mJSoupHelper.getInt(form, FF_STRIP_ID)
             && collectionId == mJSoupHelper.getInt(form, FF_STRIP_COLLECTIE_ID)) {
 
-            final String postBody = new Uri.Builder()
+            postBody = new Uri.Builder()
                     .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                     .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                    .appendQueryParameter(FF_MODE, "deleteConfirmation")
-                    .appendQueryParameter(FF_FRM_NAME, "collDelete")
+                    .appendQueryParameter(FORM_MODE, "deleteConfirmation")
+                    .appendQueryParameter(FORM_NAME, "collDelete")
                     .build()
                     .getEncodedQuery();
 
@@ -357,24 +289,64 @@ public class CollectionForm
         }
     }
 
-    @SuppressLint("DefaultLocale")
-    @NonNull
+    /**
+     * Helper to remove all StripInfo related fields from the Book.
+     *
+     * @param book to remove from
+     */
+    public void removeFields(@NonNull final Book book) {
+        book.remove(DBKey.SID_STRIP_INFO);
+        book.remove(DBKey.KEY_STRIP_INFO_AMOUNT);
+        book.remove(DBKey.KEY_STRIP_INFO_COLL_ID);
+        book.remove(DBKey.BOOL_STRIP_INFO_OWNED);
+        book.remove(DBKey.BOOL_STRIP_INFO_WANTED);
+        book.remove(DBKey.UTC_DATE_LAST_SYNC_STRIP_INFO);
+    }
+
+    /**
+     * Send a form with a single boolean flag.
+     *
+     * @param book to use
+     * @param mode one of the 3 flags, in either 'on'  or 'off' format.
+     *
+     * @throws IOException              on any failure
+     * @throws IllegalArgumentException if the external id was not present
+     */
     @WorkerThread
-    private Document getForm(@NonNull final String mode,
-                             @IntRange(from = 1) final long externalId,
-                             @IntRange(from = 1) final long collectionId)
-            throws IOException {
+    private void setBooleanByMode(@NonNull final Book book,
+                                  @NonNull final String mode)
+            throws IOException, IllegalArgumentException {
 
-        final String postBody = new Uri.Builder()
-                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
-                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FF_MODE, mode)
-                // no "frmName" used here
-                .build()
-                .getEncodedQuery();
+        final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
+        if (externalId == 0) {
+            throw new IllegalArgumentException("externalId=0");
+        }
 
-        //noinspection ConstantConditions
-        return doPost(postBody);
+        long collectionId = book.getLong(DBKey.KEY_STRIP_INFO_COLL_ID);
+        if (collectionId == 0) {
+            final String postBody = new Uri.Builder()
+                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, "")
+                    .appendQueryParameter(FORM_MODE, mode)
+                    .build()
+                    .getEncodedQuery();
+            //noinspection ConstantConditions
+            final Document responseForm = doPost(postBody);
+            collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
+            book.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
+
+            book.setStage(EntityStage.Stage.Dirty);
+
+        } else {
+            final String postBody = new Uri.Builder()
+                    .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                    .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                    .appendQueryParameter(FORM_MODE, mode)
+                    .build()
+                    .getEncodedQuery();
+            //noinspection ConstantConditions
+            doPost(postBody);
+        }
     }
 
     /**
@@ -395,7 +367,7 @@ public class CollectionForm
 
         HttpURLConnection request = null;
         try {
-            request = (HttpURLConnection) new URL(mPostUrl).openConnection();
+            request = (HttpURLConnection) new URL(FORM_URL).openConnection();
             request.setRequestMethod(HttpUtils.POST);
             request.setRequestProperty(HttpUtils.CONTENT_TYPE,
                                        HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
@@ -415,7 +387,7 @@ public class CollectionForm
 
             try (InputStream is = request.getInputStream();
                  BufferedInputStream bis = new BufferedInputStream(is)) {
-                return Jsoup.parse(bis, null, mPostUrl);
+                return Jsoup.parse(bis, null, FORM_URL);
             }
         } finally {
             if (request != null) {

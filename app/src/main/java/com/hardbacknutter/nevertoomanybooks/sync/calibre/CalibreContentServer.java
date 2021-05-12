@@ -87,7 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -137,7 +137,6 @@ public class CalibreContentServer {
 
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
-
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     public static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
@@ -146,19 +145,22 @@ public class CalibreContentServer {
     public static final String RESPONSE_TAG_NUM = "num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
-    /** Custom field for {@link SyncMetaData}. */
-    public static final String BKEY_LIBRARY = TAG + ":defLib";
-    /** Custom field for {@link SyncMetaData}. */
-    public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
+
     /** Preferences prefix. */
     static final String PREF_KEY = "calibre";
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
-    /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
+    /** Custom field for {@link SyncReaderMetaData}. */
+    public static final String BKEY_LIBRARY = TAG + ":defLib";
+    /** Custom field for {@link SyncReaderMetaData}. */
+    public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
     public static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
+
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";

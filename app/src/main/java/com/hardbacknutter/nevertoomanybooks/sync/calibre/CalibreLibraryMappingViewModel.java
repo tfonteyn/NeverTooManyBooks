@@ -23,19 +23,20 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportViewModel;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderViewModel;
 
 public class CalibreLibraryMappingViewModel
-        extends ImportViewModel {
+        extends SyncReaderViewModel {
 
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
     private CalibreLibrary mCurrentLibrary;
@@ -51,12 +52,17 @@ public class CalibreLibraryMappingViewModel
         return mLibraries;
     }
 
-    void setMetaData(@NonNull final ArchiveMetaData result) {
+
+    public void setMetaData(@Nullable final SyncReaderMetaData metaData) {
+        super.setMetaData(metaData);
+
+        Objects.requireNonNull(metaData);
+
         // at this moment, all server libs have been synced with our database
         // and are mapped to a valid bookshelf
 
         mLibraries.clear();
-        final Bundle bundle = result.getBundle();
+        final Bundle bundle = metaData.getBundle();
         mLibraries.addAll(Objects.requireNonNull(
                 bundle.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
                 "mLibraries"));

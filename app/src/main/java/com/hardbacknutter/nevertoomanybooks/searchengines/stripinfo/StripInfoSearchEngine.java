@@ -66,9 +66,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionForm;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.Bookshelfmapper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -125,12 +125,16 @@ public class StripInfoSearchEngine
             (byte) 0x46, (byte) 0x54, (byte) 0x59, (byte) 0x4b};
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
+
+    private static final String WWW_STRIPINFO_BE = "https://www.stripinfo.be";
+    public static final String COLLECTION_FORM_URL = WWW_STRIPINFO_BE + "/ajax_collectie.php";
+
     /** Delegate common Element handling. */
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
     @Nullable
     private StripInfoAuth mLoginHelper;
 
-    private CollectionForm mCollectionForm;
+    private CollectionFormParser mCollectionFormParser;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -147,7 +151,7 @@ public class StripInfoSearchEngine
                                               SearchSites.STRIP_INFO_BE,
                                               R.string.site_stripinfo_be,
                                               StripInfoAuth.PREF_KEY,
-                                              "https://www.stripinfo.be")
+                                              WWW_STRIPINFO_BE)
                 .setCountry("BE", "nl")
                 .setFilenameSuffix("SI")
 
@@ -192,7 +196,7 @@ public class StripInfoSearchEngine
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
-            mCollectionForm = new CollectionForm(context, new StripInfoSyncConfig());
+            mCollectionFormParser = new CollectionFormParser(context, new Bookshelfmapper());
         }
 
         return super.loadDocument(context, url);
@@ -976,7 +980,7 @@ public class StripInfoSearchEngine
         final long collectionId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
         if (collectionId > 0) {
             try {
-                mCollectionForm.parse(document, bookData, externalId, collectionId);
+                mCollectionFormParser.parse(document, bookData, externalId, collectionId);
 
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG  /* always */) {

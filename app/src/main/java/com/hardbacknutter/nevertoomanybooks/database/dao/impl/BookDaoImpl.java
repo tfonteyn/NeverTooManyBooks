@@ -1037,6 +1037,19 @@ public class BookDaoImpl
 
     @Override
     @NonNull
+    public TypedCursor fetchBooksForExportToStripInfo(@Nullable final LocalDateTime since) {
+        if (since == null) {
+            return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
+        } else {
+            return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
+                    UTC_DATE_LAST_SYNC_STRIP_INFO) + ">=?",
+                                 new String[]{SqlEncode.date(since)},
+                                 TBL_BOOKS.dot(PK_ID));
+        }
+    }
+
+    @Override
+    @NonNull
     public TypedCursor fetchByIsbn(@NonNull final List<String> isbnList) {
         SanityCheck.requireValue(isbnList, "isbnList");
 
@@ -1171,26 +1184,13 @@ public class BookDaoImpl
         return list;
     }
 
-    @Override
-    public boolean isImportNewer(@IntRange(from = 1) final long databaseBookId,
-                                 @NonNull final Book importedBook) {
-
-
-
-        final LocalDateTime importDate = mDateParser.parse(
-                importedBook.getString(DBKey.UTC_DATE_LAST_UPDATED));
-
-        if (importDate == null) {
-            return false;
-        }
-
-        final LocalDateTime lastUpdated;
+    @Nullable
+    public LocalDateTime getLastUpdateDate(@IntRange(from = 1) final long id) {
         try (SynchronizedStatement stmt =
                      mDb.compileStatement(Sql.Get.LAST_UPDATE_DATE_BY_BOOK_ID)) {
-            stmt.bindLong(1, databaseBookId);
-            lastUpdated = mDateParser.parse(stmt.simpleQueryForStringOrNull());
+            stmt.bindLong(1, id);
+            return mDateParser.parse(stmt.simpleQueryForStringOrNull());
         }
-        return lastUpdated == null || importDate.isAfter(lastUpdated);
     }
 
     @SuppressWarnings("UtilityClassWithoutPrivateConstructor")

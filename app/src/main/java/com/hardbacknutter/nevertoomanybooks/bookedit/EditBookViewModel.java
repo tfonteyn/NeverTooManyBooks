@@ -178,9 +178,6 @@ public class EditBookViewModel
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
                 if (bookData != null) {
                     mBook = Book.from(bookData);
-                    // has unsaved data, hence 'Dirty'
-                    mBook.setStage(EntityStage.Stage.Dirty);
-
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
                     final long bookId = args.getLong(DBKey.PK_ID, 0);

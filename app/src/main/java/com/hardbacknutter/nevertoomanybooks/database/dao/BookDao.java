@@ -382,6 +382,9 @@ public interface BookDao {
     TypedCursor fetchBooksForExportToCalibre(long libraryId,
                                              @Nullable LocalDateTime since);
 
+    @NonNull
+    TypedCursor fetchBooksForExportToStripInfo(@Nullable LocalDateTime since);
+
     /**
      * Fetch all book UUID, and return them as a List.
      *
@@ -450,16 +453,9 @@ public interface BookDao {
     @NonNull
     ArrayList<String> getCurrencyCodes(@NonNull String domainName);
 
-    /**
-     * Check if the incoming book is newer than the stored book data.
-     *
-     * @param databaseBookId the local book id to lookup in our database
-     * @param importedBook   to check the date of
-     *
-     * @return {@code true} if the imported data is newer then the local data.
-     */
-    boolean isImportNewer(@IntRange(from = 1) long databaseBookId,
-                          @NonNull Book importedBook);
+
+    @Nullable
+    LocalDateTime getLastUpdateDate(@IntRange(from = 1) long id);
 
     @IntDef(flag = true, value = {BOOK_FLAG_IS_BATCH_OPERATION,
                                   BOOK_FLAG_USE_ID_IF_PRESENT,

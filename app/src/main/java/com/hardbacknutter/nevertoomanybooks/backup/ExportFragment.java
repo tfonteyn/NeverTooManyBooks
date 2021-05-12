@@ -170,7 +170,7 @@ public class ExportFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (mVm.getExportHelper().getExporterEntries().size() > 1) {
+            if (mVm.getExportHelper().getRecordTypes().size() > 1) {
                 exportPickUri();
             }
             return true;
@@ -183,11 +183,11 @@ public class ExportFragment
      */
     private void showOptions() {
         final ExportHelper helper = mVm.getExportHelper();
-        final Set<RecordType> exportEntities = helper.getExporterEntries();
+        final Set<RecordType> exportEntities = helper.getRecordTypes();
 
         mVb.cbxCovers.setChecked(exportEntities.contains(RecordType.Cover));
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setExportEntry(RecordType.Cover, isChecked));
+                .setRecordType(RecordType.Cover, isChecked));
 
         final boolean incremental = helper.isIncremental();
         mVb.rbExportBooksOptionAll.setChecked(!incremental);
@@ -198,7 +198,7 @@ public class ExportFragment
 
         mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getExportHelper().setExportEntry(RecordType.Books, isChecked);
+            mVm.getExportHelper().setRecordType(RecordType.Books, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
@@ -231,9 +231,9 @@ public class ExportFragment
                 mVb.archiveFormatInfoLong.setText("");
 
                 helper.setEncoding(ArchiveEncoding.Zip);
-                helper.setExportEntry(RecordType.Styles, true);
-                helper.setExportEntry(RecordType.Preferences, true);
-                helper.setExportEntry(RecordType.Certificates, true);
+                helper.setRecordType(RecordType.Styles, true);
+                helper.setRecordType(RecordType.Preferences, true);
+                helper.setRecordType(RecordType.Certificates, true);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(true);
@@ -250,9 +250,9 @@ public class ExportFragment
                 mVb.archiveFormatInfoLong.setText("");
 
                 helper.setEncoding(ArchiveEncoding.Csv);
-                helper.setExportEntry(RecordType.Styles, false);
-                helper.setExportEntry(RecordType.Preferences, false);
-                helper.setExportEntry(RecordType.Certificates, false);
+                helper.setRecordType(RecordType.Styles, false);
+                helper.setRecordType(RecordType.Preferences, false);
+                helper.setRecordType(RecordType.Certificates, false);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -269,9 +269,9 @@ public class ExportFragment
                 mVb.archiveFormatInfoLong.setText("");
 
                 helper.setEncoding(ArchiveEncoding.Json);
-                helper.setExportEntry(RecordType.Styles, false);
-                helper.setExportEntry(RecordType.Preferences, false);
-                helper.setExportEntry(RecordType.Certificates, false);
+                helper.setRecordType(RecordType.Styles, false);
+                helper.setRecordType(RecordType.Preferences, false);
+                helper.setRecordType(RecordType.Certificates, false);
 
 
                 mVb.cbxBooks.setChecked(true);
@@ -289,9 +289,9 @@ public class ExportFragment
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
                 helper.setEncoding(ArchiveEncoding.Xml);
-                helper.setExportEntry(RecordType.Styles, false);
-                helper.setExportEntry(RecordType.Preferences, false);
-                helper.setExportEntry(RecordType.Certificates, false);
+                helper.setRecordType(RecordType.Styles, false);
+                helper.setRecordType(RecordType.Preferences, false);
+                helper.setRecordType(RecordType.Certificates, false);
 
 
                 mVb.cbxBooks.setChecked(true);
@@ -310,9 +310,9 @@ public class ExportFragment
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
                 helper.setEncoding(ArchiveEncoding.SqLiteDb);
-                helper.setExportEntry(RecordType.Styles, false);
-                helper.setExportEntry(RecordType.Preferences, false);
-                helper.setExportEntry(RecordType.Certificates, false);
+                helper.setRecordType(RecordType.Styles, false);
+                helper.setRecordType(RecordType.Preferences, false);
+                helper.setRecordType(RecordType.Certificates, false);
 
 
                 mVb.cbxBooks.setChecked(true);
@@ -437,7 +437,7 @@ public class ExportFragment
 
                 final StringBuilder msg = new StringBuilder(itemList);
 
-                final UriInfo uriInfo = new UriInfo(helper.getFileUri());
+                final UriInfo uriInfo = new UriInfo(helper.getUri());
                 final long size = uriInfo.getSize(getContext());
 
                 // We cannot get the folder name for the file.

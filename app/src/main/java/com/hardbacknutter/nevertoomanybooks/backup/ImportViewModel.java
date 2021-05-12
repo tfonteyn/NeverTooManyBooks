@@ -48,14 +48,14 @@ public class ImportViewModel
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
-    private final ArchiveReadMetaDataTask mArchiveReadMetaDataTask = new ArchiveReadMetaDataTask();
-    private final ArchiveReaderTask mArchiveReaderTask = new ArchiveReaderTask();
+    private final ArchiveReadMetaDataTask mReadMetaDataTask = new ArchiveReadMetaDataTask();
+    private final ArchiveReaderTask mReaderTask = new ArchiveReaderTask();
 
     /** The import configuration. */
     @Nullable
     private ImportHelper mImportHelper;
     @Nullable
-    private ArchiveMetaData mArchiveMetaData;
+    private ArchiveMetaData mMetaData;
 
     @NonNull
     ImportHelper createImportHelper(@NonNull final Context context,
@@ -85,33 +85,33 @@ public class ImportViewModel
 
     @Override
     protected void onCleared() {
-        mArchiveReadMetaDataTask.cancel();
-        mArchiveReaderTask.cancel();
+        mReadMetaDataTask.cancel();
+        mReaderTask.cancel();
         super.onCleared();
     }
 
     public void readMetaData() {
         Objects.requireNonNull(mImportHelper, "mImportHelper");
-        mArchiveReadMetaDataTask.start(mImportHelper);
+        mReadMetaDataTask.start(mImportHelper);
     }
 
     @NonNull
     public LiveData<FinishedMessage<ArchiveMetaData>> onMetaDataRead() {
-        return mArchiveReadMetaDataTask.onFinished();
+        return mReadMetaDataTask.onFinished();
     }
 
     @NonNull
     public LiveData<FinishedMessage<Exception>> onMetaDataFailure() {
-        return mArchiveReadMetaDataTask.onFailure();
+        return mReadMetaDataTask.onFailure();
     }
 
     @Nullable
-    ArchiveMetaData getArchiveMetaData() {
-        return mArchiveMetaData;
+    ArchiveMetaData getMetaData() {
+        return mMetaData;
     }
 
-    void setArchiveMetaData(@Nullable final ArchiveMetaData archiveMetaData) {
-        mArchiveMetaData = archiveMetaData;
+    void setMetaData(@Nullable final ArchiveMetaData metaData) {
+        mMetaData = metaData;
     }
 
     @Override
@@ -126,43 +126,73 @@ public class ImportViewModel
         return mResultIntent;
     }
 
+    public boolean isNewBooksOnly() {
+        //noinspection ConstantConditions
+        return mImportHelper.getUpdateOption() == ImportHelper.Updates.Skip;
+    }
+
+    public void setNewBooksOnly() {
+        //noinspection ConstantConditions
+        mImportHelper.setUpdateOption(ImportHelper.Updates.Skip);
+    }
+
+    public boolean isAllBooks() {
+        //noinspection ConstantConditions
+        return mImportHelper.getUpdateOption() == ImportHelper.Updates.Overwrite;
+    }
+
+    public void setAllBooks() {
+        //noinspection ConstantConditions
+        mImportHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
+    }
+
+    public boolean isNewAndUpdatedBooks() {
+        //noinspection ConstantConditions
+        return mImportHelper.getUpdateOption() == ImportHelper.Updates.OnlyNewer;
+    }
+
+    public void setNewAndUpdatedBooks() {
+        //noinspection ConstantConditions
+        mImportHelper.setUpdateOption(ImportHelper.Updates.OnlyNewer);
+    }
+
     /**
      * Check if we have sufficient data to start an import.
      *
      * @return {@code true} if the "Go" button should be made available
      */
     boolean isReadyToGo() {
-        return mArchiveMetaData != null;
+        return mMetaData != null;
     }
 
     @NonNull
     LiveData<ProgressMessage> onProgress() {
-        return mArchiveReaderTask.onProgressUpdate();
+        return mReaderTask.onProgressUpdate();
     }
 
     @NonNull
     LiveData<FinishedMessage<ImportResults>> onImportCancelled() {
-        return mArchiveReaderTask.onCancelled();
+        return mReaderTask.onCancelled();
     }
 
     @NonNull
     LiveData<FinishedMessage<Exception>> onImportFailure() {
-        return mArchiveReaderTask.onFailure();
+        return mReaderTask.onFailure();
     }
 
     @NonNull
     LiveData<FinishedMessage<ImportResults>> onImportFinished() {
-        return mArchiveReaderTask.onFinished();
+        return mReaderTask.onFinished();
     }
 
     void startImport() {
         Objects.requireNonNull(mImportHelper, "mImportHelper");
-        mArchiveReaderTask.start(mImportHelper);
+        mReaderTask.start(mImportHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {
-        if (taskId == mArchiveReaderTask.getTaskId()) {
-            mArchiveReaderTask.cancel();
+        if (taskId == mReaderTask.getTaskId()) {
+            mReaderTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
         }

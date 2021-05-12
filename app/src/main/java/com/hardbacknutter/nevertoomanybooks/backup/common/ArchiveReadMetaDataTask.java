@@ -69,7 +69,7 @@ public class ArchiveReadMetaDataTask
             throws InvalidArchiveException, ImportException, IOException,
                    StorageException {
 
-        try (ArchiveReader reader = mHelper.createArchiveReader(context)) {
+        try (ArchiveReader reader = mHelper.createReader(context)) {
             return reader.readMetaData(context);
         }
     }

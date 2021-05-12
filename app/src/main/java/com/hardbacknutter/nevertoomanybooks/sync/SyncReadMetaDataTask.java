@@ -17,62 +17,63 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Input: {@link ImportHelper}.
- * Output: {@link ImportResults}.
- */
-public class ArchiveReaderTask
-        extends MTask<ImportResults> {
+public class SyncReadMetaDataTask
+        extends MTask<SyncReaderMetaData> {
 
     /** Log tag. */
-    private static final String TAG = "ArchiveReaderTask";
+    private static final String TAG = "SyncReadMetaDataTask";
 
-    /** import configuration. */
-    private ImportHelper mHelper;
+    /** Server to sync with */
+    private SyncServer mSyncServer;
+    /** Configuration. */
+    private SyncReaderConfig mConfig;
 
-    public ArchiveReaderTask() {
-        super(R.id.TASK_ID_IMPORT, TAG);
+    public SyncReadMetaDataTask() {
+        super(R.id.TASK_ID_READ_META_DATA, TAG);
     }
 
     /**
      * Start the task.
      *
-     * @param helper import configuration
+     * @param syncServer to sync with
+     * @param config     configuration
      */
     @UiThread
-    public void start(@NonNull final ImportHelper helper) {
-        mHelper = helper;
+    public void start(@NonNull final SyncServer syncServer,
+                      @NonNull final SyncReaderConfig config) {
+        mSyncServer = syncServer;
+        mConfig = config;
         execute();
     }
 
-    @NonNull
+    @Nullable
     @Override
     @WorkerThread
-    protected ImportResults doWork(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException,
-                   CredentialsException {
+    protected SyncReaderMetaData doWork(@NonNull final Context context)
+            throws ImportException,
+                   IOException,
+                   CertificateException,
+                   StorageException {
 
-        try (ArchiveReader reader = mHelper.createReader(context)) {
-            return reader.read(context, this);
+        try (SyncReader reader = mSyncServer.createReader(context, mConfig)) {
+            return reader.readMetaData(context);
         }
     }
 }

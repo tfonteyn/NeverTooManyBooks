@@ -38,13 +38,13 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -80,7 +80,7 @@ public class CalibreLibraryMappingFragment
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        mVm.init(getArguments());
+        mVm.init(requireArguments());
 
         mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
@@ -124,7 +124,7 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
+    private void onMetaDataRead(@NonNull final FinishedMessage<SyncReaderMetaData> message) {
         mVm.setMetaData(message.requireResult());
         mLibraryArrayAdapter.notifyDataSetChanged();
 

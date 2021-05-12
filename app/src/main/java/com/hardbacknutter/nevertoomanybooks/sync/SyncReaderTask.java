@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.content.Context;
 
@@ -26,52 +26,54 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Input: {@link ImportHelper}.
- * Output: {@link ImportResults}.
- */
-public class ArchiveReaderTask
-        extends MTask<ImportResults> {
+public class SyncReaderTask
+        extends MTask<SyncReaderResults> {
 
     /** Log tag. */
-    private static final String TAG = "ArchiveReaderTask";
+    private static final String TAG = "SyncReaderTask";
 
-    /** import configuration. */
-    private ImportHelper mHelper;
+    /** Server to sync with */
+    private SyncServer mSyncServer;
+    /** Configuration. */
+    private SyncReaderConfig mConfig;
 
-    public ArchiveReaderTask() {
+    public SyncReaderTask() {
         super(R.id.TASK_ID_IMPORT, TAG);
     }
 
     /**
      * Start the task.
      *
-     * @param helper import configuration
+     * @param syncServer to sync with
+     * @param config     configuration
      */
     @UiThread
-    public void start(@NonNull final ImportHelper helper) {
-        mHelper = helper;
+    public void start(@NonNull final SyncServer syncServer,
+                      @NonNull final SyncReaderConfig config) {
+        mSyncServer = syncServer;
+        mConfig = config;
         execute();
     }
 
     @NonNull
     @Override
     @WorkerThread
-    protected ImportResults doWork(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException,
+    protected SyncReaderResults doWork(@NonNull final Context context)
+            throws ImportException,
+                   IOException,
+                   CertificateException,
+                   StorageException,
                    CredentialsException {
 
-        try (ArchiveReader reader = mHelper.createReader(context)) {
+        try (SyncReader reader = mSyncServer.createReader(context, mConfig)) {
             return reader.read(context, this);
         }
     }

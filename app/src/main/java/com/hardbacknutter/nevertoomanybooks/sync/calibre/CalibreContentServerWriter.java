@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -40,10 +39,7 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -54,6 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriter;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
@@ -62,67 +61,66 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * This class will only UPDATE books which exist on the server.
- * It will not push new books to the server !
- * If a book no longer exists on the server, {@link #BKEY_DELETE_LOCAL_BOOKS} decides.
+ * Export <strong>all</strong> libraries currently present on the server.
+ * <p>
+ * If the user asked for "new and updated books" only,
+ * the 'last-sync-date' from the library is used to only fetch books added/modified
+ * later then this timestamp FROM THE LOCAL DATABASE.
+ * <p>
+ * Each local book is compared to the remote book 'last-modified' date to
+ * decide to update it or not.
+ * <p>
+ * We only UPDATE books which exist on the server.
+ * We're not pushing new books to the server !
+ * If a book no longer exists on the server, {@link SyncWriterConfig#isDeleteLocalBooks()} decides.
  */
 public class CalibreContentServerWriter
-        implements ArchiveWriter {
+        implements SyncWriter {
 
     /** Log tag. */
     private static final String TAG = "CalibreServerWriter";
 
-    public static final String BKEY_DELETE_LOCAL_BOOKS = TAG + ":delLocal";
-
     @NonNull
     private final CalibreContentServer mServer;
-
     /** Export configuration. */
     @NonNull
-    private final ExportHelper mHelper;
+    private final SyncWriterConfig mConfig;
     private final boolean mDoCovers;
     private final boolean mDeleteLocalBook;
+
     @NonNull
     private final DateParser mDateParser;
-    private ExportResults mResults;
+
+    private SyncWriterResults mResults;
 
     /**
      * Constructor.
      *
      * @param context Current context
-     * @param helper  export configuration
+     * @param config  export configuration
      *
      * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final ExportHelper helper)
+                                      @NonNull final SyncWriterConfig config)
             throws CertificateException, SSLException {
 
-        mHelper = helper;
-        mServer = new CalibreContentServer(context,
-                                           Uri.parse(CalibreContentServer.getHostUrl()));
-
-        mDoCovers = mHelper.getExporterEntries().contains(RecordType.Cover);
-
-        mDeleteLocalBook = mHelper.getExtraArgs().getBoolean(BKEY_DELETE_LOCAL_BOOKS);
+        mConfig = config;
+        mServer = new CalibreContentServer(context);
+        mDoCovers = mConfig.getExporterEntries().contains(RecordType.Cover);
+        mDeleteLocalBook = mConfig.isDeleteLocalBooks();
 
         mDateParser = new ISODateParser();
     }
 
-    @Override
-    public int getVersion() {
-        // irrelevant; when reading from the server we check the server version itself.
-        return 1;
-    }
-
     @NonNull
     @Override
-    public ExportResults write(@NonNull final Context context,
-                               @NonNull final ProgressListener progressListener)
+    public SyncWriterResults write(@NonNull final Context context,
+                                   @NonNull final ProgressListener progressListener)
             throws ExportException, IOException {
 
-        mResults = new ExportResults();
+        mResults = new SyncWriterResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(
@@ -137,7 +135,7 @@ public class CalibreContentServerWriter
             for (final CalibreLibrary library : mServer.getLibraries()) {
 
                 final LocalDateTime dateSince;
-                if (mHelper.isIncremental()) {
+                if (mConfig.isIncremental()) {
                     dateSince = library.getLastSyncDate();
                 } else {
                     dateSince = null;
@@ -234,6 +232,7 @@ public class CalibreContentServerWriter
         }
     }
 
+    @NonNull
     private JSONObject collectChanges(@NonNull final CalibreLibrary library,
                                       @NonNull final JSONObject calibreBook,
                                       @NonNull final Book localBook)

@@ -51,16 +51,18 @@ public class ExportHelper {
 
     /** Log tag. */
     private static final String TAG = "ExportHelper";
+
     /** What is going to be exported. */
     @NonNull
-    private final Set<RecordType> mExportEntries;
-
-    /** Picked by the user; file Uri where we write to. */
+    private final Set<RecordType> mRecordTypes;
+    /** <strong>Where</strong> we write to. */
     @Nullable
-    private Uri mFileUri;
-    /** Set by the user; defaults to ZIP. */
+    private Uri mUri;
+    /** <strong>How</strong> to write to the Uri. */
     @NonNull
-    private ArchiveEncoding mArchiveEncoding = ArchiveEncoding.Zip;
+    private ArchiveEncoding mEncoding = ArchiveEncoding.Zip;
+
+
     /**
      * Do an incremental export. Definition of incremental depends on the writer.
      * <ul>
@@ -74,26 +76,26 @@ public class ExportHelper {
      * Constructor.
      */
     public ExportHelper() {
-        mExportEntries = EnumSet.allOf(RecordType.class);
+        mRecordTypes = EnumSet.allOf(RecordType.class);
     }
 
     /**
      * Constructor for testing individual options.
      *
-     * @param exportEntries to write
+     * @param recordTypes to write
      */
     @VisibleForTesting
-    public ExportHelper(@NonNull final RecordType... exportEntries) {
-        mExportEntries = EnumSet.copyOf(Arrays.asList(exportEntries));
+    public ExportHelper(@NonNull final RecordType... recordTypes) {
+        mRecordTypes = EnumSet.copyOf(Arrays.asList(recordTypes));
     }
 
     @NonNull
     public ArchiveEncoding getEncoding() {
-        return mArchiveEncoding;
+        return mEncoding;
     }
 
-    public void setEncoding(@NonNull final ArchiveEncoding archiveEncoding) {
-        mArchiveEncoding = archiveEncoding;
+    public void setEncoding(@NonNull final ArchiveEncoding encoding) {
+        mEncoding = encoding;
     }
 
     /**
@@ -103,17 +105,41 @@ public class ExportHelper {
      * {@code false} when it's considered an export.
      */
     public boolean isBackup() {
-        return mArchiveEncoding == ArchiveEncoding.Zip;
+        return mEncoding == ArchiveEncoding.Zip;
     }
 
     @NonNull
-    public Uri getFileUri() {
-        return Objects.requireNonNull(mFileUri, "mFileUri");
+    public Uri getUri() {
+        return Objects.requireNonNull(mUri, "mFileUri");
     }
 
-    public void setFileUri(@NonNull final Uri fileUri) {
-        mFileUri = fileUri;
+    public void setUri(@NonNull final Uri uri) {
+        mUri = uri;
     }
+
+    void setRecordType(@NonNull final RecordType recordType,
+                       final boolean isSet) {
+        if (isSet) {
+            mRecordTypes.add(recordType);
+        } else {
+            mRecordTypes.remove(recordType);
+        }
+    }
+
+    @NonNull
+    public Set<RecordType> getRecordTypes() {
+        return mRecordTypes;
+    }
+
+
+    public boolean isIncremental() {
+        return mIncremental;
+    }
+
+    void setIncremental(final boolean incremental) {
+        mIncremental = incremental;
+    }
+
 
     /**
      * Create an {@link ArchiveWriter} based on the type.
@@ -123,21 +149,15 @@ public class ExportHelper {
      * @return a new writer
      */
     @NonNull
-    public ArchiveWriter createArchiveWriter(@NonNull final Context context)
+    public ArchiveWriter createWriter(@NonNull final Context context)
             throws FileNotFoundException {
-
         if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(mFileUri, "uri");
-            if (mExportEntries.isEmpty()) {
+            Objects.requireNonNull(mUri, "uri");
+            if (mRecordTypes.isEmpty()) {
                 throw new IllegalStateException("mExportEntries.isEmpty()");
             }
         }
-
-        return mArchiveEncoding.createWriter(context, this);
-    }
-
-    private File getTempFile(@NonNull final Context context) {
-        return new File(context.getCacheDir(), TAG + ".tmp");
+        return mEncoding.createWriter(context, this);
     }
 
     /**
@@ -166,13 +186,13 @@ public class ExportHelper {
      */
     public void onSuccess(@NonNull final Context context)
             throws IOException {
-        Objects.requireNonNull(mFileUri, "uri");
+        Objects.requireNonNull(mUri, "uri");
 
         // The output file is now properly closed, export it to the user Uri
         final File tmpOutput = getTempFile(context);
 
         try (InputStream is = new FileInputStream(tmpOutput);
-             OutputStream os = context.getContentResolver().openOutputStream(mFileUri)) {
+             OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
             if (os != null) {
                 FileUtils.copy(is, os);
             }
@@ -192,41 +212,17 @@ public class ExportHelper {
         FileUtils.delete(getTempFile(context));
     }
 
-    void setExportEntry(@NonNull final RecordType entry,
-                        final boolean isSet) {
-        if (isSet) {
-            mExportEntries.add(entry);
-        } else {
-            mExportEntries.remove(entry);
-        }
-    }
-
-    /**
-     * Get the currently selected entry types that will be exported.
-     *
-     * @return set
-     */
-    @NonNull
-    public Set<RecordType> getExporterEntries() {
-        return mExportEntries;
-    }
-
-
-    public boolean isIncremental() {
-        return mIncremental;
-    }
-
-    void setIncremental(final boolean incremental) {
-        mIncremental = incremental;
+    private File getTempFile(@NonNull final Context context) {
+        return new File(context.getCacheDir(), TAG + ".tmp");
     }
 
     @Override
     @NonNull
     public String toString() {
         return "ExportHelper{"
-               + "mExportEntities=" + mExportEntries
-               + ", mUri=" + mFileUri
-               + ", mArchiveEncoding=" + mArchiveEncoding
+               + "mRecordTypes=" + mRecordTypes
+               + ", mUri=" + mUri
+               + ", mEncoding=" + mEncoding
                + ", mIncremental=" + mIncremental
                + '}';
     }

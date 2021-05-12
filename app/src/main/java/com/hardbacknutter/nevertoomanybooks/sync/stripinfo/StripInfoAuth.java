@@ -65,6 +65,8 @@ public class StripInfoAuth {
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
 
+    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
+
     /** Log tag. */
     private static final String TAG = "StripInfoAuth";
 

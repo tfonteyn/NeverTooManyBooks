@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 public final class CalibreBook {
 
-    public static final String USER_METADATA = "user_metadata";
+    static final String USER_METADATA = "user_metadata";
 
 
     static final String ID = "application_id";

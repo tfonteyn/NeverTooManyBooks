@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
@@ -108,27 +110,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  * - books inserted while not having a uuid/id; i.e. unknown input source -> would require ISBN
  */
 public class CsvRecordReader
-        implements RecordReader {
+        extends BaseRecordReader {
 
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
 
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
-
     @NonNull
     private final Locale mUserLocale;
-    /** cached localized progress string. */
-    @NonNull
-    private final String mBooksString;
-    /** cached localized progress string. */
-    @NonNull
-    private final String mProgressMessage;
     @NonNull
     private final BookCoder mBookCoder;
-
-    private ImportResults mResults;
 
     /**
      * Constructor.
@@ -139,12 +129,10 @@ public class CsvRecordReader
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context) {
-        mBookDao = ServiceLocator.getInstance().getBookDao();
+        super(context);
+
         mBookCoder = new BookCoder(context);
         mUserLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        mBooksString = context.getString(R.string.lbl_books);
-        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     @Override
@@ -319,82 +307,6 @@ public class CsvRecordReader
     }
 
     /**
-     * insert or update a single book which has a <strong>valid UUID</strong>.
-     *
-     * @param context Current context
-     * @param book    to import
-     *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
-     */
-    private void importBookWithUuid(@NonNull final Context context,
-                                    @NonNull final ImportHelper helper,
-                                    @NonNull final Book book,
-                                    final long importNumericId)
-            throws CoverStorageException, DaoWriteException {
-        // Verified to be valid earlier.
-        final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
-
-        // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mBookDao.getBookIdByUuid(uuid);
-        if (databaseBookId > 0) {
-            // The book exists in our database (matching UUID).
-
-            // Explicitly set the EXISTING id on the book
-            // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBKey.PK_ID, databaseBookId);
-
-            // UPDATE the existing book (if allowed)
-            final ImportHelper.Updates updateOption = helper.getUpdateOption();
-            if (updateOption == ImportHelper.Updates.Overwrite
-                ||
-                (updateOption == ImportHelper.Updates.OnlyNewer
-                 && mBookDao.isImportNewer(databaseBookId, book))) {
-
-                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                mResults.booksUpdated++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
-                               + "|update|" + book.getTitle());
-                }
-
-            } else {
-                mResults.booksSkipped++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
-                               + "|skipped|" + book.getTitle());
-                }
-            }
-
-        } else {
-            // The book does NOT exist in our database (no match for the UUID), insert it.
-
-            // If we have an importBookId, and it does not already exist, we reuse it.
-            if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBKey.PK_ID, importNumericId);
-            }
-
-            // the Book object will contain:
-            // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
-            // - NO id, OR an id which does not exist in the database yet.
-            // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mBookDao.insert(context, book,
-                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
-            mResults.booksCreated++;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Log.d(TAG, "UUID=" + uuid
-                           + "|importNumericId=" + importNumericId
-                           + "|insert=" + insId
-                           + "|" + book.getTitle());
-            }
-        }
-    }
-
-    /**
      * insert or update a single book which has a potentially usable id.
      *
      * @param context Current context
@@ -417,27 +329,48 @@ public class CsvRecordReader
 
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
-            // Ideally, we should ask the user presenting a choice "keep/overwrite"
+            // Ideally, we should ask the user presenting a choice "skip/overwrite"
             final ImportHelper.Updates updateOption = helper.getUpdateOption();
-            if (updateOption == ImportHelper.Updates.Overwrite
-                ||
-                (updateOption == ImportHelper.Updates.OnlyNewer
-                 && mBookDao.isImportNewer(importNumericId, book))) {
-
-                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                mResults.booksUpdated++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "importNumericId=" + importNumericId
-                               + "|update|" + book.getTitle());
+            switch (updateOption) {
+                case Overwrite: {
+                    mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                   | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mResults.booksUpdated++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "importNumericId=" + importNumericId
+                                   + "|Overwrite|" + book.getTitle());
+                    }
+                    break;
                 }
-            } else {
-                mResults.booksSkipped++;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                    Log.d(TAG, "importNumericId=" + importNumericId
-                               + "|skipped|" + book.getTitle());
+                case OnlyNewer: {
+                    final LocalDateTime localDate = mBookDao.getLastUpdateDate(importNumericId);
+                    final LocalDateTime importDate = mDateParser.parse(
+                            book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+
+                    if (localDate != null && importDate != null
+                        && importDate.isAfter(localDate)) {
+
+                        mBookDao.update(context, book,
+                                        BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                        | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                        mResults.booksUpdated++;
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                            Log.d(TAG, "importNumericId=" + importNumericId
+                                       + "|update|" + book.getTitle());
+                        }
+                    }
+                    break;
+                }
+                case Skip: {
+                    mResults.booksSkipped++;
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                        Log.d(TAG, "importNumericId=" + importNumericId
+                                   + "|Skip|" + book.getTitle());
+                    }
+                    break;
                 }
             }
+
         } else {
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused

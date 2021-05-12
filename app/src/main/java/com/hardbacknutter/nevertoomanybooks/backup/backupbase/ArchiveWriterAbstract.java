@@ -127,7 +127,7 @@ public abstract class ArchiveWriterAbstract
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
 
-        final Set<RecordType> exportEntities = mHelper.getExporterEntries();
+        final Set<RecordType> exportEntities = mHelper.getRecordTypes();
 
         final boolean writeCovers = this instanceof SupportsCovers
                                     && exportEntities.contains(RecordType.Cover);
@@ -249,10 +249,10 @@ public abstract class ArchiveWriterAbstract
         // Filter to valid options for this step.
         final Set<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
 
-        if (mHelper.getExporterEntries().contains(RecordType.Books)) {
+        if (mHelper.getRecordTypes().contains(RecordType.Books)) {
             recordTypes.add(RecordType.Books);
         }
-        if (mHelper.getExporterEntries().contains(RecordType.Cover)) {
+        if (mHelper.getRecordTypes().contains(RecordType.Cover)) {
             recordTypes.add(RecordType.Cover);
         }
 

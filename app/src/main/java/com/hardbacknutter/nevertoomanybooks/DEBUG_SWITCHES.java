@@ -94,6 +94,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean IMPORT_CSV_BOOKS_EXT = false;
 
     public static final boolean IMPORT_CALIBRE_BOOKS = false;
+    public static final boolean IMPORT_STRIP_INFO_BOOKS = false;
 
     /** Dump SQL. */
     public static final boolean DB_EXEC_SQL = false;
