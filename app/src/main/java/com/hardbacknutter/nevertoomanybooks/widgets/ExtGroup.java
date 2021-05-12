@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -98,6 +98,7 @@ public class ExtGroup
     // and this is BEFORE this class-init phase.
     protected void init(@Nullable final AttributeSet attrs) {
         super.init(attrs);
+        super.setVisibility(View.GONE);
         mUseViewMeasure = false;
 
         if (attrs != null) {
@@ -120,13 +121,6 @@ public class ExtGroup
     public void updatePreLayout(@NonNull final ConstraintLayout container) {
         super.updatePreLayout(container);
         applyLayoutFeatures(container);
-    }
-
-    public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        final ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) getLayoutParams();
-        params.getConstraintWidget().setWidth(0);
-        params.getConstraintWidget().setHeight(0);
     }
 
     /**

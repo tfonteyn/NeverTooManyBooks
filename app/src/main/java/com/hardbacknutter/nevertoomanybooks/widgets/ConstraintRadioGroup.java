@@ -109,6 +109,7 @@ public final class ConstraintRadioGroup
     @Override
     protected void init(@Nullable final AttributeSet attrs) {
         super.init(attrs);
+        super.setVisibility(View.GONE);
         mUseViewMeasure = false;
     }
 
@@ -132,14 +133,6 @@ public final class ConstraintRadioGroup
                 }
             }
         }
-    }
-
-    @Override
-    public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        // make sure we don't show
-        final ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) getLayoutParams();
-        lp.getConstraintWidget().setWidth(0);
-        lp.getConstraintWidget().setHeight(0);
     }
 
     @Override
