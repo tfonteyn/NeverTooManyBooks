@@ -29,16 +29,15 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 /**
  * Value class to report back what was imported.
  * <p>
  * Used by {@link RecordReader} and accumulated in {@link ArchiveReader}.
- * <p>
- * Note: failed = processed - created - updated
  */
 public class ImportResults
-        implements Parcelable {
+        extends ReaderResults {
 
     /** {@link Parcelable}. */
     public static final Creator<ImportResults> CREATOR = new Creator<ImportResults>() {
@@ -52,12 +51,7 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
-    /** Log tag. */
-    private static final String TAG = "ImportResults";
-    /**
-     * {@link ImportResults} after an import.
-     */
-    public static final String BKEY_IMPORT_RESULTS = TAG + ":results";
+
     /**
      * Keeps track of failed import lines in a text file.
      * Not strictly needed as row number should be part of the messages.
@@ -66,28 +60,6 @@ public class ImportResults
     public final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
     public final List<String> failedLinesMessage = new ArrayList<>();
-
-    /** The total #books that were present in the import data. */
-    public int booksProcessed;
-    /** #books we created. */
-    public int booksCreated;
-    /** #books we updated. */
-    public int booksUpdated;
-    /** #books we skipped for NON-failure reasons. */
-    public int booksSkipped;
-    /** #books which explicitly failed. */
-    public int booksFailed;
-
-    /** The total #covers that were present in the import data. */
-    public int coversProcessed;
-    /** #covers we created. */
-    public int coversCreated;
-    /** #covers we updated. */
-    public int coversUpdated;
-    /** #covers we skipped for NON-failure reasons. */
-    public int coversSkipped;
-    /** # covers which explicitly failed. */
-    public int coversFailed;
 
     /** #styles we imported. */
     public int styles;
@@ -105,17 +77,7 @@ public class ImportResults
      * @param in Parcel to construct the object from
      */
     private ImportResults(@NonNull final Parcel in) {
-        booksProcessed = in.readInt();
-        booksCreated = in.readInt();
-        booksUpdated = in.readInt();
-        booksSkipped = in.readInt();
-        booksFailed = in.readInt();
-
-        coversProcessed = in.readInt();
-        coversCreated = in.readInt();
-        coversUpdated = in.readInt();
-        coversSkipped = in.readInt();
-        coversFailed = in.readInt();
+        super(in);
 
         styles = in.readInt();
         preferences = in.readInt();
@@ -126,17 +88,7 @@ public class ImportResults
     }
 
     public void add(@NonNull final ImportResults results) {
-        booksProcessed += results.booksProcessed;
-        booksCreated += results.booksCreated;
-        booksUpdated += results.booksUpdated;
-        booksSkipped += results.booksSkipped;
-        booksFailed += results.booksFailed;
-
-        coversProcessed += results.coversProcessed;
-        coversCreated += results.coversCreated;
-        coversUpdated += results.coversUpdated;
-        coversSkipped += results.coversSkipped;
-        coversFailed += results.coversFailed;
+        super.add(results);
 
         styles += results.styles;
         preferences += results.preferences;
@@ -149,17 +101,7 @@ public class ImportResults
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(booksProcessed);
-        dest.writeInt(booksCreated);
-        dest.writeInt(booksUpdated);
-        dest.writeInt(booksSkipped);
-        dest.writeInt(booksFailed);
-
-        dest.writeInt(coversProcessed);
-        dest.writeInt(coversCreated);
-        dest.writeInt(coversUpdated);
-        dest.writeInt(coversSkipped);
-        dest.writeInt(coversFailed);
+        super.writeToParcel(dest, flags);
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
@@ -170,26 +112,10 @@ public class ImportResults
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     @NonNull
     public String toString() {
         return "Results{"
-               + "booksProcessed=" + booksProcessed
-               + ", booksCreated=" + booksCreated
-               + ", booksUpdated=" + booksUpdated
-               + ", booksSkipped=" + booksSkipped
-               + ", booksFailed=" + booksFailed
-
-               + ", coversProcessed=" + coversProcessed
-               + ", coversCreated=" + coversCreated
-               + ", coversUpdated=" + coversUpdated
-               + ", coversSkipped=" + coversSkipped
-               + ", coversFailed=" + coversFailed
-
+               + super.toString()
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates

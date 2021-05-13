@@ -108,6 +108,7 @@ public class StripInfoWriter
                 final Book book = Book.from(cursor);
                 try {
                     mCollectionForm.send(book);
+                    mResults.booksWritten++;
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.

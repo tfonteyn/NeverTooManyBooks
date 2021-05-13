@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -102,7 +102,7 @@ public class StripInfoReader
     @NonNull
     private final BookDao mBookDao;
 
-    private SyncReaderResults mResults;
+    private ReaderResults mResults;
 
     public StripInfoReader(@NonNull final Context context,
                            @NonNull final SyncReaderConfig config) {
@@ -164,8 +164,8 @@ public class StripInfoReader
 
     @NonNull
     @Override
-    public SyncReaderResults read(@NonNull final Context context,
-                                  @NonNull final ProgressListener progressListener)
+    public ReaderResults read(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
             throws IOException,
                    ImportException,
                    CredentialsException,
@@ -195,7 +195,7 @@ public class StripInfoReader
         final UserCollection uc = new UserCollection(context, mSearchEngine, userId,
                                                      new Bookshelfmapper());
 
-        mResults = new SyncReaderResults();
+        mResults = new ReaderResults();
 
         try {
             while (uc.hasMore() && !progressListener.isCancelled()) {

@@ -60,8 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -141,7 +141,7 @@ public class CalibreContentServerReader
     /** The physical library from which we'll be importing. */
     @Nullable
     private CalibreLibrary mLibrary;
-    private SyncReaderResults mResults;
+    private ReaderResults mResults;
 
     /**
      * Constructor.
@@ -207,14 +207,14 @@ public class CalibreContentServerReader
     @NonNull
     @Override
     @WorkerThread
-    public SyncReaderResults read(@NonNull final Context context,
-                                  @NonNull final ProgressListener progressListener)
+    public ReaderResults read(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
             throws DiskFullException, CoverStorageException, ImportException, IOException {
 
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
-        mResults = new SyncReaderResults();
+        mResults = new ReaderResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgress(0, context.getString(R.string.progress_msg_connecting));

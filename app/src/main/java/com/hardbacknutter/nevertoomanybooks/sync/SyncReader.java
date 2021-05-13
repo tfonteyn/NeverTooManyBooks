@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -39,6 +40,11 @@ public interface SyncReader
     String ERROR_INVALID_INPUT = "File/type is not supported";
     String ERROR_INVALID_HEADER = "Header is invalid / not found";
     String ERROR_NO_READER_AVAILABLE = "No reader available";
+
+    /**
+     * {@link ReaderResults} after an import.
+     */
+    String BKEY_RESULTS = "SyncReader:results";
 
     /**
      * Checks if the current archive looks valid.
@@ -87,8 +93,8 @@ public interface SyncReader
      */
     @NonNull
     @WorkerThread
-    SyncReaderResults read(@NonNull Context context,
-                           @NonNull ProgressListener progressListener)
+    ReaderResults read(@NonNull Context context,
+                       @NonNull ProgressListener progressListener)
             throws IOException,
                    ImportException,
                    StorageException,

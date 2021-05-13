@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -30,35 +31,33 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 
-public class ImportContract
-        extends ActivityResultContract<Void, ImportResults> {
+public class SyncWriterContract
+        extends ActivityResultContract<SyncServer, Boolean> {
 
-    private static final String TAG = "ImportContract";
+    private static final String TAG = "SyncWriterContract";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @Nullable final Void aVoid) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+                               @NonNull final SyncServer syncServer) {
+        final Intent intent = new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SyncWriterFragment.TAG);
+        intent.putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
+        return intent;
     }
 
     @Override
-    @Nullable
-    public ImportResults parseResult(final int resultCode,
-                                     @Nullable final Intent intent) {
+    @NonNull
+    public Boolean parseResult(final int resultCode,
+                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
-        if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
-        }
-        return intent.getParcelableExtra(ArchiveReader.BKEY_RESULTS);
+        return intent != null && resultCode == Activity.RESULT_OK;
     }
 }

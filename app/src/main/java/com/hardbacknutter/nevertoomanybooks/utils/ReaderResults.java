@@ -17,50 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.sync;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Value class to report back what was imported.
- * <p>
- * Note: failed = processed - created - updated
+ * Value class to report back what was read/imported.
+ * Used by both backup and sync packages.
  */
-public class SyncReaderResults
+public class ReaderResults
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncReaderResults> CREATOR = new Creator<SyncReaderResults>() {
+    public static final Creator<ReaderResults> CREATOR = new Creator<ReaderResults>() {
         @Override
-        public SyncReaderResults createFromParcel(@NonNull final Parcel in) {
-            return new SyncReaderResults(in);
+        public ReaderResults createFromParcel(@NonNull final Parcel in) {
+            return new ReaderResults(in);
         }
 
         @Override
-        public SyncReaderResults[] newArray(final int size) {
-            return new SyncReaderResults[size];
+        public ReaderResults[] newArray(final int size) {
+            return new ReaderResults[size];
         }
     };
-    /** Log tag. */
-    private static final String TAG = "SyncReaderResults";
-    /**
-     * {@link SyncReaderResults} after an import.
-     */
-    public static final String BKEY_IMPORT_RESULTS = TAG + ":results";
-    /**
-     * Keeps track of failed import lines in a text file.
-     * Not strictly needed as row number should be part of the messages.
-     * Keeping for possible future enhancements.
-     */
-    public final List<Integer> failedLinesNr = new ArrayList<>();
-    /** Keeps track of failed import lines in a text file. */
-    public final List<String> failedLinesMessage = new ArrayList<>();
 
     /** The total #books that were present in the import data. */
     public int booksProcessed;
@@ -84,7 +66,7 @@ public class SyncReaderResults
     /** # covers which explicitly failed. */
     public int coversFailed;
 
-    public SyncReaderResults() {
+    public ReaderResults() {
     }
 
     /**
@@ -92,7 +74,7 @@ public class SyncReaderResults
      *
      * @param in Parcel to construct the object from
      */
-    private SyncReaderResults(@NonNull final Parcel in) {
+    public ReaderResults(@NonNull final Parcel in) {
         booksProcessed = in.readInt();
         booksCreated = in.readInt();
         booksUpdated = in.readInt();
@@ -104,12 +86,9 @@ public class SyncReaderResults
         coversUpdated = in.readInt();
         coversSkipped = in.readInt();
         coversFailed = in.readInt();
-
-        in.readList(failedLinesNr, getClass().getClassLoader());
-        in.readList(failedLinesMessage, getClass().getClassLoader());
     }
 
-    public void add(@NonNull final SyncReaderResults results) {
+    public void add(@NonNull final ReaderResults results) {
         booksProcessed += results.booksProcessed;
         booksCreated += results.booksCreated;
         booksUpdated += results.booksUpdated;
@@ -121,9 +100,6 @@ public class SyncReaderResults
         coversUpdated += results.coversUpdated;
         coversSkipped += results.coversSkipped;
         coversFailed += results.coversFailed;
-
-        failedLinesNr.addAll(results.failedLinesNr);
-        failedLinesMessage.addAll(results.failedLinesMessage);
     }
 
     @Override
@@ -140,9 +116,6 @@ public class SyncReaderResults
         dest.writeInt(coversUpdated);
         dest.writeInt(coversSkipped);
         dest.writeInt(coversFailed);
-
-        dest.writeList(failedLinesNr);
-        dest.writeList(failedLinesMessage);
     }
 
     @Override
@@ -165,9 +138,6 @@ public class SyncReaderResults
                + ", coversUpdated=" + coversUpdated
                + ", coversSkipped=" + coversSkipped
                + ", coversFailed=" + coversFailed
-
-               + ", failedLinesNr=" + failedLinesNr
-               + ", failedLinesMessage=" + failedLinesMessage
                + '}';
     }
 }

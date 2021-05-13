@@ -41,7 +41,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -306,11 +306,11 @@ public class SyncReaderFragment
         }
     }
 
-    private void onImportCancelled(@NonNull final FinishedMessage<SyncReaderResults> message) {
+    private void onImportCancelled(@NonNull final FinishedMessage<ReaderResults> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final SyncReaderResults result = message.getResult();
+            final ReaderResults result = message.getResult();
             if (result != null) {
                 onImportFinished(R.string.progress_end_import_partially_complete, result);
             } else {
@@ -328,7 +328,7 @@ public class SyncReaderFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final FinishedMessage<SyncReaderResults> message) {
+    private void onImportFinished(@NonNull final FinishedMessage<ReaderResults> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -343,7 +343,7 @@ public class SyncReaderFragment
      * @param result  of the import
      */
     private void onImportFinished(@StringRes final int titleId,
-                                  @NonNull final SyncReaderResults result) {
+                                  @NonNull final ReaderResults result) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_info_24)
@@ -366,7 +366,7 @@ public class SyncReaderFragment
      * @return report string
      */
     @NonNull
-    private String createReport(@NonNull final SyncReaderResults result) {
+    private String createReport(@NonNull final ReaderResults result) {
 
         final List<String> items = new ArrayList<>();
 
@@ -385,36 +385,9 @@ public class SyncReaderFragment
                                 result.coversSkipped));
         }
 
-        final String report = items.stream()
-                                   .map(s -> getString(R.string.list_element, s))
-                                   .collect(Collectors.joining("\n"));
-
-        int failed = result.failedLinesNr.size();
-        if (failed == 0) {
-            return report;
-        }
-
-        @StringRes
-        final int fs;
-        if (failed > 10) {
-            // keep it sensible, list maximum 10 lines.
-            failed = 10;
-            fs = R.string.warning_import_failed_for_lines_lots;
-        } else {
-            fs = R.string.warning_import_failed_for_lines_some;
-        }
-
-        final Collection<String> itemList = new ArrayList<>();
-        for (int i = 0; i < failed; i++) {
-            itemList.add(getString(R.string.a_bracket_b_bracket,
-                                   String.valueOf(result.failedLinesNr.get(i)),
-                                   result.failedLinesMessage.get(i)));
-        }
-
-        return report + "\n" + getString(fs, itemList
-                .stream()
-                .map(s -> getString(R.string.list_element, s))
-                .collect(Collectors.joining("\n")));
+        return items.stream()
+                    .map(s -> getString(R.string.list_element, s))
+                    .collect(Collectors.joining("\n"));
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {

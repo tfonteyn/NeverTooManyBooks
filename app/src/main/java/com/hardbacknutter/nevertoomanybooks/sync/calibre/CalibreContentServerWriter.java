@@ -227,7 +227,7 @@ public class CalibreContentServerWriter
             if (localTime != null && localTime.isAfter(remoteTime)) {
                 final JSONObject changes = collectChanges(library, calibreBook, book);
                 mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
-                mResults.addBook(book.getId());
+                mResults.booksWritten++;
             }
         }
     }
@@ -336,10 +336,7 @@ public class CalibreContentServerWriter
                     is.read(bFile);
                 }
                 changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
-                // FIXME: collecting the names is in fact NOT NEEDED here,
-                //  but the current logic 'ExportResults' requires it,
-                //  or we won't get the **number** of covers exported.
-                mResults.addCover(coverFile.getName());
+                mResults.coversWritten++;
 
             } else {
                 changes.put(CalibreBook.COVER, "");

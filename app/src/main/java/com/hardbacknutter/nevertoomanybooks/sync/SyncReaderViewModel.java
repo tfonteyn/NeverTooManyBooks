@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 public class SyncReaderViewModel
         extends ViewModel
@@ -120,8 +121,8 @@ public class SyncReaderViewModel
 
     @NonNull
     Intent onImportFinished(@SuppressWarnings("TypeMayBeWeakened")
-                            @NonNull final SyncReaderResults result) {
-        mResultIntent.putExtra(SyncReaderResults.BKEY_IMPORT_RESULTS, result);
+                            @NonNull final ReaderResults result) {
+        mResultIntent.putExtra(SyncReader.BKEY_RESULTS, result);
         return mResultIntent;
     }
 
@@ -184,7 +185,7 @@ public class SyncReaderViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<SyncReaderResults>> onImportCancelled() {
+    LiveData<FinishedMessage<ReaderResults>> onImportCancelled() {
         return mReaderTask.onCancelled();
     }
 
@@ -194,7 +195,7 @@ public class SyncReaderViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<SyncReaderResults>> onImportFinished() {
+    LiveData<FinishedMessage<ReaderResults>> onImportFinished() {
         return mReaderTask.onFinished();
     }
 

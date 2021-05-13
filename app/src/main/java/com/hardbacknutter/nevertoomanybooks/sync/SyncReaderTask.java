@@ -31,11 +31,12 @@ import java.security.cert.CertificateException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class SyncReaderTask
-        extends MTask<SyncReaderResults> {
+        extends MTask<ReaderResults> {
 
     /** Log tag. */
     private static final String TAG = "SyncReaderTask";
@@ -66,7 +67,7 @@ public class SyncReaderTask
     @NonNull
     @Override
     @WorkerThread
-    protected SyncReaderResults doWork(@NonNull final Context context)
+    protected ReaderResults doWork(@NonNull final Context context)
             throws ImportException,
                    IOException,
                    CertificateException,

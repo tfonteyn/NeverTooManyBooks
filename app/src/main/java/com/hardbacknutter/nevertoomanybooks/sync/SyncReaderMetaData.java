@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -41,27 +40,6 @@ public class SyncReaderMetaData {
      */
     public SyncReaderMetaData(@NonNull final Bundle from) {
         mInfo = from;
-    }
-
-    /**
-     * Constructor used while writing to an Archive.
-     *
-     * @param context Current context
-     * @param version of the archive structure
-     * @param data    to add to the header bundle
-     */
-    @NonNull
-    public static SyncReaderMetaData create(@NonNull final Context context,
-                                            final int version,
-                                            @NonNull final SyncWriterResults data) {
-        final Bundle bundle = new Bundle();
-        if (data.getBookCount() > 0) {
-            bundle.putInt(INFO_NUMBER_OF_BOOKS, data.getBookCount());
-        }
-        if (data.getCoverCount() > 0) {
-            bundle.putInt(INFO_NUMBER_OF_COVERS, data.getCoverCount());
-        }
-        return new SyncReaderMetaData(bundle);
     }
 
     /**

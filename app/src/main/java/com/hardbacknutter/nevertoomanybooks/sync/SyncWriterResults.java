@@ -22,15 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Value class to report back what was exported.
+ * Value class to report back what was witten.
+ * (this class is overkill, but we want to keep the same usage-structure as in the reader)
  */
 public class SyncWriterResults
         implements Parcelable {
@@ -48,10 +44,9 @@ public class SyncWriterResults
         }
     };
 
-    /** id's of books we exported. */
-    private final List<Long> mBooksExported = new ArrayList<>();
-    /** filenames of covers exported. */
-    private final List<String> mCoversExported = new ArrayList<>();
+    public int booksWritten;
+    public int coversWritten;
+
 
     public SyncWriterResults() {
     }
@@ -62,61 +57,15 @@ public class SyncWriterResults
      * @param in Parcel to construct the object from
      */
     private SyncWriterResults(@NonNull final Parcel in) {
-        in.readList(mBooksExported, getClass().getClassLoader());
-        in.readStringList(mCoversExported);
-    }
-
-    /**
-     * Add a set of results to the current set of results.
-     *
-     * @param results to add
-     */
-    public void add(@NonNull final SyncWriterResults results) {
-        mBooksExported.addAll(results.mBooksExported);
-        mCoversExported.addAll(results.mCoversExported);
-    }
-
-    public void addBook(@IntRange(from = 1) final long bookId) {
-        mBooksExported.add(bookId);
-    }
-
-    public int getBookCount() {
-        return mBooksExported.size();
-    }
-
-    @VisibleForTesting
-    @NonNull
-    public List<Long> getBooksExported() {
-        return mBooksExported;
-    }
-
-    public void addCover(@NonNull final String path) {
-        mCoversExported.add(path);
-    }
-
-    public int getCoverCount() {
-        return mCoversExported.size();
-    }
-
-    /**
-     * Return the full list of cover filenames as collected with {@link #addCover(String)}.
-     * <p>
-     * This is used/needed for the two-step backup process, where step one exports books,
-     * and collects cover filenames, and than (calling this method) in a second step exports
-     * the covers.
-     *
-     * @return list
-     */
-    @NonNull
-    public List<String> getCoverFileNames() {
-        return mCoversExported;
+        booksWritten = in.readInt();
+        coversWritten = in.readInt();
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeList(mBooksExported);
-        dest.writeStringList(mCoversExported);
+        dest.writeInt(booksWritten);
+        dest.writeInt(coversWritten);
     }
 
     @Override
@@ -128,8 +77,8 @@ public class SyncWriterResults
     @NonNull
     public String toString() {
         return "Results{"
-               + "mBooksExported=" + mBooksExported
-               + ", mCoversExported=" + mCoversExported
+               + "booksWritten=" + booksWritten
+               + ", coversWritten=" + coversWritten
                + '}';
     }
 }

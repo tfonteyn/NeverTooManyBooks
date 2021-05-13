@@ -36,6 +36,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReadMetaDataTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
@@ -122,7 +123,7 @@ public class ImportViewModel
 
     @NonNull
     Intent onImportFinished(@NonNull final ImportResults result) {
-        mResultIntent.putExtra(ImportResults.BKEY_IMPORT_RESULTS, result);
+        mResultIntent.putExtra(ArchiveReader.BKEY_RESULTS, result);
         return mResultIntent;
     }
 
