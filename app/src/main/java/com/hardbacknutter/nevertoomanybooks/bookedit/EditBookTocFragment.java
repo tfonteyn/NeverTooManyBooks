@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -53,14 +52,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -74,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -94,8 +91,6 @@ public class EditBookTocFragment
     /** Log tag. */
     private static final String TAG = "EditBookTocFragment";
 
-    /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_TOC = TAG + ":rk:" + EditTocEntryDialogFragment.TAG;
     /** FragmentResultListener request key. */
@@ -141,15 +136,7 @@ public class EditBookTocFragment
                 }
             };
 
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int menuItemId,
-                                        final int position) {
-                    return onContextItemSelected(menuItemId, position);
-                }
-            };
-
+    private EditBookTocViewModel mEditTocVm;
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
                 @Override
@@ -163,6 +150,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
+    private ExtPopupMenu mContextMenu;
 
     @NonNull
     @Override
@@ -178,10 +166,6 @@ public class EditBookTocFragment
 
         mEditTocEntryLauncher.registerForFragmentResult(fm, this);
         mConfirmTocResultsLauncher.registerForFragmentResult(fm, this);
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(fm, this);
-        }
     }
 
     @Override
@@ -192,8 +176,6 @@ public class EditBookTocFragment
         mVb = FragmentEditBookTocBinding.inflate(inflater, container, false);
         return mVb.getRoot();
     }
-
-    private EditBookTocViewModel mEditTocVm;
 
     @Override
     public void onViewCreated(@NonNull final View view,
@@ -251,6 +233,18 @@ public class EditBookTocFragment
                 (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         mVb.btnAdd.setOnClickListener(v -> onAdd());
+
+        final Resources res = getResources();
+        //noinspection ConstantConditions
+        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.action_edit_ellipsis)
+            .setIcon(R.drawable.ic_baseline_edit_24);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.action_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24);
+
+        mContextMenu = new ExtPopupMenu(getContext(), menu, this::onContextItemSelected);
 
         // ready for user input
         if (mVb.author.getVisibility() == View.VISIBLE) {
@@ -352,51 +346,18 @@ public class EditBookTocFragment
         return super.onOptionsItemSelected(item);
     }
 
-    private void onCreateContextMenu(final int position) {
-        final Resources res = getResources();
-        final TocEntry item = mList.get(position);
-        //noinspection ConstantConditions
-        final String title = item.getLabel(getContext());
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-            menu.add(new MenuPickerDialogFragment.Pick(
-                    R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
-                    getString(R.string.action_edit_ellipsis),
-                    R.drawable.ic_baseline_edit_24));
-            menu.add(new MenuPickerDialogFragment.Pick(
-                    R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                    getString(R.string.action_delete),
-                    R.drawable.ic_baseline_delete_24));
-
-            mMenuLauncher.launch(title, null, menu, position);
-
-        } else {
-            final Menu menu = MenuPicker.createMenu(getContext());
-            menu.add(Menu.NONE, R.id.MENU_EDIT,
-                     res.getInteger(R.integer.MENU_ORDER_EDIT),
-                     R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_baseline_edit_24);
-            menu.add(Menu.NONE, R.id.MENU_DELETE,
-                     res.getInteger(R.integer.MENU_ORDER_DELETE),
-                     R.string.action_delete)
-                .setIcon(R.drawable.ic_baseline_delete_24);
-
-            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
-                    .show();
-        }
-    }
-
     /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param itemId   that was selected
+     * @param menuItem that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int itemId,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
+        final int itemId = menuItem.getItemId();
+
         if (itemId == R.id.MENU_EDIT) {
             editEntry(position);
             return true;
@@ -813,7 +774,7 @@ public class EditBookTocFragment
                     v -> editEntry(holder.getBindingAdapterPosition()));
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
+                mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
                 return true;
             });
 

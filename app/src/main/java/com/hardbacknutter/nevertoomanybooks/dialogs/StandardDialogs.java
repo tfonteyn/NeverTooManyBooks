@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.PopupWindow;
@@ -65,6 +63,7 @@ public final class StandardDialogs {
      * @param anchorView for the popup window
      * @param text       to display
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     public static void infoPopup(@NonNull final View anchorView,
                                  @NonNull final CharSequence text) {
         final Context context = anchorView.getContext();
@@ -76,10 +75,8 @@ public final class StandardDialogs {
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(root);
         // make the rounded corners transparent
-        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setOutsideTouchable(true);
+        popup.setBackgroundDrawable(context.getDrawable(R.drawable.bg_popup));
         popup.setFocusable(true);
-        // finally show it
         popup.showAsDropDown(anchorView);
     }
 

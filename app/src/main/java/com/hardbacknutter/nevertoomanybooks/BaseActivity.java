@@ -49,6 +49,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
@@ -168,8 +169,7 @@ public abstract class BaseActivity
         mDrawerLayout = findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
-            mNavigationView.setNavigationItemSelectedListener(
-                    item -> onNavigationItemSelected(item.getItemId()));
+            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -178,43 +178,6 @@ public abstract class BaseActivity
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
-    }
-
-    @Nullable
-    protected MenuItem getNavigationMenuItem(
-            @SuppressWarnings("SameParameterValue") @IdRes final int menuId) {
-        return mNavigationView != null ? mNavigationView.getMenu().findItem(menuId) : null;
-    }
-
-    /**
-     * Manually add the first fragment for the given container. Not added to the BackStack.
-     * <p>
-     * <strong>The activity extras bundle will be set as arguments.</strong>
-     *
-     * @param containerViewId to receive the fragment
-     * @param fragmentClass   the fragment; must be loadable with the current class loader.
-     * @param fragmentTag     tag for the fragment
-     */
-    protected void addFirstFragment(@SuppressWarnings("SameParameterValue")
-                                    @IdRes final int containerViewId,
-                                    @NonNull final Class<? extends Fragment> fragmentClass,
-                                    @NonNull final String fragmentTag) {
-
-        final FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(fragmentTag) == null) {
-            final Fragment fragment;
-            try {
-                fragment = fragmentClass.newInstance();
-            } catch (final IllegalAccessException | InstantiationException e) {
-                throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
-            }
-            fragment.setArguments(getIntent().getExtras());
-
-            fm.beginTransaction()
-              .setReorderingAllowed(true)
-              .add(containerViewId, fragment, fragmentTag)
-              .commit();
-        }
     }
 
     @Override
@@ -248,6 +211,38 @@ public abstract class BaseActivity
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setSubtitle(title);
+        }
+    }
+
+
+    /**
+     * Manually add the first fragment for the given container. Not added to the BackStack.
+     * <p>
+     * <strong>The activity extras bundle will be set as arguments.</strong>
+     *
+     * @param containerViewId to receive the fragment
+     * @param fragmentClass   the fragment; must be loadable with the current class loader.
+     * @param fragmentTag     tag for the fragment
+     */
+    protected void addFirstFragment(@SuppressWarnings("SameParameterValue")
+                                    @IdRes final int containerViewId,
+                                    @NonNull final Class<? extends Fragment> fragmentClass,
+                                    @NonNull final String fragmentTag) {
+
+        final FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(fragmentTag) == null) {
+            final Fragment fragment;
+            try {
+                fragment = fragmentClass.newInstance();
+            } catch (final IllegalAccessException | InstantiationException e) {
+                throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
+            }
+            fragment.setArguments(getIntent().getExtras());
+
+            fm.beginTransaction()
+              .setReorderingAllowed(true)
+              .add(containerViewId, fragment, fragmentTag)
+              .commit();
         }
     }
 
@@ -304,6 +299,7 @@ public abstract class BaseActivity
         return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
     }
 
+
     /**
      * If the drawer is open and the user click the back-button, close the drawer
      * and ignore the back-press.
@@ -322,34 +318,39 @@ public abstract class BaseActivity
         }
     }
 
-    /**
-     * Show an error text on the given view.
-     * It will automatically be removed after {@link #ERROR_DELAY_MS}.
-     *
-     * @param view  on which to set the error
-     * @param error text to set
-     */
-    protected void showError(@NonNull final TextInputLayout view,
-                             @NonNull final CharSequence error) {
-        view.setError(error);
-        view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
+
+    @Nullable
+    protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
+                                             @IdRes final int itemId) {
+        return mNavigationView != null ? mNavigationView.getMenu().findItem(itemId) : null;
+    }
+
+    @NonNull
+    protected View getNavigationMenuItemView(final int itemId) {
+        //noinspection ConstantConditions
+        final View anchor = mNavigationView.findViewById(itemId);
+        // Not 100% we are using a legal way of getting the View...
+        Objects.requireNonNull(anchor, "mNavigationView.findViewById(" + itemId + ")");
+        return anchor;
     }
 
     @CallSuper
-    boolean onNavigationItemSelected(final int itemId) {
+    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        final int itemId = menuItem.getItemId();
+
         closeNavigationDrawer();
 
-        if (itemId == R.id.nav_manage_bookshelves) {
+        if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // child classes which have a 'current bookshelf' should
             // override and pass the current bookshelf id
             mManageBookshelvesBaseLauncher.launch(0L);
             return true;
 
-        } else if (itemId == R.id.nav_settings) {
+        } else if (itemId == R.id.MENU_SETTINGS) {
             mSettingsLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.nav_about) {
+        } else if (itemId == R.id.MENU_ABOUT) {
             final Intent intent = new Intent(this, FragmentHostActivity.class)
                     .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
             startActivity(intent);
@@ -395,6 +396,19 @@ public abstract class BaseActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * Show an error text on the given view.
+     * It will automatically be removed after {@link #ERROR_DELAY_MS}.
+     *
+     * @param view  on which to set the error
+     * @param error text to set
+     */
+    protected void showError(@NonNull final TextInputLayout view,
+                             @NonNull final CharSequence error) {
+        view.setError(error);
+        view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
     }
 
     @IntDef({ACTIVITY_IS_RUNNING,

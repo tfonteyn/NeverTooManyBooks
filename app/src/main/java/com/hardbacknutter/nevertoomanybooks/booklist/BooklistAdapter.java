@@ -314,7 +314,7 @@ public class BooklistAdapter
 
         holder.onClickTargetView.setOnLongClickListener(v -> {
             if (mOnRowClickedListener != null) {
-                return mOnRowClickedListener.onItemLongClick(holder.getBindingAdapterPosition());
+                return mOnRowClickedListener.onItemLongClick(v, holder.getBindingAdapterPosition());
             }
             return false;
         });
@@ -716,11 +716,13 @@ public class BooklistAdapter
         /**
          * User long-clicked a row.
          *
+         * @param v        View clicked
          * @param position The position of the item within the adapter's data set.
          *
          * @return true if the callback consumed the long click, false otherwise.
          */
-        default boolean onItemLongClick(final int position) {
+        default boolean onItemLongClick(@NonNull final View v,
+                                        final int position) {
             return false;
         }
     }

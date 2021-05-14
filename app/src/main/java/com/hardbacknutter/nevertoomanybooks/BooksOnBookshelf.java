@@ -42,6 +42,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -93,8 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -121,11 +120,13 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 
@@ -170,8 +171,6 @@ public class BooksOnBookshelf
     public static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
-    /** {@link FragmentResultListener} request key. */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
@@ -366,6 +365,7 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
+
     /**
      * Listener for clicks on the list.
      */
@@ -405,46 +405,10 @@ public class BooksOnBookshelf
                     }
                 }
 
-                /**
-                 * User long-clicked on a row. Bring up a context menu as appropriate.
-                 */
                 @Override
-                public boolean onItemLongClick(final int position) {
-                    final Cursor cursor = mAdapter.getCursor();
-                    // Move the cursor, so we can read the data for this row.
-                    // Paranoia: if the user can click it, then this move should be fine.
-                    if (!cursor.moveToPosition(position)) {
-                        return false;
-                    }
-
-                    final DataHolder rowData = new CursorRow(cursor);
-
-                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
-                    if (onCreateContextMenu(menu, rowData)) {
-                        // we have a menu to show, set the title according to the level.
-                        final int level = rowData.getInt(DBKey.KEY_BL_NODE_LEVEL);
-                        final String title = mAdapter.getLevelText(position, level);
-
-                        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-                            mMenuLauncher.launch(title, null, menu, position);
-                        } else {
-                            new MenuPicker(BooksOnBookshelf.this, title, null, menu, position,
-                                           BooksOnBookshelf.this::onContextItemSelected)
-                                    .show();
-                        }
-                    }
-                    return true;
-                }
-            };
-    /**
-     * React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT).
-     */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
+                public boolean onItemLongClick(@NonNull final View v,
+                                               final int position) {
+                    return onCreateContextMenu(v, position);
                 }
             };
     /**
@@ -507,9 +471,6 @@ public class BooksOnBookshelf
         mEditBookshelfLauncher.registerForFragmentResult(fm, this);
         mEditLenderLauncher.registerForFragmentResult(fm, this);
         mOnStylePickerLauncher.registerForFragmentResult(fm, this);
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(fm, this);
-        }
     }
 
     private void createViewModel() {
@@ -530,7 +491,7 @@ public class BooksOnBookshelf
 
         if (SyncServer.CalibreCS.isEnabled(global)) {
             mCalibreSyncLauncher = registerForActivityResult(new CalibreSyncContract(), data -> {
-                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
@@ -546,7 +507,7 @@ public class BooksOnBookshelf
         if (SyncServer.StripInfo.isEnabled(global)) {
             mStripInfoSyncLauncher = registerForActivityResult(
                     new StripInfoSyncContract(), data -> {
-                        if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                        if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
                             mVm.setForceRebuildInOnResume(true);
                         }
                     });
@@ -646,7 +607,7 @@ public class BooksOnBookshelf
      */
     private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
-        getNavigationMenuItem(R.id.nav_sync).setVisible(SyncServer.isAnyEnabled(global));
+        getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(SyncServer.isAnyEnabled(global));
     }
 
     /**
@@ -733,6 +694,7 @@ public class BooksOnBookshelf
             // IMPORTANT: this is from the options menu selection.
             // We pass the book ID's for the currently displayed list.
             //TODO: add a fitting screen subtitle
+            //FIXME: currently disabled in the menu xml file.
             mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
                     mVm.getCurrentBookIdList(), null, null));
             return true;
@@ -744,14 +706,25 @@ public class BooksOnBookshelf
     /**
      * Create a context menu based on row group.
      *
-     * @param menu    to populate
-     * @param rowData current cursorRow
+     * @param v        View clicked
+     * @param position The position of the item within the adapter's data set.
      *
      * @return {@code true} if there is a menu to show
      */
-    boolean onCreateContextMenu(@NonNull final Menu menu,
-                                @NonNull final DataHolder rowData) {
-        menu.clear();
+    boolean onCreateContextMenu(@NonNull final View v,
+                                final int position) {
+
+        //noinspection ConstantConditions
+        final Cursor cursor = mAdapter.getCursor();
+        // Move the cursor, so we can read the data for this row.
+        // Paranoia: if the user can click it, then this move should be fine.
+        if (!cursor.moveToPosition(position)) {
+            return false;
+        }
+
+        final DataHolder rowData = new CursorRow(cursor);
+
+        final Menu menu = ExtPopupMenu.createMenu(this);
 
         final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
         switch (rowGroupId) {
@@ -893,35 +866,40 @@ public class BooksOnBookshelf
                 .setIcon(R.drawable.ic_baseline_unfold_more_24);
         }
 
-        return menu.size() > 0;
+        // If we actually have a menu, show it.
+        if (menu.size() > 0) {
+            // we have a menu to show, set the title according to the level.
+            final int level = rowData.getInt(DBKey.KEY_BL_NODE_LEVEL);
+            final String title = mAdapter.getLevelText(position, level);
+
+            final ExtPopupMenu popupMenu = new ExtPopupMenu(this, menu, this::onContextItemSelected)
+                    .setHeader(title, null);
+
+            // arbitrary...
+            if (menu.size() < 5) {
+                // small menu, show it anchored to the row
+                popupMenu.showAsDropDown(v, position);
+            } else {
+                // large menu, center on screen
+                popupMenu.showCentered(v, position);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param itemId   that was selected
+     * @param menuItem that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean onContextItemSelected(@IdRes final int itemId,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
-
-        // first check the non-row menus.
-
-        if (itemId == R.id.MENU_SYNC_CALIBRE) {
-            //noinspection ConstantConditions
-            mCalibreSyncLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO) {
-            //noinspection ConstantConditions
-            mStripInfoSyncLauncher.launch(null);
-            return true;
-        }
-
-        // Next handle the real context menus.
+        final int itemId = menuItem.getItemId();
 
         // Move the cursor, so we can read the data for this row.
         // The majority of the time this is not needed, but a fringe case (toggle node)
@@ -1169,59 +1147,91 @@ public class BooksOnBookshelf
     }
 
     @Override
-    protected boolean onNavigationItemSelected(@IdRes final int itemId) {
+    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.SUBMENU_SYNC) {
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
+            return false;
+
+        }
+        // The others below have no submenu, close the drawer.
         closeNavigationDrawer();
 
-        if (itemId == R.id.nav_advanced_search) {
+
+        if (itemId == R.id.SUBMENU_SYNC_CALIBRE) {
+            //noinspection ConstantConditions
+            mCalibreSyncLauncher.launch(null);
+            return false;
+
+        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO) {
+            //noinspection ConstantConditions
+            mStripInfoSyncLauncher.launch(null);
+            return false;
+        }
+
+
+
+        if (itemId == R.id.MENU_ADVANCED_SEARCH) {
             mFtsSearchLauncher.launch(mVm.getSearchCriteria());
             return true;
 
-        } else if (itemId == R.id.nav_manage_bookshelves) {
+        } else if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
             // overridden, so we can pass the current bookshelf id.
             mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
             return true;
 
-        } else if (itemId == R.id.nav_manage_list_styles) {
+        } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
             mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
             return true;
 
-        } else if (itemId == R.id.nav_import) {
+        } else if (itemId == R.id.MENU_FILE_IMPORT) {
             mImportLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.nav_export) {
+        } else if (itemId == R.id.MENU_FILE_EXPORT) {
             mExportLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.nav_sync) {
-            showSyncMenu();
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_BOOKSHELVES) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_IMPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_EXPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_IMPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_EXPORT) {
             return true;
         }
 
-        return super.onNavigationItemSelected(itemId);
+        return super.onNavigationItemSelected(menuItem);
     }
 
-    private void showSyncMenu() {
-        final Menu menu = MenuPicker.createMenu(this);
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+    protected void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
+                                         @NonNull final MenuItem menuItem,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @MenuRes final int menuResId) {
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
-            menu.add(Menu.NONE, R.id.MENU_SYNC_CALIBRE, 0, R.string.site_calibre)
-                .setIcon(R.drawable.ic_baseline_cloud_24);
+        final View anchor = getNavigationMenuItemView(anchorMenuItemId);
+
+        final Menu menu = ExtPopupMenu.createMenu(this);
+        getMenuInflater().inflate(menuResId, menu);
+        if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+            menu.findItem(R.id.SUBMENU_SYNC_CALIBRE)
+                .setVisible(SyncServer.CalibreCS.isEnabled(global));
+            menu.findItem(R.id.SUBMENU_SYNC_STRIP_INFO)
+                .setVisible(SyncServer.StripInfo.isEnabled(global));
         }
 
-        if (SyncServer.StripInfo.isEnabled(global)) {
-            menu.add(Menu.NONE, R.id.MENU_SYNC_STRIP_INFO, 0, R.string.site_stripinfo_be)
-                .setIcon(R.drawable.ic_stripinfo);
-        }
-
-        final String title = getString(R.string.action_synchronize);
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.launch(title, null, menu, 0);
-        } else {
-            new MenuPicker(this, title, null, menu, 0, this::onContextItemSelected)
-                    .show();
-        }
+        new ExtPopupMenu(this, menu, (pumItem, pos) -> onNavigationItemSelected(pumItem))
+                .setHeader(menuItem.getTitle(), null)
+                .showAsDropDown(anchor, 0);
     }
 
     /**
@@ -1258,16 +1268,16 @@ public class BooksOnBookshelf
             }
         }
 
+        final View anchor = mLayoutManager.findViewByPosition(position);
+
         final String title = getString(R.string.menu_update_books);
 
-        final Menu menu = MenuPicker.createMenu(this);
+        final Menu menu = ExtPopupMenu.createMenu(this);
         getMenuInflater().inflate(R.menu.update_books, menu);
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.launch(title, message, menu, position);
-        } else {
-            new MenuPicker(this, title, message, menu, position, this::onContextItemSelected)
-                    .show();
-        }
+        //noinspection ConstantConditions
+        new ExtPopupMenu(this, menu, this::onContextItemSelected)
+                .setHeader(title, message)
+                .showAsDropDown(anchor, position);
     }
 
     private void updateBooksFromInternetData(@NonNull final DataHolder rowData,

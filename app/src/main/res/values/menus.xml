@@ -77,7 +77,7 @@
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
 
-    <!-- Used by the MenuPicker (aka PopupMenu). -->
+    <!-- Used by the ExtPopupMenu. -->
     <item name="MENU_DIVIDER" type="id" />
 
     <item name="MENU_GROUP_CALIBRE" type="id" />
@@ -88,7 +88,6 @@
     <item name="MENU_DUPLICATE" type="id" />
     <item name="MENU_SHOW_ALL" type="id" />
     <item name="MENU_SEARCH" type="id" />
-    <item name="MENU_SETTINGS" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY" type="id" />
@@ -173,8 +172,24 @@
     <item name="MENU_CALIBRE_SETTINGS" type="id" />
     <item name="MENU_STRIP_INFO_SETTING" type="id" />
 
-    <item name="MENU_SYNC_CALIBRE" type="id" />
-    <item name="MENU_SYNC_STRIP_INFO" type="id" />
+    <!-- Navigation drawer menu -->
+    <item name="MENU_ADVANCED_SEARCH" type="id" />
+    <item name="MENU_MANAGE_BOOKSHELVES" type="id" />
+    <item name="MENU_MANAGE_LIST_STYLES" type="id" />
+    <item name="MENU_FILE_EXPORT" type="id" />
+    <item name="MENU_FILE_IMPORT" type="id" />
+    <item name="MENU_SETTINGS" type="id" />
+    <item name="MENU_ABOUT" type="id" />
+
+    <item name="SUBMENU_SYNC" type="id" />
+    <item name="SUBMENU_SYNC_CALIBRE" type="id" />
+    <item name="MENU_SYNC_CALIBRE_BOOKSHELVES" type="id" />
+    <item name="MENU_SYNC_CALIBRE_IMPORT" type="id" />
+    <item name="MENU_SYNC_CALIBRE_EXPORT" type="id" />
+    <item name="SUBMENU_SYNC_STRIP_INFO" type="id" />
+    <item name="MENU_SYNC_STRIP_INFO_IMPORT" type="id" />
+    <item name="MENU_SYNC_STRIP_INFO_EXPORT" type="id" />
+
 
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE" type="id" />

@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -40,7 +39,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -52,10 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -75,9 +72,6 @@ public class PreferredStylesFragment
 
     /** Log tag. */
     public static final String TAG = "PreferredStylesFragment";
-
-    /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
     /** View Binding. */
     private FragmentEditStylesBinding mVb;
@@ -176,15 +170,6 @@ public class PreferredStylesFragment
                 }
             });
 
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int menuItemId,
-                                        final int position) {
-                    return onContextItemSelected(menuItemId, position);
-                }
-            };
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,10 +195,6 @@ public class PreferredStylesFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         setTitle(R.string.lbl_styles_long);
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
-        }
 
         mVm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         //noinspection ConstantConditions
@@ -286,66 +267,43 @@ public class PreferredStylesFragment
         return super.onOptionsItemSelected(item);
     }
 
-    private void onCreateContextMenu(final int position) {
+    private void onCreateContextMenu(@NonNull final View anchor,
+                                     final int position) {
         final Resources res = getResources();
         final ListStyle style = mVm.getList().get(position);
         //noinspection ConstantConditions
-        final String title = style.getLabel(getContext());
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-
-            if (style instanceof UserStyle) {
-                menu.add(new MenuPickerDialogFragment.Pick(
-                        R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
-                        getString(R.string.action_edit_ellipsis),
-                        R.drawable.ic_baseline_edit_24));
-                menu.add(new MenuPickerDialogFragment.Pick(
-                        R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                        getString(R.string.action_delete),
-                        R.drawable.ic_baseline_delete_24));
-            }
-
-            menu.add(new MenuPickerDialogFragment.Pick(
-                    R.id.MENU_DUPLICATE, res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
-                    getString(R.string.action_duplicate),
-                    R.drawable.ic_baseline_content_copy_24));
-
-            mMenuLauncher.launch(title, null, menu, position);
-
-        } else {
-            final Menu menu = MenuPicker.createMenu(getContext());
-            if (style instanceof UserStyle) {
-                menu.add(Menu.NONE, R.id.MENU_EDIT,
-                         res.getInteger(R.integer.MENU_ORDER_EDIT),
-                         R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.ic_baseline_edit_24);
-                menu.add(Menu.NONE, R.id.MENU_DELETE,
-                         res.getInteger(R.integer.MENU_ORDER_DELETE),
-                         R.string.action_delete)
-                    .setIcon(R.drawable.ic_baseline_delete_24);
-            }
-
-            menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
-                     res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
-                     R.string.action_duplicate)
-                .setIcon(R.drawable.ic_baseline_content_copy_24);
-
-            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
-                    .show();
+        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        if (style instanceof UserStyle) {
+            menu.add(Menu.NONE, R.id.MENU_EDIT,
+                     res.getInteger(R.integer.MENU_ORDER_EDIT),
+                     R.string.action_edit_ellipsis)
+                .setIcon(R.drawable.ic_baseline_edit_24);
+            menu.add(Menu.NONE, R.id.MENU_DELETE,
+                     res.getInteger(R.integer.MENU_ORDER_DELETE),
+                     R.string.action_delete)
+                .setIcon(R.drawable.ic_baseline_delete_24);
         }
+
+        menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
+                 res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
+                 R.string.action_duplicate)
+            .setIcon(R.drawable.ic_baseline_content_copy_24);
+
+        new ExtPopupMenu(getContext(), menu, this::onContextItemSelected)
+                .showAsDropDown(anchor, position);
     }
 
     /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param itemId   that was selected
+     * @param menuItem that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int itemId,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
+        final int itemId = menuItem.getItemId();
 
         final ListStyle style = mVm.getList().get(position);
 
@@ -442,7 +400,7 @@ public class PreferredStylesFragment
             });
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
+                onCreateContextMenu(v, holder.getBindingAdapterPosition());
                 return true;
             });
 

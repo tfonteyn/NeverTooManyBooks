@@ -161,4 +161,11 @@
     -->
     <dimen name="large_menu_button">296dp</dimen>
 
+    <!-- ExtPopupMenu: the indentation for a dropdown -->
+    <dimen name="popup_menu_x_offset">48dp</dimen>
+    <!-- ExtPopupMenu: the elevation was taken from the android materials options menu layout -->
+    <dimen name="popup_menu_elevation">8dp</dimen>
+    <!-- ExtPopupMenu: when a title is visible, we want some border. -->
+    <dimen name="popup_menu_title_padding">4dp</dimen>
+
 </resources>

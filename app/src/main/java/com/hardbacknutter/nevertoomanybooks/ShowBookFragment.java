@@ -767,7 +767,7 @@ public class ShowBookFragment
                     mVb.lendTo.setText(
                             itemView.getContext().getString(R.string.lbl_lend_out_to_name, loanee));
                     mVb.lendTo.setVisibility(View.VISIBLE);
-                    //TODO: convert to MenuPicker context menu.... if I can be bothered. */
+                    //TODO: convert to ExtPopupMenu context menu.... if I can be bothered. */
                     mVb.lendTo.setOnCreateContextMenuListener((menu, v, menuInfo) -> menu.add(
                             Menu.NONE,
                             R.id.MENU_BOOK_LOAN_DELETE,

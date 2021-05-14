@@ -17,127 +17,186 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
- * Show context menu on a view.
- * <p>
- * Note this is <strong>NOT</strong> a DialogFrame and will not survive screen rotations.
- * It's easy enough to transform it into one, see {@link MenuPickerDialogFragment},
- * but when using a menu inflater, it's impossible to show icons.
- * Menu building can of course be handled fully in code but the trade-off can be huge.
+ * Show a context menu on a view - will show icons if present.
  */
-public class MenuPicker {
+public class ExtPopupMenu {
 
     @NonNull
-    private final AlertDialog mDialog;
+    private final PopupMenuBinding mVb;
 
-    /** Cached position of the item in the list this menu was invoked on. */
-    private final int mPosition;
+    private final int mPaddingBottom;
+    private final int mXOffset;
+
+    @NonNull
+    private final PopupWindow mPopupWindow;
     /** Listener for the result. */
     @NonNull
-    private final MenuPickListener mListener;
+    private final ExtPopupMenuListener mListener;
+
+    /** Cached position of the item in the list this menu was invoked on. */
+    private int mPosition;
 
     /**
      * Constructor.
      * <p>
      * The caller should create a menu by calling {@link #createMenu(Context)},
-     * populate it and pass it here.
+     * populate it, and pass it here.
      *
-     * @param context  Current context
-     * @param title    (optional) for the dialog/menu
-     * @param message  (optional) for the dialog/menu
      * @param menu     the menu options to show
-     * @param position of the item in a list where the context menu was initiated
-     * @param listener callback handler with the MenuItem the user chooses + the position
+     * @param listener callback handler
      */
-    public MenuPicker(@NonNull final Context context,
-                      @Nullable final String title,
-                      @Nullable final String message,
-                      @NonNull final Menu menu,
-                      final int position,
-                      @NonNull final MenuPickListener listener) {
-
-        mPosition = position;
+    public ExtPopupMenu(@NonNull final Context context,
+                        @NonNull final Menu menu,
+                        @NonNull final ExtPopupMenuListener listener) {
         mListener = listener;
 
-        final View view = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
+        final Resources res = context.getResources();
+        mPaddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
+        mXOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
-        // optional title
-        final TextView titleView = view.findViewById(R.id.alertTitle);
-        if (title != null && !title.isEmpty()) {
-            titleView.setVisibility(View.VISIBLE);
-            titleView.setText(title);
-        } else {
-            titleView.setVisibility(View.GONE);
-        }
-
-        // optional message
-        final TextView messageView = view.findViewById(R.id.alertMessage);
-        if (message != null && !message.isEmpty()) {
-            messageView.setVisibility(View.VISIBLE);
-            messageView.setText(message);
-        } else {
-            messageView.setVisibility(View.GONE);
-        }
+        mVb = PopupMenuBinding.inflate(LayoutInflater.from(context));
 
         final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
-        final RecyclerView listView = view.findViewById(R.id.item_list);
-        listView.setAdapter(adapter);
+        mVb.itemList.setAdapter(adapter);
 
-        mDialog = new MaterialAlertDialogBuilder(context)
-                .setView(view)
-                .create();
+        mPopupWindow = new PopupWindow(context);
+        mPopupWindow.setFocusable(true);
+        mPopupWindow.setContentView(mVb.getRoot());
+
+        // Widget.MaterialComponents.PopupMenu
+        mPopupWindow.setBackgroundDrawable(
+                AttrUtils.getDrawable(context, R.attr.popupMenuBackground));
+        mPopupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
     }
 
     public static Menu createMenu(@NonNull final Context context) {
         // legal trick to get an instance of Menu.
         // We leave the anchor 'null' as we're not actually going to display this object.
-        //noinspection ConstantConditions
         return new PopupMenu(context, null).getMenu();
     }
 
-    public void show() {
-        mDialog.show();
+    public ExtPopupMenu setHeader(@Nullable final CharSequence title,
+                                  @Nullable final CharSequence message) {
+        // optional title
+        if (title != null && title.length() > 0) {
+            mVb.title.setVisibility(View.VISIBLE);
+            mVb.title.setText(title);
+        } else {
+            mVb.title.setVisibility(View.GONE);
+        }
+
+        // optional message
+        if (message != null && message.length() > 0) {
+            mVb.message.setVisibility(View.VISIBLE);
+            mVb.message.setText(message);
+        } else {
+            mVb.message.setVisibility(View.GONE);
+        }
+
+        return this;
     }
 
-    public interface MenuPickListener {
+    /**
+     * Show as a true popup, just below and a bit indented.
+     *
+     * @param anchor   the view on which to pin the popup window
+     * @param position of the item in a list where the context menu was initiated.
+     *                 Not used here, but passed back to the listener.
+     */
+    public void showAsDropDown(@NonNull final View anchor,
+                               final int position) {
+        mPosition = position;
+
+        // So why are we doing the measuring and setting width/height manually?
+        // (androids internals... to remind myself)
+        //
+        // The PopupWindow is set to LayoutParams.WRAP_CONTENT / LayoutParams.WRAP_CONTENT
+        // and this fails to work reliably.
+        // Setting it to MATCH works as expected due to the Android *explicitly* checking for it.
+        //
+        // The real width/height is dynamic due to the RecyclerView.
+        // but we need an absolute value for PopupWindow#findDropDownPosition which calls
+        // PopupWindow#tryFitVertical + PopupWindow#tryFitHorizontal.
+        //
+        // The latter try to determine the absolute position of the window versus the anchor.
+        // i.e. as requested under the anchor, or if not enough space, above the anchor.
+        //
+        // PopupWindow lines 1414 is where things start to go wrong.
+        // 'p' is initialized to the original width/height -> WRAP_CONTENT
+        // instead of the ACTUAL width/height....
+        // line 2427 states:
+        //         // WRAP_CONTENT case. findDropDownPosition will have resolved this to
+        //        // absolute values, but we don't want to update mWidth/mHeight to these
+        //        // absolute values.
+        // Reality: no it does not... it just uses mWidth/mHeight *AS-IS*. i.e. wrap -> "-2"
+        // and so it does its calculations using the absolute value of -2... oops...
+
+        // a more or less accurate way of setting the width/height...
+        final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        final View contentView = mPopupWindow.getContentView();
+        contentView.measure(spec, spec);
+
+        mPopupWindow.setHeight(contentView.getMeasuredHeight() + mPaddingBottom);
+        mPopupWindow.setWidth(contentView.getMeasuredWidth());
+        // preferred location: halfway on top of the anchor, and indented by mXOffset
+        mPopupWindow.showAsDropDown(anchor, mXOffset, -anchor.getHeight() / 2);
+    }
+
+    /**
+     * Show centered on the screen.
+     *
+     * @param anchor   the view on which to pin the popup window
+     *                 (Actually only used to get the window token)
+     * @param position of the item in a list where the context menu was initiated.
+     *                 Not used here, but passed back to the listener.
+     */
+    public void showCentered(@NonNull final View anchor,
+                             final int position) {
+        mPosition = position;
+        mPopupWindow.showAtLocation(anchor, Gravity.CENTER, 0, 0);
+    }
+
+    public interface ExtPopupMenuListener {
 
         /**
          * Callback handler.
          *
-         * @param menuItemId that was selected
-         * @param position   of the item in a list where the context menu was initiated
+         * @param menuItem that was selected
+         * @param position of the item in a list where the context menu was initiated
          *
          * @return {@code true} if handled.
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onContextItemSelected(@IdRes int menuItemId,
-                                      int position);
+        boolean onMenuItemSelected(@NonNull MenuItem menuItem,
+                                   int position);
     }
 
     /**
@@ -242,11 +301,12 @@ public class MenuPicker {
             final MenuItem item = mList.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
                 if (item.hasSubMenu()) {
-                    mDialog.setTitle(item.getTitle());
+                    mVb.title.setText(item.getTitle());
+                    mVb.title.setVisibility(View.VISIBLE);
                     setMenu(item.getSubMenu());
                 } else {
-                    mDialog.dismiss();
-                    mListener.onContextItemSelected(item.getItemId(), mPosition);
+                    mPopupWindow.dismiss();
+                    mListener.onMenuItemSelected(item, mPosition);
                 }
             }
         }

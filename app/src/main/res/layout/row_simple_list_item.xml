@@ -34,8 +34,7 @@
     android:paddingStart="?attr/listPreferredItemPaddingStart"
     android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     android:text=""
-    android:textAppearance="?attr/textAppearanceListItem"
-    android:textColor="?attr/textColorAlertDialogListItem"
+    android:textAppearance="?attr/textAppearanceLargePopupMenu"
     tools:drawableStart="@drawable/ic_baseline_image_24"
     tools:text="@sample/data.json/context_menu/name"
     />

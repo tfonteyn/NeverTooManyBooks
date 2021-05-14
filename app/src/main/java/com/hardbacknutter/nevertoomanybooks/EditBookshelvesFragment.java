@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -42,15 +41,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
  * Lists all bookshelves and can add/delete/edit them.
@@ -63,8 +59,6 @@ public class EditBookshelvesFragment
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
-    /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesViewModel mVm;
@@ -91,15 +85,7 @@ public class EditBookshelvesFragment
 
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
-
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int menuItemId,
-                                        final int position) {
-                    return onContextItemSelected(menuItemId, position);
-                }
-            };
+    private ExtPopupMenu mContextMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -108,10 +94,6 @@ public class EditBookshelvesFragment
 
         final FragmentManager fm = getChildFragmentManager();
         mOnEditBookshelfLauncher.registerForFragmentResult(fm, this);
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(fm, this);
-        }
     }
 
     @Override
@@ -150,6 +132,16 @@ public class EditBookshelvesFragment
         mVb.list.addItemDecoration(new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.list.setHasFixedSize(true);
         mVb.list.setAdapter(mAdapter);
+
+        final Resources res = getResources();
+        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
+                 R.string.action_edit_ellipsis)
+            .setIcon(R.drawable.ic_baseline_edit_24);
+        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.action_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24);
+        mContextMenu = new ExtPopupMenu(getContext(), menu, this::onContextItemSelected);
     }
 
     @Override
@@ -189,50 +181,17 @@ public class EditBookshelvesFragment
         return super.onOptionsItemSelected(item);
     }
 
-    private void onCreateContextMenu(final int position) {
-        final Resources res = getResources();
-        final Bookshelf bookshelf = mVm.getBookshelf(position);
-        final String title = bookshelf.getName();
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-            menu.add(new MenuPickerDialogFragment.Pick(
-                    R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
-                    getString(R.string.action_edit_ellipsis),
-                    R.drawable.ic_baseline_edit_24));
-            menu.add(new MenuPickerDialogFragment.Pick(
-                    R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
-                    getString(R.string.action_delete),
-                    R.drawable.ic_baseline_delete_24));
-
-            mMenuLauncher.launch(title, null, menu, position);
-        } else {
-            //noinspection ConstantConditions
-            final Menu menu = MenuPicker.createMenu(getContext());
-            menu.add(Menu.NONE, R.id.MENU_EDIT,
-                     res.getInteger(R.integer.MENU_ORDER_EDIT),
-                     R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_baseline_edit_24);
-            menu.add(Menu.NONE, R.id.MENU_DELETE,
-                     res.getInteger(R.integer.MENU_ORDER_DELETE),
-                     R.string.action_delete)
-                .setIcon(R.drawable.ic_baseline_delete_24);
-
-            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
-                    .show();
-        }
-    }
-
     /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param itemId   that was selected
+     * @param menuItem that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int itemId,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
+        final int itemId = menuItem.getItemId();
 
         final Bookshelf bookshelf = mVm.getBookshelf(position);
 
@@ -314,7 +273,7 @@ public class EditBookshelvesFragment
                     v -> mVm.setSelectedPosition(holder.getBindingAdapterPosition()));
 
             holder.nameView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
+                mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
                 return true;
             });
             return holder;

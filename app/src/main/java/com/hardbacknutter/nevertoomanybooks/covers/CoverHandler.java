@@ -42,7 +42,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -72,8 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
@@ -85,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
  * A delegate class for handling a displayed Cover.
@@ -94,9 +92,6 @@ public class CoverHandler {
 
     /** Log tag. */
     private static final String TAG = "CoverHandler";
-
-    /** FragmentResultListener request key. Append the mCIdx value! */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
     /** FragmentResultListener request key. Append the mCIdx value! */
     private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
@@ -122,7 +117,6 @@ public class CoverHandler {
     private final CoverHandlerHost mCoverHandlerHost;
     @NonNull
     private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher;
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher;
     @NonNull
     private final ImageViewLoader mImageLoader;
     /** The host view; used for context, resources, Snackbar. */
@@ -168,14 +162,6 @@ public class CoverHandler {
                 onFileSelected(fileSpec);
             }
         };
-
-        mMenuLauncher = new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER + mCIdx) {
-            @Override
-            public boolean onResult(@IdRes final int menuItemId,
-                                    final int position) {
-                return onContextItemSelected(menuItemId, position);
-            }
-        };
     }
 
     public void onViewCreated(@NonNull final Fragment fragment) {
@@ -216,10 +202,6 @@ public class CoverHandler {
                 new CropImageActivity.ResultContract(), this::onGetContentResult);
 
         mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(fm, lifecycleOwner);
-        }
 
         mVm = new ViewModelProvider(viewModelStoreOwner)
                 .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
@@ -274,18 +256,17 @@ public class CoverHandler {
     /**
      * Context menu for the image.
      *
-     * @param view The view that was clicked and held.
+     * @param anchor The view that was clicked and held.
      *
      * @return {@code true} for compatibility with setOnLongClickListener
      */
-    private boolean onCreateContextMenu(@NonNull final View view) {
+    private boolean onCreateContextMenu(@NonNull final View anchor) {
         final Book book = mBookSupplier.get();
-        final Context context = view.getContext();
+        final Context context = anchor.getContext();
 
-        Menu menu = MenuPicker.createMenu(context);
+        Menu menu = ExtPopupMenu.createMenu(context);
         new MenuInflater(context).inflate(R.menu.image, menu);
 
-        final String title;
         final File uuidCoverFile = book.getCoverFile(mCIdx);
         if (uuidCoverFile != null) {
             if (BuildConfig.DEBUG /* always */) {
@@ -293,40 +274,34 @@ public class CoverHandler {
                 final BitmapFactory.Options opts = new BitmapFactory.Options();
                 opts.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(uuidCoverFile.getAbsolutePath(), opts);
-                title = "" + opts.outWidth + "x" + opts.outHeight;
-            } else {
-                title = context.getString(R.string.lbl_cover_long);
             }
         } else {
             // there is no current image; only show the replace menu
             final MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
             menu = menuItem.getSubMenu();
-            title = menuItem.getTitle().toString();
         }
 
         // we only support alternative edition covers for the front cover.
         menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
 
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.launch(title, null, menu, mCIdx);
-        } else {
-            new MenuPicker(context, title, null, menu, mCIdx, this::onContextItemSelected)
-                    .show();
-        }
+        new ExtPopupMenu(context, menu, this::onContextItemSelected)
+                .showAsDropDown(anchor, mCIdx);
 
         return true;
     }
 
     /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
-     * @param itemId   which was selected
+     * @param menuItem that was selected
      * @param position in the list (i.e. mCIdx)
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int itemId,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
+        final int itemId = menuItem.getItemId();
+
         final Book book = mBookSupplier.get();
         final Context context = mView.getContext();
 

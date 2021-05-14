@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
@@ -19,21 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- visibility set from code. -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
 
-    <item
-        android:id="@+id/sync_calibre"
-        android:icon="@drawable/ic_baseline_cloud_24"
-        android:title="@string/site_calibre"
-        android:visible="false"
-        tools:visible="true" />
-
-    <item
-        android:id="@+id/sync_stripinfo"
-        android:icon="@drawable/ic_stripinfo"
-        android:title="@string/site_stripinfo_be"
-        android:visible="false"
-        tools:visible="true" />
-</menu>
+    <solid android:color="?attr/colorBackgroundFloating" />
+    <stroke
+        android:width="1dp"
+        android:color="?attr/colorControlNormal" />
+    <corners
+        android:radius="?attr/dialogCornerRadius" />
+    <padding
+        android:bottom="4dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp" />
+</shape>

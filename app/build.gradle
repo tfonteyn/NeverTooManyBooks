@@ -148,7 +148,6 @@ android {
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
         // under development
-        buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
         buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'false')
         buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'false')
     }
@@ -167,9 +166,6 @@ android {
         debug {
             versionNameSuffix 'debug'
 
-            // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
-            // uses reflection to access a private variable
-            buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
             // under development
             buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'true')
             // under development

@@ -36,7 +36,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -54,8 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksC
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -67,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
  * Display all TocEntry's for an Author.
@@ -87,8 +85,6 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
-    /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel mVm;
     /** Set the hosting Activity result, and close it. */
@@ -102,26 +98,15 @@ public class AuthorWorksFragment
             };
     /** The Adapter. */
     private TocAdapter mAdapter;
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int menuItemId,
-                                        final int position) {
-                    return onContextItemSelected(menuItemId, position);
-                }
-            };
 
     /** View Binding. */
     private FragmentAuthorWorksBinding mVb;
+    private ExtPopupMenu mContextMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
-        }
     }
 
     @Nullable
@@ -154,12 +139,10 @@ public class AuthorWorksFragment
                  mVm.getScreenSubtitle());
 
         mVb.authorWorks.setHasFixedSize(true);
-        mVb.authorWorks
-                .addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.authorWorks.addItemDecoration(
+                new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(mVb.authorWorks.getContext());
-
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
         final int overlayType = Prefs.getIntListPref(global,
                                                      Prefs.pk_booklist_fastscroller_overlay,
@@ -168,6 +151,15 @@ public class AuthorWorksFragment
 
         mAdapter = new TocAdapter(context);
         mVb.authorWorks.setAdapter(mAdapter);
+
+        final Resources res = getResources();
+        //noinspection ConstantConditions
+        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
+                 R.string.action_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24);
+
+        mContextMenu = new ExtPopupMenu(getContext(), menu, this::onContextItemSelected);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);
@@ -232,49 +224,20 @@ public class AuthorWorksFragment
     }
 
     /**
-     * Create and show a context menu for the given position.
-     *
-     * @param position in the list
-     */
-    private void onCreateContextMenu(final int position) {
-        final Resources res = getResources();
-        final AuthorWork item = mVm.getWorks().get(position);
-        //noinspection ConstantConditions
-        final String title = item.getLabel(getContext());
-
-        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
-            menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
-                                                       res.getInteger(R.integer.MENU_ORDER_DELETE),
-                                                       getString(R.string.action_delete),
-                                                       R.drawable.ic_baseline_delete_24));
-            mMenuLauncher.launch(title, null, menu, position);
-
-        } else {
-            final Menu menu = MenuPicker.createMenu(getContext());
-            menu.add(Menu.NONE, R.id.MENU_DELETE,
-                     res.getInteger(R.integer.MENU_ORDER_DELETE),
-                     R.string.action_delete)
-                .setIcon(R.drawable.ic_baseline_delete_24);
-
-            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
-                    .show();
-        }
-    }
-
-    /**
-     * Using {@link MenuPicker} for context menus.
+     * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int menuItem,
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           final int position) {
+        final int itemId = menuItem.getItemId();
+
         final AuthorWork work = mVm.getWorks().get(position);
 
-        if (menuItem == R.id.MENU_DELETE) {
+        if (itemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
             return true;
         }
@@ -422,7 +385,7 @@ public class AuthorWorksFragment
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
 
             holder.itemView.setOnLongClickListener(v -> {
-                onCreateContextMenu(holder.getBindingAdapterPosition());
+                mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
                 return true;
             });
 
