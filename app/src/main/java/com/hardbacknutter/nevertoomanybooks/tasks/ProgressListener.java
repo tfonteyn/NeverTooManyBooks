@@ -54,13 +54,6 @@ public interface ProgressListener
                          @Nullable String text);
 
     /**
-     * Check if the user wants to cancel the operation.
-     *
-     * @return {@code true} if operation was cancelled.
-     */
-    boolean isCancelled();
-
-    /**
      * Change the indeterminate mode for the progress bar.
      *
      * @param indeterminate true/false to enable/disable the indeterminate mode
