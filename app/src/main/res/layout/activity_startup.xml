@@ -45,7 +45,7 @@
 
     <TextView
         android:id="@+id/app"
-        style="@style/AppName"
+        style="@style/About.AppName"
         android:text="@string/app_name"
         app:layout_constraintBottom_toBottomOf="@id/app_icon"
         app:layout_constraintStart_toEndOf="@id/app_icon"
@@ -55,7 +55,7 @@
 
     <TextView
         android:id="@+id/version"
-        style="@style/AppVersion"
+        style="@style/About.Version"
         app:layout_constraintEnd_toEndOf="@id/app"
         app:layout_constraintTop_toBottomOf="@id/app"
         tools:ignore="SelectableText"

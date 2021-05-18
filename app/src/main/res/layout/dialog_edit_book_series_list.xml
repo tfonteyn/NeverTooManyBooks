@@ -45,7 +45,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.Fullscreen"
+        style="@style/Dialog.Fullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,8 +63,10 @@
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/series_title"
-                    style="@style/titleTextEntryAutoComplete"
+                    style="@style/acTitleTextEntry"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    android:completionThreshold="2"
                     android:imeOptions="actionNext"
                     tools:ignore="LabelFor"
                     />
@@ -74,15 +76,13 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_series_num"
                 style="@style/TIL.EditText.SeriesNum"
-                android:hint="@string/lbl_series_num"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/lbl_series"
                 >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/series_num"
-                    style="@style/EditText.SeriesNumber"
-                    android:layout_width="match_parent"
+                    style="@style/TIE.SeriesNumber"
                     android:imeOptions="actionDone"
                     tools:ignore="Autofill"
                     />

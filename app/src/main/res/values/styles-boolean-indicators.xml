@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- android.widget.ImageView  - Read-only boolean Flags. GONE when false, VISIBLE when true.  -->
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ImageView - Generic Flag. 24dp: standard icon. -->
+    <style name="Flag">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+    </style>
+
+    <!-- A book has been read. -->
+    <style name="Flag.Read">
+        <item name="android:contentDescription">@string/lbl_read</item>
+        <item name="android:src">@drawable/ic_baseline_library_add_check_24</item>
+        <item name="android:tint">?attr/colorSecondaryVariant</item>
+    </style>
+
+    <!-- A book is a first edition. -->
+    <style name="Flag.FirstEdition">
+        <item name="android:contentDescription">@string/lbl_edition_first_edition</item>
+        <item name="android:src">@drawable/ic_baseline_filter_1_24</item>
+    </style>
+
+    <!-- A book is signed. -->
+    <style name="Flag.Signed">
+        <item name="android:contentDescription">@string/lbl_signed</item>
+        <item name="android:src">@drawable/ic_signed</item>
+    </style>
+
+    <!-- A book is signed. Meant to be used with a text label. -->
+    <style name="Flag.Signed.Check">
+        <item name="android:src">@drawable/ic_baseline_check_24</item>
+        <item name="android:tint">?attr/colorSecondaryVariant</item>
+    </style>
+
+    <!-- A book has been lend out. -->
+    <style name="Flag.LendOut">
+        <item name="android:contentDescription">@string/lbl_lend_out</item>
+        <item name="android:src">@drawable/ic_lend_out</item>
+        <item name="android:tint">?attr/colorError</item>
+    </style>
+
+    <!-- A series/author/... is complete. -->
+    <style name="Flag.Complete">
+        <item name="android:contentDescription">@string/lbl_is_complete</item>
+        <item name="android:src">@drawable/ic_baseline_done_all_24</item>
+        <item name="android:tint">?attr/colorSecondaryVariant</item>
+    </style>
+</resources>

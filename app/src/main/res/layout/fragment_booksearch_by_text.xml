@@ -41,8 +41,10 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/author"
-                style="@style/personalNameTextEntry"
+                style="@style/acPersonalNameTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -61,8 +63,9 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
                 style="@style/titleTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 />
 
@@ -83,8 +86,10 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/publisher"
-                style="@style/personalNameTextEntry"
+                style="@style/acPersonalNameTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
                 android:imeOptions="actionSearch"
                 tools:ignore="LabelFor"
                 />

@@ -48,10 +48,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/library_name"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="LabelFor"
+                style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/library/name"
                 />
 
@@ -68,7 +65,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelf"
-            style="@style/ExposedDropdownMenu"
+            style="@style/Button.DropdownMenu"
             android:hint="@string/lbl_bookshelf"
             android:paddingTop="@dimen/field_label_margin_top"
             app:layout_constraintEnd_toEndOf="parent"

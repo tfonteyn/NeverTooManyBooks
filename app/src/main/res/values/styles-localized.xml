@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,41 +26,43 @@
     -->
     <!-- *************************************************************************************** -->
 
-    <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/EditText.Title">
+    <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
+    <style name="titleTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
-
     <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete.Title">
+    <style name="acTitleTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <!-- 'human' names. e.g. Author, Publisher, ... -->
-    <style name="personalNameTextEntry" parent="@style/EditText.AutoComplete.Name">
+    <!-- AutoComplete; 'human' names. e.g. Author (first/given), Publisher, ... -->
+    <style name="acPersonalNameTextEntry">
         <item name="android:inputType">textPersonName|textCapWords</item>
     </style>
 
+
     <!-- Personal Notes, Description. -->
-    <style name="notesTextEntry" parent="@style/EditText.Notes">
+    <style name="notesTextEntry">
         <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
     </style>
 
-    <!-- The price (listed, paid, ... ) fields. -->
-    <style name="priceTextEntry" parent="@style/EditText">
+    <!-- The price PAID field. An actual number. -->
+    <style name="pricePaidTextEntry">
         <item name="android:inputType">numberDecimal</item>
     </style>
 
-    <!-- Generic single-line fields not listed above-->
-    <style name="genericTextEntry" parent="@style/EditText">
+    <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
+    <style name="priceListedTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
-    <!-- Generic single-line fields not listed above-->
-    <style name="genericNumberEntry" parent="@style/EditText">
-        <item name="android:inputType">number</item>
+
+    <!-- The number of book pages - it's a generic string, not limited to numbers only. -->
+    <style name="pagesTextEntry">
+        <item name="android:inputType">textCapWords</item>
     </style>
-    <!-- Generic AutoComplete fields not listed above -->
-    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
+
+    <!-- AutoComplete fields: format, genre, language, color,location. -->
+    <style name="autoCompleteTextEntry">
         <item name="android:inputType">textCapWords</item>
     </style>
 

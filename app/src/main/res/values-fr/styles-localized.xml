@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,13 +21,11 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Generic single-line fields not listed above-->
-    <style name="genericTextEntry" parent="@style/EditText">
+    <style name="pagesTextEntry">
         <item name="android:inputType">textCapSentences</item>
     </style>
 
-    <!-- Generic AutoComplete fields not listed above -->
-    <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
+    <style name="autoCompleteTextEntry">
         <item name="android:inputType">textCapSentences</item>
     </style>
 

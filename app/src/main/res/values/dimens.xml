@@ -90,8 +90,11 @@
     <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
     <dimen name="bob_group_level_1_margin_top">4dp</dimen>
     <!-- indent multiplier for the levels in the booklist:
-         paddingStart = (level-1) * bob_group_level_padding_start -->
+         paddingStart = (level-1) * bob_group_level_padding_start. -->
     <dimen name="bob_group_level_padding_start">8dp</dimen>
+    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
+
+
     <!-- The text size (in sp units, but in float notation) for all text in a book list row.
          For reference:
         {@code

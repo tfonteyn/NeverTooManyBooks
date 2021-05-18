@@ -79,7 +79,7 @@
 
     <ImageButton
         android:id="@+id/inf_export_books_option_new_and_updated"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_export_books_option_since_last_full_backup"
         app:layout_constraintStart_toEndOf="@id/rb_export_books_option_new_and_updated"
         app:layout_constraintTop_toTopOf="@id/rb_export_books_option_new_and_updated"
@@ -108,7 +108,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_archive_format"
-        style="@style/ExposedDropdownMenu"
+        style="@style/Button.DropdownMenu"
         android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginTop="@dimen/field_label_margin_top"
         android:hint="@string/lbl_archive_format"

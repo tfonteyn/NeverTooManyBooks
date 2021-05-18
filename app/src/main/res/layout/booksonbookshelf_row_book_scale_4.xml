@@ -23,7 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BoB.BookContainer"
+    style="@style/BoB.Group.Book"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,9 +31,9 @@
         android:layout_height="match_parent"
         >
 
+        <!-- accepts onClick (expand or book-detail) and onLongClick (menu). -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row"
-            style="@style/BoB.Book"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
@@ -44,7 +44,7 @@
 
             <TextView
                 android:id="@+id/series_num_long"
-                style="@style/BoB.Book.Text"
+                style="@style/BoB.Group.Book.SeriesNum"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/title"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +59,7 @@
 
             <TextView
                 android:id="@+id/series_num"
-                style="@style/BoB.Book.Text.SeriesNum"
+                style="@style/BoB.Group.Book.SeriesNum.Inline"
                 android:visibility="gone"
                 app:layout_constraintBaseline_toBaselineOf="@id/title"
                 app:layout_constraintEnd_toStartOf="@id/title"
@@ -71,7 +71,7 @@
 
             <TextView
                 android:id="@+id/title"
-                style="@style/BoB.Book.Text.Title"
+                style="@style/BoB.Group.Book.Title"
                 app:layout_constraintBottom_toTopOf="@id/extras"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/series_num"

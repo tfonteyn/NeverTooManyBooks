@@ -49,7 +49,7 @@
     <!-- only visible for Calibre. -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_calibre_library"
-        style="@style/ExposedDropdownMenu"
+        style="@style/Button.DropdownMenu"
         android:layout_marginStart="20dp"
         android:layout_marginTop="@dimen/section_margin_top"
         android:hint="@string/lbl_library"
@@ -106,7 +106,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_new_only"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_new_only"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_only"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_only"
@@ -125,7 +125,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_new_and_updated"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_new_and_updated"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_and_updated"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_and_updated"
@@ -143,7 +143,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_all"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_all"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_all"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_all"

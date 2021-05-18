@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -22,12 +22,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Simple; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry" parent="@style/EditText.Title">
+    <style name="titleTextEntry">
         <item name="android:inputType">textCapSentences</item>
     </style>
 
     <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntryAutoComplete" parent="@style/EditText.AutoComplete.Title">
+    <style name="acTitleTextEntry">
         <item name="android:inputType">textCapSentences</item>
     </style>
 

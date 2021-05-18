@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Keys on the isbn search keyboard. -->
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base style; not to be used directly in layouts. -->
+    <style name="IsbnKeyPad" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
+        <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
+        <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
+    </style>
+
+    <!-- 0..9 and X -->
+    <style name="IsbnKeyPad.NumberButton">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="IsbnKeyPad.SearchButton">
+    </style>
+
+    <style name="IsbnKeyPad.BackspaceButton">
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- yes, LEFT! - this is to offset the icon so its centered -->
+        <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
+        <item name="icon">@drawable/ic_baseline_backspace_24</item>
+        <item name="android:contentDescription">@string/action_delete</item>
+    </style>
+
+</resources>

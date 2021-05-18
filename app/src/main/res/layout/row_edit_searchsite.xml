@@ -30,7 +30,7 @@
 
     <CheckBox
         android:id="@id/ROW_CHECKABLE_BTN"
-        style="@style/RowButton.Checkable"
+        style="@style/RowEditor.Button.Checkable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +40,7 @@
 
     <LinearLayout
         android:id="@id/ROW_ONCLICK_TARGET"
-        style="@style/RowTextSection"
+        style="@style/RowEditor.TextSection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
         app:layout_constraintStart_toEndOf="@id/ROW_CHECKABLE_BTN"
@@ -49,14 +49,14 @@
 
         <TextView
             android:id="@+id/name"
-            style="@style/RowTextLine.Primary"
+            style="@style/RowEditor.Text.Primary"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/sites/name"
             />
 
         <TextView
             android:id="@+id/info"
-            style="@style/RowTextLine.Secondary"
+            style="@style/RowEditor.Text.Secondary"
             android:visibility="gone"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/sites/info"
@@ -66,12 +66,12 @@
 
     <ImageView
         android:id="@id/ROW_GRABBER_ICON"
-        style="@style/RowButton.DragHandle"
-        android:contentDescription="@string/hint_btn_drag_handle"
+        style="@style/RowEditor.Button.DragHandle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -33,9 +33,7 @@
 
     <RatingBar
         android:id="@+id/rating"
-        style="@style/Field.RatingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/BoB.Group.Book.RatingBar"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -44,7 +42,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +54,7 @@
 
     <TextView
         android:id="@+id/publisher"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +66,7 @@
 
     <TextView
         android:id="@+id/isbn"
-        style="@style/BoB.Book.Text.Isbn"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +78,7 @@
 
     <TextView
         android:id="@+id/format"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +90,7 @@
 
     <TextView
         android:id="@+id/location"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +102,7 @@
 
     <TextView
         android:id="@+id/shelves"
-        style="@style/BoB.Book.Text"
+        style="@style/BoB.Group.Book.Text"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

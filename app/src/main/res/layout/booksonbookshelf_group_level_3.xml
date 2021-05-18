@@ -27,26 +27,24 @@
     style="@style/BoB.Group.Level3"
     >
 
-    <ImageView
-        android:id="@+id/bullet"
-        style="@style/BoB.Group.Bullet.Level3"
-        app:layout_constraintBottom_toBottomOf="@id/name"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="ContentDescription"
-        />
-
-    <!--The 'drawableEnd' drawable itself is done from code. -->
     <TextView
         android:id="@+id/name"
-        style="@style/BoB.Group.Label.Level3"
-        android:drawableTint="?attr/colorSecondaryVariant"
+        style="@style/BoB.Group.Level3.Label"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/bullet"
+        app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:drawableEnd="@drawable/ic_baseline_done_all_24"
-        tools:ignore="SelectableText,UseCompatTextViewDrawableXml"
+        tools:ignore="SelectableText"
         tools:text="Level 3 row"
         />
 
+    <ImageView
+        android:id="@+id/cbx_is_complete"
+        style="@style/Flag.Complete"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/name"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,7 +44,7 @@
 
         <com.hardbacknutter.nevertoomanybooks.widgets.IsbnTextInputEditText
             android:id="@+id/isbn"
-            style="@style/EditText.Isbn"
+            style="@style/TIE.Isbn"
             android:layout_width="match_parent"
             tools:ignore="Autofill,LabelFor"
             tools:text="@sample/data.json/isbn/d13"
@@ -206,7 +206,7 @@
 
     <TextView
         android:id="@+id/lbl_queue"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lbl_queue"
@@ -231,7 +231,7 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/queue"
-        style="@style/Field.ChipGroup"
+        style="@style/ChipGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"

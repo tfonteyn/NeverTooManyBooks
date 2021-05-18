@@ -92,7 +92,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_new_only"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_new_only"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_only"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_only"
@@ -111,7 +111,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_new_and_updated"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_new_and_updated"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_and_updated"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_and_updated"
@@ -129,7 +129,7 @@
 
     <ImageButton
         android:id="@+id/inf_import_books_option_all"
-        style="@style/InfoButton"
+        style="@style/Button.InfoPopup"
         android:contentDescription="@string/txt_import_books_option_all"
         app:layout_constraintStart_toEndOf="@id/rb_import_books_option_all"
         app:layout_constraintTop_toTopOf="@id/rb_import_books_option_all"

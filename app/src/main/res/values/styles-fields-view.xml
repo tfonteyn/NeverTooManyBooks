@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Data fields. -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base style; not to be used directly in layouts. -->
+    <style name="Field">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textIsSelectable">true</item>
+
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <!-- 'medium' detail field; for example Series title, ...
+    Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
+    -->
+    <style name="Field.Generic">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+    </style>
+
+    <style name="Field.Generic.Inline">
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <!-- 'minor' detail field; for example format, isbn,... -->
+    <style name="Field.Generic.Small">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+    </style>
+
+    <style name="Field.Generic.Inline.Small">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+    </style>
+
+
+    <style name="Field.BookTitle">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+    </style>
+
+    <style name="Field.BookTitle.Large">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="Field.Isbn">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+    </style>
+
+    <style name="Field.Isbn.Small">
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+    </style>
+
+    <!-- Book personal notes. -->
+    <style name="Field.Notes">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <!-- A bigger text field just looks nicer with these start/end margins. -->
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline</item>
+    </style>
+
+    <!-- Book Description. -->
+    <style name="Field.Description">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:background">@drawable/bg_outline_rounded</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <!-- A bigger text field just looks nicer with these start/end margins. -->
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline</item>
+    </style>
+
+    <!-- Lend out to X. -->
+    <style name="Field.LendOutToBar">
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:background">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorSurface</item>
+        <!-- we want it centered, hence use and end-margin equal to the start margin -->
+        <item name="android:layout_marginEnd">@dimen/field_margin_start</item>
+    </style>
+
+    <style name="Field.RatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:numStars">5</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <!-- The switch on the book details screen to show/hide the TOC. -->
+    <style name="Field.ShowOrHideToc" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:buttonTint">@android:color/transparent</item>
+        <item name="android:contentDescription">@string/lbl_table_of_content</item>
+        <item name="android:visibility">gone</item>
+    </style>
+</resources>

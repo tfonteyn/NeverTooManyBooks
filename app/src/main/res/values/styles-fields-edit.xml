@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+    Edit fields;
+    'TIL'      == com.google.android.material.textfield.TextInputLayout
+    'TIE'      == com.google.android.material.textfield.TextInputEditText
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Button (icon only) positioned 'after' an EditText; serving as a extended edit action. -->
+    <style name="TIL.EditText.Button" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:enabled">true</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="iconTint">?attr/editTextColor</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
+    <!-- generic input field. -->
+    <style name="TIL.EditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <!-- a fixed width box for an external id field. -->
+    <style name="TIL.EditText.ExternalId">
+        <item name="android:layout_width">280dp</item>
+    </style>
+
+    <!-- a fixed width box for a 4-digit year. -->
+    <style name="TIL.EditText.Year">
+        <item name="android:hint">@string/lbl_year</item>
+        <item name="android:layout_width">120dp</item>
+    </style>
+
+    <!-- a fixed width box for a books number in a series. -->
+    <style name="TIL.EditText.SeriesNum">
+        <item name="android:hint">@string/lbl_series_num</item>
+        <item name="android:layout_width">200dp</item>
+    </style>
+
+    <!-- TextWatcher handles the icon. -->
+    <style name="TIL.EditText.Isbn">
+        <item name="android:hint">@string/lbl_isbn</item>
+        <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
+        <item name="startIconTint">?attr/colorSecondaryVariant</item>
+    </style>
+
+
+    <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.
+
+      Reminder:
+        AutoCompleteTextView is automatically replaced with MaterialAutoCompleteTextView
+        and setOnItemSelectedListener() DOES NOT WORK with AutoCompleteTextView.
+        Use setOnItemClickListener() instead!
+        Good read (but fails to mention setOnItemClickListener, and talks about text-change listener...)
+        https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
+    -->
+    <style name="TIL.AutoCompleteTextView"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
+    <style name="TIL.ExposedDropdownMenu"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <style name="TIE" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- A disabled/read-only edit text field on which an onClickListener can be installed.
+         Not localized.
+         com.google.android.material.textfield.TextInputEditText
+     -->
+    <style name="TIE.ReadOnly">
+        <item name="android:inputType">none</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:longClickable">false</item>
+    </style>
+
+    <!-- Dedicated series 'number' field.
+         Not localized.
+         com.google.android.material.textfield.TextInputEditText
+     -->
+    <style name="TIE.SeriesNumber">
+        <item name="android:inputType">text</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- Plain 4 digit year field.
+         Not localized.
+         com.google.android.material.textfield.TextInputEditText
+     -->
+    <style name="TIE.Year">
+        <item name="android:inputType">number</item>
+        <item name="android:maxLength">4</item>
+    </style>
+
+    <!-- ISBN / EAN or other code
+         Not localized.
+         com.google.android.material.textfield.TextInputEditText
+     -->
+    <style name="TIE.Isbn">
+        <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
+        <item name="android:digits">1234567890xX</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+
+    <!-- International three character currency code (uppercase).
+     Not localized.
+     com.google.android.material.textfield.MaterialAutoCompleteTextView
+    -->
+    <style name="EditText.Currency" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:inputType">text|textCapCharacters</item>
+        <item name="android:ems">6</item>
+        <item name="android:maxLength">3</item>
+        <item name="android:completionThreshold">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- Editable RatingBar. -->
+    <style name="Edit.Rating" parent="Widget.AppCompat.RatingBar">
+        <item name="android:numStars">5</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+</resources>

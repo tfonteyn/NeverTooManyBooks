@@ -93,8 +93,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/author"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
+                style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/author/full_name"
                 />
 
@@ -113,6 +112,7 @@
                 android:id="@+id/title"
                 style="@style/titleTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/book/title"
@@ -133,6 +133,8 @@
                 android:id="@+id/language"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/language/name"
@@ -150,8 +152,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/isbn"
-                style="@style/EditText.Isbn"
-                android:layout_width="match_parent"
+                style="@style/TIE.Isbn"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/isbn/d13"
@@ -181,8 +182,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/series_title"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
+                style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/series/title_nr"
                 />
 
@@ -200,8 +200,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/bookshelves"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
+                style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/shelves/name"
                 />
 
@@ -220,6 +219,8 @@
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="Fiction"
@@ -240,6 +241,7 @@
                 android:id="@+id/description"
                 style="@style/notesTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"

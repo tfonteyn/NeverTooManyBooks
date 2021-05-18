@@ -178,7 +178,7 @@
 
         <TextView
             android:id="@+id/lbl_genre"
-            style="@style/Field.Label"
+            style="@style/Label"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
@@ -196,7 +196,7 @@
 
         <TextView
             android:id="@+id/lbl_series"
-            style="@style/Field.Label"
+            style="@style/Label"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genre"
@@ -226,7 +226,7 @@
 
         <TextView
             android:id="@+id/lbl_bookshelves"
-            style="@style/Field.Label"
+            style="@style/Label"
             android:text="@string/lbl_bookshelves"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toc_section"
@@ -234,7 +234,7 @@
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/bookshelves"
-            style="@style/Field.ChipGroup"
+            style="@style/ChipGroup"
             app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
@@ -256,7 +256,7 @@
 
         <TextView
             android:id="@+id/lbl_notes"
-            style="@style/Field.Label"
+            style="@style/Label"
             android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bookshelves"

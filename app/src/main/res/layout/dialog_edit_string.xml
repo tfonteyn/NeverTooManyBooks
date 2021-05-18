@@ -67,7 +67,9 @@
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/edit_string"
                         style="@style/autoCompleteTextEntry"
+                        android:layout_height="wrap_content"
                         android:layout_width="match_parent"
+                        android:completionThreshold="2"
                         android:imeOptions="actionDone"
                         tools:ignore="LabelFor"
                         />

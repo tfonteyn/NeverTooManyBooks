@@ -49,8 +49,6 @@
 
         <LinearLayout
             style="@style/Dialog.Body"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:orientation="vertical"
             >
             <!--
@@ -74,7 +72,7 @@
 
                     <TextView
                         android:id="@+id/lbl_year"
-                        style="@style/Field.Label"
+                        style="@style/Label"
                         android:text="@string/lbl_year"
                         app:layout_constraintStart_toStartOf="@id/year"
                         app:layout_constraintTop_toTopOf="parent"
@@ -98,7 +96,7 @@
 
                     <TextView
                         android:id="@+id/lbl_month"
-                        style="@style/Field.Label"
+                        style="@style/Label"
                         android:text="@string/lbl_month"
                         app:layout_constraintStart_toStartOf="@id/month"
                         app:layout_constraintTop_toTopOf="parent"
@@ -122,7 +120,7 @@
 
                     <TextView
                         android:id="@+id/lbl_day"
-                        style="@style/Field.Label"
+                        style="@style/Label"
                         android:text="@string/lbl_day"
                         app:layout_constraintStart_toStartOf="@id/day"
                         app:layout_constraintTop_toTopOf="parent"

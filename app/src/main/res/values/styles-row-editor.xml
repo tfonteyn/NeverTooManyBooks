@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- An editable list with buttons on each row, and a text section in the middle of the row. -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Base.RowEditor.Button" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <!-- ImageButton - 'delete this row' -->
+    <style name="RowEditor.Button.Delete" parent="Base.RowEditor.Button">
+        <item name="android:src">@drawable/ic_baseline_delete_24</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:contentDescription">@string/action_delete</item>
+    </style>
+
+    <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
+    <style name="RowEditor.Button.DragHandle" parent="Base.RowEditor.Button">
+        <item name="android:src">@drawable/ic_baseline_drag_handle_24</item>
+        <item name="android:contentDescription">@string/hint_btn_drag_handle</item>
+    </style>
+
+    <!-- CheckBox - with custom icon -->
+    <style name="RowEditor.Button.Checkable" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- don't want it to close to the edge of the screen. -->
+        <item name="android:layout_marginStart">12dp</item>
+        <!-- larger icon, without box.
+             In Studio preview, it does not look centered,
+             but it IS FINE when the app is running for real. -->
+        <item name="android:button">?android:attr/textCheckMark</item>
+        <item name="android:contentDescription">@string/action_select</item>
+    </style>
+
+
+    <!-- LinearLayout/ConstraintLayout - the details part of the row in a list row. -->
+    <style name="RowEditor.TextSection" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- a row inside a list details row; not to be used directly in layouts -->
+    <style name="Base.RowEditor.Text" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textIsSelectable">false</item>
+    </style>
+
+    <!-- Primary row inside a list details row. -->
+    <style name="RowEditor.Text.Primary" parent="Base.RowEditor.Text">
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+    </style>
+
+    <!-- Secondary rows inside a list details row. -->
+    <style name="RowEditor.Text.Secondary" parent="Base.RowEditor.Text">
+        <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
+        <item name="android:layout_marginStart">8dp</item>
+    </style>
+</resources>

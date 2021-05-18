@@ -32,22 +32,13 @@
         android:layout_margin="@dimen/screen_border"
         >
 
-        <TextView
-            android:id="@+id/lbl_rating"
-            style="@style/Field.Label"
-            android:labelFor="@id/rating"
-            android:text="@string/lbl_rating"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-
         <RatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Edit"
+            style="@style/Edit.Rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_rating"
+            app:layout_constraintTop_toTopOf="parent"
             />
 
         <CheckBox
@@ -82,9 +73,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/read_start"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
-                tools:ignore="Autofill"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -100,9 +90,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/read_end"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
-                tools:ignore="Autofill"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -127,7 +116,9 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/location"
                 style="@style/autoCompleteTextEntry"
+                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -145,9 +136,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/date_acquired"
-                style="@style/EditText.ReadOnly"
-                android:layout_width="match_parent"
-                tools:ignore="Autofill"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -183,8 +173,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_paid"
-                style="@style/priceTextEntry"
+                style="@style/pricePaidTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="12.99"
@@ -194,7 +185,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition"
-            style="@style/ExposedDropdownMenu.Field"
+            style="@style/TIL.ExposedDropdownMenu"
             android:hint="@string/lbl_condition"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -214,7 +205,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition_cover"
-            style="@style/ExposedDropdownMenu.Field"
+            style="@style/TIL.ExposedDropdownMenu"
             android:hint="@string/lbl_dust_cover"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -264,6 +255,7 @@
                 android:id="@+id/notes"
                 style="@style/notesTextEntry"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"

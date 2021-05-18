@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/lbl_first_publication"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_first_publication"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,7 +45,7 @@
 
     <TextView
         android:id="@+id/lbl_isbn"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_isbn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/first_publication"
@@ -62,7 +62,7 @@
 
     <TextView
         android:id="@+id/lbl_publication"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_publication"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
@@ -149,7 +149,7 @@
 
     <TextView
         android:id="@+id/lbl_print_run"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_print_run"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pages"
@@ -166,7 +166,7 @@
 
     <TextView
         android:id="@+id/lbl_edition"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_edition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/print_run"
@@ -174,7 +174,7 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/edition"
-        style="@style/Field.ChipGroup"
+        style="@style/ChipGroup"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         >

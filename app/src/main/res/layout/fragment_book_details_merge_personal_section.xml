@@ -34,7 +34,7 @@
 
     <TextView
         android:id="@+id/lbl_signed"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_signed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,18 +42,16 @@
 
     <ImageView
         android:id="@+id/icon_signed"
-        style="@style/Flag"
+        style="@style/Flag.Signed.Check"
         android:layout_marginStart="@dimen/drawable_padding_end"
-        android:contentDescription="@string/lbl_signed"
-        android:src="@drawable/ic_baseline_check_24"
-        app:tint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toEndOf="@id/lbl_signed"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription"
         />
 
     <TextView
         android:id="@+id/lbl_date_acquired"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_date_acquired"
         app:layout_constraintBaseline_toBaselineOf="@id/date_acquired"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +68,7 @@
 
     <TextView
         android:id="@+id/lbl_price_paid"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_price_paid"
         app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
         app:layout_constraintStart_toStartOf="parent"
@@ -87,7 +85,7 @@
 
     <TextView
         android:id="@+id/lbl_condition"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_condition"
         app:layout_constraintBaseline_toBaselineOf="@id/condition"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +102,7 @@
 
     <TextView
         android:id="@+id/lbl_condition_cover"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_dust_cover"
         app:layout_constraintBaseline_toBaselineOf="@id/condition_cover"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +119,7 @@
 
     <TextView
         android:id="@+id/lbl_read_start"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_read_start"
         app:layout_constraintBaseline_toBaselineOf="@id/read_start"
         app:layout_constraintStart_toStartOf="parent"
@@ -138,7 +136,7 @@
 
     <TextView
         android:id="@+id/lbl_read_end"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_read_end"
         app:layout_constraintBaseline_toBaselineOf="@id/read_end"
         app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +153,7 @@
 
     <TextView
         android:id="@+id/lbl_location_long"
-        style="@style/Field.Label"
+        style="@style/Label"
         android:text="@string/lbl_location_long"
         app:layout_constraintBaseline_toBaselineOf="@id/location"
         app:layout_constraintStart_toStartOf="parent"

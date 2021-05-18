@@ -92,21 +92,21 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
-        <item name="appChipDisplayStyle">@style/Field.Chip.Display</item>
-        <item name="appChipFilterStyle">@style/Field.Chip.Filter</item>
-        <item name="appChipQueueStyle">@style/Field.Chip.Queue</item>
+        <item name="appChipDisplayStyle">@style/Chip.Display</item>
+        <item name="appChipFilterStyle">@style/Chip.Filter</item>
+        <item name="appChipQueueStyle">@style/Chip.Queue</item>
 
-        <!-- MaterialComponents overrides. -->
+        <!-- Attribute restyling. -->
+        <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
+        <!-- ThemeOverlay restyling. -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
-        <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
     </style>
 
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
@@ -126,15 +126,17 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
         parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
 
+        <!-- Attribute restyling. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-
+        <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
+        <!-- ThemeOverlay restyling. -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
     </style>
 
     <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialCalendar"
         parent="ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen">
+        <!-- Attribute restyling. -->
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>
     </style>
 </resources>
