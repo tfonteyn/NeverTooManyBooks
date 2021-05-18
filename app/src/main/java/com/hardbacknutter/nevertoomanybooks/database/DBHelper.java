@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -47,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -575,11 +575,11 @@ public class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
-        final StringBuilder eidSb = new StringBuilder();
-        for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
-            eidSb.append(domain.getName()).append("=null,");
-        }
-        body += eidSb.toString();
+        body += SearchEngineRegistry.getInstance()
+                                    .getExternalIdDomains()
+                                    .stream()
+                                    .map(domain -> domain.getName() + "=null")
+                                    .collect(Collectors.joining(","));
 
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
 
