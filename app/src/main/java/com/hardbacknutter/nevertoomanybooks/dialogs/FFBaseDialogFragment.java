@@ -79,23 +79,23 @@ public abstract class FFBaseDialogFragment
     //  private static final int SHORT_DURATION_MS = 1500;
     //  private static final int LONG_DURATION_MS = 2750;
     private static final int USE_DEFAULT = -1;
-    @Nullable
-    private View mButtonPanel;
     /** The <strong>Dialog</strong> toolbar. Not to be confused with the Activity's ActionBar! */
     Toolbar mDialogToolbar;
+    @Nullable
+    private View mButtonPanel;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean mFullscreen;
     private boolean mForceFullscreen;
 
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mWidthDrId = USE_DEFAULT;
+    private int mWidthDimenResId = USE_DEFAULT;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mDHeightDrId = USE_DEFAULT;
+    private int mDHeightDimenResId = USE_DEFAULT;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mMarginBottomDrId = USE_DEFAULT;
+    private int mMarginBottomDimenResId = USE_DEFAULT;
 
     /**
      * Constructor.
@@ -123,7 +123,7 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogWidth(@SuppressWarnings("SameParameterValue")
                                           @DimenRes final int dimenResId) {
-        mWidthDrId = dimenResId;
+        mWidthDimenResId = dimenResId;
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogHeight(@SuppressWarnings("SameParameterValue")
                                            @DimenRes final int dimenResId) {
-        mDHeightDrId = dimenResId;
+        mDHeightDimenResId = dimenResId;
     }
 
     /**
@@ -149,7 +149,7 @@ public abstract class FFBaseDialogFragment
      */
     protected void setFloatingDialogMarginBottom(@SuppressWarnings("SameParameterValue")
                                                  @DimenRes final int dimenResId) {
-        mMarginBottomDrId = dimenResId;
+        mMarginBottomDimenResId = dimenResId;
     }
 
     @Override
@@ -162,14 +162,14 @@ public abstract class FFBaseDialogFragment
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
 
         } else {
-            if (mWidthDrId == USE_DEFAULT) {
-                mWidthDrId = R.dimen.floating_dialogs_width;
+            if (mWidthDimenResId == USE_DEFAULT) {
+                mWidthDimenResId = R.dimen.floating_dialogs_width;
             }
-            if (mDHeightDrId == USE_DEFAULT) {
-                mDHeightDrId = 0;
+            if (mDHeightDimenResId == USE_DEFAULT) {
+                mDHeightDimenResId = 0;
             }
-            if (mMarginBottomDrId == USE_DEFAULT) {
-                mMarginBottomDrId = AttrUtils.getResId(context, R.attr.actionBarSize);
+            if (mMarginBottomDimenResId == USE_DEFAULT) {
+                mMarginBottomDimenResId = AttrUtils.getResId(context, R.attr.actionBarSize);
             }
         }
     }
@@ -196,7 +196,7 @@ public abstract class FFBaseDialogFragment
         super.onViewCreated(view, savedInstanceState);
         mDialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
 
-        // dialogs that are set as full-screen ONLY will not have a button bar.
+        // dialogs that are set as full-screen ONLY will NOT have a button bar.
         mButtonPanel = view.findViewById(R.id.buttonPanel);
 
         hookupButtons();
@@ -204,16 +204,16 @@ public abstract class FFBaseDialogFragment
         if (!mFullscreen) {
             final Resources res = getResources();
 
-            if (mWidthDrId != 0) {
-                view.getLayoutParams().width = res.getDimensionPixelSize(mWidthDrId);
+            if (mWidthDimenResId != 0) {
+                view.getLayoutParams().width = res.getDimensionPixelSize(mWidthDimenResId);
             }
 
-            if (mDHeightDrId != 0) {
-                view.getLayoutParams().height = res.getDimensionPixelSize(mDHeightDrId);
+            if (mDHeightDimenResId != 0) {
+                view.getLayoutParams().height = res.getDimensionPixelSize(mDHeightDimenResId);
             }
 
-            if (mMarginBottomDrId != 0) {
-                final int marginBottom = res.getDimensionPixelSize(mMarginBottomDrId);
+            if (mMarginBottomDimenResId != 0) {
+                final int marginBottom = res.getDimensionPixelSize(mMarginBottomDimenResId);
                 final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                         view.findViewById(R.id.body_frame).getLayoutParams();
                 lp.setMargins(0, 0, 0, marginBottom);
@@ -348,7 +348,6 @@ public abstract class FFBaseDialogFragment
      *
      * @param view a View from which we can get the window token.
      */
-    @SuppressWarnings("WeakerAccess")
     public void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

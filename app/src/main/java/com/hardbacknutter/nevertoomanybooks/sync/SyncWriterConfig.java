@@ -33,7 +33,6 @@ public class SyncWriterConfig {
     /** <strong>What</strong> is going to be exported. */
     @NonNull
     private final Set<RecordType> mExportEntries = EnumSet.noneOf(RecordType.class);
-    ;
 
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle mExtraArgs = new Bundle();

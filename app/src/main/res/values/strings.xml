@@ -1044,7 +1044,7 @@
     <string name="btn_this_book">This Book</string>
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
-    <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
+    <string name="hint_btn_drag_handle">Drag to reorder this list</string>
 
     <string name="action_clear_all_data">Clear all data</string>
 

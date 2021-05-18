@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -41,7 +40,6 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
@@ -1377,46 +1375,41 @@ public class BooklistAdapter
     static class CheckableStringHolder
             extends GenericStringHolder {
 
-        /** Column name of related boolean column. */
-        private final String mColumnKey;
-        /** The icon drawable. */
         @NonNull
-        private final Drawable mIcon;
+        final ImageView mIsCompleteView;
+        /** Column name of related boolean column. */
+        private String mIsCompleteKey;
 
         /**
          * Constructor.
          *
-         * @param adapter   the hosting adapter
-         * @param itemView  the view specific for this holder
-         * @param group     the group this holder represents
-         * @param columnKey Column name to use for the boolean status
-         * @param icon      to use for the checkable column
+         * @param adapter  the hosting adapter
+         * @param itemView the view specific for this holder
+         * @param group    the group this holder represents
          */
         @SuppressLint("UseCompatLoadingForDrawables")
         CheckableStringHolder(@NonNull final BooklistAdapter adapter,
                               @NonNull final View itemView,
-                              @NonNull final BooklistGroup group,
-                              @NonNull final String columnKey,
-                              @DrawableRes final int icon) {
+                              @NonNull final BooklistGroup group) {
             super(adapter, itemView, group);
-            mColumnKey = columnKey;
-            //noinspection ConstantConditions
-            mIcon = itemView.getContext().getDrawable(icon);
-            //noinspection ConstantConditions
-            mIcon.setBounds(0, 0, mIcon.getIntrinsicWidth(), mIcon.getIntrinsicHeight());
+
+            mIsCompleteView = itemView.findViewById(R.id.cbx_is_complete);
+        }
+
+        /**
+         * @param columnKey Column name to use for the 'isComplete' status
+         */
+        void setIsCompleteColumnKey(@NonNull final String columnKey) {
+            mIsCompleteKey = columnKey;
         }
 
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
                               @NonNull final ListStyle style) {
-            // do the text part first
             super.onBindViewHolder(position, rowData, style);
-
-            final Drawable icon = rowData.getBoolean(mColumnKey) ? mIcon : null;
-            final Drawable[] drawables = mTextView.getCompoundDrawablesRelative();
-            // show it (or not) at the 'end'
-            mTextView.setCompoundDrawablesRelative(drawables[0], drawables[1], icon, drawables[3]);
+            mIsCompleteView.setVisibility(rowData.getBoolean(
+                    mIsCompleteKey) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -1436,8 +1429,8 @@ public class BooklistAdapter
         AuthorHolder(@NonNull final BooklistAdapter adapter,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group,
-                  DBKey.BOOL_AUTHOR_IS_COMPLETE, R.drawable.ic_baseline_done_all_24);
+            super(adapter, itemView, group);
+            setIsCompleteColumnKey(DBKey.BOOL_AUTHOR_IS_COMPLETE);
         }
     }
 
@@ -1460,8 +1453,8 @@ public class BooklistAdapter
         SeriesHolder(@NonNull final BooklistAdapter adapter,
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(adapter, itemView, group,
-                  DBKey.BOOL_SERIES_IS_COMPLETE, R.drawable.ic_baseline_done_all_24);
+            super(adapter, itemView, group);
+            setIsCompleteColumnKey(DBKey.BOOL_SERIES_IS_COMPLETE);
         }
 
         @Override

@@ -195,6 +195,9 @@ public class BooksOnBookshelf
     /** Delegate for Amazon. */
     @Nullable
     private AmazonHandler mAmazonHandler;
+    /** Delegate for viewing a book on an external website. */
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookHandler;
 
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
@@ -278,8 +281,7 @@ public class BooksOnBookshelf
                     }
                 }
             });
-    @Nullable
-    private ViewBookOnWebsiteHandler mViewBookHandler;
+
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
@@ -598,8 +600,8 @@ public class BooksOnBookshelf
     private void createFabMenu(@NonNull final SharedPreferences global) {
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
-        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID).setEnabled(
-                EditBookExternalIdFragment.isShowTab(global));
+        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
+                .setEnabled(EditBookExternalIdFragment.isShowTab(global));
     }
 
     /**
@@ -1434,8 +1436,8 @@ public class BooksOnBookshelf
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         updateSyncMenuVisibility(global);
-        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID).setEnabled(
-                EditBookExternalIdFragment.isShowTab(global));
+        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
+                .setEnabled(EditBookExternalIdFragment.isShowTab(global));
 
         // Initialize/Update the list of bookshelves
         mVm.reloadBookshelfList(this);
