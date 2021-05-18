@@ -619,8 +619,7 @@ public class ShowBookFragment
             fields.add(R.id.location, new TextViewAccessor<>(), DBKey.KEY_LOCATION)
                   .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-            fields.add(R.id.rating, new RatingBarAccessor(false), DBKey.KEY_RATING)
-                  .setRelatedFields(R.id.lbl_rating);
+            fields.add(R.id.rating, new RatingBarAccessor(false), DBKey.KEY_RATING);
 
             fields.add(R.id.condition, new TextViewAccessor<>(
                                new StringArrayResFormatter(context, R.array.conditions_book)),

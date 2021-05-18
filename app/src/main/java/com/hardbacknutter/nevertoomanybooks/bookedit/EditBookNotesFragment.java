@@ -85,8 +85,7 @@ public class EditBookNotesFragment
         fields.add(R.id.cbx_read, new CompoundButtonAccessor(true), DBKey.BOOL_READ);
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(true), DBKey.BOOL_SIGNED);
 
-        fields.add(R.id.rating, new RatingBarAccessor(true), DBKey.KEY_RATING)
-              .setRelatedFields(R.id.lbl_rating);
+        fields.add(R.id.rating, new RatingBarAccessor(true), DBKey.KEY_RATING);
 
         fields.add(R.id.notes, new EditTextAccessor<>(), DBKey.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
