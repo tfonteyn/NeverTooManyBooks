@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *                 android:id="@+id/description"
  *                 style="@style/notesTextEntry"
  *                 android:layout_width="match_parent"
+ *                 android:layout_height="wrap_content"
  *                 tools:ignore="Autofill"
  *                 tools:text="@tools:sample/lorem/random"
  *                 />

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsCon
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.FtsDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * FIXME: open screen, click in field -> keyboard up * now rotate screen... logcat msg
@@ -97,26 +97,9 @@ public class SearchFtsFragment
     @Nullable
     private Timer mTimer;
     /** Detect text changes and call userIsActive(...). */
-    private final TextWatcher mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-        }
-
-        @Override
-        public void afterTextChanged(@NonNull final Editable editable) {
-            // we're not going to change the Editable, no need to toggle this listener
-            userIsActive(true);
-        }
+    private final TextWatcher mTextWatcher = (ExtTextWatcher) editable -> {
+        // we're not going to change the Editable, no need to toggle this listener
+        userIsActive(true);
     };
 
     /** View Binding. */

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.text.Editable;
-import android.text.TextWatcher;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -44,6 +43,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * This class name is a bit of a misnomer by now.
@@ -72,19 +72,16 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public class ISBN {
 
-    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
-
     public static final int VALIDITY_NONE = 0;
     public static final int VALIDITY_LOOSE = 1;
     public static final int VALIDITY_STRICT = 2;
-
     public static final int TYPE_ISBN10 = 1;
     /** ISBN-13 is a subtype of EAN-13. See {@link #isType(int)}. */
     public static final int TYPE_ISBN13 = 2;
     static final int TYPE_EAN13 = 3;
     static final int TYPE_UPC_A = 4;
     static final int TYPE_INVALID = 0;
-
+    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
     /** Log tag. */
     private static final String TAG = "ISBN";
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
@@ -830,7 +827,7 @@ public class ISBN {
     }
 
     public static class CleanupTextWatcher
-            implements TextWatcher {
+            implements ExtTextWatcher {
 
         @NonNull
         private final TextInputEditText mEditText;
@@ -852,22 +849,6 @@ public class ISBN {
         public void setValidityLevel(@Validity final int isbnValidityCheck) {
             mIsbnValidityCheck = isbnValidityCheck;
             clean(mEditText.getEditableText());
-        }
-
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-
         }
 
         @Override
@@ -935,7 +916,7 @@ public class ISBN {
     }
 
     public static class ValidationTextWatcher
-            implements TextWatcher {
+            implements ExtTextWatcher {
 
         @NonNull
         private final TextInputLayout mLayout;
@@ -967,22 +948,6 @@ public class ISBN {
         public void setValidityLevel(@Validity final int isbnValidityCheck) {
             mIsbnValidityCheck = isbnValidityCheck;
             validate(mEditText.getEditableText());
-        }
-
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-
         }
 
         @Override

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +30,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * Stores and retrieves data from an EditText.
@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *                 android:id="@+id/title"
  *                 style="@style/titleTextEntry"
  *                 android:layout_width="match_parent"
+ *                 android:layout_height="wrap_content"
  *                 tools:ignore="Autofill"
  *                 tools:text="@sample/data.json/book/title"
  *                 />
@@ -61,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  */
 public class EditTextAccessor<T>
         extends TextAccessor<T, EditText>
-        implements TextWatcher {
+        implements ExtTextWatcher {
 
     /** Log tag. */
     private static final String TAG = "EditTextAccessor";
@@ -209,19 +210,5 @@ public class EditTextAccessor<T>
         broadcastChange();
 
         mLastChange = System.currentTimeMillis();
-    }
-
-    @Override
-    public void beforeTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int count,
-                                  final int after) {
-    }
-
-    @Override
-    public void onTextChanged(@NonNull final CharSequence s,
-                              final int start,
-                              final int before,
-                              final int count) {
     }
 }

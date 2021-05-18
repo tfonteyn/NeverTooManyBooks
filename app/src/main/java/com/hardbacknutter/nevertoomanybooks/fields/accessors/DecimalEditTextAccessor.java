@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.widget.EditText;
 
@@ -33,6 +32,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *             <com.google.android.material.textfield.TextInputEditText
  *                 android:id="@+id/price_paid"
  *                 style="@style/priceTextEntry"
+ *                 android:layout_height="wrap_content"
  *                 android:layout_width="match_parent"
  *                 tools:ignore="Autofill"
  *                 tools:text="12.99"
@@ -85,7 +86,7 @@ public class DecimalEditTextAccessor
      * TextWatcher for TextView fields. Sets the Field value after each change.
      */
     private static class DecimalTextWatcher
-            implements TextWatcher {
+            implements ExtTextWatcher {
 
         private static final String DIGITS = "0123456789";
         @NonNull
@@ -108,22 +109,6 @@ public class DecimalEditTextAccessor
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
 
             enableListener(mView.getText());
-        }
-
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-
         }
 
         @Override

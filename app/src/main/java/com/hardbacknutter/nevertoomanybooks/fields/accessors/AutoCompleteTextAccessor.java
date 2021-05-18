@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
@@ -34,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
 
 
 /**
@@ -54,7 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *             <com.google.android.material.textfield.MaterialAutoCompleteTextView
  *                 android:id="@+id/genre"
  *                 style="@style/autoCompleteTextEntry"
+ *                 android:completionThreshold="2"
  *                 android:layout_width="match_parent"
+ *                 android:layout_height="wrap_content"
  *                 android:imeOptions="actionNext"
  *                 tools:ignore="LabelFor"
  *                 tools:text="Fiction"
@@ -65,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  */
 public class AutoCompleteTextAccessor
         extends TextAccessor<String, AutoCompleteTextView>
-        implements TextWatcher {
+        implements ExtTextWatcher {
 
     /** Log tag. */
     private static final String TAG = "AutoCompleteTextAcc";
@@ -215,19 +217,5 @@ public class AutoCompleteTextAccessor
         broadcastChange();
 
         mLastChange = System.currentTimeMillis();
-    }
-
-    @Override
-    public void beforeTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int count,
-                                  final int after) {
-    }
-
-    @Override
-    public void onTextChanged(@NonNull final CharSequence s,
-                              final int start,
-                              final int before,
-                              final int count) {
     }
 }
