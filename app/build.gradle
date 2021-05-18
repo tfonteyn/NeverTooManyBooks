@@ -92,6 +92,7 @@ if (project.hasProperty("NeverTooManyBooks.email")
 
 android {
     compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
     // 2021-02-16 world wide:
@@ -110,9 +111,13 @@ android {
 
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
+        versionCode 10
+        versionName = "2.5.0"
+
         // see NOTES.txt
         minSdkVersion 26
         targetSdkVersion 30
+
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 

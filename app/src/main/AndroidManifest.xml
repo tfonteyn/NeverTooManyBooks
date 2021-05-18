@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hardbacknutter.nevertoomanybooks"
-    android:installLocation="auto"
-    android:versionCode="10"
-    android:versionName="2.5.0">
+    android:installLocation="auto">
 
     <!-- scanning bar codes / cover images... -->
     <uses-feature
