@@ -34,6 +34,7 @@ import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.DialogConfigurationBuilder;
 import org.acra.config.MailSenderConfigurationBuilder;
 import org.acra.config.ToastConfigurationBuilder;
+import org.acra.data.StringFormat;
 import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -96,14 +97,16 @@ public class App
      */
     private void initAcra() {
         final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
-                .setResReportSendSuccessToast(R.string.acra_resReportSendSuccessToast)
-                .setResReportSendFailureToast(R.string.error_email_failed)
-                .setApplicationLogFileDir(Directory.FILES)
-                .setApplicationLogFile(
+                .withBuildConfigClass(BuildConfig.class)
+                .withReportFormat(StringFormat.JSON)
+                .withResReportSendSuccessToast(R.string.acra_resReportSendSuccessToast)
+                .withResReportSendFailureToast(R.string.error_email_failed)
+                .withApplicationLogFileDir(Directory.FILES)
+                .withApplicationLogFile(
                         ServiceLocator.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE)
-                .setApplicationLogFileLines(ACRA_LOGFILE_LINES)
+                .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
                 // TODO: comment-out unneeded fields
-                .setReportContent(
+                .withReportContent(
                         // Device
                         ReportField.PHONE_MODEL,
                         ReportField.BRAND,
@@ -142,20 +145,23 @@ public class App
                         ReportField.USER_COMMENT);
 
         builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-               .setMailTo(BuildConfig.EMAIL_ACRA)
-               .setReportFileName(EMAIL_ACRA_ATTACHMENTS);
+               .withMailTo(BuildConfig.EMAIL_ACRA)
+               .withReportFileName(EMAIL_ACRA_ATTACHMENTS)
+               .withEnabled(true);
 
         // Optional, displayed as soon as the crash occurs,
         // before collecting data which can take a few seconds
         builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-               .setResText(R.string.acra_resToastText);
+               .withResText(R.string.acra_resToastText)
+               .withEnabled(true);
 
         builder.getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
-               .setResText(R.string.acra_resDialogText)
-               .setResTitle(R.string.app_name)
-               .setResTheme(R.style.Theme_App)
-               .setResIcon(R.drawable.ic_baseline_warning_24)
-               .setResCommentPrompt(R.string.acra_resDialogCommentPrompt);
+               .withResText(R.string.acra_resDialogText)
+               .withResTitle(R.string.app_name)
+               .withResTheme(R.style.Theme_App)
+               .withResIcon(R.drawable.ic_baseline_warning_24)
+               .withResCommentPrompt(R.string.acra_resDialogCommentPrompt)
+               .withEnabled(true);
 
 
         ACRA.init(this, builder);
