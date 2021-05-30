@@ -35,6 +35,6 @@
 
         <!-- RELEASE: remove this.
             The developers home network unprotected Calibre Content Server for testing... -->
-        <domain includeSubdomains="true">192.168.0.202</domain>
+        <domain includeSubdomains="true">192.168.0.203</domain>
     </domain-config>
 </network-security-config>
