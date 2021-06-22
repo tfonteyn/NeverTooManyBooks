@@ -331,6 +331,23 @@
         <item name="android:minWidth">@dimen/screen_min_width</item>
     </style>
 
+    <style name="Progress.Container" parent="">
+        <item name="android:alpha">0.8</item>
+        <item name="android:background">@color/grey_100</item>
+        <item name="android:clickable">true</item>
+        <item name="android:elevation">@dimen/progress_z_backdrop</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Progress.Circle" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:elevation">@dimen/progress_z</item>
+        <item name="android:indeterminate">true</item>
+        <!--        <item name="indicatorColor">?attr/colorPrimaryDark</item>-->
+        <item name="indicatorSize">96dp</item>
+        <!--        <item name="trackColor">?attr/colorSecondary</item>-->
+    </style>
     <!-- *************************************************************************************** -->
 
 </resources>

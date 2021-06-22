@@ -41,7 +41,7 @@ import java.util.Objects;
 public class TopLevelItemDecoration
         extends RecyclerView.ItemDecoration {
 
-    private static final int[] ATTRS = new int[]{android.R.attr.listDivider};
+    private static final int[] ATTRS = {android.R.attr.listDivider};
     private final Rect mBounds = new Rect();
     @NonNull
     private final Drawable mDivider;

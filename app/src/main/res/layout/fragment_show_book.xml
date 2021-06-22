@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,11 +37,8 @@
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/cover_operation_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Progress.Circle"
         android:layout_gravity="center"
-        android:elevation="@dimen/progress_z"
-        android:indeterminate="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
