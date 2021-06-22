@@ -204,8 +204,10 @@ public final class NetworkUtils {
                     throw (IOException) e.getCause();
                 }
                 // Shouldn't happen... flw...
-                throw new NetworkUnavailableException("DNS lookup failed for: " + host,
-                                                      e.getCause());
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
+                throw new UnknownHostException(host);
 
             } catch (@NonNull final TimeoutException e) {
                 // re-throw as if it's coming from the network call.
