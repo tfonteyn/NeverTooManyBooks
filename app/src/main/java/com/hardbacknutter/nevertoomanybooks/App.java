@@ -110,12 +110,12 @@ public class App
                         // Device
                         ReportField.PHONE_MODEL,
                         ReportField.BRAND,
-                        ReportField.PRODUCT,
+                        // ReportField.PRODUCT,
                         // ReportField.DEVICE_FEATURES,
                         ReportField.DISPLAY,
                         ReportField.ANDROID_VERSION,
                         ReportField.BUILD,
-                        ReportField.ENVIRONMENT,
+                        // ReportField.ENVIRONMENT,
                         ReportField.TOTAL_MEM_SIZE,
                         ReportField.AVAILABLE_MEM_SIZE,
 
@@ -125,7 +125,6 @@ public class App
 
                         // Application
                         ReportField.APP_VERSION_CODE,
-                        ReportField.APP_VERSION_NAME,
                         ReportField.BUILD_CONFIG,
                         ReportField.FILE_PATH,
 
