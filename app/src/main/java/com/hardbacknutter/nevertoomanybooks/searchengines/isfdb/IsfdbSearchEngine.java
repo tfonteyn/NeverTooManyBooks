@@ -1253,7 +1253,10 @@ public class IsfdbSearchEngine
     private void processExternalIdElements(@NonNull final Collection<Element> elements,
                                            @NonNull final Bundle bookData) {
         elements.stream()
-                .map(element -> element.select("a").first().attr("href"))
+                .map(element -> element.select("a").first())
+                .filter(Objects::nonNull)
+                .map(element -> element.attr("href"))
+                .filter(Objects::nonNull)
                 .forEach(url -> {
                     if (url.contains("www.worldcat.org")) {
                         // http://www.worldcat.org/oclc/60560136
