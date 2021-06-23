@@ -319,7 +319,12 @@ public final class Site
         /** Covers. */
         Covers(R.string.lbl_covers, "covers"),
         /** Alternative editions for a given isbn. */
-        AltEditions(R.string.tab_lbl_alternative_editions, "alted");
+        AltEditions(R.string.tab_lbl_alternative_editions, "alted"),
+        /**
+         * List of sites for which we store an id.
+         * FIXME: this is not actually 'search' functionality.
+         */
+        ViewOnSite(R.string.menu_view_book_at, "view");
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")

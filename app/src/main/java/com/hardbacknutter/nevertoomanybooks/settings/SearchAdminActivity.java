@@ -35,6 +35,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminSearchBinding;
@@ -63,14 +65,12 @@ public class SearchAdminActivity
         mVm = new ViewModelProvider(this).get(SearchAdminViewModel.class);
         mVm.init(getIntent().getExtras());
 
-        if (mVm.isSingleListMode()) {
-            final Site.Type type = mVm.getType();
-            setSubtitle(type.getLabelId());
+        final List<Site.Type> types = mVm.getTypes();
+        mTabAdapter = new TabAdapter(this, types);
 
+        if (types.size() == 1) {
+            setSubtitle(types.get(0).getLabelId());
             mVb.tabPanel.setVisibility(View.GONE);
-            mTabAdapter = new TabAdapter(this, type);
-        } else {
-            mTabAdapter = new TabAdapter(this, null);
         }
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
@@ -87,10 +87,11 @@ public class SearchAdminActivity
     public void onBackPressed() {
         final boolean hasSites = mVm.validate();
         if (hasSites) {
-            if (mVm.isSingleListMode()) {
+            if (mVm.getTypes().size() == 1) {
                 // single-list is NOT persisted, just returned for temporary usage.
+                final Site.Type type = mVm.getTypes().get(0);
                 final Intent resultIntent = new Intent()
-                        .putExtra(mVm.getType().getBundleKey(), mVm.getList());
+                        .putExtra(type.getBundleKey(), mVm.getList(type));
                 setResult(Activity.RESULT_OK, resultIntent);
 
             } else {
@@ -105,33 +106,23 @@ public class SearchAdminActivity
     }
 
     /**
-     * Encapsulate all the tabs that can be shown.
-     * <p>
-     * Limited to showing a single tab, or all tabs.
+     * Encapsulate all the tabs that will be shown.
      */
     private static class TabAdapter
             extends FragmentStateAdapter {
 
-        /**
-         * If in single-list mode, the type of that list,
-         * or {@code null} in all-lists mode.
-         */
-        @Nullable
-        private final Site.Type mSingleListType;
+        @NonNull
+        private final List<Site.Type> mTypes;
 
         TabAdapter(@NonNull final FragmentActivity container,
-                   @Nullable final Site.Type singleListType) {
+                   @NonNull final List<Site.Type> types) {
             super(container);
-            mSingleListType = singleListType;
+            mTypes = types;
         }
 
         @Override
         public int getItemCount() {
-            if (mSingleListType == null) {
-                return Site.Type.values().length;
-            } else {
-                return 1;
-            }
+            return mTypes.size();
         }
 
         @NonNull
@@ -139,7 +130,7 @@ public class SearchAdminActivity
         public Fragment createFragment(final int position) {
             final Fragment fragment = new SearchOrderFragment();
             final Bundle args = new Bundle(1);
-            args.putParcelable(SearchOrderFragment.BKEY_TYPE, toType(position));
+            args.putParcelable(SearchOrderFragment.BKEY_TYPE, mTypes.get(position));
             fragment.setArguments(args);
             return fragment;
         }
@@ -147,17 +138,7 @@ public class SearchAdminActivity
 
         @StringRes
         int getTabTitle(final int position) {
-            return toType(position).getLabelId();
-        }
-
-        @NonNull
-        private Site.Type toType(final int position) {
-            // showing a single tab ?
-            if (mSingleListType != null) {
-                return mSingleListType;
-            } else {
-                return Site.Type.values()[position];
-            }
+            return mTypes.get(position).getLabelId();
         }
     }
 }

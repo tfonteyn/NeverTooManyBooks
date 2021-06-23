@@ -100,8 +100,8 @@ public class ViewBookOnWebsiteHandler {
             if (domain != null) {
                 final SearchEngine.ViewBookByExternalId searchEngine =
                         (SearchEngine.ViewBookByExternalId)
-                                Site.Type.Data.getSite(oConfig.get().getEngineId())
-                                              .getSearchEngine();
+                                Site.Type.ViewOnSite.getSite(oConfig.get().getEngineId())
+                                                    .getSearchEngine();
 
                 final String externalId = rowData.getString(domain.getName());
                 final String url = searchEngine.createBrowserUrl(externalId);

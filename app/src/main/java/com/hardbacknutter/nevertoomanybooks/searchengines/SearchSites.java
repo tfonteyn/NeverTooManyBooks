@@ -241,6 +241,31 @@ public final class SearchSites {
                 break;
             }
 
+            case ViewOnSite: {
+                // only add sites here that implement {@link SearchEngine.ViewBookByExternalId}.
+
+                type.addSite(GOODREADS);
+                type.addSite(ISFDB);
+
+                // Dutch.
+                if (BuildConfig.ENABLE_LAST_DODO) {
+                    type.addSite(LAST_DODO, enableIfDutch);
+                }
+
+                if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
+                    type.addSite(LIBRARY_THING);
+                }
+
+                type.addSite(OPEN_LIBRARY);
+
+                // Dutch.
+                if (BuildConfig.ENABLE_STRIP_INFO) {
+                    type.addSite(STRIP_INFO_BE, enableIfDutch);
+                }
+
+                break;
+            }
+
             default:
                 throw new IllegalArgumentException(String.valueOf(type));
         }
