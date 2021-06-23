@@ -111,8 +111,8 @@ android {
 
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
-        versionCode 10
-        versionName = "2.5.0"
+        versionCode 11
+        versionName = "2.5.1"
 
         // see NOTES.txt
         minSdkVersion 26
