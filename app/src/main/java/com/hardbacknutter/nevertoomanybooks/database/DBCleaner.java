@@ -116,10 +116,10 @@ public class DBCleaner {
      * {@link FullDateParser}
      */
     public void datetimeFormat() {
-        final String[] columns = new String[]{
+        final String[] columns = {
                 DBKey.UTC_DATE_LAST_UPDATED,
                 DBKey.UTC_DATE_ADDED,
-        };
+                };
 
         final Pattern T = Pattern.compile("T");
 

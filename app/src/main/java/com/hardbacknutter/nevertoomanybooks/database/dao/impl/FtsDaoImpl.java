@@ -374,7 +374,7 @@ public class FtsDaoImpl
 
             final long bookId = rowData.getLong(PK_ID);
             // Query Parameter
-            final String[] qpBookId = new String[]{String.valueOf(bookId)};
+            final String[] qpBookId = {String.valueOf(bookId)};
 
             // Get list of authors
             try (Cursor authors = mDb.rawQuery(GET_AUTHORS_BY_BOOK_ID, qpBookId)) {

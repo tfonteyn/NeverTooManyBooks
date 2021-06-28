@@ -305,7 +305,7 @@ public class StripInfoReader
         final Book delta;
 
         final Map<String, SyncField> fieldsWanted = mSyncProcessor.filter(book);
-        final boolean[] coversWanted = new boolean[]{
+        final boolean[] coversWanted = {
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[0]),
                 fieldsWanted.containsKey(Book.BKEY_TMP_FILE_SPEC[1])};
 

@@ -176,7 +176,7 @@ public class StartupActivity
                     Context.STORAGE_SERVICE);
             final StorageVolume volume = storage.getStorageVolumes().get(actualVolumeIndex);
 
-            final CharSequence[] items = new CharSequence[]{
+            final CharSequence[] items = {
                     getString(R.string.lbl_storage_quit_and_reinsert_sdcard),
                     getString(R.string.lbl_storage_select, volume.getDescription(this)),
                     getString(R.string.lbl_edit_settings)};

@@ -96,8 +96,8 @@ public class UriInfo {
 
         if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             final ContentResolver contentResolver = context.getContentResolver();
-            final String[] columns = new String[]{OpenableColumns.DISPLAY_NAME,
-                                                  OpenableColumns.SIZE};
+            final String[] columns = {OpenableColumns.DISPLAY_NAME,
+                                      OpenableColumns.SIZE};
             try (Cursor cursor = contentResolver.query(mUri, columns, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
 

@@ -35,7 +35,7 @@ public class DetailScreenBookFields
         extends BookFields {
 
     /** Show the cover images (front/back) for each book on the details screen. */
-    public static final String[] PK_COVER = new String[]{
+    public static final String[] PK_COVER = {
             "style.details.show.thumbnail.0",
             "style.details.show.thumbnail.1",
             };

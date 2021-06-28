@@ -98,7 +98,7 @@ public class SearchCoordinator
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    public static final String[] BKEY_FILE_SPEC_ARRAY = new String[]{
+    public static final String[] BKEY_FILE_SPEC_ARRAY = {
             TAG + ":fileSpec_array:0",
             TAG + ":fileSpec_array:1"
     };

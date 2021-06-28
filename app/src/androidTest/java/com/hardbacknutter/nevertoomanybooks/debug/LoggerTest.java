@@ -59,9 +59,9 @@ public class LoggerTest {
         assertTrue(files.isEmpty());
 
         for (int i = 0; i < 6; i++) {
-            final Object[] params1 = new Object[]{"message " + (msgNr++)};
+            final Object[] params1 = {"message " + (msgNr++)};
             Logger.warn("loop=" + i, params1);
-            final Object[] params = new Object[]{"message " + (msgNr++)};
+            final Object[] params = {"message " + (msgNr++)};
             Logger.warn("loop=" + i, params);
             Logger.cycleLogs();
         }

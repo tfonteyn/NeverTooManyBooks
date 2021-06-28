@@ -45,7 +45,7 @@ class FullDateParserTest
 
     @Test
     void numeric() {
-        final Locale[] locales = new Locale[]{Locale.ENGLISH};
+        final Locale[] locales = {Locale.ENGLISH};
         final DateParser parser = new FullDateParser(locales);
 
         // Matches due to MM-dd pattern being before dd-MM
@@ -97,7 +97,7 @@ class FullDateParserTest
 
     @Test
     void englishOnly() {
-        final Locale[] locales = new Locale[]{Locale.ENGLISH};
+        final Locale[] locales = {Locale.ENGLISH};
         final DateParser parser = new FullDateParser(locales);
 
         assertEquals(s_1987_06_25, parser.parse("25-Jun-1987"));
@@ -115,7 +115,7 @@ class FullDateParserTest
 
     @Test
     void multiLocale() {
-        final Locale[] locales = new Locale[]{Locale.FRENCH, Locale.GERMAN};
+        final Locale[] locales = {Locale.FRENCH, Locale.GERMAN};
         final DateParser parser = new FullDateParser(locales);
 
         // English is always added (at the end of the parser list)

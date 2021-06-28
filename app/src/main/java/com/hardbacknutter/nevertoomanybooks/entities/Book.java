@@ -151,7 +151,7 @@ public class Book
      * <p>
      * <br>type: {@code String}
      */
-    public static final String[] BKEY_TMP_FILE_SPEC = new String[]{
+    public static final String[] BKEY_TMP_FILE_SPEC = {
             TAG + ":fileSpec:0",
             TAG + ":fileSpec:1"};
     /**

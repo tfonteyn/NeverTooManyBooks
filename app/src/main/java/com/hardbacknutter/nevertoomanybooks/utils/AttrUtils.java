@@ -131,7 +131,7 @@ public final class AttrUtils {
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
 
-        final int[] textSizeAttr = new int[]{android.R.attr.textSize};
+        final int[] textSizeAttr = {android.R.attr.textSize};
         final int indexOfAttrTextSize = 0;
         final TypedArray ta = context.getTheme().obtainStyledAttributes(tv.data, textSizeAttr);
         try {

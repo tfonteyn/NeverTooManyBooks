@@ -443,7 +443,7 @@ public class CropImageView
         zoom = Math.max(1f, zoom);
 
         if ((Math.abs(zoom - getScale()) / zoom) > 0.1) {
-            final float[] coordinates = new float[]{hv.mCropRect.centerX(), hv.mCropRect.centerY()};
+            final float[] coordinates = {hv.mCropRect.centerX(), hv.mCropRect.centerY()};
             getImageMatrix().mapPoints(coordinates);
             final float duration = 300f;
             final float incrementPerMs = (zoom - getScale()) / duration;

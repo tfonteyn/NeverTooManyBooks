@@ -259,7 +259,7 @@ public class SettingsFragment
             final int oldVolumeIndex = mStorageVolumePref.findIndexOfValue(mStoredVolumeIndex);
             final CharSequence oldVolumeDesc = mStorageVolumePref.getEntries()[oldVolumeIndex];
 
-            final CharSequence[] items = new CharSequence[]{
+            final CharSequence[] items = {
                     getString(R.string.lbl_storage_select, newVolumeDesc),
                     getString(R.string.info_moving_covers_from_x_to_y,
                               oldVolumeDesc, newVolumeDesc)};
