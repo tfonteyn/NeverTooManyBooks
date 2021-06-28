@@ -394,12 +394,6 @@ public final class ServiceLocator {
         return mDBHelper.isCollationCaseSensitive();
     }
 
-    void deleteDatabases(@NonNull final Context context) {
-        context.deleteDatabase(DBHelper.DATABASE_NAME);
-        context.deleteDatabase(CoversDbHelper.DATABASE_NAME);
-    }
-
-
     @NonNull
     public AuthorDao getAuthorDao() {
         synchronized (this) {

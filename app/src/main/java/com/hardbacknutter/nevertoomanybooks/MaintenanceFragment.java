@@ -71,8 +71,7 @@ public class MaintenanceFragment
     private static final int DEBUG_CLICKS = 3;
     /** After clicking the header 3 more times, the SQLite shell will allow updates. */
     private static final int DEBUG_CLICKS_ALLOW_SQL_UPDATES = 6;
-    /** After clicking the header another 3 times, the option to delete all data becomes visible. */
-    private static final int DEBUG_CLICKS_ALLOW_DELETE_ALL = 9;
+
     private int mDebugClicks;
     private boolean mDebugSqLiteAllowsUpdates;
 
@@ -107,12 +106,6 @@ public class MaintenanceFragment
                 mVb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_baseline_warning_24, 0, 0, 0);
                 mDebugSqLiteAllowsUpdates = true;
-            }
-
-            if (mDebugClicks >= DEBUG_CLICKS_ALLOW_DELETE_ALL) {
-                // show the button, it's red...
-                //URGENT: re-enable once the #onDeleteAll functionality is complete
-//                mVb.btnDebugClearDb.setVisibility(View.VISIBLE);
             }
         });
 
@@ -230,15 +223,6 @@ public class MaintenanceFragment
               .replace(R.id.main_fragment, fragment, SqliteShellFragment.TAG)
               .commit();
         });
-
-        mVb.btnDebugClearDb.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setTitle(R.string.action_clear_all_data)
-                .setIcon(R.drawable.ic_baseline_delete_24)
-                .setMessage(R.string.confirm_clear_all_data)
-                .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> onDeleteAll())
-                .create()
-                .show());
     }
 
     /**
@@ -311,27 +295,5 @@ public class MaintenanceFragment
                + FileUtils.deleteDirectory(ServiceLocator.getUpgradesDir(), null, null)
                + FileUtils.deleteDirectory(CoverDir.getTemp(context), null, null)
                + FileUtils.deleteDirectory(CoverDir.getDir(context), coverFilter, null);
-    }
-
-    private void onDeleteAll() {
-        final Context context = getContext();
-        try {
-            //FIXME: delete all style xml files
-            ServiceLocator.getInstance().getStyles().clearCache();
-
-            //noinspection ConstantConditions
-            PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
-
-            ServiceLocator.getInstance().deleteDatabases(context);
-
-            delete(null);
-
-            Snackbar.make(mVb.getRoot(), "Now quit the app", Snackbar.LENGTH_LONG).show();
-
-        } catch (@NonNull final CoverStorageException | SecurityException e) {
-            //noinspection ConstantConditions
-            StandardDialogs.showError(context, ExMsg
-                    .map(context, e).orElse(getString(R.string.error_storage_not_accessible)));
-        }
     }
 }

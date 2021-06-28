@@ -123,18 +123,5 @@
             app:layout_constraintTop_toBottomOf="@id/btn_debug_dump_prefs"
             tools:visibility="visible"
             />
-
-        <Button
-            android:id="@+id/btn_debug_clear_db"
-            style="@style/Button.Menu"
-            android:backgroundTint="?attr/colorError"
-            android:text="@string/action_clear_all_data"
-            android:textColor="?attr/colorOnError"
-            android:visibility="gone"
-            app:icon="@drawable/ic_baseline_delete_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_debug_sq_shell"
-            tools:visibility="visible"
-            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
