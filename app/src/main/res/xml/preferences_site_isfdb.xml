@@ -19,7 +19,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="@string/site_isfdb">
@@ -42,4 +43,27 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/lbl_timeouts">
+        <SeekBarPreference
+            android:defaultValue="20"
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="isfdb.timeout.connect"
+            android:max="60"
+            android:title="@string/lbl_connection_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+        <SeekBarPreference
+            android:defaultValue="60"
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="isfdb.timeout.read"
+            android:max="120"
+            android:title="@string/lbl_read_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -111,6 +112,12 @@ public class IsfdbSearchEngine
     public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
     /** Type: {@code boolean}. */
     static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
+
+    public static final CharSequence PK_CONNECT_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_connect;
+    public static final CharSequence PK_READ_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_read;
+
     /** Common CGI directory. */
     private static final String CGI_BIN = "/cgi-bin/";
     /** bibliographic information for one title. */
@@ -247,6 +254,7 @@ public class IsfdbSearchEngine
                 .setReadTimeoutMs(60_000)
                 .build();
     }
+
 
     @NonNull
     @Override

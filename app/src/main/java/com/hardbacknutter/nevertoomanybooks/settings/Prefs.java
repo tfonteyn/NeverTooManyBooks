@@ -66,6 +66,11 @@ public final class Prefs {
     /** Whether to show the fragment that allows the user to edit the external id's. */
     public static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
 
+
+    public static final String pk_suffix_host_url = ".host.url";
+    public static final String pk_suffix_timeout_connect = ".timeout.connect";
+    public static final String pk_suffix_timeout_read = ".timeout.read";
+
     private Prefs() {
     }
 

@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -137,21 +138,25 @@ public class CalibreContentServer {
 
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
-    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
-    public static final String VALUE_IS_NONE = "None";
-    /** Response root tag: Total number of items found in a query. */
-    public static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
-    /** Response root tag: Number of items returned in 'this' call. */
-    public static final String RESPONSE_TAG_NUM = "num";
+    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
+    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    public static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_connect;
+    public static final String PK_READ_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_read;
     /** Response root tag: The array of book ids returned in 'this' call. */
     public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
     /** Preferences prefix. */
     static final String PREF_KEY = "calibre";
-    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
+    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
+    static final String VALUE_IS_NONE = "None";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+    /** Response root tag: Total number of items found in a query. */
+    static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
+    /** Response root tag: Number of items returned in 'this' call. */
+    static final String RESPONSE_TAG_NUM = "num";
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
@@ -184,9 +189,8 @@ public class CalibreContentServer {
      * And a huge buffer to download the eBook files themselves.
      */
     private static final int BUFFER_FILE = 1_048_576;
-
-    private static final int CONNECT_TIMEOUT_IN_MS = 3_000;
-    private static final int READ_TIMEOUT_IN_MS = 2_000;
+    private static final int CONNECT_TIMEOUT_IN_SECONDS = 5;
+    private static final int READ_TIMEOUT_IN_SECONDS = 3;
 
     @NonNull
     private final Uri mServerUri;
@@ -206,6 +210,8 @@ public class CalibreContentServer {
     private SSLContext mSslContext;
 
     private boolean mCalibreExtensionInstalled;
+    private final int mConnectTimeoutInMs;
+    private final int mReadTimeoutInMs;
 
     /**
      * Constructor.
@@ -254,6 +260,11 @@ public class CalibreContentServer {
             //noinspection ConstantConditions
             mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
         }
+
+        mConnectTimeoutInMs = 1000 * global.getInt(PK_CONNECT_TIMEOUT_IN_SECONDS,
+                                                   CONNECT_TIMEOUT_IN_SECONDS);
+        mReadTimeoutInMs = 1000 * global.getInt(PK_READ_TIMEOUT_IN_SECONDS,
+                                                READ_TIMEOUT_IN_SECONDS);
     }
 
     /**
@@ -1020,8 +1031,8 @@ public class CalibreContentServer {
 
         if (mImageDownloader == null) {
             mImageDownloader = new ImageDownloader()
-                    .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
-                    .setReadTimeout(READ_TIMEOUT_IN_MS)
+                    .setConnectTimeout(mConnectTimeoutInMs)
+                    .setReadTimeout(mReadTimeoutInMs)
                     .setAuthHeader(mAuthHeader)
                     .setSslContext(mSslContext);
         }
@@ -1095,8 +1106,8 @@ public class CalibreContentServer {
             throws IOException {
 
         final TerminatorConnection con = new TerminatorConnection(url)
-                .setConnectTimeout(CONNECT_TIMEOUT_IN_MS)
-                .setReadTimeout(READ_TIMEOUT_IN_MS)
+                .setConnectTimeout(mConnectTimeoutInMs)
+                .setReadTimeout(mReadTimeoutInMs)
                 .setSSLContext(mSslContext);
 
         if (mAuthHeader != null) {

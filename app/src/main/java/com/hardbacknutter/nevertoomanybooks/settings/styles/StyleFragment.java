@@ -206,7 +206,7 @@ public class StyleFragment
         final SeekBarPreference levelExpPref = findPreference(UserStyle.PK_LEVELS_EXPANSION);
         //noinspection ConstantConditions
         levelExpPref.setMax(style.getGroups().size());
-        levelExpPref.setSummary(String.valueOf(style.getTopLevel()));
+        levelExpPref.setValue(style.getTopLevel());
     }
 
     @Override

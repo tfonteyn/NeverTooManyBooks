@@ -1636,4 +1636,9 @@
     <string name="lbl_exporting">Exporting</string>
     <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
 
+    <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
+    <string name="lbl_read_timeout">Read timeout (seconds)</string>
+    <string name="lbl_timeouts">Timeouts</string>
+    <string name="lbl_website_address">Site address (URL)</string>
+
 </resources>

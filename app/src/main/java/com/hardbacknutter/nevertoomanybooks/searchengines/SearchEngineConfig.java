@@ -28,12 +28,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
- * Immutable configuration data for a {@link SearchEngine}.
+ * Configuration data for a {@link SearchEngine}.
  * See {@link SearchSites} for more details.
  */
 public final class SearchEngineConfig {
@@ -51,7 +53,7 @@ public final class SearchEngineConfig {
     private final String mPrefKey;
 
     @NonNull
-    private final String mUrl;
+    private final String mHostUrl;
 
     /** Constructed from language+country. */
     @NonNull
@@ -67,8 +69,9 @@ public final class SearchEngineConfig {
     @IdRes
     private final int mDomainMenuId;
 
+    /** The DEFAULT for the engine. */
     private final int mConnectTimeoutMs;
-
+    /** The DEFAULT for the engine. */
     private final int mReadTimeoutMs;
 
     /**
@@ -94,7 +97,7 @@ public final class SearchEngineConfig {
         mId = builder.mId;
         mLabelId = builder.mLabelId;
         mPrefKey = builder.mPrefKey;
-        mUrl = builder.mUrl;
+        mHostUrl = builder.mHostUrl;
 
         if (builder.mLang != null && !builder.mLang.isEmpty()
             && builder.mCountry != null && !builder.mCountry.isEmpty()) {
@@ -161,8 +164,11 @@ public final class SearchEngineConfig {
     }
 
     @NonNull
-    public String getSiteUrl() {
-        return mUrl;
+    public String getHostUrl() {
+        //noinspection ConstantConditions
+        return ServiceLocator.getGlobalPreferences().getString(
+                mPrefKey + Prefs.pk_suffix_host_url,
+                mHostUrl);
     }
 
     /**
@@ -193,19 +199,23 @@ public final class SearchEngineConfig {
     /**
      * Timeout we allow for a connection to work.
      *
-     * @return defaults to 5 second. Override as needed.
+     * @return defaults to 5 second. Can be overridden by preferences.
      */
     public int getConnectTimeoutInMs() {
-        return mConnectTimeoutMs;
+        return ServiceLocator.getGlobalPreferences().getInt(
+                mPrefKey + Prefs.pk_suffix_timeout_connect,
+                mConnectTimeoutMs);
     }
 
     /**
      * Timeout we allow for a response to a request.
      *
-     * @return defaults to 10 second. Override as needed.
+     * @return defaults to 10 second. Can be overridden by preferences.
      */
     public int getReadTimeoutInMs() {
-        return mReadTimeoutMs;
+        return ServiceLocator.getGlobalPreferences().getInt(
+                mPrefKey + Prefs.pk_suffix_timeout_read,
+                mReadTimeoutMs);
     }
 
     /**
@@ -238,7 +248,7 @@ public final class SearchEngineConfig {
                + ", mId=" + mId
                + ", mName=`" + mLabelId + '`'
                + ", mPrefKey=`" + mPrefKey + '`'
-               + ", mUrl=`" + mUrl + '`'
+               + ", mUrl=`" + mHostUrl + '`'
                + ", mLocale=" + mLocale
                + ", mExternalIdDomain=" + mExternalIdDomain
                + ", mDomainViewId=" + mDomainViewId
@@ -269,7 +279,7 @@ public final class SearchEngineConfig {
         private final String mPrefKey;
 
         @NonNull
-        private final String mUrl;
+        private final String mHostUrl;
 
         @Nullable
         private String mLang;
@@ -305,12 +315,12 @@ public final class SearchEngineConfig {
                        @SearchSites.EngineId final int id,
                        @StringRes final int labelId,
                        @NonNull final String prefKey,
-                       @NonNull final String url) {
+                       @NonNull final String hostUrl) {
             mClass = clazz;
             mId = id;
             mLabelId = labelId;
             mPrefKey = prefKey;
-            mUrl = url;
+            mHostUrl = hostUrl;
         }
 
         @NonNull

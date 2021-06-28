@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -108,7 +109,7 @@ public class AmazonSearchEngine
     /** Preferences prefix. */
     private static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
-    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
+    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
     /** Param 1: external book ID; the ASIN/ISBN. */
@@ -169,19 +170,12 @@ public class AmazonSearchEngine
         mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
     }
 
-    @NonNull
-    static String getAmazonUrl() {
-        //noinspection ConstantConditions
-        return ServiceLocator.getGlobalPreferences()
-                             .getString(PK_HOST_URL, "https://www.amazon.com");
-    }
-
     public static SearchEngineConfig createConfig() {
         return new SearchEngineConfig.Builder(AmazonSearchEngine.class,
                                               SearchSites.AMAZON,
                                               R.string.site_amazon,
                                               PREF_KEY,
-                                              getAmazonUrl())
+                                              "https://www.amazon.com")
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN

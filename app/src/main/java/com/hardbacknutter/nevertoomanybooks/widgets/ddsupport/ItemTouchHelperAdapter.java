@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,8 +58,10 @@ public interface ItemTouchHelperAdapter {
      * @return {@code true} if the item was moved to the new adapter position.
      */
     @SuppressWarnings("UnusedReturnValue")
-    boolean onItemMove(int fromPosition,
-                       int toPosition);
+    default boolean onItemMove(final int fromPosition,
+                               final int toPosition) {
+        return false;
+    }
 
 
     /**
@@ -70,6 +72,8 @@ public interface ItemTouchHelperAdapter {
      *
      * @param position The position of the item dismissed.
      */
-    void onItemSwiped(int position);
+    default void onItemSwiped(final int position) {
+
+    }
 }
 

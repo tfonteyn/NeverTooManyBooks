@@ -52,6 +52,7 @@
             android:max="4"
             android:title="@string/pt_bob_list_state_expansion_level"
             app:min="1"
+            app:showSeekBarValue="true"
             />
 
         <MultiSelectListPreference

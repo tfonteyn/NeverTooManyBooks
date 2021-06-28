@@ -94,7 +94,7 @@ public class StripInfoBePreferencesViewModel
             final String url = SearchEngineRegistry
                     .getInstance()
                     .getByEngineId(SearchSites.STRIP_INFO_BE)
-                    .getSiteUrl();
+                    .getHostUrl();
 
             new StripInfoAuth(url).login();
 

@@ -19,10 +19,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="@string/site_calibre">
+        android:title="@string/lbl_calibre_content_server">
 
         <SwitchPreference
             android:defaultValue="true"
@@ -38,13 +39,14 @@
             android:summary="@string/info_not_set"
             android:title="@string/menu_download_folder"
             />
+
         <EditTextPreference
             android:defaultValue=""
             android:dependency="calibre.enabled"
             android:icon="@drawable/ic_baseline_link_24"
             android:key="calibre.host.url"
             android:summary="@string/info_not_set"
-            android:title="@string/lbl_calibre_content_server" />
+            android:title="@string/lbl_website_address" />
 
         <Preference
             android:dependency="calibre.enabled"
@@ -70,6 +72,30 @@
             android:key="calibre.host.password"
             android:summary="@string/info_not_set"
             android:title="@string/password"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_timeouts">
+        <SeekBarPreference
+            android:defaultValue="10"
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="calibre.timeout.connect"
+            android:max="60"
+            android:title="@string/lbl_connection_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
+            />
+        <SeekBarPreference
+            android:defaultValue="10"
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_baseline_more_time_24"
+            android:key="calibre.timeout.read"
+            android:max="120"
+            android:title="@string/lbl_read_timeout"
+            app:min="3"
+            app:showSeekBarValue="true"
             />
     </PreferenceCategory>
 

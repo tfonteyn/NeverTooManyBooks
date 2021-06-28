@@ -112,7 +112,7 @@ public abstract class SearchEngineBase
     @NonNull
     @Override
     public String getSiteUrl() {
-        return mConfig.getSiteUrl();
+        return mConfig.getHostUrl();
     }
 
     @NonNull

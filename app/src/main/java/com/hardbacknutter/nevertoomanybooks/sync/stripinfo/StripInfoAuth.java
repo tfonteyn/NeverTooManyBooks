@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -60,6 +61,10 @@ public class StripInfoAuth {
     public static final String PREF_KEY = "stripinfo";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+    public static final CharSequence PK_CONNECT_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_connect;
+    public static final CharSequence PK_READ_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_read;
 
     private static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */

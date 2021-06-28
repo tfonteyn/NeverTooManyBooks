@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 public class AmazonHandler {
 
@@ -226,8 +228,11 @@ public class AmazonHandler {
         // Start the intent even if for some reason the fields string is empty.
         // If we don't the user will not see anything happen / we'd need to popup
         // an explanation why we cannot search.
-        final String url = AmazonSearchEngine.getAmazonUrl()
-                           + AmazonSearchEngine.SEARCH_SUFFIX + fields.trim();
+        final String url = SearchEngineRegistry.getInstance()
+                                               .getByEngineId(SearchSites.AMAZON)
+                                               .getHostUrl()
+                           + AmazonSearchEngine.SEARCH_SUFFIX
+                           + fields.trim();
         mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
