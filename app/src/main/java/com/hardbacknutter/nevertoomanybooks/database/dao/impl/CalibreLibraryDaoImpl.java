@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -32,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
@@ -300,6 +302,12 @@ public class CalibreLibraryDaoImpl
                         vlib.setId(iId);
                     }
                 }
+            } catch (@NonNull final SQLiteConstraintException e) {
+                //URGENT: import fails if bookshelf does not exist yet, or if the id is different
+                // we're fixing this by changing the json format, but need to catch old versions
+                // failing here
+                Logger.warn(TAG, e, "Can't create virtual libraries for "
+                                    + "CalibreLibrary library=" + library.toString());
             }
         }
     }
