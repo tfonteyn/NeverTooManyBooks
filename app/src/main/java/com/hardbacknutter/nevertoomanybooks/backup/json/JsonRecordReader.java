@@ -274,8 +274,6 @@ public class JsonRecordReader
         }
 
         int row = 1;
-        // Count the number of rows between committing a transaction
-        int txRowCount = 0;
         // Instance in time when we last send a progress message
         long lastUpdateTime = 0;
         // Count the nr of books in between progress updates.
@@ -289,67 +287,69 @@ public class JsonRecordReader
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
-        try {
-            // Iterate through each imported element
-            for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
-                // every 10 inserted, we commit the transaction
-                if (db.inTransaction() && txRowCount > 10) {
+
+        // Iterate through each imported element
+        for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
+
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+            try {
+                final Book book = mBookCoder.decode(books.getJSONObject(i));
+                Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID),
+                                       "KEY_BOOK_UUID");
+
+                final long importNumericId = book.getLong(DBKey.PK_ID);
+                book.remove(DBKey.PK_ID);
+                importBookWithUuid(context, helper, book, importNumericId);
+
+                if (txLock != null) {
                     db.setTransactionSuccessful();
+                }
+            } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
+                //TODO: use a meaningful user-displaying string.
+                handleRowException(row, e, context.getString(R.string.error_import_csv_line, row));
+
+            } finally {
+                if (txLock != null) {
                     db.endTransaction(txLock);
                 }
-                if (!db.inTransaction()) {
-                    txLock = db.beginTransaction(true);
-                    txRowCount = 0;
-                }
-                txRowCount++;
-
-                try {
-                    final Book book = mBookCoder.decode(books.getJSONObject(i));
-                    Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID),
-                                           "KEY_BOOK_UUID");
-
-                    final long importNumericId = book.getLong(DBKey.PK_ID);
-                    book.remove(DBKey.PK_ID);
-                    importBookWithUuid(context, helper, book, importNumericId);
-
-                } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
-                    //TODO: use a meaningful user-displaying string.
-                    mResults.booksFailed++;
-                    mResults.failedLinesMessage.add(
-                            context.getString(R.string.error_import_csv_line, row));
-                    mResults.failedLinesNr.add(row);
-
-                    Logger.warn(TAG, "e=" + e.getMessage(), ERROR_IMPORT_FAILED_AT_ROW + row);
-
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                        // logging with the full exception is VERY HEAVY
-                        Logger.error(TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                    }
-                }
-
-                row++;
-
-                delta++;
-                final long now = System.currentTimeMillis();
-                if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
-                    && !progressListener.isCancelled()) {
-                    final String msg = String.format(mProgressMessage,
-                                                     mBooksString,
-                                                     mResults.booksCreated,
-                                                     mResults.booksUpdated,
-                                                     mResults.booksSkipped);
-                    progressListener.publishProgress(delta, msg);
-                    lastUpdateTime = now;
-                    delta = 0;
-                }
             }
-        } finally {
-            if (db.inTransaction()) {
-                db.setTransactionSuccessful();
-                db.endTransaction(txLock);
+
+            row++;
+
+            delta++;
+            final long now = System.currentTimeMillis();
+            if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
+                && !progressListener.isCancelled()) {
+                final String msg = String.format(mProgressMessage,
+                                                 mBooksString,
+                                                 mResults.booksCreated,
+                                                 mResults.booksUpdated,
+                                                 mResults.booksSkipped);
+                progressListener.publishProgress(delta, msg);
+                lastUpdateTime = now;
+                delta = 0;
             }
         }
         // minus 1 to compensate for the last increment
         mResults.booksProcessed = row - 1;
+    }
+
+    private void handleRowException(final int row,
+                                    @NonNull final Exception e,
+                                    @NonNull final String msg) {
+        mResults.booksFailed++;
+        mResults.failedLinesMessage.add(msg);
+        mResults.failedLinesNr.add(row);
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                Logger.w(TAG, "Import failed at row " + row + "|e=" + e.getMessage());
+            } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+                // logging with the full exception is VERY HEAVY
+                Logger.e(TAG, "Import failed at row " + row, e);
+            }
+        }
     }
 }

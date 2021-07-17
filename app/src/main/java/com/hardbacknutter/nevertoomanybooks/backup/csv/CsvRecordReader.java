@@ -196,92 +196,84 @@ public class CsvRecordReader
 
         // One book == One row. We start after the headings row.
         int row = 1;
-        // Count the number of rows between committing a transaction
-        int txRowCount = 0;
         // Instance in time when we last send a progress message
         long lastUpdateTime = 0;
         // Count the nr of books in between progress updates.
         int delta = 0;
 
+        // not perfect, but good enough
+        if (progressListener.getMaxPos() < books.size()) {
+            progressListener.setMaxPos(books.size());
+        }
+
         final SynchronizedDb db = ServiceLocator.getInstance().getDb();
 
         Synchronizer.SyncLock txLock = null;
-        try {
-            // not perfect, but good enough
-            if (progressListener.getMaxPos() < books.size()) {
-                progressListener.setMaxPos(books.size());
-            }
 
-            // Iterate through each imported row or until cancelled
-            while (row < books.size() && !progressListener.isCancelled()) {
-                // every 10 inserted, we commit the transaction
-                if (db.inTransaction() && txRowCount > 10) {
+        // Iterate through each imported row or until cancelled
+        while (row < books.size() && !progressListener.isCancelled()) {
+
+            if (!db.inTransaction()) {
+                txLock = db.beginTransaction(true);
+            }
+            try {
+                final String[] csvDataRow = parse(context, row, books.get(row));
+
+                if (csvDataRow.length != csvColumnNames.length) {
+                    throw new ImportException(context.getString(
+                            R.string.error_import_csv_column_count_mismatch, row));
+                }
+
+                final Book book = mBookCoder.decode(context, csvColumnNames, csvDataRow);
+
+                // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
+                @Nullable
+                final boolean hasUuid = handleUuid(book);
+                // Do we have a DBDefinitions.KEY_PK_ID in the import ?
+                final long importNumericId = extractNumericId(book);
+
+                // ALWAYS let the UUID trump the ID; we may be importing someone else's list
+                if (hasUuid) {
+                    importBookWithUuid(context, helper, book, importNumericId);
+
+                } else if (importNumericId > 0) {
+                    importBookWithId(context, helper, book, importNumericId);
+
+                } else {
+                    importBook(context, book);
+                }
+
+                if (txLock != null) {
                     db.setTransactionSuccessful();
+                }
+            } catch (@NonNull final DaoWriteException
+                    | SQLiteDoneException e) {
+                //TODO: use a meaningful user-displaying string.
+                handleRowException(row, e, context.getString(R.string.error_import_csv_line, row));
+
+            } catch (@NonNull final ImportException e) {
+                handleRowException(row, e, e.getUserMessage(context));
+
+            } finally {
+                if (txLock != null) {
                     db.endTransaction(txLock);
                 }
-                if (!db.inTransaction()) {
-                    txLock = db.beginTransaction(true);
-                    txRowCount = 0;
-                }
-                txRowCount++;
-
-                try {
-                    final String[] csvDataRow = parse(context, row, books.get(row));
-
-                    if (csvDataRow.length != csvColumnNames.length) {
-                        throw new ImportException(context.getString(
-                                R.string.error_import_csv_column_count_mismatch, row));
-                    }
-
-                    final Book book = mBookCoder.decode(context, csvColumnNames, csvDataRow);
-
-                    // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
-                    @Nullable
-                    final boolean hasUuid = handleUuid(book);
-                    // Do we have a DBDefinitions.KEY_PK_ID in the import ?
-                    final long importNumericId = extractNumericId(book);
-
-                    // ALWAYS let the UUID trump the ID; we may be importing someone else's list
-                    if (hasUuid) {
-                        importBookWithUuid(context, helper, book, importNumericId);
-
-                    } else if (importNumericId > 0) {
-                        importBookWithId(context, helper, book, importNumericId);
-
-                    } else {
-                        importBook(context, book);
-                    }
-
-                } catch (@NonNull final DaoWriteException
-                        | SQLiteDoneException e) {
-                    //TODO: use a meaningful user-displaying string.
-                    handleRowException(row, e,
-                                       context.getString(R.string.error_import_csv_line, row));
-
-                } catch (@NonNull final ImportException e) {
-                    handleRowException(row, e, e.getUserMessage(context));
-                }
-
-                row++;
-
-                delta++;
-                final long now = System.currentTimeMillis();
-                if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
-                    && !progressListener.isCancelled()) {
-                    final String msg = String.format(mProgressMessage,
-                                                     mBooksString,
-                                                     mResults.booksCreated,
-                                                     mResults.booksUpdated,
-                                                     mResults.booksSkipped);
-                    progressListener.publishProgress(delta, msg);
-                    lastUpdateTime = now;
-                    delta = 0;
-                }
             }
-        } finally {
-            if (db.inTransaction()) {
-                db.setTransactionSuccessful();
-                db.endTransaction(txLock);
+
+            row++;
+
+            delta++;
+            final long now = System.currentTimeMillis();
+            if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
+                && !progressListener.isCancelled()) {
+                final String msg = String.format(mProgressMessage,
+                                                 mBooksString,
+                                                 mResults.booksCreated,
+                                                 mResults.booksUpdated,
+                                                 mResults.booksSkipped);
+                progressListener.publishProgress(delta, msg);
+                lastUpdateTime = now;
+                delta = 0;
             }
         }
 
