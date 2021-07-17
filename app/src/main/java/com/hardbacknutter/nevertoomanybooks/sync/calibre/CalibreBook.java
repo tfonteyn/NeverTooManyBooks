@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+/**
+ * These are the field names the Calibre Content Server uses/expects in its AJAX API.
+ */
 public final class CalibreBook {
 
     static final String USER_METADATA = "user_metadata";

@@ -225,16 +225,28 @@ public class CalibreContentServerWriter
             final LocalDateTime localTime =
                     mDateParser.parse(book.getString(DBKey.UTC_DATE_LAST_UPDATED));
             if (localTime != null && localTime.isAfter(remoteTime)) {
-                final JSONObject changes = collectChanges(library, calibreBook, book);
+                final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
+                final JSONObject changes = collectChanges(library, identifiers, book);
                 mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
                 mResults.booksWritten++;
             }
         }
     }
 
+    /**
+     * Transform a {@link Book} to a Calibre {@link JSONObject}.
+     * <p>
+     * Copy the wanted fields from the local {@link Book} into a {@link JSONObject}
+     * with field names {@link CalibreBook} as needed by Calibre.
+     *
+     * @param calibreBookIdentifiers the <strong>full</strong> list of identifiers for this
+     *                               book as <strong>fetched from the Calibre server</strong>
+     *
+     * @return the JSON data to send to the Calibre server
+     */
     @NonNull
     private JSONObject collectChanges(@NonNull final CalibreLibrary library,
-                                      @NonNull final JSONObject calibreBook,
+                                      @Nullable final JSONObject calibreBookIdentifiers,
                                       @NonNull final Book localBook)
             throws JSONException, IOException {
 
@@ -294,15 +306,14 @@ public class CalibreContentServerWriter
         // So, we send a combination of changes + the identifiers we don't know back to the server.
         final JSONObject localIdentifiers = collectIdentifiers(localBook);
         if (!localIdentifiers.isEmpty()) {
-            final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
-            if (identifiers != null) {
+            if (calibreBookIdentifiers != null) {
                 // overwrite remotes with locals
                 final Iterator<String> it = localIdentifiers.keys();
                 while (it.hasNext()) {
                     final String key = it.next();
-                    identifiers.put(key, localIdentifiers.get(key));
+                    calibreBookIdentifiers.put(key, localIdentifiers.get(key));
                 }
-                changes.put(CalibreBook.IDENTIFIERS, identifiers);
+                changes.put(CalibreBook.IDENTIFIERS, calibreBookIdentifiers);
 
             } else {
                 // no remotes, just send all locals

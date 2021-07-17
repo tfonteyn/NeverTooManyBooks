@@ -138,21 +138,24 @@ public class CalibreContentServer {
 
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
+    /** Response root tag: The array of book ids returned in 'this' call. */
+    public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+    /** Preferences prefix. */
+    static final String PREF_KEY = "calibre";
+
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    public static final String PK_HOST_URL =
+            PREF_KEY + Prefs.pk_suffix_host_url;
     public static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_connect;
     public static final String PK_READ_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_read;
-    /** Response root tag: The array of book ids returned in 'this' call. */
-    public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
 
-    /** Preferences prefix. */
-    static final String PREF_KEY = "calibre";
-    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
-    static final String VALUE_IS_NONE = "None";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+
+    /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
+    static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: Number of items returned in 'this' call. */
@@ -201,6 +204,9 @@ public class CalibreContentServer {
     /** As read from the Content Server. */
     @NonNull
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
+    private final int mConnectTimeoutInMs;
+    private final int mReadTimeoutInMs;
+
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary mDefaultLibrary;
@@ -208,10 +214,7 @@ public class CalibreContentServer {
     private ImageDownloader mImageDownloader;
     @Nullable
     private SSLContext mSslContext;
-
     private boolean mCalibreExtensionInstalled;
-    private final int mConnectTimeoutInMs;
-    private final int mReadTimeoutInMs;
 
     /**
      * Constructor.
