@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
@@ -86,6 +87,20 @@ public class CalibreLibrary
                           @NonNull final String name,
                           final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
+
+        mLibraryStringId = libraryId;
+        mUuid = uuid;
+        mLastSyncDate = "";
+    }
+
+    /**
+     * Constructor without ID.
+     */
+    public CalibreLibrary(@NonNull final String uuid,
+                          @NonNull final String libraryId,
+                          @NonNull final String name,
+                          @NonNull final Bookshelf mappedBookshelf) {
+        super(name, mappedBookshelf);
 
         mLibraryStringId = libraryId;
         mUuid = uuid;

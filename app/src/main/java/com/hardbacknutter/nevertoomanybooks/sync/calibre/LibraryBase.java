@@ -42,12 +42,27 @@ abstract class LibraryBase
 
     private long mMappedBookshelfId;
 
+    /**
+     * Constructor without ID.
+     */
     LibraryBase(@NonNull final String name,
                 final long mappedBookshelfId) {
         mName = name;
         mMappedBookshelfId = mappedBookshelfId;
     }
 
+    LibraryBase(@NonNull final String name,
+                @NonNull final Bookshelf mappedBookshelf) {
+        mName = name;
+        mMappedBookshelfId = mappedBookshelf.getId();
+    }
+
+    /**
+     * Full constructor.
+     *
+     * @param id      row id
+     * @param rowData with data
+     */
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
         mId = id;

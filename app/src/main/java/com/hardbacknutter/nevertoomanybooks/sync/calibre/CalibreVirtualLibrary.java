@@ -24,6 +24,7 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class CalibreVirtualLibrary
@@ -58,6 +59,19 @@ public class CalibreVirtualLibrary
                                  @NonNull final String expr,
                                  final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
+
+        mLibraryId = libraryId;
+        mExpr = expr;
+    }
+
+    /**
+     * Constructor without ID.
+     */
+    public CalibreVirtualLibrary(final long libraryId,
+                                 @NonNull final String name,
+                                 @NonNull final String expr,
+                                 @NonNull final Bookshelf mappedBookshelf) {
+        super(name, mappedBookshelf);
 
         mLibraryId = libraryId;
         mExpr = expr;
