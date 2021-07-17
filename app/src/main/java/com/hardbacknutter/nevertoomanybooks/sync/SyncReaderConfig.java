@@ -40,7 +40,7 @@ public final class SyncReaderConfig {
 
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
-    private SyncProcessor mSyncProcessor;
+    private SyncReaderProcessor mSyncProcessor;
 
     /**
      * New Books/Covers are always imported (depending on {@link #mImportEntries}).
@@ -74,11 +74,11 @@ public final class SyncReaderConfig {
     }
 
     @Nullable
-    public SyncProcessor getSyncProcessor() {
+    public SyncReaderProcessor getSyncProcessor() {
         return mSyncProcessor;
     }
 
-    public void setSyncProcessor(@Nullable final SyncProcessor syncProcessor) {
+    public void setSyncProcessor(@Nullable final SyncReaderProcessor syncProcessor) {
         mSyncProcessor = syncProcessor;
     }
 

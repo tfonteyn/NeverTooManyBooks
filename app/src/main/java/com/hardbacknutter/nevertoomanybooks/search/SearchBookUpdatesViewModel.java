@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -76,14 +76,14 @@ public class SearchBookUpdatesViewModel
     private final Book mCurrentBook = new Book();
 
     /** The configuration on which fields to update and how. */
-    private SyncProcessor.Builder mSyncProcessorBuilder;
+    private SyncReaderProcessor.Builder mSyncProcessorBuilder;
 
     /**
      * The final configuration build from {@link #mSyncProcessorBuilder},
      * ready to start processing.
      */
     @Nullable
-    private SyncProcessor mSyncProcessor;
+    private SyncReaderProcessor mSyncProcessor;
 
     /** Database Access. */
     private BookDao mBookDao;
@@ -154,9 +154,9 @@ public class SearchBookUpdatesViewModel
     /**
      * Entries are displayed in the order they are added here.
      */
-    private SyncProcessor.Builder createSyncProcessorBuilder() {
-        final SyncProcessor.Builder builder =
-                new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+    private SyncReaderProcessor.Builder createSyncProcessorBuilder() {
+        final SyncReaderProcessor.Builder builder =
+                new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
                         // DBKey.PREFS_IS_USED_COVER is the SharedPreference key indicating
                         // the Action needed for this field.
                         // The actual file names are in the Book.BKEY_TMP_FILE_SPEC array.

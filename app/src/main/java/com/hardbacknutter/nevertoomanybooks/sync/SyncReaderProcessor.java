@@ -53,19 +53,22 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
-public final class SyncProcessor
+/**
+ * Handles importing data with each field controlled by a {@link SyncAction}.
+ */
+public final class SyncReaderProcessor
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncProcessor> CREATOR = new Creator<SyncProcessor>() {
+    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<SyncReaderProcessor>() {
         @Override
-        public SyncProcessor createFromParcel(@NonNull final Parcel in) {
-            return new SyncProcessor(in);
+        public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
+            return new SyncReaderProcessor(in);
         }
 
         @Override
-        public SyncProcessor[] newArray(final int size) {
-            return new SyncProcessor[size];
+        public SyncReaderProcessor[] newArray(final int size) {
+            return new SyncReaderProcessor[size];
         }
     };
 
@@ -74,11 +77,11 @@ public final class SyncProcessor
     @NonNull
     private final Map<String, SyncField> mFields;
 
-    private SyncProcessor(@NonNull final Map<String, SyncField> fields) {
+    private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
         mFields = fields;
     }
 
-    protected SyncProcessor(@NonNull final Parcel in) {
+    protected SyncReaderProcessor(@NonNull final Parcel in) {
         final List<SyncField> list = new ArrayList<>();
         ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
 
@@ -546,7 +549,7 @@ public final class SyncProcessor
         }
 
         @NonNull
-        public SyncProcessor build() {
+        public SyncReaderProcessor build() {
             for (final Map.Entry<String, String> entry : mRelatedFields.entrySet()) {
                 final SyncField syncField = mFields.get(entry.getKey());
                 if (syncField != null && (syncField.getAction() != SyncAction.Skip)) {
@@ -554,7 +557,7 @@ public final class SyncProcessor
                     mFields.put(relatedKey, syncField.createRelatedField(relatedKey));
                 }
             }
-            return new SyncProcessor(mFields);
+            return new SyncReaderProcessor(mFields);
         }
     }
 }

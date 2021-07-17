@@ -58,9 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncProcessor;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -95,7 +95,7 @@ public class StripInfoReader
     private final StripInfoSearchEngine mSearchEngine;
     /** Which fields and how to process them for existing books. */
     @NonNull
-    private final SyncProcessor mSyncProcessor;
+    private final SyncReaderProcessor mSyncProcessor;
     /** cached localized progress string. */
     @NonNull
     private final String mBooksString;
@@ -113,7 +113,7 @@ public class StripInfoReader
         mCoversForNewBooks = new boolean[]{doCovers, doCovers};
 
         // Get either the custom passed-in, or the builtin default.
-        final SyncProcessor sp = config.getSyncProcessor();
+        final SyncReaderProcessor sp = config.getSyncProcessor();
         mSyncProcessor = sp != null ? sp : getDefaultSyncProcessor();
 
         mBookDao = ServiceLocator.getInstance().getBookDao();
@@ -132,8 +132,8 @@ public class StripInfoReader
      * @return a CopyIfBlank SyncProcessor
      */
     @NonNull
-    public static SyncProcessor getDefaultSyncProcessor() {
-        return new SyncProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+    public static SyncReaderProcessor getDefaultSyncProcessor() {
+        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
                 .add(R.string.site_stripinfo_be, DBKey.SID_STRIP_INFO)
 
                 .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
