@@ -27,7 +27,7 @@
         android:title="@string/site_stripinfo_be">
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="stripinfo.enabled"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
