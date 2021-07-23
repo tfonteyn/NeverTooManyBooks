@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.Bookshelfmapper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
@@ -196,7 +196,7 @@ public class StripInfoSearchEngine
             }
 
             // Recreate every time we load a doc; the user could have changed the preferences.
-            mCollectionFormParser = new CollectionFormParser(context, new Bookshelfmapper());
+            mCollectionFormParser = new CollectionFormParser(context, new BookshelfMapper());
         }
 
         return super.loadDocument(context, url);
@@ -337,108 +337,110 @@ public class StripInfoSearchEngine
                     primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
-                    bookData.putString(DBKey.KEY_TITLE, cleanText(titleUrlElement.text()));
-                    // extract the external (site) id from the url
-                    externalId = processExternalId(titleUrlElement, bookData);
+                    if (titleUrlElement != null) {
+                        bookData.putString(DBKey.KEY_TITLE, cleanText(titleUrlElement.text()));
+                        // extract the external (site) id from the url
+                        externalId = processExternalId(titleUrlElement, bookData);
 
-                    final Elements tds = row.select("td");
-                    int i = 0;
-                    while (i < tds.size()) {
-                        final Element td = tds.get(i);
-                        final String label = td.text();
+                        final Elements tds = row.select("td");
+                        int i = 0;
+                        while (i < tds.size()) {
+                            final Element td = tds.get(i);
+                            final String label = td.text();
 
-                        switch (label) {
-                            case "Scenario":
-                            case "Naar":
-                                i += processAuthor(td, Author.TYPE_WRITER);
-                                break;
+                            switch (label) {
+                                case "Scenario":
+                                case "Naar":
+                                    i += processAuthor(td, Author.TYPE_WRITER);
+                                    break;
 
-                            case "Tekeningen":
-                                i += processAuthor(td, Author.TYPE_ARTIST);
-                                break;
+                                case "Tekeningen":
+                                    i += processAuthor(td, Author.TYPE_ARTIST);
+                                    break;
 
-                            case "Kleuren":
-                                i += processAuthor(td, Author.TYPE_COLORIST);
-                                break;
-                            case "Inkting":
-                                i += processAuthor(td, Author.TYPE_INKING);
-                                break;
+                                case "Kleuren":
+                                    i += processAuthor(td, Author.TYPE_COLORIST);
+                                    break;
+                                case "Inkting":
+                                    i += processAuthor(td, Author.TYPE_INKING);
+                                    break;
 
-                            case "Cover":
-                                i += processAuthor(td, Author.TYPE_COVER_ARTIST);
-                                break;
+                                case "Cover":
+                                    i += processAuthor(td, Author.TYPE_COVER_ARTIST);
+                                    break;
 
-                            case "Inkting cover":
-                                i += processAuthor(td, Author.TYPE_COVER_INKING);
-                                break;
+                                case "Inkting cover":
+                                    i += processAuthor(td, Author.TYPE_COVER_INKING);
+                                    break;
 
-                            case "Vertaling":
-                                i += processAuthor(td, Author.TYPE_TRANSLATOR);
-                                break;
+                                case "Vertaling":
+                                    i += processAuthor(td, Author.TYPE_TRANSLATOR);
+                                    break;
 
-                            case "Uitgever(s)":
-                                i += processPublisher(td);
-                                break;
+                                case "Uitgever(s)":
+                                    i += processPublisher(td);
+                                    break;
 
-                            case "Jaar":
-                                i += processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
-                                break;
+                                case "Jaar":
+                                    i += processText(td, DBKey.DATE_BOOK_PUBLICATION, bookData);
+                                    break;
 
-                            case "Pagina's":
-                                i += processText(td, DBKey.KEY_PAGES, bookData);
-                                break;
+                                case "Pagina's":
+                                    i += processText(td, DBKey.KEY_PAGES, bookData);
+                                    break;
 
-                            case "ISBN":
-                                i += processText(td, DBKey.KEY_ISBN, bookData);
-                                break;
+                                case "ISBN":
+                                    i += processText(td, DBKey.KEY_ISBN, bookData);
+                                    break;
 
-                            case "Kaft":
-                                i += processText(td, DBKey.KEY_FORMAT, bookData);
-                                break;
+                                case "Kaft":
+                                    i += processText(td, DBKey.KEY_FORMAT, bookData);
+                                    break;
 
-                            case "Taal":
-                                i += processLanguage(context, td, bookData);
-                                break;
+                                case "Taal":
+                                    i += processLanguage(context, td, bookData);
+                                    break;
 
-                            case "Collectie":
-                                i += processSeriesOrCollection(td);
-                                break;
+                                case "Collectie":
+                                    i += processSeriesOrCollection(td);
+                                    break;
 
-                            case "Oplage":
-                                i += processText(td, DBKey.KEY_PRINT_RUN, bookData);
-                                break;
+                                case "Oplage":
+                                    i += processText(td, DBKey.KEY_PRINT_RUN, bookData);
+                                    break;
 
-                            case "Barcode":
-                                i += processText(td, SiteField.BARCODE, bookData);
-                                break;
+                                case "Barcode":
+                                    i += processText(td, SiteField.BARCODE, bookData);
+                                    break;
 
-                            case "":
-                                i += processEmptyLabel(td, bookData);
-                                break;
+                                case "":
+                                    i += processEmptyLabel(td, bookData);
+                                    break;
 
-                            case "Cycli":
-                                // not currently used. Example: Cyclus 2 nr. 1
-                                // This is sub-series 2, book 1, inside a series.
-                                // (also known as 'story-arc')
-                                break;
+                                case "Cycli":
+                                    // not currently used. Example: Cyclus 2 nr. 1
+                                    // This is sub-series 2, book 1, inside a series.
+                                    // (also known as 'story-arc')
+                                    break;
 
-                            case "Redactie":
-                            case "Vormgeving":
-                                // type: list of Authors
-                                // not currently used. Defined by multi-author "concept" series.
-                                // Example: https://www.stripinfo.be/reeks/strip/
-                                // 62234_XIII_Mystery_1_De_Mangoest
-                                break;
+                                case "Redactie":
+                                case "Vormgeving":
+                                    // type: list of Authors
+                                    // not currently used. Defined by multi-author "concept" series.
+                                    // Example: https://www.stripinfo.be/reeks/strip/
+                                    // 62234_XIII_Mystery_1_De_Mangoest
+                                    break;
 
-                            default:
-                                if (BuildConfig.DEBUG /* always */) {
-                                    Log.d(TAG, "parseDoc|unknown label=" + label);
-                                }
+                                default:
+                                    if (BuildConfig.DEBUG /* always */) {
+                                        Log.d(TAG, "parseDoc|unknown label=" + label);
+                                    }
+                            }
+                            i++;
                         }
-                        i++;
+                        // we found a book, quit the for(Element row : rows)
+                        break;
                     }
-                    // we found a book, quit the for(Element row : rows)
-                    break;
                 }
 
             } catch (@NonNull final Exception e) {
@@ -750,7 +752,7 @@ public class StripInfoSearchEngine
                             @NonNull final String key,
                             @NonNull final Bundle bookData) {
         final Element dataElement = td.nextElementSibling();
-        if (dataElement.childNodeSize() == 1) {
+        if (dataElement != null && dataElement.childNodeSize() == 1) {
             bookData.putString(key, cleanText(dataElement.text()));
             return 1;
         }
@@ -772,7 +774,7 @@ public class StripInfoSearchEngine
     private int processEmptyLabel(@NonNull final Element td,
                                   @NonNull final Bundle bookData) {
         final Element dataElement = td.nextElementSibling();
-        if (dataElement.childNodeSize() == 1) {
+        if (dataElement != null && dataElement.childNodeSize() == 1) {
             final String text = dataElement.text().trim();
 
             // is it a color ?

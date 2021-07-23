@@ -180,6 +180,9 @@ public class LastDodoSearchEngine
         String tmpSeriesNr = null;
 
         final Element container = document.getElementById("catalogue_information");
+        if (container == null) {
+            return;
+        }
 
         String tmpString;
 
@@ -382,8 +385,10 @@ public class LastDodoSearchEngine
         if (section != null) {
             final ArrayList<TocEntry> toc = new ArrayList<>();
             section = section.nextElementSibling();
-            for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
-                toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text()));
+            if (section != null) {
+                for (final Element tr : section.select("tr:contains(Verhaaltitel)")) {
+                    toc.add(new TocEntry(mAuthors.get(0), tr.child(1).text()));
+                }
             }
             return toc;
         }
@@ -474,9 +479,7 @@ public class LastDodoSearchEngine
                              @NonNull final Bundle bookData) {
         // there might be more than one; we only grab the first one here
         final Element a = td.child(0);
-        if (a != null) {
-            bookData.putString(SiteField.KEY_TYPE, a.text());
-        }
+        bookData.putString(SiteField.KEY_TYPE, a.text());
     }
 
     /**

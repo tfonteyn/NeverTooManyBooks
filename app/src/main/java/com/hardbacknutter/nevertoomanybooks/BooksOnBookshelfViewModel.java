@@ -675,6 +675,8 @@ public class BooksOnBookshelfViewModel
     }
 
     void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+        //we already checked, don't check if (message.isNewEvent())
+
         // the new build is completely done. We can safely discard the previous one.
         if (mBooklist != null) {
             mBooklist.close();
@@ -692,14 +694,12 @@ public class BooksOnBookshelfViewModel
         mDesiredCentralBookId = 0;
     }
 
-    void onBuildCancelled(@SuppressWarnings("unused")
-                          @NonNull final FinishedMessage<BoBTask.Outcome> message) {
+    void onBuildCancelled() {
         // reset the central book id.
         mDesiredCentralBookId = 0;
     }
 
-    void onBuildFailed(@SuppressWarnings("unused")
-                       @NonNull final FinishedMessage<Exception> message) {
+    void onBuildFailed() {
         // reset the central book id.
         mDesiredCentralBookId = 0;
     }

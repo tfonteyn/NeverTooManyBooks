@@ -293,13 +293,15 @@ public class StartupActivity
 
     // Not called for now, see {@link StartupViewModel} #mTaskListener.
     private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        @Nullable
-        final Exception e = message.getResult();
+        if (message.isNewEvent()) {
+            @Nullable
+            final Exception e = message.getResult();
 
-        if (e instanceof CoverStorageException) {
-            onExternalStorageException((CoverStorageException) e);
-        } else {
-            onGenericException(e);
+            if (e instanceof CoverStorageException) {
+                onExternalStorageException((CoverStorageException) e);
+            } else {
+                onGenericException(e);
+            }
         }
     }
 

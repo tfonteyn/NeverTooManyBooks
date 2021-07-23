@@ -125,13 +125,15 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataRead(@NonNull final FinishedMessage<SyncReaderMetaData> message) {
-        mVm.setMetaData(message.requireResult());
-        mLibraryArrayAdapter.notifyDataSetChanged();
+        if (message.isNewEvent()) {
+            mVm.setMetaData(message.requireResult());
+            mLibraryArrayAdapter.notifyDataSetChanged();
 
-        onLibrarySelected(0);
-        mVb.getRoot().setVisibility(View.VISIBLE);
+            onLibrarySelected(0);
+            mVb.getRoot().setVisibility(View.VISIBLE);
 
-        mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
+            mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,
@@ -173,26 +175,27 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
+        if (message.isNewEvent()) {
+            final Exception e = message.getResult();
 
-        final Exception e = message.getResult();
+            final Context context = getContext();
 
-        final Context context = getContext();
-
-        //noinspection ConstantConditions
-        final String msg = ExMsg.map(context, e)
-                                .orElse(getString(R.string.error_network_site_access_failed,
-                                                  CalibreContentServer.getHostUrl()));
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setTitle(R.string.lbl_calibre_content_server)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    d.dismiss();
-                    // just pop, we're always called from a fragment
-                    getParentFragmentManager().popBackStack();
-                })
-                .create()
-                .show();
+            //noinspection ConstantConditions
+            final String msg = ExMsg.map(context, e)
+                                    .orElse(getString(R.string.error_network_site_access_failed,
+                                                      CalibreContentServer.getHostUrl()));
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.lbl_calibre_content_server)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        d.dismiss();
+                        // just pop, we're always called from a fragment
+                        getParentFragmentManager().popBackStack();
+                    })
+                    .create()
+                    .show();
+        }
     }
 
     private static class Holder

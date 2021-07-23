@@ -392,7 +392,7 @@ public class AmazonSearchEngine
             final Element asinElement = addToCart.selectFirst("input#ASIN");
             if (asinElement != null) {
                 final String asin = asinElement.attr("value");
-                if (asin != null) {
+                if (!asin.isEmpty()) {
                     bookData.putString(DBKey.SID_ASIN, asin);
                 }
             }
@@ -524,7 +524,7 @@ public class AmazonSearchEngine
             }
             if (a != null) {
                 final String href = a.attr("href");
-                if (href != null && href.contains("byline")) {
+                if (href.contains("byline")) {
                     final Author author = Author.from(a.text());
 
                     final Element typeElement = span.selectFirst("span.contribution");
@@ -561,7 +561,13 @@ public class AmazonSearchEngine
                                           @IntRange(from = 0, to = 1) final int cIdx)
             throws DiskFullException, CoverStorageException {
 
+        final ArrayList<String> imageList = new ArrayList<>();
+
         final Element coverElement = document.selectFirst("img#imgBlkFront");
+        if (coverElement == null) {
+            return imageList;
+        }
+
         String url;
         try {
             // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
@@ -579,8 +585,6 @@ public class AmazonSearchEngine
             }
             url = srcUrl;
         }
-
-        final ArrayList<String> imageList = new ArrayList<>();
 
         final String fileSpec = saveImage(url, isbn, cIdx, null);
         if (fileSpec != null) {

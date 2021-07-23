@@ -589,7 +589,15 @@ public class IsfdbSearchEngine
         }
 
         final Element contentBox = allContentBoxes.first();
+        // sanity check
+        if (contentBox == null) {
+            return;
+        }
         final Element ul = contentBox.selectFirst("ul");
+        // sanity check
+        if (ul == null) {
+            return;
+        }
         final Elements lis = ul.children();
 
         String tmpString;
@@ -1166,7 +1174,7 @@ public class IsfdbSearchEngine
                     final Element edLink = tr.child(0).select("a").first();
                     if (edLink != null) {
                         final String url = edLink.attr("href");
-                        if (url != null) {
+                        if (!url.isEmpty()) {
                             String isbnStr = null;
                             // 4th column: the ISBN/Catalog ID.
                             final String catNr = tr.child(4).text();

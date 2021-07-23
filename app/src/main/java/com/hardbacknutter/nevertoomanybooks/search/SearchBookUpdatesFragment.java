@@ -308,43 +308,45 @@ public class SearchBookUpdatesFragment
 
     private void onAllDone(@NonNull final FinishedMessage<Bundle> message) {
         closeProgressDialog();
+        if (message.isNewEvent()) {
+            final Bundle result = message.getResult();
+            if (result != null) {
+                // The result will contain:
+                // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
+                // UniqueId.BKEY_BOOK_MODIFIED, boolean
+                // DBDefinitions.KEY_PK_ID, long (can be absent)
+                final Intent resultIntent = new Intent().putExtras(result);
+                //noinspection ConstantConditions
+                getActivity().setResult(Activity.RESULT_OK, resultIntent);
+            }
 
-        final Bundle result = message.getResult();
-        if (result != null) {
-            // The result will contain:
-            // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
-            // UniqueId.BKEY_BOOK_MODIFIED, boolean
-            // DBDefinitions.KEY_PK_ID, long (can be absent)
-            final Intent resultIntent = new Intent().putExtras(result);
             //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+            getActivity().finish();
         }
-
-        //noinspection ConstantConditions
-        getActivity().finish();
     }
 
     private void onAbort(@NonNull final FinishedMessage<Exception> message) {
         closeProgressDialog();
+        if (message.isNewEvent()) {
+            final Exception e = message.getResult();
 
-        final Exception e = message.getResult();
+            final Context context = getContext();
+            //noinspection ConstantConditions
+            final String msg = ExMsg.map(context, e)
+                                    .orElse(getString(R.string.error_unknown_long,
+                                                      getString(R.string.lbl_send_debug)));
 
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        final String msg = ExMsg.map(context, e)
-                                .orElse(getString(R.string.error_unknown_long,
-                                                  getString(R.string.lbl_send_debug)));
-
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    d.dismiss();
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                })
-                .create()
-                .show();
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        d.dismiss();
+                        //noinspection ConstantConditions
+                        getActivity().finish();
+                    })
+                    .create()
+                    .show();
+        }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
