@@ -193,6 +193,8 @@ public class SearchCoordinator
 
         @Override
         public void onFinished(@NonNull final FinishedMessage<Bundle> message) {
+            //TaskListener, don't check if (message.isNewEvent())
+
             // sanity check
             final Bundle result = message.requireResult();
             synchronized (mSearchResults) {
@@ -203,6 +205,8 @@ public class SearchCoordinator
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<Bundle> message) {
+            //TaskListener, don't check if (message.isNewEvent())
+
             synchronized (mSearchFinishedMessages) {
                 mSearchFinishedMessages.put(message.getTaskId(), null);
             }
@@ -211,6 +215,8 @@ public class SearchCoordinator
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+            //TaskListener, don't check if (message.isNewEvent())
+
             synchronized (mSearchFinishedMessages) {
                 mSearchFinishedMessages.put(message.getTaskId(), message.getResult());
             }

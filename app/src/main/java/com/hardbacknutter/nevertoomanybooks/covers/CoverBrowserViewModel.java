@@ -92,6 +92,7 @@ public class CoverBrowserViewModel
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
         @Override
         public void onFinished(@NonNull final FinishedMessage<ImageFileInfo> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             final ImageFileInfo result = message.getResult();
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
@@ -104,6 +105,7 @@ public class CoverBrowserViewModel
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<ImageFileInfo> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);
@@ -115,6 +117,7 @@ public class CoverBrowserViewModel
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);

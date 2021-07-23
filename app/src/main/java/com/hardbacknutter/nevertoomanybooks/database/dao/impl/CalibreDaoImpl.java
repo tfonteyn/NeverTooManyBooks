@@ -99,15 +99,17 @@ public class CalibreDaoImpl
             if (library == null) {
                 // The book did not have a full library object;
                 // It did have a library id, but that library does not exist.
-                // Theoretically this should never happen... flw
-                // log and bail out.
-                Logger.warn(TAG, "CalibreLibrary invalid for book=" + book.getId());
+                // This can happen if the import data contained old (pre) v2.5.1
+                // encoded library data.
+                // Log and bail out but do NOT throw an error!
+                Logger.warn(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
                 return;
             }
         } else {
-            // should never be the case... flw
-            // log and bail out.
-            Logger.warn(TAG, "CalibreLibrary invalid for book=" + book.getId());
+            // This can happen if the import data contained old (pre) v2.5.1
+            // encoded library data.
+            // Log and bail out but do NOT throw an error!
+            Logger.warn(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
             return;
         }
 

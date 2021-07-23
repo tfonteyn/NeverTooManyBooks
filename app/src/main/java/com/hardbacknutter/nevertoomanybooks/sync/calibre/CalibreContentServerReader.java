@@ -243,12 +243,18 @@ public class CalibreContentServerReader
                 // Due to rounding, we might get some books we don't need, but that's ok.
                 final LocalDateTime lastSyncDate = mLibrary.getLastSyncDate();
                 if (lastSyncDate != null) {
-                    query = CalibreBook.LAST_MODIFIED + ":%22%3E" + lastSyncDate
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE) + "%22";
+                    //URGENT: is doing .minusDays(1) a good/permanent solution
+                    // for the issue with non-sync issues after a server db replacement ?
+                    query = CalibreBook.LAST_MODIFIED + ":%22%3E" + lastSyncDate.minusDays(1)
+                                                                                .format(DateTimeFormatter.ISO_LOCAL_DATE)
+                            + "%22";
                 }
             }
 
             do {
+                // Reminder: the NUM for this first call might seem very low,
+                // but the full book data for each of the id's (max == NUM)
+                // will be fetched in ONE GO in the second call further below.
                 final JSONObject root;
                 if (query == null) {
                     // all-books

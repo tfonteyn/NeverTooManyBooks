@@ -93,16 +93,19 @@ public class StartupViewModel
          */
         @Override
         public void onFinished(@NonNull final FinishedMessage<Boolean> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             cleanup(message.getTaskId());
         }
 
         @Override
         public void onCancelled(@NonNull final FinishedMessage<Boolean> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             cleanup(message.getTaskId());
         }
 
         @Override
         public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+            //TaskListener, don't check if (message.isNewEvent())
             // We don't care about the status; just finish
             cleanup(message.getTaskId());
         }
