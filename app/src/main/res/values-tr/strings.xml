@@ -684,4 +684,17 @@
     <string name="action_move">Taşı</string>
     <string name="lbl_moving_data">Veriler taşınıyor</string>
     <string name="lbl_folder">Klasör</string>
+    <string name="lbl_login_to_search">Aramak için giriş yapın</string>
+    <string name="lbl_storage_volume">Depolama hacmi</string>
+    <string name="lbl_edit_settings">Ayarları düzenle</string>
+    <string name="progress_msg_cleaning_up">Temizlemek…</string>
+    <string name="lbl_connection_timeout">Bağlantı zaman aşımı (saniye)</string>
+    <string name="lbl_read_timeout">Okuma zaman aşımı (saniye)</string>
+    <string name="lbl_timeouts">zaman aşımları</string>
+    <string name="lbl_website_address">Site adresi (URL)</string>
+    <string name="lbl_calibre_content_server_extension_info">Calibre içerik sunucusu uzantısı kurulu değil.</string>
+    <string name="lbl_storage_select">“%1$s” kullan</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Uygulamayı kapatın ve doğru SD kartı takın</string>
+    <string name="info_moving_covers_from_x_to_y">Tüm kapakları “%1$s”\'den “%2$s”\'ye taşıyın</string>
+    <string name="menu_enable_sync_options">Senkronizasyon seçeneklerini etkinleştir</string>
 </resources>

@@ -683,4 +683,17 @@
     <string name="action_move">Přesunout</string>
     <string name="lbl_moving_data">Probíhá přesun dat</string>
     <string name="lbl_folder">Složka</string>
+    <string name="lbl_login_to_search">Přihlaste se k vyhledávání</string>
+    <string name="lbl_storage_volume">Objem úložiště</string>
+    <string name="lbl_edit_settings">Upravit nastavení</string>
+    <string name="progress_msg_cleaning_up">Čištění…</string>
+    <string name="lbl_connection_timeout">Časový limit připojení (sekundy)</string>
+    <string name="lbl_read_timeout">Časový limit čtení (sekundy)</string>
+    <string name="lbl_timeouts">Časové limity</string>
+    <string name="lbl_website_address">Adresa webu (URL)</string>
+    <string name="menu_enable_sync_options">Povolit možnosti synchronizace</string>
+    <string name="info_moving_covers_from_x_to_y">Přesuňte všechny kryty z „%1$s“ do „%2$s“</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
+    <string name="lbl_storage_select">Použijte „%1$s“</string>
+    <string name="lbl_calibre_content_server_extension_info">Rozšíření serveru s obsahem kalibru není nainstalováno.</string>
 </resources>

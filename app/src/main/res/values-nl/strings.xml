@@ -684,4 +684,17 @@
     <string name="action_move">Verplaatsen</string>
     <string name="lbl_moving_data">Gegevens verplaatsen</string>
     <string name="lbl_folder">Map</string>
+    <string name="lbl_login_to_search">Aanmelden om te zoeken</string>
+    <string name="lbl_storage_volume">Opslagvolume</string>
+    <string name="lbl_edit_settings">Instellingen bewerken</string>
+    <string name="progress_msg_cleaning_up">Schoonmaken…</string>
+    <string name="lbl_connection_timeout">Time-out verbinding (seconden)</string>
+    <string name="lbl_read_timeout">Time-out lezen (seconden)</string>
+    <string name="lbl_timeouts">Time-outs</string>
+    <string name="lbl_website_address">Web-adres (URL)</string>
+    <string name="menu_enable_sync_options">Synchronisatie-opties inschakelen</string>
+    <string name="info_moving_covers_from_x_to_y">Verplaats alle covers van „%1$s” naar „%2$s”</string>
+    <string name="lbl_storage_select">Gebruik „%1$s”</string>
+    <string name="lbl_calibre_content_server_extension_info">Calibre content server-extensie is niet geïnstalleerd.</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Sluit de app en inserteer de juiste SD kaart</string>
 </resources>

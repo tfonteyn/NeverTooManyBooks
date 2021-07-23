@@ -687,4 +687,19 @@
     <string name="action_move">Déplacer</string>
     <string name="lbl_moving_data">Déplacement des données en cours</string>
     <string name="lbl_folder">Dossier</string>
+    <string name="lbl_storage_volume">Volume de stockage</string>
+    <string name="progress_msg_cleaning_up">Nettoyer…</string>
+    <string name="lbl_edit_settings">Modifier les paramètres</string>
+    <string name="lbl_timeouts">Délais d\'attente</string>
+    <string name="lbl_read_timeout">Délai de lecture (secondes)</string>
+    <string name="lbl_connection_timeout">Délai d\'expiration de la connexion (secondes)</string>
+    <string name="lbl_website_address">Adresse du site (URL)</string>
+    <string name="lbl_calibre_content_server_extension_info">L\'extension du serveur de contenu Calibre n\'est pas installée.</string>
+    <string name="lbl_storage_select">Utiliser «%1$s»</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Quittez et réinsérez la bonne carte SD</string>
+    <string name="info_moving_covers_from_x_to_y">Déplacer toutes les couvertures de «%1$s» vers «%2$s»</string>
+    <string name="menu_enable_sync_options">Activer les options de synchronisation</string>
+
+    <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
+
 </resources>

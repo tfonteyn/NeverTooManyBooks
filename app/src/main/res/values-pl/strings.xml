@@ -683,4 +683,17 @@
     <string name="action_move">Przenieś</string>
     <string name="lbl_moving_data">Przenoszę dane</string>
     <string name="lbl_folder">Folder</string>
+    <string name="lbl_login_to_search">Zaloguj się, aby wyszukać</string>
+    <string name="lbl_storage_volume">Pojemność pamięci</string>
+    <string name="lbl_edit_settings">Edytuj ustawienia</string>
+    <string name="progress_msg_cleaning_up">Sprzątanie…</string>
+    <string name="lbl_connection_timeout">Limit czasu połączenia (sekundy)</string>
+    <string name="lbl_read_timeout">Limit czasu odczytu (sekundy)</string>
+    <string name="lbl_timeouts">Limity czasu</string>
+    <string name="lbl_website_address">Adres witryny (URL)</string>
+    <string name="menu_enable_sync_options">Włącz opcje synchronizacji</string>
+    <string name="info_moving_covers_from_x_to_y">Przenieś wszystkie okładki z „%1$s” do „%2$s”</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Zamknij aplikację i włóż właściwą kartę SD</string>
+    <string name="lbl_storage_select">Użyj „%1$s”</string>
+    <string name="lbl_calibre_content_server_extension_info">Rozszerzenie serwera treści Calibre nie jest zainstalowane.</string>
 </resources>

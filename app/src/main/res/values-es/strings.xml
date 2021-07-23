@@ -687,4 +687,17 @@
     <string name="action_move">Mover</string>
     <string name="lbl_moving_data">Moviendo datos</string>
     <string name="lbl_folder">Carpeta</string>
+    <string name="lbl_website_address">Dirección del sitio (URL)</string>
+    <string name="lbl_timeouts">Tiempos de espera</string>
+    <string name="lbl_read_timeout">Tiempo de espera de lectura (segundos)</string>
+    <string name="lbl_connection_timeout">Tiempo de espera de conexión (segundos)</string>
+    <string name="progress_msg_cleaning_up">Limpiar…</string>
+    <string name="lbl_edit_settings">Editar configuración</string>
+    <string name="lbl_storage_volume">Volumen de almacenamiento</string>
+    <string name="lbl_login_to_search">Iniciar sesión para buscar</string>
+    <string name="menu_enable_sync_options">Habilitar las opciones de sincronización</string>
+    <string name="info_moving_covers_from_x_to_y">Mueva todas las cubiertas de «%1$s» a «%2$s»</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Cierre la aplicación e inserte la tarjeta SD correcta</string>
+    <string name="lbl_storage_select">Utilice «%1$s»</string>
+    <string name="lbl_calibre_content_server_extension_info">La extensión del servidor de contenido de Calibre no está instalada.</string>
 </resources>

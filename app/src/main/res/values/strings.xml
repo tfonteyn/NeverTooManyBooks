@@ -1607,11 +1607,6 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
-    <string name="lbl_login_to_search">Login to search</string>
-    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
-    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
-
-    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>
 
     <!-- [VERIFIED] -->
     <string name="lbl_folder">Folder</string>
@@ -1619,21 +1614,21 @@
     <string name="lbl_moving_data">Moving data</string>
     <!-- [VERIFIED] - Title of wizard button prompting user to start data migration [CHAR LIMIT=32] -->
     <string name="action_move">Move</string>
-    <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
-    <string name="ext_media_missing_title">%s missing</string>
-    <!-- [VERIFIED] - Notification body when external media is missing [CHAR LIMIT=30] -->
-    <string name="ext_media_missing_message">Insert device again</string>
+
+
+    <string name="lbl_login_to_search">Login to search</string>
+    <string name="lbl_strip_info_mapped_bookshelf_wishlist">Wishlist mapped bookshelf</string>
+    <string name="lbl_strip_info_mapped_bookshelf_owned_books">Owned books mapped bookshelf</string>
 
     <string name="lbl_storage_volume">Storage volume</string>
 
     <string name="info_moving_covers_from_x_to_y">Move all covers from “%1$s” to “%2$s”</string>
 
-    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SDCARD</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Quit and reinsert the correct SD CARD</string>
     <string name="lbl_storage_select">Use “%1$s”</string>
     <string name="lbl_edit_settings">Edit settings</string>
 
     <string name="progress_msg_cleaning_up">Cleaning up…</string>
-    <string name="lbl_exporting">Exporting</string>
     <string name="lbl_calibre_content_server_extension_info">Calibre content server extension is not installed.</string>
 
     <string name="lbl_connection_timeout">Connection timeout (seconds)</string>
@@ -1641,4 +1636,11 @@
     <string name="lbl_timeouts">Timeouts</string>
     <string name="lbl_website_address">Site address (URL)</string>
 
+
+    <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
+
+    <!-- Notification title when external media is missing [CHAR LIMIT=30] -->
+    <!--    <string name="ext_media_missing_title">%s missing</string>-->
+    <!-- [VERIFIED] - Notification body when external media is missing [CHAR LIMIT=30] -->
+    <!--    <string name="ext_media_missing_message">Insert device again</string>-->
 </resources>

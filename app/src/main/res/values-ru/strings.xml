@@ -683,4 +683,17 @@
     <string name="action_move">Перенести</string>
     <string name="lbl_moving_data">Перенос данных</string>
     <string name="lbl_folder">Папка</string>
+    <string name="lbl_website_address">Адрес сайта (URL)</string>
+    <string name="lbl_timeouts">Таймауты</string>
+    <string name="lbl_read_timeout">Таймаут чтения (секунды)</string>
+    <string name="lbl_connection_timeout">Тайм-аут подключения (секунды)</string>
+    <string name="progress_msg_cleaning_up">Убираться…</string>
+    <string name="lbl_edit_settings">Изменить настройки</string>
+    <string name="lbl_storage_volume">Объем хранилища</string>
+    <string name="lbl_login_to_search">Авторизуйтесь для поиска</string>
+    <string name="lbl_calibre_content_server_extension_info">Расширение сервера содержимого Caliber не установлено.</string>
+    <string name="lbl_storage_select">Используйте «%1$s»</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту.</string>
+    <string name="info_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
+    <string name="menu_enable_sync_options">Включить параметры синхронизации</string>
 </resources>

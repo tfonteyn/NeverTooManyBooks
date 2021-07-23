@@ -686,4 +686,19 @@
     <string name="action_move">Verschieben</string>
     <string name="lbl_moving_data">Daten werden verschoben</string>
     <string name="lbl_folder">Ordner</string>
+    <string name="lbl_storage_volume">Speichervolumen</string>
+    <string name="lbl_edit_settings">Einstellungen bearbeiten</string>
+    <string name="progress_msg_cleaning_up">Aufräumen…</string>
+    <string name="menu_enable_sync_options">Synchronisierungsoptionen aktivieren</string>
+    <string name="lbl_calibre_content_server_extension_info">Die Calibre-Inhaltsservererweiterung ist nicht installiert.</string>
+    <string name="lbl_storage_select">Verwende „%1$s“</string>
+    <string name="info_moving_covers_from_x_to_y">Verschiebe alle Bilder von „%1$s“ nach „%2$s“</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Schließen Sie die App und legen Sie die richtige SD-Karte ein</string>
+
+    <string name="lbl_connection_timeout">Zeitüberschreitung beim Verbindung (Sekunden)</string>
+    <string name="lbl_read_timeout">Zeitüberschreitung beim Lesen (Sekunden)</string>
+    <string name="lbl_timeouts">Zeitüberschreitung</string>
+    <string name="lbl_website_address">Webadresse (URL)</string>
+    <string name="lbl_login_to_search">Melden Sie sich an, um zu suchen</string>
+
 </resources>

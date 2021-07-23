@@ -687,4 +687,17 @@
     <string name="action_move">Μετακίνηση</string>
     <string name="lbl_moving_data">Μετακίνηση δεδομένων</string>
     <string name="lbl_folder">Φάκελος</string>
+    <string name="lbl_login_to_search">Συνδεθείτε για αναζήτηση</string>
+    <string name="lbl_storage_volume">Όγκος αποθήκευσης</string>
+    <string name="lbl_edit_settings">Επεξεργασία ρυθμίσεων</string>
+    <string name="progress_msg_cleaning_up">Καθαρισμό…</string>
+    <string name="lbl_connection_timeout">Χρονικό όριο σύνδεσης (δευτερόλεπτα)</string>
+    <string name="lbl_read_timeout">Χρονικό όριο ανάγνωσης (δευτερόλεπτα)</string>
+    <string name="lbl_timeouts">Χρονικά όρια</string>
+    <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
+    <string name="menu_enable_sync_options">Ενεργοποίηση επιλογών συγχρονισμού</string>
+    <string name="info_moving_covers_from_x_to_y">Μετακινήστε όλα τα καλύμματα από «%1$s» σε «%2$s»</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Κλείστε την εφαρμογή και τοποθετήστε τη σωστή κάρτα SD</string>
+    <string name="lbl_storage_select">Χρησιμοποιήστε «%1$s»</string>
+    <string name="lbl_calibre_content_server_extension_info">Η επέκταση διακομιστή περιεχομένου Caliber δεν έχει εγκατασταθεί.</string>
 </resources>

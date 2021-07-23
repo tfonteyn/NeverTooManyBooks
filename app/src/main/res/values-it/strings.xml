@@ -686,4 +686,17 @@
     <string name="action_move">Sposta</string>
     <string name="lbl_moving_data">Spostamento dei dati in corso</string>
     <string name="lbl_folder">Cartella</string>
+    <string name="lbl_website_address">Διεύθυνση ιστότοπου (URL)</string>
+    <string name="lbl_timeouts">Timeout</string>
+    <string name="lbl_read_timeout">Timeout lettura (secondi)</string>
+    <string name="lbl_connection_timeout">Timeout connessione (secondi)</string>
+    <string name="progress_msg_cleaning_up">Pulire…</string>
+    <string name="lbl_edit_settings">Modificare le impostazioni</string>
+    <string name="lbl_storage_volume">Volume di archiviazione</string>
+    <string name="lbl_login_to_search">Accedi per cercare</string>
+    <string name="lbl_calibre_content_server_extension_info">L\'estensione del server dei contenuti Calibre non è installata.</string>
+    <string name="lbl_storage_select">Usa «%1$s»</string>
+    <string name="lbl_storage_quit_and_reinsert_sdcard">Chiudi l\'app e inserisci la scheda SD corretta</string>
+    <string name="info_moving_covers_from_x_to_y">Sposta tutte le copertine da «%1$s» a «%2$s»</string>
+    <string name="menu_enable_sync_options">Abilita opzioni di sincronizzazione</string>
 </resources>
