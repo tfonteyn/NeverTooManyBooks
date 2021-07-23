@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.Bookshelfmapper;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -124,9 +124,9 @@ public class StripInfoBePreferencesFragment
                 Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
                          .getId());
 
-        initBookshelfMapperPref(Bookshelfmapper.PK_BOOKSHELF_OWNED, defValue, entries,
+        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, entries,
                                 entryValues);
-        initBookshelfMapperPref(Bookshelfmapper.PK_BOOKSHELF_WISHLIST, defValue, entries,
+        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, entries,
                                 entryValues);
     }
 

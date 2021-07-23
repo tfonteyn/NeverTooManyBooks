@@ -77,7 +77,7 @@ public class CollectionFormParser
      */
     @AnyThread
     public CollectionFormParser(@NonNull final Context context,
-                                @NonNull final Bookshelfmapper bookshelfmapper) {
+                                @NonNull final BookshelfMapper bookshelfmapper) {
         super(context, bookshelfmapper);
 
         mIdLocation = FF_LOCATIE;

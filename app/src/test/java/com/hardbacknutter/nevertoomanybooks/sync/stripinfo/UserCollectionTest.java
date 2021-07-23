@@ -78,15 +78,15 @@ class UserCollectionTest
     private final Bookshelf mWishlistBookshelf = new Bookshelf(
             "wishlist", BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
     @Mock
-    Bookshelfmapper mBookshelfmapper;
+    BookshelfMapper mBookshelfMapper;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        when(mBookshelfmapper.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
-        when(mBookshelfmapper.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
+        when(mBookshelfMapper.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
+        when(mBookshelfMapper.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);
     }
 
     @Test
@@ -100,7 +100,7 @@ class UserCollectionTest
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
         final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
-                                                     mBookshelfmapper);
+                                                     mBookshelfMapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
@@ -151,7 +151,7 @@ class UserCollectionTest
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
         final UserCollection uc = new UserCollection(mContext, searchEngine, userId,
-                                                     mBookshelfmapper);
+                                                     mBookshelfMapper);
 
         final Document document;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {

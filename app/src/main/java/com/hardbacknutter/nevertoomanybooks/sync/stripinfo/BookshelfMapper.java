@@ -29,7 +29,7 @@ import androidx.preference.PreferenceManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-public class Bookshelfmapper {
+public class BookshelfMapper {
 
     /** The {@link Bookshelf} to which the wishlist is mapped. */
     public static final String PK_BOOKSHELF_WISHLIST =

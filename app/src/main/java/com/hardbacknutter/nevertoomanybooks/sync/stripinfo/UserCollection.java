@@ -139,7 +139,7 @@ public class UserCollection {
     UserCollection(@NonNull final Context context,
                    @NonNull final StripInfoSearchEngine searchEngine,
                    @NonNull final String userId,
-                   @NonNull final Bookshelfmapper config) {
+                   @NonNull final BookshelfMapper config) {
         mUserId = userId;
         mSearchEngine = searchEngine;
         mJsoupLoader = new JsoupLoader();
@@ -289,7 +289,7 @@ public class UserCollection {
          */
         @AnyThread
         RowParser(@NonNull final Context context,
-                  @NonNull final Bookshelfmapper config) {
+                  @NonNull final BookshelfMapper config) {
             super(context, config);
         }
 

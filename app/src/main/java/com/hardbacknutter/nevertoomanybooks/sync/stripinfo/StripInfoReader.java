@@ -193,7 +193,7 @@ public class StripInfoReader
         final SynchronizedDb db = serviceLocator.getDb();
 
         final UserCollection uc = new UserCollection(context, mSearchEngine, userId,
-                                                     new Bookshelfmapper());
+                                                     new BookshelfMapper());
 
         mResults = new ReaderResults();
 

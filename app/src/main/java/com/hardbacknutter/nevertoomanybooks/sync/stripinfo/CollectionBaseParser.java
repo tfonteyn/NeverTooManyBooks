@@ -70,7 +70,7 @@ abstract class CollectionBaseParser {
 
     @AnyThread
     CollectionBaseParser(@NonNull final Context context,
-                         @NonNull final Bookshelfmapper bookshelfmapper) {
+                         @NonNull final BookshelfMapper bookshelfmapper) {
 
         mOwnedBooksBookshelf = bookshelfmapper.getOwnedBooksBookshelf(context);
         mWishListBookshelf = bookshelfmapper.getWishListBookshelf(context);
