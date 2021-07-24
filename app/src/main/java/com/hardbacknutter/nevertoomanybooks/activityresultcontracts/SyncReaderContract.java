@@ -37,10 +37,10 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
-public class SyncReadertContract
+public class SyncReaderContract
         extends ActivityResultContract<SyncServer, ReaderResults> {
 
-    private static final String TAG = "SyncReadertContract";
+    private static final String TAG = "SyncReaderContract";
 
     @NonNull
     @Override
