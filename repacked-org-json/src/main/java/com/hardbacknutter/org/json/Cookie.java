@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 import java.util.Locale;
@@ -50,11 +70,11 @@ public class Cookie {
      *
      * @return The escaped result.
      */
-    public static String escape(String string) {
+    public static String escape(final String string) {
         char c;
-        String s = string.trim();
-        int length = s.length();
-        StringBuilder sb = new StringBuilder(length);
+        final String s = string.trim();
+        final int length = s.length();
+        final StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i += 1) {
             c = s.charAt(i);
             if (c < ' ' || c == '+' || c == '%' || c == '=' || c == ';') {
@@ -92,13 +112,13 @@ public class Cookie {
      *                       Cookie strings must have at least one '=' character and the 'name'
      *                       portion of the cookie must not be blank.
      */
-    public static JSONObject toJSONObject(String string) {
+    public static JSONObject toJSONObject(final String string) {
         final JSONObject jo = new JSONObject();
         String name;
         Object value;
 
 
-        JSONTokener x = new JSONTokener(string);
+        final JSONTokener x = new JSONTokener(string);
 
         name = unescape(x.nextTo('=').trim());
         //per RFC6265, if the name is blank, the cookie should be ignored.
@@ -152,13 +172,13 @@ public class Cookie {
      *
      * @throws JSONException thrown if the cookie has no name.
      */
-    public static String toString(JSONObject jo)
+    public static String toString(final JSONObject jo)
             throws JSONException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         String name = null;
         Object value = null;
-        for (String key : jo.keySet()) {
+        for (final String key : jo.keySet()) {
             if ("name".equalsIgnoreCase(key)) {
                 name = jo.getString(key).trim();
             }
@@ -181,7 +201,7 @@ public class Cookie {
         sb.append("=");
         sb.append(escape((String) value));
 
-        for (String key : jo.keySet()) {
+        for (final String key : jo.keySet()) {
             if ("name".equalsIgnoreCase(key)
                 || "value".equalsIgnoreCase(key)) {
                 // already processed above
@@ -214,16 +234,16 @@ public class Cookie {
      *
      * @return The unescaped string.
      */
-    public static String unescape(String string) {
-        int length = string.length();
-        StringBuilder sb = new StringBuilder(length);
+    public static String unescape(final String string) {
+        final int length = string.length();
+        final StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
             char c = string.charAt(i);
             if (c == '+') {
                 c = ' ';
             } else if (c == '%' && i + 2 < length) {
-                int d = JSONTokener.dehexchar(string.charAt(i + 1));
-                int e = JSONTokener.dehexchar(string.charAt(i + 2));
+                final int d = JSONTokener.dehexchar(string.charAt(i + 1));
+                final int e = JSONTokener.dehexchar(string.charAt(i + 2));
                 if (d >= 0 && e >= 0) {
                     c = (char) (d * 16 + e);
                     i += 2;

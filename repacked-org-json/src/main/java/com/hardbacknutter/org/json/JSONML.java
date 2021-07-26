@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 /*
@@ -48,10 +68,10 @@ public class JSONML {
      * @throws JSONException if a parsing error occurs
      */
     private static Object parse(
-            XMLTokener x,
-            boolean arrayForm,
-            JSONArray ja,
-            boolean keepStrings
+            final XMLTokener x,
+            final boolean arrayForm,
+            final JSONArray ja,
+            final boolean keepStrings
                                )
             throws JSONException {
         String attribute;
@@ -178,7 +198,7 @@ public class JSONML {
                             if (!(token instanceof String)) {
                                 throw x.syntaxError("Missing value");
                             }
-                            newjo.accumulate(attribute, keepStrings ? ((String) token) : XML
+                            newjo.accumulate(attribute, keepStrings ? token : XML
                                     .stringToValue((String) token));
                             token = null;
                         } else {
@@ -254,7 +274,7 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(String string)
+    public static JSONArray toJSONArray(final String string)
             throws JSONException {
         return (JSONArray) parse(new XMLTokener(string), true, null, false);
     }
@@ -280,8 +300,8 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(String string,
-                                        boolean keepStrings)
+    public static JSONArray toJSONArray(final String string,
+                                        final boolean keepStrings)
             throws JSONException {
         return (JSONArray) parse(new XMLTokener(string), true, null, keepStrings);
     }
@@ -307,8 +327,8 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(XMLTokener x,
-                                        boolean keepStrings)
+    public static JSONArray toJSONArray(final XMLTokener x,
+                                        final boolean keepStrings)
             throws JSONException {
         return (JSONArray) parse(x, true, null, keepStrings);
     }
@@ -329,7 +349,7 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONArray
      */
-    public static JSONArray toJSONArray(XMLTokener x)
+    public static JSONArray toJSONArray(final XMLTokener x)
             throws JSONException {
         return (JSONArray) parse(x, true, null, false);
     }
@@ -351,7 +371,7 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(String string)
+    public static JSONObject toJSONObject(final String string)
             throws JSONException {
         return (JSONObject) parse(new XMLTokener(string), false, null, false);
     }
@@ -375,8 +395,8 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(String string,
-                                          boolean keepStrings)
+    public static JSONObject toJSONObject(final String string,
+                                          final boolean keepStrings)
             throws JSONException {
         return (JSONObject) parse(new XMLTokener(string), false, null, keepStrings);
     }
@@ -398,7 +418,7 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(XMLTokener x)
+    public static JSONObject toJSONObject(final XMLTokener x)
             throws JSONException {
         return (JSONObject) parse(x, false, null, false);
     }
@@ -422,8 +442,8 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a JSONObject
      */
-    public static JSONObject toJSONObject(XMLTokener x,
-                                          boolean keepStrings)
+    public static JSONObject toJSONObject(final XMLTokener x,
+                                          final boolean keepStrings)
             throws JSONException {
         return (JSONObject) parse(x, false, null, keepStrings);
     }
@@ -438,13 +458,13 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a string
      */
-    public static String toString(JSONArray ja)
+    public static String toString(final JSONArray ja)
             throws JSONException {
         int i;
-        JSONObject jo;
-        int length;
+        final JSONObject jo;
+        final int length;
         Object object;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         String tagName;
 
 // Emit <tagName
@@ -522,12 +542,12 @@ public class JSONML {
      *
      * @throws JSONException Thrown on error converting to a string
      */
-    public static String toString(JSONObject jo)
+    public static String toString(final JSONObject jo)
             throws JSONException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         int i;
-        JSONArray ja;
-        int length;
+        final JSONArray ja;
+        final int length;
         Object object;
         String tagName;
         Object value;

@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 /*
@@ -57,7 +77,7 @@ public class XMLTokener
      *
      * @param r A source reader.
      */
-    public XMLTokener(Reader r) {
+    public XMLTokener(final Reader r) {
         super(r);
     }
 
@@ -66,7 +86,7 @@ public class XMLTokener
      *
      * @param s A source string.
      */
-    public XMLTokener(String s) {
+    public XMLTokener(final String s) {
         super(s);
     }
 
@@ -77,14 +97,14 @@ public class XMLTokener
      *
      * @return
      */
-    static String unescapeEntity(String e) {
+    static String unescapeEntity(final String e) {
         // validate
         if (e == null || e.isEmpty()) {
             return "";
         }
         // if our entity is an encoded unicode point, parse it.
         if (e.charAt(0) == '#') {
-            int cp;
+            final int cp;
             if (e.charAt(1) == 'x' || e.charAt(1) == 'X') {
                 // hex encoded unicode
                 cp = Integer.parseInt(e.substring(2), 16);
@@ -94,7 +114,7 @@ public class XMLTokener
             }
             return new String(new int[]{cp}, 0, 1);
         }
-        Character knownEntity = entity.get(e);
+        final Character knownEntity = entity.get(e);
         if (knownEntity == null) {
             // we don't know the entity so keep it encoded
             return '&' + e + ';';
@@ -113,7 +133,7 @@ public class XMLTokener
             throws JSONException {
         char c;
         int i;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         while (more()) {
             c = next();
             sb.append(c);
@@ -141,7 +161,7 @@ public class XMLTokener
     public Object nextContent()
             throws JSONException {
         char c;
-        StringBuilder sb;
+        final StringBuilder sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -181,11 +201,11 @@ public class XMLTokener
      *
      * @throws JSONException If missing ';' in XML entity.
      */
-    public Object nextEntity(@SuppressWarnings("unused") char ampersand)
+    public Object nextEntity(@SuppressWarnings("unused") final char ampersand)
             throws JSONException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (; ; ) {
-            char c = next();
+            final char c = next();
             if (Character.isLetterOrDigit(c) || c == '#') {
                 sb.append(Character.toLowerCase(c));
             } else if (c == ';') {
@@ -194,7 +214,7 @@ public class XMLTokener
                 throw syntaxError("Missing ';' in XML entity: &" + sb);
             }
         }
-        String string = sb.toString();
+        final String string = sb.toString();
         return unescapeEntity(string);
     }
 
@@ -215,7 +235,7 @@ public class XMLTokener
     public Object nextMeta()
             throws JSONException {
         char c;
-        char q;
+        final char q;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -286,8 +306,8 @@ public class XMLTokener
     public Object nextToken()
             throws JSONException {
         char c;
-        char q;
-        StringBuilder sb;
+        final char q;
+        final StringBuilder sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -369,14 +389,14 @@ public class XMLTokener
     // The Android implementation of JSONTokener has a public method of public void skipPast(String to)
     // even though ours does not have that method, to have API compatibility, our method in the subclass
     // should match.
-    public void skipPast(String to) {
+    public void skipPast(final String to) {
         boolean b;
         char c;
         int i;
         int j;
         int offset = 0;
-        int length = to.length();
-        char[] circle = new char[length];
+        final int length = to.length();
+        final char[] circle = new char[length];
 
         /*
          * First fill the circle buffer with as many characters as are in the

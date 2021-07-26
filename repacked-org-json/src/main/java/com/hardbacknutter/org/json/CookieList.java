@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 /*
@@ -48,12 +68,12 @@ public class CookieList {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONObject toJSONObject(String string)
+    public static JSONObject toJSONObject(final String string)
             throws JSONException {
-        JSONObject jo = new JSONObject();
-        JSONTokener x = new JSONTokener(string);
+        final JSONObject jo = new JSONObject();
+        final JSONTokener x = new JSONTokener(string);
         while (x.more()) {
-            String name = Cookie.unescape(x.nextTo('='));
+            final String name = Cookie.unescape(x.nextTo('='));
             x.next('=');
             jo.put(name, Cookie.unescape(x.nextTo(';')));
             x.next();
@@ -73,7 +93,7 @@ public class CookieList {
      *
      * @throws JSONException if a called function fails
      */
-    public static String toString(JSONObject jo)
+    public static String toString(final JSONObject jo)
             throws JSONException {
         boolean b = false;
         final StringBuilder sb = new StringBuilder();

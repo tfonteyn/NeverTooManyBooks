@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 /*
@@ -56,11 +76,11 @@ public class CDL {
      *
      * @throws JSONException if the quoted string is badly formed.
      */
-    private static String getValue(JSONTokener x)
+    private static String getValue(final JSONTokener x)
             throws JSONException {
         char c;
-        char q;
-        StringBuilder sb;
+        final char q;
+        final StringBuilder sb;
         do {
             c = x.next();
         } while (c == ' ' || c == '\t');
@@ -75,7 +95,7 @@ public class CDL {
                     c = x.next();
                     if (c == q) {
                         //Handle escaped double-quote
-                        char nextC = x.next();
+                        final char nextC = x.next();
                         if (nextC != '\"') {
                             // if our quote was the end of the file, don't step
                             if (nextC > 0) {
@@ -108,11 +128,11 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray rowToJSONArray(JSONTokener x)
+    public static JSONArray rowToJSONArray(final JSONTokener x)
             throws JSONException {
-        JSONArray ja = new JSONArray();
+        final JSONArray ja = new JSONArray();
         for (; ; ) {
-            String value = getValue(x);
+            final String value = getValue(x);
             char c = x.next();
             if (value == null ||
                 (ja.length() == 0 && value.length() == 0 && c != ',')) {
@@ -148,10 +168,10 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONObject rowToJSONObject(JSONArray names,
-                                             JSONTokener x)
+    public static JSONObject rowToJSONObject(final JSONArray names,
+                                             final JSONTokener x)
             throws JSONException {
-        JSONArray ja = rowToJSONArray(x);
+        final JSONArray ja = rowToJSONArray(x);
         return ja != null ? ja.toJSONObject(names) : null;
     }
 
@@ -164,23 +184,23 @@ public class CDL {
      *
      * @return A string ending in NEWLINE.
      */
-    public static String rowToString(JSONArray ja) {
-        StringBuilder sb = new StringBuilder();
+    public static String rowToString(final JSONArray ja) {
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ja.length(); i += 1) {
             if (i > 0) {
                 sb.append(',');
             }
-            Object object = ja.opt(i);
+            final Object object = ja.opt(i);
             if (object != null) {
-                String string = object.toString();
+                final String string = object.toString();
                 if (string.length() > 0 && (string.indexOf(',') >= 0 ||
                                             string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0
                                             ||
                                             string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
                     sb.append('"');
-                    int length = string.length();
+                    final int length = string.length();
                     for (int j = 0; j < length; j += 1) {
-                        char c = string.charAt(j);
+                        final char c = string.charAt(j);
                         if (c >= ' ' && c != '"') {
                             sb.append(c);
                         }
@@ -205,7 +225,7 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(String string)
+    public static JSONArray toJSONArray(final String string)
             throws JSONException {
         return toJSONArray(new JSONTokener(string));
     }
@@ -220,7 +240,7 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONTokener x)
+    public static JSONArray toJSONArray(final JSONTokener x)
             throws JSONException {
         return toJSONArray(rowToJSONArray(x), x);
     }
@@ -236,8 +256,8 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONArray names,
-                                        String string)
+    public static JSONArray toJSONArray(final JSONArray names,
+                                        final String string)
             throws JSONException {
         return toJSONArray(names, new JSONTokener(string));
     }
@@ -253,15 +273,15 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONArray toJSONArray(JSONArray names,
-                                        JSONTokener x)
+    public static JSONArray toJSONArray(final JSONArray names,
+                                        final JSONTokener x)
             throws JSONException {
         if (names == null || names.length() == 0) {
             return null;
         }
-        JSONArray ja = new JSONArray();
+        final JSONArray ja = new JSONArray();
         for (; ; ) {
-            JSONObject jo = rowToJSONObject(names, x);
+            final JSONObject jo = rowToJSONObject(names, x);
             if (jo == null) {
                 break;
             }
@@ -285,11 +305,11 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static String toString(JSONArray ja)
+    public static String toString(final JSONArray ja)
             throws JSONException {
-        JSONObject jo = ja.optJSONObject(0);
+        final JSONObject jo = ja.optJSONObject(0);
         if (jo != null) {
-            JSONArray names = jo.names();
+            final JSONArray names = jo.names();
             if (names != null) {
                 return rowToString(names) + toString(names, ja);
             }
@@ -309,15 +329,15 @@ public class CDL {
      *
      * @throws JSONException if a called function fails
      */
-    public static String toString(JSONArray names,
-                                  JSONArray ja)
+    public static String toString(final JSONArray names,
+                                  final JSONArray ja)
             throws JSONException {
         if (names == null || names.length() == 0) {
             return null;
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < ja.length(); i += 1) {
-            JSONObject jo = ja.optJSONObject(i);
+            final JSONObject jo = ja.optJSONObject(i);
             if (jo != null) {
                 sb.append(rowToString(jo.toJSONArray(names)));
             }

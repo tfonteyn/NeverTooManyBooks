@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 /*
@@ -72,11 +92,11 @@ public class HTTP {
      *
      * @throws JSONException if a called function fails
      */
-    public static JSONObject toJSONObject(String string)
+    public static JSONObject toJSONObject(final String string)
             throws JSONException {
-        JSONObject jo = new JSONObject();
-        HTTPTokener x = new HTTPTokener(string);
-        String token;
+        final JSONObject jo = new JSONObject();
+        final HTTPTokener x = new HTTPTokener(string);
+        final String token;
 
         token = x.nextToken();
         if (token.toUpperCase(Locale.ROOT).startsWith("HTTP")) {
@@ -100,7 +120,7 @@ public class HTTP {
 // Fields
 
         while (x.more()) {
-            String name = x.nextTo(':');
+            final String name = x.nextTo(':');
             x.next(':');
             jo.put(name, x.nextTo('\0'));
             x.next();
@@ -132,9 +152,9 @@ public class HTTP {
      * @throws JSONException if the object does not contain enough
      *                       information.
      */
-    public static String toString(JSONObject jo)
+    public static String toString(final JSONObject jo)
             throws JSONException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         if (jo.has("Status-Code") && jo.has("Reason-Phrase")) {
             sb.append(jo.getString("HTTP-Version"));
             sb.append(' ');
@@ -155,7 +175,7 @@ public class HTTP {
         sb.append(CRLF);
         // Don't use the new entrySet API to maintain Android support
         for (final String key : jo.keySet()) {
-            String value = jo.optString(key);
+            final String value = jo.optString(key);
             if (!"HTTP-Version".equals(key) && !"Status-Code".equals(key) &&
                 !"Reason-Phrase".equals(key) && !"Method".equals(key) &&
                 !"Request-URI".equals(key) && !JSONObject.NULL.equals(value)) {

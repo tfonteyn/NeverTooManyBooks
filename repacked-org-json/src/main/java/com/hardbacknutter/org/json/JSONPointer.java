@@ -1,3 +1,23 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.hardbacknutter.org.json;
 
 import java.io.UnsupportedEncodingException;
@@ -80,7 +100,7 @@ public class JSONPointer {
             refs = pointer.substring(2);
             try {
                 refs = URLDecoder.decode(refs, ENCODING);
-            } catch (UnsupportedEncodingException e) {
+            } catch (final UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
         } else if (pointer.startsWith("/")) {
@@ -113,7 +133,7 @@ public class JSONPointer {
         //}
     }
 
-    public JSONPointer(List<String> refTokens) {
+    public JSONPointer(final List<String> refTokens) {
         this.refTokens = new ArrayList<String>(refTokens);
     }
 
@@ -136,10 +156,11 @@ public class JSONPointer {
         return new Builder();
     }
 
-    private static String unescape(String token) {
-        return token.replace("~1", "/").replace("~0", "~")
-                    .replace("\\\"", "\"")
-                    .replace("\\\\", "\\");
+    /**
+     * https://tools.ietf.org/html/rfc6901#section-3
+     */
+    private static String unescape(final String token) {
+        return token.replace("~1", "/").replace("~0", "~");
     }
 
     /**
@@ -152,12 +173,12 @@ public class JSONPointer {
      *
      * @throws JSONPointerException is thrown if the index is out of bounds
      */
-    private static Object readByIndexToken(Object current,
-                                           String indexToken)
+    private static Object readByIndexToken(final Object current,
+                                           final String indexToken)
             throws JSONPointerException {
         try {
-            int index = Integer.parseInt(indexToken);
-            JSONArray currentArr = (JSONArray) current;
+            final int index = Integer.parseInt(indexToken);
+            final JSONArray currentArr = (JSONArray) current;
             if (index >= currentArr.length()) {
                 throw new JSONPointerException(
                         format("index %s is out of bounds - the array has %d elements", indexToken,
@@ -165,10 +186,10 @@ public class JSONPointer {
             }
             try {
                 return currentArr.get(index);
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 throw new JSONPointerException("Error reading value at index position " + index, e);
             }
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new JSONPointerException(format("%s is not an array index", indexToken), e);
         }
     }
@@ -176,18 +197,17 @@ public class JSONPointer {
     /**
      * Escapes path segment values to an unambiguous form.
      * The escape char to be inserted is '~'. The chars to be escaped
-     * are ~, which maps to ~0, and /, which maps to ~1. Backslashes
-     * and double quote chars are also escaped.
+     * are ~, which maps to ~0, and /, which maps to ~1.
      *
      * @param token the JSONPointer segment value to be escaped
      *
      * @return the escaped value for the token
+     * <p>
+     * https://tools.ietf.org/html/rfc6901#section-3
      */
-    private static String escape(String token) {
+    private static String escape(final String token) {
         return token.replace("~", "~0")
-                    .replace("/", "~1")
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\"");
+                    .replace("/", "~1");
     }
 
     /**
@@ -202,13 +222,13 @@ public class JSONPointer {
      *
      * @throws JSONPointerException if an error occurs during evaluation
      */
-    public Object queryFrom(Object document)
+    public Object queryFrom(final Object document)
             throws JSONPointerException {
         if (this.refTokens.isEmpty()) {
             return document;
         }
         Object current = document;
-        for (String token : this.refTokens) {
+        for (final String token : this.refTokens) {
             if (current instanceof JSONObject) {
                 current = ((JSONObject) current).opt(unescape(token));
             } else if (current instanceof JSONArray) {
@@ -229,8 +249,8 @@ public class JSONPointer {
      */
     @Override
     public String toString() {
-        StringBuilder rval = new StringBuilder("");
-        for (String token : this.refTokens) {
+        final StringBuilder rval = new StringBuilder();
+        for (final String token : this.refTokens) {
             rval.append('/').append(escape(token));
         }
         return rval.toString();
@@ -244,12 +264,12 @@ public class JSONPointer {
      */
     public String toURIFragment() {
         try {
-            StringBuilder rval = new StringBuilder("#");
-            for (String token : this.refTokens) {
+            final StringBuilder rval = new StringBuilder("#");
+            for (final String token : this.refTokens) {
                 rval.append('/').append(URLEncoder.encode(token, ENCODING));
             }
             return rval.toString();
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -287,7 +307,7 @@ public class JSONPointer {
          *
          * @throws NullPointerException if {@code token} is null
          */
-        public Builder append(String token) {
+        public Builder append(final String token) {
             if (token == null) {
                 throw new NullPointerException("token cannot be null");
             }
@@ -303,7 +323,7 @@ public class JSONPointer {
          *
          * @return {@code this}
          */
-        public Builder append(int arrayIndex) {
+        public Builder append(final int arrayIndex) {
             this.refTokens.add(String.valueOf(arrayIndex));
             return this;
         }
