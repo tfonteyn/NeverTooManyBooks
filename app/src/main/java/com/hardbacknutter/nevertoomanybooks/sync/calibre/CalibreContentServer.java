@@ -146,9 +146,9 @@ public class CalibreContentServer {
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL =
             PREF_KEY + Prefs.pk_suffix_host_url;
-    public static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
+    private static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_connect;
-    public static final String PK_READ_TIMEOUT_IN_SECONDS =
+    private static final String PK_READ_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_read;
 
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
@@ -439,10 +439,10 @@ public class CalibreContentServer {
             @Nullable
             CalibreLibrary library = null;
             if (!uuid.isEmpty()) {
-                library = libraryDao.getLibraryByUuid(uuid);
+                library = libraryDao.findLibraryByUuid(uuid);
             }
             if (library == null) {
-                library = libraryDao.getLibraryByStringId(libraryId);
+                library = libraryDao.findLibraryByStringId(libraryId);
             }
             if (library == null) {
                 // must be a new one.

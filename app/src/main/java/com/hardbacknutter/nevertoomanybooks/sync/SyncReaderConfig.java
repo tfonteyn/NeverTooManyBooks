@@ -24,6 +24,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -47,6 +48,8 @@ public final class SyncReaderConfig {
      * Updated Books/Covers will be handled according to this setting.
      */
     private Updates mUpdateOption;
+    @Nullable
+    private LocalDateTime mSyncDate;
 
     /**
      * Constructor.
@@ -100,16 +103,37 @@ public final class SyncReaderConfig {
         mUpdateOption = updateOption;
     }
 
+    /**
+     * Get the optional sync-date (cut-off) for use with {@link Updates#OnlyNewer}.
+     *
+     * @return date or {@code null}
+     */
+    @Nullable
+    public LocalDateTime getSyncDate() {
+        return mSyncDate;
+    }
+
+    /**
+     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
+     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
+     * we limit the fetch to the sync-date.
+     */
+    public void setSyncDate(@Nullable final LocalDateTime syncDate) {
+        mSyncDate = syncDate;
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "SyncReaderConfig{"
                + "mImportEntries=" + mImportEntries
                + ", mUpdates=" + mUpdateOption
+               + ", mSyncDate=" + mSyncDate
                + ", mExtraArgs=" + mExtraArgs
                + ", mSyncProcessor=" + mSyncProcessor
                + '}';
     }
+
 
     /**
      * Existing Books/Covers handling.

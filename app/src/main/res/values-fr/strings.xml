@@ -524,8 +524,8 @@
     <string name="txt_cleanup_files">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d\'autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l\'application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l\'expérience de plantages ou d\'autres erreurs, envisagez d\'abord d\'utiliser le bouton «%2$s»</string>
     <string name="txt_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
     <string name="txt_export_backup_all">Tous les livres, couvertures, préférence et styles de liste personnels du catalogue seront enregistrés dans la sauvegarde.</string>
-    <string name="txt_import_books_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
-    <string name="txt_import_books_option_new_and_changed">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
+    <string name="X_txt_import_books_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Seuls les livres récemment ajoutés ou mis à jour dans la sauvegarde seront mis à jour. Cette option est utile lors de la synchronisation de deux appareils.</string>
     <string name="txt_manage_fields" tools:ignore="TypographyQuotes">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="txt_rebuild_scheduled">Reconstruction planifiée</string>
     <string name="txt_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>

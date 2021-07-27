@@ -137,8 +137,8 @@
     <string name="txt_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
     <string name="txt_displaying_n_books_in_m_entries">Visualizzati %1$d libri, in %2$d voci</string>
     <string name="txt_export_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
-    <string name="txt_import_books_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
-    <string name="txt_import_books_option_new_and_changed">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
+    <string name="X_txt_import_books_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
     <string name="txt_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>

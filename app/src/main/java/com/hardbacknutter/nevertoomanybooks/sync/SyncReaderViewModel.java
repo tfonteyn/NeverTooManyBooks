@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
@@ -151,9 +152,27 @@ public class SyncReaderViewModel
         return mConfig.getUpdateOption() == SyncReaderConfig.Updates.OnlyNewer;
     }
 
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
+    /**
+     * Wrapper to handle {@link SyncReaderConfig.Updates}.
+     *
+     * @see SyncReaderConfig for docs
+     */
     public void setNewAndUpdatedBooks() {
         mConfig.setUpdateOption(SyncReaderConfig.Updates.OnlyNewer);
+    }
+
+    @Nullable
+    public LocalDateTime getSyncDate() {
+        return mConfig.getSyncDate();
+    }
+
+    /**
+     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
+     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
+     * we limit the fetch to the sync-date.
+     */
+    public void setSyncDate(@Nullable final LocalDateTime syncDate) {
+        mConfig.setSyncDate(syncDate);
     }
 
     /**

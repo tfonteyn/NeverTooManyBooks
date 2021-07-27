@@ -778,16 +778,25 @@
     <!-- Dialog import all options. (to many txt's, needs pruning) -->
     <string name="lbl_import_options">Select what will be imported.</string>
 
+    <!-- Radio button text -->
     <string name="lbl_import_books_option_new_only">New books only</string>
+    <!-- Info text for the RB -->
     <string name="txt_import_books_option_new_only">Import only new books. Any updates to existing books will be ignored.</string>
 
+    <!-- Radio button text -->
     <string name="lbl_import_books_option_new_and_updated">New and updated books</string>
+    <!-- Info text for the RB -->
     <string name="txt_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">cutoff date</string>
+    <string name="lbl_sync_date">Since</string>
 
+    <!-- Radio button text -->
     <string name="lbl_import_books_option_all">All books</string>
+    <!-- Info text for the RB -->
     <string name="txt_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
-    <string name="txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
-    <string name="txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
+
+    <string name="X_txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
 
     <!-- progress final message - all data was imported. -->
     <string name="progress_end_import_complete">Import complete</string>

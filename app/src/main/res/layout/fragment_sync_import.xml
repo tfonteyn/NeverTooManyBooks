@@ -159,4 +159,32 @@
         app:layout_constraintTop_toBottomOf="@id/rb_import_books_option_all"
         />
 
+    <TextView
+        android:id="@+id/inf_sync_date"
+        style="@style/Text.Header"
+        android:text="@string/lbl_import_books_option_new_and_updated_cutoff_date"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_sync_date"
+        style="@style/TIL.EditText"
+        android:hint="@string/lbl_sync_date"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/inf_sync_date"
+        tools:visibility="visible"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/sync_date"
+            style="@style/TIE.ReadOnly"
+            tools:text="@sample/data.json/date/long"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

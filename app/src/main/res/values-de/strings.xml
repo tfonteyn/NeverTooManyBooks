@@ -523,8 +523,8 @@
     <string name="txt_cleanup_files">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „%2$s“ Knopf zuerst zu benutzen.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d Bücher in %2$d Einträgen werden angezeigt</string>
     <string name="txt_export_backup_all">Alle Bücher, Buchumschläge, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
-    <string name="txt_import_books_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
-    <string name="txt_import_books_option_new_and_changed">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
+    <string name="X_txt_import_books_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
     <string name="txt_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="txt_rebuild_scheduled">Wiederaufbau geplant</string>
     <string name="txt_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>

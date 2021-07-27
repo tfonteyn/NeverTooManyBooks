@@ -136,8 +136,8 @@
     <string name="txt_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
     <string name="txt_displaying_n_books_in_m_entries">Wyświetlanie %1$d książek, w %2$d wpisów</string>
     <string name="txt_export_backup_all">Wszystkie książki, okładki, preferencje i niestandardowe style zostaną wyeksportowane do archiwum.</string>
-    <string name="txt_import_books_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
-    <string name="txt_import_books_option_new_and_changed">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
+    <string name="X_txt_import_books_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="txt_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>

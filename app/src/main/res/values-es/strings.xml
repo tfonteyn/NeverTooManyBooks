@@ -138,8 +138,8 @@
     <string name="txt_cleanup_files">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de «%2$s».</string>
     <string name="txt_displaying_n_books_in_m_entries">Se muestran %1$d libros, en %2$d entradas</string>
     <string name="txt_export_backup_all">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
-    <string name="txt_import_books_option_all_books">Se agregarán nuevos libros. Los libros existentes serán actualizados.</string>
-    <string name="txt_import_books_option_new_and_changed">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
+    <string name="X_txt_import_books_option_all_books">Se agregarán nuevos libros. Los libros existentes serán actualizados.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
     <string name="txt_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="confirm_registration_benefits">Esta característica se beneficia del registro con %1$s. ¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>

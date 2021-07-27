@@ -119,6 +119,13 @@ public class CalibreContentServerReader
 
     @NonNull
     private final SyncReaderConfig.Updates mUpdateOption;
+    /**
+     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
+     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
+     * we limit the fetch to the sync-date.
+     */
+    @Nullable
+    private final LocalDateTime mSyncDate;
 
     private final boolean mDoCovers;
 
@@ -138,6 +145,7 @@ public class CalibreContentServerReader
     private final CalibreContentServer mServer;
     @NonNull
     private final DateParser mDateParser = new ISODateParser();
+
     /** The physical library from which we'll be importing. */
     @Nullable
     private CalibreLibrary mLibrary;
@@ -157,6 +165,8 @@ public class CalibreContentServerReader
             throws CertificateException, SSLException {
 
         mUpdateOption = config.getUpdateOption();
+        mSyncDate = config.getSyncDate();
+
         //ENHANCE: add support for SyncProcessor
 
         mDoCovers = config.getImportEntries().contains(RecordType.Cover);
@@ -236,17 +246,15 @@ public class CalibreContentServerReader
             String query = null;
             // If we want new-books-only (Updates.Skip)
             // or new-books-and-updates (Updates.OnlyNewer),
-            // we limit the fetch to the last-sync-date.
+            // we limit the fetch to the sync-date. This speeds up the process.
             if (mUpdateOption == SyncReaderConfig.Updates.Skip
                 || mUpdateOption == SyncReaderConfig.Updates.OnlyNewer) {
-                // last_modified:">2021-01-15"
+
+                // last_modified:">2021-01-15", so we do a "minusDays(1)" first
                 // Due to rounding, we might get some books we don't need, but that's ok.
-                final LocalDateTime lastSyncDate = mLibrary.getLastSyncDate();
-                if (lastSyncDate != null) {
-                    //URGENT: is doing .minusDays(1) a good/permanent solution
-                    // for the issue with non-sync issues after a server db replacement ?
-                    query = CalibreBook.LAST_MODIFIED + ":%22%3E" + lastSyncDate.minusDays(1)
-                                                                                .format(DateTimeFormatter.ISO_LOCAL_DATE)
+                if (mSyncDate != null) {
+                    query = CalibreBook.LAST_MODIFIED + ":%22%3E"
+                            + mSyncDate.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
                             + "%22";
                 }
             }

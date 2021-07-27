@@ -40,6 +40,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -58,18 +62,20 @@ import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
 public class SyncReaderFragment
         extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "SyncReaderFragment";
-
+    /** Tag/requestKey for WrappedMaterialDatePicker. */
+    private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
     /** The ViewModel. */
     protected SyncReaderViewModel mVm;
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -80,10 +86,27 @@ public class SyncReaderFragment
                     getActivity().finish();
                 }
             };
-
     /** View Binding. */
     private FragmentSyncImportBinding mVb;
 
+
+    private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
+            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_SINGLE) {
+                @Override
+                public void onResult(@NonNull final int[] fieldIds,
+                                     @NonNull final long[] selections) {
+                    if (selections.length > 0) {
+                        if (selections[0] == WrappedMaterialDatePicker.NO_SELECTION) {
+                            updateSyncDate(null);
+                        } else {
+                            final LocalDateTime sd = Instant.ofEpochMilli(selections[0])
+                                                            .atZone(ZoneId.systemDefault())
+                                                            .toLocalDateTime();
+                            updateSyncDate(sd);
+                        }
+                    }
+                }
+            };
     @Nullable
     private ProgressDelegate mProgressDelegate;
     /** Ref to the actual Toolbar so we can enable/disable its menu. */
@@ -93,6 +116,8 @@ public class SyncReaderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Nullable
@@ -199,13 +224,29 @@ public class SyncReaderFragment
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == mVb.rbImportBooksOptionNewOnly.getId()) {
                 mVm.setNewBooksOnly();
+                mVb.infSyncDate.setVisibility(View.VISIBLE);
+                mVb.lblSyncDate.setVisibility(View.VISIBLE);
 
             } else if (checkedId == mVb.rbImportBooksOptionNewAndUpdated.getId()) {
                 mVm.setNewAndUpdatedBooks();
+                mVb.infSyncDate.setVisibility(View.VISIBLE);
+                mVb.lblSyncDate.setVisibility(View.VISIBLE);
 
             } else if (checkedId == mVb.rbImportBooksOptionAll.getId()) {
                 mVm.setAllBooks();
+                mVb.infSyncDate.setVisibility(View.GONE);
+                mVb.lblSyncDate.setVisibility(View.GONE);
             }
+        });
+
+        final boolean showSyncDateField = mVm.isNewBooksOnly() || mVm.isNewAndUpdatedBooks();
+        mVb.infSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
+        mVb.lblSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
+        mVb.syncDate.setOnClickListener(v -> {
+            final LocalDateTime syncDate = mVm.getSyncDate();
+            mDatePickerLauncher.launch(R.string.lbl_sync_date, mVb.lblSyncDate.getId(),
+                                       syncDate != null ? syncDate.toInstant(ZoneOffset.UTC)
+                                                        : null);
         });
 
         mVb.getRoot().setVisibility(View.VISIBLE);
@@ -276,12 +317,25 @@ public class SyncReaderFragment
 
     private void onCalibreLibrarySelected(@NonNull final CalibreLibrary library) {
         mVb.calibreLibrary.setText(library.getName(), false);
-
+        updateSyncDate(library.getLastSyncDate());
         mVb.archiveContent.setText(getString(R.string.name_colon_value,
                                              getString(R.string.lbl_books),
                                              String.valueOf(library.getTotalBooks())));
+
         mVm.getConfig().getExtraArgs()
            .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
+    }
+
+    /**
+     * the value stored in the ViewModel is what we'll actually use
+     * the field is display-only
+     *
+     * @param lastSyncDate to use
+     */
+    private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+        mVm.setSyncDate(lastSyncDate);
+        //noinspection ConstantConditions
+        mVb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));
     }
 
     private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {

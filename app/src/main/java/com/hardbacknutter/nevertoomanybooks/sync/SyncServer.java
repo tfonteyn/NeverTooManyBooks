@@ -81,11 +81,6 @@ public enum SyncServer
     }
 
 
-    public static boolean isAnyEnabled(@NonNull final SharedPreferences global) {
-        return CalibreHandler.isSyncEnabled(global)
-               || StripInfoHandler.isSyncEnabled(global);
-    }
-
     /** A short label. Used in drop down menus and similar. */
     @StringRes
     public int getLabel() {

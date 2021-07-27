@@ -68,6 +68,7 @@ public class CalibrePreferencesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    //URGENT: prevent from this getting started twice when the con takes a long time
                     final SwitchPreference sp = findPreference(CalibreHandler.PK_ENABLED);
                     //noinspection ConstantConditions
                     if (sp.isChecked()) {

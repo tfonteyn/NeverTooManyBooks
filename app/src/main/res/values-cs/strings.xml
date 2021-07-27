@@ -136,8 +136,8 @@
     <string name="txt_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="txt_displaying_n_books_in_m_entries">Zobrazení %1$d knih v položkách %2$d</string>
     <string name="txt_export_backup_all">Všechny knihy, obaly, předvolby a vlastní styly budou exportovány do archivu.</string>
-    <string name="txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
-    <string name="txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
+    <string name="X_txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
+    <string name="X_txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="txt_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
