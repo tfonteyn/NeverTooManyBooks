@@ -206,7 +206,8 @@ public final class ImportHelper {
 
     @NonNull
     public Set<RecordType> getRecordTypes() {
-        return mRecordTypes;
+        // Return a copy!
+        return EnumSet.copyOf(mRecordTypes);
     }
 
     @NonNull
