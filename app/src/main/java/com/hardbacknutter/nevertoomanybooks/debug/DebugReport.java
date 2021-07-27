@@ -24,9 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +34,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -92,9 +95,8 @@ public final class DebugReport {
                .append(context.getString(R.string.debug_body))
                .append("\n\n");
 
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "sendDebugInfo|" + message);
-        }
+        Logger.w(TAG, "sendDebugInfo|" + message);
+        logPreferences(context);
 
         // Find all files of interest to send
         final Collection<File> files = new ArrayList<>();
@@ -130,14 +132,15 @@ public final class DebugReport {
             final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
             final String subject = "[" + context.getString(R.string.app_name) + "] "
                                    + context.getString(R.string.debug_subject);
-            final ArrayList<String> report = new ArrayList<>();
-            report.add(message.toString());
+
+//            final ArrayList<String> report = new ArrayList<>();
+//            report.add(message.toString());
 
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_EMAIL, to)
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putExtra(Intent.EXTRA_TEXT, report)
+                    //.putExtra(Intent.EXTRA_TEXT, report)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
             context.startActivity(intent);
             return true;
@@ -146,5 +149,25 @@ public final class DebugReport {
             Logger.error(TAG, e);
             return false;
         }
+    }
+
+    /**
+     * Write the global preferences to the log file.
+     *
+     * @param context Current context
+     */
+    public static void logPreferences(@NonNull final Context context) {
+        final Map<String, ?> map = PreferenceManager
+                .getDefaultSharedPreferences(context).getAll();
+        final List<String> keyList = new ArrayList<>(map.keySet());
+        Collections.sort(keyList);
+
+        final StringBuilder sb = new StringBuilder("dumpPreferences|\n\nSharedPreferences:");
+        for (final String key : keyList) {
+            sb.append('\n').append(key).append('=').append(map.get(key));
+        }
+        sb.append("\n\n");
+
+        Logger.warn(TAG, sb.toString());
     }
 }
