@@ -24,7 +24,7 @@ and commit back.
 This is a simple book catalogue application, to store a list of your books.
 Books can be added either manually, by ISBN, or by barcode.
 
-Requires minimal Android 7.0 (API 24)
+Requires minimal Android 8.0 (API 26)
 
 In August 2018, this project was forked from:
 Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
