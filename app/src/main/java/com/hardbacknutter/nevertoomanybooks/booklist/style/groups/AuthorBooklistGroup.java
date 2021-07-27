@@ -32,6 +32,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleSharedPreferences;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -56,6 +57,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class AuthorBooklistGroup
         extends AbstractLinkedTableBooklistGroup {
 
+    /** The value is a {@link PBitmask}. */
     public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
 
@@ -125,7 +127,7 @@ public class AuthorBooklistGroup
      * @return the type of author we consider the primary author
      */
     public static int getPrimaryTypeGlobalDefault() {
-        return ServiceLocator.getGlobalPreferences().getInt(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
+        return StyleSharedPreferences.getBitmaskPref(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
     }
 
     @Override

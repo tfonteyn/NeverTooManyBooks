@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 
 /**
@@ -68,7 +69,8 @@ public class StyleSharedPreferences
      * Constructor.
      *
      * @param context      Current context
-     * @param uuid         of the style
+     * @param uuid         of the style; use {@code ""} for the global style settings
+     *                     (i.e. their default settings)
      * @param isPersistent flag
      */
     StyleSharedPreferences(@NonNull final Context context,
@@ -96,11 +98,90 @@ public class StyleSharedPreferences
         }
     }
 
+    public static int getBitmaskPref(@NonNull final SharedPreferences preferences,
+                                     @NonNull final String key,
+                                     final int defValue) {
+        // an empty set is a valid result
+        final Set<String> stringSet = preferences.getStringSet(key, null);
+        if (stringSet == null || stringSet.isEmpty()) {
+            return defValue;
+        }
+
+        // we should never have an invalid setting in the prefs... flw
+        try {
+            return getStringSetAsBitmask(stringSet);
+        } catch (@NonNull final NumberFormatException ignore) {
+            return defValue;
+        }
+    }
+
+    public static int getBitmaskPref(@NonNull final String key,
+                                     final int defValue) {
+        return getBitmaskPref(ServiceLocator.getGlobalPreferences(), key, defValue);
+    }
+
+    /**
+     * Parse and combine the values in the set into a bitmask.
+     *
+     * @param stringSet to parse
+     *
+     * @return bitmask
+     *
+     * @throws NumberFormatException is for some reason the stored value cannot be parsed
+     */
+    @IntRange(from = 0, to = 0xFFFF)
+    public static int getStringSetAsBitmask(@NonNull final Set<String> stringSet) {
+        int bitmask = 0;
+        for (final String s : stringSet) {
+            bitmask |= Integer.parseInt(s);
+        }
+        return bitmask;
+    }
+
+    @NonNull
+    private static ArrayList<Integer> getStringSetAsIntList(@NonNull final Set<String> stringSet) {
+        try {
+            return stringSet.stream()
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toCollection(ArrayList::new));
+        } catch (@NonNull final NumberFormatException e) {
+            // should not happen unless we had a bug while previously writing the pref.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "values=`" + stringSet + '`', e);
+            }
+            // in which case we bail out gracefully
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Split a CSV String into a List.
+     *
+     * @param csvString CSV string
+     *
+     * @return list
+     */
+    @NonNull
+    private static ArrayList<Integer> getIntListFromCsv(@NonNull final String csvString) {
+        try {
+            return Arrays.stream(csvString.split(PIntList.DELIM))
+                         .map(Integer::parseInt)
+                         .collect(Collectors.toCollection(ArrayList::new));
+
+        } catch (@NonNull final NumberFormatException e) {
+            // should not happen unless we had a bug while previously writing the pref.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "values=`" + csvString + '`', e);
+            }
+            // in which case we bail out gracefully
+            return new ArrayList<>();
+        }
+    }
+
     @Override
     public void remove(@NonNull final String key) {
         mStylePrefs.edit().remove(key).apply();
     }
-
 
     @Override
     public void setString(@NonNull final String key,
@@ -129,7 +210,6 @@ public class StyleSharedPreferences
 
         return mGlobalPrefs.getString(key, null);
     }
-
 
     @Override
     public void setBoolean(@NonNull final String key,
@@ -162,7 +242,6 @@ public class StyleSharedPreferences
         return null;
     }
 
-
     @Override
     public void setInt(@NonNull final String key,
                        @Nullable final Integer value) {
@@ -188,7 +267,6 @@ public class StyleSharedPreferences
 
         return null;
     }
-
 
     @Override
     public void setBitmask(@NonNull final String key,
@@ -233,16 +311,6 @@ public class StyleSharedPreferences
         return null;
     }
 
-    @IntRange(from = 0, to = 0xFFFF)
-    private int getStringSetAsBitmask(@NonNull final Set<String> stringSet) {
-        int bitmask = 0;
-        for (final String s : stringSet) {
-            bitmask |= Integer.parseInt(s);
-        }
-        return bitmask;
-    }
-
-
     @Override
     public void setStringedInt(@NonNull final String key,
                                @Nullable final Integer value) {
@@ -268,7 +336,6 @@ public class StyleSharedPreferences
         }
         return null;
     }
-
 
     @Override
     public void setStringedIntList(@NonNull final String key,
@@ -296,31 +363,6 @@ public class StyleSharedPreferences
         }
         return null;
     }
-
-    /**
-     * Split a CSV String into a List.
-     *
-     * @param csvString CSV string
-     *
-     * @return list
-     */
-    @NonNull
-    private ArrayList<Integer> getIntListFromCsv(@NonNull final String csvString) {
-        try {
-            return Arrays.stream(csvString.split(PIntList.DELIM))
-                         .map(Integer::parseInt)
-                         .collect(Collectors.toCollection(ArrayList::new));
-
-        } catch (@NonNull final NumberFormatException e) {
-            // should not happen unless we had a bug while previously writing the pref.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "values=`" + csvString + '`', e);
-            }
-            // in which case we bail out gracefully
-            return new ArrayList<>();
-        }
-    }
-
 
     @Override
     public void setIntList(@NonNull final String key,
@@ -352,21 +394,5 @@ public class StyleSharedPreferences
         }
 
         return null;
-    }
-
-    @NonNull
-    private ArrayList<Integer> getStringSetAsIntList(@NonNull final Set<String> stringSet) {
-        try {
-            return stringSet.stream()
-                            .map(Integer::parseInt)
-                            .collect(Collectors.toCollection(ArrayList::new));
-        } catch (@NonNull final NumberFormatException e) {
-            // should not happen unless we had a bug while previously writing the pref.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "values=`" + stringSet + '`', e);
-            }
-            // in which case we bail out gracefully
-            return new ArrayList<>();
-        }
     }
 }
