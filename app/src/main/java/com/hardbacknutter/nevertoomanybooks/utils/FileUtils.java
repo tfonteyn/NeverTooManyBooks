@@ -153,12 +153,6 @@ public final class FileUtils {
     public static void copy(@NonNull final File source,
                             @NonNull final File destination)
             throws IOException {
-        if (BuildConfig.DEBUG /* always */) {
-            if (!source.isFile() || !destination.isFile()) {
-                throw new IllegalArgumentException("copy only files");
-            }
-        }
-
         try (FileChannel inChannel = new FileInputStream(source).getChannel();
              FileChannel outChannel = new FileOutputStream(destination).getChannel()) {
             inChannel.transferTo(0, inChannel.size(), outChannel);
