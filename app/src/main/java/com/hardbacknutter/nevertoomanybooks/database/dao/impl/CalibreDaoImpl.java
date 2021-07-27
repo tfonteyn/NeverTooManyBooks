@@ -95,7 +95,7 @@ public class CalibreDaoImpl
                 }
             }
         } else if (book.contains(DBKey.FK_CALIBRE_LIBRARY)) {
-            library = libraryDao.getLibrary(book.getLong(DBKey.FK_CALIBRE_LIBRARY));
+            library = libraryDao.getLibraryById(book.getLong(DBKey.FK_CALIBRE_LIBRARY));
             if (library == null) {
                 // The book did not have a full library object;
                 // It did have a library id, but that library does not exist.

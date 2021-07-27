@@ -169,6 +169,8 @@ public class ShowBookFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override
@@ -197,8 +199,6 @@ public class ShowBookFragment
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
         mVm.init(getContext(), requireArguments());

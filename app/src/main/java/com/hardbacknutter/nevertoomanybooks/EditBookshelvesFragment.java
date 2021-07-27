@@ -33,7 +33,6 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -92,8 +91,7 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        final FragmentManager fm = getChildFragmentManager();
-        mOnEditBookshelfLauncher.registerForFragmentResult(fm, this);
+        mOnEditBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

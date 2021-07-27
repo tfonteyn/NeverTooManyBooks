@@ -23,6 +23,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Optional;
+
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -35,13 +37,16 @@ public class BookshelfCoder
 
     @NonNull
     private final ListStyle mDefaultStyle;
+    @NonNull
+    private final Context mContext;
 
     /**
      * Constructor.
      *
      * @param context Current context
      */
-    BookshelfCoder(@NonNull final Context context) {
+    public BookshelfCoder(@NonNull final Context context) {
+        mContext = context;
         mDefaultStyle = ServiceLocator.getInstance().getStyles().getDefault(context);
     }
 
@@ -56,6 +61,15 @@ public class BookshelfCoder
         if (!bookshelf.getStyleUuid().isEmpty()) {
             out.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
         }
+        return out;
+    }
+
+    @NonNull
+    @Override
+    public JSONObject encodeReference(@NonNull final Bookshelf bookshelf)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
+        out.put(DBKey.KEY_BOOKSHELF_NAME, bookshelf.getName());
         return out;
     }
 
@@ -77,5 +91,24 @@ public class BookshelfCoder
         }
 
         return bookshelf;
+    }
+
+    @NonNull
+    @Override
+    public Optional<Bookshelf> decodeReference(@NonNull final JSONObject data)
+            throws JSONException {
+
+        final String name = data.optString(DBKey.KEY_BOOKSHELF_NAME);
+        if (name != null && !name.isEmpty()) {
+            final Bookshelf bookshelf =
+                    ServiceLocator.getInstance().getBookshelfDao().findByName(name);
+            if (bookshelf != null) {
+                return Optional.of(bookshelf);
+            }
+        }
+
+        return Optional.of(Bookshelf.getBookshelf(mContext,
+                                                  Bookshelf.PREFERRED,
+                                                  Bookshelf.DEFAULT));
     }
 }

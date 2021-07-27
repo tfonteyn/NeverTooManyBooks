@@ -72,7 +72,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return new PartialDate(rawValue).toPrettyDate(mLocale, rawValue);
+            return new PartialDate(rawValue).toDisplay(mLocale, rawValue);
         }
     }
 

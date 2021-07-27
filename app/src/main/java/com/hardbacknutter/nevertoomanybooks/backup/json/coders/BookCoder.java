@@ -55,13 +55,23 @@ public class BookCoder
     private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
     private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
-    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
+
+    @NonNull
     private final JsonCoder<Bookshelf> mBookshelfCoder;
+    @NonNull
+    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
 
-    public BookCoder(@NonNull final Context context) {
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
+    public BookCoder(@NonNull final Context context,
+                     @NonNull final JsonCoder<Bookshelf> bookshelfCoder,
+                     @NonNull final JsonCoder<CalibreLibrary> calibreLibraryCoder) {
 
-        mBookshelfCoder = new BookshelfCoder(context);
-        mCalibreLibraryCoder = new CalibreLibraryCoder();
+        mBookshelfCoder = bookshelfCoder;
+        mCalibreLibraryCoder = calibreLibraryCoder;
     }
 
     @Override
@@ -84,13 +94,15 @@ public class BookCoder
 
         // Special keys first.
 
-        // The presence of KEY_FK_CALIBRE_LIBRARY indicates there IS a calibre library for
-        // this book. We need to explicitly load and encode it using Book.BKEY_CALIBRE_LIBRARY
-        // so we can easily find/decode it in the #decode
+        // The presence of KEY_FK_CALIBRE_LIBRARY (a row id) indicates there IS a calibre
+        // library for this book but there is no other/more library data on the book itself.
+        // We need to explicitly load the library and encode a reference for it.
         if (DBKey.FK_CALIBRE_LIBRARY.equals(key)) {
             final CalibreLibrary library = book.getCalibreLibrary();
             if (library != null) {
-                out.put(Book.BKEY_CALIBRE_LIBRARY, mCalibreLibraryCoder.encode(library));
+                // FK as it's a reference
+                out.put(DBKey.FK_CALIBRE_LIBRARY,
+                        mCalibreLibraryCoder.encodeReference(library));
             }
 
         } else if (element instanceof String) {
@@ -127,7 +139,8 @@ public class BookCoder
                 case Book.BKEY_BOOKSHELF_LIST: {
                     final ArrayList<Bookshelf> list = book.getParcelableArrayList(key);
                     if (!list.isEmpty()) {
-                        out.put(key, mBookshelfCoder.encode(list));
+                        // FK as it's a reference
+                        out.put(DBKey.FK_BOOKSHELF, mBookshelfCoder.encodeReference(list));
                     }
                     break;
                 }
@@ -178,34 +191,61 @@ public class BookCoder
         while (it.hasNext()) {
             final String key = it.next();
             switch (key) {
-                case Book.BKEY_AUTHOR_LIST:
+                case Book.BKEY_BOOKSHELF_LIST:
+                    // Full object
                     book.putParcelableArrayList(
-                            key, mAuthorCoder.decode(data.getJSONArray(key)));
+                            Book.BKEY_BOOKSHELF_LIST,
+                            mBookshelfCoder.decode(data.getJSONArray(key)));
                     break;
 
-                case Book.BKEY_BOOKSHELF_LIST:
+                case DBKey.FK_BOOKSHELF:
+                    // Reference; if the reference is not found,
+                    // the book will be put on the preferred (or default) Bookshelf.
                     book.putParcelableArrayList(
-                            key, mBookshelfCoder.decode(data.getJSONArray(key)));
+                            Book.BKEY_BOOKSHELF_LIST,
+                            mBookshelfCoder.decodeReference(data.getJSONArray(key)));
+                    break;
+
+                case Book.BKEY_CALIBRE_LIBRARY:
+                    // Full object
+                    book.setCalibreLibrary(
+                            mCalibreLibraryCoder.decode(data.getJSONObject(key)));
+                    break;
+
+                case DBKey.FK_CALIBRE_LIBRARY:
+                    // Reference; if the reference is not found,
+                    // the Calibre data is removed from the book
+                    book.setCalibreLibrary(
+                            mCalibreLibraryCoder.decodeReference(data.getJSONObject(key))
+                                                .orElse(null));
+                    break;
+
+
+
+                case Book.BKEY_AUTHOR_LIST:
+                    book.putParcelableArrayList(
+                            Book.BKEY_AUTHOR_LIST,
+                            mAuthorCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_PUBLISHER_LIST:
                     book.putParcelableArrayList(
-                            key, mPublisherCoder.decode(data.getJSONArray(key)));
+                            Book.BKEY_PUBLISHER_LIST,
+                            mPublisherCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_SERIES_LIST:
                     book.putParcelableArrayList(
-                            key, mSeriesCoder.decode(data.getJSONArray(key)));
+                            Book.BKEY_SERIES_LIST,
+                            mSeriesCoder.decode(data.getJSONArray(key)));
                     break;
 
                 case Book.BKEY_TOC_LIST:
                     book.putParcelableArrayList(
-                            key, mTocEntryCoder.decode(data.getJSONArray(key)));
+                            Book.BKEY_TOC_LIST,
+                            mTocEntryCoder.decode(data.getJSONArray(key)));
                     break;
 
-                case Book.BKEY_CALIBRE_LIBRARY:
-                    book.setCalibreLibrary(mCalibreLibraryCoder.decode(data.getJSONObject(key)));
-                    break;
 
                 default: {
                     final Object o = data.get(key);

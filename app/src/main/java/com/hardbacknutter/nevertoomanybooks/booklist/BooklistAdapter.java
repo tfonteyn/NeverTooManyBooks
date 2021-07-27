@@ -1153,7 +1153,7 @@ public class BooklistAdapter
             final String date;
             if (mInUse.pubDate) {
                 final String dateStr = rowData.getString(DBKey.DATE_BOOK_PUBLICATION);
-                date = new PartialDate(dateStr).toPrettyDate(mAdapter.getUserLocale(), dateStr);
+                date = new PartialDate(dateStr).toDisplay(mAdapter.getUserLocale(), dateStr);
             } else {
                 date = null;
             }

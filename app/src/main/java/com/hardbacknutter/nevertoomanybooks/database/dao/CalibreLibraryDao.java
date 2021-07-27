@@ -39,7 +39,7 @@ public interface CalibreLibraryDao {
      * @return physical library
      */
     @Nullable
-    CalibreLibrary getLibrary(long id);
+    CalibreLibrary getLibraryById(long id);
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given uuid.
@@ -49,7 +49,7 @@ public interface CalibreLibraryDao {
      * @return physical library
      */
     @Nullable
-    CalibreLibrary getLibraryByUuid(@NonNull String uuid);
+    CalibreLibrary findLibraryByUuid(@NonNull String uuid);
 
     /**
      * Get the <strong>physical</strong> {@link CalibreLibrary} for the given libraryStringId.
@@ -59,10 +59,10 @@ public interface CalibreLibraryDao {
      * @return physical library
      */
     @Nullable
-    CalibreLibrary getLibraryByStringId(@NonNull String libraryStringId);
+    CalibreLibrary findLibraryByStringId(@NonNull String libraryStringId);
 
     @NonNull
-    ArrayList<CalibreLibrary> getLibraries();
+    ArrayList<CalibreLibrary> getAllLibraries();
 
     /**
      * Get the <strong>virtual</strong> {@link CalibreLibrary} for the given library + name.

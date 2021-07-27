@@ -45,7 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
@@ -53,7 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferences
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
@@ -65,17 +69,21 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>
  *      <li>{@link RecordType#Certificates}</li>
+ *      <li>{@link RecordType#Bookshelves}</li>
+ *      <li>{@link RecordType#CalibreLibraries}</li>
  *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
 public class JsonRecordWriter
         implements RecordWriter {
 
-    /** The format version of this RecordWriter. */
-    private static final int VERSION = 1;
-
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
+
+    @Nullable
+    private JsonCoder<Bookshelf> mBookshelfCoder;
+    @Nullable
+    private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
 
     /**
      * Constructor.
@@ -86,6 +94,22 @@ public class JsonRecordWriter
     @AnyThread
     public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
+    }
+
+    @NonNull
+    private JsonCoder<Bookshelf> getBookshelfCoder(@NonNull final Context context) {
+        if (mBookshelfCoder == null) {
+            mBookshelfCoder = new BookshelfCoder(context);
+        }
+        return mBookshelfCoder;
+    }
+
+    @NonNull
+    private JsonCoder<CalibreLibrary> getCalibreLibraryCoder(@NonNull final Context context) {
+        if (mCalibreLibraryCoder == null) {
+            mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
+        }
+        return mCalibreLibraryCoder;
     }
 
     @Override
@@ -110,6 +134,17 @@ public class JsonRecordWriter
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
 
+        // IMPORTANT:
+        // For the current supported backup version(s),
+        // the writer will be called with ONE RecordType at a time.
+        // i.e. Styles OR Preferences OR ...
+        // and hence the jsonData written will be several virtual files (records),
+        // one for each type.
+        //
+        // For the experimental JsonArchiveWrite, this method gets called ONCE
+        // with ALL RecordType.
+        //
+        // The code is written/prepared for the latter case.
         try {
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
@@ -117,6 +152,7 @@ public class JsonRecordWriter
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
+
                 final List<ListStyle> styles =
                         ServiceLocator.getInstance().getStyles().getStyles(context, true);
                 if (!styles.isEmpty()) {
@@ -129,6 +165,7 @@ public class JsonRecordWriter
             if (entries.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
+
                 final JsonCoder<SharedPreferences> coder = new SharedPreferencesCoder();
                 jsonData.put(RecordType.Preferences.getName(),
                              coder.encode(PreferenceManager.getDefaultSharedPreferences(context)));
@@ -140,8 +177,8 @@ public class JsonRecordWriter
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_certificate_ca));
 
-                final JsonCoder<X509Certificate> coder = new CertificateCoder();
                 final JSONObject certificates = new JSONObject();
+                final JsonCoder<X509Certificate> coder = new CertificateCoder();
                 try {
                     // always export even if the CCS is disabled!
                     // The user might have temporarily switched it off.
@@ -157,11 +194,40 @@ public class JsonRecordWriter
                 }
             }
 
+            if (entries.contains(RecordType.Bookshelves)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.lbl_bookshelves));
+
+                final List<Bookshelf> bookshelves =
+                        ServiceLocator.getInstance().getBookshelfDao().getAll();
+                if (!bookshelves.isEmpty()) {
+                    jsonData.put(RecordType.Bookshelves.getName(),
+                                 getBookshelfCoder(context).encode(bookshelves));
+                }
+            }
+
+            if (entries.contains(RecordType.CalibreLibraries)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.site_calibre));
+
+                final List<CalibreLibrary> libraries =
+                        ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries();
+                if (!libraries.isEmpty()) {
+                    jsonData.put(RecordType.CalibreLibraries.getName(),
+                                 getCalibreLibraryCoder(context).encode(libraries));
+                }
+            }
+
             if (entries.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
+
                 final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context);
+                final JsonCoder<Book> coder = new BookCoder(context,
+                                                            getBookshelfCoder(context),
+                                                            getCalibreLibraryCoder(context));
 
                 int delta = 0;
                 long lastUpdate = 0;
@@ -208,4 +274,5 @@ public class JsonRecordWriter
         }
         return results;
     }
+
 }

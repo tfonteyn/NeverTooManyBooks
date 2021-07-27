@@ -228,8 +228,8 @@ public class PartialDate
      * @return human readable date string.
      */
     @NonNull
-    public String toPrettyDate(@NonNull final Locale locale,
-                               @Nullable final String defValue) {
+    public String toDisplay(@NonNull final Locale locale,
+                            @Nullable final String defValue) {
         if (mYearSet && mMonthSet && mDaySet) {
             return mLocalDate.format(
                     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale));

@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -38,15 +37,11 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -208,7 +203,8 @@ public class MaintenanceFragment
                 .create()
                 .show());
 
-        mVb.btnDebugDumpPrefs.setOnClickListener(v -> logPreferences());
+        //noinspection ConstantConditions
+        mVb.btnDebugDumpPrefs.setOnClickListener(v -> DebugReport.logPreferences(getContext()));
 
         mVb.btnDebugSqShell.setOnClickListener(v -> {
             final Bundle args = new Bundle();
@@ -224,26 +220,6 @@ public class MaintenanceFragment
               .commit();
         });
     }
-
-    /**
-     * Write the global preferences to the log file.
-     */
-    private void logPreferences() {
-        //noinspection ConstantConditions
-        final Map<String, ?> map = PreferenceManager
-                .getDefaultSharedPreferences(getContext()).getAll();
-        final List<String> keyList = new ArrayList<>(map.keySet());
-        Collections.sort(keyList);
-
-        final StringBuilder sb = new StringBuilder("dumpPreferences|\n\nSharedPreferences:");
-        for (final String key : keyList) {
-            sb.append('\n').append(key).append('=').append(map.get(key));
-        }
-        sb.append("\n\n");
-
-        Logger.warn(TAG, sb.toString());
-    }
-
 
     /**
      * Count size / Cleanup any purgeable files.

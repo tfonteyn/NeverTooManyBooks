@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDoneException;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,19 +51,25 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.org.json.JSONArray;
@@ -79,6 +86,8 @@ import com.hardbacknutter.org.json.JSONTokener;
  *         <li>{@link RecordType#Styles}</li>
  *         <li>{@link RecordType#Preferences}</li>
  *         <li>{@link RecordType#Certificates}</li>
+ *         <li>{@link RecordType#Bookshelves}</li>
+ *         <li>{@link RecordType#CalibreLibraries}</li>
  *         <li>{@link RecordType#Books}</li>
  *     </ul>
  *     </li>
@@ -91,6 +100,8 @@ import com.hardbacknutter.org.json.JSONTokener;
  *              <li>{@link RecordType#Styles}</li>
  *              <li>{@link RecordType#Preferences}</li>
  *              <li>{@link RecordType#Certificates}</li>
+ *              <li>{@link RecordType#Bookshelves}</li>
+ *              <li>{@link RecordType#CalibreLibraries}</li>
  *              <li>{@link RecordType#Books}</li>
  *         </ul>
  *         </li>
@@ -102,16 +113,16 @@ import com.hardbacknutter.org.json.JSONTokener;
 public class JsonRecordReader
         extends BaseRecordReader {
 
-    /** log error string. */
-    private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
-
     /** Log tag. */
     private static final String TAG = "JsonRecordReader";
-
     @NonNull
     private final JsonCoder<Book> mBookCoder;
     @NonNull
     private final Set<RecordType> mImportEntriesAllowed;
+    @Nullable
+    private JsonCoder<Bookshelf> mBookshelfCoder;
+    @Nullable
+    private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
 
     /**
      * Constructor.
@@ -127,7 +138,24 @@ public class JsonRecordReader
         super(context);
         mImportEntriesAllowed = importEntriesAllowed;
 
-        mBookCoder = new BookCoder(context);
+        mBookCoder = new BookCoder(context, getBookshelfCoder(context),
+                                   getCalibreLibraryCoder(context));
+    }
+
+    @NonNull
+    private JsonCoder<Bookshelf> getBookshelfCoder(@NonNull final Context context) {
+        if (mBookshelfCoder == null) {
+            mBookshelfCoder = new BookshelfCoder(context);
+        }
+        return mBookshelfCoder;
+    }
+
+    @NonNull
+    private JsonCoder<CalibreLibrary> getCalibreLibraryCoder(@NonNull final Context context) {
+        if (mCalibreLibraryCoder == null) {
+            mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
+        }
+        return mCalibreLibraryCoder;
     }
 
     @Override
@@ -169,8 +197,9 @@ public class JsonRecordReader
                 // Don't close this stream
                 final InputStream is = record.getInputStream();
                 final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                // 2021-03-01: using an updated/repacked org.json, version 20201115
-                JSONObject root = new JSONObject(new JSONTokener(isr));
+                final JSONTokener tokener = new JSONTokener(isr);
+
+                JSONObject root = new JSONObject(tokener);
 
                 // Is this a JsonArchiveWriter format ?
                 // Then descend to the container (data) object.
@@ -195,6 +224,16 @@ public class JsonRecordReader
                     if (recordType == RecordType.Certificates
                         || recordType == RecordType.AutoDetect) {
                         readCertificates(context, root);
+                    }
+
+                    if (recordType == RecordType.Bookshelves
+                        || recordType == RecordType.AutoDetect) {
+                        readBookshelves(context, root, helper);
+                    }
+
+                    if (recordType == RecordType.CalibreLibraries
+                        || recordType == RecordType.AutoDetect) {
+                        readCalibreLibraries(context, root, helper);
                     }
 
                     if (recordType == RecordType.Books
@@ -236,6 +275,7 @@ public class JsonRecordReader
             throws JSONException {
         final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
         if (jsonRoot != null) {
+            // The coder itself will set/update the values directly.
             new SharedPreferencesCoder(ServiceLocator.getGlobalPreferences())
                     .decode(jsonRoot);
             mResults.preferences = 1;
@@ -249,6 +289,7 @@ public class JsonRecordReader
         if (jsonRoot != null) {
             final CertificateCoder coder = new CertificateCoder();
 
+            // We only have a single cert for now
             final JSONObject calibreCA = jsonRoot.optJSONObject(CalibreContentServer.SERVER_CA);
             if (calibreCA != null) {
                 try {
@@ -259,6 +300,68 @@ public class JsonRecordReader
                     Logger.error(TAG, e);
                 }
             }
+        }
+    }
+
+    private void readBookshelves(@NonNull final Context context,
+                                 @NonNull final JSONObject root,
+                                 @NonNull final ImportHelper helper)
+            throws JSONException {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.Bookshelves.getName());
+        if (jsonRoot != null) {
+            final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+            new BookshelfCoder(context)
+                    .decode(jsonRoot)
+                    .forEach(bookshelf -> {
+                        bookshelfDao.fixId(bookshelf);
+                        if (bookshelf.getId() > 0) {
+                            // The shelf already exists
+                            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+                            switch (updateOption) {
+                                case Overwrite: {
+                                    bookshelfDao.update(context, bookshelf);
+                                    break;
+                                }
+                                case OnlyNewer:
+                                case Skip:
+                                    break;
+                            }
+                        } else {
+                            bookshelfDao.insert(context, bookshelf);
+                        }
+                    });
+        }
+    }
+
+    private void readCalibreLibraries(@NonNull final Context context,
+                                      @NonNull final JSONObject root,
+                                      @NonNull final ImportHelper helper)
+            throws JSONException {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreLibraries.getName());
+        if (jsonRoot != null) {
+            final CalibreLibraryDao libraryDao =
+                    ServiceLocator.getInstance().getCalibreLibraryDao();
+
+            getCalibreLibraryCoder(context)
+                    .decode(jsonRoot)
+                    .forEach(library -> {
+                        libraryDao.fixId(library);
+                        if (library.getId() > 0) {
+                            // The library already exists
+                            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+                            switch (updateOption) {
+                                case Overwrite: {
+                                    libraryDao.update(library);
+                                    break;
+                                }
+                                case OnlyNewer:
+                                case Skip:
+                                    break;
+                            }
+                        } else {
+                            libraryDao.insert(library);
+                        }
+                    });
         }
     }
 

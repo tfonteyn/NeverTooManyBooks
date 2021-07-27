@@ -46,24 +46,21 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * Hardcoded to only write {@link RecordType#Books} into a JSON file.
- *
  * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...
  * <p>
- * <br>
- *     <ul>
- *         <li>Root element {@link JsonCoder#TAG_APPLICATION_ROOT} contains:
- * <ul>
- *      <li>{@link RecordType#AutoDetect}, which contains:
+ *  <ul>
+ *      <li>Root element {@link JsonCoder#TAG_APPLICATION_ROOT} contains:
  *          <ul>
- *              <li>{@link RecordType#Books}</li>
- *              <li>future expansion</li>
+ *              <li>{@link RecordType#AutoDetect}, which contains:
+ *                  <ul>
+ *                      <li>{@link RecordType#Books}</li>
+ *                      <li>future expansion</li>
+ *                  </ul>
+ *              </li>
+ *              <li>{@link RecordType#MetaData}</li>
  *          </ul>
- *      </li>
- *      <li>{@link RecordType#MetaData}</li>
+ *     </li>
  * </ul>
- *         </li>
- *     </ul>
  */
 public class JsonArchiveWriter
         implements ArchiveWriter {
@@ -117,11 +114,20 @@ public class JsonArchiveWriter
                 // manually concat
                 // 1. archive envelope
                 bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
+                // add the archive version at the top to facilitate parsing
+                bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + getVersion());
                 // 2. container object
-                bw.write("\"" + RecordType.AutoDetect.getName() + "\":");
+                bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
+
                 // 3. the actual data inside the container
-                results = recordWriter
-                        .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+                recordWriter.write(context, bw, EnumSet.of(RecordType.Bookshelves),
+                                   progressListener);
+                recordWriter.write(context, bw, EnumSet.of(RecordType.CalibreLibraries),
+                                   progressListener);
+
+                results = recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
+                                             progressListener);
+
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
                 recordWriter.writeMetaData(bw, ArchiveMetaData

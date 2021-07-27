@@ -73,7 +73,7 @@ public abstract class ArchiveWriterAbstract
      * <p>
      * RELEASE: set correct archiver version
      */
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     /**
      * Arbitrary number of steps added to the progress max value.
@@ -175,19 +175,36 @@ public abstract class ArchiveWriterAbstract
             // importing as we'll be seeking in the input archive for these.
             if (!progressListener.isCancelled()
                 && exportEntities.contains(RecordType.Styles)) {
-                writeRecord(context, RecordType.Styles, getEncoding(RecordType.Styles),
+                writeRecord(context, RecordType.Styles,
+                            getEncoding(RecordType.Styles),
                             progressListener);
             }
 
             if (!progressListener.isCancelled()
                 && exportEntities.contains(RecordType.Preferences)) {
-                writeRecord(context, RecordType.Preferences, getEncoding(RecordType.Preferences),
+                writeRecord(context, RecordType.Preferences,
+                            getEncoding(RecordType.Preferences),
                             progressListener);
             }
 
             if (!progressListener.isCancelled()
                 && exportEntities.contains(RecordType.Certificates)) {
-                writeRecord(context, RecordType.Certificates, getEncoding(RecordType.Certificates),
+                writeRecord(context, RecordType.Certificates,
+                            getEncoding(RecordType.Certificates),
+                            progressListener);
+            }
+
+            // If we're doing books, then we MUST first do Bookshelves
+            // (and optional Calibre libraries)
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Books)) {
+
+                writeRecord(context, RecordType.Bookshelves,
+                            getEncoding(RecordType.Bookshelves),
+                            progressListener);
+
+                writeRecord(context, RecordType.CalibreLibraries,
+                            getEncoding(RecordType.CalibreLibraries),
                             progressListener);
             }
 
@@ -299,6 +316,9 @@ public abstract class ArchiveWriterAbstract
      * <ul>
      *     <li>{@link RecordType#Styles}</li>
      *     <li>{@link RecordType#Preferences}</li>
+     *     <li>{@link RecordType#Certificates}</li>
+     *     <li>{@link RecordType#Bookshelves}</li>
+     *     <li>{@link RecordType#CalibreLibraries}</li>
      * </ul>
      *
      * @param context          Current context

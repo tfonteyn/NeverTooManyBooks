@@ -168,7 +168,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 public class BooksOnBookshelf
         extends BaseActivity {
 
-    public static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
+    private static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
     /** {@link FragmentResultListener} request key. */
@@ -439,12 +439,13 @@ public class BooksOnBookshelf
 
         createFragmentResultListeners();
         createViewModel();
+
         createSyncDelegates(global);
-        mAmazonHandler = new AmazonHandler(this);
-        mViewBookHandler = new ViewBookOnWebsiteHandler(this);
+        createHandlers(global);
 
         createBookshelfSpinner();
-        createBooklist(global);
+        // setup the view related stuff; the actual list data is generated in onResume
+        createBooklistView(global);
 
         // Initialise adapter without a cursor. We'll recreate it with a cursor when
         // we're ready to display the book-list.
@@ -491,32 +492,59 @@ public class BooksOnBookshelf
      */
     private void createSyncDelegates(@NonNull final SharedPreferences global) {
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
-            mCalibreSyncLauncher = registerForActivityResult(new CalibreSyncContract(), data -> {
-                if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
-                    mVm.setForceRebuildInOnResume(true);
-                }
-            });
+        // Reminder: this method cannot be called from onResume... registerForActivityResult
+        // can only be called from onCreate
 
-            try {
-                mCalibreHandler = new CalibreHandler(this);
-                mCalibreHandler.onViewCreated(this, mVb.getRoot());
-            } catch (@NonNull final SSLException | CertificateException ignore) {
-                // ignore
+        if (SyncServer.CalibreCS.isEnabled(global)) {
+            if (mCalibreSyncLauncher == null) {
+                mCalibreSyncLauncher = registerForActivityResult(
+                        new CalibreSyncContract(), data -> {
+                            if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
+                                mVm.setForceRebuildInOnResume(true);
+                            }
+                        });
             }
         }
 
         if (SyncServer.StripInfo.isEnabled(global)) {
-            mStripInfoSyncLauncher = registerForActivityResult(
-                    new StripInfoSyncContract(), data -> {
-                        if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
-                            mVm.setForceRebuildInOnResume(true);
-                        }
-                    });
+            if (mStripInfoSyncLauncher == null) {
+                mStripInfoSyncLauncher = registerForActivityResult(
+                        new StripInfoSyncContract(), data -> {
+                            if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
+                                mVm.setForceRebuildInOnResume(true);
+                            }
+                        });
+            }
         }
     }
 
-    private void createBooklist(@NonNull final SharedPreferences global) {
+    /**
+     * Create the (optional) handlers.
+     *
+     * @param global Global preferences
+     */
+    private void createHandlers(@NonNull final SharedPreferences global) {
+
+        if (mAmazonHandler == null) {
+            mAmazonHandler = new AmazonHandler(this);
+        }
+        if (mViewBookHandler == null) {
+            mViewBookHandler = new ViewBookOnWebsiteHandler(this);
+        }
+
+        if (SyncServer.CalibreCS.isEnabled(global)) {
+            if (mCalibreHandler == null) {
+                try {
+                    mCalibreHandler = new CalibreHandler(this);
+                    mCalibreHandler.onViewCreated(this, mVb.getRoot());
+                } catch (@NonNull final SSLException | CertificateException ignore) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    private void createBooklistView(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
@@ -551,7 +579,7 @@ public class BooksOnBookshelf
      * @return the item count of the list adapter.
      */
     @IntRange(from = 0)
-    public int createListAdapter(final boolean display) {
+    private int createListAdapter(final boolean display) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "createListAdapter|display=" + display, new Throwable());
         }
@@ -608,8 +636,13 @@ public class BooksOnBookshelf
      * Show or hide the synchronization menu.
      */
     private void updateSyncMenuVisibility(@NonNull final SharedPreferences global) {
+        final boolean enable =
+                (SyncServer.CalibreCS.isEnabled(global) && mCalibreSyncLauncher != null)
+                ||
+                (SyncServer.StripInfo.isEnabled(global) && mStripInfoSyncLauncher != null);
+
         //noinspection ConstantConditions
-        getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(SyncServer.isAnyEnabled(global));
+        getNavigationMenuItem(R.id.SUBMENU_SYNC).setVisible(enable);
     }
 
     /**
@@ -713,8 +746,8 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if there is a menu to show
      */
-    boolean onCreateContextMenu(@NonNull final View v,
-                                final int position) {
+    private boolean onCreateContextMenu(@NonNull final View v,
+                                        final int position) {
 
         //noinspection ConstantConditions
         final Cursor cursor = mAdapter.getCursor();
@@ -1161,13 +1194,11 @@ public class BooksOnBookshelf
         closeNavigationDrawer();
 
 
-        if (itemId == R.id.SUBMENU_SYNC_CALIBRE) {
-            //noinspection ConstantConditions
+        if (itemId == R.id.SUBMENU_SYNC_CALIBRE && mCalibreSyncLauncher != null) {
             mCalibreSyncLauncher.launch(null);
             return false;
 
-        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO) {
-            //noinspection ConstantConditions
+        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO && mStripInfoSyncLauncher != null) {
             mStripInfoSyncLauncher.launch(null);
             return false;
         }
@@ -1214,10 +1245,10 @@ public class BooksOnBookshelf
         return super.onNavigationItemSelected(menuItem);
     }
 
-    protected void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
-                                         @NonNull final MenuItem menuItem,
-                                         @SuppressWarnings("SameParameterValue")
-                                         @MenuRes final int menuResId) {
+    @SuppressWarnings("SameParameterValue")
+    private void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
+                                       @NonNull final MenuItem menuItem,
+                                       @MenuRes final int menuResId) {
 
         final View anchor = getNavigationMenuItemView(anchorMenuItemId);
 
@@ -1226,9 +1257,12 @@ public class BooksOnBookshelf
         if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
             menu.findItem(R.id.SUBMENU_SYNC_CALIBRE)
-                .setVisible(SyncServer.CalibreCS.isEnabled(global));
+                .setVisible(SyncServer.CalibreCS.isEnabled(global)
+                            && mCalibreSyncLauncher != null);
+
             menu.findItem(R.id.SUBMENU_SYNC_STRIP_INFO)
-                .setVisible(SyncServer.StripInfo.isEnabled(global));
+                .setVisible(SyncServer.StripInfo.isEnabled(global)
+                            && mStripInfoSyncLauncher != null);
         }
 
         new ExtPopupMenu(this, menu, (pumItem, pos) -> onNavigationItemSelected(pumItem))
@@ -1348,8 +1382,8 @@ public class BooksOnBookshelf
      * @param change one of the BookChange flags
      * @param bookId the book that was changed
      */
-    public void onBookChange(@RowChangeListener.BookChange final int change,
-                             @IntRange(from = 1) final long bookId) {
+    private void onBookChange(@RowChangeListener.BookChange final int change,
+                              @IntRange(from = 1) final long bookId) {
         // ENHANCE: update the modified row without a rebuild.
         saveListPosition();
         buildBookList();
@@ -1521,10 +1555,10 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    public void onBuildCancelled(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+    private void onBuildCancelled(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
         mVb.progressCircle.hide();
         if (message.isNewEvent()) {
-            mVm.onBuildCancelled(message);
+            mVm.onBuildCancelled();
 
             if (mVm.isListLoaded()) {
                 displayList();
@@ -1539,10 +1573,10 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    public void onBuildFailed(@NonNull final FinishedMessage<Exception> message) {
+    private void onBuildFailed(@NonNull final FinishedMessage<Exception> message) {
         mVb.progressCircle.hide();
         if (message.isNewEvent()) {
-            mVm.onBuildFailed(message);
+            mVm.onBuildFailed();
 
             if (mVm.isListLoaded()) {
                 displayList();
@@ -1939,7 +1973,7 @@ public class BooksOnBookshelf
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        BooksonbookshelfHeaderBinding mVb;
+        final BooksonbookshelfHeaderBinding mVb;
 
         HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
             super(vb.getRoot());

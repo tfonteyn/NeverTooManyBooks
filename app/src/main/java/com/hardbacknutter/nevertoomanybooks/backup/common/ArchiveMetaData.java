@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 public class ArchiveMetaData {
 
     /** Version of archiver used to write this archive. */
-    private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
+    public static final String INFO_ARCHIVER_VERSION = "ArchVersion";
     /** Creation LocalDateTime(local zone) of archive; ISO formatted. */
     private static final String INFO_CREATED_DATE = "CreateDate";
     /** Identifier. */

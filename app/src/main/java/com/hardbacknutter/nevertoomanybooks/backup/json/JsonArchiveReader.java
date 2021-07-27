@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
@@ -44,6 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+/**
+ * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...
+ */
 public class JsonArchiveReader
         implements ArchiveReader {
 
@@ -73,8 +77,14 @@ public class JsonArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (RecordReader recordReader = new JsonRecordReader(
-                context, mHelper.getRecordTypes())) {
+        final Set<RecordType> importEntries = mHelper.getRecordTypes();
+        if (importEntries.contains(RecordType.Books)) {
+            importEntries.add(RecordType.Bookshelves);
+            importEntries.add((RecordType.CalibreLibraries));
+        }
+
+
+        try (RecordReader recordReader = new JsonRecordReader(context, importEntries)) {
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(

@@ -60,7 +60,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <p>
  * Currently supported formats.
  * <ul>
- *     <li>v3:
+ *     <li>v4: Books will contain REFERENCES to Bookshelves and CalibreLibraries;
+ *              and FULL data on other related objects.
+ *         <ul>
+ *             <li>{@link RecordType#MetaData} :         {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Styles} :           {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Preferences} :      {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Certificates} :     {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Bookshelves} :      {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#CalibreLibraries} : {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Books} :            {@link RecordEncoding#Json}</li>
+ *             <li>Multiple {@link RecordType#Cover}</li>
+ *         </ul>
+ *     </li>
+ *     <li>v3: Books will contain FULL data on related objects.
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Json}</li>
  *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Json}</li>
@@ -70,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
- *     <li>v2:
+ *     <li>v2: xml/csv
  *         <ul>
  *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
  *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Xml}</li>
@@ -183,7 +196,7 @@ public abstract class ArchiveReaderAbstract
      * <li>The header is assumed to already have been read by {@link #readMetaData(Context)}</li>
      * <li>Seek and read {@link RecordType#Styles}</li>
      * <li>Seek and read {@link RecordType#Preferences}</li>
-     * <li>read sequentially and read records as encountered.</li>
+     * <li>Sequentially read records as encountered.</li>
      * </ol>
      *
      * @param context          Current context
@@ -206,20 +219,17 @@ public abstract class ArchiveReaderAbstract
         // Sanity check: the archive info should have been read during the validate phase
         Objects.requireNonNull(mMetaData, "info");
 
-        if (mHelper.getRecordTypes().contains(RecordType.Cover)) {
-            mCoverReader = new CoverRecordReader();
-        }
+
 
         final int archiveVersion = mMetaData.getArchiveVersion();
         switch (archiveVersion) {
             case 4:
-                // future...
-                readV4(context, progressListener);
-                break;
             case 3:
             case 2:
+                // The reader is flexible enough to detect the different versions for now.
                 readV2(context, progressListener);
                 break;
+
             case 1:
                 throw new InvalidArchiveException("v1 no longer supported");
 
@@ -230,30 +240,27 @@ public abstract class ArchiveReaderAbstract
         return mResults;
     }
 
-    private void readV4(@NonNull final Context context,
-                        @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException {
-
-        ArchiveReaderRecord record = seek(RecordType.AutoDetect);
-        while (record != null && !progressListener.isCancelled()) {
-            if (record.getType().isPresent()) {
-                readRecord(context, record, progressListener);
-            }
-            record = next();
-        }
-    }
-
     private void readV2(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
                    IOException, StorageException {
 
         final Set<RecordType> importEntries = mHelper.getRecordTypes();
+
         try {
-            final boolean readBooks = importEntries.contains(RecordType.Books);
-            final boolean readCovers = importEntries.contains(RecordType.Cover);
             final boolean readCertificates = importEntries.contains(RecordType.Certificates);
+
+            final boolean readCovers = importEntries.contains(RecordType.Cover);
+            if (readCovers) {
+                mCoverReader = new CoverRecordReader();
+            }
+
+            final boolean readBooks = importEntries.contains(RecordType.Books);
+            if (readBooks) {
+                importEntries.add(RecordType.Bookshelves);
+                importEntries.add((RecordType.CalibreLibraries));
+            }
+
 
             //noinspection ConstantConditions
             int estimatedSteps = 1 + mMetaData.getBookCount();
@@ -274,7 +281,7 @@ public abstract class ArchiveReaderAbstract
                         1, context.getString(R.string.lbl_styles_long));
                 final ArchiveReaderRecord record = seek(RecordType.Styles);
                 if (record != null) {
-                    readRecord(context, record, progressListener);
+                    readRecord(context, importEntries, record, progressListener);
                 }
                 closeInputStream();
             }
@@ -285,27 +292,28 @@ public abstract class ArchiveReaderAbstract
                         1, context.getString(R.string.lbl_settings));
                 final ArchiveReaderRecord record = seek(RecordType.Preferences);
                 if (record != null) {
-                    readRecord(context, record, progressListener);
+                    readRecord(context, importEntries, record, progressListener);
                 }
                 closeInputStream();
             }
 
-            // Get first record.
-            ArchiveReaderRecord record = next();
-
+            ArchiveReaderRecord record;
             // process each entry based on type, unless we are cancelled.
-            while (record != null && !progressListener.isCancelled()) {
+            while ((record = next()) != null
+                   && !progressListener.isCancelled()) {
+
                 if (record.getType().isPresent()) {
                     final RecordType type = record.getType().get();
 
                     if ((type == RecordType.Cover && readCovers)
-                        || (type == RecordType.Books && readBooks)
                         || (type == RecordType.Certificates && readCertificates)
+                        || (type == RecordType.Bookshelves && readBooks)
+                        || (type == RecordType.CalibreLibraries && readBooks)
+                        || (type == RecordType.Books && readBooks)
                     ) {
-                        readRecord(context, record, progressListener);
+                        readRecord(context, importEntries, record, progressListener);
                     }
                 }
-                record = next();
             }
         } finally {
             try {
@@ -317,6 +325,7 @@ public abstract class ArchiveReaderAbstract
     }
 
     private void readRecord(@NonNull final Context context,
+                            @NonNull final Set<RecordType> importEntriesAllowed,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
@@ -340,7 +349,7 @@ public abstract class ArchiveReaderAbstract
             } else {
                 // everything else, keep it clean and create a new reader for each entry.
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mHelper.getRecordTypes())) {
+                        .get().createReader(context, importEntriesAllowed)) {
 
                     mResults.add(recordReader.read(context, record, mHelper, progressListener));
                 }

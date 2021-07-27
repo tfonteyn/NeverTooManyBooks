@@ -28,6 +28,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 /**
  * Supported archive entry types.
@@ -75,9 +77,23 @@ public enum RecordType {
     Certificates("certificates"),
 
     /**
+     * All information needed to encode/decode {@link Bookshelf} elements.
+     * ONLY ONE PER ARCHIVE.
+     */
+    Bookshelves("bookshelves"),
+
+    /**
+     * All information needed to encode/decode {@link CalibreLibrary} elements.
+     * ONLY ONE PER ARCHIVE.
+     */
+    CalibreLibraries("calibrelibraries"),
+
+    /**
      * All information needed to encode/decode {@link Book} elements.
      * All auxiliary data (author, bookshelf, ...) is included as needed.
      * ONLY ONE PER ARCHIVE.
+     * <p>
+     * If Books are written then {@link #Bookshelves} <strong>MUST</strong> precede it.
      */
     Books("books"),
 

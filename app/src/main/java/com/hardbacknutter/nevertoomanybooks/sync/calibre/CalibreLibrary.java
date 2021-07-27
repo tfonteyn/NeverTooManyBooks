@@ -146,6 +146,13 @@ public class CalibreLibrary
         return mLibraryStringId;
     }
 
+    /**
+     * Get the UUID for this library as defined/created by the Calibre Content Server.
+     *
+     * <strong>Will be {@code ""} if our extension is not installed on the CSS</strong>
+     *
+     * @return CSS uuid, or ""
+     */
     @NonNull
     public String getUuid() {
         return mUuid;

@@ -179,7 +179,7 @@ public class XmlRecordWriter
                                        @NonNull final ProgressListener progressListener)
             throws IOException {
         final ArrayList<CalibreLibrary> calibreLibraries =
-                ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries();
+                ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries();
         if (!calibreLibraries.isEmpty()) {
             writer.write("<CalibreLibraryList");
             writer.write(XmlUtils.versionAttr(1));

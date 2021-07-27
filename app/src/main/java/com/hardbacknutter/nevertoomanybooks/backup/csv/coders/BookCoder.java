@@ -50,11 +50,12 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
  * the old ones.
  *
  * <strong>LIMITATIONS:</strong> Calibre book data is handled, but Calibre library is NOT.
- * The Calibre native string-id is written out.
+ * The Calibre native string-id is written out with the book.
+ * <p>
  * When reading, the Calibre native string-id is checked against already existing data,
  * but if there is no match all Calibre data for the book is discarded.
  * <p>
- * In other words: this coder is (no longer) a full backup/restore!
+ * In other words: this coder is NOT a full backup/restore!
  */
 public class BookCoder {
 
@@ -152,7 +153,7 @@ public class BookCoder {
 
         mExternalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
-        ServiceLocator.getInstance().getCalibreLibraryDao().getLibraries()
+        ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries()
                       .forEach(library -> {
                           mCalibreLibraryId2StrMap.put(library.getId(),
                                                        library.getLibraryStringId());

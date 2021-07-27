@@ -570,7 +570,7 @@ public class Book
             // but if not, go explicitly fetch it.
             final CalibreLibrary library = ServiceLocator
                     .getInstance().getCalibreLibraryDao()
-                    .getLibrary(getLong(DBKey.FK_CALIBRE_LIBRARY));
+                    .getLibraryById(getLong(DBKey.FK_CALIBRE_LIBRARY));
 
             if (library != null) {
                 // store for reuse

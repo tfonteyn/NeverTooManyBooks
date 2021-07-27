@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,32 +45,51 @@ public final class DateUtils {
      *
      * @return local timezone DateTime
      */
-    private static ZonedDateTime utcToZoned(@NonNull final LocalDateTime utc) {
+    public static ZonedDateTime utcToZoned(@NonNull final LocalDateTime utc) {
         return utc.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
     }
 
     /**
-     * Pretty format a local timezone date to a user viewable datetime-string.
+     * Pretty format a local timezone date to a user viewable date+time string.
      *
-     * @param context   Current context
-     * @param localDate to format
+     * @param context       Current context
+     * @param localDateTime to format
      *
-     * @return human readable datetime string
+     * @return human readable datetime string; if the input is null, {@code ""} is returned
      */
     @NonNull
-    public static String toDisplay(@NonNull final Context context,
-                                   @NonNull final TemporalAccessor localDate) {
+    public static String displayDateTime(@NonNull final Context context,
+                                         @Nullable final TemporalAccessor localDateTime) {
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-                                .withLocale(userLocale)
-                                .format(localDate);
+        if (localDateTime == null) {
+            return "";
+        } else {
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                                    .withLocale(userLocale)
+                                    .format(localDateTime);
+        }
     }
 
+    /**
+     * Pretty format a local timezone date to a user viewable date string.
+     *
+     * @param context       Current context
+     * @param localDateTime to format
+     *
+     * @return human readable date string; if the input is null, {@code ""} is returned
+     */
     @NonNull
-    public static String utcToDisplay(@NonNull final Context context,
-                                      @NonNull final LocalDateTime utcDate) {
-        return toDisplay(context, utcToZoned(utcDate));
-    }
+    public static String displayDate(@NonNull final Context context,
+                                     @Nullable final TemporalAccessor localDateTime) {
 
+        if (localDateTime == null) {
+            return "";
+        } else {
+            final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+            return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                                    .withLocale(userLocale)
+                                    .format(localDateTime);
+        }
+    }
 }

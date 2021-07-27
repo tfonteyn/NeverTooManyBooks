@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,11 +23,19 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
+/**
+ * Note that {@link #decode(JSONObject)} returns the object because we EXPECT the object,
+ * while {@link #decodeReference(JSONObject)} returns an Optional because the actual object
+ * might legitimate not exist.
+ *
+ * @param <T>
+ */
 public interface JsonCoder<T> {
 
     String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
@@ -47,6 +55,22 @@ public interface JsonCoder<T> {
     }
 
     @NonNull
+    default JSONObject encodeReference(@NonNull final T element)
+            throws JSONException {
+        throw new UnsupportedOperationException();
+    }
+
+    @NonNull
+    default JSONArray encodeReference(@NonNull final List<T> list)
+            throws JSONException {
+        final List<JSONObject> result = new ArrayList<>();
+        for (final T element : list) {
+            result.add(encodeReference(element));
+        }
+        return new JSONArray(result);
+    }
+
+    @NonNull
     T decode(@NonNull JSONObject data)
             throws JSONException;
 
@@ -56,6 +80,22 @@ public interface JsonCoder<T> {
         final ArrayList<T> list = new ArrayList<>();
         for (int i = 0; i < elements.length(); i++) {
             list.add(decode((JSONObject) elements.get(i)));
+        }
+        return list;
+    }
+
+    @NonNull
+    default Optional<T> decodeReference(@NonNull final JSONObject data)
+            throws JSONException {
+        throw new UnsupportedOperationException();
+    }
+
+    @NonNull
+    default ArrayList<T> decodeReference(@NonNull final JSONArray elements)
+            throws JSONException {
+        final ArrayList<T> list = new ArrayList<>();
+        for (int i = 0; i < elements.length(); i++) {
+            decodeReference((JSONObject) elements.get(i)).ifPresent(list::add);
         }
         return list;
     }

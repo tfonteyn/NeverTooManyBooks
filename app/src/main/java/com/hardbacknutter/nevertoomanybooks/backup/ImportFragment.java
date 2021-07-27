@@ -375,7 +375,8 @@ public class ImportFragment
             if (creationDate != null) {
                 archiveContent.add(getString(R.string.name_colon_value,
                                              getString(R.string.lbl_created),
-                                             DateUtils.toDisplay(getContext(), creationDate)));
+                                             DateUtils
+                                                     .displayDateTime(getContext(), creationDate)));
             }
             if (metaData.hasBookCount()) {
                 archiveContent.add(getString(R.string.name_colon_value,
