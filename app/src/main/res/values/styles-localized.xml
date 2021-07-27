@@ -46,11 +46,6 @@
         <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
     </style>
 
-    <!-- The price PAID field. An actual number. -->
-    <style name="pricePaidTextEntry">
-        <item name="android:inputType">numberDecimal</item>
-    </style>
-
     <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
     <style name="priceListedTextEntry">
         <item name="android:inputType">textCapWords</item>
