@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
  * Crazy wrapper around a {@link MaterialDatePicker}
  * to make it work with a {@link FragmentResultListener}.
  * <p>
- * Usage:
+ * Usage: URGENT: update the example code
  * <pre>
  *     {@code
  *
@@ -223,6 +223,17 @@ public final class WrappedMaterialDatePicker<S>
 
         /**
          * Callback handler.
+         * <p>
+         * The resulting date can be reconstructed with for example
+         *
+         * <pre>
+         *     {@code
+         *              Instant.ofEpochMilli(selections[i])
+         *                     .atZone(ZoneId.systemDefault())
+         *                     .format(DateTimeFormatter.ISO_LOCAL_DATE)
+         *     }
+         * </pre>
+         * Instant.ofEpochMilli(selections[0])
          *
          * @param fieldIds   the field(s) this dialog was bound to
          * @param selections the selected date(s)
