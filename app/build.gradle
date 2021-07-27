@@ -104,7 +104,7 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         versionCode 12
-        versionName = "2.5.3"
+        versionName = "2.5.4"
 
         // see NOTES.txt
         minSdkVersion 26
@@ -219,7 +219,7 @@ android {
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
-    // 2021-03-01: using an updated/repacked org.json, version 20210307
+    // We're using an updated/repacked org.json, version 20210307
     implementation project(path: ':repacked-org-json')
     implementation project(path: ':fastscroller')
 
@@ -230,14 +230,14 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.3.0-alpha01'
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-beta02'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-rc01'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.core:core:1.7.0-alpha01'
     implementation 'androidx.customview:customview:1.1.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
     implementation 'androidx.exifinterface:exifinterface:1.3.2'
-    implementation 'androidx.fragment:fragment:1.3.5'
+    implementation 'androidx.fragment:fragment:1.3.6'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.3.1'
     implementation 'androidx.preference:preference:1.1.1'
