@@ -43,13 +43,17 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
 
+/**
+ * Note on mHasLastUpdateDateField / mSyncDateUserEditable:
+ * It's debatable that we could just use mHasLastUpdateDateField for both meanings.
+ */
 public enum SyncServer
         implements Parcelable {
 
     /** A Calibre Content Server. */
-    CalibreCS(R.string.lbl_calibre_content_server, true),
+    CalibreCS(R.string.lbl_calibre_content_server, true, true),
     /** StripInfo web site. */
-    StripInfo(R.string.site_stripinfo_be, false);
+    StripInfo(R.string.site_stripinfo_be, false, false);
 
     /** {@link Parcelable}. */
     public static final Creator<SyncServer> CREATOR = new Creator<SyncServer>() {
@@ -72,12 +76,17 @@ public enum SyncServer
     @StringRes
     private final int mLabel;
 
+
     private final boolean mHasLastUpdateDateField;
+    private final boolean mSyncDateIsUserEditable;
+
 
     SyncServer(@StringRes final int label,
-               final boolean hasLastUpdateDateField) {
+               final boolean hasLastUpdateDateField,
+               final boolean syncDateUserEditable) {
         mLabel = label;
         mHasLastUpdateDateField = hasLastUpdateDateField;
+        mSyncDateIsUserEditable = syncDateUserEditable;
     }
 
 
@@ -99,6 +108,14 @@ public enum SyncServer
         }
     }
 
+    public boolean isSyncDateUserEditable() {
+        return mSyncDateIsUserEditable;
+    }
+
+    /**
+     * Check whether each book has a specific last-update date to
+     * (help) sync it with the server/web site
+     */
     public boolean hasLastUpdateDateField() {
         return mHasLastUpdateDateField;
     }

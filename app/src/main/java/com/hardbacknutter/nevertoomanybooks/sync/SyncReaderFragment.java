@@ -224,24 +224,17 @@ public class SyncReaderFragment
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == mVb.rbImportBooksOptionNewOnly.getId()) {
                 mVm.setNewBooksOnly();
-                mVb.infSyncDate.setVisibility(View.VISIBLE);
-                mVb.lblSyncDate.setVisibility(View.VISIBLE);
 
             } else if (checkedId == mVb.rbImportBooksOptionNewAndUpdated.getId()) {
                 mVm.setNewAndUpdatedBooks();
-                mVb.infSyncDate.setVisibility(View.VISIBLE);
-                mVb.lblSyncDate.setVisibility(View.VISIBLE);
 
             } else if (checkedId == mVb.rbImportBooksOptionAll.getId()) {
                 mVm.setAllBooks();
-                mVb.infSyncDate.setVisibility(View.GONE);
-                mVb.lblSyncDate.setVisibility(View.GONE);
             }
+            updateSyncDateVisibility();
         });
 
-        final boolean showSyncDateField = mVm.isNewBooksOnly() || mVm.isNewAndUpdatedBooks();
-        mVb.infSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
-        mVb.lblSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
+        updateSyncDateVisibility();
         mVb.syncDate.setOnClickListener(v -> {
             final LocalDateTime syncDate = mVm.getSyncDate();
             mDatePickerLauncher.launch(R.string.lbl_sync_date, mVb.lblSyncDate.getId(),
@@ -324,6 +317,12 @@ public class SyncReaderFragment
 
         mVm.getConfig().getExtraArgs()
            .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
+    }
+
+    private void updateSyncDateVisibility() {
+        final boolean showSyncDateField = mVm.isSyncDateUserEditable();
+        mVb.infSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
+        mVb.lblSyncDate.setVisibility(showSyncDateField ? View.VISIBLE : View.GONE);
     }
 
     /**

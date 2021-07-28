@@ -161,6 +161,12 @@ public class SyncReaderViewModel
         mConfig.setUpdateOption(SyncReaderConfig.Updates.OnlyNewer);
     }
 
+    public boolean isSyncDateUserEditable() {
+        return Objects.requireNonNull(mSyncServer, "mSyncServer")
+                      .isSyncDateUserEditable()
+               && (isNewBooksOnly() || isNewAndUpdatedBooks());
+    }
+
     @Nullable
     public LocalDateTime getSyncDate() {
         return mConfig.getSyncDate();
