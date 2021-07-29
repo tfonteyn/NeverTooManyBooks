@@ -1462,6 +1462,8 @@
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
 
+    <string name="lbl_date_last_updated">Date last updated</string>
+
 
     <!-- [VERIFIED] Universal date strings -->
     <string name="lbl_year">Year</string>
