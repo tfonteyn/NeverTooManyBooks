@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -35,10 +34,6 @@ import androidx.documentfile.provider.DocumentFile;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
-import androidx.preference.SwitchPreference;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -47,16 +42,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
 public class CalibrePreferencesFragment
-        extends BasePreferenceFragment {
+        extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "CalibrePreferencesFrag";
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
@@ -64,32 +56,15 @@ public class CalibrePreferencesFragment
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
     private CalibrePreferencesViewModel mVm;
+
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    //URGENT: prevent from this getting started twice when the con takes a long time
-                    final SwitchPreference sp = findPreference(CalibreHandler.PK_ENABLED);
-                    //noinspection ConstantConditions
-                    if (sp.isChecked()) {
-                        //noinspection ConstantConditions
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_baseline_info_24)
-                                .setTitle(R.string.lbl_test_connection)
-                                .setMessage(R.string.confirm_test_connection)
-                                .setNegativeButton(R.string.action_not_now, (d, w) ->
-                                        popBackStackOrFinish())
-                                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                                    d.dismiss();
-                                    mVm.validateConnection();
-                                })
-                                .create()
-                                .show();
-                    } else {
-                        popBackStackOrFinish();
-                    }
+                    proposeConnectionValidation(CalibreHandler.PK_ENABLED);
                 }
             };
+
     private Preference mFolderPref;
     private Preference mCaPref;
     private final ActivityResultLauncher<String> mOpenCaUriLauncher =
@@ -181,45 +156,16 @@ public class CalibrePreferencesFragment
         mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+        mVm.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
     }
 
-    private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
-        if (message.isNewEvent()) {
-            final Boolean result = message.getResult();
-            if (result != null) {
-                if (result) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
-                            .show();
-                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
-                } else {
-                    //For now we don't get here, instead we would be in onFailure.
-                    // But keeping this here to guard against future changes in the task logic
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
-                }
-            }
-        }
+    protected void validateConnection() {
+        mVm.validateConnection();
     }
 
-    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        if (message.isNewEvent()) {
-            final Exception e = message.getResult();
-
-            final Context context = getContext();
-            //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
-                                    .orElse(getString(R.string.error_network_site_access_failed,
-                                                      getString(R.string.site_calibre)));
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_network_failed_try_again)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
-        }
+    @Override
+    protected void cancelTask(final int taskId) {
+        mVm.cancelTask(taskId);
     }
 
     /**

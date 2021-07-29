@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -32,24 +31,19 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 
 @Keep
 public class StripInfoBePreferencesFragment
-        extends BasePreferenceFragment {
+        extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "StripInfoBePrefFrag";
 
@@ -59,19 +53,7 @@ public class StripInfoBePreferencesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
-                    new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_baseline_info_24)
-                            .setTitle(R.string.lbl_test_connection)
-                            .setMessage(R.string.confirm_test_connection)
-                            .setNegativeButton(R.string.action_not_now, (d, w) ->
-                                    popBackStackOrFinish())
-                            .setPositiveButton(android.R.string.ok, (d, w) -> {
-                                d.dismiss();
-                                mVm.validateConnection();
-                            })
-                            .create()
-                            .show();
+                    proposeConnectionValidation(StripInfoHandler.PK_ENABLED);
                 }
             };
 
@@ -163,44 +145,15 @@ public class StripInfoBePreferencesFragment
         mVm = new ViewModelProvider(this).get(StripInfoBePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+        mVm.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
     }
 
-    private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
-        if (message.isNewEvent()) {
-            final Boolean result = message.getResult();
-            if (result != null) {
-                if (result) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT)
-                            .show();
-                    getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
-                } else {
-                    //For now we don't get here, instead we would be in onFailure.
-                    // But keeping this here to guard against future changes in the task logic
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
-                }
-            }
-        }
+    protected void validateConnection() {
+        mVm.validateConnection();
     }
 
-    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        if (message.isNewEvent()) {
-            final Exception e = message.getResult();
-
-            final Context context = getContext();
-            //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
-                                    .orElse(getString(R.string.error_network_site_access_failed,
-                                                      getString(R.string.site_stripinfo_be)));
-
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.error_network_failed_try_again)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
-        }
+    @Override
+    protected void cancelTask(final int taskId) {
+        mVm.cancelTask(taskId);
     }
 }

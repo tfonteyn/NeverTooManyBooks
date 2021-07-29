@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.content.Context;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -34,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 public class StripInfoBePreferencesViewModel
@@ -55,6 +57,19 @@ public class StripInfoBePreferencesViewModel
     @NonNull
     LiveData<FinishedMessage<Exception>> onConnectionFailed() {
         return mValidateConnectionTask.onFailure();
+    }
+
+    @NonNull
+    LiveData<ProgressMessage> onProgressUpdate() {
+        return mValidateConnectionTask.onProgressUpdate();
+    }
+
+    void cancelTask(@IdRes final int taskId) {
+        if (taskId == mValidateConnectionTask.getTaskId()) {
+            mValidateConnectionTask.cancel();
+        } else {
+            throw new IllegalArgumentException("taskId=" + taskId);
+        }
     }
 
     void validateConnection() {
@@ -91,6 +106,7 @@ public class StripInfoBePreferencesViewModel
         @Override
         protected Boolean doWork(@NonNull final Context context)
                 throws IOException, CredentialsException {
+            publishProgress(0, context.getString(R.string.progress_msg_connecting));
             final String url = SearchEngineRegistry
                     .getInstance()
                     .getByEngineId(SearchSites.STRIP_INFO_BE)
