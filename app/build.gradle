@@ -23,6 +23,8 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 apply plugin: 'com.android.application'
+// https://github.com/mannodermaus/android-junit5
+apply plugin: 'de.mannodermaus.android-junit5'
 
 /*
     $HOME/.gradle/gradle.properties:
@@ -178,6 +180,8 @@ android {
     }
 
     compileOptions {
+        //TODO: upgrading to VERSION_11: https://issuetracker.google.com/issues/180946610
+        // https://www.mobileit.cz/Blog/Pages/android-java-release-train.aspx
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
 
@@ -186,7 +190,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        viewBinding true
     }
 
     testOptions {
@@ -226,7 +230,7 @@ dependencies {
     // https://github.com/google/desugar_jdk_libs
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     //
-    implementation 'androidx.activity:activity:1.3.0-rc02'
+    implementation 'androidx.activity:activity:1.3.0'
     implementation 'androidx.annotation:annotation:1.3.0-alpha01'
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -269,7 +273,15 @@ dependencies {
     // local tests use JUnit5
     testImplementation 'org.mockito:mockito-core:3.11.2'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.11.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+
+    // (Required) Writing and executing Unit Tests on the JUnit Platform
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    // (Optional) If you need "Parameterized Tests"
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.7.2'
+    // (Optional) If you also have JUnit 4-based tests
+    // testImplementation "junit:junit:4.13.2"
+    // testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.7.2'
 
     // device tests use JUnit4
     androidTestImplementation 'androidx.test:core:1.4.0'
