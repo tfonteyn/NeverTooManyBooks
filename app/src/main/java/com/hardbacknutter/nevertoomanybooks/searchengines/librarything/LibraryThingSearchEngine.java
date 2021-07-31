@@ -148,7 +148,7 @@ public class LibraryThingSearchEngine
      *   }
      * </pre>
      */
-    private static class LibraryThingEditionHandler
+    static class LibraryThingEditionHandler
             extends DefaultHandler {
 
         /** isbn tag in an editions xml response. */

@@ -67,7 +67,7 @@ public class EditBookPublisherListDialogFragment
             TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookViewModel mVm;
+    EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -239,8 +239,8 @@ public class EditBookPublisherListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
-    private void processChanges(@NonNull final Publisher original,
-                                @NonNull final Publisher modified) {
+    void processChanges(@NonNull final Publisher original,
+                        @NonNull final Publisher modified) {
 
         // name not changed ?
         if (original.getName().equals(modified.getName())) {

@@ -76,7 +76,7 @@ public class ImportResults
      *
      * @param in Parcel to construct the object from
      */
-    private ImportResults(@NonNull final Parcel in) {
+    ImportResults(@NonNull final Parcel in) {
         super(in);
 
         styles = in.readInt();

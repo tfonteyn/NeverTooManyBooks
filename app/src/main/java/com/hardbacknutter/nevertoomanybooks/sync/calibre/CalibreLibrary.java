@@ -122,7 +122,7 @@ public class CalibreLibrary
         mLastSyncDate = rowData.getString(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY);
     }
 
-    private CalibreLibrary(@NonNull final Parcel in) {
+    CalibreLibrary(@NonNull final Parcel in) {
         super(in);
 
         //noinspection ConstantConditions

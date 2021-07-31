@@ -26,7 +26,6 @@ import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -227,7 +226,6 @@ public class CsvRecordReader
                 final Book book = mBookCoder.decode(context, csvColumnNames, csvDataRow);
 
                 // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
-                @Nullable
                 final boolean hasUuid = handleUuid(book);
                 // Do we have a DBDefinitions.KEY_PK_ID in the import ?
                 final long importNumericId = extractNumericId(book);

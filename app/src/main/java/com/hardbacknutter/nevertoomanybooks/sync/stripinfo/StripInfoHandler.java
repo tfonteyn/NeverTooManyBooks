@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 public class StripInfoHandler {
 
     /** Whether to show any sync menus at all. */
-    private static final String PK_ENABLED = StripInfoAuth.PREF_KEY + ".enabled";
+    public static final String PK_ENABLED = StripInfoAuth.PREF_KEY + ".enabled";
 
     /**
      * Check if SYNC menus should be shown at all. This does not affect searching.

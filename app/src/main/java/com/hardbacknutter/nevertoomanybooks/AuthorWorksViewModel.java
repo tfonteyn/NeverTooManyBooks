@@ -185,7 +185,7 @@ public class AuthorWorksViewModel
         if (mAllBookshelves) {
             return null;
         } else {
-            return "" + mBookshelf.getName();
+            return mBookshelf.getName();
         }
     }
 

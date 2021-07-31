@@ -82,7 +82,7 @@ public final class SyncField
         mSyncAction = action;
     }
 
-    protected SyncField(@NonNull final Parcel in) {
+    SyncField(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         key = in.readString();
         mLabelId = in.readInt();

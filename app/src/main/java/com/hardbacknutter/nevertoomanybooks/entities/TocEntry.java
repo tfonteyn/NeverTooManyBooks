@@ -146,7 +146,7 @@ public class TocEntry
      *
      * @param in Parcel to construct the object from
      */
-    private TocEntry(@NonNull final Parcel in) {
+    TocEntry(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mAuthor = in.readParcelable(Author.class.getClassLoader());

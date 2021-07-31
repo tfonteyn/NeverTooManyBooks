@@ -56,7 +56,7 @@ public class SyncWriterResults
      *
      * @param in Parcel to construct the object from
      */
-    private SyncWriterResults(@NonNull final Parcel in) {
+    SyncWriterResults(@NonNull final Parcel in) {
         booksWritten = in.readInt();
         coversWritten = in.readInt();
     }

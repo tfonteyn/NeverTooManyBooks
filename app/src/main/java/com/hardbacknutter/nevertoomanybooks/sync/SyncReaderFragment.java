@@ -331,7 +331,7 @@ public class SyncReaderFragment
      *
      * @param lastSyncDate to use
      */
-    private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+    void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         mVm.setSyncDate(lastSyncDate);
         //noinspection ConstantConditions
         mVb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));

@@ -66,7 +66,7 @@ public class EditBookSeriesListDialogFragment
     private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookViewModel mVm;
+    EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -243,8 +243,8 @@ public class EditBookSeriesListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
-    private void processChanges(@NonNull final Series original,
-                                @NonNull final Series modified) {
+    void processChanges(@NonNull final Series original,
+                        @NonNull final Series modified) {
 
         // name not changed ?
         if (original.getTitle().equals(modified.getTitle())) {

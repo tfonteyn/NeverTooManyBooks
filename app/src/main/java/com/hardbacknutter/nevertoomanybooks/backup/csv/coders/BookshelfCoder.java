@@ -65,7 +65,6 @@ public class BookshelfCoder
         return ',';
     }
 
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @NonNull
     @Override
     public String encode(@NonNull final Bookshelf bookshelf) {

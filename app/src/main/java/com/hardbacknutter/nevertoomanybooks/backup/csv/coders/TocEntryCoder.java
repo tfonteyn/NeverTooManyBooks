@@ -61,7 +61,6 @@ public class TocEntryCoder
     TocEntryCoder() {
     }
 
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @NonNull
     @Override
     public String encode(@NonNull final TocEntry tocEntry) {

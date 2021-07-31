@@ -74,7 +74,7 @@ public class EditBookAuthorListDialogFragment
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    private EditBookViewModel mVm;
+    EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -249,8 +249,8 @@ public class EditBookAuthorListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
-    private void processChanges(@NonNull final Author original,
-                                @NonNull final Author modified) {
+    void processChanges(@NonNull final Author original,
+                        @NonNull final Author modified) {
 
         // name not changed ?
         if (original.getFamilyName().equals(modified.getFamilyName())

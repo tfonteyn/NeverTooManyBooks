@@ -107,7 +107,7 @@ public class DomainExpression
      *
      * @param in Parcel to construct the object from
      */
-    private DomainExpression(@NonNull final Parcel in) {
+    DomainExpression(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mDomain = in.readParcelable(Domain.class.getClassLoader());
         mExpression = in.readString();

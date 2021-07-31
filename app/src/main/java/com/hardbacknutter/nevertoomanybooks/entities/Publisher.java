@@ -86,7 +86,7 @@ public class Publisher
      *
      * @param in Parcel to construct the object from
      */
-    private Publisher(@NonNull final Parcel in) {
+    Publisher(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();

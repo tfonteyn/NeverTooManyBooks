@@ -485,9 +485,9 @@ public class CropImageView
         }
     }
 
-    private void zoomTo(final float scale,
-                        final float centerX,
-                        final float centerY) {
+    void zoomTo(final float scale,
+                final float centerX,
+                final float centerY) {
         final float deltaScale = Math.max(scale, mMaxZoom) / getScale();
         mSuppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
         setImageMatrix(getImageViewMatrix());
@@ -543,7 +543,7 @@ public class CropImageView
         @NonNull
         private ModifyMode mMode = ModifyMode.None;
         /** in screen space. */
-        private Rect mDrawRect;
+        Rect mDrawRect;
 
         /**
          * Constructor.

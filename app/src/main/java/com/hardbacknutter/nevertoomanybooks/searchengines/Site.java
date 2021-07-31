@@ -93,9 +93,9 @@ public final class Site
      * @param engineId the search engine id
      * @param enabled  flag
      */
-    private Site(@NonNull final Type type,
-                 @SearchSites.EngineId final int engineId,
-                 final boolean enabled) {
+    Site(@NonNull final Type type,
+         @SearchSites.EngineId final int engineId,
+         final boolean enabled) {
 
         this.engineId = engineId;
         mType = type;
@@ -107,7 +107,7 @@ public final class Site
      *
      * @param from object to copy
      */
-    private Site(@NonNull final Site from) {
+    Site(@NonNull final Site from) {
         engineId = from.engineId;
         mType = from.mType;
 
@@ -122,7 +122,7 @@ public final class Site
      *
      * @param in Parcel to construct the object from
      */
-    private Site(@NonNull final Parcel in) {
+    Site(@NonNull final Parcel in) {
         engineId = in.readInt();
         //noinspection ConstantConditions
         mType = in.readParcelable(Type.class.getClassLoader());
@@ -286,11 +286,11 @@ public final class Site
                + '.';
     }
 
-    private void loadFromPrefs(@NonNull final SharedPreferences global) {
+    void loadFromPrefs(@NonNull final SharedPreferences global) {
         mEnabled = global.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
-    private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
+    void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
@@ -352,7 +352,7 @@ public final class Site
         @StringRes
         private final int mLabelId;
         /** Internal name (for prefs). */
-        private final String mTypeName;
+        final String mTypeName;
 
         private final Collection<Site> mList = new ArrayList<>();
 

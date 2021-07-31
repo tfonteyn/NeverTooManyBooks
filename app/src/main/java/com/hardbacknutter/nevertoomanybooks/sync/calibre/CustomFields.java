@@ -109,7 +109,7 @@ public final class CustomFields {
             this.type = type;
         }
 
-        protected Field(@NonNull final Parcel in) {
+        Field(@NonNull final Parcel in) {
             //noinspection ConstantConditions
             calibreKey = in.readString();
             //noinspection ConstantConditions

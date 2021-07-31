@@ -327,7 +327,6 @@ public abstract class EditBookBaseFragment
      * <p>
      * {@inheritDoc}
      */
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @CallSuper
     @Override
     public void onSaveFields(@NonNull final Book book) {
@@ -450,8 +449,8 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    private void onDateSet(@NonNull final int[] fieldIds,
-                           @NonNull final long[] selections) {
+    void onDateSet(@NonNull final int[] fieldIds,
+                   @NonNull final long[] selections) {
 
         for (int i = 0; i < fieldIds.length; i++) {
             if (selections[i] == WrappedMaterialDatePicker.NO_SELECTION) {
@@ -464,8 +463,8 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    private void onDateSet(@IdRes final int fieldId,
-                           @NonNull final String dateStr) {
+    void onDateSet(@IdRes final int fieldId,
+                   @NonNull final String dateStr) {
 
         final Field<String, TextView> field = getField(fieldId);
         field.getAccessor().setValue(dateStr);

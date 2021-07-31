@@ -92,7 +92,7 @@ public class SettingsFragment
     private String mStoredVolumeIndex;
     private ListPreference mStorageVolumePref;
 
-    private SettingsViewModel mVm;
+    SettingsViewModel mVm;
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =

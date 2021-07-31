@@ -734,37 +734,37 @@ public class BooklistAdapter
     private static class FieldsInUse {
 
         /** Book row details. Based on global visibility user preference. */
-        private boolean edition;
+        boolean edition;
         /** Book row details. Based on global visibility user preference. */
-        private boolean lending;
+        boolean lending;
         /** Book row details. Based on global visibility user preference. */
-        private boolean read;
+        boolean read;
         /** Book row details. Based on global visibility user preference. */
-        private boolean series;
+        boolean series;
         /** Book row details. Based on global visibility user preference. */
-        private boolean signed;
+        boolean signed;
 
         /** Book row details - Based on style. */
-        private boolean author;
+        boolean author;
         /** Book row details - Based on style. */
-        private boolean bookshelf;
+        boolean bookshelf;
         /** Book row details - Based on style. */
-        private boolean cover;
+        boolean cover;
         /** Book row details - Based on style. */
-        private boolean format;
+        boolean format;
         /** Book row details - Based on style. */
-        private boolean isbn;
+        boolean isbn;
         /** Book row details - Based on style. */
-        private boolean location;
+        boolean location;
         /** Book row details - Based on style. */
-        private boolean pubDate;
+        boolean pubDate;
         /** Book row details - Based on style. */
-        private boolean publisher;
+        boolean publisher;
         /** Book row details - Based on style. */
-        private boolean rating;
+        boolean rating;
 
         /** Set to true after {@link #set} is called. */
-        private boolean isSet;
+        boolean isSet;
 
         /**
          * Constructor. Initialized by the adapter.
@@ -1134,7 +1134,7 @@ public class BooklistAdapter
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_POSITIONS) {
                 if (mDbgRowIdView != null) {
-                    final String txt = "" + position + '/'
+                    final String txt = String.valueOf(position) + '/'
                                        + rowData.getLong(DBKey.KEY_BL_LIST_VIEW_NODE_ROW_ID);
                     mDbgRowIdView.setText(txt);
                 }

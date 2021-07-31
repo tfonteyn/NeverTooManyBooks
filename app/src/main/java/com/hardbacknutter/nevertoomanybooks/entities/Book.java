@@ -269,7 +269,7 @@ public class Book
         if (cIdx > 0) {
             name = uuid + "_" + cIdx;
         } else {
-            name = uuid + "";
+            name = uuid;
         }
 
         final File jpg = new File(coverDir, name + ".jpg");
@@ -732,7 +732,7 @@ public class Book
                 if (cIdx > 0) {
                     name = uuid + "_" + cIdx;
                 } else {
-                    name = uuid + "";
+                    name = uuid;
                 }
 
                 final File coverDir;
@@ -1179,21 +1179,18 @@ public class Book
         /** first edition ever of this work/content/story. */
         public static final int FIRST = 1;
         /** First printing of 'this' edition. */
-        @SuppressWarnings("WeakerAccess")
         @VisibleForTesting
         public static final int FIRST_IMPRESSION = 1 << 1;
         /** This edition had a limited run. (Numbered or not). */
         @VisibleForTesting
         public static final int LIMITED = 1 << 2;
         /** This edition comes in a slipcase. */
-        @SuppressWarnings("WeakerAccess")
         @VisibleForTesting
         public static final int SLIPCASE = 1 << 3;
         /** This edition is signed. i.e the whole print-run of this edition is signed. */
         @VisibleForTesting
         public static final int SIGNED = 1 << 4;
         /** It's a bookclub edition. */
-        @SuppressWarnings("WeakerAccess")
         @VisibleForTesting
         public static final int BOOK_CLUB = 1 << 7;
         /** Bitmask for all editions. Bit 5/6 not in use for now. */

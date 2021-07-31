@@ -77,11 +77,11 @@ public final class SyncReaderProcessor
     @NonNull
     private final Map<String, SyncField> mFields;
 
-    private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
+    SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
         mFields = fields;
     }
 
-    protected SyncReaderProcessor(@NonNull final Parcel in) {
+    SyncReaderProcessor(@NonNull final Parcel in) {
         final List<SyncField> list = new ArrayList<>();
         ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
 

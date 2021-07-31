@@ -60,7 +60,7 @@ public class EditBookshelvesFragment
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
-    private EditBookshelvesViewModel mVm;
+    EditBookshelvesViewModel mVm;
 
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
@@ -84,7 +84,7 @@ public class EditBookshelvesFragment
 
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
-    private ExtPopupMenu mContextMenu;
+    ExtPopupMenu mContextMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

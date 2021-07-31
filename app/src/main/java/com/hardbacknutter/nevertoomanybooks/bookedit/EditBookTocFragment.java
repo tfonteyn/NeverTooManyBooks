@@ -150,7 +150,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
-    private ExtPopupMenu mContextMenu;
+    ExtPopupMenu mContextMenu;
 
     @NonNull
     @Override
@@ -254,8 +254,8 @@ public class EditBookTocFragment
         }
     }
 
-    private void onEntryUpdated(@NonNull final TocEntry tocEntry,
-                                final boolean hasMultipleAuthors) {
+    void onEntryUpdated(@NonNull final TocEntry tocEntry,
+                        final boolean hasMultipleAuthors) {
         updateMultiAuthor(hasMultipleAuthors);
 
         if (mEditPosition == null) {
@@ -374,7 +374,7 @@ public class EditBookTocFragment
      *
      * @param position the position of the item
      */
-    private void editEntry(final int position) {
+    void editEntry(final int position) {
         mEditPosition = position;
 
         final TocEntry tocEntry = mList.get(position);
@@ -386,7 +386,7 @@ public class EditBookTocFragment
      *
      * @param position the position of the item
      */
-    private void deleteEntry(final int position) {
+    void deleteEntry(final int position) {
         final TocEntry tocEntry = mList.get(position);
         if (tocEntry.getId() != 0) {
             //noinspection ConstantConditions
@@ -546,8 +546,8 @@ public class EditBookTocFragment
         }
     }
 
-    private void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
-                                      @NonNull final Collection<TocEntry> tocEntries) {
+    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+                              @NonNull final Collection<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
             final Book book = mVm.getBook();
             book.putLong(DBKey.BITMASK_TOC, tocBitMask);
@@ -561,7 +561,7 @@ public class EditBookTocFragment
         mListAdapter.notifyDataSetChanged();
     }
 
-    private void searchIsfdb() {
+    void searchIsfdb() {
         if (mIsfdbEditions.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

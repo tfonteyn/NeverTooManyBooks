@@ -221,7 +221,7 @@ public class Synchronizer {
     /**
      * Internal implementation of a Shared Lock.
      */
-    private class SharedLock
+    class SharedLock
             implements SyncLock {
 
         @Override
@@ -240,7 +240,7 @@ public class Synchronizer {
     /**
      * Internal implementation of an Exclusive Lock.
      */
-    private class ExclusiveLock
+    class ExclusiveLock
             implements SyncLock {
 
         @Override

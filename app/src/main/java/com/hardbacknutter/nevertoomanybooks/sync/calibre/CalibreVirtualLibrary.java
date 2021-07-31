@@ -91,7 +91,7 @@ public class CalibreVirtualLibrary
         mExpr = rowData.getString(DBKey.KEY_CALIBRE_VIRT_LIB_EXPR);
     }
 
-    private CalibreVirtualLibrary(@NonNull final Parcel in) {
+    CalibreVirtualLibrary(@NonNull final Parcel in) {
         super(in);
 
         mLibraryId = in.readInt();

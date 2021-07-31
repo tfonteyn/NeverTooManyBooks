@@ -213,7 +213,7 @@ public class Series
      *
      * @param in Parcel to construct the object from
      */
-    private Series(@NonNull final Parcel in) {
+    Series(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mTitle = in.readString();

@@ -236,8 +236,8 @@ public final class TipManager {
          *
          * @param id string resource to display
          */
-        private Tip(@StringRes final int id,
-                    @NonNull final String defaultKey) {
+        Tip(@StringRes final int id,
+            @NonNull final String defaultKey) {
             mDefaultStringId = id;
             mDefaultKey = defaultKey;
             mLayoutId = R.layout.dialog_tip;
@@ -258,7 +258,7 @@ public final class TipManager {
          *
          * @return {@code true} if this Tip should be displayed
          */
-        private boolean shouldBeShown() {
+        boolean shouldBeShown() {
             return shouldBeShown(mDefaultKey);
         }
 
@@ -269,7 +269,7 @@ public final class TipManager {
          *
          * @return {@code true} if this Tip should be displayed
          */
-        private boolean shouldBeShown(@NonNull final String key) {
+        boolean shouldBeShown(@NonNull final String key) {
             return !mHasBeenDisplayed
                    && ServiceLocator.getGlobalPreferences().getBoolean(PREF_TIP + key, true);
         }

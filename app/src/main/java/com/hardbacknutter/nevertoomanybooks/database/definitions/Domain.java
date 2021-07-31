@@ -128,7 +128,7 @@ public class Domain
      *
      * @param in Parcel to construct the object from
      */
-    private Domain(@NonNull final Parcel in) {
+    Domain(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mName = in.readString();
         //noinspection ConstantConditions

@@ -277,7 +277,7 @@ public class Author
      *
      * @param in Parcel to construct the object from
      */
-    private Author(@NonNull final Parcel in) {
+    Author(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mFamilyName = in.readString();

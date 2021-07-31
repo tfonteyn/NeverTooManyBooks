@@ -54,7 +54,6 @@ public class AuthorCoder
     public AuthorCoder() {
     }
 
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @NonNull
     @Override
     public String encode(@NonNull final Author author) {

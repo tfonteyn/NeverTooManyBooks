@@ -50,7 +50,6 @@ public class SeriesCoder
     public SeriesCoder() {
     }
 
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @NonNull
     @Override
     public String encode(@NonNull final Series series) {

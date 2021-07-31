@@ -156,7 +156,7 @@ public class Bookshelf
      *
      * @param in Parcel to construct the object from
      */
-    private Bookshelf(@NonNull final Parcel in) {
+    Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();
@@ -180,7 +180,7 @@ public class Bookshelf
     @NonNull
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          final long id,
-                                         @PredefinedBookshelf final long fallbackId) {
+                                         final long fallbackId) {
 
         final Bookshelf bookshelf = getBookshelf(context, id);
         if (bookshelf != null) {
