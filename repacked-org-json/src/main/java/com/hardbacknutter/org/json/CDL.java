@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -135,14 +134,11 @@ public class CDL {
             final String value = getValue(x);
             char c = x.next();
             if (value == null ||
-                (ja.length() == 0 && value.length() == 0 && c != ',')) {
+                (ja.isEmpty() && value.isEmpty() && c != ',')) {
                 return null;
             }
             ja.put(value);
-            for (; ; ) {
-                if (c == ',') {
-                    break;
-                }
+            while (c != ',') {
                 if (c != ' ') {
                     if (c == '\n' || c == '\r' || c == 0) {
                         return ja;
@@ -193,10 +189,10 @@ public class CDL {
             final Object object = ja.opt(i);
             if (object != null) {
                 final String string = object.toString();
-                if (string.length() > 0 && (string.indexOf(',') >= 0 ||
-                                            string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0
-                                            ||
-                                            string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
+                if (!string.isEmpty() && (string.indexOf(',') >= 0 ||
+                                          string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0
+                                          ||
+                                          string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
                     sb.append('"');
                     final int length = string.length();
                     for (int j = 0; j < length; j += 1) {
@@ -276,7 +272,7 @@ public class CDL {
     public static JSONArray toJSONArray(final JSONArray names,
                                         final JSONTokener x)
             throws JSONException {
-        if (names == null || names.length() == 0) {
+        if (names == null || names.isEmpty()) {
             return null;
         }
         final JSONArray ja = new JSONArray();
@@ -287,7 +283,7 @@ public class CDL {
             }
             ja.put(jo);
         }
-        if (ja.length() == 0) {
+        if (ja.isEmpty()) {
             return null;
         }
         return ja;
@@ -332,7 +328,7 @@ public class CDL {
     public static String toString(final JSONArray names,
                                   final JSONArray ja)
             throws JSONException {
-        if (names == null || names.length() == 0) {
+        if (names == null || names.isEmpty()) {
             return null;
         }
         final StringBuilder sb = new StringBuilder();

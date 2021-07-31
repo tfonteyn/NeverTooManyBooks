@@ -59,6 +59,7 @@ SOFTWARE.
  * @author JSON.org
  * @version 2014-05-03
  */
+@SuppressWarnings("FieldNotUsedInToString")
 public class JSONTokener {
 
     /** Reader for the input. */
@@ -345,8 +346,8 @@ public class JSONTokener {
      * accept them.
      *
      * @param quote The quoting character, either
-     *              <code>"</code>&nbsp;<small>(double quote)</small> or
-     *              <code>'</code>&nbsp;<small>(single quote)</small>.
+     *              {@code "}&nbsp;<small>(double quote)</small> or
+     *              {@code '}&nbsp;<small>(single quote)</small>.
      *
      * @return A String.
      *
@@ -508,7 +509,7 @@ public class JSONTokener {
         }
 
         string = sb.toString().trim();
-        if ("".equals(string)) {
+        if (string.isEmpty()) {
             throw this.syntaxError("Missing value");
         }
         return JSONObject.stringToValue(string);

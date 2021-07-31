@@ -122,7 +122,7 @@ public class Cookie {
 
         name = unescape(x.nextTo('=').trim());
         //per RFC6265, if the name is blank, the cookie should be ignored.
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new JSONException("Cookies must have a 'name'");
         }
         jo.put("name", name);
@@ -143,14 +143,14 @@ public class Cookie {
                 throw new JSONException("Illegal attribute name: 'value'");
             }
             // check to see if it's a flag property
-            if (x.next() != '=') {
-                value = Boolean.TRUE;
-            } else {
+            if (x.next() == '=') {
                 value = unescape(x.nextTo(';')).trim();
                 x.next();
+            } else {
+                value = Boolean.TRUE;
             }
             // only store non-blank attributes
-            if (!"".equals(name) && !"".equals(value)) {
+            if (!name.isEmpty() && !"".equals(value)) {
                 jo.put(name, value);
             }
         }
@@ -190,7 +190,7 @@ public class Cookie {
             }
         }
 
-        if (name == null || "".equals(name.trim())) {
+        if (name == null || name.trim().isEmpty()) {
             throw new JSONException("Cookie does not have a name");
         }
         if (value == null) {
@@ -225,12 +225,12 @@ public class Cookie {
     }
 
     /**
-     * Convert <code>%</code><i>hh</i> sequences to single characters, and
+     * Convert {@code %}<i>hh</i> sequences to single characters, and
      * convert plus to space.
      *
      * @param string A string that may contain
-     *               <code>+</code>&nbsp;<small>(plus)</small> and
-     *               <code>%</code><i>hh</i> sequences.
+     *               {@code +}&nbsp;<small>(plus)</small> and
+     *               {@code %}<i>hh</i> sequences.
      *
      * @return The unescaped string.
      */

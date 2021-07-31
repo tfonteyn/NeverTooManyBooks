@@ -76,12 +76,12 @@ public class JSONML {
             throws JSONException {
         String attribute;
         char c;
-        String closeTag = null;
+        String closeTag;
         int i;
-        JSONArray newja = null;
-        JSONObject newjo = null;
+        JSONArray newja;
+        JSONObject newjo;
         Object token;
-        String tagName = null;
+        String tagName;
 
 // Test for and skip past these forms:
 //      <!-- ... -->
@@ -205,7 +205,7 @@ public class JSONML {
                             newjo.accumulate(attribute, "");
                         }
                     }
-                    if (arrayForm && newjo.length() > 0) {
+                    if (arrayForm && !newjo.isEmpty()) {
                         newja.put(newjo);
                     }
 
@@ -229,21 +229,18 @@ public class JSONML {
                             throw x.syntaxError("Misshaped tag");
                         }
                         closeTag = (String) parse(x, arrayForm, newja, keepStrings);
-                        if (closeTag != null) {
-                            if (!closeTag.equals(tagName)) {
-                                throw x.syntaxError("Mismatched '" + tagName +
-                                                    "' and '" + closeTag + "'");
+                        if (!closeTag.equals(tagName)) {
+                            throw x.syntaxError("Mismatched '" + tagName +
+                                                "' and '" + closeTag + "'");
+                        }
+                        if (!arrayForm && !newja.isEmpty()) {
+                            newjo.put("childNodes", newja);
+                        }
+                        if (ja == null) {
+                            if (arrayForm) {
+                                return newja;
                             }
-                            tagName = null;
-                            if (!arrayForm && newja.length() > 0) {
-                                newjo.put("childNodes", newja);
-                            }
-                            if (ja == null) {
-                                if (arrayForm) {
-                                    return newja;
-                                }
-                                return newjo;
-                            }
+                            return newjo;
                         }
                     }
                 }

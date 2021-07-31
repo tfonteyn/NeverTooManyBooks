@@ -54,12 +54,12 @@ SOFTWARE.
  * added, so the results are ready for transmission or storage. Each instance of
  * JSONWriter can produce one JSON text.
  * <p>
- * A JSONWriter instance provides a <code>value</code> method for appending
+ * A JSONWriter instance provides a {@code value} method for appending
  * values to the
- * text, and a <code>key</code>
- * method for adding keys before values in objects. There are <code>array</code>
- * and <code>endArray</code> methods that make and bound array values, and
- * <code>object</code> and <code>endObject</code> methods which make and bound
+ * text, and a {@code key}
+ * method for adding keys before values in objects. There are {@code array}
+ * and {@code endArray} methods that make and bound array values, and
+ * {@code object} and {@code endObject} methods which make and bound
  * object values. All of these methods return the JSONWriter instance,
  * permitting a cascade style. For example, <pre>
  * new JSONWriter(myWriter)
@@ -69,7 +69,7 @@ SOFTWARE.
  *     .endObject();</pre> which writes <pre>
  * {"JSON":"Hello, World!"}</pre>
  * <p>
- * The first method called must be <code>array</code> or <code>object</code>.
+ * The first method called must be {@code array} or {@code object}.
  * There are no methods for adding commas or colons. JSONWriter adds them for
  * you. Objects and arrays can be nested up to 200 levels deep.
  * <p>
@@ -147,7 +147,7 @@ public class JSONWriter {
      */
     public static String valueToString(final Object value)
             throws JSONException {
-        if (value == null || value.equals(null)) {
+        if (value == null) {
             return "null";
         }
         if (value instanceof JSONString) {
@@ -231,13 +231,14 @@ public class JSONWriter {
 
     /**
      * Begin appending a new array. All values until the balancing
-     * <code>endArray</code> will be appended to this array. The
-     * <code>endArray</code> method must be called to mark the array's end.
+     * {@code endArray} will be appended to this array. The
+     * {@code endArray} method must be called to mark the array's end.
      *
      * @return this
      *
      * @throws JSONException If the nesting is too deep, or if the object is
-     *                       started in the wrong place (for example as a key or after the end of the
+     *                       started in the wrong place (for example as a key
+     *                       or after the end of the
      *                       outermost array or object).
      */
     public JSONWriter array()
@@ -284,7 +285,7 @@ public class JSONWriter {
 
     /**
      * End an array. This method most be called to balance calls to
-     * <code>array</code>.
+     * {@code array}.
      *
      * @return this
      *
@@ -297,7 +298,7 @@ public class JSONWriter {
 
     /**
      * End an object. This method most be called to balance calls to
-     * <code>object</code>.
+     * {@code object}.
      *
      * @return this
      *
@@ -352,13 +353,14 @@ public class JSONWriter {
 
     /**
      * Begin appending a new object. All keys and values until the balancing
-     * <code>endObject</code> will be appended to this object. The
-     * <code>endObject</code> method must be called to mark the object's end.
+     * {@code endObject} will be appended to this object. The
+     * {@code endObject} method must be called to mark the object's end.
      *
      * @return this
      *
      * @throws JSONException If the nesting is too deep, or if the object is
-     *                       started in the wrong place (for example as a key or after the end of the
+     *                       started in the wrong place (for example as a key
+     *                       or after the end of the
      *                       outermost array or object).
      */
     public JSONWriter object()
@@ -418,8 +420,8 @@ public class JSONWriter {
     }
 
     /**
-     * Append either the value <code>true</code> or the value
-     * <code>false</code>.
+     * Append either the value {@code true} or the value
+     * {@code false}.
      *
      * @param b A boolean.
      *

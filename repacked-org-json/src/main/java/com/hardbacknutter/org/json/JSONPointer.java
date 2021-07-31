@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.org.json;
 
 import java.io.UnsupportedEncodingException;
@@ -91,7 +90,7 @@ public class JSONPointer {
         if (pointer == null) {
             throw new NullPointerException("pointer cannot be null");
         }
-        if (pointer.isEmpty() || pointer.equals("#")) {
+        if (pointer.isEmpty() || "#".equals(pointer)) {
             this.refTokens = Collections.emptyList();
             return;
         }
@@ -108,9 +107,9 @@ public class JSONPointer {
         } else {
             throw new IllegalArgumentException("a JSON pointer should start with '/' or '#/'");
         }
-        this.refTokens = new ArrayList<String>();
+        this.refTokens = new ArrayList<>();
         int slashIdx = -1;
-        int prevSlashIdx = 0;
+        int prevSlashIdx;
         do {
             prevSlashIdx = slashIdx + 1;
             slashIdx = refs.indexOf('/', prevSlashIdx);
@@ -134,22 +133,23 @@ public class JSONPointer {
     }
 
     public JSONPointer(final List<String> refTokens) {
-        this.refTokens = new ArrayList<String>(refTokens);
+        this.refTokens = new ArrayList<>(refTokens);
     }
 
     /**
      * Static factory method for {@link Builder}. Example usage:
      *
-     * <pre><code>
+     * <pre>{@code
      * JSONPointer pointer = JSONPointer.builder()
      *       .append("obj")
      *       .append("other~key").append("another/key")
      *       .append("\"")
      *       .append(0)
      *       .build();
-     * </code></pre>
+     * }</pre>
      *
-     * @return a builder instance which can be used to construct a {@code JSONPointer} instance by chained
+     * @return a builder instance which can be used to construct a {@code JSONPointer}
+     * instance by chained
      * {@link Builder#append(String)} calls.
      */
     public static Builder builder() {
@@ -182,7 +182,7 @@ public class JSONPointer {
             if (index >= currentArr.length()) {
                 throw new JSONPointerException(
                         format("index %s is out of bounds - the array has %d elements", indexToken,
-                               Integer.valueOf(currentArr.length())));
+                               currentArr.length()));
             }
             try {
                 return currentArr.get(index);
@@ -281,7 +281,7 @@ public class JSONPointer {
     public static class Builder {
 
         // Segments for the eventual JSONPointer string
-        private final List<String> refTokens = new ArrayList<String>();
+        private final List<String> refTokens = new ArrayList<>();
 
         /**
          * Creates a {@code JSONPointer} instance using the tokens previously set using the
@@ -316,8 +316,8 @@ public class JSONPointer {
         }
 
         /**
-         * Adds an integer to the reference token list. Although not necessarily, mostly this token will
-         * denote an array index.
+         * Adds an integer to the reference token list. Although not necessarily,
+         * mostly this token will denote an array index.
          *
          * @param arrayIndex the array index to be added to the token list
          *

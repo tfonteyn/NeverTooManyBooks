@@ -98,19 +98,19 @@ public class XML {
     /**
      * Creates an iterator for navigating Code Points in a string instead of
      * characters. Once Java7 support is dropped, this can be replaced with
-     * <code>
+     * {@code
      * string.codePoints()
-     * </code>
+     * }
      * which is available in Java8 and above.
      *
      * @see <a href=
      * "http://stackoverflow.com/a/21791059/6030888">http://stackoverflow.com/a/21791059/6030888</a>
      */
     private static Iterable<Integer> codePointIterator(final String string) {
-        return new Iterable<Integer>() {
+        return new Iterable<>() {
             @Override
             public Iterator<Integer> iterator() {
-                return new Iterator<Integer>() {
+                return new Iterator<>() {
                     private final int length = string.length();
                     private int nextIndex;
 
@@ -281,7 +281,7 @@ public class XML {
             throws JSONException {
         final char c;
         int i;
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         String string;
         final String tagName;
         Object token;
@@ -314,7 +314,7 @@ public class XML {
                 if ("CDATA".equals(token)) {
                     if (x.next() == '[') {
                         string = x.nextCDATA();
-                        if (string.length() > 0) {
+                        if (!string.isEmpty()) {
                             context.accumulate(config.getcDataTagName(), string);
                         }
                         return false;
@@ -406,7 +406,7 @@ public class XML {
                     }
                     if (nilAttributeFound) {
                         context.accumulate(tagName, JSONObject.NULL);
-                    } else if (jsonObject.length() > 0) {
+                    } else if (!jsonObject.isEmpty()) {
                         context.accumulate(tagName, jsonObject);
                     } else {
                         context.accumulate(tagName, "");
@@ -424,7 +424,7 @@ public class XML {
                             return false;
                         } else if (token instanceof String) {
                             string = (String) token;
-                            if (string.length() > 0) {
+                            if (!string.isEmpty()) {
                                 if (xmlXsiTypeConverter != null) {
                                     jsonObject.accumulate(config.getcDataTagName(),
                                                           stringToValue(string,
@@ -439,7 +439,7 @@ public class XML {
                         } else if (token == LT) {
                             // Nested element
                             if (parse(x, jsonObject, tagName, config)) {
-                                if (jsonObject.length() == 0) {
+                                if (jsonObject.isEmpty()) {
                                     context.accumulate(tagName, "");
                                 } else if (jsonObject.length() == 1
                                            && jsonObject.opt(config.getcDataTagName()) != null) {
@@ -486,7 +486,7 @@ public class XML {
     // the one in JSONObject. Changes made here should be reflected there.
     // This method should not make calls out of the XML object.
     public static Object stringToValue(final String string) {
-        if ("".equals(string)) {
+        if (string != null && string.isEmpty()) {
             return string;
         }
 
@@ -531,7 +531,7 @@ public class XML {
                 try {
                     final BigDecimal bd = new BigDecimal(val);
                     if (initial == '-' && BigDecimal.ZERO.compareTo(bd) == 0) {
-                        return Double.valueOf(-0.0);
+                        return -0.0;
                     }
                     return bd;
                 } catch (final NumberFormatException retryAsDouble) {
@@ -571,10 +571,10 @@ public class XML {
             // long lived.
             final BigInteger bi = new BigInteger(val);
             if (bi.bitLength() <= 31) {
-                return Integer.valueOf(bi.intValue());
+                return bi.intValue();
             }
             if (bi.bitLength() <= 63) {
-                return Long.valueOf(bi.longValue());
+                return bi.longValue();
             }
             return bi;
         }
@@ -909,10 +909,10 @@ public class XML {
 
         string = (object == null) ? "null" : escape(object.toString());
         return (tagName == null) ? "\"" + string + "\""
-                                 : (string.length() == 0) ? "<" + tagName + "/>" : "<" + tagName
-                                                                                   + ">" + string
-                                                                                   + "</" + tagName
-                                                                                   + ">";
+                                 : (string.isEmpty()) ? "<" + tagName + "/>" : "<" + tagName
+                                                                               + ">" + string
+                                                                               + "</" + tagName
+                                                                               + ">";
 
     }
 }

@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.org.json;
 
 /*
@@ -60,42 +59,42 @@ import java.util.Map;
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
  * string wrapped in square brackets with commas separating the values. The
- * internal form is an object having <code>get</code> and <code>opt</code>
- * methods for accessing the values by index, and <code>put</code> methods for
+ * internal form is an object having {@code get} and {@code opt}
+ * methods for accessing the values by index, and {@code put} methods for
  * adding or replacing values. The values can be any of these types:
- * <code>Boolean</code>, <code>JSONArray</code>, <code>JSONObject</code>,
- * <code>Number</code>, <code>String</code>, or the
- * <code>JSONObject.NULL object</code>.
+ * {@code Boolean}, {@code JSONArray}, {@code JSONObject},
+ * {@code Number}, {@code String}, or the
+ * {@code JSONObject.NULL object}.
  * <p>
  * The constructor can convert a JSON text into a Java object. The
- * <code>toString</code> method converts to JSON text.
+ * {@code toString} method converts to JSON text.
  * <p>
- * A <code>get</code> method returns a value if one can be found, and throws an
- * exception if one cannot be found. An <code>opt</code> method returns a
+ * A {@code get} method returns a value if one can be found, and throws an
+ * exception if one cannot be found. An {@code opt} method returns a
  * default value instead of throwing an exception, and so is useful for
  * obtaining optional values.
  * <p>
- * The generic <code>get()</code> and <code>opt()</code> methods return an
+ * The generic {@code get()} and {@code opt()} methods return an
  * object which you can cast or query for type. There are also typed
- * <code>get</code> and <code>opt</code> methods that do type checking and type
+ * {@code get} and {@code opt} methods that do type checking and type
  * coercion for you.
  * <p>
- * The texts produced by the <code>toString</code> methods strictly conform to
+ * The texts produced by the {@code toString} methods strictly conform to
  * JSON syntax rules. The constructors are more forgiving in the texts they will
  * accept:
  * <ul>
- * <li>An extra <code>,</code>&nbsp;<small>(comma)</small> may appear just
+ * <li>An extra {@code ,}&nbsp;<small>(comma)</small> may appear just
  * before the closing bracket.</li>
- * <li>The <code>null</code> value will be inserted when there is <code>,</code>
+ * <li>The {@code null} value will be inserted when there is {@code ,}
  * &nbsp;<small>(comma)</small> elision.</li>
- * <li>Strings may be quoted with <code>'</code>&nbsp;<small>(single
+ * <li>Strings may be quoted with {@code '}&nbsp;<small>(single
  * quote)</small>.</li>
  * <li>Strings do not need to be quoted at all if they do not begin with a quote
  * or single quote, and if they do not contain leading or trailing spaces, and
  * if they do not contain any of these characters:
- * <code>{ } [ ] / \ : , #</code> and if they do not look like numbers and
- * if they are not the reserved words <code>true</code>, <code>false</code>, or
- * <code>null</code>.</li>
+ * {@code { } [ ] / \ : , #} and if they do not look like numbers and
+ * if they are not the reserved words {@code true}, {@code false}, or
+ * {@code null}.</li>
  * </ul>
  *
  * @author JSON.org
@@ -113,7 +112,7 @@ public class JSONArray
      * Construct an empty JSONArray.
      */
     public JSONArray() {
-        this.myArrayList = new ArrayList<Object>();
+        this.myArrayList = new ArrayList<>();
     }
 
     /**
@@ -172,8 +171,8 @@ public class JSONArray
     /**
      * Construct a JSONArray from a source JSON text.
      *
-     * @param source A string that begins with <code>[</code>&nbsp;<small>(left
-     *               bracket)</small> and ends with <code>]</code>
+     * @param source A string that begins with {@code [}&nbsp;<small>(left
+     *               bracket)</small> and ends with {@code ]}
      *               &nbsp;<small>(right bracket)</small>.
      *
      * @throws JSONException If there is a syntax error.
@@ -190,9 +189,9 @@ public class JSONArray
      */
     public JSONArray(final Collection<?> collection) {
         if (collection == null) {
-            this.myArrayList = new ArrayList<Object>();
+            this.myArrayList = new ArrayList<>();
         } else {
-            this.myArrayList = new ArrayList<Object>(collection.size());
+            this.myArrayList = new ArrayList<>(collection.size());
             this.addAll(collection, true);
         }
     }
@@ -217,11 +216,11 @@ public class JSONArray
      */
     public JSONArray(final JSONArray array) {
         if (array == null) {
-            this.myArrayList = new ArrayList<Object>();
+            this.myArrayList = new ArrayList<>();
         } else {
             // shallow copy directly the internal array lists as any wrapping
             // should have been done already in the original JSONArray
-            this.myArrayList = new ArrayList<Object>(array.myArrayList);
+            this.myArrayList = new ArrayList<>(array.myArrayList);
         }
     }
 
@@ -257,7 +256,7 @@ public class JSONArray
             throw new JSONException(
                     "JSONArray initial capacity cannot be negative.");
         }
-        this.myArrayList = new ArrayList<Object>(initialCapacity);
+        this.myArrayList = new ArrayList<>(initialCapacity);
     }
 
     /**
@@ -335,12 +334,12 @@ public class JSONArray
             throws JSONException {
         final Object object = this.get(index);
         if (object.equals(Boolean.FALSE)
-            || (object instanceof String && ((String) object)
-                .equalsIgnoreCase("false"))) {
+            || (object instanceof String && "false"
+                .equalsIgnoreCase((String) object))) {
             return false;
         } else if (object.equals(Boolean.TRUE)
-                   || (object instanceof String && ((String) object)
-                .equalsIgnoreCase("true"))) {
+                   || (object instanceof String && "true"
+                .equalsIgnoreCase((String) object))) {
             return true;
         }
         throw wrongValueFormatException(index, "boolean", null);
@@ -383,7 +382,7 @@ public class JSONArray
             throws JSONException {
         final Object object = this.get(index);
         if (object instanceof Number) {
-            return ((Float) object).floatValue();
+            return (Float) object;
         }
         try {
             return Float.parseFloat(object.toString());
@@ -586,11 +585,11 @@ public class JSONArray
     }
 
     /**
-     * Determine if the value is <code>null</code>.
+     * Determine if the value is {@code null}.
      *
      * @param index The index must be between 0 and length() - 1.
      *
-     * @return true if the value at the index is <code>null</code>, or if there is no value.
+     * @return true if the value at the index is {@code null}, or if there is no value.
      */
     public boolean isNull(final int index) {
         return JSONObject.NULL.equals(this.opt(index));
@@ -598,7 +597,7 @@ public class JSONArray
 
     /**
      * Make a string from the contents of this JSONArray. The
-     * <code>separator</code> string is inserted between each element. Warning:
+     * {@code separator} string is inserted between each element. Warning:
      * This method assumes that the data structure is acyclical.
      *
      * @param separator A string that will be inserted between the elements.
@@ -714,11 +713,7 @@ public class JSONArray
         if (val == null) {
             return defaultValue;
         }
-        final double doubleValue = val.doubleValue();
-        // if (Double.isNaN(doubleValue) || Double.isInfinite(doubleValue)) {
-        // return defaultValue;
-        // }
-        return doubleValue;
+        return val.doubleValue();
     }
 
     /**
@@ -750,11 +745,7 @@ public class JSONArray
         if (val == null) {
             return defaultValue;
         }
-        final float floatValue = val.floatValue();
-        // if (Float.isNaN(floatValue) || Float.isInfinite(floatValue)) {
-        // return floatValue;
-        // }
-        return floatValue;
+        return val.floatValue();
     }
 
     /**
@@ -829,9 +820,7 @@ public class JSONArray
                 return myE;
             }
             return Enum.valueOf(clazz, val.toString());
-        } catch (final IllegalArgumentException e) {
-            return defaultValue;
-        } catch (final NullPointerException e) {
+        } catch (final IllegalArgumentException | NullPointerException e) {
             return defaultValue;
         }
     }
@@ -931,7 +920,7 @@ public class JSONArray
     }
 
     /**
-     * Get an optional {@link Number} value associated with a key, or <code>null</code>
+     * Get an optional {@link Number} value associated with a key, or {@code null}
      * if there is no such key or if the value is not a number. If the value is a string,
      * an attempt will be made to evaluate it as a number ({@link BigDecimal}). This method
      * would be used in cases where type coercion of the number value is unwanted.
@@ -1088,7 +1077,7 @@ public class JSONArray
      * @return this.
      *
      * @throws JSONException        If a value in the map is non-finite number.
-     * @throws NullPointerException If a key in the map is <code>null</code>
+     * @throws NullPointerException If a key in the map is {@code null}
      */
     public JSONArray put(final Map<?, ?> value) {
         return this.put(new JSONObject(value));
@@ -1229,7 +1218,7 @@ public class JSONArray
      *
      * @throws JSONException        If the index is negative or if the the value is an invalid
      *                              number.
-     * @throws NullPointerException If a key in the map is <code>null</code>
+     * @throws NullPointerException If a key in the map is {@code null}
      */
     public JSONArray put(final int index,
                          final Map<?, ?> value)
@@ -1324,7 +1313,8 @@ public class JSONArray
      *
      * @return this.
      *
-     * @throws JSONException        If not an array, JSONArray, Iterable or if an value is non-finite number.
+     * @throws JSONException        If not an array, JSONArray, Iterable or if an value is
+     *                              non-finite number.
      * @throws NullPointerException Thrown if the array parameter is null.
      */
     public JSONArray putAll(final Object array)
@@ -1536,8 +1526,8 @@ public class JSONArray
      * @param indentFactor The number of spaces to add to each level of indentation.
      *
      * @return a printable, displayable, transmittable representation of the
-     * object, beginning with <code>[</code>&nbsp;<small>(left
-     * bracket)</small> and ending with <code>]</code>
+     * object, beginning with {@code [}&nbsp;<small>(left
+     * bracket)</small> and ending with {@code ]}
      * &nbsp;<small>(right bracket)</small>.
      *
      * @throws JSONException if a called function fails
@@ -1653,7 +1643,7 @@ public class JSONArray
      * @return a java.util.List containing the elements of this array
      */
     public List<Object> toList() {
-        final List<Object> results = new ArrayList<Object>(this.myArrayList.size());
+        final List<Object> results = new ArrayList<>(this.myArrayList.size());
         for (final Object element : this.myArrayList) {
             if (element == null || JSONObject.NULL.equals(element)) {
                 results.add(null);
