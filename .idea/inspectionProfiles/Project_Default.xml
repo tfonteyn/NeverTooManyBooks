@@ -14,6 +14,7 @@
     <inspection_tool class="AndroidLintRegistered" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintSelectableText" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintSourceLockedOrientationActivity" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="AndroidLintSyntheticAccessor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintTypographyQuotes" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnsupportedChromeOsCameraSystemFeature" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintValidActionsXml" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -147,6 +148,7 @@
       <option name="m_ignoreNegatedZeroComparison" value="true" />
     </inspection_tool>
     <inspection_tool class="NegativelyNamedBooleanVariable" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="NonFinalFieldInEnum" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonFinalUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonPublicClone" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NonSerializableWithSerialVersionUIDField" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -228,12 +230,13 @@
       <option name="ignoreThrown" value="true" />
     </inspection_tool>
     <inspection_tool class="TransientFieldNotInitialized" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="TrivialStringConcatenation" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TypeMayBeWeakened" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.time.LocalDateTime,com.hardbacknutter.nevertoomanybooks.entities.Book,com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle,com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate,java.util.Set,java.util.List,com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage,java.util.Collection,android.text.Editable,com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults,com.hardbacknutter.nevertoomanybooks.backup.ImportResults,com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo,com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage</stopClasses>
+      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.time.LocalDateTime,com.hardbacknutter.nevertoomanybooks.entities.Book,com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle,com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate,java.util.Set,java.util.List,com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage,java.util.Collection,android.text.Editable,com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults,com.hardbacknutter.nevertoomanybooks.backup.ImportResults,com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo,com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage,com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener</stopClasses>
     </inspection_tool>
     <inspection_tool class="UncheckedExceptionClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
@@ -241,6 +244,7 @@
       <option name="m_ignoreStaticMethodCalls" value="false" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>
+    <inspection_tool class="UnnecessaryConstantArrayCreationExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryConstructor" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreAnnotations" value="true" />
     </inspection_tool>
