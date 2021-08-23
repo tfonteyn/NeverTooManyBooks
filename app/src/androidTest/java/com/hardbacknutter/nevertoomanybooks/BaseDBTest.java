@@ -35,6 +35,6 @@ public abstract class BaseDBTest {
             throws DaoWriteException, CoverStorageException {
 
         CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
-        ServiceLocator.getInstance().initialiseDb(ServiceLocator.getGlobalPreferences());
+        ServiceLocator.getInstance().initialiseDb();
     }
 }

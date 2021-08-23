@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -60,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
@@ -224,18 +222,18 @@ public class EditBookViewModel
     }
 
     /**
-     * Convert a Field value (String) to an Instant in time.
+     * Convert a Field's value (String) to an Instant in time.
      *
-     * @param field       to extract from
+     * @param value       to extract from
      * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
      *
      * @return instant
      */
     @Nullable
-    Instant getInstant(@NonNull final Field<String, TextView> field,
+    Instant getInstant(@NonNull final String value,
                        final boolean todayIfNone) {
 
-        final LocalDateTime date = mDateParser.parse(field.getAccessor().getValue());
+        final LocalDateTime date = mDateParser.parse(value);
         if (date == null && !todayIfNone) {
             return null;
         }
@@ -245,7 +243,6 @@ public class EditBookViewModel
         }
         return Instant.now();
     }
-
     /**
      * Get the list of fragments (their tags) which have unfinished edits.
      *

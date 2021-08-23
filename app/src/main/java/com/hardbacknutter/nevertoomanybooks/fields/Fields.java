@@ -173,7 +173,7 @@ public class Fields {
             final Field<?, ?> field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 // do NOT call onChanged, as this is the initial load
-                field.getAccessor().setValue(dataManager);
+                field.setValue(dataManager);
             }
         }
     }
@@ -187,8 +187,7 @@ public class Fields {
         for (int f = 0; f < mAllFields.size(); f++) {
             final Field<?, ?> field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
-                field.getAccessor().getValue(dataManager);
-                field.validate();
+                field.getValue(dataManager);
             }
         }
     }

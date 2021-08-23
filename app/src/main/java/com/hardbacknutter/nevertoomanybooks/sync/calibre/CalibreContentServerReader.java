@@ -104,9 +104,10 @@ import com.hardbacknutter.org.json.JSONObject;
 public class CalibreContentServerReader
         implements SyncReader {
 
+    public static final String SYNC_PROCESSOR_PREFIX =
+            CalibreContentServer.PREF_KEY + ".fields.update.";
     /** Log tag. */
     private static final String TAG = "CalibreServerReader";
-
     private static final String BKEY_VIRTUAL_LIBRARY_LIST = TAG + ":vlibs";
 
     /** The number of books we fetch per request. Tested with CCS running on a RaspberryPi 1b+. */
@@ -179,6 +180,55 @@ public class CalibreContentServerReader
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
     }
+
+    // This needs thought/work....
+//    @NonNull
+//    public static SyncReaderProcessor getDefaultSyncProcessor() {
+//        return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
+//
+//                .add(R.string.lbl_cover_front, DBKey.COVER_IS_USED[0])
+//                .addRelatedField(DBKey.COVER_IS_USED[0], Book.BKEY_TMP_FILE_SPEC[0])
+//
+//                .add(R.string.lbl_cover_back, DBKey.COVER_IS_USED[1])
+//                .addRelatedField(DBKey.COVER_IS_USED[1], Book.BKEY_TMP_FILE_SPEC[1])
+//
+//                .add(R.string.lbl_title, DBKey.KEY_TITLE,
+//                     SyncAction.Overwrite)
+//
+//                .addList(R.string.lbl_authors, DBKey.FK_AUTHOR, Book.BKEY_AUTHOR_LIST)
+//                .addList(R.string.lbl_series_multiple, DBKey.KEY_SERIES_TITLE,
+//                         Book.BKEY_SERIES_LIST)
+//
+//                .add(R.string.lbl_description, DBKey.KEY_DESCRIPTION,
+//                     SyncAction.Overwrite)
+//
+//                .addList(R.string.lbl_publishers, DBKey.KEY_PUBLISHER_NAME,
+//                         Book.BKEY_PUBLISHER_LIST)
+//                .add(R.string.lbl_date_published, DBKey.DATE_BOOK_PUBLICATION)
+//
+//
+//
+//                .add(R.string.site_calibre, DBKey.KEY_CALIBRE_BOOK_ID)
+//                .addRelatedField(DBKey.KEY_CALIBRE_BOOK_UUID, DBKey.KEY_CALIBRE_BOOK_ID)
+//
+//                .add(R.string.lbl_date_last_updated, DBKey.UTC_DATE_LAST_UPDATED,
+//                     SyncAction.Overwrite)
+//
+//
+//
+//                .add(R.string.lbl_format, DBKey.KEY_FORMAT)
+//                .add(R.string.lbl_language, DBKey.KEY_LANGUAGE)
+//
+//                .add(R.string.lbl_rating, DBKey.KEY_RATING)
+//
+//
+//                // CustomFields
+//                .add(R.string.lbl_read, DBKey.BOOL_READ)
+//                .add(R.string.lbl_read_start, DBKey.DATE_READ_START)
+//                .add(R.string.lbl_read_end, DBKey.DATE_READ_END)
+//                .add(R.string.lbl_personal_notes, DBKey.KEY_PRIVATE_NOTES)
+//                .build();
+//    }
 
     private void initLibrary(@NonNull final Context context)
             throws IOException, JSONException {

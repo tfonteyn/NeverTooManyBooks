@@ -29,7 +29,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:textIsSelectable">true</item>
+        <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 

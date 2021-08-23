@@ -355,12 +355,10 @@ public final class ServiceLocator {
 
     /**
      * Called during startup. This will trigger the creation/upgrade/open process.
-     *
-     * @param global Global preferences
      */
-    void initialiseDb(@NonNull final SharedPreferences global) {
+    void initialiseDb() {
         mDBHelper = new DBHelper(mAppContext);
-        mDBHelper.initialiseDb(global);
+        mDBHelper.initialiseDb(mAppContext);
     }
 
     /**
@@ -370,7 +368,12 @@ public final class ServiceLocator {
      */
     @NonNull
     public SynchronizedDb getDb() {
-        //noinspection ConstantConditions
+        synchronized (this) {
+            // Needed due to situations where the app has been asleep for awhile.
+            if (mDBHelper == null) {
+                initialiseDb();
+            }
+        }
         return mDBHelper.getDb();
     }
 

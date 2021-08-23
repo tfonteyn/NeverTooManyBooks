@@ -83,8 +83,8 @@ public class EditBookFieldsFragment
                                      @NonNull final ArrayList<Entity> selectedItems) {
                     final Field<List<Entity>, TextView> field = getField(fieldId);
                     mVm.getBook().putParcelableArrayList(field.getKey(), selectedItems);
-                    field.getAccessor().setValue(selectedItems);
-                    field.onChanged(true);
+                    field.setValue(selectedItems);
+                    field.onChanged();
                 }
             };
     /** The scanner. */
@@ -143,9 +143,7 @@ public class EditBookFieldsFragment
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         mVm.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
-            final Field<List<Author>, TextView> field = getField(R.id.author);
-            field.getAccessor().setValue(authors);
-            field.validate();
+            getField(R.id.author).setValue(authors);
         });
 
         // no listener/callback. We share the book view model in the Activity scope
@@ -154,9 +152,7 @@ public class EditBookFieldsFragment
 
         if (getField(R.id.series_title).isUsed(global)) {
             mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
-                final Field<List<Series>, TextView> field = getField(R.id.series_title);
-                field.getAccessor().setValue(series);
-                field.validate();
+                getField(R.id.series_title).setValue(series);
             });
 
             // no listener/callback. We share the book view model in the Activity scope
@@ -233,7 +229,7 @@ public class EditBookFieldsFragment
                            new AuthorListFormatter(Author.Details.Short, true, false)),
                    Book.BKEY_AUTHOR_LIST, DBKey.FK_AUTHOR)
               .setErrorViewId(R.id.lbl_author)
-              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
+              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Short, true, false)),
@@ -242,7 +238,7 @@ public class EditBookFieldsFragment
 
         fields.add(R.id.title, new EditTextAccessor<>(), DBKey.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
-              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
+              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.description, new EditTextAccessor<>(), DBKey.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
@@ -256,7 +252,7 @@ public class EditBookFieldsFragment
                            new LanguageFormatter(userLocale), true),
                    DBKey.KEY_LANGUAGE)
               .setErrorViewId(R.id.lbl_language)
-              .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
+              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.genre, new AutoCompleteTextAccessor(() -> mVm.getAllGenres()),
                    DBKey.KEY_GENRE)
@@ -274,6 +270,10 @@ public class EditBookFieldsFragment
     @Override
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
+        //noinspection ConstantConditions
+        mVm.getBook().pruneAuthors(getContext(), true);
+        mVm.getBook().pruneSeries(getContext(), true);
+
         super.onPopulateViews(fields, book);
 
         if (mCoverHandler[0] != null) {
@@ -289,16 +289,6 @@ public class EditBookFieldsFragment
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
-    }
-
-    @Override
-    public void onResume() {
-        //noinspection ConstantConditions
-        mVm.getBook().pruneAuthors(getContext(), true);
-        mVm.getBook().pruneSeries(getContext(), true);
-
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
     }
 
     @Override

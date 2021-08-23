@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -26,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -42,9 +42,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -57,9 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -111,9 +107,8 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldId, date.getIsoString());
                 }
             };
-    /** Listener for all field changes. Must keep strong reference. */
-    private final Fields.AfterChangeListener mAfterChangeListener =
-            fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
+    /** Listener for all field changes. MUST keep strong reference. */
+    private final Fields.AfterChangeListener mAfterChangeListener = this::onAfterFieldChange;
     @Nullable
     private AmazonHandler mAmazonHandler;
     @Nullable
@@ -170,9 +165,10 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Context context = getContext();
         //noinspection ConstantConditions
-        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(getContext());
-        mAmazonHandler = new AmazonHandler(getContext());
+        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(context);
+        mAmazonHandler = new AmazonHandler(context);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
@@ -239,6 +235,7 @@ public abstract class EditBookBaseFragment
     @CallSuper
     @Override
     public void onResume() {
+        super.onResume();
 
         // Not sure this is really needed; but it does no harm.
         // In theory, the editing fragment can trigger an internet search,
@@ -249,27 +246,21 @@ public abstract class EditBookBaseFragment
             mVm.addFieldsFromBundle(getArguments());
         }
 
-        super.onResume();
-        // hook up the Views, and calls {@link #onPopulateViews}
-        populateViews();
-    }
-
-    /**
-     * Load all Views from the book while preserving the isDirty() status.
-     * <p>
-     * This is final/private; child classes should override {@link #onPopulateViews}.
-     */
-    private void populateViews() {
+        // update all Fields with their current View instances
         final Fields fields = getFields();
         //noinspection ConstantConditions
         fields.setParentView(getView());
 
+        // Load all Views from the book while preserving the stage of the book.
         fields.setAfterChangeListener(null);
         final Book book = mVm.getBook();
         book.lockStage();
-        // make it so!
+
+        // make it so! Child classes can override this method.
         onPopulateViews(fields, book);
+
         book.unlockStage();
+        // Dev note: DO NOT use a 'this' reference directly
         fields.setAfterChangeListener(mAfterChangeListener);
 
         // All views should now have proper visibility set, so fix their focus order.
@@ -294,9 +285,11 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * This is where you should populate all the fields with the values coming from the book.
+     * This is where all fields should be populate with the values coming from the book.
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
+     * <p>
+     * The {@link Fields.AfterChangeListener} is disabled and the book is locked during this call.
      *
      * @param fields current field collection
      * @param book   loaded book
@@ -305,6 +298,12 @@ public abstract class EditBookBaseFragment
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
         fields.setAll(book);
+    }
+
+    /** Listener for all field changes. */
+    @CallSuper
+    public void onAfterFieldChange(@IdRes final int fieldId) {
+        mVm.getBook().setStage(EntityStage.Stage.Dirty);
     }
 
     @Override
@@ -335,28 +334,6 @@ public abstract class EditBookBaseFragment
 
 
     /**
-     * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
-     * <p>
-     * Dev. note: a Supplier is used so we don't load the list if the Field is actually not in use
-     *
-     * @param global       Global preferences
-     * @param field        to setup
-     * @param listSupplier Supplier with auto complete values
-     */
-    void addAutocomplete(@NonNull final SharedPreferences global,
-                         @NonNull final Field<String, AutoCompleteTextView> field,
-                         @NonNull final Supplier<List<String>> listSupplier) {
-
-        // only bother when it's in use
-        if (field.isUsed(global)) {
-            final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
-            final AutoCompleteTextView view = field.getAccessor().getView();
-            //noinspection ConstantConditions
-            view.setAdapter(new FieldArrayAdapter(getContext(), listSupplier.get(), formatter));
-        }
-    }
-
-    /**
      * Setup a date picker for selecting a (full) date range.
      * <p>
      * Clicking on the start-date field will allow the user to set just the start-date.
@@ -366,45 +343,43 @@ public abstract class EditBookBaseFragment
      *
      * @param global           Global preferences
      * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
-     * @param startDateTitleId title of the dialog box if the end-date is not in use
-     * @param fieldStartDate   to setup for the start-date
-     * @param endDateTitleId   title of the dialog box if the start-date is not in use
-     * @param fieldEndDate     to setup for the end-date
      * @param todayIfNone      if true, and if the field was empty, we'll default to today's date.
+     * @param startDateTitleId title of the dialog box if the end-date is not in use
+     * @param startDateField   to setup for the start-date
+     * @param endDateTitleId   title of the dialog box if the start-date is not in use
+     * @param endDateField     to setup for the end-date
      */
     @SuppressWarnings("SameParameterValue")
     void addDateRangePicker(@NonNull final SharedPreferences global,
                             @StringRes final int dateSpanTitleId,
+                            final boolean todayIfNone,
+
                             @StringRes final int startDateTitleId,
-                            @NonNull final Field<String, TextView> fieldStartDate,
+                            @NonNull final Field<String, TextView> startDateField,
+
                             @StringRes final int endDateTitleId,
-                            @NonNull final Field<String, TextView> fieldEndDate,
-                            final boolean todayIfNone) {
+                            @NonNull final Field<String, TextView> endDateField) {
 
-        final boolean startUsed = fieldStartDate.isUsed(global);
-        if (startUsed) {
-            // single date picker for the start-date
-            //noinspection ConstantConditions
-            fieldStartDate.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(startDateTitleId, fieldStartDate.getId(),
-                            mVm.getInstant(fieldStartDate, todayIfNone)));
-        }
+        // Always a single date picker for the start-date
+        addDatePicker(global, todayIfNone, startDateTitleId, startDateField);
 
-        if (fieldEndDate.isUsed(global)) {
-            final TextView view = fieldEndDate.getAccessor().getView();
-            if (startUsed) {
+        if (endDateField.isUsed(global)) {
+            final TextView endView = endDateField.getView();
+            if (startDateField.isUsed(global)) {
                 // date-span picker for the end-date
                 //noinspection ConstantConditions
-                view.setOnClickListener(v -> mDateRangePickerLauncher
+                endView.setOnClickListener(v -> mDateRangePickerLauncher
                         .launch(dateSpanTitleId,
-                                fieldStartDate.getId(), mVm.getInstant(fieldStartDate, todayIfNone),
-                                fieldEndDate.getId(), mVm.getInstant(fieldEndDate, todayIfNone)));
+                                startDateField.getId(),
+                                mVm.getInstant(startDateField.getValue(), todayIfNone),
+                                endDateField.getId(),
+                                mVm.getInstant(endDateField.getValue(), todayIfNone)));
             } else {
                 // without using a start-date, single date picker for the end-date
                 //noinspection ConstantConditions
-                view.setOnClickListener(v -> mDatePickerLauncher
-                        .launch(endDateTitleId, fieldEndDate.getId(),
-                                mVm.getInstant(fieldEndDate, todayIfNone)));
+                endView.setOnClickListener(v -> mDatePickerLauncher
+                        .launch(endDateTitleId, endDateField.getId(),
+                                mVm.getInstant(endDateField.getValue(), todayIfNone)));
             }
         }
     }
@@ -413,19 +388,21 @@ public abstract class EditBookBaseFragment
      * Setup a date picker for selecting a single, full date.
      *
      * @param global      Global preferences
-     * @param field       to setup
-     * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
+     * @param titleId     title for the picker window
+     * @param field       to setup
      */
     @SuppressWarnings("SameParameterValue")
     void addDatePicker(@NonNull final SharedPreferences global,
-                       @NonNull final Field<String, TextView> field,
+                       final boolean todayIfNone,
                        @StringRes final int titleId,
-                       final boolean todayIfNone) {
+                       @NonNull final Field<String, TextView> field) {
+
         if (field.isUsed(global)) {
             //noinspection ConstantConditions
-            field.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(titleId, field.getId(), mVm.getInstant(field, todayIfNone)));
+            field.getView().setOnClickListener(v -> mDatePickerLauncher
+                    .launch(titleId, field.getId(),
+                            mVm.getInstant(field.getValue(), todayIfNone)));
         }
     }
 
@@ -433,19 +410,19 @@ public abstract class EditBookBaseFragment
      * Setup a date picker for selecting a partial date.
      *
      * @param global      Global preferences
-     * @param field       to setup
-     * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
+     * @param titleId     title for the picker window
+     * @param field       to setup
      */
     @SuppressWarnings("SameParameterValue")
     void addPartialDatePicker(@NonNull final SharedPreferences global,
-                              @NonNull final Field<String, TextView> field,
+                              final boolean todayIfNone,
                               @StringRes final int titleId,
-                              final boolean todayIfNone) {
+                              @NonNull final Field<String, TextView> field) {
         if (field.isUsed(global)) {
             //noinspection ConstantConditions
-            field.getAccessor().getView().setOnClickListener(v -> mPartialDatePickerLauncher
-                    .launch(titleId, field.getId(), field.getAccessor().getValue(), todayIfNone));
+            field.getView().setOnClickListener(v -> mPartialDatePickerLauncher
+                    .launch(titleId, field.getId(), field.getValue(), todayIfNone));
         }
     }
 
@@ -467,11 +444,11 @@ public abstract class EditBookBaseFragment
                    @NonNull final String dateStr) {
 
         final Field<String, TextView> field = getField(fieldId);
-        field.getAccessor().setValue(dateStr);
-        field.onChanged(true);
+        field.setValue(dateStr);
+        field.onChanged();
 
         if (fieldId == R.id.read_end) {
-            getField(R.id.cbx_read).getAccessor().setValue(true);
+            getField(R.id.cbx_read).setValue(true);
         }
     }
 

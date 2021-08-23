@@ -209,10 +209,12 @@ public class ShowBookFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_baseline_edit_24);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> mEditBookLauncher.launch(
-                mVm.getBookAtPosition(mVb.pager.getCurrentItem()).getId()));
+        //URGENT: make decision to do without the FAB button on this activity?....
+        // i.e. edit book via options menu
+        fab.setVisibility(View.GONE);
+//        fab.setImageResource(R.drawable.ic_baseline_edit_24);
+//        fab.setOnClickListener(v -> mEditBookLauncher.launch(
+//                mVm.getBookAtPosition(mVb.pager.getCurrentItem()).getId()));
 
         createCoverDelegates(global);
 
@@ -226,6 +228,8 @@ public class ShowBookFragment
                 setActivityTitle(mVm.getBookAtPosition(position));
             }
         });
+        // getInitialPagerPosition == mVb.pager.getCurrentItem()
+        setActivityTitle(mVm.getBookAtPosition(mVm.getInitialPagerPosition()));
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -448,15 +452,16 @@ public class ShowBookFragment
     }
 
     private void setActivityTitle(@NonNull final Book book) {
-        String title = book.getString(DBKey.KEY_TITLE);
-        if (BuildConfig.DEBUG /* always */) {
-            title = "[" + book.getId() + "] " + title;
-        }
-        setTitle(title);
-
+//        String title = book.getString(DBKey.KEY_TITLE);
         //noinspection ConstantConditions
-        setSubtitle(Author.getCondensedNames(
-                getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
+        String authors = Author.getCondensedNames(
+                getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
+
+        if (BuildConfig.DEBUG /* always */) {
+            authors = "[" + book.getId() + "] " + authors;
+        }
+        setTitle(authors);
+//        setSubtitle(title);
     }
 
     public static class ShowBookPagerAdapter

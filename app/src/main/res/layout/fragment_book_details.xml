@@ -48,11 +48,22 @@
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/icon_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/book/title"
+            />
+
+        <ImageView
+            android:id="@+id/icon_read"
+            style="@style/Flag.Read"
+            android:layout_marginTop="4dp"
+            android:scaleX="1.3"
+            android:scaleY="1.3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title"
+            tools:ignore="ContentDescription"
             />
 
         <ImageView
@@ -120,28 +131,12 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <ImageView
-            android:id="@+id/icon_read"
-            style="@style/Flag.Read"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:ignore="ContentDescription"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_rating_read_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,icon_read"
-            />
-
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/rating"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -238,20 +233,20 @@
             app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
-            <!-- chips will be added here dynamically -->
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                style="?attr/appChipDisplayStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="@string/lbl_books"-->
-            <!--                />-->
+            <!--             chips will be added here dynamically -->
+            <com.google.android.material.chip.Chip
+                style="?attr/appChipDisplayStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_books"
+                />
 
-            <!--            <com.google.android.material.chip.Chip-->
-            <!--                style="?attr/appChipDisplayStyle"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="@string/lbl_all_bookshelves"-->
-            <!--                />-->
+            <com.google.android.material.chip.Chip
+                style="?attr/appChipDisplayStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_all_bookshelves"
+                />
         </com.google.android.material.chip.ChipGroup>
 
         <TextView

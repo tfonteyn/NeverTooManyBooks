@@ -212,7 +212,7 @@ public class AutoCompleteTextAccessor
         }
 
         // Clear any previous error. The new content will be re-checked at validation time.
-        mField.getAccessor().setError(null);
+        mField.setError(null);
 
         broadcastChange();
 

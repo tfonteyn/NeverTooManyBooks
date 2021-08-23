@@ -106,7 +106,7 @@ android {
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         versionCode 12
-        versionName = "2.5.4"
+        versionName = "2.5.5"
 
         // see NOTES.txt
         minSdkVersion 26
@@ -230,27 +230,27 @@ dependencies {
     // https://github.com/google/desugar_jdk_libs
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     //
-    implementation 'androidx.activity:activity:1.3.0'
+    implementation 'androidx.activity:activity:1.3.1'
     implementation 'androidx.annotation:annotation:1.3.0-alpha01'
     implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-rc01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.core:core:1.7.0-alpha01'
     implementation 'androidx.customview:customview:1.1.0'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
-    implementation 'androidx.exifinterface:exifinterface:1.3.2'
-    implementation 'androidx.fragment:fragment:1.3.6'
+    implementation 'androidx.exifinterface:exifinterface:1.3.3'
+    implementation 'androidx.fragment:fragment:1.4.0-alpha07'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.3.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0-beta01'
     //implementation 'androidx.work:work-runtime:2.5.0'
 
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.5.0-alpha01'
+    implementation 'com.google.android.material:material:1.5.0-alpha02'
 
     // https://www.acra.ch/docs/Setup/
     implementation 'ch.acra:acra-mail:5.8.4'
@@ -264,15 +264,15 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.13'
 
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jsoup:jsoup:1.14.2'
 
     // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
     implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
     implementation 'com.google.zxing:core:3.4.1'
 
     // local tests use JUnit5
-    testImplementation 'org.mockito:mockito-core:3.11.2'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.11.2'
+    testImplementation 'org.mockito:mockito-core:3.12.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.12.1'
 
     // (Required) Writing and executing Unit Tests on the JUnit Platform
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'

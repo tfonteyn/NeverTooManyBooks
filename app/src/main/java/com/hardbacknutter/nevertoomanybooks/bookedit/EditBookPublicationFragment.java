@@ -24,21 +24,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
@@ -80,11 +76,8 @@ public class EditBookPublicationFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mVm.onPublisherList().observe(getViewLifecycleOwner(), publishers -> {
-            final Field<List<Publisher>, TextView> field = getField(R.id.publisher);
-            field.getAccessor().setValue(publishers);
-            field.validate();
-        });
+        mVm.onPublisherList().observe(getViewLifecycleOwner(),
+                                      publishers -> getField(R.id.publisher).setValue(publishers));
 
         // no listener/callback. We share the book view model in the Activity scope
         mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
@@ -115,12 +108,15 @@ public class EditBookPublicationFragment
                    Book.BKEY_PUBLISHER_LIST, DBKey.KEY_PUBLISHER_NAME)
               .setRelatedFields(R.id.lbl_publisher);
 
+
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
                    DBKey.DATE_BOOK_PUBLICATION)
+              .setResetButton(R.id.date_published_clear, "")
               .setTextInputLayout(R.id.lbl_date_published);
 
         fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),
                    DBKey.DATE_FIRST_PUBLICATION)
+              .setResetButton(R.id.first_publication_clear, "")
               .setTextInputLayout(R.id.lbl_first_publication);
 
         // MUST be defined before the currency field is defined.
@@ -144,29 +140,23 @@ public class EditBookPublicationFragment
     @Override
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(fields, book);
-
-        // hide unwanted fields
-        //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, false);
-    }
-
-    @Override
-    public void onResume() {
         //noinspection ConstantConditions
         mVm.getBook().prunePublishers(getContext(), true);
 
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
+        super.onPopulateViews(fields, book);
+
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
 
-        addPartialDatePicker(global, getField(R.id.date_published),
-                             R.string.lbl_date_published, false);
+        addPartialDatePicker(global, false, R.string.lbl_date_published,
+                             getField(R.id.date_published));
 
-        addPartialDatePicker(global, getField(R.id.first_publication),
-                             R.string.lbl_first_publication, false);
+        addPartialDatePicker(global, false, R.string.lbl_first_publication,
+                             getField(R.id.first_publication));
+        // hide unwanted fields
+        //noinspection ConstantConditions
+        fields.setVisibility(getView(), false, false);
     }
 }

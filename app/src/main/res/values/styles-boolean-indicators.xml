@@ -32,7 +32,7 @@
     <!-- A book has been read. -->
     <style name="Flag.Read">
         <item name="android:contentDescription">@string/lbl_read</item>
-        <item name="android:src">@drawable/ic_baseline_library_add_check_24</item>
+        <item name="android:src">@drawable/ic_baseline_file_download_done_24</item>
         <item name="android:tint">?attr/colorSecondaryVariant</item>
     </style>
 

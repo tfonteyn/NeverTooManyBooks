@@ -23,7 +23,8 @@
      All menu items related to a book.
      Used for the options and context menus.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_BOOK_SET_READ"
         android:icon="@drawable/ic_baseline_check_box_24"
@@ -40,7 +41,8 @@
         android:id="@id/MENU_BOOK_EDIT"
         android:icon="@drawable/ic_baseline_edit_24"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/action_edit_ellipsis" />
+        android:title="@string/action_edit_ellipsis"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_BOOK_DUPLICATE"

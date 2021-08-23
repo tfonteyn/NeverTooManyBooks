@@ -123,7 +123,7 @@ public abstract class BaseDataAccessor<T, V extends View>
     void broadcastChange() {
         if (!mOnChangeCalled) {
             mOnChangeCalled = true;
-            mField.onChanged(false);
+            mField.onChanged();
         }
     }
 }

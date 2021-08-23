@@ -46,6 +46,16 @@
         <item name="endIconMode">clear_text</item>
     </style>
 
+    <style name="TIL.EditText.ClearButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:src">@drawable/ic_baseline_cancel_24</item>
+        <item name="android:background">@null</item>
+        <item name="android:contentDescription">@string/action_clear</item>
+    </style>
+
     <!-- a fixed width box for an external id field. -->
     <style name="TIL.EditText.ExternalId">
         <item name="android:layout_width">280dp</item>

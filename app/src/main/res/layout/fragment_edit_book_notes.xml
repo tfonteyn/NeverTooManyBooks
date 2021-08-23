@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck"
             />
 
         <CheckBox
@@ -66,7 +67,7 @@
             android:id="@+id/lbl_read_start"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_start"
-            app:layout_constraintEnd_toStartOf="@id/lbl_read_end"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
             >
@@ -79,13 +80,23 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <ImageButton
+            android:id="@+id/read_start_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
+            app:layout_constraintTop_toTopOf="@id/lbl_read_start"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_end"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lbl_read_start"
-            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -96,12 +107,14 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_date_read_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_read_start,lbl_read_end"
+        <ImageButton
+            android:id="@+id/read_end_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_end"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_end"
+            app:layout_constraintTop_toTopOf="@id/lbl_read_end"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -110,7 +123,7 @@
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_date_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -141,6 +154,16 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/date_acquired_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_date_acquired"
+            app:layout_constraintEnd_toEndOf="@id/lbl_date_acquired"
+            app:layout_constraintTop_toTopOf="@id/lbl_date_acquired"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid_currency"

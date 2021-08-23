@@ -99,6 +99,8 @@ public class FullDateParser
 
     /**
      * Constructor.
+     *
+     * @param context Current context; not stored, only used to get the locale.
      */
     public FullDateParser(@NonNull final Context context) {
         mLocales = new Locale[]{context.getResources().getConfiguration().getLocales().get(0),

@@ -38,6 +38,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookNotesBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -58,6 +59,9 @@ public class EditBookNotesFragment
     /** Log tag. */
     private static final String TAG = "EditBookNotesFragment";
 
+    /** View Binding. */
+    private FragmentEditBookNotesBinding mVb;
+
     @NonNull
     @Override
     public String getFragmentId() {
@@ -69,7 +73,8 @@ public class EditBookNotesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
+        mVb = FragmentEditBookNotesBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -115,15 +120,18 @@ public class EditBookNotesFragment
 
         fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
                    DBKey.DATE_ACQUIRED)
+              .setResetButton(R.id.date_acquired_clear, "")
               .setTextInputLayout(R.id.lbl_date_acquired);
 
         fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
                    DBKey.DATE_READ_START)
+              .setResetButton(R.id.read_start_clear, "")
               .setTextInputLayout(R.id.lbl_read_start)
               .setFieldValidator(this::validateReadStartAndEndFields);
 
         fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
                    DBKey.DATE_READ_END)
+              .setResetButton(R.id.read_end_clear, "")
               .setTextInputLayout(R.id.lbl_read_end)
               .setFieldValidator(this::validateReadStartAndEndFields);
     }
@@ -132,16 +140,6 @@ public class EditBookNotesFragment
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-
-        // hide unwanted fields
-        //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, false);
-    }
-
-    @Override
-    public void onResume() {
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         //noinspection ConstantConditions
@@ -150,13 +148,16 @@ public class EditBookNotesFragment
 
         addReadCheckboxOnClickListener(global);
 
-        addDatePicker(global, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
+        addDatePicker(global, true, R.string.lbl_date_acquired,
+                      getField(R.id.date_acquired));
 
-        addDateRangePicker(global,
-                           R.string.lbl_read,
+        addDateRangePicker(global, R.string.lbl_read, true,
                            R.string.lbl_read_start, getField(R.id.read_start),
-                           R.string.lbl_read_end, getField(R.id.read_end),
-                           true);
+                           R.string.lbl_read_end, getField(R.id.read_end));
+
+        // hide unwanted fields
+        //noinspection ConstantConditions
+        fields.setVisibility(getView(), false, false);
     }
 
     /**
@@ -171,14 +172,13 @@ public class EditBookNotesFragment
         final Field<?, ?> readCbx = getField(R.id.cbx_read);
         if (readCbx.isUsed(global)) {
             //noinspection ConstantConditions
-            readCbx.getAccessor().getView().setOnClickListener(v -> {
+            readCbx.getView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {
                     final Field<String, TextView> readEnd = getField(R.id.read_end);
-                    if (readEnd.getAccessor().isEmpty()) {
-                        readEnd.getAccessor().setValue(
-                                LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        readEnd.onChanged(true);
+                    if (readEnd.isEmpty()) {
+                        readEnd.setValue(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                        readEnd.onChanged();
                     }
                 }
             });
@@ -190,26 +190,26 @@ public class EditBookNotesFragment
         final Field<String, TextView> startField = getField(R.id.read_start);
         final Field<String, TextView> endField = getField(R.id.read_end);
 
-        final String start = startField.getAccessor().getValue();
+        final String start = startField.getValue();
         if (start == null || start.isEmpty()) {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
+            startField.setError(null);
+            endField.setError(null);
             return;
         }
 
-        final String end = endField.getAccessor().getValue();
+        final String end = endField.getValue();
         if (end == null || end.isEmpty()) {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
+            startField.setError(null);
+            endField.setError(null);
             return;
         }
 
         if (start.compareToIgnoreCase(end) > 0) {
-            endField.getAccessor().setError(getString(R.string.vldt_read_start_after_end));
+            endField.setError(getString(R.string.vldt_read_start_after_end));
 
         } else {
-            startField.getAccessor().setError(null);
-            endField.getAccessor().setError(null);
+            startField.setError(null);
+            endField.setError(null);
         }
     }
 }

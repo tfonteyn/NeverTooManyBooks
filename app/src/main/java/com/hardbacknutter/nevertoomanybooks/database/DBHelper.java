@@ -105,7 +105,7 @@ public class DBHelper
     public static final int DATABASE_VERSION = 16;
 
     /** NEVER change this name. */
-    public static final String DATABASE_NAME = "nevertoomanybooks.db";
+    private static final String DATABASE_NAME = "nevertoomanybooks.db";
 
     /** Log tag. */
     private static final String TAG = "DBHelper";
@@ -219,16 +219,17 @@ public class DBHelper
      * <p>
      * Called during startup. If needed, this will trigger the creation/upgrade process.
      *
-     * @param global Global preferences
+     * @param context Current context
      */
-    public void initialiseDb(@NonNull final SharedPreferences global) {
+    public void initialiseDb(@NonNull final Context context) {
         synchronized (this) {
             if (mSynchronizedDb != null) {
-                throw new IllegalStateException("Already initialized");
+                return;
             }
 
             // default 25, see SynchronizedDb javadoc
-            final int stmtCacheSize = global.getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
+            final int stmtCacheSize = PreferenceManager.getDefaultSharedPreferences(context)
+                                                       .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
 
             // Dev note: don't move this to the constructor, "this" must
             // be fully constructed before we can pass it to the SynchronizedDb constructor
@@ -277,15 +278,14 @@ public class DBHelper
             // will be returned first if 'A' < 'a'.
             db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
-            final String s;
-            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t COLLATE LOCALIZED" + ",i",
-                                        null)) {
+            final boolean cs;
+            try (Cursor c = db.rawQuery(
+                    "SELECT t,i FROM collation_cs_check ORDER BY t COLLATE LOCALIZED,i",
+                    null)) {
                 c.moveToFirst();
-                s = c.getString(0);
+                cs = !"a".equals(c.getString(0));
             }
 
-            final boolean cs = !"a".equals(s);
             if (cs) {
                 Log.e(TAG, "\n=============================================="
                            + "\n========== CASE SENSITIVE COLLATION =========="

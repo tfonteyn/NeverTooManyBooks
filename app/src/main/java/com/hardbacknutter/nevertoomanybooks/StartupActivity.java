@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
@@ -31,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -224,10 +222,9 @@ public class StartupActivity
     }
 
     public void initDb() {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
         try {
             // Create/Upgrade/Open the main database as needed.
-            ServiceLocator.getInstance().initialiseDb(global);
+            ServiceLocator.getInstance().initialiseDb();
 
         } catch (@NonNull final Exception e) {
             onGenericException(e);

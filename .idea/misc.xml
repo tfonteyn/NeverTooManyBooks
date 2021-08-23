@@ -8,12 +8,26 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_build_24.xml" value="0.39114583333333336" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_cancel_24.xml" value="0.203125" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_book_details.xml" value="0.3517948717948718" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_main.xml" value="0.3611111111111111" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf.xml" value="0.37083333333333335" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/dialog_partial_date_picker.xml" value="0.2657407407407407" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_book_details.xml" value="0.22311744654477844" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_external_id.xml" value="0.3609375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_fields.xml" value="0.375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_notes.xml" value="0.342042755344418" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_publication.xml" value="0.33" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_toc.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_export.xml" value="0.375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_show_book.xml" value="0.3517948717948718" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/mnu_btn_confirm.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/progress_dialog.xml" value="0.35128205128205126" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/menu/toolbar_action_clear_save.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_calibre.xml" value="0.17916666666666667" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_site_stripinfo.xml" value="0.225" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/drawable/mtrl_ic_cancel.xml" value="0.3611111111111111" />
       </map>
     </option>
   </component>
