@@ -142,18 +142,16 @@ public class EditBookFieldsFragment
 
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
-        mVm.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
-            getField(R.id.author).setValue(authors);
-        });
+        mVm.onAuthorList().observe(getViewLifecycleOwner(),
+                                   authors -> getField(R.id.author).setValue(authors));
 
         // no listener/callback. We share the book view model in the Activity scope
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .launch(getChildFragmentManager()));
 
         if (getField(R.id.series_title).isUsed(global)) {
-            mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
-                getField(R.id.series_title).setValue(series);
-            });
+            mVm.onSeriesList().observe(getViewLifecycleOwner(),
+                                       series -> getField(R.id.series_title).setValue(series));
 
             // no listener/callback. We share the book view model in the Activity scope
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment

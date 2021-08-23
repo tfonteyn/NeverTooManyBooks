@@ -246,15 +246,9 @@ public final class AppLocaleImpl
     public void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (mOnLocaleChangedListeners) {
-            final Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    mOnLocaleChangedListeners.iterator();
-            while (it.hasNext()) {
-                final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
-                if (listenerRef.get() == null || listenerRef.get().equals(listener)) {
-                    // remove dead listeners and the specified listener
-                    it.remove();
-                }
-            }
+            // remove dead listeners and the specified listener
+            mOnLocaleChangedListeners.removeIf(
+                    listenerRef -> listenerRef.get() == null || listenerRef.get().equals(listener));
         }
     }
 

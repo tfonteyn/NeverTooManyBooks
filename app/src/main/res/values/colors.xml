@@ -26,16 +26,16 @@
     <color name="day_primary_variant">@color/blue_grey_200</color>
     <color name="day_on_primary">@color/black</color>
 
-    <color name="day_secondary">@color/cyan_500</color>
-    <color name="day_secondary_variant">@color/cyan_600</color>
+    <color name="day_secondary">@color/teal_500</color>
+    <color name="day_secondary_variant">@color/teal_600</color>
     <color name="day_on_secondary">@color/black</color>
 
     <color name="night_primary">@color/blue_grey_300</color>
     <color name="night_primary_variant">@color/blue_grey_400</color>
     <color name="night_on_primary">@color/white</color>
 
-    <color name="night_secondary">@color/cyan_200</color>
-    <color name="night_secondary_variant">@color/cyan_300</color>
+    <color name="night_secondary">@color/teal_200</color>
+    <color name="night_secondary_variant">@color/teal_300</color>
     <color name="night_on_secondary">@color/black</color>
 
 

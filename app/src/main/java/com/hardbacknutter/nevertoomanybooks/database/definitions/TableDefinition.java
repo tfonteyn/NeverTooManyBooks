@@ -838,7 +838,7 @@ public class TableDefinition {
         final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
         final List<String> dstColumns = srcColumns
                 .stream()
-                .map(column -> renames.containsKey(column) ? renames.get(column) : column)
+                .map(column -> renames.getOrDefault(column, column))
                 .collect(Collectors.toList());
 
         final String sql =

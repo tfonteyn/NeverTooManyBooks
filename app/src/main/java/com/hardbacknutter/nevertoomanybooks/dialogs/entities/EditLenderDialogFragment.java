@@ -184,7 +184,7 @@ public class EditLenderDialogFragment
                                       null, null, null)) {
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    final String name = cursor.getString(cursor.getColumnIndex(
+                    final String name = cursor.getString(cursor.getColumnIndexOrThrow(
                             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
                     contacts.add(name);
                 }

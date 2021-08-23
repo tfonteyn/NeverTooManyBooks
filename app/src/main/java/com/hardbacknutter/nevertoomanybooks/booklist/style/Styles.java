@@ -28,6 +28,7 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,8 +175,7 @@ public class Styles {
         // while the non-preferred styles will be 1000.
         final List<ListStyle> allStyles = list
                 .stream()
-                .sorted((style1, style2) -> Integer.compare(
-                        style1.getMenuPosition(), style2.getMenuPosition()))
+                .sorted(Comparator.comparingInt(ListStyle::getMenuPosition))
                 .collect(Collectors.toList());
         if (all) {
             return allStyles;

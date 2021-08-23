@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -338,6 +339,7 @@ public class FtsDaoImpl
      *
      * @throws TransactionException a transaction must be started before calling this method
      */
+    @SuppressLint("Range")
     private void processBooks(@NonNull final Cursor cursor,
                               @NonNull final String sql)
             throws TransactionException {
@@ -380,10 +382,10 @@ public class FtsDaoImpl
             try (Cursor authors = mDb.rawQuery(GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
-                    colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
+                    colGivenNames = authors.getColumnIndexOrThrow(KEY_AUTHOR_GIVEN_NAMES);
                 }
                 if (colFamilyName < 0) {
-                    colFamilyName = authors.getColumnIndex(KEY_AUTHOR_FAMILY_NAME);
+                    colFamilyName = authors.getColumnIndexOrThrow(KEY_AUTHOR_FAMILY_NAME);
                 }
 
                 while (authors.moveToNext()) {

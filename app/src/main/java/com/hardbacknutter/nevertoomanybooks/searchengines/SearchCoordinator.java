@@ -934,6 +934,7 @@ public class SearchCoordinator
      * @param taskId of task
      * @param result of a search (can be null for failed/cancelled searches)
      */
+    @SuppressLint("WrongConstant")
     private void onSearchTaskFinished(final int taskId,
                                       @Nullable final Bundle result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {

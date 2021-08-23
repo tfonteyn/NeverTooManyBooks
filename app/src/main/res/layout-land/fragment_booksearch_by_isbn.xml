@@ -59,7 +59,7 @@
         app:layout_constraintStart_toEndOf="@id/lbl_isbn"
         />
 
-    <Space
+    <android.widget.Space
         android:id="@+id/keypadSpacer"
         android:layout_width="0dp"
         android:layout_height="12dp"
