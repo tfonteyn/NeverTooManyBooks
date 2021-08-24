@@ -35,6 +35,8 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
@@ -57,16 +59,21 @@ public final class WrappedMaterialDatePicker<S>
     @IdRes
     private final int[] mFieldIds;
     /** key to use for the FragmentResultListener. */
-    private String mRequestKey;
+    private final String mRequestKey;
 
     /**
      * Constructor.
      *
-     * @param picker   the MaterialDatePicker to wrap
-     * @param fieldIds the fields which are bound to the single date or date-span
+     * @param requestKey for use with the FragmentResultListener
+     *                   Will ALSO be used as the regular tag for this fragment, as per
+     *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
+     * @param picker     the MaterialDatePicker to wrap
+     * @param fieldIds   the fields which are bound to the single date or date-span
      */
-    private WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker,
+    private WrappedMaterialDatePicker(@NonNull final String requestKey,
+                                      @NonNull final MaterialDatePicker<S> picker,
                                       @NonNull @IdRes final int... fieldIds) {
+        mRequestKey = requestKey;
         mPicker = picker;
         mFieldIds = fieldIds;
     }
@@ -74,17 +81,11 @@ public final class WrappedMaterialDatePicker<S>
     /**
      * Wrapper to {@link MaterialDatePicker#show(FragmentManager, String)}.
      *
-     * @param fm         The FragmentManager this fragment will be added to.
-     * @param requestKey for use with the FragmentResultListener
-     *                   Will ALSO be used as the regular tag for this fragment, as per
-     *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
+     * @param fm The FragmentManager this fragment will be added to.
      */
-    public void show(@NonNull final FragmentManager fm,
-                     @NonNull final String requestKey) {
-        mRequestKey = requestKey;
-
+    public void show(@NonNull final FragmentManager fm) {
         mPicker.addOnPositiveButtonClickListener(this);
-        mPicker.show(fm, requestKey);
+        mPicker.show(fm, mRequestKey);
     }
 
     @Override
@@ -161,14 +162,14 @@ public final class WrappedMaterialDatePicker<S>
 
             final Long selection = getInstant(value, todayIfNone);
 
-            new WrappedMaterialDatePicker<>(
-                    MaterialDatePicker.Builder
-                            .datePicker()
-                            .setTitleText(titleId)
-                            .setSelection(selection)
-                            .build(),
-                    fieldId)
-                    .show(mFragmentManager, mRequestKey);
+            new WrappedMaterialDatePicker<>(mRequestKey,
+                                            MaterialDatePicker.Builder
+                                                    .datePicker()
+                                                    .setTitleText(titleId)
+                                                    .setSelection(selection)
+                                                    .build(),
+                                            fieldId)
+                    .show(mFragmentManager);
         }
 
         /**
@@ -180,18 +181,19 @@ public final class WrappedMaterialDatePicker<S>
          */
         public void launch(@StringRes final int titleId,
                            @IdRes final int fieldId,
-                           @Nullable final Instant time) {
+                           @Nullable final LocalDateTime time) {
 
-            final Long selection = time != null ? time.toEpochMilli() : null;
+            final Long selection =
+                    time != null ? time.toInstant(ZoneOffset.UTC).toEpochMilli() : null;
 
-            new WrappedMaterialDatePicker<>(
-                    MaterialDatePicker.Builder
-                            .datePicker()
-                            .setTitleText(titleId)
-                            .setSelection(selection)
-                            .build(),
-                    fieldId)
-                    .show(mFragmentManager, mRequestKey);
+            new WrappedMaterialDatePicker<>(mRequestKey,
+                                            MaterialDatePicker.Builder
+                                                    .datePicker()
+                                                    .setTitleText(titleId)
+                                                    .setSelection(selection)
+                                                    .build(),
+                                            fieldId)
+                    .show(mFragmentManager);
         }
 
         /**
@@ -220,14 +222,15 @@ public final class WrappedMaterialDatePicker<S>
                 endSelection = tmp;
             }
 
-            new WrappedMaterialDatePicker<>(
-                    MaterialDatePicker.Builder
-                            .dateRangePicker()
-                            .setTitleText(titleId)
-                            .setSelection(new Pair<>(startSelection, endSelection))
-                            .build(),
-                    startFieldId, endFieldId)
-                    .show(mFragmentManager, mRequestKey);
+            new WrappedMaterialDatePicker<>(mRequestKey,
+                                            MaterialDatePicker.Builder
+                                                    .dateRangePicker()
+                                                    .setTitleText(titleId)
+                                                    .setSelection(new Pair<>(startSelection,
+                                                                             endSelection))
+                                                    .build(),
+                                            startFieldId, endFieldId)
+                    .show(mFragmentManager);
         }
 
         @Override
@@ -256,6 +259,5 @@ public final class WrappedMaterialDatePicker<S>
          */
         public abstract void onResult(@NonNull int[] fieldIds,
                                       @NonNull long[] selections);
-
     }
 }

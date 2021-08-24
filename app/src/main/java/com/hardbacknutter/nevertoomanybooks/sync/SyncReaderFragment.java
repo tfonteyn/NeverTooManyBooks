@@ -43,7 +43,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -235,12 +234,8 @@ public class SyncReaderFragment
         });
 
         updateSyncDateVisibility();
-        mVb.syncDate.setOnClickListener(v -> {
-            final LocalDateTime syncDate = mVm.getSyncDate();
-            mDatePickerLauncher.launch(R.string.lbl_sync_date, mVb.lblSyncDate.getId(),
-                                       syncDate != null ? syncDate.toInstant(ZoneOffset.UTC)
-                                                        : null);
-        });
+        mVb.syncDate.setOnClickListener(v -> mDatePickerLauncher
+                .launch(R.string.lbl_sync_date, mVb.lblSyncDate.getId(), mVm.getSyncDate()));
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
