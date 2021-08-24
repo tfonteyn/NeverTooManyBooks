@@ -128,12 +128,12 @@ public class SyncReaderViewModel
     }
 
     /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    public boolean isNewBooksOnly() {
+    boolean isNewBooksOnly() {
         return mConfig.getUpdateOption() == SyncReaderConfig.Updates.Skip;
     }
 
     /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    public void setNewBooksOnly() {
+    void setNewBooksOnly() {
         mConfig.setUpdateOption(SyncReaderConfig.Updates.Skip);
     }
 
@@ -173,7 +173,7 @@ public class SyncReaderViewModel
     }
 
     /**
-     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
+     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip}
      * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */

@@ -114,7 +114,7 @@ public final class SyncReaderConfig {
     }
 
     /**
-     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
+     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip}
      * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
