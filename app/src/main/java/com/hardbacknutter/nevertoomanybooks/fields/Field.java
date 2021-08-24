@@ -59,7 +59,7 @@ public class Field<T, V extends View> {
 
     /** Accessor to use. Encapsulates the formatter. */
     @NonNull
-    final FieldViewAccessor<T, V> mFieldViewAccessor;
+    private final FieldViewAccessor<T, V> mFieldViewAccessor;
 
     /** Field ID. */
     @IdRes
@@ -321,8 +321,8 @@ public class Field<T, V extends View> {
      * @param parent     parent view for all related fields.
      * @param visibility to use
      */
-    void setRelatedFieldsVisibility(@NonNull final View parent,
-                                    final int visibility) {
+    private void setRelatedFieldsVisibility(@NonNull final View parent,
+                                            final int visibility) {
         for (final int fieldId : mRelatedFields) {
             final View view = parent.findViewById(fieldId);
             if (view != null) {
