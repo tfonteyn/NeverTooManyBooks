@@ -1229,7 +1229,7 @@ public class SearchCoordinator
                     BitmapFactory.decodeFile(fileSpec, opt);
                     // If no size info, assume file bad and skip
                     if (opt.outHeight > 0 && opt.outWidth > 0) {
-                        final long size = opt.outHeight * opt.outWidth;
+                        final long size = (long) opt.outHeight * (long) opt.outWidth;
                         if (size > bestImageSize) {
                             bestImageSize = size;
                             bestFileIndex = i;
