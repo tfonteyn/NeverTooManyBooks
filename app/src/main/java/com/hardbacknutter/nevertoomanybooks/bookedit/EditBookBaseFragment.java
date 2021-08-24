@@ -59,6 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
@@ -78,7 +80,7 @@ public abstract class EditBookBaseFragment
     /** Tag/requestKey for WrappedMaterialDatePicker. */
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
 
-    private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
+    final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
             new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_SINGLE) {
                 @Override
                 public void onResult(@NonNull final int[] fieldIds,
@@ -151,12 +153,6 @@ public abstract class EditBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        final FragmentManager fm = getChildFragmentManager();
-
-        mPartialDatePickerLauncher.registerForFragmentResult(fm, this);
-        mDatePickerLauncher.registerForFragmentResult(fm, this);
-        mDateRangePickerLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -172,6 +168,17 @@ public abstract class EditBookBaseFragment
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
+
+        final FragmentManager fm = getChildFragmentManager();
+        final DateParser dateParser = new FullDateParser(context);
+
+        mPartialDatePickerLauncher.registerForFragmentResult(fm, this);
+
+        mDatePickerLauncher.registerForFragmentResult(fm, this);
+        mDatePickerLauncher.setDateParser(dateParser);
+
+        mDateRangePickerLauncher.registerForFragmentResult(fm, this);
 
         final Fields fields = getFields();
         if (fields.isEmpty()) {
@@ -345,9 +352,9 @@ public abstract class EditBookBaseFragment
      * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
      * @param todayIfNone      if true, and if the field was empty, we'll default to today's date.
      * @param startDateTitleId title of the dialog box if the end-date is not in use
-     * @param startDateField   to setup for the start-date
+     * @param startDate        to setup for the start-date
      * @param endDateTitleId   title of the dialog box if the start-date is not in use
-     * @param endDateField     to setup for the end-date
+     * @param endDate          to setup for the end-date
      */
     @SuppressWarnings("SameParameterValue")
     void addDateRangePicker(@NonNull final SharedPreferences global,
@@ -355,31 +362,30 @@ public abstract class EditBookBaseFragment
                             final boolean todayIfNone,
 
                             @StringRes final int startDateTitleId,
-                            @NonNull final Field<String, TextView> startDateField,
+                            @NonNull final Field<String, TextView> startDate,
 
                             @StringRes final int endDateTitleId,
-                            @NonNull final Field<String, TextView> endDateField) {
+                            @NonNull final Field<String, TextView> endDate) {
 
         // Always a single date picker for the start-date
-        addDatePicker(global, todayIfNone, startDateTitleId, startDateField);
+        addDatePicker(global, todayIfNone, startDateTitleId, startDate);
 
-        if (endDateField.isUsed(global)) {
-            final TextView endView = endDateField.getView();
-            if (startDateField.isUsed(global)) {
+        if (endDate.isUsed(global)) {
+            final TextView endView = endDate.getView();
+            if (startDate.isUsed(global)) {
                 // date-span picker for the end-date
                 //noinspection ConstantConditions
                 endView.setOnClickListener(v -> mDateRangePickerLauncher
                         .launch(dateSpanTitleId,
-                                startDateField.getId(),
-                                mVm.getInstant(startDateField.getValue(), todayIfNone),
-                                endDateField.getId(),
-                                mVm.getInstant(endDateField.getValue(), todayIfNone)));
+                                startDate.getId(), startDate.getValue(),
+                                endDate.getId(), endDate.getValue(),
+                                todayIfNone));
             } else {
                 // without using a start-date, single date picker for the end-date
                 //noinspection ConstantConditions
                 endView.setOnClickListener(v -> mDatePickerLauncher
-                        .launch(endDateTitleId, endDateField.getId(),
-                                mVm.getInstant(endDateField.getValue(), todayIfNone)));
+                        .launch(endDateTitleId, endDate.getId(), endDate.getValue(),
+                                todayIfNone));
             }
         }
     }
@@ -401,8 +407,7 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(global)) {
             //noinspection ConstantConditions
             field.getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(titleId, field.getId(),
-                            mVm.getInstant(field.getValue(), todayIfNone)));
+                    .launch(titleId, field.getId(), field.getValue(), todayIfNone));
         }
     }
 

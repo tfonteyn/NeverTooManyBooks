@@ -33,9 +33,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,8 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class EditBookViewModel
@@ -135,8 +130,6 @@ public class EditBookViewModel
     /** The currently displayed tab. */
     private int mCurrentTab;
 
-    private DateParser mDateParser;
-
     /**
      * <ul>
      * <li>{@link DBKey#PK_ID}  book id</li>
@@ -162,9 +155,7 @@ public class EditBookViewModel
     void init(@NonNull final Context context,
               @Nullable final Bundle args) {
 
-        if (mDateParser == null) {
-            mDateParser = new FullDateParser(context);
-
+        if (mBook == null) {
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
                 if (styleUuid != null) {
@@ -221,28 +212,6 @@ public class EditBookViewModel
         return fields;
     }
 
-    /**
-     * Convert a Field's value (String) to an Instant in time.
-     *
-     * @param value       to extract from
-     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
-     *
-     * @return instant
-     */
-    @Nullable
-    Instant getInstant(@NonNull final String value,
-                       final boolean todayIfNone) {
-
-        final LocalDateTime date = mDateParser.parse(value);
-        if (date == null && !todayIfNone) {
-            return null;
-        }
-
-        if (date != null) {
-            return date.toInstant(ZoneOffset.UTC);
-        }
-        return Instant.now();
-    }
     /**
      * Get the list of fragments (their tags) which have unfinished edits.
      *

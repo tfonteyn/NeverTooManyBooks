@@ -38,45 +38,11 @@ import java.time.Instant;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Crazy wrapper around a {@link MaterialDatePicker}
  * to make it work with a {@link FragmentResultListener}.
- * <p>
- * Usage: URGENT: update the example code
- * <pre>
- *     {@code
- *
- *     private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:" + "datePickerSingle";
- *     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener
- *         = new WrappedMaterialDatePicker.OnResultListener() {
- *         @Override
- *         public void onResult(@NonNull final long... selections) {
- *             // do something with the selections
- *             // datePicker()      : one selection
- *             // dateRangePicker() : two selections
- *             // Can be NO_SELECTION, or the usual long value
- *         }
- *     };
- *
- *     @Override
- *     public void onCreate(@Nullable final Bundle savedInstanceState) {
- *         super.onCreate(savedInstanceState);
- *         getChildFragmentManager().setFragmentResultListener(
- *                 RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
- *         ...
- *     }
- *
- *      // create/show:
- *      new WrappedMaterialDatePicker<>(
- *              MaterialDatePicker.Builder
- *                            .datePicker()
- *                            .setTitleText(dialogTitleId)
- *                            .setSelection(selection)
- *                            .build())
- *                  .show(getChildFragmentManager(), RK_DATE_PICKER_SINGLE);
- *     }
- * </pre>
  *
  * @param <S> selection; This class only supports a {@code Long}, or a {@code Pair<Long,Long>}.
  */
@@ -93,6 +59,12 @@ public final class WrappedMaterialDatePicker<S>
     /** key to use for the FragmentResultListener. */
     private String mRequestKey;
 
+    /**
+     * Constructor.
+     *
+     * @param picker   the MaterialDatePicker to wrap
+     * @param fieldIds the fields which are bound to the single date or date-span
+     */
     private WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker,
                                       @NonNull @IdRes final int... fieldIds) {
         mPicker = picker;
@@ -142,6 +114,8 @@ public final class WrappedMaterialDatePicker<S>
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
 
+        private DateParser mDateParser;
+
         public Launcher(@NonNull final String requestKey) {
             super(requestKey);
         }
@@ -154,6 +128,47 @@ public final class WrappedMaterialDatePicker<S>
             result.putIntArray(FIELD_ID, fieldIds);
             result.putLongArray(SELECTIONS, selection);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        public void setDateParser(@NonNull final DateParser dateParser) {
+            mDateParser = dateParser;
+        }
+
+        @Nullable
+        private Long getInstant(@Nullable final String value,
+                                final boolean todayIfNone) {
+            final Instant date = mDateParser.parseToInstant(value, todayIfNone);
+            if (date != null) {
+                return date.toEpochMilli();
+            }
+            return null;
+        }
+
+        /**
+         * Launch the dialog to select a single date.
+         *
+         * @param titleId     for the dialog screen
+         * @param fieldId     field this dialog is bound to
+         * @param value       current selection (a parsable date string),
+         *                    or {@code null} for none
+         * @param todayIfNone if {@code true}, and if the field value empty,
+         *                    default to today's date.
+         */
+        public void launch(@StringRes final int titleId,
+                           @IdRes final int fieldId,
+                           @Nullable final String value,
+                           final boolean todayIfNone) {
+
+            final Long selection = getInstant(value, todayIfNone);
+
+            new WrappedMaterialDatePicker<>(
+                    MaterialDatePicker.Builder
+                            .datePicker()
+                            .setTitleText(titleId)
+                            .setSelection(selection)
+                            .build(),
+                    fieldId)
+                    .show(mFragmentManager, mRequestKey);
         }
 
         /**
@@ -190,12 +205,13 @@ public final class WrappedMaterialDatePicker<S>
          */
         public void launch(@StringRes final int titleId,
                            @IdRes final int startFieldId,
-                           @Nullable final Instant timeStart,
+                           @Nullable final String timeStart,
                            @IdRes final int endFieldId,
-                           @Nullable final Instant timeEnd) {
+                           @Nullable final String timeEnd,
+                           final boolean todayIfNone) {
 
-            Long startSelection = timeStart != null ? timeStart.toEpochMilli() : null;
-            Long endSelection = timeEnd != null ? timeEnd.toEpochMilli() : null;
+            Long startSelection = getInstant(timeStart, todayIfNone);
+            Long endSelection = getInstant(timeEnd, todayIfNone);
 
             // both set ? then make sure the order is correct
             if (startSelection != null && endSelection != null && startSelection > endSelection) {

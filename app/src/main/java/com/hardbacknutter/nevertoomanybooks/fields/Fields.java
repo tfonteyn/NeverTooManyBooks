@@ -142,6 +142,21 @@ public class Fields {
         return field;
     }
 
+    @NonNull
+    public <V extends View> DateField<V> addDate(@IdRes final int id,
+                                                 @NonNull
+                                                 final FieldViewAccessor<String, V> accessor,
+                                                 @NonNull final String key) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(key, "key");
+        }
+
+        final DateField<V> field = new DateField<>(id, accessor, key, key);
+        mAllFields.put(id, field);
+        return field;
+    }
+
     /**
      * Return the Field associated with the passed ID.
      *
