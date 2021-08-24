@@ -38,7 +38,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookNotesBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -59,9 +58,6 @@ public class EditBookNotesFragment
     /** Log tag. */
     private static final String TAG = "EditBookNotesFragment";
 
-    /** View Binding. */
-    private FragmentEditBookNotesBinding mVb;
-
     @NonNull
     @Override
     public String getFragmentId() {
@@ -73,8 +69,7 @@ public class EditBookNotesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentEditBookNotesBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        return inflater.inflate(R.layout.fragment_edit_book_notes, container, false);
     }
 
     @Override
