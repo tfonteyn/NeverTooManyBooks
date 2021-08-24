@@ -64,7 +64,10 @@ public final class NotifierImpl
             // Sets the Activity to start in a new, empty task
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+            // Apps targeting Android 12 and higher must specify either FLAG_IMMUTABLE
+            // or FLAG_MUTABLE when constructing a PendingIntent.
             pendingIntent = PendingIntent.getActivity(context, requestCode, intent,
+                                                      PendingIntent.FLAG_IMMUTABLE |
                                                       PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
