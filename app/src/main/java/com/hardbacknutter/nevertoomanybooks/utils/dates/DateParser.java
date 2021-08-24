@@ -21,7 +21,9 @@ package com.hardbacknutter.nevertoomanybooks.utils.dates;
 
 import androidx.annotation.Nullable;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Locale;
 
 public interface DateParser {
@@ -51,5 +53,42 @@ public interface DateParser {
     default LocalDateTime parse(@Nullable final String dateStr,
                                 @Nullable final Locale locale) {
         return parse(dateStr);
+    }
+
+    /**
+     * Parse a value (String) to an Instant in time.
+     *
+     * @param dateStr to extract from
+     *
+     * @return instant
+     */
+    @Nullable
+    default Instant parseToInstant(@Nullable final String dateStr) {
+        final LocalDateTime date = parse(dateStr);
+        if (date != null) {
+            return date.toInstant(ZoneOffset.UTC);
+        }
+        return null;
+    }
+
+    /**
+     * Parse a value (String) to an Instant in time.
+     *
+     * @param dateStr     to extract from
+     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
+     *
+     * @return instant
+     */
+    @Nullable
+    default Instant parseToInstant(@Nullable final String dateStr,
+                                   final boolean todayIfNone) {
+        final LocalDateTime date = parse(dateStr);
+        if (date != null) {
+            return date.toInstant(ZoneOffset.UTC);
+        }
+        if (todayIfNone) {
+            return Instant.now();
+        }
+        return null;
     }
 }
