@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookTocFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -153,20 +152,7 @@ public class IsfdbSearchEngine
     private static final Pattern UNKNOWN_M_D_LITERAL = Pattern.compile("-00", Pattern.LITERAL);
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
-    /**
-     * Trim extraneous punctuation and whitespace from the titles and authors.
-     * <p>
-     * Original code in {@link EditBookTocFragment} had:
-     * {@code CLEANUP_REGEX = "[\\,\\.\\'\\:\\;\\`\\~\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\_\\+]*$";}
-     * <p>
-     * Note that inside the square brackets of a character class, many
-     * escapes are unnecessary that would be necessary outside of a character class.
-     * So that became:
-     * {@code private static final String CLEANUP_REGEX = "[,.':;`~@#$%^&*()\\-=_+]*$";}
-     * <p>
-     * But given a title like "Introduction (The Father-Thing)"
-     * you loose the ")" at the end, so remove that from the regex, see below
-     */
+    /** Trim extraneous punctuation and whitespace from the titles and authors. */
     private static final Pattern CLEANUP_TITLE_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
