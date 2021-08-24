@@ -92,32 +92,31 @@ public class ISBN {
             "X can only be at the end of an ISBN-10";
 
     /**
-     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">Info</a>
-     * <p>
      * The extended barcode combined with the UPC_A vendor prefix can be used to
      * reconstruct the ISBN.
      * Example:
-     * Del Rey edition of Larry Niven's _World of Ptavvs_,
+     * Del Rey edition of Larry Niven's "World of Ptavvs",
      * which says it's "Ninth Printing: September 1982" on the copyright page.
      * There is no ISBN/EAN barcode on the inside cover.
      * The back cover has an extended UPC_A code "0 70999 00225 5 30054".
      * <p>
      * "070999" in the first part of the UPC_A means that the ISBN starts with "0-345"
      * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">upc-map</a>
-     * making it a Ballantine book
+     * making it a Ballantine book.
      * "00225" indicates the price
      * That gets us:
      * ISBN-10 is "0-345-30054-?"
      * The ISBN check digit is omitted from the bar code but can be calculated;
-     * in this case it's 8
-     * <p>
-     * UPC_A Prefix -- ISBN Prefix mapping file (may not be complete)
+     * in this case it's 8, which makes the full ISBN "0-345-30054-8".
+     *
+     * @see <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">Info</a>
      */
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
     /** Remove '-' and space chars. */
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
 
     static {
+        // UPC_A Prefix -- ISBN Prefix mapping file (may not be complete)
         UPC_2_ISBN_PREFIX.put("014794", "08041");
         UPC_2_ISBN_PREFIX.put("018926", "0445");
         UPC_2_ISBN_PREFIX.put("027778", "0449");
@@ -159,10 +158,10 @@ public class ISBN {
     /** The type of code, determined at creation time. */
     @Type
     private final int mType;
-    /** the code as a pure text string. The raw input string for invalid codes. */
+    /** The code as a pure text string. The raw input string for invalid codes. */
     @NonNull
     private final String mAsText;
-    /** kept for faster conversion between formats. {@code null} for invalid codes. */
+    /** Kept for faster conversion between formats. {@code null} for invalid codes. */
     @Nullable
     private final List<Integer> mDigits;
 
