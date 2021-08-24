@@ -22,9 +22,11 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-apply plugin: 'com.android.application'
-// https://github.com/mannodermaus/android-junit5
-apply plugin: 'de.mannodermaus.android-junit5'
+plugins {
+    id 'com.android.application'
+    // https://github.com/mannodermaus/android-junit5
+    id 'de.mannodermaus.android-junit5'
+}
 
 /*
     $HOME/.gradle/gradle.properties:
