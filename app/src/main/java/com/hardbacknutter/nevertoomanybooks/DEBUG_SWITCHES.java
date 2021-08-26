@@ -102,7 +102,7 @@ public final class DEBUG_SWITCHES {
     /** Enable strict mode reporting on network,disc,... */
     public static final boolean STRICT_MODE_THREADING = false;
     /** Enable strict mode reporting on VM leaking,... */
-    public static final boolean STRICT_MODE_VM = true;
+    public static final boolean STRICT_MODE_VM = false;
 
     public static final boolean FAKE_BARCODE_SCANNER = false;
 
