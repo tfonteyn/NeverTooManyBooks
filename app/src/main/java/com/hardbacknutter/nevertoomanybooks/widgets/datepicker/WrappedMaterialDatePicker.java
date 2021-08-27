@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.widgets.datepicker;
 
 import android.os.Bundle;
 
@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -39,7 +40,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
@@ -110,15 +110,17 @@ public final class WrappedMaterialDatePicker<S>
     }
 
     public abstract static class Launcher
-            extends FragmentLauncherBase {
+            implements FragmentResultListener {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
+        protected final String mRequestKey;
+        protected FragmentManager mFragmentManager;
 
         private DateParser mDateParser;
 
         public Launcher(@NonNull final String requestKey) {
-            super(requestKey);
+            mRequestKey = requestKey;
         }
 
         static void setResult(@NonNull final Fragment fragment,
@@ -259,5 +261,11 @@ public final class WrappedMaterialDatePicker<S>
          */
         public abstract void onResult(@NonNull int[] fieldIds,
                                       @NonNull long[] selections);
+
+        public void register(@NonNull final FragmentManager fragmentManager,
+                             @NonNull final LifecycleOwner lifecycleOwner) {
+            mFragmentManager = fragmentManager;
+            mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
+        }
     }
 }

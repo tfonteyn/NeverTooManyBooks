@@ -42,6 +42,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -62,7 +64,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
+import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DatePickerListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DateRangePicker;
+import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.SingleDatePicker;
 
 public abstract class EditBookBaseFragment
         extends BaseFragment
@@ -75,32 +79,17 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_PARTIAL =
             TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
 
-    /** Tag/requestKey for WrappedMaterialDatePicker. */
-    private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
-    /** Tag/requestKey for WrappedMaterialDatePicker. */
-    private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
-
-    final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
-            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_SINGLE) {
-                @Override
-                public void onResult(@NonNull final int[] fieldIds,
-                                     @NonNull final long[] selections) {
-                    onDateSet(fieldIds, selections);
-                }
-            };
-
-    private final WrappedMaterialDatePicker.Launcher mDateRangePickerLauncher =
-            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_RANGE) {
-                @Override
-                public void onResult(@NonNull final int[] fieldIds,
-                                     @NonNull final long[] selections) {
-                    onDateSet(fieldIds, selections);
-                }
-            };
+    /** MUST keep a strong reference. */
+    private final DatePickerListener mDatePickerListener = new DatePickerListener() {
+        @Override
+        public void onResult(@NonNull final int[] fieldIds,
+                             @NonNull final long[] selections) {
+            onDateSet(fieldIds, selections);
+        }
+    };
 
     /** The view model. */
     EditBookViewModel mVm;
-
     private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
             new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
                 @Override
@@ -115,6 +104,7 @@ public abstract class EditBookBaseFragment
     private AmazonHandler mAmazonHandler;
     @Nullable
     private ViewBookOnWebsiteHandler mViewBookOnWebsiteHandler;
+    private DateParser mDateParser;
 
     /**
      * Init all Fields, and add them the fields collection.
@@ -169,16 +159,10 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+        mDateParser = new FullDateParser(getContext());
 
         final FragmentManager fm = getChildFragmentManager();
-        final DateParser dateParser = new FullDateParser(context);
-
         mPartialDatePickerLauncher.registerForFragmentResult(fm, this);
-
-        mDatePickerLauncher.registerForFragmentResult(fm, this);
-        mDatePickerLauncher.setDateParser(dateParser);
-
-        mDateRangePickerLauncher.registerForFragmentResult(fm, this);
 
         final Fields fields = getFields();
         if (fields.isEmpty()) {
@@ -339,53 +323,57 @@ public abstract class EditBookBaseFragment
         getFields().getAll(book);
     }
 
-
     /**
-     * Setup a date picker for selecting a (full) date range.
+     * Setup a date picker for selecting a date range.
      * <p>
      * Clicking on the start-date field will allow the user to set just the start-date.
      * Clicking on the end-date will prompt to select both the start and end dates.
      * <p>
      * If only one field is used, we just display a single date picker.
      *
-     * @param global           Global preferences
-     * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
-     * @param todayIfNone      if true, and if the field was empty, we'll default to today's date.
-     * @param startDateTitleId title of the dialog box if the end-date is not in use
-     * @param startDate        to setup for the start-date
-     * @param endDateTitleId   title of the dialog box if the start-date is not in use
-     * @param endDate          to setup for the end-date
+     * @param global       Global preferences
+     * @param titleId      title for the picker
+     * @param startFieldId to setup for the start-date
+     * @param startTitleId title of the picker if the end-date is not in use
+     * @param endFieldId   to setup for the end-date
+     * @param endTitleId   title of the picker if the start-date is not in use
      */
-    @SuppressWarnings("SameParameterValue")
     void addDateRangePicker(@NonNull final SharedPreferences global,
-                            @StringRes final int dateSpanTitleId,
-                            final boolean todayIfNone,
+                            @StringRes final int titleId,
 
-                            @StringRes final int startDateTitleId,
-                            @NonNull final Field<String, TextView> startDate,
+                            @IdRes final int startFieldId,
+                            final int startTitleId,
 
-                            @StringRes final int endDateTitleId,
-                            @NonNull final Field<String, TextView> endDate) {
+                            @IdRes final int endFieldId,
+                            final int endTitleId) {
 
-        // Always a single date picker for the start-date
-        addDatePicker(global, todayIfNone, startDateTitleId, startDate);
+        final Field<String, TextView> startField = getField(startFieldId);
+        final Field<String, TextView> endField = getField(endFieldId);
 
-        if (endDate.isUsed(global)) {
-            final TextView endView = endDate.getView();
-            if (startDate.isUsed(global)) {
-                // date-span picker for the end-date
+        if (startField.isUsed(global)) {
+            // Always a single date picker for the start-date
+            addDatePicker(global, startFieldId, startTitleId);
+        }
+
+        if (endField.isUsed(global)) {
+            // If read+end fields are active; use a date-span picker for the end-date
+            if (startField.isUsed(global)) {
+                final DateRangePicker dp =
+                        new DateRangePicker(getChildFragmentManager(),
+                                            titleId,
+                                            startFieldId, endFieldId);
+                dp.setDateParser(mDateParser, true);
+                dp.onResume(mDatePickerListener);
+
                 //noinspection ConstantConditions
-                endView.setOnClickListener(v -> mDateRangePickerLauncher
-                        .launch(dateSpanTitleId,
-                                startDate.getId(), startDate.getValue(),
-                                endDate.getId(), endDate.getValue(),
-                                todayIfNone));
+                endField.getView().setOnClickListener(
+                        v -> dp.launch(startField.getValue(), endField.getValue(),
+                                       mDatePickerListener
+                                      ));
+
             } else {
                 // without using a start-date, single date picker for the end-date
-                //noinspection ConstantConditions
-                endView.setOnClickListener(v -> mDatePickerLauncher
-                        .launch(endDateTitleId, endDate.getId(), endDate.getValue(),
-                                todayIfNone));
+                addDatePicker(global, endFieldId, endTitleId);
             }
         }
     }
@@ -393,49 +381,50 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param global      Global preferences
-     * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
-     * @param titleId     title for the picker window
-     * @param field       to setup
+     * @param global  Global preferences
+     * @param fieldId the field to hookup
+     * @param titleId title for the picker window
      */
-    @SuppressWarnings("SameParameterValue")
     void addDatePicker(@NonNull final SharedPreferences global,
-                       final boolean todayIfNone,
-                       @StringRes final int titleId,
-                       @NonNull final Field<String, TextView> field) {
+                       @IdRes final int fieldId,
+                       @StringRes final int titleId) {
 
+        final Field<String, TextView> field = getField(fieldId);
         if (field.isUsed(global)) {
+            final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
+                                                             titleId, fieldId);
+            dp.setDateParser(mDateParser, true);
+            dp.onResume(mDatePickerListener);
+
             //noinspection ConstantConditions
-            field.getView().setOnClickListener(v -> mDatePickerLauncher
-                    .launch(titleId, field.getId(), field.getValue(), todayIfNone));
+            field.getView().setOnClickListener(v -> dp.launch(field.getValue(),
+                                                              mDatePickerListener));
         }
     }
 
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param global      Global preferences
-     * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
-     * @param titleId     title for the picker window
-     * @param field       to setup
+     * @param global  Global preferences
+     * @param fieldId the field to hookup
+     * @param titleId title for the picker window
      */
-    @SuppressWarnings("SameParameterValue")
     void addPartialDatePicker(@NonNull final SharedPreferences global,
-                              final boolean todayIfNone,
-                              @StringRes final int titleId,
-                              @NonNull final Field<String, TextView> field) {
+                              @IdRes final int fieldId,
+                              @StringRes final int titleId) {
+        final Field<String, TextView> field = getField(fieldId);
         if (field.isUsed(global)) {
             //noinspection ConstantConditions
             field.getView().setOnClickListener(v -> mPartialDatePickerLauncher
-                    .launch(titleId, field.getId(), field.getValue(), todayIfNone));
+                    .launch(titleId, field.getId(), field.getValue(), false));
         }
     }
 
     void onDateSet(@NonNull final int[] fieldIds,
                    @NonNull final long[] selections) {
-
+        Logger.d(TAG, "onDateSet", "selections=" + Arrays.toString(selections));
         for (int i = 0; i < fieldIds.length; i++) {
-            if (selections[i] == WrappedMaterialDatePicker.NO_SELECTION) {
+            if (selections[i] == DatePickerListener.NO_SELECTION) {
                 onDateSet(fieldIds[i], "");
             } else {
                 onDateSet(fieldIds[i], Instant.ofEpochMilli(selections[i])

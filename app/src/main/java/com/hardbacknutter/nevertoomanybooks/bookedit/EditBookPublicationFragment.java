@@ -150,11 +150,9 @@ public class EditBookPublicationFragment
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
 
-        addPartialDatePicker(global, false, R.string.lbl_date_published,
-                             getField(R.id.date_published));
+        addPartialDatePicker(global, R.id.date_published, R.string.lbl_date_published);
+        addPartialDatePicker(global, R.id.first_publication, R.string.lbl_first_publication);
 
-        addPartialDatePicker(global, false, R.string.lbl_first_publication,
-                             getField(R.id.first_publication));
         // hide unwanted fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);

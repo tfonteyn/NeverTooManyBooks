@@ -143,12 +143,11 @@ public class EditBookNotesFragment
 
         addReadCheckboxOnClickListener(global);
 
-        addDatePicker(global, true, R.string.lbl_date_acquired,
-                      getField(R.id.date_acquired));
+        addDatePicker(global, R.id.date_acquired, R.string.lbl_date_acquired);
 
-        addDateRangePicker(global, R.string.lbl_read, true,
-                           R.string.lbl_read_start, getField(R.id.read_start),
-                           R.string.lbl_read_end, getField(R.id.read_end));
+        addDateRangePicker(global, R.string.lbl_read,
+                           R.id.read_start, R.string.lbl_read_start,
+                           R.id.read_end, R.string.lbl_read_end);
 
         // hide unwanted fields
         //noinspection ConstantConditions

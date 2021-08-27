@@ -64,15 +64,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
-import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
+import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.DatePickerListener;
+import com.hardbacknutter.nevertoomanybooks.widgets.datepicker.SingleDatePicker;
 
 public class SyncReaderFragment
         extends BaseFragment {
 
     /** Log tag. */
     public static final String TAG = "SyncReaderFragment";
-    /** Tag/requestKey for WrappedMaterialDatePicker. */
-    private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
+
     /** The ViewModel. */
     protected SyncReaderViewModel mVm;
     /** Set the hosting Activity result, and close it. */
@@ -88,24 +88,8 @@ public class SyncReaderFragment
     /** View Binding. */
     private FragmentSyncImportBinding mVb;
 
+    private SingleDatePicker mSyncDatePicker;
 
-    private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
-            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_SINGLE) {
-                @Override
-                public void onResult(@NonNull final int[] fieldIds,
-                                     @NonNull final long[] selections) {
-                    if (selections.length > 0) {
-                        if (selections[0] == WrappedMaterialDatePicker.NO_SELECTION) {
-                            updateSyncDate(null);
-                        } else {
-                            final LocalDateTime sd = Instant.ofEpochMilli(selections[0])
-                                                            .atZone(ZoneId.systemDefault())
-                                                            .toLocalDateTime();
-                            updateSyncDate(sd);
-                        }
-                    }
-                }
-            };
     @Nullable
     private ProgressDelegate mProgressDelegate;
     /** Ref to the actual Toolbar so we can enable/disable its menu. */
@@ -115,8 +99,6 @@ public class SyncReaderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        mDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Nullable
@@ -139,6 +121,10 @@ public class SyncReaderFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
+        mSyncDatePicker = new SingleDatePicker(getChildFragmentManager(),
+                                               R.string.lbl_sync_date,
+                                               mVb.lblSyncDate.getId());
+
         mVm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
         mVm.init(requireArguments());
 
@@ -153,6 +139,12 @@ public class SyncReaderFragment
         setTitle(mVm.getSyncServer().getLabel());
         // Either first time, or if the task is already running - either is fine.
         showOptions();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSyncDatePicker.onResume(this::onSyncDateSet);
     }
 
     @Override
@@ -234,8 +226,8 @@ public class SyncReaderFragment
         });
 
         updateSyncDateVisibility();
-        mVb.syncDate.setOnClickListener(v -> mDatePickerLauncher
-                .launch(R.string.lbl_sync_date, mVb.lblSyncDate.getId(), mVm.getSyncDate()));
+        mVb.syncDate.setOnClickListener(v -> mSyncDatePicker.launch(mVm.getSyncDate(),
+                                                                    this::onSyncDateSet));
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
@@ -458,6 +450,20 @@ public class SyncReaderFragment
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
             mProgressDelegate = null;
+        }
+    }
+
+    private void onSyncDateSet(@NonNull final int[] fieldIds,
+                               @NonNull final long[] selections) {
+        if (selections.length > 0) {
+            if (selections[0] == DatePickerListener.NO_SELECTION) {
+                updateSyncDate(null);
+            } else {
+                final LocalDateTime sd = Instant.ofEpochMilli(selections[0])
+                                                .atZone(ZoneId.systemDefault())
+                                                .toLocalDateTime();
+                updateSyncDate(sd);
+            }
         }
     }
 }
