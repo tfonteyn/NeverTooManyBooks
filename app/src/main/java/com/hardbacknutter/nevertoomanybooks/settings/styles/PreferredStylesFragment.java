@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -411,9 +412,11 @@ public class PreferredStylesFragment
             return holder;
         }
 
+        // SuppressLint("RecyclerView")
+        // false positive, we're not actively using the copy we take.
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
+                                     @SuppressLint("RecyclerView") final int position) {
             super.onBindViewHolder(holder, position);
 
             final ListStyle style = getItem(position);
