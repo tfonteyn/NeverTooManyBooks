@@ -199,7 +199,7 @@ public final class AppLocaleImpl
 
         } catch (@NonNull final MissingResourceException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "isValid|e=" + e.getMessage() + "|locale=" + locale);
+                Log.d(TAG, "isValid|e=" + e.getMessage());
             }
             return false;
 
