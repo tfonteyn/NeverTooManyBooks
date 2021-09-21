@@ -10,24 +10,46 @@
       <map>
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_build_24.xml" value="0.39114583333333336" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_cancel_24.xml" value="0.203125" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_warning_amber_24.xml" value="0.16145833333333334" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-land/fragment_edit_book_fields.xml" value="0.2953125" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw600dp-land/fragment_book_details.xml" value="0.528125" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw600dp/fragment_book_details.xml" value="0.5" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw800dp-land/fragment_book_details.xml" value="0.2640625" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_book_details.xml" value="0.3517948717948718" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_main.xml" value="0.3611111111111111" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf.xml" value="0.37083333333333335" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/dialog_partial_date_picker.xml" value="0.2657407407407407" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_book_details.xml" value="0.22311744654477844" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_booksearch_by_isbn.xml" value="0.21666666666666667" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_external_id.xml" value="0.3609375" />
-        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_fields.xml" value="0.375" />
-        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_notes.xml" value="0.342042755344418" />
-        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_publication.xml" value="0.33" />
-        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_toc.xml" value="0.375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_fields.xml" value="0.35185185185185186" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_notes.xml" value="0.5" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_publication.xml" value="0.362962962962963" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_toc.xml" value="0.27037037037037037" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_export.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_show_book.xml" value="0.3517948717948718" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_sync_import.xml" value="0.2078125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/mnu_btn_confirm.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/progress_dialog.xml" value="0.35128205128205126" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/z_text_sizes.xml" value="0.353125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/menu/toolbar_action_clear_save.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_calibre.xml" value="0.17916666666666667" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_field_visibility.xml" value="0.33" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_site_stripinfo.xml" value="0.225" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/4f1825eae66720169005547a341ce6c8/transformed/appcompat-1.4.0-alpha03/res/drawable/abc_btn_default_mtrl_shape.xml" value="0.5" />
         <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/drawable/mtrl_ic_cancel.xml" value="0.3611111111111111" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/layout/mtrl_picker_fullscreen.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/layout/mtrl_picker_header_fullscreen.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/drawable-v21/ic_arrow_down_24dp.xml" value="0.39114583333333336" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/drawable/ic_arrow_down_24dp.xml" value="0.39114583333333336" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/expand_button.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/image_frame.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference_material.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference_widget_seekbar.xml" value="0.3609375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference_widget_seekbar_material.xml" value="0.375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference_widget_switch.xml" value="0.3609375" />
+        <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fce9b04c55f254a5b638d088aaef8532/transformed/preference-1.1.1/res/layout/preference_widget_switch_compat.xml" value="0.3609375" />
       </map>
     </option>
   </component>
@@ -102,7 +124,7 @@
     <resource url="https://checkstyle.org/dtds/configuration_1_3.dtd" location="$PROJECT_DIR$" />
     <xml-schema-version>XMLSchema_1_1</xml-schema-version>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
