@@ -358,7 +358,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a double value.
+     * @return a double value ({@code null} or empty becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -383,7 +383,7 @@ public class DataManager
      *
      * @param key Key of data object
      *
-     * @return a float value.
+     * @return a float value ({@code null} or empty becomes 0)
      *
      * @throws NumberFormatException if the source was not compatible.
      */
@@ -478,7 +478,6 @@ public class DataManager
      *
      * @throws NumberFormatException if the source was not compatible.
      */
-    @SuppressWarnings("WeakerAccess")
     @Nullable
     public Money getMoney(@NonNull final String key)
             throws NumberFormatException {
@@ -496,7 +495,6 @@ public class DataManager
      * @param key   Key of data object
      * @param money to store
      */
-    @SuppressWarnings("WeakerAccess")
     public void putMoney(@NonNull final String key,
                          @NonNull final Money money) {
         mRawData.putDouble(key, money.doubleValue());
@@ -589,7 +587,6 @@ public class DataManager
      *
      * @param key Key of data object
      */
-    @SuppressWarnings("WeakerAccess")
     public void putNull(@NonNull final String key) {
         mRawData.putString(key, null);
     }
