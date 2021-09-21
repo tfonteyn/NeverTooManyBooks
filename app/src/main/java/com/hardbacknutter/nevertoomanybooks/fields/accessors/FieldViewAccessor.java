@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,11 +109,32 @@ public interface FieldViewAccessor<T, V extends View> {
     void setValue(@Nullable T value);
 
     /**
-     * Fetch the value from the passed DataManager, and set the Field.
+     * Check if the given value is considered to be 'empty'.
+     * The encapsulated type decides what 'empty' means.
+     * <p>
+     * This default implementation considers an Object to be empty if:
+     * <ul>
+     *      <li>{@code null}</li>
+     *      <li>Number == 0</li>
+     *      <li>Boolean == false</li>
+     *      <li>empty Collection</li>
+     *      <li>checkable not checked</li>
+     *      <li>empty String</li>
+     * </ul>
+     * If the test can be optimized (i.e. if {@link #getValue} can be shortcut),
+     * then you should override {@link #isEmpty()}.
      *
-     * @param source Collection to load data from.
+     * @return {@code true} if empty.
      */
-    void setValue(@NonNull DataManager source);
+    static boolean isEmpty(@Nullable final Object value) {
+        //noinspection rawtypes
+        return value == null
+               || value instanceof Number && ((Number) value).doubleValue() == 0.0d
+               || value instanceof Boolean && !(Boolean) value
+               || value instanceof Collection && ((Collection) value).isEmpty()
+               || value instanceof Checkable && !((Checkable) value).isChecked()
+               || value.toString().isEmpty();
+    }
 
     /**
      * Get the value from the view associated with the Field
@@ -124,33 +145,22 @@ public interface FieldViewAccessor<T, V extends View> {
     void getValue(@NonNull DataManager target);
 
     /**
-     * Check if this field is considered to be 'empty'.
-     * The encapsulated type decides what 'empty' means.
+     * Fetch the value from the passed DataManager, and set the Field.
      * <p>
-     * This default implementation considers
-     * <ul>
-     *      <li>{@code null}</li>
-     *      <li>Number == 0</li>
-     *      <li>Boolean == false</li>
-     *      <li>empty Collection</li>
-     *      <li>checkable not checked</li>
-     *      <li>empty String</li>
-     * </ul>
-     * to be empty.
-     * If the test can be optimized (i.e. if {@link #getValue} can be shortcut),
-     * then you should override this default method.
+     * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
+     * in the database.
+     *
+     * @param source DataManager to load the Field value from
+     */
+    void setInitialValue(@NonNull DataManager source);
+
+    /**
+     * Check if this field is considered to be 'empty'.
      *
      * @return {@code true} if empty.
      */
     default boolean isEmpty() {
-        final T value = getValue();
-        //noinspection rawtypes
-        return value == null
-               || value instanceof Number && ((Number) value).doubleValue() == 0.0d
-               || value instanceof Boolean && !(Boolean) value
-               || value instanceof Collection && ((Collection) value).isEmpty()
-               || value instanceof Checkable && !((Checkable) value).isChecked()
-               || value.toString().isEmpty();
+        return isEmpty(getValue());
     }
 
     /**

@@ -28,7 +28,9 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 
 /**
@@ -41,21 +43,34 @@ public abstract class BaseDataAccessor<T, V extends View>
         implements FieldViewAccessor<T, V> {
 
     Field<T, V> mField;
-
+    /**
+     * The value which is currently held in memory.
+     * If there is no current View, then this value *is* the correct current value.
+     * If there is a View, then the View will contain the correct current value.
+     * i.e. always try the View first before using this value.
+     * <p>
+     * Updated by the user and/or {@link #setValue(Object)}.
+     */
     @Nullable
     T mRawValue;
-
     /** Specific to accessors that need to know if we're viewing or editing a Field. */
     boolean mIsEditable;
+    /**
+     * The value as originally loaded from the database
+     * by {@link #setInitialValue(DataManager)}.
+     */
+    @Nullable
+    private T mInitialValue;
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<V> mViewReference;
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<View> mErrorViewReference;
+
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private String mErrorText;
-
-    /** broadcast a change only once. */
-    private boolean mOnChangeCalled;
 
     @Override
     public void setField(@NonNull final Field<T, V> field) {
@@ -115,15 +130,40 @@ public abstract class BaseDataAccessor<T, V extends View>
         }
     }
 
+    public void setInitialValue(@Nullable final T value) {
+        mInitialValue = value;
+        setValue(value);
+    }
+
+    public boolean isChanged() {
+        // an initial null/empty value, and a current empty value is considered no-change.
+        final T currentValue = getValue();
+        if (FieldViewAccessor.isEmpty(mInitialValue) && this.isEmpty()) {
+            return false;
+        }
+        return !Objects.equals(mInitialValue, currentValue);
+    }
+
     /**
-     * Let the field know the value was changed.
+     * Call back to the field letting it know the value was changed.
      * <p>
-     * We broadcast a change only once.
+     * FIXME: "initial" -(1)-> "new" -(2)-> "initial"; step (1) is broadcast; step (2) is NOT !
      */
     void broadcastChange() {
-        if (!mOnChangeCalled) {
-            mOnChangeCalled = true;
+        if (isChanged()) {
             mField.onChanged();
         }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BaseDataAccessor{" +
+               mField.getKey() +
+               ": mIsEditable=" + mIsEditable +
+               ", mInitialValue=" + mInitialValue +
+               ", mRawValue=" + mRawValue +
+               ", mCurrentValue=" + getValue() +
+               '}';
     }
 }

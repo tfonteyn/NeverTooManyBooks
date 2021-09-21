@@ -112,6 +112,11 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
+
+
+    public static final int CONDITION_UNKNOWN = 0;
+    public static final int CONDITION_AS_NEW = 5;
+
     /**
      * Bundle key for {@code ParcelableArrayList<Author>}.
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
@@ -1156,6 +1161,18 @@ public class Book
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
     public @interface TocBits {
+
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CONDITION_UNKNOWN, CONDITION_AS_NEW})
+    public @interface BookCondition {
+
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CONDITION_UNKNOWN, CONDITION_AS_NEW})
+    public @interface DustCoverCondition {
 
     }
 

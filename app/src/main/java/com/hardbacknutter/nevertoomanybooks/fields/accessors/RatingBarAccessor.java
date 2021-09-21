@@ -80,8 +80,8 @@ public class RatingBarAccessor
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
-        setValue(source.getFloat(mField.getKey()));
+    public void setInitialValue(@NonNull final DataManager source) {
+        setInitialValue(source.getFloat(mField.getKey()));
     }
 
     @Override

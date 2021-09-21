@@ -33,11 +33,13 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -134,12 +136,21 @@ public class EditBookNotesFragment
     @Override
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
-        super.onPopulateViews(fields, book);
-        // With all Views populated, (re-)add the helpers which rely on fields having valid views
-
         //noinspection ConstantConditions
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
+
+        if (book.isNew()) {
+            // new books defaults
+            book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
+
+            if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
+                book.putInt(DBKey.KEY_BOOK_CONDITION, Book.CONDITION_AS_NEW);
+            }
+        }
+
+        super.onPopulateViews(fields, book);
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         addReadCheckboxOnClickListener(global);
 

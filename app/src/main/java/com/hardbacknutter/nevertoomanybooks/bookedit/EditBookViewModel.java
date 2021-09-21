@@ -24,7 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -56,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
@@ -200,16 +204,36 @@ public class EditBookViewModel
     }
 
     @NonNull
-    Fields getFields(@Nullable final String key) {
+    Fields getFields(@Nullable final String fragmentId) {
         Fields fields;
         synchronized (mFieldsMap) {
-            fields = mFieldsMap.get(key);
+            fields = mFieldsMap.get(fragmentId);
             if (fields == null) {
                 fields = new Fields();
-                mFieldsMap.put(key, fields);
+                mFieldsMap.put(fragmentId, fields);
             }
         }
         return fields;
+    }
+
+    /**
+     * Find the Field (across all fragments) associated with the passed ID.
+     * If two fragments contain the same field (id), the first one found is returned.
+     *
+     * @param id Field/View ID
+     *
+     * @return Associated Field
+     */
+    @NonNull
+    Optional<Field<?, ? extends View>> findField(@IdRes final int id) {
+        synchronized (mFieldsMap) {
+            return mFieldsMap.values()
+                             .stream()
+                             .map(Fields::asList)
+                             .flatMap(Collection::stream)
+                             .filter(field -> field.getId() == id)
+                             .findFirst();
+        }
     }
 
     /**

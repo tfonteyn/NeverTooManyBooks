@@ -116,8 +116,8 @@ public class ExposedDropDownMenuAccessor
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
-        setValue(source.getInt(mField.getKey()));
+    public void setInitialValue(@NonNull final DataManager source) {
+        setInitialValue(source.getInt(mField.getKey()));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,8 @@ public class BooleanIndicatorAccessor
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
-        setValue(source.getBoolean(mField.getKey()));
+    public void setInitialValue(@NonNull final DataManager source) {
+        setInitialValue(source.getBoolean(mField.getKey()));
     }
 
     @Override

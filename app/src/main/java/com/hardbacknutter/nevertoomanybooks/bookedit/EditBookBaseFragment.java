@@ -80,13 +80,7 @@ public abstract class EditBookBaseFragment
             TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
 
     /** MUST keep a strong reference. */
-    private final DatePickerListener mDatePickerListener = new DatePickerListener() {
-        @Override
-        public void onResult(@NonNull final int[] fieldIds,
-                             @NonNull final long[] selections) {
-            onDateSet(fieldIds, selections);
-        }
-    };
+    private final DatePickerListener mDatePickerListener = this::onDateSet;
 
     /** The view model. */
     EditBookViewModel mVm;
@@ -293,8 +287,35 @@ public abstract class EditBookBaseFragment
 
     /** Listener for all field changes. */
     @CallSuper
-    public void onAfterFieldChange(@IdRes final int fieldId) {
-        mVm.getBook().setStage(EntityStage.Stage.Dirty);
+    public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
+        final Book book = mVm.getBook();
+
+        book.setStage(EntityStage.Stage.Dirty);
+
+        // For new books, we copy a number of fields as appropriate by default.
+        if (book.isNew()) {
+            if (field.getId() == R.id.price_listed_currency) {
+                mVm.findField(R.id.price_paid_currency)
+                   .ifPresent(paidField -> {
+                       if (!field.isEmpty() && paidField.isEmpty()) {
+                           // Get the CURRENT value from the field, and store it in the BOOK
+                           // as the destination field is on another fragment.
+                           book.put(DBKey.PRICE_PAID_CURRENCY, field.getValue());
+                           // If it was on the same fragment, we'd need to store it in the field.
+                           // Maybe just do both all the time ?
+                           // ((Field<String, View>)paidField).setValue(value);
+                       }
+                   });
+            } else if (field.getId() == R.id.price_listed) {
+                mVm.findField(R.id.price_paid)
+                   .ifPresent(paidField -> {
+                       if (!field.isEmpty() && paidField.isEmpty()) {
+                           // see above for comments
+                           book.put(DBKey.PRICE_PAID, field.getValue());
+                       }
+                   });
+            }
+        }
     }
 
     @Override

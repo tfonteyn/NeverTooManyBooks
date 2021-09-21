@@ -240,7 +240,7 @@ public class Field<T, V extends View> {
             }
             if (mTextInputLayoutId != 0) {
                 final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
-                til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue((T) null));
+                til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue(null));
             }
             if (mResetBtnId != 0) {
                 mResetBtnViewReference = new WeakReference<>(parent.findViewById(mResetBtnId));
@@ -366,10 +366,23 @@ public class Field<T, V extends View> {
         return mFieldViewAccessor.getValue();
     }
 
-    public void setValue(@NonNull final DataManager source) {
-        mFieldViewAccessor.setValue(source);
+    /**
+     * Load the field from the passed {@link DataManager}.
+     * <p>
+     * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
+     * in the database.
+     *
+     * @param source DataManager to load the Field objects from
+     */
+    public void setInitialValue(@NonNull final DataManager source) {
+        mFieldViewAccessor.setInitialValue(source);
     }
 
+    /**
+     * Set the value directly. (e.g. upon another field changing... etc...)
+     *
+     * @param value to set
+     */
     public void setValue(@Nullable final T value) {
         mFieldViewAccessor.setValue(value);
         if (mValidator != null) {
@@ -408,7 +421,7 @@ public class Field<T, V extends View> {
     @CallSuper
     public void onChanged() {
         if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
-            mAfterFieldChangeListener.get().afterFieldChange(mId);
+            mAfterFieldChangeListener.get().afterFieldChange(this);
 
         } else {
             if (BuildConfig.DEBUG /* always */) {

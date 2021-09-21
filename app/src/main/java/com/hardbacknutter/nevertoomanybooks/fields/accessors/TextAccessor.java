@@ -51,11 +51,11 @@ public abstract class TextAccessor<T, V extends TextView>
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
+    public void setInitialValue(@NonNull final DataManager source) {
         final Object obj = source.get(mField.getKey());
         if (obj != null) {
             //noinspection unchecked
-            setValue((T) obj);
+            setInitialValue((T) obj);
         }
     }
 

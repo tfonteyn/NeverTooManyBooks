@@ -29,6 +29,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -65,11 +68,11 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *
  * <ul>Data flows to and from a view as follows:
  *      <li>IN  (no formatter ):<br>
- *          {@link FieldViewAccessor#setValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
  *          {@link FieldViewAccessor#setValue(Object)} ->
  *          populates the View.</li>
  *      <li>IN  (with formatter):<br>
- *          {@link FieldViewAccessor#setValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
  *          {@link FieldViewAccessor#setValue(Object)} ->
  *          {@link FieldFormatter#apply} ->
  *          populates the View.</li>
@@ -95,6 +98,14 @@ public class Fields {
 
     public boolean isEmpty() {
         return mAllFields.size() == 0;
+    }
+
+    public List<Field<?, ? extends View>> asList() {
+        final List<Field<?, ? extends View>> list = new ArrayList<>(mAllFields.size());
+        for (int i = 0; i < mAllFields.size(); i++) {
+            list.add(mAllFields.valueAt(i));
+        }
+        return list;
     }
 
     /**
@@ -173,7 +184,7 @@ public class Fields {
             final Field<?, ?> field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 // do NOT call onChanged, as this is the initial load
-                field.setValue(dataManager);
+                field.setInitialValue(dataManager);
             }
         }
     }
@@ -245,7 +256,7 @@ public class Fields {
 
     public interface AfterChangeListener {
 
-        void afterFieldChange(@IdRes int fieldId);
+        void afterFieldChange(@NonNull Field<?, ?> field);
     }
 
 }

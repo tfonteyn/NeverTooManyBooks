@@ -89,8 +89,8 @@ public class CompoundButtonAccessor
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
-        setValue(source.getBoolean(mField.getKey()));
+    public void setInitialValue(@NonNull final DataManager source) {
+        setInitialValue(source.getBoolean(mField.getKey()));
     }
 
     @Override

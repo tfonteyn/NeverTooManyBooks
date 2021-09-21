@@ -123,8 +123,8 @@ public class EntityListChipGroupAccessor
     }
 
     @Override
-    public void setValue(@NonNull final DataManager source) {
-        setValue(new ArrayList<>(source.getParcelableArrayList(mField.getKey())));
+    public void setInitialValue(@NonNull final DataManager source) {
+        setInitialValue(new ArrayList<>(source.getParcelableArrayList(mField.getKey())));
     }
 
     @Override
