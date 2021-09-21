@@ -199,8 +199,8 @@ public class BookCoder {
                 book.getParcelableArrayList(Book.BKEY_SERIES_LIST))));
         line.add(encode(book.getString(DBKey.KEY_PAGES)));
         line.add(encode(book.getString(DBKey.KEY_PRIVATE_NOTES)));
-        line.add(encode(book.getString(DBKey.KEY_BOOK_CONDITION)));
-        line.add(encode(book.getString(DBKey.KEY_BOOK_CONDITION_COVER)));
+        line.add(encode(book.getInt(DBKey.KEY_BOOK_CONDITION)));
+        line.add(encode(book.getInt(DBKey.KEY_BOOK_CONDITION_COVER)));
         line.add(encode(book.getDouble(DBKey.PRICE_LISTED)));
         line.add(encode(book.getString(DBKey.PRICE_LISTED_CURRENCY)));
         line.add(encode(book.getDouble(DBKey.PRICE_PAID)));
