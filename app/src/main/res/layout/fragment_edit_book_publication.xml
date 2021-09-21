@@ -148,21 +148,13 @@
             tools:visibility="visible"
             />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_dates_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_first_publication,lbl_date_published"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_pages"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_dates_bottom"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_published"
             >
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pages"
@@ -207,10 +199,10 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_listed"
-                style="@style/priceListedTextEntry"
+                style="@style/EditText.Price.Listed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="14.99"
                 />

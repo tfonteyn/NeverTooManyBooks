@@ -129,8 +129,8 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/location"
                 style="@style/autoCompleteTextEntry"
-                android:layout_height="wrap_content"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
@@ -171,7 +171,6 @@
             android:layout_width="wrap_content"
             android:hint="@string/lbl_currency"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
-            app:layout_constraintEnd_toStartOf="@id/lbl_price_paid"
             app:layout_constraintStart_toStartOf="parent"
             >
 
@@ -196,7 +195,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_paid"
-                android:inputType="numberDecimal"
+                style="@style/EditText.Price.Paid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
@@ -246,14 +245,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_condition_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_condition,lbl_condition_cover"
-            />
-
         <CheckBox
             android:id="@+id/cbx_signed"
             android:layout_width="wrap_content"
@@ -261,7 +252,7 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/lbl_signed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_condition_bottom"
+            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
             tools:checked="true"
             />
 
