@@ -168,10 +168,30 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
-        <item name="android:ems">6</item>
+        <item name="android:minWidth">120dp</item>
         <item name="android:maxLength">3</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- com.google.android.material.textfield.TextInputEditText -->
+    <style name="EditText.Price" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:completionThreshold">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
+    <style name="EditText.Price.Listed">
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
+    <style name="EditText.Price.Paid">
+        <item name="android:inputType">numberDecimal</item>
     </style>
 
     <!-- Editable RatingBar. -->
@@ -181,4 +201,8 @@
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
+
+    <!--    <style name="Edit.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">-->
+
+    <!--    </style>-->
 </resources>

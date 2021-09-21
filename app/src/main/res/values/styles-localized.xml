@@ -40,15 +40,9 @@
         <item name="android:inputType">textPersonName|textCapWords</item>
     </style>
 
-
     <!-- Personal Notes, Description. -->
     <style name="notesTextEntry">
         <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
-    </style>
-
-    <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
-    <style name="priceListedTextEntry">
-        <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- The number of book pages - it's a generic string, not limited to numbers only. -->
