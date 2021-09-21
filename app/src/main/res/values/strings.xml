@@ -210,7 +210,7 @@
 
 
     <!-- Explanatory note associated with import options not available with older archives. -->
-    <string name="warning_import_archive_version_to_old">This option is not supported for older archive versions.</string>
+    <string name="X_warning_import_archive_version_to_old">This option is not supported for older archive versions.</string>
 
 
     <!-- a lookup for a specific book failed (this was not a search). -->
@@ -233,7 +233,7 @@
     <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
 
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
-    <string name="warning_requires_isbn_alt">No ISBN stored for book</string>
+    <string name="X_warning_requires_isbn_alt">No ISBN stored for book</string>
 
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
 
@@ -242,7 +242,7 @@
     <string name="warning_already_in_list">Already in the list!</string>
 
     <string name="warning_no_matching_book_found">No matching book found</string>
-    <string name="warning_no_matching_book_found_long">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
+    <string name="X_warning_no_matching_book_found_long">The book was not found. You can sometimes find the correct barcode on the inside front cover. Otherwise please enter the details manually.</string>
 
     <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
 
@@ -254,7 +254,7 @@
     <string name="warning_if_day_set_month_and_year_must_be">If a day is specified, then both month and year must be specified.</string>
     <string name="warning_if_month_set_year_must_be">If a month is specified, then a year must also be specified.</string>
 
-    <string name="warning_book_no_longer_exists">The specified book no longer exists.</string>
+    <string name="X_warning_book_no_longer_exists">The specified book no longer exists.</string>
 
     <!-- When trying to automatically fetching the TOC of a book/anthology, we're not 100%
          if we indeed got the right content. So ask the user first. -->
@@ -293,13 +293,13 @@
     <!-- ####################################################################################### -->
 
     <string name="info_authorized">Authorized</string>
-    <string name="info_not_authorized">Not Authorized</string>
-    <string name="info_authorized_needed">Authorize Access</string>
-    <string name="info_site_authorization_successful">%1$s authorization successful</string>
+    <string name="X_info_not_authorized">Not Authorized</string>
+    <string name="X_info_authorized_needed">Authorize Access</string>
+    <string name="X_info_site_authorization_successful">%1$s authorization successful</string>
 
     <!-- Generic failed -->
     <string name="error_authorization_failed">Authorization failed</string>
-    <string name="error_authentication_failed">Authentication failed</string>
+    <string name="X_error_authentication_failed">Authentication failed</string>
     <!-- 'Site'  failed -->
     <string name="error_site_authorization_failed">%1$s authorization resulted in an error.</string>
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
@@ -312,7 +312,7 @@
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
-    <string name="confirm_continue">Are you sure you want to continue ?</string>
+    <string name="X_confirm_continue">Are you sure you want to continue ?</string>
 
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
 
@@ -347,8 +347,6 @@
 
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
-
-    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA!\n Except by restoring from a previous backup, THIS CANNOT BE UNDONE!\n\n Are you sure you want to continue ?</string>
 
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
@@ -400,7 +398,7 @@
     <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting…</string>
     <!-- Progress dialog message displayed when uploading data to a web site. -->
-    <string name="progress_msg_sending">Sending, please wait…</string>
+    <string name="X_progress_msg_sending">Sending, please wait…</string>
 
     <string name="progress_msg_saving_image">Saving image…</string>
 
@@ -739,9 +737,9 @@
     <!-- Dialog title. -->
     <string name="lbl_scope_of_change">Scope of Change</string>
     <!-- Dialog title. -->
-    <string name="lbl_select_an_action">Select an action</string>
+    <string name="X_lbl_select_an_action">Select an action</string>
     <!-- Dialog title. -->
-    <string name="lbl_select_style">Select Style</string>
+    <string name="X_lbl_select_style">Select Style</string>
     <!-- Dialog title. -->
     <string name="lbl_duplicate_book">Copy this book</string>
 
@@ -769,7 +767,7 @@
 
     <!-- menu options. -->
     <string name="menu_import">Import</string>
-    <string name="menu_import_all">Import all books</string>
+    <string name="X_menu_import_all">Import all books</string>
 
     <!-- Dialog title. -->
     <string name="lbl_import">Import</string>
@@ -810,7 +808,7 @@
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
     <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
-    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="X_error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
 
@@ -821,7 +819,7 @@
     <!-- Dialog title. -->
     <string name="lbl_backup">Backup</string>
     <!-- Progress Dialog title. -->
-    <string name="lbl_backing_up">Backing up…</string>
+    <string name="X_lbl_backing_up">Backing up…</string>
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported.</string>
     <string name="lbl_export_books_option_all">All books</string>
@@ -844,9 +842,9 @@
 
     <string name="action_synchronize">Synchronize</string>
     <!-- Sync with a remote server. -->
-    <string name="menu_send_all">Send all</string>
+    <string name="X_menu_send_all">Send all</string>
     <!-- Sync with a remote server. -->
-    <string name="menu_send_updated">Send updated books</string>
+    <string name="X_menu_send_updated">Send updated books</string>
 
     <string name="menu_set_download_folder">Set the download folder</string>
     <string name="menu_download_folder">Local download folder</string>
@@ -976,7 +974,7 @@
     <!-- [VERIFIED] 'Retry' -->
     <string name="action_retry">Retry</string>
     <!-- [VERIFIED] 'Try again' -->
-    <string name="action_try_again">Try again</string>
+    <string name="X_action_try_again">Try again</string>
     <!-- [VERIFIED] -->
     <string name="action_not_now">Not now</string>
     <!-- [VERIFIED] e.g. clearing a form. -->
@@ -992,7 +990,7 @@
     <!-- [VERIFIED] -->
     <string name="action_reset_to_default">Reset to default</string>
     <!-- [VERIFIED] -->
-    <string name="action_clear_credentials">Clear credentials</string>
+    <string name="X_action_clear_credentials">Clear credentials</string>
     <!-- [VERIFIED] -->
     <string name="btn_learn_more">Learn more</string>
     <!-- [VERIFIED] -->
@@ -1004,14 +1002,13 @@
     <!-- [VERIFIED] -->
     <string name="action_send">Send</string>
     <!-- [VERIFIED] 6 chars max -->
-    <string name="action_next">Next</string>
+    <string name="X_action_next">Next</string>
     <!-- [VERIFIED] 6 chars max -->
-    <string name="action_previous">Prev</string>
+    <string name="X_action_previous">Prev</string>
     <!-- [VERIFIED] -->
     <string name="action_done">Done</string>
     <!-- [VERIFIED] -->
-    <string name="action_execute">Execute</string>
-
+    <string name="X_action_execute">Execute</string>
 
     <string name="action_validate">Validate</string>
 
@@ -1023,13 +1020,13 @@
     <string name="whichEditApplication">Edit with</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting an application to run to
      send content to a specific recipient. -->
-    <string name="whichSendToApplication">Send using</string>
+    <string name="X_whichSendToApplication">Send using</string>
     <!-- [VERIFIED] Title of intent resolver dialog when capturing an image. -->
-    <string name="whichImageCaptureApplication">Capture image with</string>
+    <string name="X_whichImageCaptureApplication">Capture image with</string>
     <!-- [VERIFIED] Title of intent resolver dialog when selecting a sharing application to run. -->
     <string name="whichSendApplication">Share</string>
     <!-- [VERIFIED] Button that sends feedback about a crashed application -->
-    <string name="aerr_report">Send feedback</string>
+    <string name="X_aerr_report">Send feedback</string>
 
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
@@ -1055,7 +1052,7 @@
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag to reorder this list</string>
 
-    <string name="action_clear_all_data">Clear all data</string>
+    <string name="X_action_clear_all_data">Clear all data</string>
 
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
@@ -1263,15 +1260,15 @@
     <!-- [VERIFIED] Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
 
-    <string name="unused">unused</string>
+    <string name="X_unused">unused</string>
 
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
 
-    <string name="lbl_completed">Completed</string>
-    <string name="lbl_failed">Failed</string>
-    <string name="lbl_queued">Queued</string>
-    <string name="lbl_updated">Updated</string>
+    <string name="X_lbl_completed">Completed</string>
+    <string name="X_lbl_failed">Failed</string>
+    <string name="X_lbl_queued">Queued</string>
+    <string name="X_lbl_updated">Updated</string>
 
     <!-- [VERIFIED] -->
     <string name="username">Username</string>
@@ -1356,7 +1353,7 @@
     <!-- Single book back/second cover. -->
     <string name="lbl_cover_back">Back cover</string>
     <!-- Single book cover - Long label. -->
-    <string name="lbl_cover_long">Cover image</string>
+    <string name="X_lbl_cover_long">Cover image</string>
 
     <!-- Multiple book covers. Short label. -->
     <string name="lbl_covers">Covers</string>
@@ -1422,7 +1419,7 @@
     <string name="lbl_select_website">Select a website:</string>
 
     <string name="lbl_library">Library</string>
-    <string name="lbl_virtual_library">Virtual Library</string>
+    <string name="X_lbl_virtual_library">Virtual Library</string>
     <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
     <string name="lbl_delete_removed_books">Delete local books which are no longer present on the server</string>
 
@@ -1500,7 +1497,7 @@
 
     <!-- Text in a dropdown menu. Must be fairly short. -->
     <string name="lbl_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
+    <string name="X_lbl_archive_type_backup_tar">Backup (.tar)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
 
@@ -1561,7 +1558,6 @@
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
 
-    <string name="action_exit">Exit</string>
     <string name="X_action_update">Update</string>
     <string name="X_action_swap">Swap</string>
 

@@ -31,8 +31,8 @@
     <string name="acra_resReportSendSuccessToast">Merci !</string>
     <string name="acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="action_add">Ajouter</string>
-    <string name="action_clear_all_data">Supprimer toutes les données</string>
-    <string name="action_clear_credentials">Effacer les identifiants</string>
+    <string name="X_action_clear_all_data">Supprimer toutes les données</string>
+    <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="action_clear">Effacer</string>
     <string name="action_delete">Supprimer</string>
     <string name="action_discard">Annuler</string>
@@ -49,7 +49,7 @@
     <string name="action_select">Sélectionner</string>
     <string name="action_show_all">Tout afficher</string>
     <string name="action_skip">Ignorer</string>
-    <string name="action_try_again">Réessayer</string>
+    <string name="X_action_try_again">Réessayer</string>
     <string name="action_validate">Valider</string>
     <string name="amazon_ellipsis">Amazon…</string>
     <string name="and_others_plus"><![CDATA[%1$s … <small>[+%2$d]</small>]]></string>
@@ -79,8 +79,7 @@
     <string name="btn_show_list">Afficher la liste</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="bytes">%.0f octets</string>
-    <string name="confirm_clear_all_data">CELA SUPPRIMERA TOUTES LES DONNÉES!\n Sauf en restaurant à partir d\'une sauvegarde précédente, CECI NE PEUT PAS ÊTRE ANNULÉ!\n\n Es-tu sur de vouloir continuer ?</string>
-    <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>
+    <string name="X_confirm_continue">Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\n\nÊtes vous sûr de vouloir poursuivre ?</string>
     <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Voulez-vous vraiment supprimer l\'étagère «%1$s»? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
     <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
@@ -104,13 +103,13 @@
     <string name="debug_send_info_text">Cela créera une copie de sauvegarde de votre base de données ainsi que de tous les fichiers journaux et l\'enverra aux développeurs. Si vous ne souhaitez pas envoyer certains de ces fichiers, supprimez les des pièces jointes du courriel avant l\'envoi.</string>
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
     <string name="dynamic">Dynamique</string>
-    <string name="error_authentication_failed">Authentification échouée</string>
+    <string name="X_error_authentication_failed">Authentification échouée</string>
     <string name="error_authorization_failed">L\'autorisation à échouée</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_unknown_long">Une erreur inattendue est apparue. Si le problème persiste, contactez le support technique en utilisant l\'option «%1$s» en bas de la page de paramètres.</string>
-    <string name="error_import_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
+    <string name="X_error_import_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_import_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="error_import_failed">Restauration échouée</string>
@@ -137,11 +136,11 @@
     <string name="fab_add_book_by_isbn">Entrer l\'ISBN</string>
     <string name="fab_add_book_manually">Ajouter manuellement</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="menu_send_all">Tout envoyer</string>
-    <string name="menu_send_updated">Envoi les livres mis à jour</string>
-    <string name="lbl_completed">Terminé</string>
-    <string name="lbl_failed">Échoué</string>
-    <string name="lbl_queued">En file d\'attente</string>
+    <string name="X_menu_send_all">Tout envoyer</string>
+    <string name="X_menu_send_updated">Envoi les livres mis à jour</string>
+    <string name="X_lbl_completed">Terminé</string>
+    <string name="X_lbl_failed">Échoué</string>
+    <string name="X_lbl_queued">En file d\'attente</string>
     <string name="hint_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
     <string name="hint_empty_author">(L\'auteur est manquant)</string>
     <string name="hint_empty_day">(Jour non défini)</string>
@@ -154,11 +153,11 @@
     <string name="hint_empty_series">(Pas de série)</string>
     <string name="hint_empty_year">(Année non définie)</string>
     <string name="info_not_set">Non définie</string>
-    <string name="info_authorized_needed">Autoriser l\'accès</string>
+    <string name="X_info_authorized_needed">Autoriser l\'accès</string>
     <string name="info_authorized">Autorisé</string>
     <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur «OK» pour les appliquer, ou appuyez sur «Tous les livres» pour les ignorer toutes.</string>
-    <string name="info_not_authorized">Non autorisé</string>
-    <string name="info_site_authorization_successful">Autorisation %1$s accordée</string>
+    <string name="X_info_not_authorized">Non autorisé</string>
+    <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
     <string name="isfdb_menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
     <string name="isfdb_warning_limited_to">(uniquement pris en charge par le site ISFDB)</string>
     <string name="kilobytes">%.2fko</string>
@@ -176,7 +175,7 @@
     <string name="lbl_archive_is_export_only">Ceci est uniquement pour l\'exportation de données; l\'importation n\'est pas prise en charge.</string>
     <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
     <string name="lbl_archive_type_backup_zip">Copie de sauvegarde (.zip)</string>
-    <string name="lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
+    <string name="X_lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
     <string name="lbl_archive_type_csv_info">Exportation des livres vers un fichier CSV</string>
     <string name="lbl_archive_type_csv">Livres (.csv)</string>
     <string name="lbl_archive_type_db">Fichier de base de données (.db)</string>
@@ -198,7 +197,7 @@
     <string name="lbl_author">Auteur</string>
     <string name="lbl_authors">Auteurs</string>
     <string name="lbl_available">Disponible</string>
-    <string name="lbl_backing_up">Sauvegarde de…</string>
+    <string name="X_lbl_backing_up">Sauvegarde de…</string>
     <string name="menu_backup_and_export">Sauvegarde et exportation</string>
     <string name="lbl_backup">Sauvegarder</string>
     <string name="lbl_barcode">code à barre</string>
@@ -218,7 +217,7 @@
     <string name="lbl_condition">État</string>
     <string name="lbl_cover_back">Couverture arrière</string>
     <string name="lbl_cover_front">Couverture</string>
-    <string name="lbl_cover_long">Image de couverture</string>
+    <string name="X_lbl_cover_long">Image de couverture</string>
     <string name="lbl_covers_long">Images de couverture</string>
     <string name="lbl_covers">Couvertures</string>
     <string name="lbl_credentials">Identifiants de l\'utilisateur</string>
@@ -302,9 +301,9 @@
     <string name="lbl_search_filtered_on_x">Filtré: %1$s</string>
     <string name="lbl_search_for_books">Rechercher des livres</string>
     <string name="lbl_search_isbn">recherche par ISBN</string>
-    <string name="lbl_select_an_action">Choisissez une action</string>
+    <string name="X_lbl_select_an_action">Choisissez une action</string>
     <string name="lbl_select_fields">Sélection des champs</string>
-    <string name="lbl_select_style">Sélectionner un style</string>
+    <string name="X_lbl_select_style">Sélectionner un style</string>
     <string name="lbl_select_website">Sélectionnez un site web:</string>
     <string name="lbl_send_debug">Rapport de bug</string>
     <string name="lbl_series_multiple">Séries</string>
@@ -409,7 +408,7 @@
     <string name="progress_msg_searching_editions">Éditions en cours de recherche…</string>
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
     <string name="progress_msg_searching">Recherche en cours…</string>
-    <string name="progress_msg_sending">Envoi en cours, veuillez patienter…</string>
+    <string name="X_progress_msg_sending">Envoi en cours, veuillez patienter…</string>
     <string name="progress_msg_skip_s">Passer - %1$s</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
@@ -509,7 +508,7 @@
     <string name="tip_background_task_events"> Vous pouvez voir ici les événements associés à une tâche d\'arrière plan. Cliquer sur un événement vous permettra de réaliser un ensemble d\'actions appropriées pour cet événement.</string>
     <string name="tip_background_tasks">Vous pouvez voir ici les tâches en cours d\'exécution ainsi que les tâches préalablement exécutées qui se sont terminées avec des erreurs, ou d\'autres événements notables. En cliquant sur une tâche, vous pourrez voir les événements associés ainsi que supprimer la tâche.</string>
     <string name="tip_book_list">Cliquez sur un livre vous montrera les détails du livre, un appui long sur un livre dans la liste vous donnera d\'autres options.</string>
-    <string name="warning_no_matching_book_found_long">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
+    <string name="X_warning_no_matching_book_found_long">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
     <string name="tip_book_search_by_text">L\'ajout de livres par ISBN est plus précis que par auteur ou titre, et généralement préférable. Rappelez-vous qu\'il est parfois possible de trouver le bon code barre à l\'intérieur de la couverture.\n\n</string>
     <string name="tip_booklist_style_groups">Vous pouvez utiliser cet écran pour modifier la hiérarchie des en-têtes pour un style de liste de livres spécifique. Une coche indique que l\'en-tête sera affiché dans la liste, décochez-la pour la masquer et inversement. Vous pouvez réorganiser la hiérarchie en faisant glisser l\'icône située à l\'extrême droite de chaque ligne.</string>
     <string name="tip_booklist_style_menu">Ce menu vous permet de sélectionner le style de la liste.\n\nVous pouvez également personnaliser ce menu, ainsi que créer vos propres styles de liste, en cliquant sur «personnaliser» à la fin de la liste.</string>
@@ -535,7 +534,7 @@
     <string name="txt_x_pages">%1$d pages</string>
     <string name="unknown">Inconnu</string>
     <string name="unknown_author">[Auteur inconnu]</string>
-    <string name="unused">inutilisé</string>
+    <string name="X_unused">inutilisé</string>
     <string name="vldt_blank_required_for_x">Le champ «%1$s» doit être vide</string>
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour «%1$s»</string>
     <string name="vldt_date_expected_for_x">Date attendue pour «%1$s»</string>
@@ -547,7 +546,7 @@
     <string name="vldt_real_expected_for_x">Valeur décimale attendue pour «%1$s»</string>
     <string name="warning_already_in_list">Déjà dans la liste!</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
-    <string name="warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
+    <string name="X_warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
@@ -559,10 +558,10 @@
     <string name="warning_import_csv">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_failed_for_lines_lots">L\'analyse a échoué pour les lignes \n%1$s\n et autres.</string>
     <string name="warning_import_failed_for_lines_some">L\'analyse a échoué pour les lignes \n%1$s\n</string>
-    <string name="warning_import_archive_version_to_old">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
+    <string name="X_warning_import_archive_version_to_old">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_no_editions">Aucune information d\'édition supplémentaire disponible</string>
-    <string name="warning_requires_isbn_alt">Aucun ISBN enregistré pour ce livre</string>
+    <string name="X_warning_requires_isbn_alt">Aucun ISBN enregistré pour ce livre</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n\'a été trouvé</string>
     <string name="warning_no_search_data_for_active_sites">Aucune donnée de recherche valide pour les sites actifs.</string>
     <string name="warning_requires_at_least_1_field">Au moins un champ ne doit pas être vide.</string>
@@ -575,7 +574,6 @@
     <string name="warning_toc_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
     <string name="warning_x_already_exists">%1$s existe déjà.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» n\'est pas un code valable</string>
-    <string name="action_exit">Quitter</string>
     <string name="X_action_swap">Échanger</string>
     <string name="X_action_update">Mettre à jour</string>
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
@@ -607,7 +605,7 @@
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
     <string name="X_progress_msg_n_covers_processed">%1$d couvertures traitées</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d ajoutés, %3$d mis à jour</string>
-    <string name="lbl_updated">Mis à jour</string>
+    <string name="X_lbl_updated">Mis à jour</string>
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="X_vldt_failed_for_x">La validation a échoué pour «%1$s»</string>
@@ -650,17 +648,17 @@
     <string name="error_network_failed_try_again">Vérifiez la connexion et réessayez</string>
     <string name="lbl_test_connection">Tester la connexion</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
-    <string name="menu_import_all">Importer tous les livres</string>
+    <string name="X_menu_import_all">Importer tous les livres</string>
     <string name="progress_end_export_successful">Exportation réussie</string>
     <string name="error_export_failed">L\'exportation a échoué</string>
     <string name="action_go">OK</string>
     <string name="action_search">Rechercher</string>
     <string name="action_send">Envoyer</string>
-    <string name="action_next">Suivant</string>
+    <string name="X_action_next">Suivant</string>
     <string name="action_done">OK</string>
-    <string name="action_previous">Préc.</string>
-    <string name="action_execute">Exécuter</string>
-    <string name="lbl_virtual_library">Bibliothèque Virtuelle</string>
+    <string name="X_action_previous">Préc.</string>
+    <string name="X_action_execute">Exécuter</string>
+    <string name="X_lbl_virtual_library">Bibliothèque Virtuelle</string>
     <string name="lbl_library">Bibliothèque</string>
     <string name="action_create">Créer</string>
     <string name="menu_download_folder">Dossier de téléchargement local</string>
@@ -668,11 +666,11 @@
     <string name="progress_msg_downloading">Téléchargement…</string>
     <string name="progress_end_download_successful">Téléchargement réussi</string>
     <string name="error_download_failed">Échec du téléchargement</string>
-    <string name="aerr_report">Envoyer des commentaires</string>
+    <string name="X_aerr_report">Envoyer des commentaires</string>
     <string name="whichViewApplication">Ouvrir avec</string>
     <string name="whichEditApplication">Modifier avec</string>
-    <string name="whichSendToApplication">Envoyer avec</string>
-    <string name="whichImageCaptureApplication">Capturer une image avec</string>
+    <string name="X_whichSendToApplication">Envoyer avec</string>
+    <string name="X_whichImageCaptureApplication">Capturer une image avec</string>
     <string name="lbl_certificates">Certificats</string>
     <string name="lbl_delete_removed_books">Supprimer les livres qui ne sont plus présents sur le serveur</string>
     <string name="lbl_virtual_libraries">Bibliothèques virtuelles dans cette bibliothèque</string>
