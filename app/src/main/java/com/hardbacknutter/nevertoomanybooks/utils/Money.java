@@ -116,9 +116,16 @@ public class Money
     }
 
     /**
-     * Populate CURRENCY_MAP.
+     * Populate CURRENCY_MAP. This is used during parsing of price/currency strings.
+     * <p>
      * The key in the map must be <strong>LOWER-case</strong>.
      * The value in the map must be <strong>UPPER-case</strong>.
+     * <p>
+     * We can't add all possible values, so we add the ones from english speaking countries,
+     * the Euro countries (and their legacy currencies) and the ones we specifically
+     * support by having a locale (translation) for.
+     * <p>
+     * Others can/will be added as needed.
      *
      * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>English</a>
      */
@@ -144,21 +151,23 @@ public class Money
         CURRENCY_MAP.put("zł", "PLN"); // Polish Zloty
         CURRENCY_MAP.put("kč", "CZK "); // Czech Koruna
         CURRENCY_MAP.put("kc", "CZK "); // Czech Koruna
-        CURRENCY_MAP.put("dm", "DEM"); // German marks
+        CURRENCY_MAP.put("dm", "DEM"); // German Marks
         CURRENCY_MAP.put("ƒ", "NLG"); // Dutch Guilder
         CURRENCY_MAP.put("fr", "BEF"); // Belgian Franc
         CURRENCY_MAP.put("fr.", "BEF"); // Belgian Franc
         CURRENCY_MAP.put("f", "FRF"); // French Franc
         CURRENCY_MAP.put("ff", "FRF"); // French Franc
         CURRENCY_MAP.put("pta", "ESP"); // Spanish Peseta
-        CURRENCY_MAP.put("L", "ITL"); // Italian Lira
+        CURRENCY_MAP.put("l", "ITL"); // Italian Lira
+        CURRENCY_MAP.put("lit", "ITL"); // Italian Lira
         CURRENCY_MAP.put("Δρ", "GRD"); // Greek Drachma
         CURRENCY_MAP.put("₺", "TRY "); // Turkish Lira
 
         // some others as seen on ISFDB site
         CURRENCY_MAP.put("r$", "BRL"); // Brazilian Real
         CURRENCY_MAP.put("kr", "DKK"); // Denmark Krone
-        CURRENCY_MAP.put("Ft", "HUF"); // Hungarian Forint
+        CURRENCY_MAP.put("ft", "HUF"); // Hungarian Forint
+        CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
     }
 
     public boolean parse(@NonNull final Locale locale,
