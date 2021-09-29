@@ -47,7 +47,6 @@
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="20"
-            android:dependency="calibre.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="isfdb.timeout.connect"
             android:max="60"
@@ -57,7 +56,6 @@
             />
         <SeekBarPreference
             android:defaultValue="60"
-            android:dependency="calibre.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="isfdb.timeout.read"
             android:max="120"
