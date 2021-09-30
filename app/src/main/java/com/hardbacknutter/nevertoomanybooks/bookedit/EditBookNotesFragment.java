@@ -141,7 +141,8 @@ public class EditBookNotesFragment
                 .getDefaultSharedPreferences(getContext());
 
         if (book.isNew()) {
-            // new books defaults
+            // new books defaults. Do this here and not in the parent class,
+            // so when the user does not actually display this page, these will not be used.
             book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
 
             if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
