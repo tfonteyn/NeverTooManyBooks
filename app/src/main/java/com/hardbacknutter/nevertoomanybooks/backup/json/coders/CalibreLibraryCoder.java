@@ -113,7 +113,7 @@ public class CalibreLibraryCoder
     public Optional<CalibreLibrary> decodeReference(@NonNull final JSONObject data)
             throws JSONException {
 
-        CalibreLibrary library = null;
+        CalibreLibrary library;
         String s = data.optString(DBKey.KEY_CALIBRE_LIBRARY_UUID);
         if (s != null && !s.isEmpty()) {
             library = ServiceLocator.getInstance().getCalibreLibraryDao().findLibraryByUuid(s);
