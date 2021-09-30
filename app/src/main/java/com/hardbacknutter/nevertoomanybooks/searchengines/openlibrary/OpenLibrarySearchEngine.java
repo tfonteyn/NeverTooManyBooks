@@ -105,7 +105,11 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>last update dates on the website & api docs are sometimes from years ago.
  * Is this still developed ?</li>
  * </ul>
- * Below is a rudimentary "data" implementation. "details" was tested with curl.
+ * Implementing SearchEngine.ByText is possible, but an issue is how much data could be returned.
+ * Example: https://openlibrary.org/search.json?author=tolkien&title=hobbit
+ * will return a 9000+ lines long document...
+ * <p>
+ *  Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
 public class OpenLibrarySearchEngine
         extends SearchEngineBase
@@ -452,7 +456,7 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     * @param context Current context
+     * @param context     Current context
      * @param jsonObject  the complete book record.
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
