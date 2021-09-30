@@ -251,7 +251,8 @@ public class StripInfoSearchEngine
                                   @NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
-        // the search url is the same
+        // the search url is the same but we need to specifically support barcodes
+        // to allow non-isbn codes.
         return searchByIsbn(context, barcode, fetchCovers);
     }
 
