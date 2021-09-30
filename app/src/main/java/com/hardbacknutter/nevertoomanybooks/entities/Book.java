@@ -113,7 +113,19 @@ public class Book
      */
     public static final int RATING_STARS = 5;
 
-
+    /**
+     * A book (and dustcover) condition goes from 1(worst)..5(best) or 0 for not-set.
+     * In code we only need 0/5.
+     * <p>
+     * <string-array name="conditions_book">
+     * <item>@string/unknown</item>
+     * <item>@string/lbl_condition_reading_copy</item>
+     * <item>@string/lbl_condition_fair</item>
+     * <item>@string/lbl_condition_good</item>
+     * <item>@string/lbl_condition_very_good</item>
+     * <item>@string/lbl_condition_fine</item>
+     * </string-array>
+     */
     public static final int CONDITION_UNKNOWN = 0;
     public static final int CONDITION_AS_NEW = 5;
 
@@ -1166,13 +1178,7 @@ public class Book
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({CONDITION_UNKNOWN, CONDITION_AS_NEW})
-    public @interface BookCondition {
-
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({CONDITION_UNKNOWN, CONDITION_AS_NEW})
-    public @interface DustCoverCondition {
+    public @interface Condition {
 
     }
 
