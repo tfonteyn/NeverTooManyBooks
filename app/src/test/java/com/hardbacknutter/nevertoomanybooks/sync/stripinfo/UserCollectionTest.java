@@ -111,7 +111,7 @@ class UserCollectionTest
             Assertions.assertTrue(document.hasText());
 
             // should call this... but we can't as it uses "new Bundle()"
-            //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
+            //final List<Bundle> collection = uc.parse(mContext, document, mLogger);
             final List<Bundle> collection = parseHere(uc, document);
 
             assertEquals(25, collection.size());
@@ -162,7 +162,7 @@ class UserCollectionTest
             assertTrue(document.hasText());
 
             // should call this... but we can't as it uses "new Bundle()"
-            //final List<Bundle> collection = ic.parse(mContext, document, mLogger);
+            //final List<Bundle> collection = uc.parse(mContext, document, mLogger);
             final List<Bundle> collection = parseHere(uc, document);
 
             assertEquals(1, collection.size());
@@ -173,7 +173,7 @@ class UserCollectionTest
     }
 
     @NonNull
-    private List<Bundle> parseHere(@NonNull final UserCollection ic,
+    private List<Bundle> parseHere(@NonNull final UserCollection uc,
                                    @NonNull final Document document) {
 
         final Element root = document.getElementById("collectionContent");
@@ -191,7 +191,7 @@ class UserCollectionTest
         for (final Element row : rows) {
             final Bundle cData = BundleMock.create();
 
-            ic.parseRow(row, cData);
+            uc.parseRow(row, cData);
             if (!cData.isEmpty()) {
                 collection.add(cData);
             }
