@@ -24,9 +24,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -41,6 +43,7 @@ public abstract class SearchEngineBase
     private final SearchEngineConfig mConfig;
     @Nullable
     private Canceller mCaller;
+    private java.util.function.Supplier<Bundle> mBundleSupplier = Bundle::new;
 
     /**
      * Constructor.
@@ -131,5 +134,15 @@ public abstract class SearchEngineBase
         // mCaller being null should only happen when we check if we're cancelled
         // before a task was started.
         return mCaller == null || mCaller.isCancelled();
+    }
+
+    @NonNull
+    protected Bundle newBundleInstance() {
+        return mBundleSupplier.get();
+    }
+
+    @VisibleForTesting
+    public void setBundleSupplier(final Supplier<Bundle> bundleSupplier) {
+        mBundleSupplier = bundleSupplier;
     }
 }

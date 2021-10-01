@@ -133,7 +133,7 @@ public class KbNlSearchEngine
 
         ServiceLocator.getInstance().getCookieManager();
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 

@@ -207,7 +207,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
@@ -227,7 +227,7 @@ public class OpenLibrarySearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 

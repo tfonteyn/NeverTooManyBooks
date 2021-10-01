@@ -209,7 +209,7 @@ public class StripInfoSearchEngine
                                      @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
@@ -231,7 +231,7 @@ public class StripInfoSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url);

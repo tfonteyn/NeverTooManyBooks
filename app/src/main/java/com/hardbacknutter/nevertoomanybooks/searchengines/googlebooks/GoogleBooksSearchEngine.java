@@ -98,7 +98,7 @@ public class GoogleBooksSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
@@ -117,7 +117,7 @@ public class GoogleBooksSearchEngine
                          @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = newBundleInstance();
 
         // %2B  +
         // %3A  :
