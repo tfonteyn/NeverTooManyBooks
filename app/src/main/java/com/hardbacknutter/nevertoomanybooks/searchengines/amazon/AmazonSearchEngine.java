@@ -30,8 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -86,33 +84,35 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * Should really implement the Amazon API.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
+ * <p>
+ * Implementing SearchEngine.ByText using
+ * <pre>
+ * "https://www.amazon.co.uk/s/ref=sr_adv_b&search-alias=stripbooks"
+ *      + "&unfiltered=1"
+ *      + "&__mk_en_GB=ÅMÅZÕÑ"
+ * </pre>
+ * FAILED due to amazon blocking these kind of request with captcha's.
+ * They seem to increasingly block any type of robot access.
  */
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
-        implements SearchEngine.ByIsbn,
+        implements SearchEngine.ByBarcode,
                    SearchEngine.CoverByIsbn {
 
     /** Website character encoding. */
     static final String CHARSET = "UTF-8";
-    /**
-     * The search url.
-     *
-     * <ul>Fields that can be added to the /gp URL
-     *      <li>&field-isbn</li>
-     *      <li>&field-author</li>
-     *      <li>&field-title</li>
-     *      <li>&field-publisher</li>
-     *      <li>&field-keywords</li>
-     * </ul>
-     */
-    static final String SEARCH_SUFFIX = "/gp/search?index=books";
+
     /** Preferences prefix. */
     private static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
     public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
-    /** Param 1: external book ID; the ASIN/ISBN. */
+
+    /**
+     * Search by ASIN. This is an absolute uri.
+     * Param 1: external book ID; the ASIN/ISBN10.
+     */
     private static final String BY_EXTERNAL_ID = "/gp/product/%1$s";
 
     /**
@@ -185,28 +185,6 @@ public class AmazonSearchEngine
                 .build();
     }
 
-    /**
-     * The external id for Amazon is the isbn.
-     *
-     * @param isbn to search for
-     *
-     * @return url
-     */
-    @NonNull
-//    @Override
-    public String createUrl(@NonNull final String isbn) {
-        String fields = "";
-        if (!isbn.isEmpty()) {
-            try {
-                fields += "&field-isbn=" + URLEncoder.encode(isbn, CHARSET);
-            } catch (@NonNull final UnsupportedEncodingException ignore) {
-                // ignore
-            }
-        }
-
-        return getSiteUrl() + SEARCH_SUFFIX + fields.trim();
-    }
-
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
@@ -246,26 +224,20 @@ public class AmazonSearchEngine
         }
     }
 
-    /**
-     * The external ID is the ASIN.
-     * The ASIN for books is identical to the ISBN10 code.
-     */
     @NonNull
-//    @Override
-    public Bundle searchByExternalId(@NonNull final Context context,
-                                     @NonNull final String externalId,
-                                     @NonNull final boolean[] fetchCovers)
+    private Bundle genericSearch(@NonNull final Context context,
+                                 @NonNull final String url,
+                                 @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = new Bundle();
-
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
+        final Bundle bookData = newBundleInstance();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
         }
         return bookData;
     }
+
 
     @NonNull
     @Override
@@ -274,11 +246,30 @@ public class AmazonSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
+        // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn);
-        if (tmp.isIsbn10Compat()) {
-            return searchByExternalId(context, tmp.asText(ISBN.TYPE_ISBN10), fetchCovers);
+        final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.TYPE_ISBN10) : validIsbn;
+
+        return genericSearch(context,
+                             getSiteUrl() + String.format(BY_EXTERNAL_ID, asin),
+                             fetchCovers);
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByBarcode(@NonNull final Context context,
+                                  @NonNull final String barcode,
+                                  @NonNull final boolean[] fetchCovers)
+            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+
+        if (ASIN.isValidAsin(barcode)) {
+            return genericSearch(context,
+                                 getSiteUrl() + String.format(BY_EXTERNAL_ID, barcode),
+                                 fetchCovers);
+
         } else {
-            return searchByExternalId(context, validIsbn, fetchCovers);
+            // not supported
+            return newBundleInstance();
         }
     }
 
