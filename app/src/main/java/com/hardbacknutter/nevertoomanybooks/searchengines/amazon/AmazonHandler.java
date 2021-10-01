@@ -46,11 +46,49 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
 public class AmazonHandler {
 
+    /**
+     * The search url for books when opening a browser activity.
+     *
+     * <ul>Fields that can be added to the /gp URL
+     *      <li>&field-isbn</li>
+     *      <li>&field-author</li>
+     *      <li>&field-title</li>
+     *      <li>&field-publisher</li>
+     *      <li>&field-keywords</li>
+     * </ul>
+     *
+     * @see <a href="https://www.amazon.co.uk/advanced-search/books/">
+     * www.amazon.co.uk/advanced-search/books</a>
+     */
+    private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
+
     @NonNull
     private final Context mContext;
 
     public AmazonHandler(@NonNull final Context context) {
         mContext = context;
+    }
+
+    @NonNull
+    private static String encodeSearchString(@Nullable final String search) {
+        if (search == null || search.isEmpty()) {
+            return "";
+        }
+
+        final StringBuilder out = new StringBuilder(search.length());
+        char prev = ' ';
+        for (final char curr : search.toCharArray()) {
+            if (Character.isLetterOrDigit(curr)) {
+                out.append(curr);
+                prev = curr;
+            } else {
+                if (!Character.isWhitespace(prev)) {
+                    out.append(' ');
+                }
+                prev = ' ';
+            }
+        }
+        return out.toString().trim();
     }
 
     private void prepareMenu(@NonNull final Menu menu,
@@ -203,11 +241,12 @@ public class AmazonHandler {
         String fields = "";
 
         if (author != null) {
-            final String cAuthor = encodeSearchString(author.getFormattedName(true));
+            final String cAuthor = encodeSearchString(
+                    author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
                 try {
-                    fields += "&field-author=" + URLEncoder
-                            .encode(cAuthor, AmazonSearchEngine.CHARSET);
+                    fields += "&field-author="
+                              + URLEncoder.encode(cAuthor, AmazonSearchEngine.CHARSET);
                 } catch (@NonNull final UnsupportedEncodingException ignore) {
                     // ignore
                 }
@@ -231,30 +270,8 @@ public class AmazonHandler {
         final String url = SearchEngineRegistry.getInstance()
                                                .getByEngineId(SearchSites.AMAZON)
                                                .getHostUrl()
-                           + AmazonSearchEngine.SEARCH_SUFFIX
+                           + ADV_SEARCH_BOOKS
                            + fields.trim();
         mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-    }
-
-    @NonNull
-    private String encodeSearchString(@Nullable final String search) {
-        if (search == null || search.isEmpty()) {
-            return "";
-        }
-
-        final StringBuilder out = new StringBuilder(search.length());
-        char prev = ' ';
-        for (final char curr : search.toCharArray()) {
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-                prev = curr;
-            } else {
-                if (!Character.isWhitespace(prev)) {
-                    out.append(' ');
-                }
-                prev = ' ';
-            }
-        }
-        return out.toString().trim();
     }
 }
