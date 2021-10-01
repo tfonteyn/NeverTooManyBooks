@@ -97,8 +97,7 @@ public final class BundleMock {
 
         doAnswer(invocation -> map.keySet()).when(bundle).keySet();
 
-        //noinspection ResultOfMethodCallIgnored
-        doAnswer(invocation -> BundleMock.class.getSimpleName() + "{map=" + map.toString() + "}")
+        doAnswer(invocation -> BundleMock.class.getSimpleName() + "{map=" + map + "}")
                 .when(bundle).toString();
 
         doAnswer(put).when(bundle).putBoolean(anyString(), anyBoolean());
