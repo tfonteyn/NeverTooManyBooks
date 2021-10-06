@@ -91,7 +91,6 @@ public class ExtPopupMenu {
         mPopupWindow.setFocusable(true);
         mPopupWindow.setContentView(mVb.getRoot());
 
-        // Widget.MaterialComponents.PopupMenu
         mPopupWindow.setBackgroundDrawable(
                 AttrUtils.getDrawable(context, R.attr.popupMenuBackground));
         mPopupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
