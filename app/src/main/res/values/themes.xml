@@ -89,7 +89,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
 
     <!-- Base theme used by both Day and Night themes. -->
-    <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
         <item name="appChipDisplayStyle">@style/Chip.Display</item>
@@ -105,7 +105,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
 
     <!-- Base theme used by both Day and Night themes. -->
-    <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+    <style name="Base.Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
@@ -124,7 +124,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
-        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        parent="ThemeOverlay.Material3.MaterialAlertDialog">
 
         <!-- Attribute restyling. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
@@ -135,7 +135,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialCalendar"
-        parent="ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen">
+        parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
         <!-- Attribute restyling. -->
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>
     </style>
