@@ -23,9 +23,9 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 plugins {
-    id 'com.android.application'
+    id("com.android.application")
     // https://github.com/mannodermaus/android-junit5
-    id 'de.mannodermaus.android-junit5'
+    id("de.mannodermaus.android-junit5")
 }
 
 /*
@@ -36,22 +36,22 @@ plugins {
     android {
         signingConfigs {
             debug {
-                storeFile file('/path/to/keystore.jks')
-                storePassword 'myPassword'
-                keyAlias = 'myDebugKey'
-                keyPassword 'myPassword'
+                storeFile file("/path/to/keystore.jks")
+                storePassword "myPassword"
+                keyAlias = "myDebugKey"
+                keyPassword "myPassword"
             }
             beta {
-                storeFile file('/path/to/keystore.jks')
-                storePassword 'myPassword'
-                keyAlias = 'myBetaKey'
-                keyPassword 'myPassword'
+                storeFile file("/path/to/keystore.jks")
+                storePassword "myPassword"
+                keyAlias = "myBetaKey"
+                keyPassword "myPassword"
             }
             release {
-                storeFile file('/path/to/keystore.jks')
-                storePassword 'myPassword'
-                keyAlias = 'myReleaseKey'
-                keyPassword 'myPassword'
+                storeFile file("/path/to/keystore.jks")
+                storePassword "myPassword"
+                keyAlias = "myReleaseKey"
+                keyPassword "myPassword"
             }
         }
 
@@ -81,11 +81,11 @@ if (project.hasProperty("hbn.signing")
     android {
         defaultConfig {
             // ACRA crash reports
-            buildConfigField('String', 'EMAIL_ACRA', '"acra@somewhere.com"')
+            buildConfigField("String", "EMAIL_ACRA", '"acra@somewhere.com"')
             // Manual debug reports
-            buildConfigField('String', 'EMAIL_DEBUG_REPORT', '"debug@somewhere.com"')
+            buildConfigField("String", "EMAIL_DEBUG_REPORT", '"debug@somewhere.com"')
             // About-page contact
-            buildConfigField('String', 'EMAIL_CONTACT', '"info@somewhere.com"')
+            buildConfigField("String", "EMAIL_CONTACT", '"info@somewhere.com"')
         }
     }
  */
@@ -97,82 +97,84 @@ if (project.hasProperty("NeverTooManyBooks.email")
 android {
     compileSdkVersion 31
 
-    // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2021-06-30 world wide:
-    // 11.0     17.5
-    // 10.0     53.41
-    // 9.0      70.44
-    // 8.1      79.5
-    // 8.0      83.48
-
     defaultConfig {
-        applicationId 'com.hardbacknutter.nevertoomanybooks'
+        applicationId "com.hardbacknutter.nevertoomanybooks"
         versionCode 12
         versionName = "2.6"
 
         // see NOTES.txt
+        // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
+        // 2021-06-30 world wide:
+        // 11.0     17.5
+        // 10.0     53.41
+        // 9.0      70.44
+        // 8.1      79.5
+        // 8.0      83.48
         minSdkVersion 26
         targetSdkVersion 31
 
         multiDexEnabled true
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // Email address placeholders. Their values should be empty, i.e. '""'.
         // The real values are in "NeverTooManyBooks.email"; see above
-        if (getBuildConfigFields().get('EMAIL_ACRA') == null) {
+        if (getBuildConfigFields().get("EMAIL_ACRA") == null) {
             // ACRA crash reports
-            buildConfigField('String', 'EMAIL_ACRA', '""')
+            buildConfigField("String", "EMAIL_ACRA", '""')
             // Manual debug reports
-            buildConfigField('String', 'EMAIL_DEBUG_REPORT', '""')
+            buildConfigField("String", "EMAIL_DEBUG_REPORT", '""')
             // About-page contact
-            buildConfigField('String', 'EMAIL_CONTACT', '""')
+            buildConfigField("String", "EMAIL_CONTACT", '""')
         }
 
         // Add the build UTC DateTime; ISO formatted
-        buildConfigField('String', 'TIMESTAMP',
+        buildConfigField("String", "TIMESTAMP",
                 '"' + LocalDateTime.now(ZoneOffset.UTC)
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
 
 
-        buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
+        buildConfigField("boolean", "ENABLE_GOOGLE_BOOKS", "true")
 
         // Dutch.
-        // 2021-04: the site has changed technology and our engine no longer works.
-        // Disabled for now.
-        buildConfigField('boolean', 'ENABLE_KB_NL', 'false')
-
+        buildConfigField("boolean", "ENABLE_LAST_DODO", "true")
         // Dutch.
-        buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
-        // Dutch.
-        buildConfigField('boolean', 'ENABLE_STRIP_INFO', 'true')
+        buildConfigField("boolean", "ENABLE_STRIP_INFO", "true")
 
-        buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
-
-        // under development
-        buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'false')
-        buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'false')
+        buildConfigField("boolean", "ENABLE_LIBRARY_THING_ALT_ED", "true")
     }
 
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+
+            // under development
+            buildConfigField("boolean", "ENABLE_STYLE_BOOKSHELF_FILTER", "false")
+            buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "false")
+
+            // Dutch.
+            // 2021-04: the site has changed technology and our engine no longer works.
+            // Disabled for now.
+            buildConfigField("boolean", "ENABLE_KB_NL", "false")
         }
         beta {
             initWith release
-            versionNameSuffix 'beta'
+            versionNameSuffix "-beta"
+            applicationIdSuffix ".beta"
         }
         debug {
-            versionNameSuffix 'debug'
+            debuggable true
+            versionNameSuffix "-debug"
+            applicationIdSuffix ".debug"
 
             // under development
-            buildConfigField('boolean', 'ENABLE_STYLE_BOOKSHELF_FILTER', 'true')
+            buildConfigField("boolean", "ENABLE_STYLE_BOOKSHELF_FILTER", "true")
             // under development
-            buildConfigField('boolean', 'ENABLE_STRIP_INFO_LOGIN', 'true')
+            buildConfigField("boolean", "ENABLE_STRIP_INFO_LOGIN", "true")
             // under development; adapting to the new site format.
-            buildConfigField('boolean', 'ENABLE_KB_NL', 'true')
+            buildConfigField("boolean", "ENABLE_KB_NL", "true")
         }
     }
 
@@ -196,100 +198,103 @@ android {
     }
 
     testOptions {
-        unitTests.includeAndroidResources = true
-        // Can be enabled to make Log.x work. OR, use Logger.x
-        unitTests.returnDefaultValues = false
-        unitTests.all {
-            reports {
-                junitXml.enabled = true
-                html.enabled = false
+        unitTests {
+            includeAndroidResources = true
+            // Can be enabled to make Log.x work. OR, use Logger.x
+            returnDefaultValues = false
+            all {
+                reports {
+                    junitXml.enabled = true
+                    html.enabled = false
+                }
             }
         }
     }
 
     packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.md'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/LICENSE-notice.md'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/README.md'
-        exclude 'META-INF/CHANGES'
+        exclude "META-INF/LICENSE"
+        exclude "META-INF/LICENSE.md"
+        exclude "META-INF/LICENSE.txt"
+        exclude "META-INF/license.txt"
+        exclude "META-INF/LICENSE-notice.md"
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/NOTICE.txt"
+        exclude "META-INF/notice.txt"
+        exclude "META-INF/ASL2.0"
+        exclude "META-INF/DEPENDENCIES"
+        exclude "META-INF/README.md"
+        exclude "META-INF/CHANGES"
     }
 }
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
     // We're using an updated/repacked org.json, version 20210307
-    implementation project(path: ':repacked-org-json')
-    implementation project(path: ':fastscroller')
+    implementation project(path: ":repacked-org-json")
+//    implementation project(path: ":dragdrop")
+    implementation project(path: ":fastscroller")
 
     // https://github.com/google/desugar_jdk_libs
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
     //
-    implementation 'androidx.activity:activity:1.3.1'
-    implementation 'androidx.annotation:annotation:1.3.0-alpha01'
-    implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-    implementation 'androidx.core:core:1.7.0-beta01'
-    implementation 'androidx.customview:customview:1.1.0'
-    implementation 'androidx.documentfile:documentfile:1.0.1'
-    implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
-    implementation 'androidx.exifinterface:exifinterface:1.3.3'
-    implementation 'androidx.fragment:fragment:1.4.0-alpha09'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.3.1'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.viewpager2:viewpager2:1.1.0-beta01'
-    //implementation 'androidx.work:work-runtime:2.5.0'
+    implementation "androidx.activity:activity:1.3.1"
+    implementation 'androidx.annotation:annotation:1.3.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.4.0-beta01'
+    implementation "androidx.cardview:cardview:1.0.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+    implementation 'androidx.core:core:1.7.0-beta02'
+    implementation "androidx.customview:customview:1.1.0"
+    implementation "androidx.documentfile:documentfile:1.0.1"
+    implementation "androidx.drawerlayout:drawerlayout:1.1.1"
+    implementation "androidx.exifinterface:exifinterface:1.3.3"
+    implementation 'androidx.fragment:fragment:1.4.0-alpha10'
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-livedata:2.3.1"
+    implementation "androidx.preference:preference:1.1.1"
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "androidx.viewpager2:viewpager2:1.1.0-beta01"
+    //implementation "androidx.work:work-runtime:2.5.0"
 
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.5.0-alpha03'
+    implementation 'com.google.android.material:material:1.5.0-alpha04'
 
     // https://www.acra.ch/docs/Setup/
-    implementation 'ch.acra:acra-mail:5.8.4'
-    implementation 'ch.acra:acra-toast:5.8.4'
-    implementation 'ch.acra:acra-dialog:5.8.4'
+    implementation "ch.acra:acra-mail:5.8.4"
+    implementation "ch.acra:acra-toast:5.8.4"
+    implementation "ch.acra:acra-dialog:5.8.4"
 
     // Tar file support for backups
     // http://commons.apache.org/proper/commons-compress/
-    implementation 'org.apache.commons:commons-compress:1.21'
+    implementation "org.apache.commons:commons-compress:1.21"
     // http://commons.apache.org/proper/commons-codec/
-    implementation 'commons-codec:commons-codec:1.13'
+    implementation "commons-codec:commons-codec:1.13"
 
     // jsoup HTML parser library @ https://jsoup.org/
-    implementation 'org.jsoup:jsoup:1.14.2'
+    implementation 'org.jsoup:jsoup:1.14.3'
 
     // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
-    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
-    implementation 'com.google.zxing:core:3.4.1'
+    implementation "com.journeyapps:zxing-android-embedded:4.2.0"
+    implementation "com.google.zxing:core:3.4.1"
 
     // local tests use JUnit5
-    testImplementation 'org.mockito:mockito-core:3.12.4'
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.12.4'
+    testImplementation "org.mockito:mockito-core:3.12.4"
+    testImplementation "org.mockito:mockito-junit-jupiter:3.12.4"
 
     // (Required) Writing and executing Unit Tests on the JUnit Platform
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     // (Optional) If you need "Parameterized Tests"
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.1'
     // (Optional) If you also have JUnit 4-based tests
     // testImplementation "junit:junit:4.13.2"
-    // testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.7.2'
+    // testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.7.2"
 
     // device tests use JUnit4
-    androidTestImplementation 'androidx.test:core:1.4.0'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation "androidx.test:core:1.4.0"
+    androidTestImplementation "androidx.test:runner:1.4.0"
+    androidTestImplementation "androidx.test:rules:1.4.0"
 
-//    testImplementation 'org.robolectric:robolectric:4.4'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+//    testImplementation "org.robolectric:robolectric:4.4"
+//    androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
 }
