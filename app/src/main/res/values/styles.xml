@@ -30,7 +30,7 @@
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -41,7 +41,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:textColor">?attr/colorAccent</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <style name="Text.Header.Indented">
@@ -54,17 +54,17 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
     <style name="Text.Body.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
     <!-- Chips for view and edit mode -->
     <!-- *************************************************************************************** -->
-    <style name="ChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+    <style name="ChipGroup" parent="Widget.Material3.ChipGroup">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- without some extra margin, the chips are glued to the label above the group. -->
@@ -73,7 +73,7 @@
     </style>
 
     <!-- Read-Write style for Book-edit screen. -->
-    <style name="Chip.Filter" parent="Widget.MaterialComponents.Chip.Filter">
+    <style name="Chip.Filter" parent="Widget.Material3.Chip.Filter">
     </style>
 
     <!-- Read-Only style for Book-view screen.
@@ -83,7 +83,7 @@
         <item name="android:textSize">14p</item>
         <item name="ensureMinTouchTargetSize">true</item>
         -->
-    <style name="Chip.Display" parent="Base.Widget.MaterialComponents.Chip">
+    <style name="Chip.Display" parent="Base.Widget.Material3.Chip">
         <item name="closeIconVisible">false</item>
         <item name="android:checkable">false</item>
         <item name="android:clickable">false</item>
@@ -95,7 +95,7 @@
     </style>
 
     <!-- Queue type view: the user can tap the chip for actioning, or tap the close icon to remove it -->
-    <style name="Chip.Queue" parent="Base.Widget.MaterialComponents.Chip">
+    <style name="Chip.Queue" parent="Base.Widget.Material3.Chip">
         <item name="closeIconVisible">true</item>
         <item name="android:checkable">false</item>
         <item name="android:clickable">true</item>
@@ -104,7 +104,7 @@
     <!-- *************************************************************************************** -->
     <!-- FAB buttons -->
     <!-- *************************************************************************************** -->
-    <style name="FAB" parent="Widget.MaterialComponents.FloatingActionButton">
+    <style name="FAB" parent="Widget.Material3.FloatingActionButton.Primary">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
@@ -112,7 +112,7 @@
     </style>
 
     <!-- FAB buttons that appear as a menu above the actual FAB button. -->
-    <style name="FABMenu" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+    <style name="FABMenu" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
@@ -126,26 +126,28 @@
     <!-- *************************************************************************************** -->
 
     <!-- An Activity primary/top toolbar -->
-    <style name="Toolbar.Activity" parent="Widget.MaterialComponents.Toolbar.Primary">
+    <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="layout_scrollFlags">scroll|enterAlways</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
+    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
-    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">
+    <style name="TabBar" parent="Widget.Material3.TabLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="tabMode">scrollable</item>
     </style>
 
-    <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
+    <style name="NavigationView" parent="Widget.Material3.NavigationView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
@@ -200,7 +202,7 @@
 
     <!-- The TextInputLayout view as the equivalent of a Spinner for menu selections. -->
     <style name="Button.DropdownMenu"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- make the drop down arrow better visible. -->
@@ -208,7 +210,7 @@
     </style>
 
     <!-- A button in a list of action-options. -->
-    <style name="Button.Menu" parent="Widget.MaterialComponents.Button.TextButton">
+    <style name="Button.Menu" parent="Widget.Material3.Button.TextButton">
         <item name="android:layout_width">@dimen/large_menu_button</item>
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
@@ -220,20 +222,20 @@
         <item name="iconPadding">12dp</item>
     </style>
 
-    <!-- The added padding/stroke items are copied from: "Widget.MaterialComponents.Button.OutlinedButton" -->
+    <!-- The added padding/stroke items are copied from: "Widget.Material3.Button.OutlinedButton" -->
     <style name="Button.Menu.Outlined">
-        <!-- @dimen/mtrl_btn_padding_left -->
+        <!-- @dimen/m3_btn_icon_btn_padding_left -->
         <item name="android:paddingLeft">16dp</item>
-        <!-- @dimen/mtrl_btn_padding_right -->
-        <item name="android:paddingRight">16dp</item>
-        <!-- @dimen/mtrl_btn_stroke_size -->
+        <!-- @dimen/m3_btn_icon_btn_padding_right -->
+        <item name="android:paddingRight">24dp</item>
+        <!-- @dimen/m3_btn_stroke_size -->
         <item name="strokeWidth">1dp</item>
-        <!-- @color/mtrl_btn_stroke_color_selector -->
-        <item name="strokeColor">@color/btn_stroke_color_selector</item>
+        <!-- @color/m3_button_outline_color_selector -->
+        <item name="strokeColor">@color/button_outline_color_selector</item>
     </style>
 
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
-    <style name="Button.Action.Submit" parent="Widget.MaterialComponents.Button">
+    <style name="Button.Action.Submit" parent="Widget.Material3.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -243,7 +245,7 @@
     </style>
 
     <!-- The confirmation button placed in toolbars. -->
-    <style name="Button.Action.Toolbar" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Button.Action.Toolbar" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
@@ -253,7 +255,7 @@
     </style>
 
     <!-- A button which will take the user to some external website. -->
-    <style name="Button.Url" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="Button.Url" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
@@ -278,14 +280,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">cursive</item>
-        <item name="android:textAppearance">?attr/textAppearanceHeadline5</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadlineMedium</item>
     </style>
 
     <style name="About.Version" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <style name="About.Statistic" parent="Widget.MaterialComponents.TextView">
@@ -294,21 +296,20 @@
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:gravity">end</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
 
     <!-- Attribute restyling: "snackbarTextViewStyle"
          Override for the default to allow 2 lines of text. -->
-    <style name="App.SnackbarTextViewStyle" parent="Widget.MaterialComponents.Snackbar.TextView">
+    <style name="App.SnackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
     <!-- Attribute restyling: "materialCalendarHeaderConfirmButton"
          We want the full screen calendar widget to use the same style 'actual' button. -->
-    <style name="App.MaterialCalendar.HeaderConfirmButton"
-        parent="Widget.MaterialComponents.MaterialCalendar.HeaderConfirmButton">
+    <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>
 
@@ -339,7 +340,7 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="Progress.Circle" parent="Widget.MaterialComponents.CircularProgressIndicator">
+    <style name="Progress.Circle" parent="Widget.Material3.CircularProgressIndicator">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:elevation">@dimen/progress_z</item>

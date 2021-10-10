@@ -38,38 +38,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
-            />
-
-        <CheckBox
-            android:id="@+id/cbx_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/field_margin_inline"
-            android:text="@string/lbl_read"
-            app:layout_constraintBottom_toTopOf="@id/barrier_rating_read_bottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:checked="true"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_rating_read_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,cbx_read"
-
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_start"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/rating"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -94,7 +74,7 @@
             android:id="@+id/lbl_read_end"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_end"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             >
@@ -117,34 +97,34 @@
             tools:visibility="visible"
             />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_location"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_location"
+        <CheckBox
+            android:id="@+id/cbx_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/field_margin_inline"
+            android:text="@string/lbl_read"
+            app:layout_constraintBottom_toTopOf="@id/barrier_read_bottom"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
-            >
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            tools:checked="true"
+            />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/location"
-                style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_read_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="rating,lbl_read_start,lbl_read_end,cbx_read"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_date_acquired"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cbx_read"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -257,12 +237,33 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_location"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/location"
+                style="@style/autoCompleteTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_personal_notes"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
             >
 
             <com.google.android.material.textfield.TextInputEditText

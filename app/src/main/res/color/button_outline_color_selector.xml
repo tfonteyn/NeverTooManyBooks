@@ -19,8 +19,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Copied from Material 1.4.0-alpha02 "res/color/mtrl_btn_stroke_color_selector.xml" -->
+<!-- Copied from Material 1.5.0-alpha04 "res/color/m3_button_outline_color_selector.xml" -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="?attr/colorPrimary" android:state_checked="true" />
     <item android:alpha="0.12" android:color="?attr/colorOnSurface" android:state_checked="false" />
+    <!-- colorOutline is private -->
+    <!--    <item android:color="?attr/colorOutline" />-->
+    <item android:color="?attr/appColorOutline" />
 </selector>

@@ -30,7 +30,7 @@
         android:id="@+id/lbl_site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceOverline"
+        android:textAppearance="?attr/textAppearanceLabelSmall"
         android:textIsSelectable="true"
         android:textSize="@dimen/cover_browser_gallery_text_size"
         android:textAllCaps="false"

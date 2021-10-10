@@ -24,7 +24,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base style; not to be used directly in layouts. -->
-    <style name="IsbnKeyPad" parent="Widget.MaterialComponents.Button">
+    <style name="IsbnKeyPad" parent="Widget.Material3.Button">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>

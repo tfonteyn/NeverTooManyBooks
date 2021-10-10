@@ -43,14 +43,13 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- ======================================= -->
         <!-- Material color attributes (light theme) -->
         <!-- ======================================= -->
-
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/day_on_primary</item>
 
-        <item name="colorSecondary">@color/day_secondary</item>
-        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/day_on_secondary</item>
+        <!--        <item name="colorSecondary">@color/day_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/day_on_secondary</item>-->
 
         <!--  <item name="colorSurface">@color/white</item>-->
         <!--  <item name="colorOnSurface">@color/black</item>-->
@@ -73,70 +72,60 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
         <item name="appNavBarColorCenter">@color/blue_grey_300</item>
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
+
+        <!-- M3: colorOutline: m3_sys_color_light_outline: m3_ref_palette_neutral_variant50: -->
+        <item name="appColorOutline">#ff79747e</item>
     </style>
-
-    <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-
-        <item name="colorPrimary">@color/day_primary</item>
-        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
-        <item name="colorOnPrimary">@color/day_on_primary</item>
-
-        <item name="colorSecondary">@color/day_secondary</item>
-        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/day_on_secondary</item>
-    </style>
-
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!--        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
 
         <item name="appChipDisplayStyle">@style/Chip.Display</item>
         <item name="appChipFilterStyle">@style/Chip.Filter</item>
         <item name="appChipQueueStyle">@style/Chip.Queue</item>
 
-        <!-- Attribute restyling. -->
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
-        <!-- ThemeOverlay restyling. -->
+
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
     </style>
 
 
+    <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
+        <item name="colorOnPrimary">@color/day_on_primary</item>
+
+        <!--        <item name="colorSecondary">@color/day_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/day_on_secondary</item>-->
+    </style>
+
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!--        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
 
     <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/day_on_primary</item>
 
-        <item name="colorSecondary">@color/day_secondary</item>
-        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/day_on_secondary</item>
-    </style>
+        <!-- Overrule the Material 3 dark/grey background. -->
+        <item name="android:background">?attr/colorSurface</item>
 
-    <!-- Base theme used by both Day and Night themes. -->
-    <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
-        parent="ThemeOverlay.Material3.MaterialAlertDialog">
-
-        <!-- Attribute restyling. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
-        <!-- ThemeOverlay restyling. -->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <!--        <item name="colorSecondary">@color/day_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/day_on_secondary</item>-->
     </style>
 
     <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
-    <style name="ThemeOverlay.App.MaterialCalendar"
-        parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
-        <!-- Attribute restyling. -->
+    <style name="ThemeOverlay.App.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>
     </style>
 </resources>

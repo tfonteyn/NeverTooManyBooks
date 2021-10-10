@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/section_margin_top"
         android:text="@string/progress_msg_starting_up"
-        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
         android:textIsSelectable="true"
         app:layout_constraintBottom_toTopOf="@id/progress_bar"
         app:layout_constraintEnd_toEndOf="parent"

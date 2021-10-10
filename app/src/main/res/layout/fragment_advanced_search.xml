@@ -137,7 +137,7 @@
         android:id="@+id/books_found"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
         app:layout_constraintStart_toStartOf="parent"

@@ -30,9 +30,9 @@
         <item name="colorPrimaryVariant">@color/night_primary_variant</item>
         <item name="colorOnPrimary">@color/night_on_primary</item>
 
-        <item name="colorSecondary">@color/night_secondary</item>
-        <item name="colorSecondaryVariant">@color/night_secondary_variant</item>
-        <item name="colorOnSecondary">@color/night_on_secondary</item>
+        <!--        <item name="colorSecondary">@color/night_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/night_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/night_on_secondary</item>-->
 
         <!--    <item name="colorSurface">#121212</item>-->
         <!--    <item name="colorOnSurface">@color/white</item>-->
@@ -48,12 +48,32 @@
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
+
+        <!-- M3: colorOutline: m3_sys_color_dark_outline: m3_ref_palette_neutral_variant60: -->
+        <item name="appColorOutline">#ff938f99</item>
     </style>
 
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
+        <item name="colorPrimary">@color/night_primary</item>
+        <item name="colorPrimaryVariant">@color/night_primary_variant</item>
+        <item name="colorOnPrimary">@color/night_on_primary</item>
+
+        <!--        <item name="colorSecondary">@color/night_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/night_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/night_on_secondary</item>-->
     </style>
 
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/night_primary</item>
+        <item name="colorPrimaryVariant">@color/night_primary_variant</item>
+        <item name="colorOnPrimary">@color/night_on_primary</item>
+
+        <!-- default is fine -->
+        <!--        <item name="android:background">?attr/colorSurface</item>-->
+
+        <!--        <item name="colorSecondary">@color/night_secondary</item>-->
+        <!--        <item name="colorSecondaryVariant">@color/night_secondary_variant</item>-->
+        <!--        <item name="colorOnSecondary">@color/night_on_secondary</item>-->
     </style>
 
 </resources>

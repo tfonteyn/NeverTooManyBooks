@@ -128,7 +128,7 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_rating_read_bottom"
+            android:id="@+id/barrier_read_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -140,7 +140,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_bottom"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />

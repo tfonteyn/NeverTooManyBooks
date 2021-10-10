@@ -27,7 +27,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Button (icon only) positioned 'after' an EditText; serving as a extended edit action. -->
-    <style name="TIL.EditText.Button" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <style name="TIL.EditText.Button" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:enabled">true</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">0dp</item>
@@ -39,7 +39,7 @@
     </style>
 
     <!-- generic input field. -->
-    <style name="TIL.EditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    <style name="TIL.EditText" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/til_field_margin</item>
@@ -91,7 +91,7 @@
         https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
     -->
     <style name="TIL.AutoCompleteTextView"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/til_field_margin</item>
@@ -101,7 +101,7 @@
 
     <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
     <style name="TIL.ExposedDropdownMenu"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- make the drop down arrow better visible. -->
@@ -202,7 +202,7 @@
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
 
-    <!--    <style name="Edit.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">-->
+    <!--    <style name="Edit.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">-->
 
     <!--    </style>-->
 </resources>

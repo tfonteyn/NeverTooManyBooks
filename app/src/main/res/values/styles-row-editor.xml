@@ -45,7 +45,7 @@
     </style>
 
     <!-- CheckBox - with custom icon -->
-    <style name="RowEditor.Button.Checkable" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+    <style name="RowEditor.Button.Checkable" parent="Widget.Material3.CompoundButton.CheckBox">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- don't want it to close to the edge of the screen. -->

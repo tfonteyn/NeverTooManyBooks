@@ -35,7 +35,7 @@
     Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
     -->
     <style name="Field.Generic">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
     <style name="Field.Generic.Inline">
@@ -45,35 +45,35 @@
 
     <!-- 'minor' detail field; for example format, isbn,... -->
     <style name="Field.Generic.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <style name="Field.Generic.Inline.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
 
     <style name="Field.BookTitle">
         <item name="android:textStyle">italic</item>
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
     <style name="Field.BookTitle.Large">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:textSize">22sp</item>
     </style>
 
     <style name="Field.Isbn">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
     <style name="Field.Isbn.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <!-- Book personal notes. -->
     <style name="Field.Notes">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:layout_marginEnd">@dimen/field_margin_inline</item>
@@ -81,7 +81,7 @@
 
     <!-- Book Description. -->
     <style name="Field.Description">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:background">@drawable/bg_outline_rounded</item>
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
@@ -92,7 +92,7 @@
 
     <!-- Lend out to X. -->
     <style name="Field.LendOutToBar">
-        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
         <item name="android:background">?attr/colorOnSurface</item>
         <item name="android:textColor">?attr/colorSurface</item>
         <!-- we want it centered, hence use and end-margin equal to the start margin -->
@@ -107,7 +107,7 @@
     </style>
 
     <!-- The switch on the book details screen to show/hide the TOC. -->
-    <style name="Field.ShowOrHideToc" parent="Widget.MaterialComponents.CompoundButton.Switch">
+    <style name="Field.ShowOrHideToc" parent="Widget.Material3.CompoundButton.Switch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
