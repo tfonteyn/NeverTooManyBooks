@@ -212,19 +212,22 @@ android {
     }
 
     packagingOptions {
-        exclude "META-INF/LICENSE"
-        exclude "META-INF/LICENSE.md"
-        exclude "META-INF/LICENSE.txt"
-        exclude "META-INF/license.txt"
-        exclude "META-INF/LICENSE-notice.md"
-        exclude "META-INF/NOTICE"
-        exclude "META-INF/NOTICE.txt"
-        exclude "META-INF/notice.txt"
-        exclude "META-INF/ASL2.0"
-        exclude "META-INF/DEPENDENCIES"
-        exclude "META-INF/README.md"
-        exclude "META-INF/CHANGES"
+        resources {
+            excludes += ['META-INF/LICENSE',
+                         'META-INF/LICENSE.md',
+                         'META-INF/LICENSE.txt',
+                         'META-INF/license.txt',
+                         'META-INF/LICENSE-notice.md',
+                         'META-INF/NOTICE',
+                         'META-INF/NOTICE.txt',
+                         'META-INF/notice.txt',
+                         'META-INF/ASL2.0',
+                         'META-INF/DEPENDENCIES',
+                         'META-INF/README.md',
+                         'META-INF/CHANGES']
+        }
     }
+
 }
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
@@ -243,7 +246,7 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
-    implementation 'androidx.core:core:1.7.0-beta02'
+    implementation 'androidx.core:core:1.7.0-rc01'
     implementation "androidx.customview:customview:1.1.0"
     implementation "androidx.documentfile:documentfile:1.0.1"
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
@@ -278,8 +281,8 @@ dependencies {
     implementation "com.google.zxing:core:3.4.1"
 
     // local tests use JUnit5
-    testImplementation "org.mockito:mockito-core:3.12.4"
-    testImplementation "org.mockito:mockito-junit-jupiter:3.12.4"
+    testImplementation 'org.mockito:mockito-core:4.0.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'
 
     // (Required) Writing and executing Unit Tests on the JUnit Platform
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
