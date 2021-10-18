@@ -141,7 +141,7 @@ public class GoogleBooksSearchEngine
      *                    The array is guaranteed to have at least one element.
      * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
      */
-    private void fetchBook(final Context context,
+    private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
