@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ISFDB>
+    <Records>1</Records>
+    <Publications>
+        <Publication>
+            <Record>425189</Record>
+            <Title>Triplanetary</Title>
+            <Authors>
+                <Author>E. E. &apos;Doc&apos; Smith</Author>
+            </Authors>
+            <Year>1971-02-15</Year>
+            <Isbn>0491001576</Isbn>
+            <Publisher>W. H. Allen</Publisher>
+            <Price>£1.75</Price>
+            <Pages>254</Pages>
+            <Binding>hc</Binding>
+            <Type>NOVEL</Type>
+            <Tag>TRPLNTRLBK1971</Tag>
+            <Image>http://www.isfdb.org/wiki/images/4/46/TRPLNTRLBK1971.jpg</Image>
+            <CoverArtists>
+                <Artist>Ken Reilly</Artist>
+            </CoverArtists>
+            <Note>Data from OCLC.
+                Publication date from Amazon.co.uk
+            </Note>
+            <External_IDs>
+                <External_ID>
+                    <IDtype>12</IDtype>
+                    <IDtypeName>OCLC/WorldCat</IDtypeName>
+                    <IDvalue>16190406</IDvalue>
+                </External_ID>
+            </External_IDs>
+
+        </Publication>
+    </Publications>
+</ISFDB>
