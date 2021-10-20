@@ -293,6 +293,30 @@ public class ISBN {
     }
 
     /**
+     * Filter a string of all non-digits/X.
+     *
+     * @param s string to parse
+     *
+     * @return stripped string
+     */
+    @NonNull
+    public static String cleanText(@Nullable final String s) {
+        if (s == null || s.isEmpty()) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            // allows an X anywhere instead of just at the end; doesn't really matter.
+            if (Character.isDigit(c) || ((c == 'X' || c == 'x'))) {
+                sb.append(c);
+            }
+        }
+        // ... but let empty Strings here just return.
+        return sb.toString();
+    }
+
+    /**
      * Check if two codes are matching.
      *
      * @param isbnStr1   first code

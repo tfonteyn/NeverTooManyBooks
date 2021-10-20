@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -339,7 +340,8 @@ public class StripInfoSearchEngine
 
                     final Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     if (titleUrlElement != null) {
-                        bookData.putString(DBKey.KEY_TITLE, cleanText(titleUrlElement.text()));
+                        bookData.putString(DBKey.KEY_TITLE, ParseUtils
+                                .cleanText(titleUrlElement.text()));
                         // extract the external (site) id from the url
                         externalId = processExternalId(titleUrlElement, bookData);
 
@@ -754,7 +756,7 @@ public class StripInfoSearchEngine
                             @NonNull final Bundle bookData) {
         final Element dataElement = td.nextElementSibling();
         if (dataElement != null && dataElement.childNodeSize() == 1) {
-            bookData.putString(key, cleanText(dataElement.text()));
+            bookData.putString(key, ParseUtils.cleanText(dataElement.text()));
             return 1;
         }
         return 0;
@@ -874,7 +876,7 @@ public class StripInfoSearchEngine
         if (dataElement != null) {
             final Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
-                final String text = cleanText(as.get(i).text());
+                final String text = ParseUtils.cleanText(as.get(i).text());
                 final Series currentSeries = Series.from3(text);
                 // check if already present
                 if (mSeries.stream().anyMatch(series -> series.equals(currentSeries))) {
@@ -900,7 +902,7 @@ public class StripInfoSearchEngine
         if (dataElement != null) {
             final Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
-                final String name = cleanText(aas.get(i).text());
+                final String name = ParseUtils.cleanText(aas.get(i).text());
                 final Publisher currentPublisher = Publisher.from(name);
                 // check if already present
                 if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
@@ -957,7 +959,7 @@ public class StripInfoSearchEngine
                         .matcher(text)
                         .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
 
-                content.append(cleanText(text));
+                content.append(ParseUtils.cleanText(text));
                 if (i < sections.size() - 1) {
                     // separate multiple sections
                     content.append("\n<br>\n<br>");

@@ -48,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -249,7 +251,7 @@ public class LastDodoSearchEngine
                 case "ISBN:":
                     tmpString = td.text();
                     if (!"Geen".equals(tmpString)) {
-                        tmpString = digits(tmpString, true);
+                        tmpString = ISBN.cleanText(tmpString);
                         if (!tmpString.isEmpty()) {
                             bookData.putString(DBKey.KEY_ISBN, tmpString);
                         }
@@ -451,7 +453,7 @@ public class LastDodoSearchEngine
      */
     private void processPublisher(@NonNull final Element td) {
         for (final Element a : td.select("a")) {
-            final String name = cleanText(a.text());
+            final String name = ParseUtils.cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present
             if (mPublishers.stream().anyMatch(pub -> pub.equals(currentPublisher))) {
@@ -493,7 +495,7 @@ public class LastDodoSearchEngine
                              @NonNull final String key,
                              @NonNull final Bundle bookData) {
         if (td != null) {
-            final String text = cleanText(td.text().trim());
+            final String text = ParseUtils.cleanText(td.text().trim());
             if (!text.isEmpty()) {
                 bookData.putString(key, text);
             }
