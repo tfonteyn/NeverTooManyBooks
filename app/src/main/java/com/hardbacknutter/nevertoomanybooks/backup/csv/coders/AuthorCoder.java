@@ -76,7 +76,7 @@ public class AuthorCoder
         }
 
         if (!details.isEmpty()) {
-            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
+            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details;
         }
         return result;
     }

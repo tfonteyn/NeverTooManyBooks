@@ -179,7 +179,7 @@ public class SqliteShellFragment
                         for (int c = 0; c < cursor.getColumnCount(); c++) {
                             line.append("<td>").append(cursor.getString(c)).append("</td>");
                         }
-                        sb.append("<tr>").append(line.toString()).append("</tr>");
+                        sb.append("<tr>").append(line).append("</tr>");
                         maxLines--;
                     }
                     sb.append("</table>");

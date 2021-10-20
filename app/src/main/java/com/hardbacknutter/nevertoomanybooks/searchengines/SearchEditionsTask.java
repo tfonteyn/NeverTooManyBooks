@@ -102,7 +102,7 @@ public class SearchEditionsTask
                 // Silently ignore individual failures,
                 // we'll return what we get from the sites that worked.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "site=" + site.toString(), e);
+                    Logger.d(TAG, "site=" + site, e);
                 }
             }
         }

@@ -310,7 +310,7 @@ public class CalibreContentServer {
                   .putString(PK_LOCAL_FOLDER_URI, uri.toString())
                   .apply();
         } catch (@NonNull final SecurityException e) {
-            Logger.error(TAG, e, "uri=" + uri.toString());
+            Logger.error(TAG, e, "uri=" + uri);
             throw e;
         }
     }

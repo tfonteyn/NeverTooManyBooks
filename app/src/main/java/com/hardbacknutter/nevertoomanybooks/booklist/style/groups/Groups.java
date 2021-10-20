@@ -180,7 +180,7 @@ public class Groups
 
         // note the use of a Supplier
         return Objects.requireNonNull(mGroupMap.get(id), ()
-                -> "Group was NULL: id=" + id + ", " + this.toString());
+                -> "Group was NULL: id=" + id + ", " + this);
     }
 
     /**

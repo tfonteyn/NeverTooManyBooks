@@ -791,7 +791,7 @@ public class Author
                + ", mGivenNames=`" + mGivenNames + '`'
                + ", mIsComplete=" + mIsComplete
                + ", mType=0b" + Integer.toBinaryString(mType)
-               + ", mType=" + sj.toString()
+               + ", mType=" + sj
                + '}';
     }
 
