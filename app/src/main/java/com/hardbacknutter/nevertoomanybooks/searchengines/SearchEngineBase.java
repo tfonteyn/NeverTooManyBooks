@@ -137,12 +137,18 @@ public abstract class SearchEngineBase
     }
 
     @NonNull
-    protected Bundle newBundleInstance() {
+    public Bundle newBundleInstance() {
         return mBundleSupplier.get();
     }
 
+    /**
+     * Allow injecting mock bundles during testing.
+     *
+     * @param bundleSupplier to provide new (mock) Bundle instances.
+     */
     @VisibleForTesting
     public void setBundleSupplier(final Supplier<Bundle> bundleSupplier) {
         mBundleSupplier = bundleSupplier;
     }
+
 }
