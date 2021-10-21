@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -45,10 +46,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -62,6 +68,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
@@ -71,11 +79,13 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * See notes in the package-info.java file.
@@ -106,40 +116,49 @@ public class IsfdbSearchEngine
     /** But to encode the search url (a GET), the charset must be 8859-1. */
     @SuppressWarnings("WeakerAccess")
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
+    /** Map ISFDB book types to {@link Book.TocBits}. */
+    static final Map<String, Integer> TYPE_MAP = new HashMap<>();
     /** Preferences prefix. */
     private static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
     public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
     /** Type: {@code boolean}. */
     static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
-
     public static final CharSequence PK_CONNECT_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_connect;
     public static final CharSequence PK_READ_TIMEOUT_IN_SECONDS =
             PREF_KEY + Prefs.pk_suffix_timeout_read;
-
+    /**
+     * As proposed by another user on the ISFDB wiki,
+     * we're only going to send one request a second.
+     *
+     * @see <a href="http://www.isfdb.org/wiki/index.php/ISFDB:Help_desk#Some_Downloading_Questions_and_a_Request">throttling</a>
+     */
+    private static final Throttler THROTTLER = new Throttler(1_000);
     /** Common CGI directory. */
-    private static final String CGI_BIN = "/cgi-bin/";
+    private static final String CGI_BIN = "/cgi-bin";
     /** bibliographic information for one title. */
-    private static final String URL_TITLE_CGI = "title.cgi";
+    private static final String CGI_TITLE = "/title.cgi";
     /** bibliographic information for one publication. */
-    private static final String URL_PL_CGI = "pl.cgi";
+    private static final String CGI_PL = "/pl.cgi";
     /** ISFDB bibliography for one author. */
-    private static final String URL_EA_CGI = "ea.cgi";
+    private static final String CGI_EA = "/ea.cgi";
     /** titles associated with a particular Series. */
-    private static final String URL_PE_CGI = "pe.cgi";
+    private static final String CGI_PE = "/pe.cgi";
     /** Search by type; e.g.  arg=%s&type=ISBN. */
-    private static final String URL_SE_CGI = "se.cgi";
+    private static final String CGI_SE = "/se.cgi";
     /** Advanced search FORM submission (using GET), and the returned results page url. */
-    private static final String URL_ADV_SEARCH_RESULTS_CGI = "adv_search_results.cgi";
+    private static final String CGI_ADV_SEARCH_RESULTS = "/adv_search_results.cgi";
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
     /** Param 1: external book ID. */
-    private static final String BY_EXTERNAL_ID = CGI_BIN + URL_PL_CGI + "?%1$s";
+    private static final String CGI_BY_EXTERNAL_ID = CGI_BIN + CGI_PL + "?%1$s";
     /** Search URL template. */
-    private static final String EDITIONS_URL = CGI_BIN + URL_SE_CGI + "?arg=%s&type=ISBN";
-    /** Map ISFDB book types to {@link Book.TocBits}. */
-    private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
+    private static final String CGI_EDITIONS = CGI_BIN + CGI_SE + "?arg=%s&type=ISBN";
+
+    private static final String REST_BIN = CGI_BIN + "/rest";
+    private static final String REST_BY_EXTERNAL_ID = REST_BIN + "/getpub_by_internal_ID.cgi?%1$s";
+
     /**
      * Either the Web page itself, and/or the JSoup parser has used both decimal and hex
      * representation for the "•" character. Capturing all 3 possibilities here.
@@ -152,9 +171,6 @@ public class IsfdbSearchEngine
     private static final Pattern UNKNOWN_M_D_LITERAL = Pattern.compile("-00", Pattern.LITERAL);
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
-    /** Trim extraneous punctuation and whitespace from the titles and authors. */
-    private static final Pattern CLEANUP_TITLE_PATTERN =
-            Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -239,6 +255,7 @@ public class IsfdbSearchEngine
 
                 .setConnectTimeoutMs(20_000)
                 .setReadTimeoutMs(60_000)
+                .setStaticThrottler(THROTTLER)
                 .build();
     }
 
@@ -246,7 +263,7 @@ public class IsfdbSearchEngine
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
-        return getSiteUrl() + CGI_BIN + URL_PL_CGI + "?" + externalId;
+        return getSiteUrl() + CGI_BIN + CGI_PL + "?" + externalId;
     }
 
     @NonNull
@@ -258,7 +275,7 @@ public class IsfdbSearchEngine
 
         final Bundle bookData = newBundleInstance();
 
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
+        final String url = getSiteUrl() + String.format(CGI_BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
@@ -293,7 +310,7 @@ public class IsfdbSearchEngine
                          @NonNull final boolean[] fetchCovers)
             throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
 
-        final String url = getSiteUrl() + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+        final String url = getSiteUrl() + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
                            + "ORDERBY=pub_title"
                            + "&ACTION=query"
                            + "&START=0"
@@ -606,7 +623,7 @@ public class IsfdbSearchEngine
 
                 if (fieldName == null) {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                        Log.d(TAG, "fetch|" + li.toString());
+                        Log.d(TAG, "fetch|" + li);
                     }
                     continue;
                 }
@@ -653,7 +670,7 @@ public class IsfdbSearchEngine
                         // we use them in the order found here.
                         //   <li><b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
                         tmpString = nextSibling.toString().trim();
-                        tmpString = digits(tmpString, true);
+                        tmpString = ISBN.cleanText(tmpString);
                         if (!tmpString.isEmpty()) {
                             bookData.putString(DBKey.KEY_ISBN, tmpString);
                         }
@@ -661,7 +678,7 @@ public class IsfdbSearchEngine
                         final Element nextElementSibling = fieldLabelElement.nextElementSibling();
                         if (nextElementSibling != null) {
                             tmpString = nextElementSibling.text();
-                            tmpString = digits(tmpString, true);
+                            tmpString = ISBN.cleanText(tmpString);
                             if (!tmpString.isEmpty()) {
                                 bookData.putString(SiteField.ISBN_2, tmpString);
                             }
@@ -754,7 +771,7 @@ public class IsfdbSearchEngine
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(TAG, e, "path: " + document.location() + "\n\nLI: " + li.toString());
+                Logger.error(TAG, e, "path: " + document.location() + "\n\nLI: " + li);
             }
         }
 
@@ -762,7 +779,7 @@ public class IsfdbSearchEngine
         final Element recordIDDiv = contentBox.select("span.recordID").first();
         if (recordIDDiv != null) {
             tmpString = recordIDDiv.ownText();
-            tmpString = digits(tmpString, false);
+            tmpString = ParseUtils.digits(tmpString);
             if (!tmpString.isEmpty()) {
                 try {
                     final long record = Long.parseLong(tmpString);
@@ -785,9 +802,9 @@ public class IsfdbSearchEngine
             bookData.putString(DBKey.KEY_DESCRIPTION, tmpString);
         }
 
-        // ISFDB does not offer the books language on the main page (although they store
-        // it in their database).
-        //ENHANCE: the site is adding language to the data.. revisit. For now, default to English
+        // ISFDB does not offer the books language on the main page
+        // (although they store it in their database).
+        //ENHANCE: the site is adding language to the data; revisit. For now, default to English
         bookData.putString(DBKey.KEY_LANGUAGE, "eng");
 
         final ArrayList<TocEntry> toc = parseToc(context, document);
@@ -829,7 +846,8 @@ public class IsfdbSearchEngine
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            tmpString = digits(toc.get(0).getFirstPublicationDate().getIsoString(), false);
+            tmpString = ParseUtils
+                    .digits(toc.get(0).getFirstPublicationDate().getIsoString());
             if (!tmpString.isEmpty()) {
                 bookData.putString(DBKey.DATE_FIRST_PUBLICATION, tmpString);
             }
@@ -973,14 +991,14 @@ public class IsfdbSearchEngine
                 for (final Element a : li.select("a")) {
                     final String href = a.attr("href");
 
-                    if (title == null && href.contains(URL_TITLE_CGI)) {
-                        title = cleanUpName(a.text());
+                    if (title == null && href.contains(CGI_TITLE)) {
+                        title = ParseUtils.cleanName(a.text());
                         //ENHANCE: tackle 'variant' titles later
 
-                    } else if (author == null && href.contains(URL_EA_CGI)) {
-                        author = Author.from(cleanUpName(a.text()));
+                    } else if (author == null && href.contains(CGI_EA)) {
+                        author = Author.from(ParseUtils.cleanName(a.text()));
 
-                    } else if (addSeriesFromToc && href.contains(URL_PE_CGI)) {
+                    } else if (addSeriesFromToc && href.contains(CGI_PE)) {
                         final Series series = Series.from(a.text());
 
                         //  • 4] • (1987) • novel by
@@ -1022,7 +1040,7 @@ public class IsfdbSearchEngine
                 // i.e. if this entry has the same title as the book title
                 if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
                     && title.equalsIgnoreCase(mTitle)) {
-                    mFirstPublicationYear = digits(year, false);
+                    mFirstPublicationYear = ParseUtils.digits(year);
                 }
 
                 final TocEntry tocEntry = new TocEntry(author, title, year);
@@ -1127,7 +1145,7 @@ public class IsfdbSearchEngine
             throws SearchException, CredentialsException {
         mIsbn = validIsbn;
 
-        final String url = getSiteUrl() + String.format(EDITIONS_URL, validIsbn);
+        final String url = getSiteUrl() + String.format(CGI_EDITIONS, validIsbn);
         return fetchEditions(context, url);
     }
 
@@ -1146,13 +1164,13 @@ public class IsfdbSearchEngine
 
         final String pageUrl = document.location();
 
-        if (pageUrl.contains(URL_PL_CGI)) {
+        if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
             editions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, document));
 
-        } else if (pageUrl.contains(URL_TITLE_CGI)
-                   || pageUrl.contains(URL_SE_CGI)
-                   || pageUrl.contains(URL_ADV_SEARCH_RESULTS_CGI)) {
+        } else if (pageUrl.contains(CGI_TITLE)
+                   || pageUrl.contains(CGI_SE)
+                   || pageUrl.contains(CGI_ADV_SEARCH_RESULTS)) {
             // example: http://www.isfdb.org/cgi-bin/title.cgi?11169
             // we have multiple editions. We get here from one of:
             // - direct link to the "title" of the publication; i.e. 'show the editions'
@@ -1244,7 +1262,7 @@ public class IsfdbSearchEngine
         }
 
         // go get it.
-        final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, edition.getIsfdbId());
+        final String url = getSiteUrl() + String.format(CGI_BY_EXTERNAL_ID, edition.getIsfdbId());
         return loadDocument(context, url);
     }
 
@@ -1355,11 +1373,88 @@ public class IsfdbSearchEngine
         return Long.parseLong(url.substring(index));
     }
 
+    // Experimenting with the REST API... to limited for full use for now.
+    @VisibleForTesting
     @NonNull
-    private String cleanUpName(@NonNull final String s) {
-        final String tmp = cleanText(s.trim());
-        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
+    public Bundle xmlSearchByExternalId(@NonNull final Context context,
+                                        @NonNull final String externalId,
+                                        @NonNull final boolean[] fetchCovers)
+            throws StorageException, SearchException {
+
+        // getpub_by_internal_ID.cgi
+        //   calls this server code:
+        // def SQLGetPubById(id):
+        //	query = "select * from pubs where pub_id = '%d'" % (int(id))
+        //	db.query(query)
+        //	result = db.store_result()
+        //	if result.num_rows() > 0:
+        //		pub = result.fetch_row()
+        //		return pub[0]
+        //	else:
+        //		return 0
+        final String url = getSiteUrl() + String.format(REST_BY_EXTERNAL_ID, externalId);
+        final List<Bundle> bookData = fetchPublications(context, url, fetchCovers, 1);
+        if (bookData.isEmpty()) {
+            return newBundleInstance();
+        } else {
+            return bookData.get(0);
+        }
     }
+
+    /**
+     * Fetch a (list of) publications by REST-url which returns an xml doc.
+     *
+     * @param context     Current context
+     * @param url         to fetch
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     *                    The array is guaranteed to have at least one element.
+     * @param maxRecords  the maximum number of "Publication" records to fetch
+     */
+    @NonNull
+    private List<Bundle> fetchPublications(@NonNull final Context context,
+                                           @NonNull final String url,
+                                           @NonNull final boolean[] fetchCovers,
+                                           @SuppressWarnings("SameParameterValue")
+                                           final int maxRecords)
+            throws StorageException, SearchException {
+
+        final IsfdbPublicationListHandler listHandler =
+                new IsfdbPublicationListHandler(this,
+                                                fetchCovers, maxRecords,
+                                                getLocale(context));
+
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
+
+        try {
+            final SAXParser parser = factory.newSAXParser();
+            try (TerminatorConnection con = createConnection(url)) {
+                parser.parse(con.getInputStream(), listHandler);
+            }
+
+            if (isCancelled()) {
+                return new ArrayList<>();
+            }
+
+        } catch (@NonNull final SAXException e) {
+            // unwrap SAXException if possible
+            final Exception embedded = e.getException();
+            if (embedded instanceof EOFException) {
+                // not an error; we're done.
+                return listHandler.getResult();
+
+            } else if (embedded instanceof StorageException) {
+                throw (StorageException) embedded;
+            } else {
+                throw new SearchException(getName(context), e);
+            }
+
+        } catch (@NonNull final ParserConfigurationException | IOException e) {
+            throw new SearchException(getName(context), e);
+        }
+
+        return listHandler.getResult();
+    }
+
 
     /**
      * ISFDB specific field names we add to the bundle based on parsed XML data.
@@ -1374,6 +1469,7 @@ public class IsfdbSearchEngine
 
         static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
         static final String ISBN_2 = "__ISFDB_ISBN2";
+        static final String BOOK_TAG = "__TAG";
 
         private SiteField() {
         }
