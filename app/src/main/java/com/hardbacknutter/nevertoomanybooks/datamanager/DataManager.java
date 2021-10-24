@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -499,7 +500,8 @@ public class DataManager
                          @NonNull final Money money) {
         mRawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
-            mRawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY, money.getCurrency());
+            mRawData.putString(key + DBKey.SUFFIX_KEY_CURRENCY,
+                               money.getCurrency().toUpperCase(Locale.ENGLISH));
         }
     }
 
