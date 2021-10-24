@@ -69,28 +69,28 @@ public class MoneyFormatter
             return "";
         }
 
-        final String currency = rawValue.getCurrency();
+        final Currency currency = rawValue.getCurrency();
         // no currency ? just display the source value as-is
-        if (currency == null || currency.isEmpty()) {
-            return String.valueOf(rawValue.doubleValue());
+        if (currency == null) {
+            return rawValue.toString();
         }
 
         try {
             final DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
-            nf.setCurrency(Currency.getInstance(currency));
+            nf.setCurrency(currency);
 
             // the result is rather dire... most currency symbols are shown as 3-char codes
             // e.g. 'EUR','US$',...
-            return nf.format(rawValue.doubleValue());
+            return nf.format(rawValue.getValue());
 
         } catch (@NonNull final IllegalArgumentException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "currency=" + rawValue.getCurrency()
-                           + "|value=" + rawValue.doubleValue(), e);
+                Log.d(TAG, "currency=" + rawValue.getCurrencyCode()
+                           + "|value=" + rawValue.getValue(), e);
             }
 
             return context.getString(R.string.fallback_currency_format,
-                                     rawValue.getCurrency(),
+                                     rawValue.getCurrencyCode(),
                                      rawValue.doubleValue());
         }
     }

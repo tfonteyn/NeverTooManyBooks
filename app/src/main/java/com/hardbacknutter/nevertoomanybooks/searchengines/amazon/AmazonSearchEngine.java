@@ -367,7 +367,7 @@ public class AmazonSearchEngine
             final Money money = new Money(siteLocale, price.text());
             if (money.getCurrency() != null) {
                 bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                bookData.putString(DBKey.PRICE_LISTED_CURRENCY, money.getCurrency());
+                bookData.putString(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());
             } else {
                 bookData.putString(DBKey.PRICE_LISTED, price.text());
             }

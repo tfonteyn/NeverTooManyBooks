@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class CurrencyUtilsTest
         extends Base {
 
+    private static final BigDecimal tenDotFive = BigDecimal.valueOf(10.50d);
+
     /** Country with ',' as thousands, and '.' as decimal separator. */
     @Test
     void splitPrice10() {
@@ -39,16 +42,16 @@ class CurrencyUtilsTest
         Money money;
 
         money = new Money(locale, "$10.50");
-        assertEquals(Money.USD, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.USD, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
 
         money = new Money(locale, "£10.50");
-        assertEquals(Money.GBP, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
 
         money = new Money(locale, "EUR 10.50");
-        assertEquals(Money.EUR, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
     }
 
     @Test
@@ -59,7 +62,7 @@ class CurrencyUtilsTest
 
         money = new Money(locale, "10.50");
         assertNull(money.getCurrency());
-        assertEquals(0.0d, money.doubleValue());
+        assertNull(money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
@@ -69,12 +72,12 @@ class CurrencyUtilsTest
         Money money;
 
         money = new Money(locale, "fr10,50");
-        assertEquals("BEF", money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals("BEF", money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
 
         money = new Money(locale, "$10.50");
-        assertEquals(Money.USD, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.USD, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
@@ -84,8 +87,8 @@ class CurrencyUtilsTest
         final Money money;
 
         money = new Money(locale, "£10.50");
-        assertEquals(Money.GBP, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.GBP, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
@@ -95,7 +98,7 @@ class CurrencyUtilsTest
         final Money money;
 
         money = new Money(locale, "EUR 10.50");
-        assertEquals(Money.EUR, money.getCurrency());
-        assertEquals(10.50d, money.doubleValue());
+        assertEquals(Money.EUR, money.getCurrencyCode());
+        assertEquals(tenDotFive, money.getValue());
     }
 }

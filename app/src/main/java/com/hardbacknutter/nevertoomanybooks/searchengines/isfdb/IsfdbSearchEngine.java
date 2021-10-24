@@ -708,10 +708,10 @@ public class IsfdbSearchEngine
                     if (nextSibling != null) {
                         tmpString = nextSibling.toString().trim();
                         final Money money = new Money(getLocale(context), tmpString);
-                        if (money.getCurrency() != null) {
+                        if (money.getCurrencyCode() != null) {
                             bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
                             bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
-                                               money.getCurrency());
+                                               money.getCurrencyCode());
                         } else {
                             bookData.putString(DBKey.PRICE_LISTED, tmpString);
                         }

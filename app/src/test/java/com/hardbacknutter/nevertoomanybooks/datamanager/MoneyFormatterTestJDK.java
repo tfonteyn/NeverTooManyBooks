@@ -62,8 +62,8 @@ class MoneyFormatterTestJDK
         setLocale(Locale.GERMANY);
         //noinspection ConstantConditions
         final FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
-        assertEquals("1.234,50 $", f.format(mContext, new Money(1234.50d, Money.USD)));
-        assertEquals("1.234,50 £", f.format(mContext, new Money(1234.50d, Money.GBP)));
-        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, Money.EUR)));
+        assertEquals("1.234,50 $", f.format(mContext, new Money(1234.50d, Money.USD)));
+        assertEquals("1.234,50 £", f.format(mContext, new Money(1234.50d, Money.GBP)));
+        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, Money.EUR)));
     }
 }

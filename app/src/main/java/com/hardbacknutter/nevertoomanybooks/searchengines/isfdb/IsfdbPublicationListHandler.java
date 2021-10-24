@@ -315,9 +315,9 @@ class IsfdbPublicationListHandler
                 case XML_PRICE: {
                     final String tmpString = mBuilder.toString().trim();
                     final Money money = new Money(mLocale, tmpString);
-                    if (money.getCurrency() != null) {
+                    if (money.getCurrencyCode() != null) {
                         mPublicationData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                        addIfNotPresent(DBKey.PRICE_LISTED_CURRENCY, money.getCurrency());
+                        addIfNotPresent(DBKey.PRICE_LISTED_CURRENCY, money.getCurrencyCode());
                     } else {
                         addIfNotPresent(DBKey.PRICE_LISTED, tmpString);
                     }

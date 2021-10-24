@@ -22,10 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,10 +51,10 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * Casting to a float is with loss of precision.
  * <p>
  * ENHANCE: currency fields should not use float/double.
- * https://javamoney.github.io - a wonderful library, although it seems it
- * won't make it into the JDK for now. Might have issues on Android though.
+ * https://javamoney.github.io - a wonderful library, might have issues on Android though.
  * https://www.joda.org/joda-money/ not tried, but looks small and neat.
- * Alternatively migrate to using BigDecimal as a short term solution.
+ * <p>
+ * For now, migrating to using BigDecimal and storing in the db as int?
  */
 public class Money
         extends Number {
@@ -72,28 +76,37 @@ public class Money
     /** HTML cleaning. */
     private static final Pattern NBSP_LITERAL = Pattern.compile("&nbsp;", Pattern.LITERAL);
 
-    /** A Map to translate currency symbols to their official ISO code. */
+    /** A Map to translate currency <strong>symbols</strong> to their official ISO code. */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
 
     private static final long serialVersionUID = -2882175581162071769L;
 
-    /** ISO code. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
-    private String mCurrency;
-    private double mValue;
+    private Currency mCurrency;
+    @Nullable
+    private BigDecimal mValue;
 
-    public Money() {
-    }
-
-    public Money(final double value,
-                 @NonNull final String currency) {
+    public Money(@NonNull final BigDecimal value,
+                 @NonNull final Currency currency) {
         mValue = value;
         mCurrency = currency;
     }
 
+    public Money(@NonNull final BigDecimal value,
+                 @NonNull final String currency) {
+        mValue = value;
+        mCurrency = Currency.getInstance(currency);
+    }
+
+    public Money(final double value,
+                 @NonNull final String currency) {
+        mValue = BigDecimal.valueOf(value);
+        mCurrency = Currency.getInstance(currency);
+    }
+
     /**
-     * Takes a combined price field, and returns the value/currency in the Bundle.
+     * Takes a combined price field, e.g. "Bf459", "$9.99", "66 EUR", etc.
      *
      * <strong>Note:</strong>
      * The UK (GBP), pre-decimal 1971, had Shilling/Pence as subdivisions of the pound.
@@ -102,12 +115,11 @@ public class Money
      * It's used on the ISFDB web site. We convert it to GBP.
      * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
      *
-     * <strong>If any conversion fails, the currency will be {@code null},
-     * and the value will be 0.0d</strong>
+     * <strong>If any conversion fails, the currency and the value will be {@code null}</strong>
      *
      * @param locale            <strong>Must</strong> be the Locale for the source data.
      *                          (and NOT simply the system/user).
-     * @param priceWithCurrency price to decode, e.g. "Bf459", "$9.99", "66 EUR", ...
+     * @param priceWithCurrency price to decode
      */
     public Money(@NonNull final Locale locale,
                  @NonNull final CharSequence priceWithCurrency) {
@@ -170,6 +182,23 @@ public class Money
         CURRENCY_MAP.put("lei", "RON"); // Romanian Leu (Lei)
     }
 
+    /**
+     * Convert the passed string with a (hopefully valid) currency unit/symbol,
+     * into the ISO code for that currency.
+     *
+     * @param symbol to convert
+     *
+     * @return ISO code.
+     */
+    @Nullable
+    private static String fromSymbol(@NonNull final String symbol) {
+        if (CURRENCY_MAP.isEmpty()) {
+            createCurrencyMap();
+        }
+        final String key = symbol.trim().toLowerCase(ServiceLocator.getSystemLocale());
+        return CURRENCY_MAP.get(key);
+    }
+
     public boolean parse(@NonNull final Locale locale,
                          @NonNull final CharSequence priceWithCurrency) {
 
@@ -207,8 +236,9 @@ public class Money
 
                 // the British pound was made up of 20 shillings, each of which was
                 // made up of 12 pence, a total of 240 pence. Madness...
-                mValue = ((shillings * 12) + pence) / 240f;
-                mCurrency = GBP;
+                final double d = ((shillings * 12) + pence) / 240d;
+                mValue = BigDecimal.valueOf(d);
+                mCurrency = Currency.getInstance(GBP);
                 return true;
 
             } catch (@NonNull final NumberFormatException ignore) {
@@ -228,18 +258,18 @@ public class Money
             currencyCode = currencyStr.trim().toUpperCase(locale);
             // if we don't have a normalized ISO3 code, see if we can convert it to one.
             if (currencyCode.length() != 3) {
-                currencyCode = currencyToISO(currencyStr);
+                currencyCode = fromSymbol(currencyStr);
             }
         }
 
         if (currencyCode != null && currencyCode.length() == 3) {
             if (valueStr != null && !valueStr.isEmpty()) {
                 try {
-                    // buffer just in case the getCurrencyCode() throws.
+                    // buffer just in case the getInstance() throws.
                     final double tmpValue = ParseUtils.parseDouble(valueStr, locale);
                     // re-get the code just in case it used a recognised but non-standard string
-                    mCurrency = Currency.getInstance(currencyCode).getCurrencyCode();
-                    mValue = tmpValue;
+                    mCurrency = Currency.getInstance(currencyCode);
+                    mValue = BigDecimal.valueOf(tmpValue);
                     return true;
 
                 } catch (@NonNull final IllegalArgumentException ignore) {
@@ -251,56 +281,51 @@ public class Money
         return false;
     }
 
+    @Nullable
+    public BigDecimal getValue() {
+        return mValue;
+    }
+
+    @Nullable
+    public Currency getCurrency() {
+        return mCurrency;
+    }
+
     /**
-     * Convert the passed string with a (hopefully valid) currency unit, into the ISO code
-     * for that currency.
+     * Convenience method. Get the ISO currency code.
      *
-     * @param currency to convert
+     * @return ISO 4217 code or {@code null} if the currency is not set
      *
-     * @return ISO code.
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_4217">ISO 4217</a>
      */
     @Nullable
-    private String currencyToISO(@NonNull final String currency) {
-        if (CURRENCY_MAP.isEmpty()) {
-            createCurrencyMap();
-        }
-        final String key = currency.trim().toLowerCase(ServiceLocator.getSystemLocale());
-        return CURRENCY_MAP.get(key);
+    public String getCurrencyCode() {
+        return mCurrency != null ? mCurrency.getCurrencyCode() : null;
+    }
+
+    public boolean isZero() {
+        return Objects.requireNonNull(mValue).compareTo(BigDecimal.ZERO) == 0;
     }
 
     @Override
     public double doubleValue() {
-        return mValue;
+        return Objects.requireNonNull(mValue).doubleValue();
     }
 
     @Override
     public int intValue() {
-        if (mValue >= 0) {
-            return (int) (mValue + 0.5);
-        } else {
-            return (int) mValue;
-        }
+        return Objects.requireNonNull(mValue).round(MathContext.UNLIMITED).intValue();
     }
 
     @Override
     public long longValue() {
-        if (mValue >= 0) {
-            return (int) (mValue + 0.5);
-        } else {
-            return (int) mValue;
-        }
+        return Objects.requireNonNull(mValue).round(MathContext.UNLIMITED).longValue();
     }
 
     @Override
     public float floatValue() {
-        return (float) mValue;
+        return Objects.requireNonNull(mValue).floatValue();
     }
-
-    @Nullable
-    public String getCurrency() {
-        return mCurrency;
-    }
-
 
     /**
      * NOT DEBUG!
@@ -312,7 +337,7 @@ public class Money
     @Override
     @NonNull
     public String toString() {
-        return Double.toString(mValue);
+        return Objects.requireNonNull(mValue).toString();
     }
 
     /**
@@ -326,72 +351,97 @@ public class Money
      * @return EURO value as a new Money object.
      */
     public Money toEuro() {
-        if (EUR.equals(mCurrency) || mCurrency == null || mCurrency.isEmpty()) {
+        Objects.requireNonNull(mValue);
+
+        if (mCurrency == null) {
             return new Money(mValue, EUR);
         }
 
-        switch (mCurrency) {
+        switch (mCurrency.getCurrencyCode()) {
+            case "EUR":
+                return new Money(mValue, EUR);
+
             case "BEF":
             case "LUF":
-                return new Money(mValue / 40.3399, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(40.3399d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "NLD":
-                return new Money(mValue / 2.20371, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(2.20371d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "FRF":
             case "MCF":
-                return new Money(mValue / 6.55957, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(6.55957d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "DEM":
-                return new Money(mValue / 1.95583, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(1.95583d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "IEP":
-                return new Money(mValue / 0.787564, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(0.787564d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "ITL":
-                return new Money(mValue / 1.93627, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(1.93627d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "GRD":
-                return new Money(mValue / 340.75, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(340.75d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "ESP":
-                return new Money(mValue / 166.386, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(166.386d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "PTE":
-                return new Money(mValue / 200.482, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(200.482d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "ATS":
-                return new Money(mValue / 13.7603, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(13.7603d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "CYP":
-                return new Money(mValue / 0.585274, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(0.585274d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "EEK":
-                return new Money(mValue / 15.6466, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(15.6466d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "FIM":
-                return new Money(mValue / 5.94573, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(5.94573d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "LVL":
-                return new Money(mValue / 0.702804, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(0.702804d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "LTL":
-                return new Money(mValue / 3.45280, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(3.45280d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "MTL":
-                return new Money(mValue / 0.429300, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(0.429300d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "SML":
-                return new Money(mValue / 1936.27, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(1936.27d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "SKK":
-                return new Money(mValue / 30.1260, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(30.1260d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "SIT":
-                return new Money(mValue / 239.640, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(239.640d),
+                                               RoundingMode.HALF_UP), EUR);
 
             case "VAL":
-                return new Money(mValue / 1936.27, EUR);
+                return new Money(mValue.divide(BigDecimal.valueOf(1936.27d),
+                                               RoundingMode.HALF_UP), EUR);
 
             default:
                 return new Money(mValue, mCurrency);
