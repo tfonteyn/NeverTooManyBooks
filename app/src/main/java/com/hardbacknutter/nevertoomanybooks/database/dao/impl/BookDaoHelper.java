@@ -106,8 +106,8 @@ public class BookDaoHelper {
         processBitmask();
 
         // cleanup/build all price related fields
-        processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
-        processPrice(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
+        processPrice(DBKey.PRICE_LISTED);
+        processPrice(DBKey.PRICE_PAID);
 
         // replace 'T' by ' ' and truncate pure date fields if needed
         processDates();
@@ -145,19 +145,18 @@ public class BookDaoHelper {
     /**
      * Helper for {@link #process(Context)}.
      *
-     * @param valueKey    key for the value field
-     * @param currencyKey key for the currency field
+     * @param key key for the money (value) field
      */
     @VisibleForTesting
-    public void processPrice(@NonNull final String valueKey,
-                             @NonNull final String currencyKey) {
+    public void processPrice(@NonNull final String key) {
+
+        final String currencyKey = key + DBKey.SUFFIX_KEY_CURRENCY;
         // handle a price without a currency.
-        if (mBook.contains(valueKey) && !mBook.contains(currencyKey)) {
+        if (mBook.contains(key) && !mBook.contains(currencyKey)) {
             // we presume the user bought the book in their own currency.
-            final Money money = new Money(mBookLocale, mBook.getString(valueKey));
+            final Money money = new Money(mBookLocale, mBook.getString(key));
             if (money.getCurrency() != null) {
-                mBook.putDouble(valueKey, money.doubleValue());
-                mBook.putString(currencyKey, money.getCurrency().toUpperCase(mBookLocale));
+                mBook.putMoney(key, money);
                 return;
             }
             // else just leave the original in the data
@@ -165,7 +164,7 @@ public class BookDaoHelper {
 
         // Make sure currencies are uppercase
         if (mBook.contains(currencyKey)) {
-            mBook.putString(currencyKey, mBook.getString(currencyKey).toUpperCase(mBookLocale));
+            mBook.putString(currencyKey, mBook.getString(currencyKey).toUpperCase(Locale.ENGLISH));
         }
     }
 

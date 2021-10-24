@@ -52,7 +52,7 @@ class BookTest
         book.putString(DBKey.PRICE_LISTED_CURRENCY, "$");
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED));
@@ -72,8 +72,8 @@ class BookTest
         // no KEY_PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
-        bdh.processPrice(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_LISTED);
+        bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
@@ -94,8 +94,8 @@ class BookTest
         // no KEY_PRICE_PAID_CURRENCY
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
-        bdh.processPrice(DBKey.PRICE_PAID, DBKey.PRICE_PAID_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_LISTED);
+        bdh.processPrice(DBKey.PRICE_PAID);
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
@@ -114,7 +114,7 @@ class BookTest
         book.putString(DBKey.PRICE_LISTED, "EUR 45");
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
-        bdh.processPrice(DBKey.PRICE_LISTED, DBKey.PRICE_LISTED_CURRENCY);
+        bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED));
