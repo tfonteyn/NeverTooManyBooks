@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,7 +65,7 @@ public class MoneyFormatter
     public String format(@NonNull final Context context,
                          @Nullable final Money rawValue) {
 
-        if (rawValue == null || rawValue.doubleValue() == 0.0d) {
+        if (rawValue == null || rawValue.isZero()) {
             return "";
         }
 
