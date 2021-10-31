@@ -158,9 +158,7 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- Container for contents of drawer
-         uses NavigationView to make configuration easier
-    -->
+    <!-- Container for contents of main menu drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         style="@style/NavigationView"
