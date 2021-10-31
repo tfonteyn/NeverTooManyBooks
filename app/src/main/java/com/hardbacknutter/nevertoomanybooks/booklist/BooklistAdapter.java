@@ -1105,6 +1105,7 @@ public class BooklistAdapter
             }
 
             if (mInUse.rating) {
+                //URGENT: int? not float?
                 final int rating = rowData.getInt(DBKey.KEY_RATING);
                 if (rating != 0) {
                     mRatingBar.setRating(rating);

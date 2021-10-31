@@ -292,7 +292,7 @@ public class CalibreContentServerWriter
             changes.put(CalibreBook.PUBLISHER, "");
         }
 
-        changes.put(CalibreBook.RATING, (int) localBook.getDouble(DBKey.KEY_RATING));
+        changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.KEY_RATING));
 
         final JSONArray languages = new JSONArray();
         final String language = localBook.getString(DBKey.KEY_LANGUAGE);

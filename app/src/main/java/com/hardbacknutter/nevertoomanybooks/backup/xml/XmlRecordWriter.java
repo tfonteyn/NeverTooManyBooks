@@ -491,7 +491,7 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.attr(DBKey.KEY_LOCATION,
                                            book.getString(DBKey.KEY_LOCATION)));
                 writer.write(XmlUtils.attr(DBKey.KEY_RATING,
-                                           book.getDouble(DBKey.KEY_RATING)));
+                                           book.getFloat(DBKey.KEY_RATING)));
                 writer.write(XmlUtils.attr(DBKey.BOOL_SIGNED,
                                            book.getBoolean(DBKey.BOOL_SIGNED)));
                 writer.write(XmlUtils.attr(DBKey.BITMASK_EDITION,

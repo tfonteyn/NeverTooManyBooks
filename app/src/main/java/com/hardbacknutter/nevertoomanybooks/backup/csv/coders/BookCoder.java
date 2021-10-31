@@ -191,7 +191,7 @@ public class BookCoder {
         line.add(encode(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
         line.add(encode(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
         line.add(encode(book.getLong(DBKey.BITMASK_EDITION)));
-        line.add(encode(book.getDouble(DBKey.KEY_RATING)));
+        line.add(encode(book.getFloat(DBKey.KEY_RATING)));
         line.add(encode(mBookshelfCoder.encodeList(
                 book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST))));
         line.add(encode(book.getInt(DBKey.BOOL_READ)));

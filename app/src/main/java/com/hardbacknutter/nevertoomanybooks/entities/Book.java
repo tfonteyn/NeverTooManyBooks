@@ -388,14 +388,10 @@ public class Book
         // publication data
         bookData.putString(DBKey.KEY_PRINT_RUN, getString(DBKey.KEY_PRINT_RUN));
         bookData.putLong(DBKey.BITMASK_TOC, getLong(DBKey.BITMASK_TOC));
-        bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
-                           getString(DBKey.DATE_BOOK_PUBLICATION));
-        bookData.putDouble(DBKey.PRICE_LISTED,
-                           getDouble(DBKey.PRICE_LISTED));
-        bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
-                           getString(DBKey.PRICE_LISTED_CURRENCY));
-        bookData.putString(DBKey.DATE_FIRST_PUBLICATION,
-                           getString(DBKey.DATE_FIRST_PUBLICATION));
+        bookData.putString(DBKey.DATE_BOOK_PUBLICATION, getString(DBKey.DATE_BOOK_PUBLICATION));
+        bookData.putDouble(DBKey.PRICE_LISTED, getDouble(DBKey.PRICE_LISTED));
+        bookData.putString(DBKey.PRICE_LISTED_CURRENCY, getString(DBKey.PRICE_LISTED_CURRENCY));
+        bookData.putString(DBKey.DATE_FIRST_PUBLICATION, getString(DBKey.DATE_FIRST_PUBLICATION));
 
         bookData.putString(DBKey.KEY_FORMAT, getString(DBKey.KEY_FORMAT));
         bookData.putString(DBKey.KEY_COLOR, getString(DBKey.KEY_COLOR));
@@ -413,7 +409,7 @@ public class Book
         // put/getBoolean is 'right', but as a copy, might as well just use long
         bookData.putLong(DBKey.BOOL_SIGNED, getLong(DBKey.BOOL_SIGNED));
 
-        bookData.putDouble(DBKey.KEY_RATING, getDouble(DBKey.KEY_RATING));
+        bookData.putFloat(DBKey.KEY_RATING, getFloat(DBKey.KEY_RATING));
         bookData.putString(DBKey.KEY_PRIVATE_NOTES, getString(DBKey.KEY_PRIVATE_NOTES));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
@@ -423,8 +419,7 @@ public class Book
 
         bookData.putString(DBKey.DATE_ACQUIRED, getString(DBKey.DATE_ACQUIRED));
         bookData.putDouble(DBKey.PRICE_PAID, getDouble(DBKey.PRICE_PAID));
-        bookData.putString(DBKey.PRICE_PAID_CURRENCY,
-                           getString(DBKey.PRICE_PAID_CURRENCY));
+        bookData.putString(DBKey.PRICE_PAID_CURRENCY, getString(DBKey.PRICE_PAID_CURRENCY));
 
         bookData.putInt(DBKey.KEY_BOOK_CONDITION, getInt(DBKey.KEY_BOOK_CONDITION));
         bookData.putInt(DBKey.KEY_BOOK_CONDITION_COVER, getInt(DBKey.KEY_BOOK_CONDITION_COVER));
@@ -956,9 +951,9 @@ public class Book
                      LONG_VALIDATOR, R.string.lbl_table_of_content);
 
         addValidator(DBKey.PRICE_LISTED,
-                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_listed);
+                     PRICE_VALIDATOR, R.string.lbl_price_listed);
         addValidator(DBKey.PRICE_PAID,
-                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
+                     PRICE_VALIDATOR, R.string.lbl_price_paid);
 
         addCrossValidator((context, book) -> {
             final String start = book.getString(DBKey.DATE_READ_START);
@@ -1131,13 +1126,13 @@ public class Book
         final String seriesStr = series != null ? " (" + series.getLabel(context) + ')' : "";
 
         //remove trailing 0's
-        final double rating = getDouble(DBKey.KEY_RATING);
+        final float rating = getFloat(DBKey.KEY_RATING);
         final String ratingStr;
         if (rating > 0) {
-            // force rounding
+            // force rounding down
             final int ratingTmp = (int) rating;
             // get fraction
-            final double decimal = rating - ratingTmp;
+            final float decimal = rating - ratingTmp;
             if (decimal > 0) {
                 ratingStr = '(' + String.valueOf(rating) + '/' + RATING_STARS + ')';
             } else {

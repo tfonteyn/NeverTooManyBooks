@@ -536,7 +536,7 @@ public class CalibreContentServerReader
             final int rating = calibreBook.getInt(CalibreBook.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
-                localBook.putDouble(DBKey.KEY_RATING, rating);
+                localBook.putFloat(DBKey.KEY_RATING, rating);
             }
         }
 
