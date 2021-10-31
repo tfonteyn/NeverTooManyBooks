@@ -42,6 +42,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- ======================================= -->
         <!-- Material color attributes (light theme) -->
+        <!-- https://m3.material.io/libraries/mdc-android/color-theming -->
         <!-- ======================================= -->
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
@@ -53,13 +54,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
         <!--  <item name="colorSurface">@color/white</item>-->
         <!--  <item name="colorOnSurface">@color/black</item>-->
-
-        <!-- framework - The color applied to icons/controls in their normal state. -->
-        <!--  <item name="colorControlNormal">?attr/colorOnPrimary</item>-->
-        <!-- framework - The color applied to icons/controls in their activated state (e.g. checked). -->
-        <!--  <item name="colorControlActivated">?attr/colorPrimary</item>-->
-        <!-- framework - The color applied to control highlights (e.g. ripples, list selectors). -->
-        <!--  <item name="colorControlHighlight">DEFAULT</item>-->
 
         <!-- ======================================= -->
         <!-- Application specific (light theme) -->

@@ -126,7 +126,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- An Activity primary/top toolbar -->
-    <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar.Surface">
+    <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="layout_scrollFlags">scroll|enterAlways</item>
@@ -134,7 +134,7 @@
     </style>
 
     <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar.Surface">
+    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
