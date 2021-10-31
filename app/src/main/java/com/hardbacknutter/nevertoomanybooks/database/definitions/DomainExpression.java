@@ -37,7 +37,7 @@ public class DomainExpression
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<DomainExpression> CREATOR = new Creator<DomainExpression>() {
+    public static final Creator<DomainExpression> CREATOR = new Creator<>() {
         @Override
         public DomainExpression createFromParcel(@NonNull final Parcel in) {
             return new DomainExpression(in);

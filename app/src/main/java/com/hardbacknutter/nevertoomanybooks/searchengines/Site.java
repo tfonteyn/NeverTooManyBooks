@@ -50,7 +50,7 @@ public final class Site
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Site> CREATOR = new Creator<Site>() {
+    public static final Creator<Site> CREATOR = new Creator<>() {
         @Override
         public Site createFromParcel(@NonNull final Parcel source) {
             return new Site(source);
@@ -328,7 +328,7 @@ public final class Site
 
         /** {@link Parcelable}. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<Type> CREATOR = new Creator<Type>() {
+        public static final Creator<Type> CREATOR = new Creator<>() {
             @Override
             @NonNull
             public Type createFromParcel(@NonNull final Parcel in) {

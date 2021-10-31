@@ -40,7 +40,7 @@ public class ImageFileInfo
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ImageFileInfo> CREATOR = new Creator<ImageFileInfo>() {
+    public static final Creator<ImageFileInfo> CREATOR = new Creator<>() {
         @Override
         public ImageFileInfo createFromParcel(@NonNull final Parcel in) {
             return new ImageFileInfo(in);

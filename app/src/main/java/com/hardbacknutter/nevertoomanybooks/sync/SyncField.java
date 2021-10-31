@@ -33,7 +33,7 @@ public final class SyncField
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncField> CREATOR = new Creator<SyncField>() {
+    public static final Creator<SyncField> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public SyncField createFromParcel(@NonNull final Parcel in) {

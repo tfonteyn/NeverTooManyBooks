@@ -47,7 +47,7 @@ public class PartialDate
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<PartialDate> CREATOR = new Creator<PartialDate>() {
+    public static final Creator<PartialDate> CREATOR = new Creator<>() {
         @Override
         public PartialDate createFromParcel(@NonNull final Parcel in) {
             return new PartialDate(in);

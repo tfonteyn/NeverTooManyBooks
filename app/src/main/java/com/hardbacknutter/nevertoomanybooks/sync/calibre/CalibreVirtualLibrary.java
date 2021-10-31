@@ -30,18 +30,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 public class CalibreVirtualLibrary
         extends LibraryBase {
 
-    public static final Creator<CalibreVirtualLibrary> CREATOR =
-            new Creator<CalibreVirtualLibrary>() {
-                @Override
-                public CalibreVirtualLibrary createFromParcel(@NonNull final Parcel in) {
-                    return new CalibreVirtualLibrary(in);
-                }
+    public static final Creator<CalibreVirtualLibrary> CREATOR = new Creator<>() {
+        @Override
+        public CalibreVirtualLibrary createFromParcel(@NonNull final Parcel in) {
+            return new CalibreVirtualLibrary(in);
+        }
 
-                @Override
-                public CalibreVirtualLibrary[] newArray(final int size) {
-                    return new CalibreVirtualLibrary[size];
-                }
-            };
+        @Override
+        public CalibreVirtualLibrary[] newArray(final int size) {
+            return new CalibreVirtualLibrary[size];
+        }
+    };
 
     /** The physical Calibre library row id. */
     private long mLibraryId;

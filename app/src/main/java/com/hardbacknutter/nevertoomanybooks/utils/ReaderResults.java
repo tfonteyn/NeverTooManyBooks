@@ -32,7 +32,7 @@ public class ReaderResults
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ReaderResults> CREATOR = new Creator<ReaderResults>() {
+    public static final Creator<ReaderResults> CREATOR = new Creator<>() {
         @Override
         public ReaderResults createFromParcel(@NonNull final Parcel in) {
             return new ReaderResults(in);

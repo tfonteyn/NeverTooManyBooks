@@ -42,7 +42,7 @@ public class Publisher
         implements Entity, ItemWithTitle, Mergeable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {
+    public static final Creator<Publisher> CREATOR = new Creator<>() {
         @Override
         public Publisher createFromParcel(@NonNull final Parcel source) {
             return new Publisher(source);

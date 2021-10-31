@@ -87,7 +87,7 @@ public class StartupViewModel
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
 
-    private final TaskListener<Boolean> mTaskListener = new TaskListener<Boolean>() {
+    private final TaskListener<Boolean> mTaskListener = new TaskListener<>() {
         /**
          * Called when any startup task completes. If no more tasks, let the activity know.
          */

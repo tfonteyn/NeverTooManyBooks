@@ -41,7 +41,7 @@ public class ExportResults
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ExportResults> CREATOR = new Creator<ExportResults>() {
+    public static final Creator<ExportResults> CREATOR = new Creator<>() {
         @Override
         public ExportResults createFromParcel(@NonNull final Parcel in) {
             return new ExportResults(in);

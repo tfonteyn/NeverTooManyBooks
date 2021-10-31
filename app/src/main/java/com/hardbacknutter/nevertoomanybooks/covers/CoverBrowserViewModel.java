@@ -89,7 +89,7 @@ public class CoverBrowserViewModel
     @Nullable
     private FetchImageTask mSelectedImageTask;
     /** FetchImageTask listener. */
-    private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<ImageFileInfo>() {
+    private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<>() {
         @Override
         public void onFinished(@NonNull final FinishedMessage<ImageFileInfo> message) {
             //TaskListener, don't check if (message.isNewEvent())

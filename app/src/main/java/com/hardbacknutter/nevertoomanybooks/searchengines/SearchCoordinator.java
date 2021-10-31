@@ -180,7 +180,7 @@ public class SearchCoordinator
     /** Cached string resource. */
     private String mListElementPrefixString;
     /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
+    private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
 
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {

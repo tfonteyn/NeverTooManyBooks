@@ -83,7 +83,7 @@ public class EditBookSeriesListDialogFragment
     private SeriesListAdapter mListAdapter;
 
     private final EditBookBaseFragment.EditItemLauncher<Series> mOnEditSeriesLauncher =
-            new EditBookBaseFragment.EditItemLauncher<Series>(RK_EDIT_SERIES) {
+            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_SERIES) {
                 @Override
                 public void onResult(@NonNull final Series original,
                                      @NonNull final Series modified) {

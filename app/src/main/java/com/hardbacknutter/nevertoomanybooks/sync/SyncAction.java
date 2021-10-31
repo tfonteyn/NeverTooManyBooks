@@ -37,7 +37,7 @@ public enum SyncAction
     Overwrite(R.string.lbl_field_usage_overwrite);
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncAction> CREATOR = new Creator<SyncAction>() {
+    public static final Creator<SyncAction> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public SyncAction createFromParcel(@NonNull final Parcel in) {

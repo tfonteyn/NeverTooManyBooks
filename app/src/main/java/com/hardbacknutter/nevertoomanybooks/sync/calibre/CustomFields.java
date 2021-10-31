@@ -82,7 +82,7 @@ public final class CustomFields {
     public static class Field
             implements Parcelable {
 
-        public static final Creator<Field> CREATOR = new Creator<Field>() {
+        public static final Creator<Field> CREATOR = new Creator<>() {
             @Override
             public Field createFromParcel(@NonNull final Parcel in) {
                 return new Field(in);

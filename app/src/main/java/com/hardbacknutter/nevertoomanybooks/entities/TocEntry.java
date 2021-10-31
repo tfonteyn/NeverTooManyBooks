@@ -56,7 +56,7 @@ public class TocEntry
         implements Entity, ItemWithTitle, Mergeable, AuthorWork {
 
     /** {@link Parcelable}. */
-    public static final Creator<TocEntry> CREATOR = new Creator<TocEntry>() {
+    public static final Creator<TocEntry> CREATOR = new Creator<>() {
         @Override
         public TocEntry createFromParcel(@NonNull final Parcel source) {
             return new TocEntry(source);

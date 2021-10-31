@@ -56,7 +56,7 @@ public enum SyncServer
     StripInfo(R.string.site_stripinfo_be, false, false);
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncServer> CREATOR = new Creator<SyncServer>() {
+    public static final Creator<SyncServer> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public SyncServer createFromParcel(@NonNull final Parcel in) {

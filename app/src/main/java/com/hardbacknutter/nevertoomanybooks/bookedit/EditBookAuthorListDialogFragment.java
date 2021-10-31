@@ -91,7 +91,7 @@ public class EditBookAuthorListDialogFragment
     private AuthorListAdapter mListAdapter;
 
     private final EditBookBaseFragment.EditItemLauncher<Author> mOnEditAuthorLauncher =
-            new EditBookBaseFragment.EditItemLauncher<Author>(RK_EDIT_AUTHOR) {
+            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_AUTHOR) {
                 @Override
                 public void onResult(@NonNull final Author original,
                                      @NonNull final Author modified) {

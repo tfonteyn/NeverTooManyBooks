@@ -83,7 +83,7 @@ public class EditBookPublisherListDialogFragment
     /** The adapter for the list itself. */
     private PublisherListAdapter mListAdapter;
     private final EditBookBaseFragment.EditItemLauncher<Publisher> mOnEditPublisherLauncher =
-            new EditBookBaseFragment.EditItemLauncher<Publisher>(RK_EDIT_PUBLISHER) {
+            new EditBookBaseFragment.EditItemLauncher<>(RK_EDIT_PUBLISHER) {
                 @Override
                 public void onResult(@NonNull final Publisher original,
                                      @NonNull final Publisher modified) {

@@ -70,7 +70,7 @@ public class Author
         implements Entity, Mergeable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Author> CREATOR = new Creator<Author>() {
+    public static final Creator<Author> CREATOR = new Creator<>() {
         @Override
         public Author createFromParcel(@NonNull final Parcel source) {
             return new Author(source);

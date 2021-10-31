@@ -32,7 +32,7 @@ public class SyncWriterResults
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncWriterResults> CREATOR = new Creator<SyncWriterResults>() {
+    public static final Creator<SyncWriterResults> CREATOR = new Creator<>() {
         @Override
         public SyncWriterResults createFromParcel(@NonNull final Parcel in) {
             return new SyncWriterResults(in);

@@ -43,7 +43,7 @@ public class Domain
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Domain> CREATOR = new Creator<Domain>() {
+    public static final Creator<Domain> CREATOR = new Creator<>() {
         @Override
         public Domain createFromParcel(@NonNull final Parcel source) {
             return new Domain(source);

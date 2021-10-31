@@ -43,7 +43,7 @@ public class CalibreLibrary
         extends LibraryBase {
 
     /** {@link Parcelable}. */
-    public static final Creator<CalibreLibrary> CREATOR = new Creator<CalibreLibrary>() {
+    public static final Creator<CalibreLibrary> CREATOR = new Creator<>() {
         @Override
         public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
             return new CalibreLibrary(in);

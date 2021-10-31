@@ -40,7 +40,7 @@ public class ImportResults
         extends ReaderResults {
 
     /** {@link Parcelable}. */
-    public static final Creator<ImportResults> CREATOR = new Creator<ImportResults>() {
+    public static final Creator<ImportResults> CREATOR = new Creator<>() {
         @Override
         public ImportResults createFromParcel(@NonNull final Parcel in) {
             return new ImportResults(in);

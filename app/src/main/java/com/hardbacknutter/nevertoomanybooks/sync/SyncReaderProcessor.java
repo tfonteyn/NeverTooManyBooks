@@ -60,7 +60,7 @@ public final class SyncReaderProcessor
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<SyncReaderProcessor>() {
+    public static final Creator<SyncReaderProcessor> CREATOR = new Creator<>() {
         @Override
         public SyncReaderProcessor createFromParcel(@NonNull final Parcel in) {
             return new SyncReaderProcessor(in);

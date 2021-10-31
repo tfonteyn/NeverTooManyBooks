@@ -55,7 +55,7 @@ public class Series
         implements Entity, ItemWithTitle, Mergeable {
 
     /** {@link Parcelable}. */
-    public static final Creator<Series> CREATOR = new Creator<Series>() {
+    public static final Creator<Series> CREATOR = new Creator<>() {
         @Override
         public Series createFromParcel(@NonNull final Parcel source) {
             return new Series(source);

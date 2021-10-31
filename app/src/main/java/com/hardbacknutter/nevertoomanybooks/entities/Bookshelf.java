@@ -60,7 +60,7 @@ public class Bookshelf
     public static final String TAG = "Bookshelf";
 
     /** {@link Parcelable}. */
-    public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
+    public static final Creator<Bookshelf> CREATOR = new Creator<>() {
         @Override
         public Bookshelf createFromParcel(@NonNull final Parcel source) {
             return new Bookshelf(source);

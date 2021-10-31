@@ -75,7 +75,7 @@ public enum ArchiveEncoding
     Tar(".tar");
 
     /** {@link Parcelable}. */
-    public static final Creator<ArchiveEncoding> CREATOR = new Creator<ArchiveEncoding>() {
+    public static final Creator<ArchiveEncoding> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public ArchiveEncoding createFromParcel(@NonNull final Parcel in) {
