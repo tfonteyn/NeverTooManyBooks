@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -523,12 +524,8 @@ public class Book
             }
         }
 
-        if (bookLocale != null) {
-            return bookLocale;
-        } else {
-            // none, use fallback.
-            return fallbackLocale;
-        }
+        // none, use fallback.
+        return Objects.requireNonNullElse(bookLocale, fallbackLocale);
     }
 
 

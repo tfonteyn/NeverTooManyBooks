@@ -420,12 +420,8 @@ public class BooklistAdapter
                           @BooklistGroup.Id final int groupKeyId,
                           @Nullable final String text,
                           @Nullable final Locale locale) {
-        final Locale tmpLocale;
-        if (locale != null) {
-            tmpLocale = locale;
-        } else {
-            tmpLocale = mUserLocale;
-        }
+
+        final Locale tmpLocale = Objects.requireNonNullElse(locale, mUserLocale);
 
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {

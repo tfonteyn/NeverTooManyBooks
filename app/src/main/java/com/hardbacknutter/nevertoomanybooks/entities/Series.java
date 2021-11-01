@@ -525,11 +525,7 @@ public class Series
      * @param number to use, a {@code null} is replaced by "".
      */
     public void setNumber(@Nullable final String number) {
-        if (number == null) {
-            mNumber = "";
-        } else {
-            mNumber = number;
-        }
+        mNumber = Objects.requireNonNullElse(number, "");
     }
 
     /**

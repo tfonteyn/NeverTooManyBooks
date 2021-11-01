@@ -420,10 +420,8 @@ public class PartialDatePickerDialogFragment
             final String dateStr;
             if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
                 dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-            } else if (currentValue != null) {
-                dateStr = currentValue;
             } else {
-                dateStr = "";
+                dateStr = Objects.requireNonNullElse(currentValue, "");
             }
 
             final Bundle args = new Bundle(4);

@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -344,11 +345,8 @@ public class ExtArrayAdapter<T>
      */
     public void addAll(final T... items) {
         synchronized (mLock) {
-            if (mOriginalValues != null) {
-                Collections.addAll(mOriginalValues, items);
-            } else {
-                Collections.addAll(mObjects, items);
-            }
+            Collections.addAll(Objects.requireNonNullElseGet(mOriginalValues, () -> mObjects),
+                               items);
             mObjectsFromResources = false;
         }
         if (mNotifyOnChange) {

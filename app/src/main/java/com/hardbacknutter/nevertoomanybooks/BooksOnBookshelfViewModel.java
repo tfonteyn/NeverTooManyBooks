@@ -232,11 +232,8 @@ public class BooksOnBookshelfViewModel
         if (selectedPosition != null) {
             return selectedPosition;
 
-        } else if (defaultPosition != null) {
-            return defaultPosition;
         } else {
-            // shouldn't get here... flw
-            return 0;
+            return Objects.requireNonNullElse(defaultPosition, 0);
         }
     }
 

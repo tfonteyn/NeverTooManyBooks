@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
@@ -309,12 +310,8 @@ public class EditBookViewModel
      */
     @NonNull
     Author getPrimaryAuthor(@NonNull final Context context) {
-        final Author author = mBook.getPrimaryAuthor();
-        if (author != null) {
-            return author;
-        } else {
-            return Author.createUnknownAuthor(context);
-        }
+        return Objects.requireNonNullElseGet(mBook.getPrimaryAuthor(),
+                                             () -> Author.createUnknownAuthor(context));
     }
 
     /**
