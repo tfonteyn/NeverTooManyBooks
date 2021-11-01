@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
+import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -142,6 +143,7 @@ public class StartupActivity
                 return;
 
             case 4:
+                mVb.getRoot().setVisibility(View.GONE);
                 proposeBackup();
                 return;
 
