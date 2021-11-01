@@ -241,6 +241,7 @@ public final class SearchEngineConfig {
         return mSupportsMultipleCoverSizes;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SearchEngineConfig{"
