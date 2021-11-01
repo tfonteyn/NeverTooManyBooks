@@ -72,7 +72,7 @@ public class DataManager
     /** re-usable validator. */
     protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** re-usable validator. */
-    protected static final DataValidator BLANK_OR_DOUBLE_VALIDATOR = new OrValidator(
+    protected static final DataValidator PRICE_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new DoubleValidator());
 
@@ -482,8 +482,7 @@ public class DataManager
     public Money getMoney(@NonNull final String key)
             throws NumberFormatException {
         if (mRawData.containsKey(key)) {
-            return new Money(getDouble(key),
-                             getString(key + DBKey.SUFFIX_KEY_CURRENCY));
+            return new Money(getDouble(key), getString(key + DBKey.SUFFIX_KEY_CURRENCY));
         } else {
             return null;
         }

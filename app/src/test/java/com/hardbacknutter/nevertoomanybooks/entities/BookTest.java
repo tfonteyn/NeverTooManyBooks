@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookTest
@@ -48,15 +47,14 @@ class BookTest
 
         final Book book = new Book(mRawData);
         book.putString(DBKey.KEY_LANGUAGE, "eng");
-        book.putDouble(DBKey.PRICE_LISTED, 1.23d);
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, "$");
+        book.putMoney(DBKey.PRICE_LISTED, new Money(1.23d, "USD"));
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals("$", book.getString(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals("USD", book.getString(DBKey.PRICE_LISTED_CURRENCY));
     }
 
     /** US english book, price set, currency not set. */
@@ -66,8 +64,8 @@ class BookTest
 
         final Book book = new Book(mRawData);
         book.putString(DBKey.KEY_LANGUAGE, "eng");
-        book.putDouble(DBKey.PRICE_LISTED, 0d);
-        book.putString(DBKey.PRICE_LISTED_CURRENCY, "");
+        book.putMoney(DBKey.PRICE_LISTED, new Money(0d, ""));
+
         book.putDouble(DBKey.PRICE_PAID, 456.789d);
         // no KEY_PRICE_PAID_CURRENCY
 
@@ -77,7 +75,8 @@ class BookTest
         //dump(book);
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
-        assertNotNull(book.get(DBKey.PRICE_LISTED_CURRENCY));
+        assertNull(book.get(DBKey.PRICE_LISTED_CURRENCY));
+
         assertEquals(456.789d, book.getDouble(DBKey.PRICE_PAID));
         assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
     }
@@ -88,8 +87,10 @@ class BookTest
 
         final Book book = new Book(mRawData);
         book.putString(DBKey.KEY_LANGUAGE, "fra");
+        // as a valid string
         book.putString(DBKey.PRICE_LISTED, "");
         book.putString(DBKey.PRICE_LISTED_CURRENCY, Money.EUR);
+        // as an invalid string
         book.putString(DBKey.PRICE_PAID, "test");
         // no KEY_PRICE_PAID_CURRENCY
 
@@ -100,7 +101,8 @@ class BookTest
 
         assertEquals(0d, book.getDouble(DBKey.PRICE_LISTED));
         assertEquals(Money.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY));
-        // "test" is correct according to preprocessPrices NOT changing illegal values.
+
+        // "test" is correct as preprocessPrices should NOT change illegal values.
         assertEquals("test", book.get(DBKey.PRICE_PAID));
         assertNull(book.get(DBKey.PRICE_PAID_CURRENCY));
     }
@@ -111,14 +113,14 @@ class BookTest
 
         final Book book = new Book(mRawData);
         book.putString(DBKey.KEY_LANGUAGE, "eng");
-        book.putString(DBKey.PRICE_LISTED, "EUR 45");
+        book.putMoney(DBKey.PRICE_LISTED, new Money(Locale.ENGLISH, "EUR 45"));
 
         final BookDaoHelper bdh = new BookDaoHelper(mContext, book, true);
         bdh.processPrice(DBKey.PRICE_LISTED);
         //dump(book);
 
         assertEquals(45d, book.getDouble(DBKey.PRICE_LISTED));
-        assertEquals(Money.EUR, book.get(DBKey.PRICE_LISTED_CURRENCY));
+        assertEquals(Money.EUR, book.getString(DBKey.PRICE_LISTED_CURRENCY));
     }
 
     @Test

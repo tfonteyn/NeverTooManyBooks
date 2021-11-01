@@ -93,16 +93,22 @@ public class Money
         mCurrency = currency;
     }
 
-    public Money(@NonNull final BigDecimal value,
-                 @NonNull final String currency) {
-        mValue = value;
-        mCurrency = Currency.getInstance(currency);
-    }
-
     public Money(final double value,
                  @NonNull final String currency) {
-        mValue = BigDecimal.valueOf(value);
-        mCurrency = Currency.getInstance(currency);
+        this(BigDecimal.valueOf(value), currency);
+    }
+
+    public Money(@NonNull final BigDecimal value,
+                 @Nullable final String currency) {
+        mValue = value;
+
+        if (currency != null) {
+            try {
+                mCurrency = Currency.getInstance(currency);
+            } catch (@NonNull final IllegalArgumentException e) {
+                // ignore
+            }
+        }
     }
 
     /**
@@ -446,5 +452,23 @@ public class Money
             default:
                 return new Money(mValue, mCurrency);
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Money money = (Money) o;
+        return Objects.equals(mCurrency, money.mCurrency)
+               && Objects.equals(mValue, money.mValue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mCurrency, mValue);
     }
 }
