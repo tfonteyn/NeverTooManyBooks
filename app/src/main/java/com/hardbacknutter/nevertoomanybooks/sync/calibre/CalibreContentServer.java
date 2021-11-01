@@ -139,7 +139,7 @@ public class CalibreContentServer {
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
     /** Response root tag: The array of book ids returned in 'this' call. */
-    public static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+    static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
     /** Preferences prefix. */
     static final String PREF_KEY = "calibre";
 

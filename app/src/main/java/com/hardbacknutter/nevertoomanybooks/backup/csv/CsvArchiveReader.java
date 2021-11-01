@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -83,19 +82,15 @@ public class CsvArchiveReader
                                  new File(ServiceLocator.getUpgradesDir(), DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
-        @Nullable
-        final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
-        if (is == null) {
-            throw new FileNotFoundException(mHelper.getUri().toString());
-        }
-
-        try (RecordReader recordReader = new CsvRecordReader(context)) {
+        try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+             RecordReader recordReader = new CsvRecordReader(context)) {
+            if (is == null) {
+                throw new FileNotFoundException(mHelper.getUri().toString());
+            }
             final ArchiveReaderRecord record = new CsvArchiveRecord(
                     mHelper.getUriInfo().getDisplayName(context), is);
 
             return recordReader.read(context, record, mHelper, progressListener);
-        } finally {
-            is.close();
         }
     }
 
