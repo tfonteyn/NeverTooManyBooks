@@ -532,14 +532,12 @@ public class BooksOnBookshelf
             mViewBookHandler = new ViewBookOnWebsiteHandler(this);
         }
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
-            if (mCalibreHandler == null) {
-                try {
-                    mCalibreHandler = new CalibreHandler(this);
-                    mCalibreHandler.onViewCreated(this, mVb.getRoot());
-                } catch (@NonNull final SSLException | CertificateException ignore) {
-                    // ignore
-                }
+        if (mCalibreHandler == null && SyncServer.CalibreCS.isEnabled(global)) {
+            try {
+                mCalibreHandler = new CalibreHandler(this);
+                mCalibreHandler.onViewCreated(this, mVb.getRoot());
+            } catch (@NonNull final SSLException | CertificateException ignore) {
+                // ignore
             }
         }
     }
@@ -781,17 +779,18 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                if (SyncServer.CalibreCS.isEnabled(global)) {
+                if (mCalibreHandler != null && SyncServer.CalibreCS.isEnabled(global)) {
                     final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
-                    //noinspection ConstantConditions
                     mCalibreHandler.prepareMenu(menu, book);
                 }
 
-                //noinspection ConstantConditions
-                mViewBookHandler.prepareMenu(menu, rowData);
+                if (mViewBookHandler != null) {
+                    mViewBookHandler.prepareMenu(menu, rowData);
+                }
 
-                //noinspection ConstantConditions
-                mAmazonHandler.prepareMenu(menu, rowData);
+                if (mAmazonHandler != null) {
+                    mAmazonHandler.prepareMenu(menu, rowData);
+                }
                 break;
             }
             case BooklistGroup.AUTHOR: {
@@ -802,8 +801,9 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                //noinspection ConstantConditions
-                mAmazonHandler.prepareMenu(menu, rowData);
+                if (mAmazonHandler != null) {
+                    mAmazonHandler.prepareMenu(menu, rowData);
+                }
                 break;
             }
             case BooklistGroup.SERIES: {
@@ -816,8 +816,9 @@ public class BooksOnBookshelf
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    //noinspection ConstantConditions
-                    mAmazonHandler.prepareMenu(menu, rowData);
+                    if (mAmazonHandler != null) {
+                        mAmazonHandler.prepareMenu(menu, rowData);
+                    }
                 }
                 break;
             }
