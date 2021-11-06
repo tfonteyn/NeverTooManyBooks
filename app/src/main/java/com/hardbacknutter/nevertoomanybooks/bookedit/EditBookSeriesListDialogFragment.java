@@ -269,7 +269,6 @@ public class EditBookSeriesListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
-            //noinspection ConstantConditions
             mVm.getBook().pruneSeries(getContext(), true);
             mListAdapter.notifyDataSetChanged();
             return;

@@ -218,7 +218,6 @@ public class PreferredStylesFragment
         mItemTouchHelper.attachToRecyclerView(mVb.stylesList);
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_booklist_styles_editor, null);
         }

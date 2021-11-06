@@ -235,7 +235,6 @@ public class EditBookTocFragment
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
         final Resources res = getResources();
-        //noinspection ConstantConditions
         final Menu menu = ExtPopupMenu.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)

@@ -213,99 +213,6 @@ public class TransFormTask
         return rotation;
     }
 
-    //    /**
-//     * Decode the image from the given file and scale it to
-//     * <strong>FILL the given bounds</strong> while preserving the aspect ratio.
-//     * <p>
-//     * Optionally rotates after scaling to the given angle.
-//     *
-//     * @param srcFile   the file to read from
-//     * @param maxWidth  Maximum desired width of the image
-//     * @param maxHeight Maximum desired height of the image
-//     * @param angle     to rotate. Use {@code 0} to not rotate.
-//     *
-//     * @return The bitmap, or {@code null} on any failure
-//     */
-//    @SuppressWarnings("unused")
-//    @Nullable
-//    @WorkerThread
-//    public static Bitmap overscanScaleToFitAndRotate(@Nullable final File srcFile,
-//                                                     final int maxWidth,
-//                                                     final int maxHeight,
-//                                                     final int angle) {
-//        if (srcFile == null || !srcFile.exists()) {
-//            return null;
-//        }
-//
-//        // Read the bitmap size.
-//        final BitmapFactory.Options opt = new BitmapFactory.Options();
-//        opt.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-//
-//        // Abort if no size info, or to small to be any good.
-//        if (opt.outHeight <= 0 || opt.outWidth <= 0
-//            || (opt.outHeight < MIN_IMAGE_SIDE && opt.outWidth < MIN_IMAGE_SIDE)) {
-//            return null;
-//        }
-//
-//        // Work out how to scale the file to fit in required box.
-//        // Basically max out EITHER the width or the height, so the image fits in the box and
-//        // is as big as possible while still preserving the aspect ratio.
-//        float widthRatio = (float) maxWidth / opt.outWidth;
-//        float heightRatio = (float) maxHeight / opt.outHeight;
-//        float ratio = Math.min(widthRatio, heightRatio);
-//
-//        opt.inSampleSize = (int) Math.ceil(1 / ratio);
-//        // we want to round UP to the nearest power of 2.
-//        opt.inSampleSize = (int) Math.pow(2, Math.ceil(Math.log(opt.inSampleSize) / Math.log(2)));
-//        // We sample at twice the size we need, and will subsequently scale it.
-//        opt.inSampleSize = opt.inSampleSize / 2;
-//        // sanity check
-//        if (opt.inSampleSize < 1) {
-//            opt.inSampleSize = 1;
-//        }
-//
-//        // This time we want the image itself
-//        opt.inJustDecodeBounds = false;
-//
-//        @Nullable
-//        final Bitmap source = BitmapFactory.decodeFile(srcFile.getAbsolutePath(), opt);
-//        if (source == null) {
-//            return null;
-//        }
-//
-//        // Fix ratio based on the new sample size
-//        ratio = ratio / (1.0f / opt.inSampleSize);
-//
-//        final Matrix matrix = new Matrix();
-//        matrix.setScale(ratio, ratio);
-//        // optional rotation afterwards
-//        if (angle != 0) {
-//            matrix.postRotate(angle);
-//        }
-//        try {
-//            final Bitmap scaledBitmap = Bitmap.createBitmap(source, 0, 0,
-//                                                            source.getWidth(), source.getHeight(),
-//                                                            matrix, true);
-//            if (!source.equals(scaledBitmap)) {
-//                // clean up the source right now to save memory.
-//                source.recycle();
-//            }
-//
-//            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-//                Log.d(TAG, "scaleToFitAndRotate"
-//                           + "|width=" + scaledBitmap.getWidth()
-//                           + "|height=" + scaledBitmap.getHeight());
-//            }
-//            return scaledBitmap;
-//
-//        } catch (@NonNull final OutOfMemoryError e) {
-//            // this is likely to fail if we're out of memory, but let's try at least
-//            Logger.error(App.getAppContext(), TAG, e);
-//            return null;
-//        }
-//    }
-
     /**
      * Value class with the results.
      */
@@ -482,7 +389,7 @@ public class TransFormTask
         Transformation setSurfaceRotation(final int surfaceRotation) {
             switch (surfaceRotation) {
                 case Surface.ROTATION_0:
-                    mSurfaceRotation = +90;
+                    mSurfaceRotation = 90;
                     break;
 
                 case Surface.ROTATION_180:

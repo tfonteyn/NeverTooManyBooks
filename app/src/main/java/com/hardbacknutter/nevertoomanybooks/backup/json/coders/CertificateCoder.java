@@ -69,7 +69,6 @@ public class CertificateCoder
 
         String dataStr = data.optString(CERT);
         if (!dataStr.isEmpty()) {
-            //noinspection DynamicRegexReplaceableByCompiledPattern
             dataStr = dataStr.replace(BEGIN_CERT, "").replace(END_CERT, "");
             final byte[] b = Base64.decode(dataStr.getBytes(StandardCharsets.US_ASCII), 0);
             try (InputStream is = new ByteArrayInputStream(b)) {

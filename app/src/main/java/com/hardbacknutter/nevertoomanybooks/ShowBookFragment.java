@@ -232,7 +232,6 @@ public class ShowBookFragment
         setActivityTitle(mVm.getBookAtPosition(mVm.getInitialPagerPosition()));
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
         }
     }

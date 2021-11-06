@@ -252,7 +252,7 @@ public class UserCollection {
                   @NonNull final Bundle cData) {
         final String idAttr = row.id();
         // sanity check, each row is normally a book.
-        if (!idAttr.isEmpty() && idAttr.startsWith(ROW_ID_ATTR)) {
+        if (idAttr.startsWith(ROW_ID_ATTR)) {
             try {
                 final long externalId = Long.parseLong(idAttr.substring(ROW_ID_ATTR_LEN));
                 final Element mine = row.getElementById("stripCollectie-" + externalId);

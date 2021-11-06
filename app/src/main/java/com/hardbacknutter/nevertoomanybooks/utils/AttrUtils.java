@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -109,36 +108,6 @@ public final class AttrUtils {
         theme.resolveAttribute(attr, tv, true);
 
         return context.getResources().getDrawable(tv.resourceId, theme);
-    }
-
-    /**
-     * Get the Attribute dimension value multiplied by the appropriate
-     * metric and truncated to integer pixels.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *                Must be a type that has a {@code android.R.attr.textSize} value.
-     *
-     * @return size in integer pixels, or {@code -1} if not defined.
-     *
-     * @throws Resources.NotFoundException if the requested text size does not exist.
-     */
-    @SuppressWarnings("unused")
-    public static int getTextSize(@NonNull final Context context,
-                                  @AttrRes final int attr)
-            throws Resources.NotFoundException {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        final int[] textSizeAttr = {android.R.attr.textSize};
-        final int indexOfAttrTextSize = 0;
-        final TypedArray ta = context.getTheme().obtainStyledAttributes(tv.data, textSizeAttr);
-        try {
-            return ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
-        } finally {
-            ta.recycle();
-        }
     }
 
     /**
