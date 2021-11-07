@@ -28,6 +28,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
+    <!-- used to shade the rest of the screen -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
