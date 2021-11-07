@@ -39,12 +39,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.AttrRes;
 import androidx.core.util.Consumer;
 
 /**
@@ -52,10 +50,6 @@ import androidx.core.util.Consumer;
  * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
 final class PopupStyles {
-
-    //ENHANCE: make the text color configurable
-    @AttrRes
-    private static final int TEXT_COLOR = R.attr.colorOnPrimary;
 
     @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> MD = popupView -> {
@@ -78,9 +72,7 @@ final class PopupStyles {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.fs_md_popup_text_size));
+        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
     };
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -103,9 +95,7 @@ final class PopupStyles {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.fs_classic_popup_text_size));
+        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
     };
 
     static final Consumer<TextView> MD2 = popupView -> {
@@ -120,9 +110,8 @@ final class PopupStyles {
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
-        // MD and CLASSIC use colorPrimaryVariant with a border of colorPrimary.
-        // MD2 just uses a single filled colorPrimary shape.
-        popupView.setBackground(new Md2PopupBackground(context, R.attr.colorPrimary));
+        //reminder: don't use colorSurface; that's already used for the list view background.
+        popupView.setBackground(new Md2PopupBackground(context, R.attr.colorBackgroundFloating));
         popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
 
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
@@ -130,9 +119,7 @@ final class PopupStyles {
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
 
-        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.fs_md2_popup_text_size));
+        popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
     };
 
 

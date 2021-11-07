@@ -37,19 +37,16 @@
     <dimen name="fs_classic_popup_min_width">120dp</dimen>
     <dimen name="fs_classic_popup_min_height">64dp</dimen>
     <dimen name="fs_classic_popup_margin_end">16dp</dimen>
-    <dimen name="fs_classic_popup_text_size">18sp</dimen>
 
     <!-- fast scroller - PopupStyles.MD styling -->
     <dimen name="fs_md_popup_min_size">60dp</dimen>
     <dimen name="fs_md_popup_margin_end">16dp</dimen>
-    <dimen name="fs_md_popup_text_size">18sp</dimen>
 
     <!-- fast scroller - PopupStyles.MD2 styling -->
     <dimen name="fs_md2_popup_min_width">78dp</dimen>
     <dimen name="fs_md2_popup_min_height">64dp</dimen>
     <dimen name="fs_md2_popup_margin_end">14dp</dimen>
     <dimen name="fs_md2_popup_elevation">4dp</dimen>
-    <dimen name="fs_md2_popup_text_size">18sp</dimen>
     <!-- fast scroller - PopupStyles.MD2 background styling -->
     <dimen name="fs_md2_popup_bg_padding_start">16dp</dimen>
     <dimen name="fs_md2_popup_bg_padding_end">29dp</dimen>

@@ -27,7 +27,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:autoMirrored="true"
     android:shape="rectangle">
-    <solid android:color="?attr/colorPrimaryVariant" />
+    <!-- reminder: don't use colorSurface; that's already used for the list view background. -->
+    <solid android:color="?attr/colorBackgroundFloating" />
 
     <stroke
         android:width="4dp"
@@ -42,4 +43,3 @@
         android:left="22dp"
         android:right="22dp" />
 </shape>
-
