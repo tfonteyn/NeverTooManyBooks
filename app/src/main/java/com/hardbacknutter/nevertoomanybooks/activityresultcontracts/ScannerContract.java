@@ -30,8 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -39,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.journeyapps.barcodescanner.ScanIntentResult;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * <ul>
@@ -85,12 +85,12 @@ public class ScannerContract
         // Beep when a barcode was recognised
         final boolean beep = global.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
-        final IntentIntegrator integrator = IntentIntegrator.forSupportFragment(fragment);
-        integrator.setCameraId(CameraDetection.getPreferredCameraId(context, global));
-        integrator.setOrientationLocked(false);
-        integrator.setPrompt(context.getString(R.string.zxing_msg_default_status));
-        integrator.setBeepEnabled(beep);
-        return integrator.createScanIntent();
+        final ScanOptions scanOptions = new ScanOptions();
+        scanOptions.setCameraId(CameraDetection.getPreferredCameraId(context, global));
+        scanOptions.setOrientationLocked(false);
+        scanOptions.setPrompt(context.getString(R.string.zxing_msg_default_status));
+        scanOptions.setBeepEnabled(beep);
+        return scanOptions.createScanIntent(context);
     }
 
     @Nullable
@@ -105,7 +105,7 @@ public class ScannerContract
             return null;
         }
         // parse and return the barcode
-        return IntentIntegrator.parseActivityResult(resultCode, intent).getContents();
+        return ScanIntentResult.parseActivityResult(resultCode, intent).getContents();
     }
 
 }
