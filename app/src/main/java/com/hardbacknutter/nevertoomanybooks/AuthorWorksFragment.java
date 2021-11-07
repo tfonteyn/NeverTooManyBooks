@@ -342,9 +342,9 @@ public class AuthorWorksFragment
 
         /** Cached inflater. */
         private final LayoutInflater mInflater;
-        /** Row indicator icon. */
+        /** Show the row indicator icon. */
         private final ColorStateList mDrawableOn;
-        /** Row indicator icon. */
+        /** Hide the row indicator icon. */
         private final ColorStateList mDrawableOff;
 
         /**
@@ -424,9 +424,13 @@ public class AuthorWorksFragment
             }
 
             if (work instanceof TocEntry) {
+                // show the icon if this entry appears in more than one book in our collection
+                // We do this by changing the color between 'normal' and 'transparent'
                 if (work.getBookCount() > 1) {
+                    // colorControlNormal
                     holder.titleView.setCompoundDrawableTintList(mDrawableOn);
                 } else {
+                    // transparent
                     holder.titleView.setCompoundDrawableTintList(mDrawableOff);
                 }
             }
