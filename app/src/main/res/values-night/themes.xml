@@ -43,9 +43,6 @@
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
-
-        <!-- M3: colorOutline: m3_sys_color_dark_outline: m3_ref_palette_neutral_variant60: -->
-        <item name="appColorOutline">#ff938f99</item>
     </style>
 
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">

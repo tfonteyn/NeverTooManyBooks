@@ -61,9 +61,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
         <item name="appNavBarColorCenter">@color/blue_grey_300</item>
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
-
-        <!-- M3: colorOutline: m3_sys_color_light_outline: m3_ref_palette_neutral_variant50: -->
-        <item name="appColorOutline">#ff79747e</item>
     </style>
 
     <!-- Base theme used by both Day and Night themes. -->

@@ -37,9 +37,6 @@
     <!-- the color to give certain preferences a visual indicator. -->
     <attr name="appPreferenceAlertColor" format="reference|color" />
 
-    <!-- Material3 defines "?attr/colorOutline" as private. This is the equivalent. -->
-    <attr name="appColorOutline" format="color" />
-
     <declare-styleable name="ExtGroup">
         <attr name="groupApply">
             <flag name="visibility" value="0x1" />
