@@ -77,7 +77,7 @@
     <style name="TIL.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
-        <item name="startIconTint">?attr/colorSecondaryVariant</item>
+        <item name="startIconTint">?attr/colorSecondary</item>
     </style>
 
 
