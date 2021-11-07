@@ -59,8 +59,8 @@
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_margin="@dimen/screen_border"
             android:layout_height="match_parent"
+            android:layout_margin="@dimen/screen_border"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
