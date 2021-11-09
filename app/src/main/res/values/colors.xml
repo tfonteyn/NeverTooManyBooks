@@ -25,28 +25,27 @@
     <color name="cropper_focus">@color/grey_600</color>
     <color name="cropper_outline_rectangle">@color/orange_600</color>
 
-
     <!-- ########## the theme colors. ########## -->
 
-    <!-- m3_sys_color_light_primary -> m3_ref_palette_primary40 -> #ff6750a4 -->
+    <!-- m3_sys_color_light_primary -> m3_ref_palette_primary40 -->
     <color name="day_primary">@color/blue_grey_400</color>
-    <!-- m3_sys_color_light_on_primary -> m3_ref_palette_primary100 -> #ffffffff -->
-    <color name="day_on_primary">@color/black</color>
+    <!-- m3_sys_color_light_on_primary -> m3_ref_palette_primary100 -->
+    <color name="day_on_primary">@color/white</color>
 
-    <!-- m3_sys_color_light_secondary -> m3_ref_palette_secondary40 -> #ff625b71 -->
-    <color name="day_secondary">@color/teal_500</color>
-    <!-- m3_sys_color_light_on_secondary -> m3_ref_palette_secondary100 -> #ffffffff -->
-    <color name="day_on_secondary">@color/black</color>
+    <!-- m3_sys_color_light_secondary -> m3_ref_palette_secondary40 -->
+    <color name="day_secondary">@color/teal_400</color>
+    <!-- m3_sys_color_light_on_secondary -> m3_ref_palette_secondary100 -->
+    <color name="day_on_secondary">@color/white</color>
 
 
-    <!-- m3_sys_color_dark_primary -> m3_ref_palette_primary80 -> #ffd0bcff -->
-    <color name="night_primary">@color/blue_grey_300</color>
-    <!-- m3_sys_color_dark_on_primary -> m3_ref_palette_primary20 -> #ff381e72 -->
-    <color name="night_on_primary">@color/white</color>
+    <!-- m3_sys_color_dark_primary -> m3_ref_palette_primary80 -->
+    <color name="night_primary">@color/blue_grey_800</color>
+    <!-- m3_sys_color_dark_on_primary -> m3_ref_palette_primary20 -->
+    <color name="night_on_primary">@color/blue_grey_200</color>
 
-    <!-- m3_sys_color_dark_secondary -> m3_ref_palette_secondary80 -> #ffccc2dc -->
-    <color name="night_secondary">@color/teal_200</color>
-    <!-- m3_sys_color_dark_on_secondary -> m3_ref_palette_secondary20 -> #ff332d41 -->
-    <color name="night_on_secondary">@color/black</color>
+    <!-- m3_sys_color_dark_secondary -> m3_ref_palette_secondary80 -->
+    <color name="night_secondary">@color/teal_800</color>
+    <!-- m3_sys_color_dark_on_secondary -> m3_ref_palette_secondary20 -->
+    <color name="night_on_secondary">@color/teal_200</color>
 
 </resources>

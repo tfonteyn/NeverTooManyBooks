@@ -54,8 +54,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- Application specific (light theme) -->
         <!-- ======================================= -->
         <item name="appPreferenceAlertColor">@color/red_400</item>
-        <!-- the default colorSurface is "too white". -->
-        <item name="appCardBackgroundColor">@color/grey_50</item>
+        <item name="appBobCardBackgroundColor">@color/grey_50</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
@@ -65,7 +64,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
-        <!--        <item name="android:statusBarColor">?attr/colorPrimary</item>-->
+        <!--  <item name="android:statusBarColor">?attr/colorPrimary</item>-->
 
         <item name="appChipDisplayStyle">@style/Chip.Display</item>
         <item name="appChipFilterStyle">@style/Chip.Filter</item>
@@ -89,25 +88,23 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
-        <!--        <item name="android:statusBarColor">?attr/colorPrimary</item>-->
+        <!--  <item name="android:statusBarColor">?attr/colorPrimary</item>-->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
 
-    <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
+    <!-- custom ThemeOverlay. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorOnPrimary">@color/day_on_primary</item>
 
         <!--  <item name="colorSecondary">@color/day_secondary</item>-->
         <!--  <item name="colorOnSecondary">@color/day_on_secondary</item>-->
-
-        <!-- Overrule the Material 3 dark/grey background. -->
-        <item name="android:background">?attr/colorSurface</item>
     </style>
 
-    <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
+    <!-- custom ThemeOverlay. -->
     <style name="ThemeOverlay.App.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
+        <item name="materialCalendarHeaderLayout">@style/App.MaterialCalendar.HeaderLayout</item>
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>
     </style>
 </resources>

@@ -26,8 +26,8 @@
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipQueueStyle" format="reference" />
 
-    <!-- The CardView -->
-    <attr name="appCardBackgroundColor" format="reference|color" />
+    <!-- The CardView for books on the booklist (bob) -->
+    <attr name="appBobCardBackgroundColor" format="reference|color" />
 
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />

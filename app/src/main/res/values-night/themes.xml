@@ -36,8 +36,7 @@
         <!-- Application specific (dark theme) -->
         <!-- ====================================== -->
         <item name="appPreferenceAlertColor">@color/red_500</item>
-        <!-- the default colorSurface #121212 works fine in night. -->
-        <item name="appCardBackgroundColor">?attr/colorSurface</item>
+        <item name="appBobCardBackgroundColor">@color/grey_900</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
@@ -59,9 +58,6 @@
 
         <!--   <item name="colorSecondary">@color/night_secondary</item>-->
         <!--   <item name="colorOnSecondary">@color/night_on_secondary</item>-->
-
-        <!-- default is fine -->
-        <!--        <item name="android:background">?attr/colorSurface</item>-->
     </style>
 
 </resources>

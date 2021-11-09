@@ -301,15 +301,19 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- Attribute restyling: "snackbarTextViewStyle"
-         Override for the default to allow 2 lines of text. -->
+    <!-- Snackbar: override the default to allow 2 lines of text. -->
     <style name="App.SnackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
-    <!-- Attribute restyling: "materialCalendarHeaderConfirmButton"
-         We want the full screen calendar widget to use the same style 'actual' button. -->
+    <!-- *************************************************************************************** -->
+    <!-- We want the full screen calendar widget to use the same header style as all our edit-screens. -->
+    <style name="App.MaterialCalendar.HeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
     <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>
 
@@ -345,9 +349,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:elevation">@dimen/progress_z</item>
         <item name="android:indeterminate">true</item>
-        <!--        <item name="indicatorColor">?attr/colorPrimaryDark</item>-->
+        <!-- <item name="indicatorColor">?attr/colorPrimaryDark</item>-->
         <item name="indicatorSize">96dp</item>
-        <!--        <item name="trackColor">?attr/colorSecondary</item>-->
+        <!-- <item name="trackColor">?attr/colorSecondary</item>-->
     </style>
     <!-- *************************************************************************************** -->
 
