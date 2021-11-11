@@ -54,7 +54,7 @@
         style="@style/About.Version"
         app:layout_constraintEnd_toEndOf="@id/app_name"
         app:layout_constraintTop_toBottomOf="@id/app_name"
-        tools:ignore="SelectableText"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
         tools:text="a.b.c"
         />
 

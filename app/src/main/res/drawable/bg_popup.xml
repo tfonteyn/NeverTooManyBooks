@@ -23,7 +23,7 @@
     android:shape="rectangle">
 
     <solid
-        android:color="?attr/colorOnSurface" />
+        android:color="?attr/colorSurfaceInverse" />
     <corners
         android:radius="8dp" />
 </shape>

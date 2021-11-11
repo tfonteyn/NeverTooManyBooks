@@ -19,6 +19,9 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Do NOT add: android:background="@drawable/bg_popup"
+     as we set the *window* background to that value.
+     -->
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,7 +34,7 @@
     android:paddingTop="4dp"
     android:paddingEnd="8dp"
     android:paddingBottom="4dp"
-    android:textColor="?attr/colorSurface"
+    android:textColor="?android:attr/textColorPrimaryInverse"
     android:textIsSelectable="true"
     tools:text="@tools:sample/lorem/random"
     />

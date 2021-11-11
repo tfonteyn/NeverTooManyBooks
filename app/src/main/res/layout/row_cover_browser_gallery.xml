@@ -30,13 +30,13 @@
         android:id="@+id/lbl_site"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAllCaps="false"
         android:textAppearance="?attr/textAppearanceLabelSmall"
         android:textIsSelectable="true"
         android:textSize="@dimen/cover_browser_gallery_text_size"
-        android:textAllCaps="false"
         android:textStyle="italic"
+        tools:ignore="SmallSp,TouchTargetSizeCheck"
         tools:text="@sample/data.json/sites/name"
-        tools:ignore="SmallSp"
         />
 
     <!-- This is the initial place holder only. -->
@@ -48,4 +48,3 @@
         tools:src="@sample/covers"
         />
 </LinearLayout>
-

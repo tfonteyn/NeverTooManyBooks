@@ -32,6 +32,6 @@
     android:paddingStart="?attr/listPreferredItemPaddingStart"
     android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     android:textAppearance="?attr/textAppearanceListItem"
-    android:textColor="?attr/textColorAlertDialogListItem"
+    android:textColor="?android:attr/textColorAlertDialogListItem"
     tools:text="@sample/data.json/styles/name"
     />

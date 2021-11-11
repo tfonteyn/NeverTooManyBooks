@@ -27,7 +27,7 @@
 
     <stroke
         android:width="2dp"
-        android:color="?attr/colorPrimary" />
+        android:color="?attr/colorOnBackground" />
 
     <corners android:radius="8dp" />
 

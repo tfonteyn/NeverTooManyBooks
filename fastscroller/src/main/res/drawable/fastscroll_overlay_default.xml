@@ -32,7 +32,7 @@
 
     <stroke
         android:width="4dp"
-        android:color="?attr/colorPrimary" />
+        android:color="?attr/colorOnBackground" />
 
     <corners
         android:bottomLeftRadius="44dp"

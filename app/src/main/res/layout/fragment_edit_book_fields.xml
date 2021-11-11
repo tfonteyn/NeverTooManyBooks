@@ -169,6 +169,7 @@
             android:id="@+id/btn_scan"
             style="@style/TIL.EditText.Button"
             app:icon="@drawable/ic_barcode"
+            android:contentDescription="@string/menu_barcode_scan"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"

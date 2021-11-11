@@ -40,7 +40,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
-        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
@@ -215,7 +215,7 @@
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
-        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:maxLines">1</item>
         <item name="android:gravity">start|center_vertical</item>
         <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
@@ -248,7 +248,7 @@
     <style name="Button.Action.Toolbar" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
         <item name="android:insetLeft">4dp</item>
         <item name="android:insetRight">4dp</item>
@@ -259,7 +259,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textColor">?android:attr/textColorLink</item>
         <item name="android:textAllCaps">false</item>
         <item name="icon">@drawable/ic_baseline_link_24</item>
     </style>
@@ -313,7 +313,7 @@
     </style>
 
     <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>
 
