@@ -8,17 +8,27 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/bg_outline_rounded.xml" value="0.35" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/bg_popup.xml" value="0.196" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/bg_progress.xml" value="0.378" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_build_24.xml" value="0.39114583333333336" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_cancel_24.xml" value="0.203125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/ic_baseline_warning_amber_24.xml" value="0.16145833333333334" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/drawable/selector_row_highlight_color.xml" value="0.216" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-land/fragment_edit_book_fields.xml" value="0.2953125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw600dp-land/fragment_book_details.xml" value="0.528125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw600dp/fragment_book_details.xml" value="0.5" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout-sw800dp-land/fragment_book_details.xml" value="0.2640625" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_book_details.xml" value="0.3517948717948718" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_main.xml" value="0.3611111111111111" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/activity_startup.xml" value="0.29286019666524155" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf.xml" value="0.37083333333333335" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf_group_level_1.xml" value="0.29286019666524155" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf_row_book_scale_3.xml" value="0.29286019666524155" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/booksonbookshelf_row_book_scale_4.xml" value="0.31765711842667804" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/dialog_partial_date_picker.xml" value="0.2657407407407407" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_about.xml" value="0.67" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_author_works.xml" value="0.31765711842667804" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_book_details.xml" value="0.22311744654477844" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_booksearch_by_isbn.xml" value="0.21666666666666667" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_external_id.xml" value="0.3609375" />
@@ -28,14 +38,40 @@
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_edit_book_toc.xml" value="0.27037037037037037" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_export.xml" value="0.375" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_show_book.xml" value="0.3517948717948718" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_sync_calibre.xml" value="0.28637627432808155" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/fragment_sync_import.xml" value="0.2078125" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/inc_dialog_buttonbar.xml" value="0.31765711842667804" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/mnu_btn_confirm.xml" value="0.375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/popup_info.xml" value="0.75" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/popup_menu.xml" value="0.33" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/progress_dialog.xml" value="0.35128205128205126" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_choice_multi.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_choice_single.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_cover_browser_gallery.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_author_list.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_bookshelf.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_calibre_library.xml" value="0.67" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_preferred_styles.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_publisher_list.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_searchsite.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_series_list.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_style_groups.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_edit_toc_entry.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_simple_list_divider.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_simple_list_item.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_toc_entry.xml" value="0.29286019666524155" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_toc_entry_book.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_toc_entry_with_author.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/row_update_from_internet.xml" value="0.31765711842667804" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/z_color_debug.xml" value="0.5" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/layout/z_text_sizes.xml" value="0.353125" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/menu/toolbar_action_clear_save.xml" value="0.375" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/menu/toolbar_action_save.xml" value="0.2891515407344871" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_calibre.xml" value="0.17916666666666667" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_field_visibility.xml" value="0.33" />
         <entry key="..\:/Data/Code/NeverTooManyBooks/app/src/main/res/xml/preferences_site_stripinfo.xml" value="0.225" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/fastscroller/src/main/res/drawable/fastscroll_overlay_classic.xml" value="0.216" />
+        <entry key="..\:/Data/Code/NeverTooManyBooks/fastscroller/src/main/res/drawable/fastscroll_overlay_default.xml" value="0.216" />
         <entry key="..\:/Users/tom/.gradle/caches/transforms-3/4f1825eae66720169005547a341ce6c8/transformed/appcompat-1.4.0-alpha03/res/drawable/abc_btn_default_mtrl_shape.xml" value="0.5" />
         <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/drawable/mtrl_ic_cancel.xml" value="0.3611111111111111" />
         <entry key="..\:/Users/tom/.gradle/caches/transforms-3/fa55c9c31c7d049c756e3b9893bbed50/transformed/material-1.5.0-alpha02/res/layout/mtrl_picker_fullscreen.xml" value="0.375" />
@@ -124,7 +160,7 @@
     <resource url="https://checkstyle.org/dtds/configuration_1_3.dtd" location="$PROJECT_DIR$" />
     <xml-schema-version>XMLSchema_1_1</xml-schema-version>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17_PREVIEW" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
