@@ -48,8 +48,9 @@ public class AmazonHandler {
 
     /**
      * The search url for books when opening a browser activity.
-     *
-     * <ul>Fields that can be added to the /gp URL
+     * <p>
+     * Fields that can be added to the /gp URL:
+     * <ul>
      *      <li>&field-isbn</li>
      *      <li>&field-author</li>
      *      <li>&field-title</li>

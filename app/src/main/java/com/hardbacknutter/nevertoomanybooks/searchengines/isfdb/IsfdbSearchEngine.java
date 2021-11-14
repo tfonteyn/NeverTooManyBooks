@@ -468,7 +468,6 @@ public class IsfdbSearchEngine
      * }
      * </pre>
      * <p>
-     * <p>
      * 20-19-07: new format:
      * <pre>
      * {@code

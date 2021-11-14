@@ -30,15 +30,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
  * StringList factory for a TocEntry.
- * <ul>Format:
+ * <p>
+ * Format:
+ * <ul>
  *      <li>title (date) * authorName * {json}</li>
  *      <li>title * authorName * {json}</li>
  * </ul>
  * authorName: see {@link AuthorCoder}
- * date: see {@link #DATE_PATTERN}.
+ * <br>date: see {@link #DATE_PATTERN}.
  *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
- * and can be missing.
+ * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
 public class TocEntryCoder
         implements StringList.Coder<TocEntry> {

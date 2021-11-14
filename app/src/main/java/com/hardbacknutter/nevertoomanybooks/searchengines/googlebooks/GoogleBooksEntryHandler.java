@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <p>
  * THIS CLASS IS OBSOLETE (but still in use and working fine).
  * <p>
- * <p>
  * An XML handler for the Google Books entry return.
  *
  * <pre>

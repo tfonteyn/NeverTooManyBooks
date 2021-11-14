@@ -419,7 +419,6 @@ public class OpenLibrarySearchEngine
      *     }
      * }</pre>
      * <p>
-     * <p>
      * A search on OLID returns:
      * <pre>{@code
      *  {

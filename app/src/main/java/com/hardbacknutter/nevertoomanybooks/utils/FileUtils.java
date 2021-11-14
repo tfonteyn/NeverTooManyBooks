@@ -464,8 +464,9 @@ public final class FileUtils {
      * {@link DocumentFile#createFile(String, String)} which DOES, and
      * {@link DocumentFile#findFile(String)} which does NOT
      * convert invalid characters.
-     *
-     * <ul>Combines the hidden methods:
+     * <p>
+     * Combines the hidden methods:
+     * <ul>
      *  <li>{@link android.os.FileUtils}#buildValidFatFilename</li>
      *  <li>{@link android.os.FileUtils}#buildValidExtFilename</li>
      *  <li>{@link android.os.FileUtils}#trimFilename</li>
@@ -504,8 +505,9 @@ public final class FileUtils {
 
     /**
      * Check file name character.
-     *
-     * <ul>Combines the hidden methods:
+     * <p>
+     * Combines the hidden methods:
+     * <ul>
      *  <li>android.os.FileUtils#isValidFatFilenameChar</li>
      *  <li>android.os.FileUtils#isValidExtFilenameChar</li>
      * </ul>

@@ -64,7 +64,8 @@ import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
 /**
- * <ul>Supports:
+ * Supports:
+ * <ul>
  *      <li>{@link RecordType#MetaData}</li>
  *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>

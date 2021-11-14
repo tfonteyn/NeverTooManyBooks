@@ -29,10 +29,10 @@ public interface MaintenanceDao {
      * Purge anything that is no longer in use.
      * <p>
      * Purging is no longer done at every occasion where it *might* be needed.
-     * It was noticed (in the logs) that it was done far to often.
-     * <ul>It is now called only:
-     * <li>Before a (Zip) backup.</li>
-     * <li>After an import of data (all sources).</li>
+     * It was noticed (in the logs) that it was done far to often. It is now called only:
+     * <ul>
+     *  <li>Before a (Zip) backup.</li>
+     *  <li>After an import of data (all sources).</li>
      * </ul>
      * So orphaned data will stay around a little longer which in fact may be beneficial
      * while entering/correcting a book collection.

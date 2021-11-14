@@ -237,8 +237,9 @@ public class ISBN {
 
     /**
      * Constructor.
-     *
-     * <ul>Accepts as valid:
+     * <p>
+     * Accepts as valid:
+     * <ul>
      *      <li>ISBN-10</li>
      *      <li>ISBN-13</li>
      *      <li>EAN-13</li>
@@ -258,13 +259,15 @@ public class ISBN {
 
     /**
      * Constructor.
-     *
-     * <ul>Accepts as valid:
+     * <p>
+     * Accepts as valid:
+     * <ul>
      *      <li>ISBN-10</li>
      *      <li>ISBN-13</li>
      *      <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
      * </ul>
-     * <ul>Rejects as invalid:
+     * Rejects as invalid:
+     * <ul>
      *      <li>EAN-13</li>
      *      <li>generic UPC_A</li>
      * </ul>

@@ -25,12 +25,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 /**
  * StringList factory for a Publisher.
- * <ul>Format:
- *      <li>Name</li>
- * </ul>
- *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
- * and can be missing.
+ * <p>
+ * Format: Name
  */
 public class PublisherCoder
         implements StringList.Coder<Publisher> {

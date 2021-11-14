@@ -181,7 +181,6 @@ public class Author
      * same as above, but with comma:
      * Foo Bar, Jr.
      * <p>
-     * <p>
      * Not covered yet, and seen in the wild:
      * "James jr. Tiptree" -> suffix as a middle name.
      * "Dr. Asimov" -> titles... pre or suffixed

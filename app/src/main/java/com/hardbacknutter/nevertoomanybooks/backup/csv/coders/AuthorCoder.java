@@ -31,16 +31,15 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * StringList factory for a Author.
- * <ul>Format:
- *      <li>authorName * {json}</li>
- * </ul>
- * <ul>With authorName:
+ * <p>
+ * Format: authorName * {json}
+ * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
+ * <p>
+ * With authorName:
+ * <ul>
  *      <li>writing out: "family, givenNames"</li>
  *      <li>reading in: see {@link Author#from(String)}</li>
  * </ul>
- *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
- * and can be missing.
  */
 public class AuthorCoder
         implements StringList.Coder<Author> {

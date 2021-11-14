@@ -34,12 +34,9 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * StringList factory for a Bookshelf.
- * <ul>Format:
- *      <li>shelfName * {json}</li>
- * </ul>
- *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
- * and can be missing.
+ * <p>
+ * Format: shelfName * {json}
+ * <br><strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
 public class BookshelfCoder
         implements StringList.Coder<Bookshelf> {

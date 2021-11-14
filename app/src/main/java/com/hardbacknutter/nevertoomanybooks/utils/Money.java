@@ -145,7 +145,8 @@ public class Money
      * <p>
      * Others can/will be added as needed.
      *
-     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>English</a>
+     * @see <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language">
+     *     English as an official language</a>
      */
     private static void createCurrencyMap() {
         // allow re-creating

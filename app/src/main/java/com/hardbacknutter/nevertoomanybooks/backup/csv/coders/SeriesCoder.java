@@ -31,15 +31,16 @@ import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * StringList factory for a Series.
- * <ul>Format:
+ * <p>
+ * Format:
+ * <ul>
  *      <li>title (number) * {json}</li>
  *      <li>title * {json}</li>
  * </ul>
  * number: alpha-numeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
  * i.e. starting with a number (int or float) with optional alphanumeric characters trailing.
- *
- * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
- * and can be missing.
+ * <p>
+ * <strong>Note:</strong> the " * {json}" suffix is optional and can be missing.
  */
 public class SeriesCoder
         implements StringList.Coder<Series> {

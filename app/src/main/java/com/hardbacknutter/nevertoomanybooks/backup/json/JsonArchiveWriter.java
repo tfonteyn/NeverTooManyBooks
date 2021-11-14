@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...
- * <p>
  *  <ul>
  *      <li>Root element {@link JsonCoder#TAG_APPLICATION_ROOT} contains:
  *          <ul>

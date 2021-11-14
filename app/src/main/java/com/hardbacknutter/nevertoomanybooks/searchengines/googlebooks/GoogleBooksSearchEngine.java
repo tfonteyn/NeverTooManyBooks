@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * https://developers.google.com/gdata/docs/directory
  * https://developers.google.com/gdata/docs/2.0/reference
  * <p>
- * <p>
  * The new API:
  * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>
  *
