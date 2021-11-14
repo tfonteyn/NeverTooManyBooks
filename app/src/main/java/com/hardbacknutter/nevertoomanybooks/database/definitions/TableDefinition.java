@@ -39,9 +39,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-
 /**
  * Class to store table name and a list of domain definitions.
  */
@@ -1068,8 +1065,9 @@ public class TableDefinition {
 
             } else {
                 final List<Domain> pk = mParent.getPrimaryKey();
-                if (BuildConfig.DEBUG /* always */) {
-                    SanityCheck.requireValue(pk, "no primary key on table: " + mParent);
+                if (pk.isEmpty()) {
+                    // Should never happen... flw
+                    throw new IllegalStateException("No primary key for table: " + mParent);
                 }
                 final StringBuilder sql = new StringBuilder();
                 for (int i = 0; i < pk.size(); i++) {

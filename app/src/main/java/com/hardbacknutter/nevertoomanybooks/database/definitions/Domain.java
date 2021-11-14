@@ -30,13 +30,11 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-
 /**
  * Defines a domain; name, type, ...
  * Immutable.
  * <p>
- * Parcelable: needed by {@link BooklistGroup}
+ * Parcelable: needed by BooklistGroup
  */
 @SuppressWarnings("FieldNotUsedInToString")
 public class Domain
@@ -467,11 +465,9 @@ public class Domain
         @NonNull
         public Builder references(@NonNull final TableDefinition table,
                                   @NonNull final String actions) {
-//            if (BuildConfig.DEBUG /* always */) {
-//                if (mReferences != null) {
-//                    throw new IllegalStateException("can only be called once");
-//                }
-//            }
+            if (mReferences != null) {
+                throw new IllegalStateException("can only be called once");
+            }
             mReferences = table.getName() + ' ' + actions;
             return this;
         }

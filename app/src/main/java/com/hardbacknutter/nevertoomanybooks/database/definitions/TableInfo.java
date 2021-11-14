@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +32,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Details of a database table as retrieved from {@code PRAGMA table_info(tableName)}.
@@ -105,7 +105,9 @@ public class TableInfo {
             }
         }
 
-        SanityCheck.requireValue(allColumns, "Unable to get column details");
+        if (allColumns.isEmpty()) {
+            throw new SQLiteException("Unable to get column details");
+        }
         return allColumns;
     }
 

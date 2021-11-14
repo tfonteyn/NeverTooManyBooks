@@ -119,7 +119,6 @@ public class ColumnInfo {
      *      <li>{@link Cursor#FIELD_TYPE_STRING}</li>
      *      <li>{@link Cursor#FIELD_TYPE_BLOB}</li>
      * </ul>
-     * </p>
      * <p>
      * If for whatever reason the type is not recognised,
      * {@link Cursor#FIELD_TYPE_STRING} is returned.
@@ -165,7 +164,8 @@ public class ColumnInfo {
         Integer, Real, Text, Blob;
 
         static StorageClass newInstance(@NonNull final String columnType) {
-            // hardcoded strings are for backwards compatibility
+            // Hardcoded strings are for backwards compatibility.
+            // We MUST use the system locale here.
             switch (columnType.toLowerCase(ServiceLocator.getSystemLocale())) {
                 case TYPE_INTEGER:
                 case "int":

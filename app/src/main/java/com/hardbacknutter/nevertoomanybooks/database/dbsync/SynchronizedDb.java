@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
@@ -239,13 +238,7 @@ public class SynchronizedDb
         // reminder: insert does not throw exceptions for the actual insert.
         // but it can throw other exceptions.
         try {
-            final long id = mSqlDb.insert(table, null, values);
-            if (id == -1) {
-                Logger.error(TAG, new Throwable(), "Insert failed"
-                                                   + "|table=" + table
-                                                   + "|cv=" + values);
-            }
-            return id;
+            return mSqlDb.insert(table, null, values);
 
         } finally {
             if (txLock != null) {

@@ -225,6 +225,10 @@ public class BookDaoImpl
             // go!
             final long newBookId = mDb.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
+                Logger.error(TAG, new Throwable(), "Insert failed"
+                                                   + "|table=" + TBL_BOOKS.getName()
+                                                   + "|cv=" + cv);
+
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
@@ -1042,7 +1046,7 @@ public class BookDaoImpl
             return getBookCursor(null, null, TBL_BOOKS.dot(PK_ID));
         } else {
             return getBookCursor(TBL_STRIPINFO_COLLECTION.dot(
-                    UTC_DATE_LAST_SYNC_STRIP_INFO) + ">=?",
+                                         UTC_DATE_LAST_SYNC_STRIP_INFO) + ">=?",
                                  new String[]{SqlEncode.date(since)},
                                  TBL_BOOKS.dot(PK_ID));
         }
