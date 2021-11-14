@@ -257,7 +257,7 @@ dependencies {
     //implementation "androidx.work:work-runtime:2.5.0"
 
     // https://github.com/material-components/material-components-android/releases
-    implementation 'com.google.android.material:material:1.5.0-alpha05'
+    implementation 'com.google.android.material:material:1.5.0-beta01'
 
     // https://www.acra.ch/docs/Setup/
     implementation "ch.acra:acra-mail:5.8.4"
