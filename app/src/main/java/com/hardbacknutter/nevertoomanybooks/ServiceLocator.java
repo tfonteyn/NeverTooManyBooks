@@ -241,7 +241,7 @@ public final class ServiceLocator {
     /**
      * Return the device Locale.
      * <p>
-     * When running a JUnit test, this method will always return {@code Locale.ENGLISH}.
+     * When running a JUnit test, this method will always return {@code Locale.US}.
      *
      * @return Locale
      */
