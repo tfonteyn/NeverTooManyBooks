@@ -86,11 +86,19 @@ public class BoBTask
     private void initFixedDomainList() {
         mFixedDomainList.add(
                 // Title for displaying; do NOT sort on it
+                // Example: "The Dream Master"
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE)));
         mFixedDomainList.add(
                 // Title for sorting
+                // Example: "dreammasterthe" OR "thedreammaster"
+                // i.e. depending on user preference, the first format
+                // consists of the original title stripped of whitespace and any special characters,
+                // and with the article/prefix moved to the end.
+                // The second format leaves the article/prefix in its original location.
+                // The choice between the two formats is a user preference which, when changed,
+                // updates ALL rows in the database with the newly formatted title.
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
                         DBDefinitions.TBL_BOOKS.dot(DBKey.KEY_TITLE_OB),
