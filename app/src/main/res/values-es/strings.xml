@@ -698,4 +698,5 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Cierre la aplicación e inserte la tarjeta SD correcta</string>
     <string name="lbl_storage_select">Utilice «%1$s»</string>
     <string name="lbl_calibre_content_server_extension_info">La extensión del servidor de contenido de Calibre no está instalada.</string>
+    <string name="lbl_sync_date">Ya que</string>
 </resources>

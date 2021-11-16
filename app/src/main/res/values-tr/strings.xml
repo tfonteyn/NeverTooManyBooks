@@ -695,4 +695,6 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Uygulamayı kapatın ve doğru SD kartı takın</string>
     <string name="info_moving_covers_from_x_to_y">Tüm kapakları “%1$s”\'den “%2$s”\'ye taşıyın</string>
     <string name="menu_enable_sync_options">Senkronizasyon seçeneklerini etkinleştir</string>
+    <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="lbl_sync_date">Dan beri</string>
 </resources>

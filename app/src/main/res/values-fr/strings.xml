@@ -699,5 +699,6 @@
     <string name="menu_enable_sync_options">Activer les options de synchronisation</string>
 
     <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
+    <string name="lbl_sync_date">Depuis</string>
 
 </resources>

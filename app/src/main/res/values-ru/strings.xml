@@ -694,4 +694,6 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Закройте приложение и вставьте правильную SD-карту.</string>
     <string name="info_moving_covers_from_x_to_y">Перенести все обложки из «%1$s» в «%2$s»</string>
     <string name="menu_enable_sync_options">Включить параметры синхронизации</string>
+    <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="lbl_sync_date">C</string>
 </resources>

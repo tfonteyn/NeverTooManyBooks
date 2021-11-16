@@ -694,4 +694,6 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Zavřete aplikaci a vložte správnou SD kartu</string>
     <string name="lbl_storage_select">Použijte „%1$s“</string>
     <string name="lbl_calibre_content_server_extension_info">Rozšíření serveru s obsahem kalibru není nainstalováno.</string>
+    <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="lbl_sync_date">Od té doby</string>
 </resources>

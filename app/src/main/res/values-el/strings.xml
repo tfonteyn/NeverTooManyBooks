@@ -698,4 +698,5 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Κλείστε την εφαρμογή και τοποθετήστε τη σωστή κάρτα SD</string>
     <string name="lbl_storage_select">Χρησιμοποιήστε «%1$s»</string>
     <string name="lbl_calibre_content_server_extension_info">Η επέκταση διακομιστή περιεχομένου Caliber δεν έχει εγκατασταθεί.</string>
+    <string name="lbl_sync_date">Από</string>
 </resources>

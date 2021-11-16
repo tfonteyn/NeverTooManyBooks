@@ -694,4 +694,6 @@
     <string name="lbl_storage_quit_and_reinsert_sdcard">Zamknij aplikację i włóż właściwą kartę SD</string>
     <string name="lbl_storage_select">Użyj „%1$s”</string>
     <string name="lbl_calibre_content_server_extension_info">Rozszerzenie serwera treści Calibre nie jest zainstalowane.</string>
+    <string name="pv_reformat_titles_prefixes">""</string>
+    <string name="lbl_sync_date">Odkąd</string>
 </resources>

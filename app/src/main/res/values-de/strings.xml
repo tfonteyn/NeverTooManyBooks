@@ -698,5 +698,6 @@
     <string name="lbl_timeouts">Zeitüberschreitung</string>
     <string name="lbl_website_address">Webadresse (URL)</string>
     <string name="lbl_login_to_search">Melden Sie sich an, um zu suchen</string>
+    <string name="lbl_sync_date">Seit</string>
 
 </resources>

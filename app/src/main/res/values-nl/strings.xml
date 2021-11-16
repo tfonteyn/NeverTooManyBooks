@@ -695,4 +695,5 @@
     <string name="lbl_storage_select">Gebruik „%1$s”</string>
     <string name="lbl_calibre_content_server_extension_info">Calibre content server-extensie is niet geïnstalleerd.</string>
     <string name="lbl_storage_quit_and_reinsert_sdcard">Sluit de app en inserteer de juiste SD kaart</string>
+    <string name="lbl_sync_date">Sinds</string>
 </resources>
