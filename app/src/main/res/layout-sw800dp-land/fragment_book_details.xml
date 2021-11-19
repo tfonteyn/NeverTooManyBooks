@@ -249,7 +249,7 @@
             style="@style/Label"
             android:text="@string/lbl_personal_notes"
             app:layout_constraintStart_toStartOf="@id/personal_data_section"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
+            app:layout_constraintTop_toBottomOf="@id/bookshelves"
             />
 
         <TextView
