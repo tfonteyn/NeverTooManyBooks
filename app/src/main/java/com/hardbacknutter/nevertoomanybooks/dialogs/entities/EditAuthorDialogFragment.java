@@ -34,9 +34,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -84,7 +84,7 @@ public class EditAuthorDialogFragment
     public static void launch(@NonNull final FragmentActivity activity,
                               @NonNull final Author author) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
         args.putParcelable(DBKey.FK_AUTHOR, author);
 
         final DialogFragment frag = new EditAuthorDialogFragment();
@@ -189,9 +189,9 @@ public class EditAuthorDialogFragment
                 success = authorDao.update(context, mAuthor);
             }
             if (success) {
-                BooksOnBookshelf.RowChangeListener
+                RowChangeListener
                         .setResult(this, mRequestKey,
-                                   BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
+                                   RowChangeListener.AUTHOR, mAuthor.getId());
                 return true;
             }
         } else {
@@ -206,10 +206,10 @@ public class EditAuthorDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             authorDao.merge(context, mAuthor, existingId);
-                            BooksOnBookshelf.RowChangeListener.setResult(
+                            RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the author who 'lost' their books
-                                    BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
+                                    RowChangeListener.AUTHOR, mAuthor.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

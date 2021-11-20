@@ -27,9 +27,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Genre.
@@ -44,7 +44,7 @@ public class EditGenreDialogFragment
      * No-arg constructor for OS use.
      */
     public EditGenreDialogFragment() {
-        super(R.string.lbl_genre, R.string.lbl_genre, BooksOnBookshelf.RowChangeListener.GENRE);
+        super(R.string.lbl_genre, R.string.lbl_genre, RowChangeListener.GENRE);
     }
 
     /**
@@ -55,7 +55,7 @@ public class EditGenreDialogFragment
     public static void launch(@NonNull final FragmentActivity activity,
                               @NonNull final String text) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, text);
 
         final DialogFragment frag = new EditGenreDialogFragment();

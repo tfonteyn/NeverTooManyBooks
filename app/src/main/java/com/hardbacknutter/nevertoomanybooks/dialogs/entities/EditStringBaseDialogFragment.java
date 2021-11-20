@@ -31,8 +31,8 @@ import androidx.annotation.StringRes;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -53,7 +53,7 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @BooksOnBookshelf.RowChangeListener.Change
+    @RowChangeListener.Change
     private final int mFieldFlag;
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
@@ -69,11 +69,11 @@ public abstract class EditStringBaseDialogFragment
      *
      * @param titleId   for the dialog (i.e. the toolbar)
      * @param label     to use for the 'hint' of the input field
-     * @param fieldFlag one of the {@link BooksOnBookshelf.RowChangeListener.Change} bits
+     * @param fieldFlag one of the {@link RowChangeListener.Change} bits
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
-                                 @BooksOnBookshelf.RowChangeListener.Change final int fieldFlag) {
+                                 @RowChangeListener.Change final int fieldFlag) {
         super(R.layout.dialog_edit_string);
 
         mDialogTitleId = titleId;
@@ -168,7 +168,7 @@ public abstract class EditStringBaseDialogFragment
 
         onSave(mOriginalText, mCurrentText);
 
-        BooksOnBookshelf.RowChangeListener.setResult(this, mRequestKey, mFieldFlag, 0);
+        RowChangeListener.setResult(this, mRequestKey, mFieldFlag, 0);
         return true;
     }
 

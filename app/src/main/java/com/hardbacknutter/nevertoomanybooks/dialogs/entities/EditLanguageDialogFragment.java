@@ -28,9 +28,9 @@ import androidx.fragment.app.FragmentActivity;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -50,7 +50,7 @@ public class EditLanguageDialogFragment
      */
     public EditLanguageDialogFragment() {
         super(R.string.lbl_language, R.string.lbl_language,
-              BooksOnBookshelf.RowChangeListener.LANGUAGE);
+              RowChangeListener.LANGUAGE);
     }
 
     /**
@@ -74,7 +74,7 @@ public class EditLanguageDialogFragment
         }
 
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, editLang);
 
         final DialogFragment frag = new EditLanguageDialogFragment();

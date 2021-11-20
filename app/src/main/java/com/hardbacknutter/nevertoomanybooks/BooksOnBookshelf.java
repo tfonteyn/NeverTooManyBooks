@@ -40,12 +40,10 @@ import android.widget.AdapterView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
@@ -54,8 +52,6 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -86,6 +82,7 @@ import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -1725,7 +1722,6 @@ public class BooksOnBookshelf
      *     <li>The row number at the top of the screen.</li>
      *     <li>The pixel offset of that row from the top of the screen.</li>
      * </ol>
-     * <p>
      */
     private void saveListPosition() {
         if (!isDestroyed()) {
@@ -1877,97 +1873,6 @@ public class BooksOnBookshelf
                                     mLayoutManager.findFirstVisibleItemPosition(),
                                     mLayoutManager.findLastVisibleItemPosition(),
                                     pos));
-    }
-
-    /**
-     * Allows to be notified of changes made.
-     * The bit number are not stored and can be changed.
-     * <p>
-     * If a book id is passed back, it should be available
-     * in {@code data.getLong(DBDefinitions.KEY_FK_BOOK)}.
-     */
-    public interface RowChangeListener
-            extends FragmentResultListener {
-
-        String REQUEST_KEY = "rk:RowChangeListener";
-
-        // Note that BOOK is missing here.
-        // It's implied if a bookId is passed back, or if the context makes it clear anyhow.
-        int AUTHOR = 1;
-        int SERIES = 1 << 1;
-        int PUBLISHER = 1 << 2;
-        int BOOKSHELF = 1 << 3;
-        int TOC_ENTRY = 1 << 4;
-
-        int FORMAT = 1 << 5;
-        int COLOR = 1 << 6;
-        int GENRE = 1 << 7;
-        int LANGUAGE = 1 << 8;
-        int LOCATION = 1 << 9;
-
-        /** A book was set to read/unread. */
-        int BOOK_READ = 1 << 10;
-
-        /**
-         * A book was either lend out, or returned.
-         * <p>
-         * When lend out:  data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-         * When returned: data == null
-         */
-        int BOOK_LOANEE = 1 << 11;
-
-        /** A book was deleted. */
-        int BOOK_DELETED = 1 << 12;
-
-        /* private. */ String ITEM_ID = "item";
-        /* private. */ String CHANGE = "change";
-
-        /**
-         * Notify changes where made.
-         *
-         * @param requestKey for use with the FragmentResultListener
-         * @param change     what changed
-         * @param id         the item being modified,
-         *                   or {@code 0} for a global change or for an books-table inline item
-         */
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @Change final int change,
-                              final long id) {
-            final Bundle result = new Bundle(2);
-            result.putInt(CHANGE, change);
-            result.putLong(ITEM_ID, id);
-            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-        }
-
-        @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
-            onChange(result.getInt(CHANGE),
-                     result.getLong(ITEM_ID));
-        }
-
-        /**
-         * Called if changes were made.
-         *
-         * @param change what changed
-         * @param id     the item being modified, or {@code 0} for a global change
-         */
-        void onChange(@Change int change,
-                      @IntRange(from = 0) long id);
-
-        @IntDef({AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
-                 FORMAT, COLOR, GENRE, LANGUAGE, LOCATION})
-        @Retention(RetentionPolicy.SOURCE)
-        @interface Change {
-
-        }
-
-        @IntDef({BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
-        @Retention(RetentionPolicy.SOURCE)
-        @interface BookChange {
-
-        }
     }
 
     private static class HeaderViewHolder
