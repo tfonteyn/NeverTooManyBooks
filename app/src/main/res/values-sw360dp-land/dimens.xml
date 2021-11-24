@@ -19,15 +19,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
-    port:  w360dp h616dp
-    land:  w640dp h336dp
--->
 <resources>
-    <dimen name="field_margin_start">8dp</dimen>
-    <dimen name="field_margin_inline">12dp</dimen>
-
-    <dimen name="screen_min_width">340dp</dimen>
-    <dimen name="progress_width">340dp</dimen>
+    <dimen name="fab_menu_translationY_0">-10dp</dimen>
+    <dimen name="fab_menu_translationY_1">-75dp</dimen>
+    <dimen name="fab_menu_translationY_2">-140dp</dimen>
+    <dimen name="fab_menu_translationY_3">-205dp</dimen>
+    <dimen name="fab_menu_translationY_4">-270dp</dimen>
 </resources>

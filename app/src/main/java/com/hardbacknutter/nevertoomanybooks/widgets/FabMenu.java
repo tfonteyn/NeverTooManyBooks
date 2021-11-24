@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -139,40 +140,24 @@ public class FabMenu {
 
         final Resources res = mFab.getResources();
 
-        final float baseY = res.getDimension(R.dimen.fab_menu_translationY_base);
-        final float deltaY = res.getDimension(R.dimen.fab_menu_translationY_delta);
-
         final float baseX = res.getDimension(R.dimen.fab_menu_translationX);
-        final float deltaX = res.getDimension(R.dimen.fab_menu_translationX_delta);
+        final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
 
-        // Test for split-screen layouts (or really small devices?)
-        // Having more than 4 FAB buttons is not really a good UI design
-        // But this just about fits our 5...
-        // It's a fringe case... resource qualifiers would be overkill.
-        final boolean smallScreen = res.getConfiguration().screenHeightDp < 400;
-
-        int i = 0;
-        for (final ExtendedFloatingActionButton fab : mFabMenuItems) {
+        for (int i = 0; i < mFabMenuItems.length; i++) {
+            final ExtendedFloatingActionButton fab = mFabMenuItems[i];
             // allow for null items
             if (fab != null && fab.isEnabled()) {
                 if (show) {
                     fab.show();
-                    if (smallScreen) {
-                        // to the left of FAB and up
-                        fab.animate().translationX(baseX + deltaX);
-                        fab.animate().translationY(i * deltaY);
-                    } else {
-                        // on top of base FAB
-                        fab.animate().translationX(baseX);
-                        fab.animate().translationY(baseY + ((i + 1) * deltaY));
-                    }
+                    fab.animate().translationX(baseX);
+                    fab.animate().translationY(baseY.getDimensionPixelSize(i, 0));
                 } else {
                     fab.animate().translationX(0);
                     fab.animate().translationY(0);
                     fab.hide();
                 }
-                i++;
             }
         }
+        baseY.recycle();
     }
 }

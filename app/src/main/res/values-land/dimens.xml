@@ -29,4 +29,12 @@
     <dimen name="progress_margin_top">50dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 
+    <dimen name="fab_menu_translationX">-80dp</dimen>
+
+    <dimen name="fab_menu_translationY_0">10dp</dimen>
+    <dimen name="fab_menu_translationY_1">-50dp</dimen>
+    <dimen name="fab_menu_translationY_2">-110dp</dimen>
+    <dimen name="fab_menu_translationY_3">-170dp</dimen>
+    <dimen name="fab_menu_translationY_4">-230dp</dimen>
+
 </resources>

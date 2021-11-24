@@ -70,18 +70,23 @@
     <!-- square dimensions of the icon. -->
     <dimen name="nav_header_icon_size">100dp</dimen>
 
-
     <!-- Spacing around the FAB. -->
     <dimen name="fab_margin">16dp</dimen>
-    <!-- offset to the left, as compared to the base FAB button -->
-    <dimen name="fab_menu_translationX">-20dp</dimen>
-    <!-- added to the offset when using small screens -->
-    <dimen name="fab_menu_translationX_delta">-60dp</dimen>
-    <!-- offset upwards, as compared to the base FAB button -->
-    <dimen name="fab_menu_translationY_base">-10dp</dimen>
-    <!-- offset + (level * delta) -->
-    <dimen name="fab_menu_translationY_delta">-60dp</dimen>
+    <!-- offset to the left/top, as compared to the base FAB button -->
+    <dimen name="fab_menu_translationX">-60dp</dimen>
+    <dimen name="fab_menu_translationY_0">-50dp</dimen>
+    <dimen name="fab_menu_translationY_1">-115dp</dimen>
+    <dimen name="fab_menu_translationY_2">-180dp</dimen>
+    <dimen name="fab_menu_translationY_3">-245dp</dimen>
+    <dimen name="fab_menu_translationY_4">-310dp</dimen>
 
+    <array name="fab_menu_translationY_all">
+        <item>@dimen/fab_menu_translationY_0</item>
+        <item>@dimen/fab_menu_translationY_1</item>
+        <item>@dimen/fab_menu_translationY_2</item>
+        <item>@dimen/fab_menu_translationY_3</item>
+        <item>@dimen/fab_menu_translationY_4</item>
+    </array>
 
     <!-- the margin around the CardView. -->
     <dimen name="bob_book_card_margin">8dp</dimen>
