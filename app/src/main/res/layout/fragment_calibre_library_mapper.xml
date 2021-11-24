@@ -117,6 +117,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/screen_border"
+        android:nestedScrollingEnabled="true"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -126,6 +127,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_vlibs"
         app:layout_constraintVertical_bias="0.0"
+        tools:itemCount="4"
         tools:listitem="@layout/row_edit_calibre_library"
         tools:visibility="visible"
         />
