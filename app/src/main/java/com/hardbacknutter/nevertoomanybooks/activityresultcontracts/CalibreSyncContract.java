@@ -43,8 +43,7 @@ public class CalibreSyncContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, CalibreSyncFragment.TAG);
+        return FragmentHostActivity.createIntent(context, CalibreSyncFragment.TAG);
     }
 
     @Override

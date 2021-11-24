@@ -385,9 +385,9 @@ public class ShowBookFragment
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = new Intent(getContext(), SettingsHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                              CalibrePreferencesFragment.TAG);
+            //noinspection ConstantConditions
+            final Intent intent = SettingsHostActivity
+                    .createIntent(getContext(), CalibrePreferencesFragment.TAG);
             startActivity(intent);
             return true;
 

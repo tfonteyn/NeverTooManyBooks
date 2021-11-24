@@ -53,8 +53,8 @@ public class AuthorWorksContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AuthorWorksFragment.TAG)
+        return FragmentHostActivity
+                .createIntent(context, AuthorWorksFragment.TAG)
                 .putExtra(DBKey.PK_ID, input.authorId)
                 .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }

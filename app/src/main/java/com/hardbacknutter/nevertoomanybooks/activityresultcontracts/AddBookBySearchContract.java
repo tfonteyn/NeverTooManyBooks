@@ -64,33 +64,25 @@ public class AddBookBySearchContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final By by) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class);
-
         switch (by) {
             case Isbn:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByIsbnFragment.TAG);
-                break;
+                return FragmentHostActivity.createIntent(context, SearchBookByIsbnFragment.TAG);
 
             case Scan:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByIsbnFragment.TAG)
-                      .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
-                                SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
-                break;
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByIsbnFragment.TAG)
+                        .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
+                                  SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
 
             case ExternalId:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByExternalIdFragment.TAG);
-                break;
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByExternalIdFragment.TAG);
 
             case Text:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByTextFragment.TAG);
-                break;
+                return FragmentHostActivity.createIntent(context, SearchBookByTextFragment.TAG);
         }
 
-        return intent;
+        throw new IllegalArgumentException(by.name());
     }
 
     @Override

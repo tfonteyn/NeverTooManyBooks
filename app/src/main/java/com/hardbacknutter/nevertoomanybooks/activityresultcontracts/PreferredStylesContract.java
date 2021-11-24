@@ -62,8 +62,8 @@ public class PreferredStylesContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final String styleUuid) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
+        return FragmentHostActivity
+                .createIntent(context, PreferredStylesFragment.TAG)
                 .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
     }
 

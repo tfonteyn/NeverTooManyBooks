@@ -32,7 +32,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
@@ -63,8 +62,8 @@ public class EditStyleContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return new Intent(context, SettingsHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+        return SettingsHostActivity
+                .createIntent(context, StyleFragment.TAG)
                 .putExtra(BKEY_ACTION, input.action)
                 .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);

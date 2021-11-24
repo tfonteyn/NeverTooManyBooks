@@ -53,8 +53,8 @@ public class EditBookshelvesContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Long bookshelfId) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
+        final Intent intent = FragmentHostActivity
+                .createIntent(context, EditBookshelvesFragment.TAG);
         if (bookshelfId != 0) {
             intent.putExtra(EditBookshelvesViewModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
         }

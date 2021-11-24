@@ -351,8 +351,7 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.MENU_ABOUT) {
-            final Intent intent = new Intent(this, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
+            final Intent intent = FragmentHostActivity.createIntent(this, AboutFragment.TAG);
             startActivity(intent);
             return true;
         }

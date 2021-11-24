@@ -49,8 +49,8 @@ public class UpdateBooklistContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
+        final Intent intent = FragmentHostActivity
+                .createIntent(context, SearchBookUpdatesFragment.TAG)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, input.bookIdList);
 
         if (input.subTitle != null) {

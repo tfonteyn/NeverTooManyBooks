@@ -70,8 +70,7 @@ public class SearchFtsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SearchCriteria criteria) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
+        final Intent intent = FragmentHostActivity.createIntent(context, SearchFtsFragment.TAG);
         criteria.to(intent);
         return intent;
     }

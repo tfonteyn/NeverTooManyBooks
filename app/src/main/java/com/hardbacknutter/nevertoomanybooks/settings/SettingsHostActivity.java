@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -36,7 +38,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
@@ -48,6 +49,9 @@ public class SettingsHostActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = "SettingsHostActivity";
+    private static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
+
     private static final Map<String, Class<? extends BasePreferenceFragment>> sMap =
             new HashMap<>();
 
@@ -55,6 +59,12 @@ public class SettingsHostActivity
         sMap.put(SettingsFragment.TAG, SettingsFragment.class);
         sMap.put(CalibrePreferencesFragment.TAG, CalibrePreferencesFragment.class);
         sMap.put(StyleFragment.TAG, StyleFragment.class);
+    }
+
+    public static Intent createIntent(@NonNull final Context context,
+                                      @NonNull final String fragmentTag) {
+        return new Intent(context, SettingsHostActivity.class)
+                .putExtra(BKEY_FRAGMENT_TAG, fragmentTag);
     }
 
     @Override
@@ -67,7 +77,7 @@ public class SettingsHostActivity
         super.onCreate(savedInstanceState);
 
         final String tag = Objects.requireNonNull(
-                getIntent().getStringExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG), "tag");
+                getIntent().getStringExtra(BKEY_FRAGMENT_TAG), "tag");
 
         final Class<? extends BasePreferenceFragment> aClass = sMap.get(tag);
         if (aClass != null) {

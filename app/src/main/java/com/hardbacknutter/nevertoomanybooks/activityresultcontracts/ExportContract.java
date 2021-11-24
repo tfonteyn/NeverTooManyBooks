@@ -42,8 +42,7 @@ public class ExportContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+        return FragmentHostActivity.createIntent(context, ExportFragment.TAG);
     }
 
     @Override

@@ -46,10 +46,9 @@ public class SyncReaderContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SyncServer syncServer) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SyncReaderFragment.TAG);
-        intent.putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
-        return intent;
+        return FragmentHostActivity
+                .createIntent(context, SyncReaderFragment.TAG)
+                .putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
     }
 
     @Override

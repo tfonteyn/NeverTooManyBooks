@@ -202,9 +202,8 @@ public class StartupActivity
                             }
                             case 2: {
                                 // take user to the settings screen
-                                final Intent intent = new Intent(this, SettingsHostActivity.class)
-                                        .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                                  SettingsFragment.TAG)
+                                final Intent intent = SettingsHostActivity
+                                        .createIntent(this, SettingsFragment.TAG)
                                         .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                                   Prefs.pk_storage_volume)
                                         .putExtra(SettingsFragment.BKEY_STORAGE_WAS_MISSING, true);
@@ -320,9 +319,8 @@ public class StartupActivity
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     // We'll TRY to start the maintenance fragment
                     // which gives access to debug options
-                    final Intent intent = new Intent(this, FragmentHostActivity.class)
-                            .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                      MaintenanceFragment.TAG);
+                    final Intent intent = FragmentHostActivity
+                            .createIntent(this, MaintenanceFragment.TAG);
                     startActivity(intent);
                     finish();
                 })

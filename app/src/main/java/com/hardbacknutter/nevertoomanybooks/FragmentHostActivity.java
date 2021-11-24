@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -46,7 +49,7 @@ public class FragmentHostActivity
         extends BaseActivity {
 
     private static final String TAG = "FragmentHostActivity";
-    public static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
+    private static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
 
     private static final Map<String, Class<? extends Fragment>> sMap = new HashMap<>();
 
@@ -73,6 +76,12 @@ public class FragmentHostActivity
         sMap.put(AboutFragment.TAG, AboutFragment.class);
 
         sMap.put(MaintenanceFragment.TAG, MaintenanceFragment.class);
+    }
+
+    public static Intent createIntent(@NonNull final Context context,
+                                      @NonNull final String fragmentTag) {
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(BKEY_FRAGMENT_TAG, fragmentTag);
     }
 
     @Override

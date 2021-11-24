@@ -44,10 +44,9 @@ public class SyncWriterContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SyncServer syncServer) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SyncWriterFragment.TAG);
-        intent.putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
-        return intent;
+        return FragmentHostActivity
+                .createIntent(context, SyncWriterFragment.TAG)
+                .putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
     }
 
     @Override

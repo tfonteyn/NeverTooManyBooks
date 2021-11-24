@@ -981,9 +981,8 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            final Intent intent = new Intent(this, SettingsHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                              CalibrePreferencesFragment.TAG);
+            final Intent intent = SettingsHostActivity
+                    .createIntent(this, CalibrePreferencesFragment.TAG);
             startActivity(intent);
             return true;
 
