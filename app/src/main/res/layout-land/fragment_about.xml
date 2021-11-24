@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TopCentered"
+    android:minWidth="500dp"
+    tools:context=".FragmentHostActivity"
+    >
+
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="@dimen/app_logo"
+        android:layout_height="@dimen/app_logo"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/app_name"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:src="@drawable/ic_nevertoomanybooks_about"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/app_name"
+        style="@style/About.AppName"
+        android:text="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="@id/app_icon"
+        app:layout_constraintStart_toEndOf="@id/app_icon"
+        app:layout_constraintTop_toTopOf="@id/app_icon"
+        tools:text="NeverTooManyBooks"
+        />
+
+    <TextView
+        android:id="@+id/version"
+        style="@style/About.Version"
+        app:layout_constraintEnd_toEndOf="@id/app_name"
+        app:layout_constraintTop_toBottomOf="@id/app_name"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="a.b.c"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_header_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="app_icon,version"
+        />
+
+    <TextView
+        android:id="@+id/lbl_books"
+        style="@style/Label"
+        android:layout_marginTop="24dp"
+        android:text="@string/lbl_books"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
+        />
+
+    <TextView
+        android:id="@+id/lbl_series"
+        style="@style/Label"
+        android:text="@string/lbl_series"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_books"
+        />
+
+    <TextView
+        android:id="@+id/lbl_authors"
+        style="@style/Label"
+        android:text="@string/lbl_authors"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series"
+        />
+
+    <TextView
+        android:id="@+id/lbl_publishers"
+        style="@style/Label"
+        android:text="@string/lbl_publishers"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_authors"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_labels_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_publishers"
+        />
+
+    <TextView
+        android:id="@+id/book_count"
+        style="@style/About.Statistic"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:ignore="SelectableText"
+        tools:text="1234"
+        />
+
+    <TextView
+        android:id="@+id/series_count"
+        style="@style/About.Statistic"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:ignore="SelectableText"
+        tools:text="234"
+        />
+
+    <TextView
+        android:id="@+id/author_count"
+        style="@style/About.Statistic"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:ignore="SelectableText"
+        tools:text="567"
+        />
+
+    <TextView
+        android:id="@+id/publisher_count"
+        style="@style/About.Statistic"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:ignore="SelectableText"
+        tools:text="89"
+        />
+
+    <TextView
+        android:id="@+id/contacts"
+        style="@style/Text.Header"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginTop="24dp"
+        android:text="@string/lbl_about_contact"
+        app:layout_constraintStart_toStartOf="@id/btn_sourcecode_url"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
+        />
+
+    <Button
+        android:id="@+id/btn_sourcecode_url"
+        style="@style/Button.Url"
+        android:text="@string/lbl_sourcecode_url"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contacts"
+        />
+
+    <!-- actionBarSize is a bit of a hack... but positioning
+        the fragment in the FragmentContainerView constrained to
+        the visible screen is elusive. -->
+    <TextView
+        android:id="@+id/debug_version"
+        style="@style/Field.Generic.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:text=""
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="a7 d13 b2020-11-01"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
