@@ -43,7 +43,8 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.core.util.Consumer;
+import java.util.function.Consumer;
+
 
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
