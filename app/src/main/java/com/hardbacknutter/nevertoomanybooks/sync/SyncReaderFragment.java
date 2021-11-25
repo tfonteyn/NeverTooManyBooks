@@ -115,9 +115,9 @@ public class SyncReaderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        mToolbar = getToolbar();
 
+        //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
@@ -318,7 +318,7 @@ public class SyncReaderFragment
      *
      * @param lastSyncDate to use
      */
-    void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+    private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
         mVm.setSyncDate(lastSyncDate);
         //noinspection ConstantConditions
         mVb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));

@@ -207,8 +207,7 @@ public class ShowBookFragment
         mAmazonHandler = new AmazonHandler(getContext());
         mViewBookHandler = new ViewBookOnWebsiteHandler(getContext());
 
-        // The FAB lives in the activity.
-        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        final FloatingActionButton fab = getFab();
         //URGENT: make decision to do without the FAB button on this activity?....
         // i.e. edit book via options menu
         fab.setVisibility(View.GONE);

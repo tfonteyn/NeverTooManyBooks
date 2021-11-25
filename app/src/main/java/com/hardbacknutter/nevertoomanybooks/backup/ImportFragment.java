@@ -141,9 +141,9 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
         setTitle(R.string.lbl_import);
 
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        mToolbar = getToolbar();
 
+        //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
@@ -166,6 +166,7 @@ public class ImportFragment
             mOpenUriLauncher.launch(MIME_TYPES);
         }
     }
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,

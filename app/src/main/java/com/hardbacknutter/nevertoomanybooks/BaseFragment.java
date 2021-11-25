@@ -19,9 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.Objects;
 
 /**
  * Notes on using getSupportActionBar to set the activity title:
@@ -33,6 +39,18 @@ import androidx.fragment.app.Fragment;
  */
 public abstract class BaseFragment
         extends Fragment {
+
+    @NonNull
+    protected Toolbar getToolbar() {
+        //noinspection ConstantConditions
+        return Objects.requireNonNull(getActivity().findViewById(R.id.toolbar), "R.id.toolbar");
+    }
+
+    @NonNull
+    protected FloatingActionButton getFab() {
+        //noinspection ConstantConditions
+        return Objects.requireNonNull(getActivity().findViewById(R.id.fab), "R.id.fab");
+    }
 
     public void setTitle(@StringRes final int titleResId,
                          @StringRes final int subtitleResId) {

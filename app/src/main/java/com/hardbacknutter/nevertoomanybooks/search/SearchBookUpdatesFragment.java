@@ -146,9 +146,7 @@ public class SearchBookUpdatesFragment
         // Something really bad happened and we're aborting
         mVm.onAbort().observe(getViewLifecycleOwner(), this::onAbort);
 
-        // The FAB lives in the activity.
-        //noinspection ConstantConditions
-        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());

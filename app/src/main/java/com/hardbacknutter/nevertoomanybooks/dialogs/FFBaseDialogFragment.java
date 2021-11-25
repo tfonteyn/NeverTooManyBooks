@@ -76,8 +76,8 @@ public abstract class FFBaseDialogFragment
         extends DialogFragment {
 
     // SnackBar:
-    //  private static final int SHORT_DURATION_MS = 1500;
-    //  private static final int LONG_DURATION_MS = 2750;
+    //  SHORT_DURATION_MS = 1500;
+    //  LONG_DURATION_MS = 2750;
     private static final int USE_DEFAULT = -1;
     /** The <strong>Dialog</strong> toolbar. Not to be confused with the Activity's ActionBar! */
     Toolbar mDialogToolbar;
@@ -348,7 +348,7 @@ public abstract class FFBaseDialogFragment
      *
      * @param view a View from which we can get the window token.
      */
-    public void hideKeyboard(@NonNull final View view) {
+    protected void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

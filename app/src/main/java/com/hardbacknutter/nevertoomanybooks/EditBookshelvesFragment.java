@@ -118,8 +118,7 @@ public class EditBookshelvesFragment
         mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(),
                                                 aVoid -> mAdapter.notifyDataSetChanged());
 
-        // The FAB lives in the activity.
-        final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        final FloatingActionButton fab = getFab();
         fab.setImageResource(R.drawable.ic_baseline_add_24);
         fab.setVisibility(View.VISIBLE);
         //noinspection ConstantConditions
