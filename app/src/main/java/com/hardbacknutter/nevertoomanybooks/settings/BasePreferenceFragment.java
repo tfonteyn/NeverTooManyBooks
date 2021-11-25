@@ -82,7 +82,7 @@ public abstract class BasePreferenceFragment
      * This will make sure the current fragment can be the top-fragment (then finish)
      * or be called from another fragment (then pop).
      */
-    protected void popBackStackOrFinish() {
+    void popBackStackOrFinish() {
         if (getParentFragmentManager().getBackStackEntryCount() > 0) {
             getParentFragmentManager().popBackStack();
         } else {
@@ -95,6 +95,7 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
+        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .registerOnSharedPreferenceChangeListener(this);
 
@@ -106,6 +107,7 @@ public abstract class BasePreferenceFragment
 
     @Override
     public void onPause() {
+        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();

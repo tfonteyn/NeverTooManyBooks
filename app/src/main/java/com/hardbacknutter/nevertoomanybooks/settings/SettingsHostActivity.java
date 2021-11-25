@@ -129,6 +129,7 @@ public class SettingsHostActivity
          * -keep public class * extends androidx.preference.PreferenceFragmentCompat
          * or use @Keep annotation on individual fragments
          */
+        //noinspection ConstantConditions
         final Fragment fragment =
                 fm.getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
 
