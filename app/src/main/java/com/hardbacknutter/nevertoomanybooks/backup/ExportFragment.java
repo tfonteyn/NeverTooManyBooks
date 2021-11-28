@@ -537,8 +537,7 @@ public class ExportFragment
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(
-                        getActivity().findViewById(R.id.progress_frame))
+                mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(getString(R.string.menu_backup_and_export))
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))

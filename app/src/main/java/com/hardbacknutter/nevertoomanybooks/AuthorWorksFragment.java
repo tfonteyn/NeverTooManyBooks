@@ -135,8 +135,8 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         mVm.init(context, requireArguments());
 
-        setTitle(mVm.getScreenTitle(context),
-                 mVm.getScreenSubtitle());
+        setTitle(mVm.getScreenTitle(context));
+        setSubtitle(mVm.getScreenSubtitle());
 
         mVb.authorWorks.setHasFixedSize(true);
         mVb.authorWorks.addItemDecoration(
@@ -215,8 +215,8 @@ public class AuthorWorksFragment
             mVm.reloadWorkList();
             mAdapter.notifyDataSetChanged();
             //noinspection ConstantConditions
-            setTitle(mVm.getScreenTitle(getContext()),
-                     mVm.getScreenSubtitle());
+            setTitle(mVm.getScreenTitle(getContext()));
+            setSubtitle(mVm.getScreenSubtitle());
             return true;
         }
 

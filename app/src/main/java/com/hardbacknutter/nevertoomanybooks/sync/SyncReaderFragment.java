@@ -34,7 +34,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -92,8 +91,6 @@ public class SyncReaderFragment
 
     @Nullable
     private ProgressDelegate mProgressDelegate;
-    /** Ref to the actual Toolbar so we can enable/disable its menu. */
-    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -114,8 +111,6 @@ public class SyncReaderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mToolbar = getToolbar();
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
@@ -163,7 +158,7 @@ public class SyncReaderFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+        final MenuItem menuItem = getToolbar().getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
         menuItem.setEnabled(mVm.isReadyToGo());
     }
 
@@ -434,8 +429,7 @@ public class SyncReaderFragment
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(
-                        getActivity().findViewById(R.id.progress_frame))
+                mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(getString(R.string.lbl_importing))
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
@@ -444,6 +438,7 @@ public class SyncReaderFragment
             mProgressDelegate.onProgress(message);
         }
     }
+
 
     private void closeProgressDialog() {
         if (mProgressDelegate != null) {

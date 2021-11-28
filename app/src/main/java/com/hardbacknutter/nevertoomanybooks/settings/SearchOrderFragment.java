@@ -104,8 +104,8 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.lbl_settings,
-                 R.string.lbl_websites);
+        setTitle(R.string.lbl_settings);
+        setSubtitle(R.string.lbl_websites);
 
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);

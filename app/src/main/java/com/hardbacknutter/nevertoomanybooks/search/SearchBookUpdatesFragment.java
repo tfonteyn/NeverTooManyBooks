@@ -351,8 +351,7 @@ public class SearchBookUpdatesFragment
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(
-                        getActivity().findViewById(R.id.progress_frame))
+                mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(getString(R.string.progress_msg_searching))
                         .setIndeterminate(true)
                         .setPreventSleep(true)

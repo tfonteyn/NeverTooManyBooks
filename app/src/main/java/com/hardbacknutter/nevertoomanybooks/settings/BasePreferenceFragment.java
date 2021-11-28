@@ -30,6 +30,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
@@ -91,11 +93,17 @@ public abstract class BasePreferenceFragment
         }
     }
 
+    @NonNull
+    protected View getProgressFrame() {
+        //noinspection ConstantConditions
+        return Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
+                                      "R.id.progress_frame");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
-        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .registerOnSharedPreferenceChangeListener(this);
 
@@ -107,7 +115,6 @@ public abstract class BasePreferenceFragment
 
     @Override
     public void onPause() {
-        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();

@@ -201,17 +201,11 @@ public abstract class BaseActivity
     }
 
     public void setSubtitle(@StringRes final int title) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(title);
-        }
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle(title);
     }
 
     public void setSubtitle(@Nullable final CharSequence title) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(title);
-        }
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle(title);
     }
 
 
@@ -326,7 +320,7 @@ public abstract class BaseActivity
     }
 
     @NonNull
-    protected View getNavigationMenuItemView(final int itemId) {
+    View getNavigationMenuItemView(final int itemId) {
         //noinspection ConstantConditions
         final View anchor = mNavigationView.findViewById(itemId);
         // Not 100% we are using a legal way of getting the View...

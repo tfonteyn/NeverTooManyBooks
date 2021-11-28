@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -43,29 +45,22 @@ public abstract class BaseFragment
     @NonNull
     protected Toolbar getToolbar() {
         //noinspection ConstantConditions
-        return Objects.requireNonNull(getActivity().findViewById(R.id.toolbar), "R.id.toolbar");
+        return Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
+                                      "R.id.toolbar");
     }
 
     @NonNull
     protected FloatingActionButton getFab() {
         //noinspection ConstantConditions
-        return Objects.requireNonNull(getActivity().findViewById(R.id.fab), "R.id.fab");
+        return Objects.requireNonNull(getActivity().findViewById(R.id.fab),
+                                      "R.id.fab");
     }
 
-    public void setTitle(@StringRes final int titleResId,
-                         @StringRes final int subtitleResId) {
-        final BaseActivity baseActivity = ((BaseActivity) getActivity());
+    @NonNull
+    protected View getProgressFrame() {
         //noinspection ConstantConditions
-        baseActivity.setTitle(titleResId);
-        baseActivity.setSubtitle(subtitleResId);
-    }
-
-    public void setTitle(@Nullable final CharSequence title,
-                         @Nullable final CharSequence subtitle) {
-        final BaseActivity baseActivity = ((BaseActivity) getActivity());
-        //noinspection ConstantConditions
-        baseActivity.setTitle(title);
-        baseActivity.setSubtitle(subtitle);
+        return Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
+                                      "R.id.progress_frame");
     }
 
     public void setTitle(@StringRes final int resId) {

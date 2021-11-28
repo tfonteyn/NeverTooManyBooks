@@ -76,8 +76,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(
-                        getActivity().findViewById(R.id.progress_frame))
+                mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(getString(R.string.lbl_test_connection))
                         .setPreventSleep(false)
                         .setIndeterminate(true)
