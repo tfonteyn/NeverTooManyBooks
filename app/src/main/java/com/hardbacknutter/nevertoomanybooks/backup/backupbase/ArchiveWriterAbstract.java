@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * {@link com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter}
  * so we could eliminate this class. But let's keep it open for the future for now.
  */
+@SuppressWarnings("RedundantThrows")
 public abstract class ArchiveWriterAbstract
         implements ArchiveWriter {
 
