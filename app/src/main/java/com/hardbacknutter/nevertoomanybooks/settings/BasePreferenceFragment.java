@@ -104,6 +104,7 @@ public abstract class BasePreferenceFragment
     public void onResume() {
         super.onResume();
 
+        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .registerOnSharedPreferenceChangeListener(this);
 
@@ -115,6 +116,7 @@ public abstract class BasePreferenceFragment
 
     @Override
     public void onPause() {
+        //noinspection ConstantConditions
         getPreferenceScreen().getSharedPreferences()
                              .unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();

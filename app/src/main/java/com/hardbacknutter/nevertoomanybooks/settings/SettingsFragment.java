@@ -346,12 +346,14 @@ public class SettingsFragment
         @AttrRes
         final int attr;
         //careful: we use the pref to get SharedPreferences... but we need the 'schedulerKey' !
+        //noinspection ConstantConditions
         if (preference.getSharedPreferences().getBoolean(schedulerKey, false)) {
             attr = R.attr.appPreferenceAlertColor;
         } else {
             attr = R.attr.colorControlNormal;
         }
 
+        //noinspection ConstantConditions
         final Drawable icon = preference.getIcon().mutate();
         //noinspection ConstantConditions
         icon.setTint(AttrUtils.getColorInt(getContext(), attr));

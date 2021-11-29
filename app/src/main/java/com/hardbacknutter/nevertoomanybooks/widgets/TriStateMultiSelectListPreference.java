@@ -156,6 +156,7 @@ public class TriStateMultiSelectListPreference
 
     public boolean isActive() {
         if (mActive == null) {
+            //noinspection ConstantConditions
             mActive = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
         }
         return mActive;
@@ -168,8 +169,10 @@ public class TriStateMultiSelectListPreference
     @Override
     public void setValues(@NonNull final Set<String> values) {
         if (isActive()) {
+            //noinspection ConstantConditions
             getSharedPreferences().edit().putBoolean(getKey() + ACTIVE, true).apply();
         } else {
+            //noinspection ConstantConditions
             getSharedPreferences().edit().remove(getKey() + ACTIVE).remove(getKey()).apply();
         }
         super.setValues(values);
