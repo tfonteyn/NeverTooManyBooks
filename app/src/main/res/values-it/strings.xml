@@ -117,8 +117,6 @@
     <string name="fab_add_book_by_external_id">ID libro del sito web</string>
     <string name="fab_add_book_manually">Aggiungi Manualmente</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Invia tutti</string>
-    <string name="X_menu_send_updated">Invia modificati</string>
     <string name="X_lbl_completed">Completato</string>
     <string name="X_lbl_failed">Errore</string>
     <string name="X_lbl_queued">In coda</string>
@@ -377,7 +375,6 @@
     <string name="progress_msg_saving_image">Salvataggio dell\'immagine…</string>
     <string name="progress_msg_searching">Ricerca…</string>
     <string name="progress_msg_searching_site">Ricerca in %1$s</string>
-    <string name="X_progress_msg_sending">Invio in corso, attendere…</string>
     <string name="progress_msg_skip_s">Salta - %1$s</string>
     <string name="progress_msg_starting_up">Avvio…</string>
     <string name="progress_msg_upgrading">Sto aggiornando…</string>
@@ -511,7 +508,6 @@
     <string name="X_lbl_select_image">Seleziona immagine…</string>
     <string name="X_lbl_select_style">Seleziona Stile</string>
     <string name="unknown_author">[Autore sconosciuto]</string>
-    <string name="X_unused">non usato</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">È prevista una data per «%1$s»</string>
@@ -522,7 +518,6 @@
     <string name="vldt_read_start_after_end">Data di inizio lettura posteriore alla data di fine lettura</string>
     <string name="vldt_real_expected_for_x">È previsto un valore reale per «%1$s»</string>
     <string name="warning_backup_request">Vuoi effettuare il backup del database nella scheda SD?</string>
-    <string name="X_warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="warning_book_not_found">Impossibile trovare il libro specificato</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria.</string>
     <string name="warning_image_copy_failed">L\'immagine non può essere copiata.</string>
@@ -534,10 +529,8 @@
     <string name="warning_import_csv">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="warning_import_failed_for_lines_lots">Analisi non riuscita per le righe \n%1$s\n e altre.</string>
     <string name="warning_import_failed_for_lines_some">Analisi non riuscita per le righe \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
-    <string name="X_warning_requires_isbn_alt">Codice ISBN non memorizzato</string>
     <string name="warning_no_matching_book_found">Nessuna corrispondenza trovata</string>
     <string name="warning_no_search_data_for_active_sites">Nessun dato di ricerca valido per siti attivi.</string>
     <string name="confirm_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
@@ -603,7 +596,6 @@
     <string name="statick">Statico</string>
     <string name="action_select">Seleziona</string>
     <string name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
-    <string name="X_action_clear_all_data">Elimina tutti i dati</string>
     <string name="pt_line_spacing">Interlinea</string>
     <string name="X_confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="menu_backup_and_export">Backup ed esportazione</string>

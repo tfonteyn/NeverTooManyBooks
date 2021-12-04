@@ -117,8 +117,6 @@
     <string name="fab_add_book_by_external_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
     <string name="fab_add_book_manually">Χειροκίνητη Προσθήκη</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Αποστολή όλων</string>
-    <string name="X_menu_send_updated">Αποστολή ενημερωμένων</string>
     <string name="X_lbl_completed">Ολοκληρώθηκαν</string>
     <string name="X_lbl_failed">Απέτυχαν</string>
     <string name="X_lbl_queued">Σε σειρά</string>
@@ -379,7 +377,6 @@
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
-    <string name="X_progress_msg_sending">Αποστολή, παρακαλώ περιμένετε…</string>
     <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
@@ -512,7 +509,6 @@
     <string name="X_lbl_select_image">Επιλογή εικόνας…</string>
     <string name="X_lbl_select_style">Επιλογή Στυλ</string>
     <string name="unknown_author">[Άγνωστος συγγραφέας]</string>
-    <string name="X_unused">αχρησιμοποίητος</string>
     <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
     <string name="vldt_date_expected_for_x">Αναμένεται ημερομηνία για «%1$s»</string>
@@ -523,7 +519,6 @@
     <string name="vldt_read_start_after_end">Η ημερομηνία έναρξης ανάγνωσης είναι μετά την ημερομηνία λήξης</string>
     <string name="vldt_real_expected_for_x">Αναμένεται ένας πραγματικός αριθμός για «%1$s»</string>
     <string name="warning_backup_request">Θέλετε να κρατήσετε αντίγραφο ασφαλείας της βάσης στην SDcard;</string>
-    <string name="X_warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="warning_image_copy_failed">Δεν ήταν δυνατή η αντιγραφή της εικόνας.</string>
@@ -535,10 +530,8 @@
     <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
     <string name="warning_import_failed_for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
-    <string name="X_warning_requires_isbn_alt">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
     <string name="warning_no_search_data_for_active_sites">Δεν υπάρχουν έγκυρα δεδομένα αναζήτησης για ενεργούς ιστότοπους.</string>
     <string name="confirm_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
@@ -604,7 +597,6 @@
     <string name="statick">Στατικός</string>
     <string name="action_select">Επιλογή</string>
     <string name="error_import_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
-    <string name="X_action_clear_all_data">Διαγραφή όλων των δεδομένων</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="X_confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="menu_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>

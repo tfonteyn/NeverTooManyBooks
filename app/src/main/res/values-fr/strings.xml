@@ -31,7 +31,6 @@
     <string name="acra_resReportSendSuccessToast">Merci !</string>
     <string name="acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="action_add">Ajouter</string>
-    <string name="X_action_clear_all_data">Supprimer toutes les données</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>
     <string name="action_clear">Effacer</string>
     <string name="action_delete">Supprimer</string>
@@ -136,8 +135,6 @@
     <string name="fab_add_book_by_isbn">Entrer l\'ISBN</string>
     <string name="fab_add_book_manually">Ajouter manuellement</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Tout envoyer</string>
-    <string name="X_menu_send_updated">Envoi les livres mis à jour</string>
     <string name="X_lbl_completed">Terminé</string>
     <string name="X_lbl_failed">Échoué</string>
     <string name="X_lbl_queued">En file d\'attente</string>
@@ -408,7 +405,6 @@
     <string name="progress_msg_searching_editions">Éditions en cours de recherche…</string>
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
     <string name="progress_msg_searching">Recherche en cours…</string>
-    <string name="X_progress_msg_sending">Envoi en cours, veuillez patienter…</string>
     <string name="progress_msg_skip_s">Passer - %1$s</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
@@ -534,7 +530,6 @@
     <string name="txt_x_pages">%1$d pages</string>
     <string name="unknown">Inconnu</string>
     <string name="unknown_author">[Auteur inconnu]</string>
-    <string name="X_unused">inutilisé</string>
     <string name="vldt_blank_required_for_x">Le champ «%1$s» doit être vide</string>
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour «%1$s»</string>
     <string name="vldt_date_expected_for_x">Date attendue pour «%1$s»</string>
@@ -546,7 +541,6 @@
     <string name="vldt_real_expected_for_x">Valeur décimale attendue pour «%1$s»</string>
     <string name="warning_already_in_list">Déjà dans la liste!</string>
     <string name="warning_backup_request">Voulez-vous sauvegarder votre base de données sur la carte SD ?</string>
-    <string name="X_warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque.</string>
     <string name="warning_enable_at_least_1_website">Activer au moins un site Web pour chaque catégorie.</string>
@@ -558,10 +552,8 @@
     <string name="warning_import_csv">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_failed_for_lines_lots">L\'analyse a échoué pour les lignes \n%1$s\n et autres.</string>
     <string name="warning_import_failed_for_lines_some">L\'analyse a échoué pour les lignes \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
     <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_no_editions">Aucune information d\'édition supplémentaire disponible</string>
-    <string name="X_warning_requires_isbn_alt">Aucun ISBN enregistré pour ce livre</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n\'a été trouvé</string>
     <string name="warning_no_search_data_for_active_sites">Aucune donnée de recherche valide pour les sites actifs.</string>
     <string name="warning_requires_at_least_1_field">Au moins un champ ne doit pas être vide.</string>

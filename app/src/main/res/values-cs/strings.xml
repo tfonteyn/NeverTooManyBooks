@@ -116,8 +116,6 @@
     <string name="fab_add_book_by_external_id">ID webové stránky</string>
     <string name="fab_add_book_manually">Přidat ručně</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Odeslat vše</string>
-    <string name="X_menu_send_updated">Odeslat aktualizované</string>
     <string name="X_lbl_completed">Kompletní</string>
     <string name="X_lbl_failed">Neúspěšný</string>
     <string name="X_lbl_queued">Fronta</string>
@@ -376,7 +374,6 @@
     <string name="progress_msg_saving_image">Uložení obrázku…</string>
     <string name="progress_msg_searching">Vyhledávání…</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
-    <string name="X_progress_msg_sending">Odesílá se, prosím čekejte…</string>
     <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
@@ -506,7 +503,6 @@
     <string name="X_lbl_select_image">Zvolit obrázek…</string>
     <string name="X_lbl_select_style">Zvolit styl</string>
     <string name="unknown_author">[Neznámý autor]</string>
-    <string name="X_unused">nepoužitý</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
     <string name="vldt_date_expected_for_x">Očekáváno datum pro „%1$s“</string>
@@ -517,7 +513,6 @@
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení.</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
-    <string name="X_warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu</string>
     <string name="warning_cannot_delete_1st_bs">Nelze smazat defaultní knihovnu.</string>
     <string name="warning_image_copy_failed">Obrázek nelze zkopírovat.</string>
@@ -529,10 +524,8 @@
     <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a další.</string>
     <string name="warning_import_failed_for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Tato volba není podporována u starších verzí archivu.</string>
     <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
-    <string name="X_warning_requires_isbn_alt">Kniha nemá uložen ISBN</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
     <string name="warning_no_search_data_for_active_sites">Pro aktivní weby neexistují žádná platná data vyhledávání.</string>
     <string name="confirm_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
@@ -599,7 +592,6 @@
     <string name="statick">Statický</string>
     <string name="action_select">Vybrat</string>
     <string name="error_import_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
-    <string name="X_action_clear_all_data">Smažte všechna data</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="X_confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="menu_backup_and_export">Zálohování a export</string>

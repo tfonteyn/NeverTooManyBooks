@@ -208,11 +208,6 @@
          Only 10 line numbers will be listed -->
     <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
-
-    <!-- Explanatory note associated with import options not available with older archives. -->
-    <string name="X_warning_import_archive_version_to_old">This option is not supported for older archive versions.</string>
-
-
     <!-- a lookup for a specific book failed (this was not a search). -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>
     <!-- a search for a book which more or less matches what we were searching for failed. -->
@@ -233,7 +228,6 @@
     <string name="warning_requires_at_least_1_field">At least one field must not be blank.</string>
 
     <string name="warning_requires_isbn">This action requires a valid ISBN.</string>
-    <string name="X_warning_requires_isbn_alt">No ISBN stored for book</string>
 
     <string name="warning_requires_site_and_id">Select a site and enter an id.</string>
 
@@ -253,8 +247,6 @@
     <string name="warning_no_editions">No additional edition information available.</string>
     <string name="warning_if_day_set_month_and_year_must_be">If a day is specified, then both month and year must be specified.</string>
     <string name="warning_if_month_set_year_must_be">If a month is specified, then a year must also be specified.</string>
-
-    <string name="X_warning_book_no_longer_exists">The specified book no longer exists.</string>
 
     <!-- When trying to automatically fetching the TOC of a book/anthology, we're not 100%
          if we indeed got the right content. So ask the user first. -->
@@ -397,8 +389,6 @@
 
     <!-- [VERIFIED] Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting…</string>
-    <!-- Progress dialog message displayed when uploading data to a web site. -->
-    <string name="X_progress_msg_sending">Sending, please wait…</string>
 
     <string name="progress_msg_saving_image">Saving image…</string>
 
@@ -839,12 +829,7 @@
     <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="progress_end_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
 
-
     <string name="action_synchronize">Synchronize</string>
-    <!-- Sync with a remote server. -->
-    <string name="X_menu_send_all">Send all</string>
-    <!-- Sync with a remote server. -->
-    <string name="X_menu_send_updated">Send updated books</string>
 
     <string name="menu_set_download_folder">Set the download folder</string>
     <string name="menu_download_folder">Local download folder</string>
@@ -1052,8 +1037,6 @@
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag to reorder this list</string>
 
-    <string name="X_action_clear_all_data">Clear all data</string>
-
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
     <!-- ####################################################################################### -->
@@ -1259,8 +1242,6 @@
 
     <!-- [VERIFIED] Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
-
-    <string name="X_unused">unused</string>
 
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>

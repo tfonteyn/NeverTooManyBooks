@@ -118,8 +118,6 @@
     <string name="fab_add_book_by_external_id">Web sitesi kitap kimliği</string>
     <string name="fab_add_book_manually">El ile ekle</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Tümünü gönder</string>
-    <string name="X_menu_send_updated">Güncellenenleri gönder</string>
     <string name="X_lbl_completed">Tamamlandı</string>
     <string name="X_lbl_failed">Başarısız</string>
     <string name="X_lbl_queued">Kuyrukta</string>
@@ -380,7 +378,6 @@
     <string name="progress_msg_saving_image">Resim kaydediliyor…</string>
     <string name="progress_msg_searching">Aranıyor…</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
-    <string name="X_progress_msg_sending">Gönderiliyor, lütfen bekleyin…</string>
     <string name="progress_msg_skip_s">Atla - %1$s</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
@@ -510,7 +507,6 @@
     <string name="X_lbl_select_image">Resim seç…</string>
     <string name="X_lbl_select_style">Biçem seç</string>
     <string name="unknown_author">[Bilinmeyen Yazar]</string>
-    <string name="X_unused">kullanılmamış</string>
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
     <string name="vldt_date_expected_for_x">“%1$s” için bir tarih gerekli</string>
@@ -521,7 +517,6 @@
     <string name="vldt_read_start_after_end">Okunmaya başlama süresi bitiş süresinden sonra</string>
     <string name="vldt_real_expected_for_x">“%1$s” için bir gerçek sayı gerekli</string>
     <string name="warning_backup_request">Veritabanınızı SD karta yedeklemek ister misiniz?</string>
-    <string name="X_warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="warning_book_not_found">Belirtilen kitap bulunamıyor</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor.</string>
     <string name="warning_image_copy_failed">Görüntü kopyalanamadı.</string>
@@ -533,10 +528,8 @@
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
     <string name="warning_import_failed_for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
-    <string name="X_warning_import_archive_version_to_old">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
-    <string name="X_warning_requires_isbn_alt">Bu kitap için bir ISBN depolanmamış</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
     <string name="warning_no_search_data_for_active_sites">Etkin siteler için geçerli arama verisi yok.</string>
     <string name="confirm_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
@@ -601,7 +594,6 @@
     <string name="statick">Statik</string>
     <string name="action_select">Seç</string>
     <string name="error_import_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
-    <string name="X_action_clear_all_data">Tüm verileri sil</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="X_confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="menu_backup_and_export">Yedekleme ve Dışa Aktarma</string>

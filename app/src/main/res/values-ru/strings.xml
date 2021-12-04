@@ -116,8 +116,6 @@
     <string name="fab_add_book_by_external_id">Идентификатор книги сайта</string>
     <string name="fab_add_book_manually">Добавить вручную</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Отправить все</string>
-    <string name="X_menu_send_updated">Отправить обновленные</string>
     <string name="X_lbl_completed">Завершено</string>
     <string name="X_lbl_failed">Неудача</string>
     <string name="X_lbl_queued">В очереди</string>
@@ -375,7 +373,6 @@
     <string name="progress_msg_saving_image">Сохранение изображения…</string>
     <string name="progress_msg_searching">Поиск…</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
-    <string name="X_progress_msg_sending">Отправка, пожалуйста подождите…</string>
     <string name="progress_msg_skip_s">Пропустить - %1$s</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
@@ -506,7 +503,6 @@
     <string name="X_lbl_select_image">Выбор картинки…</string>
     <string name="X_lbl_select_style">Выбрать стиль</string>
     <string name="unknown_author">[Неизвестный автор]</string>
-    <string name="X_unused">неиспользуемый</string>
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>
     <string name="vldt_date_expected_for_x">Введите дату: «%1$s»</string>
@@ -517,7 +513,6 @@
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: «%1$s»</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
-    <string name="X_warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку.</string>
     <string name="warning_image_copy_failed">Изображение не может быть скопировано.</string>
@@ -529,10 +524,8 @@
     <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и других.</string>
     <string name="warning_import_failed_for_lines_some">Сбой разбора для строк \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
-    <string name="X_warning_requires_isbn_alt">Нет ISBN хранящегося для книги</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
     <string name="warning_no_search_data_for_active_sites">Нет действительных поисковых данных для активных сайтов.</string>
     <string name="confirm_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
@@ -599,7 +592,6 @@
     <string name="action_validate">проверять</string>
     <string name="action_select">Выбрать</string>
     <string name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
-    <string name="X_action_clear_all_data">Удалить все данные</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="X_confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="menu_backup_and_export">Резервное копирование и экспорт</string>

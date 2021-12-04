@@ -30,7 +30,6 @@
     <string name="acra_resReportSendSuccessToast">Danke!</string>
     <string name="acra_resToastText">&APP_NAME; ist abgestürzt. Bitte helfen Sie uns bei der Verbesserung der App, indem Sie diesen Absturz melden.</string>
     <string name="action_add">Hinzufügen</string>
-    <string name="X_action_clear_all_data">Löschen Sie alle Daten</string>
     <string name="X_action_clear_credentials">Anmeldedaten löschen</string>
     <string name="action_clear">Löschen</string>
     <string name="action_delete">Löschen</string>
@@ -135,8 +134,6 @@
     <string name="fab_add_book_by_isbn">ISBN eingeben</string>
     <string name="fab_add_book_manually">Manuell hinzufügen</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Alles senden</string>
-    <string name="X_menu_send_updated">Geänderte Bücher senden</string>
     <string name="X_lbl_completed">Abgeschlossen</string>
     <string name="X_lbl_failed">Fehlerhaft</string>
     <string name="X_lbl_queued">Eingereiht</string>
@@ -407,7 +404,6 @@
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_searching_site">Suche bei %1$s</string>
     <string name="progress_msg_searching">Suche…</string>
-    <string name="X_progress_msg_sending">Senden, bitte warten…</string>
     <string name="progress_msg_skip_s">Überspringe - %1$s</string>
     <string name="progress_msg_starting_up">Gleich geht\'s los…</string>
     <string name="progress_msg_upgrading">Upgrade läuft…</string>
@@ -533,7 +529,6 @@
     <string name="txt_x_pages">%1$d seiten</string>
     <string name="unknown">Unbekannt</string>
     <string name="unknown_author">[Unbekannter Autor]</string>
-    <string name="X_unused">ungebraucht</string>
     <string name="vldt_blank_required_for_x">„%1$s“ muss leer sein</string>
     <string name="vldt_boolean_expected_for_x">Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet</string>
     <string name="vldt_date_expected_for_x">Es wird ein Datum für „%1$s“ erwartet</string>
@@ -545,7 +540,6 @@
     <string name="vldt_real_expected_for_x">Es wird ein Gleitkomma-Wert für „%1$s“ erwartet</string>
     <string name="warning_already_in_list">Schon in der Liste!</string>
     <string name="warning_backup_request">Möchten Sie ihre Datenbank auf SD-Karte sichern?</string>
-    <string name="X_warning_book_no_longer_exists">Das gewünschte Buch existiert nicht mehr</string>
     <string name="warning_book_not_found">Das angegebene Buch wurde nicht gefunden</string>
     <string name="warning_cannot_delete_1st_bs">Das erste Bücherregal kann nicht gelöscht werden.</string>
     <string name="warning_enable_at_least_1_website">Aktivieren Sie mindestens eine Website für jede Kategorie.</string>
@@ -557,10 +551,8 @@
     <string name="warning_import_csv">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
     <string name="warning_import_failed_for_lines_lots">Die Analyse für die Zeilen \n%1$s\n und andere ist fehlgeschlagen.</string>
     <string name="warning_import_failed_for_lines_some">Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
-    <string name="X_warning_import_archive_version_to_old">Diese Option wird für ältere Archivversionen nicht unterstützt.</string>
     <string name="warning_import_csv_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar</string>
-    <string name="X_warning_requires_isbn_alt">Zu diesem Buch ist keine ISBN gespeichert</string>
     <string name="warning_no_matching_book_found">Kein passendes Buch gefunden</string>
     <string name="warning_no_search_data_for_active_sites">Keine gültigen Suchdaten für aktive Websites.</string>
     <string name="warning_requires_at_least_1_field">Mindestens ein Feld darf nicht leer sein.</string>

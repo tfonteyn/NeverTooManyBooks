@@ -116,8 +116,6 @@
     <string name="fab_add_book_by_external_id">Identyfikator książki internetowej</string>
     <string name="fab_add_book_manually">Dodaj ręcznie</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="X_menu_send_all">Wyślij wszystko</string>
-    <string name="X_menu_send_updated">Wyślij zaktualizowane</string>
     <string name="X_lbl_completed">Zakończony</string>
     <string name="X_lbl_failed">Nie powiodło się</string>
     <string name="X_lbl_queued">W kolejce</string>
@@ -377,7 +375,6 @@
     <string name="progress_msg_saving_image">Zapisywanie obrazu…</string>
     <string name="progress_msg_searching">Badawczy…</string>
     <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
-    <string name="X_progress_msg_sending">Wysyłanie, proszę czekać…</string>
     <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
@@ -507,7 +504,6 @@
     <string name="X_lbl_select_image">Wybierz zdjęcie…</string>
     <string name="X_lbl_select_style">Wybierz styl</string>
     <string name="unknown_author">[Nieznany autor]</string>
-    <string name="X_unused">nie używany</string>
     <string name="vldt_blank_required_for_x">Oczekiwana wartość pusta dla „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Oczekiwana wartość logiczna (0,1,t,f,true,false) dla „%1$s”</string>
     <string name="vldt_date_expected_for_x">Oczekiwana data „%1$s”</string>
@@ -518,7 +514,6 @@
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
     <string name="vldt_real_expected_for_x">Oczekiwana wartość liczbowa dla „%1$s”</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
-    <string name="X_warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki</string>
     <string name="warning_cannot_delete_1st_bs">Nie można usunąć pierwszej półki.</string>
     <string name="warning_image_copy_failed">Nie można skopiować obrazu.</string>
@@ -530,10 +525,8 @@
     <string name="warning_import_csv">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="warning_import_failed_for_lines_lots">Analiza nie powiodła się dla linii \n%1$s\n i innych.</string>
     <string name="warning_import_failed_for_lines_some">Analiza nie powiodła się dla linii \n%1$s\n</string>
-    <string name="X_warning_import_archive_version_to_old">Ta opcja nie jest obsługiwana w starszych wersjach archiwum.</string>
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_no_editions">Brak wydań</string>
-    <string name="X_warning_requires_isbn_alt">Nie zapisano numeru ISBN dla książki</string>
     <string name="warning_no_matching_book_found">Nie znaleziono pasującej książki</string>
     <string name="warning_no_search_data_for_active_sites">Brak prawidłowych danych wyszukiwania dla aktywnych witryn.</string>
     <string name="confirm_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
@@ -600,7 +593,6 @@
     <string name="statick">Statyczny</string>
     <string name="action_select">Wybierz</string>
     <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
-    <string name="X_action_clear_all_data">Usuń wszystkie dane</string>
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="X_confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="menu_backup_and_export">Kopia zapasowa i eksport</string>
