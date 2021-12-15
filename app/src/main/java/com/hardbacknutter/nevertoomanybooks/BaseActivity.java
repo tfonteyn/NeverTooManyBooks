@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
 /**
- * Base class for all Activity's (except the startup activity).
+ * Base class for all Activity's (except the startup and the crop activity).
  * <p>
  * Fragments should implement:
  * <pre>
@@ -148,15 +148,6 @@ public abstract class BaseActivity
         mInitialLocaleSpec = appLocale.getPersistedLocaleSpec(global);
     }
 
-    /**
-     * Wrapper for {@link #setContentView}.
-     * Called from {@link #onCreate} after the theme was set and
-     * before the DrawerLayout and Toolbar is setup.
-     */
-    protected void onSetContentView() {
-        // no UI by default.
-    }
-
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
@@ -164,20 +155,23 @@ public abstract class BaseActivity
         mInitialNightModeId = NightMode.getInstance().apply(this);
 
         super.onCreate(savedInstanceState);
-        onSetContentView();
+    }
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        if (mDrawerLayout != null) {
-            mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
-            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-        }
-
+    protected void initToolbar() {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
+    }
+
+    void initNavDrawer() {
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
+            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        }
     }
 
     @Override
@@ -218,10 +212,10 @@ public abstract class BaseActivity
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      */
-    protected void addFirstFragment(@SuppressWarnings("SameParameterValue")
-                                    @IdRes final int containerViewId,
-                                    @NonNull final Class<? extends Fragment> fragmentClass,
-                                    @NonNull final String fragmentTag) {
+    void addFirstFragment(@SuppressWarnings("SameParameterValue")
+                          @IdRes final int containerViewId,
+                          @NonNull final Class<? extends Fragment> fragmentClass,
+                          @NonNull final String fragmentTag) {
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(fragmentTag) == null) {
@@ -345,7 +339,7 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.MENU_ABOUT) {
-            final Intent intent = FragmentHostActivity.createIntent(this, AboutFragment.TAG);
+            final Intent intent = FragmentHostActivity.createIntent(this, AboutFragment.class);
             startActivity(intent);
             return true;
         }

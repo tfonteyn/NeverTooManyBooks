@@ -165,6 +165,16 @@ public class ShowBookFragment
                 }
             };
 
+    public static Intent createIntent(@NonNull final Context context,
+                                      final long bookId) {
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
+                          R.layout.activity_book_details)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
+                          ShowBookFragment.class.getName())
+                .putExtra(DBKey.PK_ID, bookId);
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -386,7 +396,7 @@ public class ShowBookFragment
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
             //noinspection ConstantConditions
             final Intent intent = SettingsHostActivity
-                    .createIntent(getContext(), CalibrePreferencesFragment.TAG);
+                    .createIntent(getContext(), CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;
 

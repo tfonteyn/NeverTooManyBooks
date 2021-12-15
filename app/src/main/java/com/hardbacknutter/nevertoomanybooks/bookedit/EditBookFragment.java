@@ -20,9 +20,19 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -33,17 +43,18 @@ import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.databinding.ActivityEditBookBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -51,43 +62,99 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
-/**
- * The hosting activity for editing a book.
- */
-public class EditBookActivity
-        extends BaseActivity {
+public class EditBookFragment
+        extends BaseFragment {
 
     /** Log tag. */
-    private static final String TAG = "EditBookActivity";
+    public static final String TAG = "EditBookActivity";
 
     /** Host for the tabbed fragments. */
     private TabAdapter mTabAdapter;
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel mVm;
     /** View Binding. */
-    private ActivityEditBookBinding mVb;
+    private FragmentEditBookBinding mVb;
 
-    @Override
-    protected void onSetContentView() {
-        mVb = ActivityEditBookBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
-    }
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    // Warn the user if the book was changed
+                    if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
+                        //noinspection ConstantConditions
+                        StandardDialogs.unsavedEdits(getContext(),
+                                                     () -> prepareSave(true),
+                                                     () -> setResultsAndFinish());
+                        return;
+                    }
+
+                    setResultsAndFinish();
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-        mVm = new ViewModelProvider(this).get(EditBookViewModel.class);
-        mVm.init(this, getIntent().getExtras());
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentEditBookBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
 
-        mTabAdapter = new TabAdapter(this);
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), getArguments());
+
+        mTabAdapter = new TabAdapter(getActivity());
         mVb.pager.setAdapter(mTabAdapter);
 
-        new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) -> {
+        final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
+
+        new TabLayoutMediator(tabPanel, mVb.pager, (tab, position) -> {
             final TabAdapter.TabInfo tabInfo = mTabAdapter.getTabInfo(position);
             tab.setText(tabInfo.titleId);
             tab.setContentDescription(tabInfo.contentDescriptionId);
         }).attach();
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_action_save, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+        button.setText(menuItem.getTitle());
+        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+    }
+
+    @CallSuper
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.MENU_ACTION_CONFIRM) {
+            prepareSave(true);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -113,19 +180,6 @@ public class EditBookActivity
         mVm.setCurrentTab(mVb.pager.getCurrentItem());
     }
 
-    @Override
-    public void onBackPressed() {
-
-        // Warn the user if the book was changed
-        if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
-            StandardDialogs.unsavedEdits(this, () -> prepareSave(true),
-                                         this::setResultsAndFinish);
-            return;
-        }
-
-        setResultsAndFinish();
-    }
-
     /**
      * Prepare data for saving.
      *
@@ -142,11 +196,13 @@ public class EditBookActivity
      *                             with {@code false}
      */
     public void prepareSave(final boolean checkUnfinishedEdits) {
+        final Context context = requireContext();
+
         final Book book = mVm.getBook();
         // list of fragment tags
         final Collection<String> unfinishedEdits = mVm.getUnfinishedEdits();
 
-        final List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        final List<Fragment> fragments = getParentFragmentManager().getFragments();
         for (int i = 0; i < fragments.size(); i++) {
             final Fragment fragment = fragments.get(i);
             // Nor really needed to check for being a DataEditor,
@@ -169,7 +225,7 @@ public class EditBookActivity
                     && unfinishedEdits.contains(dataEditor.getFragmentId())) {
                     // bring it to the front; i.e. resume it; the user will see it below the dialog.
                     mVb.pager.setCurrentItem(i);
-                    StandardDialogs.unsavedEdits(this,
+                    StandardDialogs.unsavedEdits(context,
                                                  () -> prepareSave(false),
                                                  this::setResultsAndFinish);
                     return;
@@ -185,7 +241,7 @@ public class EditBookActivity
                     dataEditor.onSaveFields(book);
                     if (checkUnfinishedEdits && dataEditor.hasUnfinishedEdits()) {
                         mVb.pager.setCurrentItem(i);
-                        StandardDialogs.unsavedEdits(this,
+                        StandardDialogs.unsavedEdits(context,
                                                      () -> prepareSave(false),
                                                      this::setResultsAndFinish);
                         return;
@@ -195,11 +251,11 @@ public class EditBookActivity
         }
 
         // Now validate the book data
-        if (!book.validate(this)) {
-            new MaterialAlertDialogBuilder(this)
+        if (!book.validate(context)) {
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.vldt_failure)
-                    .setMessage(book.getValidationExceptionMessage(this))
+                    .setMessage(book.getValidationExceptionMessage(context))
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
@@ -208,7 +264,7 @@ public class EditBookActivity
 
         // Check if the book already exists
         if (mVm.bookExists()) {
-            new MaterialAlertDialogBuilder(this)
+            new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
@@ -230,21 +286,23 @@ public class EditBookActivity
     /**
      * Save the collected book details.
      */
-    void saveBook() {
+    private void saveBook() {
         try {
-            mVm.saveBook(this);
+            //noinspection ConstantConditions
+            mVm.saveBook(getContext());
             setResultsAndFinish();
 
         } catch (@NonNull final CoverStorageException | DaoWriteException e) {
             Logger.error(TAG, e);
-            StandardDialogs.showError(this, R.string.error_storage_not_writable);
+            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }
 
     /** Single point of exit for this Activity. */
-    void setResultsAndFinish() {
-        setResult(Activity.RESULT_OK, mVm.getResultIntent());
-        finish();
+    public void setResultsAndFinish() {
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+        getActivity().finish();
     }
 
     private static class TabAdapter
@@ -256,13 +314,13 @@ public class EditBookActivity
         /**
          * Constructor.
          *
-         * @param activity hosting fragment
+         * @param container hosting activity
          */
-        TabAdapter(@NonNull final FragmentActivity activity) {
-            super(activity);
+        TabAdapter(@NonNull final FragmentActivity container) {
+            super(container);
 
             final SharedPreferences global =
-                    PreferenceManager.getDefaultSharedPreferences(activity);
+                    PreferenceManager.getDefaultSharedPreferences(container);
 
             // Build the tab class/title list.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class,
@@ -303,7 +361,7 @@ public class EditBookActivity
             try {
                 return mTabs.get(position).clazz.newInstance();
 
-            } catch (@NonNull final IllegalAccessException | InstantiationException e) {
+            } catch (@NonNull final IllegalAccessException | java.lang.InstantiationException e) {
                 // We'll never get here...
                 throw new IllegalStateException(e);
             }

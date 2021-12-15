@@ -49,6 +49,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,7 +60,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -86,12 +86,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  * Note this code consistently uses a {@link ContentResolver} for input/output.
  */
 public class CropImageActivity
-        extends BaseActivity {
+        extends AppCompatActivity {
 
     /** Log tag. */
     private static final String TAG = "CropImageActivity";
 
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_SOURCE = TAG + ":src";
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_DESTINATION = TAG + ":dst";
 
     /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
@@ -104,14 +106,10 @@ public class CropImageActivity
     private ActivityCropimageBinding mVb;
 
     @Override
-    protected void onSetContentView() {
-        mVb = ActivityCropimageBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
-    }
-
-    @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mVb = ActivityCropimageBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
 
         // make an educated guess how many pics we can store.
         try {

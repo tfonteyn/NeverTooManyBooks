@@ -27,6 +27,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -46,7 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPrefe
  */
 public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+                   SharedPreferences.OnSharedPreferenceChangeListener {
 
     /** Log tag. */
     private static final String TAG = "BasePreferenceFragment";
@@ -152,4 +155,39 @@ public abstract class BasePreferenceFragment
 
         super.onDisplayPreferenceDialog(preference);
     }
+
+    @Override
+    public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
+                                             @NonNull final Preference pref) {
+
+        final FragmentManager fm = getParentFragmentManager();
+
+        /* Instantiate the new Fragment
+         *
+         * Proguard rule needed:
+         * -keep public class * extends androidx.preference.PreferenceFragmentCompat
+         * or use @Keep annotation on individual fragments
+         */
+        //noinspection ConstantConditions
+        final Fragment fragment =
+                fm.getFragmentFactory().instantiate(getContext().getClassLoader(),
+                                                    pref.getFragment());
+
+        // combine the original extras with any new ones (the latter can override the former)
+        Bundle args = getArguments();
+        if (args == null) {
+            args = pref.getExtras();
+        } else {
+            args.putAll(pref.getExtras());
+        }
+        fragment.setArguments(args);
+
+        fm.beginTransaction()
+          .setReorderingAllowed(true)
+          .addToBackStack(fragment.getTag())
+          .replace(R.id.main_fragment, fragment)
+          .commit();
+        return true;
+    }
+
 }

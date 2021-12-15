@@ -60,10 +60,12 @@
             android:src="@drawable/ic_baseline_edit_24"
             />
 
+        <!-- used by the Sync handler(s) -->
         <include
             android:id="@+id/progress_frame"
             layout="@layout/progress_dialog"
             android:visibility="gone"
+            tools:visibility="visible"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

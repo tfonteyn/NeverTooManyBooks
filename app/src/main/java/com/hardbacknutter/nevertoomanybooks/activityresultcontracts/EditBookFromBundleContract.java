@@ -30,7 +30,9 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -43,7 +45,11 @@ public class EditBookFromBundleContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Bundle bookData) {
-        return new Intent(context, EditBookActivity.class)
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
+                          R.layout.activity_edit_book)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
+                          EditBookFragment.class.getName())
                 .putExtra(Book.BKEY_DATA_BUNDLE, bookData);
     }
 

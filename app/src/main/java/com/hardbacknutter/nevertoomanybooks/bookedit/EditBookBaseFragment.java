@@ -27,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -42,7 +41,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
@@ -51,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -84,6 +81,7 @@ public abstract class EditBookBaseFragment
 
     /** The view model. */
     EditBookViewModel mVm;
+
     private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
             new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
                 @Override
@@ -167,12 +165,6 @@ public abstract class EditBookBaseFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_save, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
             inflater.inflate(R.menu.sm_view_on_site, menu);
@@ -199,12 +191,6 @@ public abstract class EditBookBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final Book book = mVm.getBook();
         final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_ACTION_CONFIRM) {
-            //noinspection ConstantConditions
-            ((EditBookActivity) getActivity()).prepareSave(true);
-            return true;
-        }
 
         if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
             return true;
@@ -441,9 +427,8 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    void onDateSet(@NonNull final int[] fieldIds,
-                   @NonNull final long[] selections) {
-        Logger.d(TAG, "onDateSet", "selections=" + Arrays.toString(selections));
+    private void onDateSet(@NonNull final int[] fieldIds,
+                           @NonNull final long[] selections) {
         for (int i = 0; i < fieldIds.length; i++) {
             if (selections[i] == DatePickerListener.NO_SELECTION) {
                 onDateSet(fieldIds[i], "");
@@ -455,8 +440,8 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    void onDateSet(@IdRes final int fieldId,
-                   @NonNull final String dateStr) {
+    private void onDateSet(@IdRes final int fieldId,
+                           @NonNull final String dateStr) {
 
         final Field<String, TextView> field = getField(fieldId);
         field.setValue(dateStr);

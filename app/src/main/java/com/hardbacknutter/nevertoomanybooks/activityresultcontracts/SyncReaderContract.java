@@ -47,7 +47,7 @@ public class SyncReaderContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SyncServer syncServer) {
         return FragmentHostActivity
-                .createIntent(context, SyncReaderFragment.TAG)
+                .createIntent(context, SyncReaderFragment.class)
                 .putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
     }
 

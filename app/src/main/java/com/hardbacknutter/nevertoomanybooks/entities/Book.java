@@ -99,7 +99,7 @@ public class Book
      * <p>
      * or in other words:
      * 0b000 = contains one 'work' and is written by a single author.
-     * 0b001 = multiple 'work' and is written by a single author (anthology from ONE author)
+     * 0b001 = multiple 'work' and is written by a single author (collection from ONE author)
      * 0b010 = multiple authors cooperating on a single 'work'
      * 0b011 = multiple authors and multiple 'work's (it's an anthology from multiple author)
      * <p>

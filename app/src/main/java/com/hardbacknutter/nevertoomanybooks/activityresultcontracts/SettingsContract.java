@@ -54,7 +54,7 @@ public class SettingsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final String scrollToKey) {
-        final Intent intent = SettingsHostActivity.createIntent(context, SettingsFragment.TAG);
+        final Intent intent = SettingsHostActivity.createIntent(context, SettingsFragment.class);
         if (scrollToKey != null) {
             intent.putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY, scrollToKey);
         }

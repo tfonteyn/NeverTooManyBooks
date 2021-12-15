@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,67 +19,74 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * A listener/template class for the {@link android.widget.Spinner} widget.
  *
  * <a href="https://stackoverflow.com/questions/27745948/">
- *     android-spinner-onitemselected-called-multiple-times-after-screen-rotation#28466764</a>
+ * android-spinner-onitemselected-called-multiple-times-after-screen-rotation#28466764</a>
  * <em>
  * In general, I've found that there are many different events that can trigger the
  * onItemSelected method, and it is difficult to keep track of all of them. Instead,
  * I found it simpler to use an OnTouchListener to only respond to user-initiated changes.
  * </em>
- * <pre>
- * {@code
- *
- *     SpinnerInteractionListener mListener =
- *         new SpinnerInteractionListener() {
- *
- *             private boolean userInteraction = false;
- *
- *             @SuppressLint("ClickableViewAccessibility")
- *             @Override
- *             public boolean onTouch(@NonNull final View v,
- *                                    @NonNull final MotionEvent event) {
- *                 userInteraction = true;
- *                 return false;
- *             }
- *
- *             @Override
- *             public void onItemSelected(@NonNull final AdapterView<?> parent,
- *                                        @Nullable final View view,
- *                                        final int position,
- *                                        final long id) {
- *                 if (userInteraction) {
- *                     userInteraction = false;
- *                     // Your selection handling code here
- *                 }
- *             }
- *         };
- *
- *     // Add the listener to the spinner as both
- *     // an OnItemSelectedListener + an OnTouchListener:
- *     mSpinnerView.setOnTouchListener(mListener);
- *     mSpinnerView.setOnItemSelectedListener(mListener);
- * }
- * </pre>
  */
-public interface SpinnerInteractionListener
-        extends
-        AdapterView.OnItemSelectedListener,
-        View.OnTouchListener {
+public abstract class SpinnerInteractionListener
+        implements AdapterView.OnItemSelectedListener,
+                   View.OnTouchListener {
+
+    private boolean userInteraction;
 
     /**
-     * Handy default.
-     * {@inheritDoc}
+     * Attach the given Spinner to this listener.
+     *
+     * @param spinner to attach to
      */
+    public void attach(@NonNull final Spinner spinner) {
+        spinner.setOnTouchListener(this);
+        spinner.setOnItemSelectedListener(this);
+    }
+
+    /**
+     * Callback with the selected id.
+     *
+     * @param id selected
+     */
+    public abstract void onItemSelected(final long id);
+
+    /** internal listener - use {@link #onItemSelected(long)} instead. */
     @Override
-    default void onNothingSelected(@NonNull final AdapterView<?> parent) {
+    public boolean onTouch(@NonNull final View v,
+                           @NonNull final MotionEvent event) {
+        userInteraction = true;
+        return false;
+    }
+
+    /** internal listener - use {@link #onItemSelected(long)} instead. */
+    @Override
+    public void onItemSelected(@NonNull final AdapterView<?> parent,
+                               @Nullable final View view,
+                               final int position,
+                               final long id) {
+        if (userInteraction) {
+            userInteraction = false;
+            if (view == null) {
+                return;
+            }
+        }
+
+        onItemSelected(id);
+    }
+
+    /** internal listener - use {@link #onItemSelected(long)} instead. */
+    public void onNothingSelected(@NonNull final AdapterView<?> parent) {
         // Do nothing
     }
 }

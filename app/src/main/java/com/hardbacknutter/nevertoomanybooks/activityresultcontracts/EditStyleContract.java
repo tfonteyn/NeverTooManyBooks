@@ -63,7 +63,7 @@ public class EditStyleContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
         return SettingsHostActivity
-                .createIntent(context, StyleFragment.TAG)
+                .createIntent(context, StyleFragment.class)
                 .putExtra(BKEY_ACTION, input.action)
                 .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);

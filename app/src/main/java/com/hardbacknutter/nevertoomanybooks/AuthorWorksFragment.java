@@ -51,7 +51,6 @@ import java.util.Objects;
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -281,8 +280,9 @@ public class AuthorWorksFragment
             final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
             if (bookIdList.size() == 1) {
                 // open new activity to show the book, 'back' will return to this one.
-                final Intent intent = new Intent(getContext(), ShowBookActivity.class)
-                        .putExtra(DBKey.PK_ID, bookIdList.get(0));
+                //noinspection ConstantConditions
+                final Intent intent = ShowBookFragment
+                        .createIntent(getContext(), bookIdList.get(0));
                 startActivity(intent);
 
             } else {
@@ -304,8 +304,8 @@ public class AuthorWorksFragment
 
         } else if (work instanceof BookAsWork) {
             // open new activity to show the book, 'back' will return to this one.
-            final Intent intent = new Intent(getContext(), ShowBookActivity.class)
-                    .putExtra(DBKey.PK_ID, work.getId());
+            //noinspection ConstantConditions
+            final Intent intent = ShowBookFragment.createIntent(getContext(), work.getId());
             startActivity(intent);
 
         } else {

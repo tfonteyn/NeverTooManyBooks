@@ -43,7 +43,7 @@ public class StripInfoSyncContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return FragmentHostActivity.createIntent(context, StripInfoSyncFragment.TAG);
+        return FragmentHostActivity.createIntent(context, StripInfoSyncFragment.class);
     }
 
     @Override

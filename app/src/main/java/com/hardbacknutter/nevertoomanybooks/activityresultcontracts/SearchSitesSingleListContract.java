@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 
 public class SearchSitesSingleListContract
@@ -52,7 +52,8 @@ public class SearchSitesSingleListContract
         // All sites in a list are always of the same type; just grab it from the first entry
         mListKey = list.get(0).getType().getBundleKey();
 
-        return new Intent(context, SearchAdminActivity.class)
+        return SearchAdminFragment
+                .createIntent(context)
                 .putExtra(SearchAdminViewModel.BKEY_LIST, list);
     }
 

@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.
  * <p>
- * Persistence is handled in {@link SearchAdminActivity} / {@link SearchAdminViewModel}.
+ * Persistence is handled in {@link SearchAdminFragment} / {@link SearchAdminViewModel}.
  */
 public class SearchOrderFragment
         extends BaseFragment {

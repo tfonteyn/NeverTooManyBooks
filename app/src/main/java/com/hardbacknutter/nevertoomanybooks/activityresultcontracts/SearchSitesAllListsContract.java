@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 public class SearchSitesAllListsContract
         extends ActivityResultContract<Void, Boolean> {
@@ -41,7 +41,7 @@ public class SearchSitesAllListsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return new Intent(context, SearchAdminActivity.class);
+        return SearchAdminFragment.createIntent(context);
     }
 
     @NonNull

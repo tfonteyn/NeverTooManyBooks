@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 /**
@@ -309,7 +309,7 @@ public final class Site
      * The different types of configurable site lists we maintain.
      *
      * <strong>Note:</strong> the order of the enum values is used as the order
-     * of the tabs in {@link SearchAdminActivity}.
+     * of the tabs in {@link SearchAdminFragment}.
      */
     public enum Type
             implements Parcelable {

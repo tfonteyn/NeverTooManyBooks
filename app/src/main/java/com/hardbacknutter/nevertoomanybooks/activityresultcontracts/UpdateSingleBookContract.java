@@ -55,7 +55,7 @@ public class UpdateSingleBookContract
 
         //noinspection ConstantConditions
         return FragmentHostActivity
-                .createIntent(context, SearchBookUpdatesFragment.TAG)
+                .createIntent(context, SearchBookUpdatesFragment.class)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                 .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle())
                 .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,

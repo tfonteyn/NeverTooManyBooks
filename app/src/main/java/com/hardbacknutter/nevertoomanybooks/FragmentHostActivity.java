@@ -23,84 +23,55 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookByTextFragment;
-import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
-import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoSyncFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 
 /**
- * Hosting activity for generic fragments <strong>without</strong>
- * a DrawerLayout/NavigationView side panel.
+ * Hosting activity for generic fragments.
+ *
+ * @see SettingsHostActivity
  */
 public class FragmentHostActivity
         extends BaseActivity {
 
     private static final String TAG = "FragmentHostActivity";
-    private static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
-
-    private static final Map<String, Class<? extends Fragment>> sMap = new HashMap<>();
-
-    static {
-        sMap.put(SearchBookByIsbnFragment.TAG, SearchBookByIsbnFragment.class);
-        sMap.put(SearchBookByTextFragment.TAG, SearchBookByTextFragment.class);
-        sMap.put(SearchBookByExternalIdFragment.TAG, SearchBookByExternalIdFragment.class);
-        sMap.put(SearchBookUpdatesFragment.TAG, SearchBookUpdatesFragment.class);
-
-        sMap.put(SearchFtsFragment.TAG, SearchFtsFragment.class);
-
-        sMap.put(AuthorWorksFragment.TAG, AuthorWorksFragment.class);
-
-        sMap.put(ImportFragment.TAG, ImportFragment.class);
-        sMap.put(ExportFragment.TAG, ExportFragment.class);
-
-        sMap.put(EditBookshelvesFragment.TAG, EditBookshelvesFragment.class);
-
-        sMap.put(PreferredStylesFragment.TAG, PreferredStylesFragment.class);
-
-        sMap.put(CalibreSyncFragment.TAG, CalibreSyncFragment.class);
-        sMap.put(StripInfoSyncFragment.TAG, StripInfoSyncFragment.class);
-
-        sMap.put(AboutFragment.TAG, AboutFragment.class);
-
-        sMap.put(MaintenanceFragment.TAG, MaintenanceFragment.class);
-    }
+    public static final String BKEY_ACTIVITY = TAG + ":a";
+    public static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
     public static Intent createIntent(@NonNull final Context context,
-                                      @NonNull final String fragmentTag) {
+                                      @NonNull final Class<? extends Fragment> fragmentClass) {
         return new Intent(context, FragmentHostActivity.class)
-                .putExtra(BKEY_FRAGMENT_TAG, fragmentTag);
-    }
-
-    @Override
-    protected void onSetContentView() {
-        setContentView(R.layout.activity_main);
+                .putExtra(BKEY_ACTIVITY, R.layout.activity_main)
+                .putExtra(BKEY_FRAGMENT_CLASS, fragmentClass.getName());
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final String tag = Objects.requireNonNull(
-                getIntent().getStringExtra(BKEY_FRAGMENT_TAG), "tag");
+        @LayoutRes
+        final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
+        final String classname = Objects.requireNonNull(
+                getIntent().getStringExtra(BKEY_FRAGMENT_CLASS), "fragment class");
 
-        final Class<? extends Fragment> aClass = sMap.get(tag);
-        if (aClass != null) {
-            addFirstFragment(R.id.main_fragment, aClass, tag);
-        } else {
-            throw new IllegalArgumentException(tag);
+        final Class<? extends Fragment> fragmentClass;
+        try {
+            //noinspection unchecked
+            fragmentClass = (Class<? extends Fragment>) getClassLoader().loadClass(classname);
+        } catch (@NonNull final ClassNotFoundException e) {
+            throw new IllegalArgumentException(classname);
         }
+
+        setContentView(activityResId);
+        initNavDrawer();
+        initToolbar();
+
+        addFirstFragment(R.id.main_fragment, fragmentClass, classname);
     }
 }

@@ -154,6 +154,7 @@
             android:id="@+id/progress_frame"
             layout="@layout/progress_dialog"
             android:visibility="gone"
+            tools:visibility="visible"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

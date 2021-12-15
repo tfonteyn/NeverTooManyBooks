@@ -66,20 +66,20 @@ public class AddBookBySearchContract
                                @NonNull final By by) {
         switch (by) {
             case Isbn:
-                return FragmentHostActivity.createIntent(context, SearchBookByIsbnFragment.TAG);
+                return FragmentHostActivity.createIntent(context, SearchBookByIsbnFragment.class);
 
             case Scan:
                 return FragmentHostActivity
-                        .createIntent(context, SearchBookByIsbnFragment.TAG)
+                        .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                   SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
 
             case ExternalId:
                 return FragmentHostActivity
-                        .createIntent(context, SearchBookByExternalIdFragment.TAG);
+                        .createIntent(context, SearchBookByExternalIdFragment.class);
 
             case Text:
-                return FragmentHostActivity.createIntent(context, SearchBookByTextFragment.TAG);
+                return FragmentHostActivity.createIntent(context, SearchBookByTextFragment.class);
         }
 
         throw new IllegalArgumentException(by.name());

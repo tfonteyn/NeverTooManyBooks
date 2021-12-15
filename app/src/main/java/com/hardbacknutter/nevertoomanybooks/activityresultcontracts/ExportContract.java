@@ -42,7 +42,7 @@ public class ExportContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return FragmentHostActivity.createIntent(context, ExportFragment.TAG);
+        return FragmentHostActivity.createIntent(context, ExportFragment.class);
     }
 
     @Override

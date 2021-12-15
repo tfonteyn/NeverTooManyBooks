@@ -32,10 +32,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
@@ -298,37 +296,17 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
-                private boolean userInteraction;
-
-                @SuppressLint("ClickableViewAccessibility")
-                @Override
-                public boolean onTouch(@NonNull final View v,
-                                       @NonNull final MotionEvent event) {
-                    userInteraction = true;
-                    return false;
-                }
 
                 @Override
-                public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                           @Nullable final View view,
-                                           final int position,
-                                           final long id) {
-                    if (userInteraction) {
-                        userInteraction = false;
-                        if (view == null) {
-                            return;
-                        }
-
-                        // check if the selection is actually different from the previous one
-                        final boolean isChanged = id != mVm.getCurrentBookshelf().getId();
-                        if (isChanged) {
-                            saveListPosition();
-                            mVm.setCurrentBookshelf(parent.getContext(), id);
-                            buildBookList();
-                        }
+                public void onItemSelected(final long id) {
+                    if (id != mVm.getCurrentBookshelf().getId()) {
+                        saveListPosition();
+                        mVm.setCurrentBookshelf(BooksOnBookshelf.this, id);
+                        buildBookList();
                     }
                 }
             };
@@ -416,9 +394,13 @@ public class BooksOnBookshelf
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
     @Override
-    protected void onSetContentView() {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(mVb.getRoot());
+
+        initNavDrawer();
+        initToolbar();
 
         mFabMenu = new FabMenu(mVb.fab, mVb.fabOverlay,
                                mVb.fab0ScanBarcode,
@@ -426,11 +408,6 @@ public class BooksOnBookshelf
                                mVb.fab2SearchText,
                                mVb.fab3AddManually,
                                mVb.fab4SearchExternalId);
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -616,8 +593,7 @@ public class BooksOnBookshelf
         mBookshelfAdapter = new EntityArrayAdapter<>(this, mVm.getBookshelfList());
 
         mVb.bookshelfSpinner.setAdapter(mBookshelfAdapter);
-        mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
-        mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
+        mOnBookshelfSelectionChanged.attach(mVb.bookshelfSpinner);
     }
 
     private void createFabMenu(@NonNull final SharedPreferences global) {
@@ -680,6 +656,70 @@ public class BooksOnBookshelf
     }
 
     @Override
+    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.SUBMENU_SYNC) {
+            showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
+            return false;
+
+        }
+        // The others below have no submenu, close the drawer.
+        closeNavigationDrawer();
+
+
+        if (itemId == R.id.SUBMENU_SYNC_CALIBRE && mCalibreSyncLauncher != null) {
+            mCalibreSyncLauncher.launch(null);
+            return false;
+
+        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO && mStripInfoSyncLauncher != null) {
+            mStripInfoSyncLauncher.launch(null);
+            return false;
+        }
+
+
+
+        if (itemId == R.id.MENU_ADVANCED_SEARCH) {
+            mFtsSearchLauncher.launch(mVm.getSearchCriteria());
+            return true;
+
+        } else if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
+            // overridden, so we can pass the current bookshelf id.
+            mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
+            return true;
+
+        } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
+            mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
+            return true;
+
+        } else if (itemId == R.id.MENU_FILE_IMPORT) {
+            mImportLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_FILE_EXPORT) {
+            mExportLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_BOOKSHELVES) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_IMPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE_EXPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_IMPORT) {
+            return true;
+
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_EXPORT) {
+            return true;
+        }
+
+        return super.onNavigationItemSelected(menuItem);
+    }
+
+    @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         getMenuInflater().inflate(R.menu.bob, menu);
@@ -731,6 +771,73 @@ public class BooksOnBookshelf
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the FAB menu is showing, hide it and suppress the back key.
+        if (mFabMenu.hideMenu()) {
+            return;
+        }
+
+        // If the current list is has any search criteria enabled, clear them and rebuild the list.
+        if (isTaskRoot() && !mVm.getSearchCriteria().isEmpty()) {
+            mVm.getSearchCriteria().clear();
+            buildBookList();
+            return;
+        }
+
+        // Otherwise handle the back-key as normal.
+        super.onBackPressed();
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+
+        // don't build the list needlessly
+        if (isRecreating() || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        // If we have search criteria enabled (i.e. we're filtering the current list)
+        // then we should display the 'up' indicator. See #onBackPressed.
+        updateActionBar(mVm.getSearchCriteria().isEmpty());
+
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+
+        updateSyncMenuVisibility(global);
+        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
+                .setEnabled(EditBookExternalIdFragment.isShowTab(global));
+
+        // Initialize/Update the list of bookshelves
+        mVm.reloadBookshelfList(this);
+        mBookshelfAdapter.notifyDataSetChanged();
+        // and select the current shelf.
+        final int selectedPosition = mVm.getSelectedBookshelfSpinnerPosition(this);
+        mVb.bookshelfSpinner.setSelection(selectedPosition);
+
+
+        final boolean forceRebuildInOnResume = mVm.isForceRebuildInOnResume();
+        // always reset for next iteration.
+        mVm.setForceRebuildInOnResume(false);
+
+        if (forceRebuildInOnResume || !mVm.isListLoaded()) {
+            buildBookList();
+
+        } else {
+            // no rebuild needed/done, just let the system redisplay the list state
+            displayList(mVm.getTargetNodes());
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onPause() {
+        mFabMenu.hideMenu();
+        saveListPosition();
+        super.onPause();
     }
 
     /**
@@ -982,7 +1089,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
             final Intent intent = SettingsHostActivity
-                    .createIntent(this, CalibrePreferencesFragment.TAG);
+                    .createIntent(this, CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;
 
@@ -1178,70 +1285,6 @@ public class BooksOnBookshelf
         }
     }
 
-    @Override
-    boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
-        final int itemId = menuItem.getItemId();
-
-        if (itemId == R.id.SUBMENU_SYNC) {
-            showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
-            return false;
-
-        }
-        // The others below have no submenu, close the drawer.
-        closeNavigationDrawer();
-
-
-        if (itemId == R.id.SUBMENU_SYNC_CALIBRE && mCalibreSyncLauncher != null) {
-            mCalibreSyncLauncher.launch(null);
-            return false;
-
-        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO && mStripInfoSyncLauncher != null) {
-            mStripInfoSyncLauncher.launch(null);
-            return false;
-        }
-
-
-
-        if (itemId == R.id.MENU_ADVANCED_SEARCH) {
-            mFtsSearchLauncher.launch(mVm.getSearchCriteria());
-            return true;
-
-        } else if (itemId == R.id.MENU_MANAGE_BOOKSHELVES) {
-            // overridden, so we can pass the current bookshelf id.
-            mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
-            return true;
-
-        } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
-            mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
-            return true;
-
-        } else if (itemId == R.id.MENU_FILE_IMPORT) {
-            mImportLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.MENU_FILE_EXPORT) {
-            mExportLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_BOOKSHELVES) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_IMPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_EXPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_IMPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_EXPORT) {
-            return true;
-        }
-
-        return super.onNavigationItemSelected(menuItem);
-    }
-
     @SuppressWarnings("SameParameterValue")
     private void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
                                        @NonNull final MenuItem menuItem,
@@ -1366,8 +1409,8 @@ public class BooksOnBookshelf
      *               or {@code 0} for a global change or for an books-table inline item
      *               (example of the latter: format/location/...)
      */
-    public void onRowChange(@RowChangeListener.Change final int change,
-                            @IntRange(from = 0) final long id) {
+    private void onRowChange(@RowChangeListener.Change final int change,
+                             @IntRange(from = 0) final long id) {
         // ENHANCE: update the modified row without a rebuild.
         saveListPosition();
         buildBookList();
@@ -1430,73 +1473,6 @@ public class BooksOnBookshelf
             // styles, prefs, books, covers,... it all requires a rebuild.
             mVm.setForceRebuildInOnResume(true);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        // If the FAB menu is showing, hide it and suppress the back key.
-        if (mFabMenu.hideMenu()) {
-            return;
-        }
-
-        // If the current list is has any search criteria enabled, clear them and rebuild the list.
-        if (isTaskRoot() && !mVm.getSearchCriteria().isEmpty()) {
-            mVm.getSearchCriteria().clear();
-            buildBookList();
-            return;
-        }
-
-        // Otherwise handle the back-key as normal.
-        super.onBackPressed();
-    }
-
-    @Override
-    @CallSuper
-    public void onResume() {
-        super.onResume();
-
-        // don't build the list needlessly
-        if (isRecreating() || isFinishing() || isDestroyed()) {
-            return;
-        }
-
-        // If we have search criteria enabled (i.e. we're filtering the current list)
-        // then we should display the 'up' indicator. See #onBackPressed.
-        updateActionBar(mVm.getSearchCriteria().isEmpty());
-
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-
-        updateSyncMenuVisibility(global);
-        mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
-                .setEnabled(EditBookExternalIdFragment.isShowTab(global));
-
-        // Initialize/Update the list of bookshelves
-        mVm.reloadBookshelfList(this);
-        mBookshelfAdapter.notifyDataSetChanged();
-        // and select the current shelf.
-        final int selectedPosition = mVm.getSelectedBookshelfSpinnerPosition(this);
-        mVb.bookshelfSpinner.setSelection(selectedPosition);
-
-
-        final boolean forceRebuildInOnResume = mVm.isForceRebuildInOnResume();
-        // always reset for next iteration.
-        mVm.setForceRebuildInOnResume(false);
-
-        if (forceRebuildInOnResume || !mVm.isListLoaded()) {
-            buildBookList();
-
-        } else {
-            // no rebuild needed/done, just let the system redisplay the list state
-            displayList(mVm.getTargetNodes());
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onPause() {
-        mFabMenu.hideMenu();
-        saveListPosition();
-        super.onPause();
     }
 
     /**

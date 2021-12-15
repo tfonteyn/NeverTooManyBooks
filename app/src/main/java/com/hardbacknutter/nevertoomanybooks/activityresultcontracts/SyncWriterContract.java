@@ -45,7 +45,7 @@ public class SyncWriterContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final SyncServer syncServer) {
         return FragmentHostActivity
-                .createIntent(context, SyncWriterFragment.TAG)
+                .createIntent(context, SyncWriterFragment.class)
                 .putExtra(SyncServer.BKEY_SITE, (Parcelable) syncServer);
     }
 

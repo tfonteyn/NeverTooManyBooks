@@ -808,6 +808,8 @@ public class IsfdbSearchEngine
 
         final ArrayList<TocEntry> toc = parseToc(context, document);
         if (!toc.isEmpty()) {
+            // We always store the toc even if there is only a single entry.
+            // ISFDB provides the *original* publication year in the toc which we want to preserve.
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
                 bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);

@@ -63,7 +63,7 @@ public class PreferredStylesContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final String styleUuid) {
         return FragmentHostActivity
-                .createIntent(context, PreferredStylesFragment.TAG)
+                .createIntent(context, PreferredStylesFragment.class)
                 .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
     }
 

@@ -44,7 +44,7 @@ public class ImportContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return FragmentHostActivity.createIntent(context, ImportFragment.TAG);
+        return FragmentHostActivity.createIntent(context, ImportFragment.class);
     }
 
     @Override
