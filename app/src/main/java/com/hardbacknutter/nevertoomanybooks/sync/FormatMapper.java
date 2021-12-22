@@ -69,7 +69,7 @@ public final class FormatMapper
     }
 
     public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
-        return global.getBoolean(Prefs.pk_search_reformat_format, false);
+        return global.getBoolean(Prefs.pk_search_reformat_format, true);
     }
 
     @NonNull

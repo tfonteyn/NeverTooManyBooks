@@ -52,6 +52,6 @@ public final class ColorMapper
     }
 
     public static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
-        return global.getBoolean(Prefs.pk_search_reformat_color, false);
+        return global.getBoolean(Prefs.pk_search_reformat_color, true);
     }
 }
