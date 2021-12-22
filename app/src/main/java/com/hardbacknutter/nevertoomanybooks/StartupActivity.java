@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -121,6 +123,18 @@ public class StartupActivity
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());
         mVm.onFailure().observe(this, this::onFailure);
+
+        //URGENT: there is a recurring issue where style prefs are written to the global prefs
+        // when not intended. Instead of fixing that, we'll migrate styles to the db table.
+        // Until then, remove any accidental global style prefs.
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = prefs.edit();
+
+        prefs.getAll().keySet().stream()
+             .filter(key -> key.startsWith("style."))
+             .forEach(editor::remove);
+
+        editor.apply();
 
         nextStage();
     }
