@@ -116,6 +116,9 @@ public class CoverBrowserDialogFragment
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
 
+        mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
+        mVm.init(args);
+
         final Resources res = getResources();
         mPreviewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
         mPreviewMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_preview_height);
@@ -131,9 +134,6 @@ public class CoverBrowserDialogFragment
         final String bookTitle = Objects.requireNonNull(
                 requireArguments().getString(DBKey.KEY_TITLE));
         mVb.toolbar.setSubtitle(bookTitle);
-
-        mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        mVm.init(requireArguments());
 
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = Objects.requireNonNull(

@@ -64,6 +64,15 @@ public class CalibreLibraryMappingFragment
     private ExtArrayAdapter<CalibreLibrary> mLibraryArrayAdapter;
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
+        mVm.init(requireArguments());
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -77,10 +86,6 @@ public class CalibreLibraryMappingFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        mVm.init(requireArguments());
 
         mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);

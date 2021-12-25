@@ -76,6 +76,13 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mVm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -89,8 +96,6 @@ public class SearchBookByExternalIdFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setTitle(R.string.fab_add_book_by_external_id);
-
-        mVm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
 
         if (savedInstanceState != null) {
             final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);

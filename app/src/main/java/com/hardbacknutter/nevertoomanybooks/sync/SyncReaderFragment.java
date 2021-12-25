@@ -96,6 +96,10 @@ public class SyncReaderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
+        mVm.init(requireArguments());
     }
 
     @Nullable
@@ -119,9 +123,6 @@ public class SyncReaderFragment
         mSyncDatePicker = new SingleDatePicker(getChildFragmentManager(),
                                                R.string.lbl_sync_date,
                                                mVb.lblSyncDate.getId());
-
-        mVm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
-        mVm.init(requireArguments());
 
         mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);

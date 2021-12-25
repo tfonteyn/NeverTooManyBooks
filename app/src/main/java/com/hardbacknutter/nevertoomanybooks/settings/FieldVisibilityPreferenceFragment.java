@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
@@ -46,16 +45,11 @@ public class FieldVisibilityPreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+
+        setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
     }
 
     @Override

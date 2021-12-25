@@ -93,6 +93,16 @@ public abstract class SearchBookBaseFragment
     }
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //noinspection ConstantConditions
+        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
+        //noinspection ConstantConditions
+        mCoordinator.init(getContext(), requireArguments());
+    }
+
+    @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -101,10 +111,6 @@ public abstract class SearchBookBaseFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        // Activity scope!
-        mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
-        //noinspection ConstantConditions
-        mCoordinator.init(getContext(), requireArguments());
         mCoordinator.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // Handle both Success and Failed searches
         mCoordinator.onSearchFinished().observe(getViewLifecycleOwner(), this::onSearchFinished);

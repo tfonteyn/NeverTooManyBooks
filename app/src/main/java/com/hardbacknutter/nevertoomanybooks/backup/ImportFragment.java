@@ -121,6 +121,9 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
     }
 
     @Nullable
@@ -141,8 +144,6 @@ public class ImportFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
 
         mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);

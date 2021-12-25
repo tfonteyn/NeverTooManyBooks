@@ -61,6 +61,9 @@ public class StripInfoBePreferencesFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
+        mVm = new ViewModelProvider(this).get(StripInfoBePreferencesViewModel.class);
+
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         EditTextPreference etp;
@@ -72,7 +75,6 @@ public class StripInfoBePreferencesFragment
             editText.selectAll();
         });
         etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
-
 
         etp = findPreference(StripInfoAuth.PK_HOST_PASS);
         //noinspection ConstantConditions
@@ -142,7 +144,6 @@ public class StripInfoBePreferencesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm = new ViewModelProvider(this).get(StripInfoBePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
         mVm.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);

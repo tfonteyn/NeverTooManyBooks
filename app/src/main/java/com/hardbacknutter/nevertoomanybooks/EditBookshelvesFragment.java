@@ -60,7 +60,7 @@ public class EditBookshelvesFragment
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
-    EditBookshelvesViewModel mVm;
+    private EditBookshelvesViewModel mVm;
 
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
@@ -84,12 +84,15 @@ public class EditBookshelvesFragment
 
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
-    ExtPopupMenu mContextMenu;
+    private ExtPopupMenu mContextMenu;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
+        mVm.init(getArguments());
 
         mOnEditBookshelfLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
@@ -113,8 +116,6 @@ public class EditBookshelvesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        mVm.init(getArguments());
         mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(),
                                                 aVoid -> mAdapter.notifyDataSetChanged());
 

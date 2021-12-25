@@ -113,6 +113,10 @@ public class SettingsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         final ListPreference.SimpleSummaryProvider listSummaryProvider =
@@ -185,7 +189,6 @@ public class SettingsFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onMoveCancelled().observe(getViewLifecycleOwner(), this::onMoveCancelled);
         mVm.onMoveFailure().observe(getViewLifecycleOwner(), this::onMoveFailure);

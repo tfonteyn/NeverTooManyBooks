@@ -454,6 +454,7 @@ public class BooksOnBookshelf
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mVm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         mVm.init(this, getIntent().getExtras());
+
         mVm.onCancelled().observe(this, this::onBuildCancelled);
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
@@ -508,7 +509,7 @@ public class BooksOnBookshelf
 
         if (mCalibreHandler == null && SyncServer.CalibreCS.isEnabled(global)) {
             try {
-                mCalibreHandler = new CalibreHandler(this);
+                mCalibreHandler = new CalibreHandler(this, this);
                 mCalibreHandler.onViewCreated(this, mVb.getRoot());
             } catch (@NonNull final SSLException | CertificateException ignore) {
                 // ignore

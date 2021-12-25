@@ -90,6 +90,9 @@ public class SearchBookByIsbnFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        mVm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
+        mVm.init(getArguments());
+
         if (savedInstanceState != null) {
             mScannerStarted = savedInstanceState.getBoolean(BKEY_STARTED, false);
         }
@@ -100,6 +103,7 @@ public class SearchBookByIsbnFragment
     public ResultIntentOwner getResultIntentOwner() {
         return mVm;
     }
+
 
     @Override
     @Nullable
@@ -115,9 +119,6 @@ public class SearchBookByIsbnFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setTitle(R.string.lbl_search_isbn);
-
-        mVm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        mVm.init(getArguments());
 
         mVb.isbn.setText(mCoordinator.getIsbnSearchText());
 

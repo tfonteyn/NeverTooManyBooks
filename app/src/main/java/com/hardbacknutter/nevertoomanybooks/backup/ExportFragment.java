@@ -93,6 +93,9 @@ public class ExportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
     }
 
     @Nullable
@@ -110,9 +113,6 @@ public class ExportFragment
         super.onViewCreated(view, savedInstanceState);
 
         setTitle(R.string.menu_backup_and_export);
-
-        //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);

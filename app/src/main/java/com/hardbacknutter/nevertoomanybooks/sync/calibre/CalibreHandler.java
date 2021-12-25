@@ -88,7 +88,8 @@ public class CalibreHandler {
     @Nullable
     private ProgressDelegate mProgressDelegate;
 
-    private CalibreHandlerViewModel mVm;
+    @NonNull
+    private final CalibreHandlerViewModel mVm;
 
     /**
      * Constructor.
@@ -98,9 +99,13 @@ public class CalibreHandler {
      * @throws CertificateException on failures related to a user installed CA.
      * @throws SSLException         on secure connection failures
      */
-    public CalibreHandler(@NonNull final Context context)
+    public CalibreHandler(@NonNull final Context context,
+                          @NonNull final ViewModelStoreOwner viewModelStoreOwner)
             throws CertificateException, SSLException {
         mServer = new CalibreContentServer(context);
+
+        mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
+        mVm.init(mServer);
     }
 
     /**
@@ -123,8 +128,9 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
-        onViewCreated(activity, view,
-                      activity, activity,
+        onViewCreated(activity,
+                      view,
+                      activity,
                       activity);
     }
 
@@ -135,8 +141,9 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
-        onViewCreated(fragment.getActivity(), fragment.getView(),
-                      fragment, fragment.getViewLifecycleOwner(),
+        onViewCreated(fragment.getActivity(),
+                      fragment.getView(),
+                      fragment.getViewLifecycleOwner(),
                       fragment);
     }
 
@@ -148,7 +155,6 @@ public class CalibreHandler {
      */
     private void onViewCreated(@NonNull final Activity activity,
                                @NonNull final View view,
-                               @NonNull final ViewModelStoreOwner viewModelStoreOwner,
                                @NonNull final LifecycleOwner lifecycleOwner,
                                @NonNull final ActivityResultCaller caller) {
         mActivity = activity;
@@ -166,8 +172,6 @@ public class CalibreHandler {
                     }
                 });
 
-        mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
-        mVm.init(mServer);
         mVm.onFinished().observe(lifecycleOwner, this::onFinished);
         mVm.onCancelled().observe(lifecycleOwner, this::onCancelled);
         mVm.onFailure().observe(lifecycleOwner, this::onFailure);

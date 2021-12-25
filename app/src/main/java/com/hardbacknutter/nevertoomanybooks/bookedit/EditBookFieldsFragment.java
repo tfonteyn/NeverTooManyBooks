@@ -185,7 +185,7 @@ public class EditBookFieldsFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
 
-            mCoverHandler[0] = new CoverHandler(this, 0, maxWidth, maxHeight);
+            mCoverHandler[0] = new CoverHandler(this, this, 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
@@ -202,7 +202,7 @@ public class EditBookFieldsFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
 
-            mCoverHandler[1] = new CoverHandler(this, 1, maxWidth, maxHeight);
+            mCoverHandler[1] = new CoverHandler(this, this, 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(() -> mVm.getBook());

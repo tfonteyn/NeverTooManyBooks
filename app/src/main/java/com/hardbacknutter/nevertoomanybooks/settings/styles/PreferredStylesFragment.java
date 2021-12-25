@@ -175,6 +175,10 @@ public class PreferredStylesFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mVm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), requireArguments());
     }
 
     @Nullable
@@ -197,10 +201,7 @@ public class PreferredStylesFragment
 
         setTitle(R.string.lbl_styles_long);
 
-        mVm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         //noinspection ConstantConditions
-        mVm.init(getContext(), requireArguments());
-
         mVb.stylesList.addItemDecoration(
                 new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.stylesList.setHasFixedSize(true);

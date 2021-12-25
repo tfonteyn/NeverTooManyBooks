@@ -121,7 +121,7 @@ public class CoverHandler {
     private final ImageViewLoader mImageLoader;
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
-    private CoverHandlerViewModel mVm;
+    private final CoverHandlerViewModel mVm;
     private ActivityResultLauncher<String> mCameraPermissionLauncher;
     private ActivityResultLauncher<Uri> mTakePictureLauncher;
     private ActivityResultLauncher<CropImageActivity.ResultContract.Input> mCropPictureLauncher;
@@ -147,6 +147,7 @@ public class CoverHandler {
      * @param maxHeight        the maximum height for the cover
      */
     public CoverHandler(@NonNull final CoverHandlerHost coverHandlerHost,
+                        @NonNull final ViewModelStoreOwner viewModelStoreOwner,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         final int maxWidth,
                         final int maxHeight) {
@@ -154,6 +155,10 @@ public class CoverHandler {
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
+
+        mVm = new ViewModelProvider(viewModelStoreOwner)
+                .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
+
         mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, mMaxWidth, mMaxHeight);
 
         mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
@@ -167,8 +172,10 @@ public class CoverHandler {
     public void onViewCreated(@NonNull final Fragment fragment) {
 
         //noinspection ConstantConditions
-        onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
-                      fragment, fragment.getChildFragmentManager(), fragment);
+        onViewCreated(fragment.getView(),
+                      fragment.getViewLifecycleOwner(),
+                      fragment.getChildFragmentManager(),
+                      fragment);
     }
 
     /**
@@ -178,7 +185,6 @@ public class CoverHandler {
      */
     public void onViewCreated(@NonNull final View view,
                               @NonNull final LifecycleOwner lifecycleOwner,
-                              @NonNull final ViewModelStoreOwner viewModelStoreOwner,
                               @NonNull final FragmentManager fm,
                               @NonNull final ActivityResultCaller caller) {
         mView = view;
@@ -202,9 +208,6 @@ public class CoverHandler {
                 new CropImageActivity.ResultContract(), this::onGetContentResult);
 
         mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
-
-        mVm = new ViewModelProvider(viewModelStoreOwner)
-                .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
 
         mVm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {

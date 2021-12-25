@@ -70,7 +70,7 @@ public class SearchOrderFragment
 
     /* The View model. */
     @SuppressWarnings("FieldCanBeLocal")
-    private SearchAdminViewModel mModel;
+    private SearchAdminViewModel mVm;
 
     /** View Binding. */
     private FragmentEditSearchOrderBinding mVb;
@@ -89,6 +89,9 @@ public class SearchOrderFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
     }
 
     @Override
@@ -107,10 +110,8 @@ public class SearchOrderFragment
         setTitle(R.string.lbl_settings);
         setSubtitle(R.string.lbl_websites);
 
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
-        mSiteList = mModel.getList(mType);
+        mSiteList = mVm.getList(mType);
 
         //noinspection ConstantConditions
         mVb.siteList.addItemDecoration(

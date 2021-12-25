@@ -74,7 +74,7 @@ public class EditBookAuthorListDialogFragment
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    EditBookViewModel mVm;
+    private EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -124,6 +124,9 @@ public class EditBookAuthorListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
         mOnEditAuthorLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
@@ -133,9 +136,6 @@ public class EditBookAuthorListDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         mVb = DialogEditBookAuthorListBinding.bind(view);
-
-        //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
@@ -249,8 +249,8 @@ public class EditBookAuthorListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
-    void processChanges(@NonNull final Author original,
-                        @NonNull final Author modified) {
+    private void processChanges(@NonNull final Author original,
+                                @NonNull final Author modified) {
 
         // name not changed ?
         if (original.getFamilyName().equals(modified.getFamilyName())
@@ -423,6 +423,10 @@ public class EditBookAuthorListDialogFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
+
+            //noinspection ConstantConditions
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
             mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
@@ -448,9 +452,6 @@ public class EditBookAuthorListDialogFragment
             mVb = DialogEditBookAuthorBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(

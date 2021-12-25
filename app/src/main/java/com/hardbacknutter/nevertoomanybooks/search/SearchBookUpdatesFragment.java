@@ -94,6 +94,10 @@ public class SearchBookUpdatesFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -124,13 +128,10 @@ public class SearchBookUpdatesFragment
             setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
-        mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(getContext(), args);
-
         // Progress from individual searches AND overall progress
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
+        //noinspection ConstantConditions
         mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
                 mVm.processOne(getContext(), message.getResult()));
         // User cancelled the update

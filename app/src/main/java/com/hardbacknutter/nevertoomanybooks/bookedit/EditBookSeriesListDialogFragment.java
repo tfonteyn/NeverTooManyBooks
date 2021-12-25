@@ -66,7 +66,7 @@ public class EditBookSeriesListDialogFragment
     private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
 
     /** The book. Must be in the Activity scope. */
-    EditBookViewModel mVm;
+    private EditBookViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -243,8 +243,8 @@ public class EditBookSeriesListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
-    void processChanges(@NonNull final Series original,
-                        @NonNull final Series modified) {
+    private void processChanges(@NonNull final Series original,
+                                @NonNull final Series modified) {
 
         // name not changed ?
         if (original.getTitle().equals(modified.getTitle())) {
@@ -390,6 +390,10 @@ public class EditBookSeriesListDialogFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
+
+            //noinspection ConstantConditions
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
             mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
@@ -413,9 +417,6 @@ public class EditBookSeriesListDialogFragment
             mVb = DialogEditBookSeriesBinding.bind(view);
 
             mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(

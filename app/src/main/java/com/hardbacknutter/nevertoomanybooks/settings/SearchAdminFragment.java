@@ -98,6 +98,10 @@ public class SearchAdminFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
+        mVm.init(getArguments());
     }
 
     @Nullable
@@ -117,9 +121,6 @@ public class SearchAdminFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
-        mVm.init(getArguments());
 
         final List<Site.Type> types = mVm.getTypes();
         mTabAdapter = new TabAdapter(getActivity(), types);

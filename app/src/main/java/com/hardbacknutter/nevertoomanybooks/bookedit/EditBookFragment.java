@@ -96,6 +96,11 @@ public class EditBookFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), getArguments());
     }
 
     @Nullable
@@ -115,10 +120,6 @@ public class EditBookFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(getContext(), getArguments());
 
         mTabAdapter = new TabAdapter(getActivity());
         mVb.pager.setAdapter(mTabAdapter);

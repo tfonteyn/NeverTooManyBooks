@@ -150,7 +150,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
-    ExtPopupMenu mContextMenu;
+    private ExtPopupMenu mContextMenu;
 
     @NonNull
     @Override
@@ -161,6 +161,8 @@ public class EditBookTocFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mEditTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
 
@@ -183,7 +185,6 @@ public class EditBookTocFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mEditTocVm = new ViewModelProvider(this).get(EditBookTocViewModel.class);
         mEditTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
         mEditTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
@@ -253,8 +254,8 @@ public class EditBookTocFragment
         }
     }
 
-    void onEntryUpdated(@NonNull final TocEntry tocEntry,
-                        final boolean hasMultipleAuthors) {
+    private void onEntryUpdated(@NonNull final TocEntry tocEntry,
+                                final boolean hasMultipleAuthors) {
         updateMultiAuthor(hasMultipleAuthors);
 
         if (mEditPosition == null) {
@@ -373,7 +374,7 @@ public class EditBookTocFragment
      *
      * @param position the position of the item
      */
-    void editEntry(final int position) {
+    private void editEntry(final int position) {
         mEditPosition = position;
 
         final TocEntry tocEntry = mList.get(position);
@@ -385,7 +386,7 @@ public class EditBookTocFragment
      *
      * @param position the position of the item
      */
-    void deleteEntry(final int position) {
+    private void deleteEntry(final int position) {
         final TocEntry tocEntry = mList.get(position);
         if (tocEntry.getId() != 0) {
             //noinspection ConstantConditions
@@ -545,8 +546,8 @@ public class EditBookTocFragment
         }
     }
 
-    void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
-                              @NonNull final Collection<TocEntry> tocEntries) {
+    private void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+                                      @NonNull final Collection<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
             final Book book = mVm.getBook();
             book.putLong(DBKey.BITMASK_TOC, tocBitMask);
@@ -560,7 +561,7 @@ public class EditBookTocFragment
         mListAdapter.notifyDataSetChanged();
     }
 
-    void searchIsfdb() {
+    private void searchIsfdb() {
         if (mIsfdbEditions.isEmpty()) {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
                           Snackbar.LENGTH_LONG).show();

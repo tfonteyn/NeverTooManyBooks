@@ -74,6 +74,9 @@ public class CalibrePreferencesFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
+
+        mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
+
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
         EditTextPreference etp;
@@ -153,7 +156,6 @@ public class CalibrePreferencesFragment
                     setFolderSummary(mFolderPref);
                 });
 
-        mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
         mVm.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);

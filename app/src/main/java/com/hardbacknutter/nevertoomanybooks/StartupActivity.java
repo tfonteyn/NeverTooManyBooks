@@ -110,6 +110,9 @@ public class StartupActivity
             return;
         }
 
+        mVm = new ViewModelProvider(this).get(StartupViewModel.class);
+        mVm.init(this);
+
         mVb = ActivityStartupBinding.inflate(getLayoutInflater());
         setContentView(mVb.getRoot());
 
@@ -117,8 +120,6 @@ public class StartupActivity
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
         mVb.version.setText(info.getVersionName());
 
-        mVm = new ViewModelProvider(this).get(StartupViewModel.class);
-        mVm.init(this);
         mVm.onProgress().observe(this, message -> onProgress(message.text));
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());

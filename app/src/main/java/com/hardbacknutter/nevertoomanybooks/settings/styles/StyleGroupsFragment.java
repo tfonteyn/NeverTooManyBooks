@@ -60,7 +60,7 @@ public class StyleGroupsFragment
     private ItemTouchHelper mItemTouchHelper;
 
     /** Style we are editing. */
-    private StyleViewModel mStyleViewModel;
+    private StyleViewModel mVm;
 
     /**
      * Either make the groups permanent, or inform the user they need to have at least one group.
@@ -69,8 +69,8 @@ public class StyleGroupsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    if (mStyleViewModel.hasGroupsSelected()) {
-                        mStyleViewModel.updateStyleGroups();
+                    if (mVm.hasGroupsSelected()) {
+                        mVm.updateStyleGroups();
                         // just pop, we're always called from a fragment
                         getParentFragmentManager().popBackStack();
 
@@ -99,7 +99,7 @@ public class StyleGroupsFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mStyleViewModel = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
     }
 
     @Nullable
@@ -130,7 +130,7 @@ public class StyleGroupsFragment
         // The adapter for the list.
         final GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(getContext(),
-                                            mStyleViewModel.createWrappedGroupList(),
+                                            mVm.createWrappedGroupList(),
                                             vh -> mItemTouchHelper.startDrag(vh));
 
         mVb.groupList.setAdapter(listAdapter);

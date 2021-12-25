@@ -106,6 +106,10 @@ public class AuthorWorksFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), requireArguments());
     }
 
     @Nullable
@@ -130,10 +134,8 @@ public class AuthorWorksFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         final Context context = getContext();
-        mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(context, requireArguments());
 
+        //noinspection ConstantConditions
         setTitle(mVm.getScreenTitle(context));
         setSubtitle(mVm.getScreenSubtitle());
 
@@ -152,13 +154,12 @@ public class AuthorWorksFragment
         mVb.authorWorks.setAdapter(mAdapter);
 
         final Resources res = getResources();
-        //noinspection ConstantConditions
-        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        final Menu menu = ExtPopupMenu.createMenu(context);
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
 
-        mContextMenu = new ExtPopupMenu(getContext(), menu, this::onContextItemSelected);
+        mContextMenu = new ExtPopupMenu(context, menu, this::onContextItemSelected);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);

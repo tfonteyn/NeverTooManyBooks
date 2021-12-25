@@ -73,6 +73,9 @@ public class SearchBookByTextFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
+        mVm.init();
     }
 
     @Override
@@ -89,9 +92,6 @@ public class SearchBookByTextFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setTitle(R.string.lbl_search_for_books);
-
-        mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
-        mVm.init();
 
         if (mVm.usePublisher()) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);

@@ -135,6 +135,9 @@ public abstract class EditBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
     }
 
     @Override
@@ -147,9 +150,6 @@ public abstract class EditBookBaseFragment
         //noinspection ConstantConditions
         mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(context);
         mAmazonHandler = new AmazonHandler(context);
-
-        //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
         mDateParser = new FullDateParser(getContext());
 

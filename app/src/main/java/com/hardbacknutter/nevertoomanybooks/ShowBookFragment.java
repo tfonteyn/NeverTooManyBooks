@@ -180,6 +180,10 @@ public class ShowBookFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
+        //noinspection ConstantConditions
+        mVm.init(getContext(), requireArguments());
+
         mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
@@ -209,9 +213,6 @@ public class ShowBookFragment
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
-        mVm.init(getContext(), requireArguments());
 
         createSyncDelegates(global);
         mAmazonHandler = new AmazonHandler(getContext());
@@ -255,7 +256,7 @@ public class ShowBookFragment
         if (SyncServer.CalibreCS.isEnabled(global)) {
             try {
                 //noinspection ConstantConditions
-                mCalibreHandler = new CalibreHandler(getContext());
+                mCalibreHandler = new CalibreHandler(getContext(), this);
                 mCalibreHandler.onViewCreated(this);
             } catch (@NonNull final SSLException | CertificateException ignore) {
                 // ignore
@@ -274,7 +275,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
-            mCoverHandler[0] = new CoverHandler(this, 0, maxWidth, maxHeight);
+            mCoverHandler[0] = new CoverHandler(this, this, 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
@@ -285,7 +286,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
-            mCoverHandler[1] = new CoverHandler(this, 1, maxWidth, maxHeight);
+            mCoverHandler[1] = new CoverHandler(this, this, 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
