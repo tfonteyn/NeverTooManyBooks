@@ -90,8 +90,11 @@ public class App
     public void onCreate() {
         super.onCreate();
 
-        ServiceLocator.create(getApplicationContext());
-        SearchEngineRegistry.create(getApplicationContext());
+        // https://www.acra.ch/docs/Troubleshooting-Guide#applicationoncreate
+        if (!ACRA.isACRASenderServiceProcess()) {
+            ServiceLocator.create(getApplicationContext());
+            SearchEngineRegistry.create(getApplicationContext());
+        }
     }
 
     /**
@@ -101,7 +104,7 @@ public class App
         final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                 .withBuildConfigClass(BuildConfig.class)
                 .withReportFormat(StringFormat.JSON)
-                .withReportSendSuccessToast(getString(R.string.acra_resReportSendSuccessToast))
+                //.withReportSendSuccessToast(getString(R.string.acra_resReportSendSuccessToast))
                 .withReportSendFailureToast(getString(R.string.error_email_failed))
                 .withApplicationLogFileDir(Directory.FILES)
                 .withApplicationLogFile(APPLICATION_LOG_FILE)

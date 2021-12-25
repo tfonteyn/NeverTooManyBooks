@@ -133,6 +133,7 @@ public final class PackageInfoWrapper {
     @NonNull
     public String getSignedBy() {
         final StringBuilder signedBy = new StringBuilder();
+        //noinspection ProhibitedExceptionCaught
         try {
             // concat the signature chain.
             for (final Signature sig : mInfo.signatures) {
@@ -163,6 +164,9 @@ public final class PackageInfoWrapper {
                     }
                 }
             }
+        } catch (@NonNull final NullPointerException e) {
+            return "Not signed, likely development version";
+
         } catch (@NonNull final NoSuchAlgorithmException | RuntimeException e) {
             return e.toString();
         }

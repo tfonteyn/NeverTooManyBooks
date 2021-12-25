@@ -59,9 +59,7 @@ public final class DebugReport {
     }
 
     /**
-     * Collect and send debug info to a support email address.
-     * <p>
-     * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
+     * Collect and send debug info using email.
      * <p>
      * URGENT: need a better way to send the db file... mail accounts limit the size of attachments
      *
@@ -134,19 +132,16 @@ public final class DebugReport {
             final String subject = "[" + context.getString(R.string.app_name) + "] "
                                    + context.getString(R.string.debug_subject);
 
-//            final ArrayList<String> report = new ArrayList<>();
-//            report.add(message.toString());
-
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_EMAIL, to)
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    //.putExtra(Intent.EXTRA_TEXT, report)
+                    .putExtra(Intent.EXTRA_TEXT, message.toString())
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
             context.startActivity(intent);
             return true;
 
-        } catch (@NonNull final NullPointerException | ActivityNotFoundException | IOException e) {
+        } catch (@NonNull final ActivityNotFoundException | IOException e) {
             Logger.error(TAG, e);
             return false;
         }
