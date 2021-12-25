@@ -62,6 +62,8 @@ public final class DebugReport {
      * Collect and send debug info to a support email address.
      * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
+     * <p>
+     * URGENT: need a better way to send the db file... mail accounts limit the size of attachments
      *
      * @param context Current context
      */
@@ -72,14 +74,12 @@ public final class DebugReport {
         final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
         message.append("App: ").append(info.getPackageName()).append('\n')
                .append("Version: ").append(info.getVersionName())
-               .append(" (")
-               .append(info.getVersionCode())
-               .append(", ")
-               .append(BuildConfig.TIMESTAMP)
-               .append(")\n");
-
-
-        message.append("SDK: ")
+               /* */.append(" (")
+               /* */.append(info.getVersionCode())
+               /* */.append(", ")
+               /* */.append(BuildConfig.TIMESTAMP)
+               /* */.append(")\n")
+               .append("SDK: ")
                /* */.append(Build.VERSION.RELEASE)
                /* */.append(" (").append(Build.VERSION.SDK_INT).append(' ')
                /* */.append(Build.TAGS).append(")\n")
@@ -89,14 +89,15 @@ public final class DebugReport {
                .append("Product: ").append(Build.PRODUCT).append('\n')
                .append("Brand: ").append(Build.BRAND).append('\n')
                .append("ID: ").append(Build.ID).append('\n')
+               .append("Signed-By: ").append(info.getSignedBy()).append('\n');
 
-               .append("Signed-By: ").append(info.getSignedBy()).append('\n')
-               .append("\nDetails:\n\n")
+        Logger.warn(TAG, "sendDebugInfo|" + message);
+        logPreferences(context);
+
+        // last part; the user should (hopefully) add their comment to the email
+        message.append("\nDetails:\n\n")
                .append(context.getString(R.string.debug_body))
                .append("\n\n");
-
-        Logger.w(TAG, "sendDebugInfo|" + message);
-        logPreferences(context);
 
         // Find all files of interest to send
         final Collection<File> files = new ArrayList<>();
