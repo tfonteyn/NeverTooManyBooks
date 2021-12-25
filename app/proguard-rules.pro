@@ -19,6 +19,11 @@
 # hide the original source file name.
 -renamesourcefileattribute SourceFile
 
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.ParametersAreNonnullByDefault
+# used by acra
+-dontwarn com.google.auto.service.AutoService
+
 
 # The below and more is now done with the "@Keep" annotation.
 # Keeping for reference for now.
