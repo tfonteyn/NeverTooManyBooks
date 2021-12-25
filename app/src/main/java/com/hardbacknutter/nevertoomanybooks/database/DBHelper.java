@@ -869,6 +869,7 @@ public class DBHelper
                          .remove("search.site.goodreads.covers.enabled")
                          .remove("startup.lastVersion")
                          .remove("tmp.edit.book.tab.authSer")
+                         .remove("ui.messages.use")
                          .apply();
     }
 }
