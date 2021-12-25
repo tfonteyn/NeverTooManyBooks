@@ -46,6 +46,8 @@ public class App
 
     private static final int ACRA_LOGFILE_LINES = 1_000;
     private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
+    private static final String APPLICATION_LOG_FILE =
+            ServiceLocator.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE;
 
     /** Flag to indicate the startup can skip a full init. */
     private boolean mHotStart;
@@ -99,13 +101,12 @@ public class App
         final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                 .withBuildConfigClass(BuildConfig.class)
                 .withReportFormat(StringFormat.JSON)
-                .withResReportSendSuccessToast(R.string.acra_resReportSendSuccessToast)
-                .withResReportSendFailureToast(R.string.error_email_failed)
+                .withReportSendSuccessToast(getString(R.string.acra_resReportSendSuccessToast))
+                .withReportSendFailureToast(getString(R.string.error_email_failed))
                 .withApplicationLogFileDir(Directory.FILES)
-                .withApplicationLogFile(
-                        ServiceLocator.DIR_LOG + File.separatorChar + Logger.ERROR_LOG_FILE)
+                .withApplicationLogFile(APPLICATION_LOG_FILE)
                 .withApplicationLogFileLines(ACRA_LOGFILE_LINES)
-                // TODO: comment-out unneeded fields
+                .withExcludeMatchingSharedPreferencesKeys(".*password.*")
                 .withReportContent(
                         // Device
                         ReportField.PHONE_MODEL,
@@ -151,15 +152,15 @@ public class App
         // Optional, displayed as soon as the crash occurs,
         // before collecting data which can take a few seconds
         builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
-               .withResText(R.string.acra_resToastText)
+               .withText(getString(R.string.acra_resToastText))
                .withEnabled(true);
 
         builder.getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
-               .withResText(R.string.acra_resDialogText)
-               .withResTitle(R.string.app_name)
+               .withText(getString(R.string.acra_resDialogText))
+               .withTitle(getString(R.string.app_name))
+               .withCommentPrompt(getString(R.string.acra_resDialogCommentPrompt))
                .withResTheme(R.style.Theme_App)
                .withResIcon(R.drawable.ic_baseline_warning_24)
-               .withResCommentPrompt(R.string.acra_resDialogCommentPrompt)
                .withEnabled(true);
 
 
