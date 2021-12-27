@@ -23,11 +23,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdk rootProject.ext.sdkVersion
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 31
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.sdkVersion
     }
 
     buildTypes {
