@@ -30,19 +30,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -89,6 +92,7 @@ public class SearchBookUpdatesFragment
     private ProgressDelegate mProgressDelegate;
     /** View Binding. */
     private FragmentUpdateFromInternetBinding mVb;
+
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -152,9 +156,10 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
-        populateFields();
+        initAdapter();
 
         if (savedInstanceState == null) {
+            //noinspection ConstantConditions
             TipManager.getInstance()
                       .display(getContext(), R.string.tip_update_fields_from_internet, () ->
                               Site.promptToRegister(getContext(), mVm.getSiteList(),
@@ -165,35 +170,17 @@ public class SearchBookUpdatesFragment
         }
     }
 
+    private void initAdapter() {
+        mVb.fieldList.setHasFixedSize(true);
+        //noinspection ConstantConditions
+        mVb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), mVm.getSyncFields()));
+    }
+
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable()) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Display the list of fields.
-     */
-    private void populateFields() {
-        for (final SyncField syncField : mVm.getFieldSyncList()) {
-            final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
-                    .inflate(getLayoutInflater(), mVb.fieldList, false);
-
-            rowVb.field.setText(syncField.getFieldLabelId());
-
-            rowVb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-            rowVb.cbxUsage.setText(syncField.getActionLabelId());
-            rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, syncField);
-            rowVb.cbxUsage.setOnClickListener(v -> {
-                final SyncField fs = (SyncField) rowVb.cbxUsage.getTag(R.id.TAG_FIELD_USAGE);
-                fs.nextState();
-                rowVb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
-                rowVb.cbxUsage.setText(fs.getActionLabelId());
-            });
-
-            mVb.fieldList.addView(rowVb.getRoot());
         }
     }
 
@@ -225,32 +212,11 @@ public class SearchBookUpdatesFragment
 
         } else if (itemId == R.id.MENU_RESET) {
             mVm.resetPreferences();
-            mVb.fieldList.removeAllViews();
-            populateFields();
+            initAdapter();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Count the checked fields, we need at least one selected to make sense.
-     *
-     * @return {@code true} if at least one field is selected
-     */
-    private boolean hasSelections() {
-        final int nChildren = mVb.fieldList.getChildCount();
-        for (int i = 0; i < nChildren; i++) {
-            final View view = mVb.fieldList.getChildAt(i);
-            final CompoundButton cb = view.findViewById(R.id.cbx_usage);
-            if (cb != null) {
-                final SyncField syncField = (SyncField) cb.getTag(R.id.TAG_FIELD_USAGE);
-                if (syncField.getAction() != SyncAction.Skip) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -259,7 +225,11 @@ public class SearchBookUpdatesFragment
      */
     private void prepareUpdate() {
         // sanity check
-        if (!hasSelections()) {
+        if (mVm.getSyncFields()
+               .stream()
+               .map(SyncField::getAction)
+               .noneMatch(action -> action != SyncAction.Skip)) {
+
             Snackbar.make(mVb.fieldList, R.string.warning_select_at_least_1_field,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -368,6 +338,75 @@ public class SearchBookUpdatesFragment
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
             mProgressDelegate = null;
+        }
+    }
+
+    public static class Holder
+            extends RecyclerView.ViewHolder {
+
+        private final TextView fieldView;
+        private final CheckBox cbxUsage;
+
+        Holder(@NonNull final RowUpdateFromInternetBinding vb) {
+            super(vb.getRoot());
+            fieldView = vb.field;
+            cbxUsage = vb.cbxUsage;
+        }
+    }
+
+    private static class SyncFieldAdapter
+            extends RecyclerView.Adapter<Holder> {
+
+        /** Cached inflater. */
+        @NonNull
+        private final LayoutInflater mInflater;
+
+        private final SyncField[] mSyncFields;
+
+        /**
+         * Constructor.
+         *
+         * @param context    Current context.
+         * @param syncFields to show
+         */
+        SyncFieldAdapter(@NonNull final Context context,
+                         @NonNull final Collection<SyncField> syncFields) {
+            mInflater = LayoutInflater.from(context);
+            //noinspection ZeroLengthArrayAllocation
+            mSyncFields = syncFields.toArray(new SyncField[0]);
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                         final int viewType) {
+            final RowUpdateFromInternetBinding vb = RowUpdateFromInternetBinding
+                    .inflate(mInflater, parent, false);
+            final Holder holder = new Holder(vb);
+
+            holder.cbxUsage.setOnClickListener(v -> {
+                final SyncField fs = mSyncFields[holder.getBindingAdapterPosition()];
+                fs.nextState();
+                vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
+                vb.cbxUsage.setText(fs.getActionLabelId());
+            });
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final Holder holder,
+                                     final int position) {
+
+            final SyncField syncField = mSyncFields[position];
+
+            holder.fieldView.setText(syncField.getFieldLabelId());
+            holder.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
+            holder.cbxUsage.setText(syncField.getActionLabelId());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mSyncFields.length;
         }
     }
 }

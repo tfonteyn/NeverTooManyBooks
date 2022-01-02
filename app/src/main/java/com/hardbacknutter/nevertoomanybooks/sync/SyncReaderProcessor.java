@@ -434,7 +434,7 @@ public final class SyncReaderProcessor
         }
 
         @NonNull
-        public Collection<SyncField> getFieldSyncList() {
+        public Collection<SyncField> getSyncFields() {
             return mFields.values();
         }
 

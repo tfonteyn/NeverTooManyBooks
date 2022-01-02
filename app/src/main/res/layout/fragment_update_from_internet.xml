@@ -22,12 +22,12 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered"
-        >
+        style="@style/TopCentered">
 
         <TextView
             android:id="@+id/select_fields_blurb"
@@ -35,33 +35,25 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/txt_select_fields_to_update"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck"
             />
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/field_list"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fillViewport="true"
+            android:layout_margin="@dimen/screen_border"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
-            >
-
-            <LinearLayout
-                android:id="@+id/field_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical"
-                >
-                <!-- fields are added here dynamically -->
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            tools:itemCount="10"
+            tools:listitem="@layout/row_update_from_internet"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

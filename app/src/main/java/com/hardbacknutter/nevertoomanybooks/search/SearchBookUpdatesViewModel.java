@@ -204,8 +204,8 @@ public class SearchBookUpdatesViewModel
     }
 
     @NonNull
-    Collection<SyncField> getFieldSyncList() {
-        return mSyncProcessorBuilder.getFieldSyncList();
+    Collection<SyncField> getSyncFields() {
+        return mSyncProcessorBuilder.getSyncFields();
     }
 
     /**
