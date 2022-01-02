@@ -39,7 +39,7 @@ public class BooklistGroupTest
     public void cc() {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final Styles styles = ServiceLocator.getInstance().getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
         final BooklistGroup g1 = BooklistGroup.newInstance(BooklistGroup.COLOR, false, s1);

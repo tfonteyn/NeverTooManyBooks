@@ -49,10 +49,7 @@ public final class BuiltinStyle
     public static final int MAX_ID = -19;
 
 
-    /** We need a random style with a filter for testing. */
-    @VisibleForTesting
-    public static final String UUID_UNREAD_AUTHOR_THEN_SERIES
-            = "f479e979-c43f-4b0b-9c5b-6942964749df";
+
 
     private static final int ID_AUTHOR_THEN_SERIES = -1;
 
@@ -67,15 +64,16 @@ public final class BuiltinStyle
 
 
     private static final int ID_UNREAD_AUTHOR_THEN_SERIES = -2;
-
+    private static final String UUID_UNREAD_AUTHOR_THEN_SERIES
+            = "f479e979-c43f-4b0b-9c5b-6942964749df";
 
     private static final int ID_COMPACT = -3;
     private static final String UUID_COMPACT
             = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
-
-    private static final int ID_TITLE_FIRST_LETTER = -4;
-    private static final String UUID_TITLE_FIRST_LETTER
-            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
+    /** We need a random style with a filter for testing. */
+    @VisibleForTesting
+    public static final String UUID_FOR_TESTING_ONLY = UUID_UNREAD_AUTHOR_THEN_SERIES;
+    private static final int ID_BOOK_TITLE_FIRST_LETTER = -4;
 
     private static final int ID_SERIES = -5;
     private static final String UUID_SERIES
@@ -136,7 +134,8 @@ public final class BuiltinStyle
     private static final int ID_DATE_LAST_UPDATE = -19;
     private static final String UUID_DATE_LAST_UPDATE
             = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
-
+    private static final String UUID_BOOK_TITLE_FIRST_LETTER
+            = "16b4ecdf-edef-4bf2-a682-23f7230446c8";
     /**
      * Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used.
      * NEVER change the order.
@@ -146,7 +145,7 @@ public final class BuiltinStyle
             UUID_AUTHOR_THEN_SERIES,
             UUID_UNREAD_AUTHOR_THEN_SERIES,
             UUID_COMPACT,
-            UUID_TITLE_FIRST_LETTER,
+            UUID_BOOK_TITLE_FIRST_LETTER,
             UUID_SERIES,
 
             UUID_GENRE,
@@ -280,11 +279,11 @@ public final class BuiltinStyle
                      .setShowField(ListScreenBookFields.PK_COVERS, false);
                 break;
 
-            case ID_TITLE_FIRST_LETTER:
+            case ID_BOOK_TITLE_FIRST_LETTER:
                 style = new BuiltinStyle(context, id, uuid,
                                          R.string.style_builtin_first_letter_book_title,
                                          isPreferred, menuPos,
-                                         BooklistGroup.BOOK_TITLE_LETTER);
+                                         BooklistGroup.BOOK_TITLE_1ST_LETTER);
                 break;
 
             case ID_SERIES:

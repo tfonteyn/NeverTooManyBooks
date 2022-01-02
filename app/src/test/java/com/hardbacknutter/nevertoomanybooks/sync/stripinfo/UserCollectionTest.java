@@ -76,7 +76,7 @@ class UserCollectionTest
     private final Bookshelf mOwnedBookshelf = new Bookshelf(
             "owned", BuiltinStyle.DEFAULT_UUID);
     private final Bookshelf mWishlistBookshelf = new Bookshelf(
-            "wishlist", BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
+            "wishlist", BuiltinStyle.UUID_FOR_TESTING_ONLY);
     @Mock
     BookshelfMapper mBookshelfMapper;
 

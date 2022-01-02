@@ -40,7 +40,7 @@ public class UserStyleTest
     public void clone01() {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final Styles styles = ServiceLocator.getInstance().getStyles();
-        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_UNREAD_AUTHOR_THEN_SERIES);
+        final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
 
         assertNotNull(s1);
 
