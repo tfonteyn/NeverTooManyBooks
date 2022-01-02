@@ -1623,6 +1623,7 @@
     <string name="lbl_read_timeout">Read timeout (seconds)</string>
     <string name="lbl_timeouts">Timeouts</string>
     <string name="lbl_website_address">Site address (URL)</string>
+    <string name="lbl_sql_query">SQL query</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
