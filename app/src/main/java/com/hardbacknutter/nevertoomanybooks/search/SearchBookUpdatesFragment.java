@@ -30,8 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
@@ -341,16 +339,14 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    public static class Holder
+    static class Holder
             extends RecyclerView.ViewHolder {
 
-        private final TextView fieldView;
-        private final CheckBox cbxUsage;
+        private final RowUpdateFromInternetBinding vb;
 
         Holder(@NonNull final RowUpdateFromInternetBinding vb) {
             super(vb.getRoot());
-            fieldView = vb.field;
-            cbxUsage = vb.cbxUsage;
+            this.vb = vb;
         }
     }
 
@@ -384,7 +380,7 @@ public class SearchBookUpdatesFragment
                     .inflate(mInflater, parent, false);
             final Holder holder = new Holder(vb);
 
-            holder.cbxUsage.setOnClickListener(v -> {
+            holder.vb.cbxUsage.setOnClickListener(v -> {
                 final SyncField fs = mSyncFields[holder.getBindingAdapterPosition()];
                 fs.nextState();
                 vb.cbxUsage.setChecked(fs.getAction() != SyncAction.Skip);
@@ -399,9 +395,9 @@ public class SearchBookUpdatesFragment
 
             final SyncField syncField = mSyncFields[position];
 
-            holder.fieldView.setText(syncField.getFieldLabelId());
-            holder.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
-            holder.cbxUsage.setText(syncField.getActionLabelId());
+            holder.vb.field.setText(syncField.getFieldLabelId());
+            holder.vb.cbxUsage.setChecked(syncField.getAction() != SyncAction.Skip);
+            holder.vb.cbxUsage.setText(syncField.getActionLabelId());
         }
 
         @Override
