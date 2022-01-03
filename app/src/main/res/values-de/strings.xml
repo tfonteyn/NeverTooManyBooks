@@ -383,7 +383,7 @@
     <string name="pe_ui_theme_day_night">Tag / Nacht</string>
     <string name="pe_ui_theme_light">Licht</string>
     <string name="pg_barcode_scanner">Barcodelesegerät</string>
-    <string name="pg_bob_show_details">Buchdetails</string>
+    <string name="pg_bob_show_details">In der Liste angezeigte Buchdetails</string>
     <string name="pg_booklist">Buchlisten</string>
     <string name="camera">Kamera</string>
     <string name="pg_filters">Buchfilter</string>

@@ -345,7 +345,7 @@
     <string name="pe_ui_theme_day_night">Den / Noc</string>
     <string name="pe_ui_theme_light">Světlo</string>
     <string name="pg_barcode_scanner">Čtečka kódů</string>
-    <string name="pg_bob_show_details">Podrobnosti knihy</string>
+    <string name="pg_bob_show_details">Podrobnosti knihy zobrazené v seznamu</string>
     <string name="pg_booklist">Seznamy knih</string>
     <string name="camera">Fotoaparát</string>
     <string name="pg_filters">Filtry knih</string>

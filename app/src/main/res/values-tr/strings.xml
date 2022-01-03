@@ -349,7 +349,7 @@
     <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
     <string name="pe_ui_theme_light">ışık</string>
     <string name="pg_barcode_scanner">Barkod okuyucu</string>
-    <string name="pg_bob_show_details">Kitap detayları</string>
+    <string name="pg_bob_show_details">Listede gösterilen Kitap Detayları</string>
     <string name="pg_booklist">Kitap listeleri</string>
     <string name="camera">Kamera</string>
     <string name="pg_filters">Kitap süzgeçleri</string>

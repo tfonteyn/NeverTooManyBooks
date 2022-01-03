@@ -348,7 +348,7 @@
     <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
     <string name="pe_ui_theme_light">Φως</string>
     <string name="pg_barcode_scanner">Σάρωση γραμμοκώδικα</string>
-    <string name="pg_bob_show_details">Στοιχεία βιβλίου</string>
+    <string name="pg_bob_show_details">Λεπτομέρειες βιβλίου εμφανίζονται στη λίστα</string>
     <string name="pg_booklist">Λίστα βιβλίων</string>
     <string name="camera">Κάμερα</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>

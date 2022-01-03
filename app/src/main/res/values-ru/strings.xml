@@ -344,7 +344,7 @@
     <string name="pe_ui_theme_day_night">День / Ночь</string>
     <string name="pe_ui_theme_light">свет</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
-    <string name="pg_bob_show_details">Детали книги</string>
+    <string name="pg_bob_show_details">Информация о книге отображается в списке</string>
     <string name="pg_booklist">Списки книг</string>
     <string name="camera">камера</string>
     <string name="pg_filters">Фильтры книг</string>

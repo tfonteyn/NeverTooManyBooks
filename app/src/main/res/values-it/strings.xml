@@ -345,7 +345,7 @@
     <string name="pe_ui_theme_day_night">Giornata / Notte</string>
     <string name="pe_ui_theme_light">Chiaro</string>
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
-    <string name="pg_bob_show_details">Dettagli del libro</string>
+    <string name="pg_bob_show_details">Dettagli del libro visualizzati nell\'elenco</string>
     <string name="pg_booklist">Elenchi di libri</string>
     <string name="camera">Fotocamera</string>
     <string name="pg_filters">Filtra libri</string>

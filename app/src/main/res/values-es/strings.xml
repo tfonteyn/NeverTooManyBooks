@@ -348,7 +348,7 @@
     <string name="pe_ui_theme_day_night">Día / Noche</string>
     <string name="pe_ui_theme_light">Luz</string>
     <string name="pg_barcode_scanner">Escáner de código de barras</string>
-    <string name="pg_bob_show_details">Detalles del libro</string>
+    <string name="pg_bob_show_details">Detalles del libro que se muestran en la lista</string>
     <string name="pg_booklist">Listas de libros</string>
     <string name="camera">Cámara</string>
     <string name="pg_filters">Filtros adicionales</string>

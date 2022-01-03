@@ -381,7 +381,7 @@
     <string name="pe_ui_theme_day_night">Dag / Nacht</string>
     <string name="pe_ui_theme_light">Helder</string>
     <string name="pg_barcode_scanner">Barcode scanner</string>
-    <string name="pg_bob_show_details">Boek details</string>
+    <string name="pg_bob_show_details">Boekdetails weergegeven in de lijst</string>
     <string name="pg_booklist">Boeken Lijst</string>
     <string name="camera">Camera</string>
     <string name="pg_filters">Boekfilters</string>

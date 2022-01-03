@@ -346,7 +346,7 @@
     <string name="pe_ui_theme_day_night">Dzień / Noc</string>
     <string name="pe_ui_theme_light">Światło</string>
     <string name="pg_barcode_scanner">Skaner kodów kreskowych</string>
-    <string name="pg_bob_show_details">Szczegóły książki</string>
+    <string name="pg_bob_show_details">Szczegóły książki pokazane na liście</string>
     <string name="pg_booklist">Listy książek</string>
     <string name="camera">Aparat fotograficzny</string>
     <string name="pg_filters">Filtry</string>
