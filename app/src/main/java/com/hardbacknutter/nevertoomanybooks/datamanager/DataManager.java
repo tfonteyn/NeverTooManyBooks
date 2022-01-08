@@ -427,49 +427,6 @@ public class DataManager
     }
 
     /**
-     * Check if a bit or combination of bits is set on the existing value
-     * (uses {@code 0} if not present yet) for the given key.
-     * <p>
-     * Uses a {@code long} for storage.
-     *
-     * @param key  Key of data object
-     * @param bits to check
-     *
-     * @return {@code true} if the bit is set
-     */
-    public boolean isBitSet(@NonNull final String key,
-                            final int bits) {
-        return (ParseUtils.toLong(mRawData.get(key)) & bits) != 0;
-    }
-
-    /**
-     * Set a bit or combination of bits on the existing value
-     * (uses {@code 0} if not present yet) for the given key.
-     * <p>
-     * Uses a {@code long} for storage.
-     *
-     * @param key     Key of data object
-     * @param bits    to set to the 'checked' value
-     * @param checked value to set
-     */
-    public void setBit(@NonNull final String key,
-                       final int bits,
-                       final boolean checked) {
-
-        long value = ParseUtils.toLong(mRawData.get(key));
-
-        if (checked) {
-            // set the bit
-            value |= bits;
-        } else {
-            // or reset the bit
-            value &= ~bits;
-        }
-
-        mRawData.putLong(key, value);
-    }
-
-    /**
      * Get a {@link Money} value.
      *
      * @param key Key of data object

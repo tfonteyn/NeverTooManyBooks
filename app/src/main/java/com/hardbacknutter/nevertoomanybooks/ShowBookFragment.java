@@ -39,19 +39,17 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
@@ -61,9 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentShowBookBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
@@ -95,7 +91,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Class for representing read-only book details.
@@ -180,7 +175,8 @@ public class ShowBookFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
+        //noinspection ConstantConditions
+        mVm = new ViewModelProvider(getActivity()).get(ShowBookViewModel.class);
         //noinspection ConstantConditions
         mVm.init(getContext(), requireArguments());
 
@@ -218,18 +214,9 @@ public class ShowBookFragment
         mAmazonHandler = new AmazonHandler(getContext());
         mViewBookHandler = new ViewBookOnWebsiteHandler(getContext());
 
-        final FloatingActionButton fab = getFab();
-        //URGENT: make decision to do without the FAB button on this activity?....
-        // i.e. edit book via options menu
-        fab.setVisibility(View.GONE);
-//        fab.setImageResource(R.drawable.ic_baseline_edit_24);
-//        fab.setOnClickListener(v -> mEditBookLauncher.launch(
-//                mVm.getBookAtPosition(mVb.pager.getCurrentItem()).getId()));
-
         createCoverDelegates(global);
 
-        mPagerAdapter = new ShowBookPagerAdapter(getContext(), getChildFragmentManager(),
-                                                 mVm, mCoverHandler);
+        mPagerAdapter = new ShowBookPagerAdapter(this, mVm, mCoverHandler);
         mVb.pager.setAdapter(mPagerAdapter);
         mVb.pager.setCurrentItem(mVm.getInitialPagerPosition(), false);
         mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -238,7 +225,6 @@ public class ShowBookFragment
                 setActivityTitle(mVm.getBookAtPosition(position));
             }
         });
-        // getInitialPagerPosition == mVb.pager.getCurrentItem()
         setActivityTitle(mVm.getBookAtPosition(mVm.getInitialPagerPosition()));
 
         if (savedInstanceState == null) {
@@ -263,9 +249,9 @@ public class ShowBookFragment
             }
         }
 
-        if (SyncServer.StripInfo.isEnabled(global)) {
-
-        }
+//        if (SyncServer.StripInfo.isEnabled(global)) {
+//
+//        }
     }
 
     private void createCoverDelegates(@NonNull final SharedPreferences global) {
@@ -461,7 +447,6 @@ public class ShowBookFragment
     }
 
     private void setActivityTitle(@NonNull final Book book) {
-//        String title = book.getString(DBKey.KEY_TITLE);
         //noinspection ConstantConditions
         String authors = Author.getCondensedNames(
                 getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
@@ -470,11 +455,13 @@ public class ShowBookFragment
             authors = "[" + book.getId() + "] " + authors;
         }
         setTitle(authors);
-//        setSubtitle(title);
+        setSubtitle(book.getString(DBKey.KEY_TITLE));
     }
 
     public static class ShowBookPagerAdapter
             extends RecyclerView.Adapter<ShowBookPagerAdapter.Holder> {
+
+        private final Fragment mHostFragment;
 
         /** Cached inflater. */
         @NonNull
@@ -487,45 +474,54 @@ public class ShowBookFragment
         /** The fields used. */
         @NonNull
         private final Fields mFieldsMap;
-
-        @NonNull
-        private final FragmentManager mFragmentManager;
+        private final boolean mUseLoanee;
+        private final boolean mUseToc;
 
         /**
          * Constructor.
          *
-         * @param context       Current context
-         * @param fm            FragmentManager
          * @param bookViewModel the view model from the fragment
          * @param coverHandler  the array of handlers
          */
-        ShowBookPagerAdapter(@NonNull final Context context,
-                             @NonNull final FragmentManager fm,
+        ShowBookPagerAdapter(@NonNull final Fragment hostFragment,
                              @NonNull final ShowBookViewModel bookViewModel,
                              @NonNull final CoverHandler[] coverHandler) {
-            mInflater = LayoutInflater.from(context);
-            mFragmentManager = fm;
+            mHostFragment = hostFragment;
             mVm = bookViewModel;
             mCoverHandler = coverHandler;
 
+            final Context context = mHostFragment.getContext();
+            mInflater = LayoutInflater.from(context);
+            //noinspection ConstantConditions
             mFieldsMap = initFields(context);
+
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(context);
+            mUseLoanee = DBKey.isUsed(global, DBKey.KEY_LOANEE);
+            mUseToc = DBKey.isUsed(global, DBKey.BITMASK_TOC);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = mInflater.inflate(R.layout.fragment_book_details, parent, false);
-            final Holder holder = new Holder(view);
+
+            final FragmentBookDetailsBinding vb = FragmentBookDetailsBinding
+                    .inflate(mInflater, parent, false);
+            // Pass in the parent fm; i.e. the one from the activity.
+            final Holder holder = new Holder(mHostFragment.getParentFragmentManager(),
+                                             vb, mUseLoanee, mUseToc);
 
             if (mCoverHandler[0] != null) {
-                mCoverHandler[0].attachOnClickListeners(mFragmentManager, holder.mVb.coverImage0);
+                mCoverHandler[0].attachOnClickListeners(mHostFragment.getChildFragmentManager(),
+                                                        holder.mVb.coverImage0);
             } else {
                 holder.mVb.coverImage0.setVisibility(View.GONE);
             }
 
             if (mCoverHandler[1] != null) {
-                mCoverHandler[1].attachOnClickListeners(mFragmentManager, holder.mVb.coverImage1);
+                mCoverHandler[1].attachOnClickListeners(mHostFragment.getChildFragmentManager(),
+                                                        holder.mVb.coverImage1);
             } else {
                 holder.mVb.coverImage1.setVisibility(View.GONE);
             }
@@ -676,58 +672,42 @@ public class ShowBookFragment
             /** View Binding. */
             @NonNull
             private final FragmentBookDetailsMergePublicationSectionBinding mVbPub;
-            /** View Binding. */
-            @NonNull
-            private final FragmentBookDetailsMergeTocSectionBinding mVbToc;
-            /** Cached inflater. */
-            @NonNull
-            private final LayoutInflater mLayoutInflater;
 
-            private final boolean mUseToc;
             private final boolean mUseLoanee;
 
-            Holder(@NonNull final View itemView) {
-                super(itemView);
+            private final boolean mUseToc;
 
-                mLayoutInflater = LayoutInflater.from(itemView.getContext());
+            private final FragmentManager mFm;
 
-                mVb = FragmentBookDetailsBinding.bind(itemView);
+            Holder(@NonNull final FragmentManager fragmentManager,
+                   @NonNull final FragmentBookDetailsBinding vb,
+                   final boolean useLoanee,
+                   final boolean useToc) {
+                super(vb.getRoot());
+
+                mFm = fragmentManager;
+                mVb = vb;
+                mUseLoanee = useLoanee;
+                mUseToc = useToc;
+
                 mVbPub = FragmentBookDetailsMergePublicationSectionBinding
                         .bind(mVb.publicationSection);
-                mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
-
-                final SharedPreferences global = PreferenceManager
-                        .getDefaultSharedPreferences(itemView.getContext());
-                mUseLoanee = DBKey.isUsed(global, DBKey.KEY_LOANEE);
-                mUseToc = DBKey.isUsed(global, DBKey.BITMASK_TOC);
 
                 if (!mUseLoanee) {
                     mVb.lendTo.setVisibility(View.GONE);
                 }
 
-                // Anthology/TOC fields
                 if (mUseToc) {
-                    // show/hide the TOC as the user flips the switch.
-                    mVbToc.btnShowToc.setOnClickListener(v -> {
-                        // note that the button is explicitly (re)set.
-                        // If user clicks to fast it seems to get out of sync.
-                        if (mVbToc.toc.getVisibility() == View.VISIBLE) {
-                            // Force a scroll
-                            // A manual scroll seems not possible after the TOC closes?
-                            mVb.rootScroller.fullScroll(View.FOCUS_UP);
-                            mVbToc.toc.setVisibility(View.GONE);
-                            mVbToc.btnShowToc.setChecked(false);
-
-                        } else {
-                            mVbToc.toc.setVisibility(View.VISIBLE);
-                            mVbToc.btnShowToc.setChecked(true);
-                        }
+                    mVb.btnShowToc.setOnClickListener(v -> {
+                        final Fragment fragment = new TocFragment();
+                        mFm.beginTransaction()
+                           .setReorderingAllowed(true)
+                           .addToBackStack(TocFragment.TAG)
+                           .replace(R.id.main_fragment, fragment, TocFragment.TAG)
+                           .commit();
                     });
                 } else {
-                    mVbToc.lblAnthology.setVisibility(View.GONE);
-                    mVbToc.lblToc.setVisibility(View.GONE);
-                    mVbToc.toc.setVisibility(View.GONE);
-                    mVbToc.btnShowToc.setVisibility(View.GONE);
+                    mVb.btnShowToc.setVisibility(View.GONE);
                 }
             }
 
@@ -746,8 +726,28 @@ public class ShowBookFragment
                     onBindLoanee(book.getLoanee());
                 }
 
+                switch (book.getContentType()) {
+                    case Collection:
+                        mVb.lblAnthologyOrCollection.setVisibility(View.VISIBLE);
+                        mVb.lblAnthologyOrCollection.setText(R.string.lbl_collection);
+                        break;
+
+                    case Anthology:
+                        mVb.lblAnthologyOrCollection.setVisibility(View.VISIBLE);
+                        mVb.lblAnthologyOrCollection.setText(R.string.lbl_anthology);
+                        break;
+
+                    case Book:
+                    default:
+                        mVb.lblAnthologyOrCollection.setVisibility(View.GONE);
+                        break;
+                }
+
                 if (mUseToc) {
-                    onBindToc(book);
+                    final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                    mVb.btnShowToc.setVisibility(tocList.isEmpty() ? View.GONE : View.VISIBLE);
+                } else {
+                    mVb.btnShowToc.setVisibility(View.GONE);
                 }
 
                 fields.setVisibility(mVb.getRoot(), true, false);
@@ -793,68 +793,6 @@ public class ShowBookFragment
             }
 
             /**
-             * Show or hide the Table Of Content section.
-             *
-             * @param book to load from
-             */
-            private void onBindToc(@NonNull final Book book) {
-                final boolean isAnthology = book.isBitSet(DBKey.BITMASK_TOC,
-                                                          Book.TOC_MULTIPLE_WORKS);
-                mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-
-                mVbToc.toc.removeAllViews();
-                mVbToc.toc.setVisibility(View.GONE);
-                mVbToc.btnShowToc.setChecked(false);
-
-                final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
-
-                if (tocList.isEmpty()) {
-                    mVbToc.lblToc.setVisibility(View.GONE);
-                    mVbToc.btnShowToc.setVisibility(View.GONE);
-
-                } else {
-                    final Context context = itemView.getContext();
-
-                    for (final TocEntry tocEntry : tocList) {
-                        final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
-                                .inflate(mLayoutInflater, mVbToc.toc, false);
-
-                        rowVb.title.setText(tocEntry.getLabel(context));
-                        rowVb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
-
-                        final boolean isSet = tocEntry.getBookCount() > 1;
-                        if (isSet) {
-                            rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
-                            rowVb.cbxMultipleBooks.setOnClickListener(v -> {
-                                final String titles = tocEntry
-                                        .getBookTitles()
-                                        .stream()
-                                        .map(bt -> context
-                                                .getString(R.string.list_element, bt.second))
-                                        .collect(Collectors.joining("\n"));
-                                StandardDialogs.infoPopup(rowVb.cbxMultipleBooks, titles);
-                            });
-                        }
-
-                        final PartialDate date = tocEntry.getFirstPublicationDate();
-                        if (date.isEmpty()) {
-                            rowVb.year.setVisibility(View.GONE);
-                        } else {
-                            rowVb.year.setVisibility(View.VISIBLE);
-                            // show full date string (if available)
-                            rowVb.year.setText(context.getString(R.string.brackets,
-                                                                 date.getIsoString()));
-                        }
-                        mVbToc.toc.addView(rowVb.getRoot());
-                    }
-
-                    mVbToc.lblToc.setVisibility(View.VISIBLE);
-                    mVbToc.btnShowToc.setVisibility(View.VISIBLE);
-
-                }
-            }
-
-            /**
              * If all field Views are View.GONE, set the section View to View.GONE as well.
              * Otherwise, set the section View to View.VISIBLE.
              *
@@ -875,5 +813,4 @@ public class ShowBookFragment
             }
         }
     }
-
 }

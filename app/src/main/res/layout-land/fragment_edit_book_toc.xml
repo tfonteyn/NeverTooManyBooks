@@ -28,6 +28,37 @@
     android:layout_margin="@dimen/screen_border"
     >
 
+    <RadioGroup
+        android:id="@+id/rg_book_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/field_label_margin_top"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <RadioButton
+            android:id="@+id/rb_is_collection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_collection"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_is_anthology"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_anthology"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_is_neither"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/neither"
+            />
+    </RadioGroup>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_title"
         style="@style/TIL.EditText"
@@ -35,7 +66,7 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         app:layout_constraintEnd_toStartOf="@id/lbl_first_publication"
-        app:layout_constraintStart_toEndOf="@id/barrier_cbx_end"
+        app:layout_constraintStart_toEndOf="@id/rg_book_type"
         app:layout_constraintTop_toTopOf="parent"
         >
 
@@ -74,7 +105,7 @@
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
         app:layout_constraintEnd_toEndOf="@id/lbl_title"
-        app:layout_constraintStart_toEndOf="@id/barrier_cbx_end"
+        app:layout_constraintStart_toStartOf="@id/lbl_title"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
 
@@ -90,26 +121,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <CheckBox
-        android:id="@+id/cbx_is_anthology"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lbl_anthology"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_first_publication"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:checked="true"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_multiple_authors"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lbl_toc_multiple_authors"
-        app:layout_constraintBaseline_toBaselineOf="@id/btn_add"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:checked="true"
-        />
-
     <Button
         android:id="@+id/btn_add"
         style="@style/Button.Action.Submit"
@@ -120,19 +131,11 @@
         />
 
     <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_cbx_end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="end"
-        app:constraint_referenced_ids="cbx_is_anthology,cbx_multiple_authors"
-        />
-
-    <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_header_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="lbl_author, cbx_multiple_authors, btn_add"
+        app:constraint_referenced_ids="lbl_author,rg_book_type,btn_add"
         />
 
     <androidx.recyclerview.widget.RecyclerView

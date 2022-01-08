@@ -40,6 +40,9 @@ public class DetailScreenBookFields
             "style.details.show.thumbnail.1",
             };
 
+    /** Whether an available TOC should be shown initially or only on user demand. */
+    public static final String PK_SHOW_TOC_BY_DEFAULT = "style.details.show.toc";
+
     /**
      * Constructor.
      *
@@ -56,6 +59,10 @@ public class DetailScreenBookFields
                                   PK_COVER[cIdx],
                                   DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])));
         }
+
+        addField(new PBoolean(isPersistent, persistenceLayer,
+                              PK_SHOW_TOC_BY_DEFAULT,
+                              DBKey.isUsed(global, DBKey.BITMASK_TOC)));
     }
 
     /**

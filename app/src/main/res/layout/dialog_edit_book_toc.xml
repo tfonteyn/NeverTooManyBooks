@@ -58,10 +58,10 @@
                 >
 
                 <CheckBox
-                    android:id="@+id/cbx_multiple_authors"
+                    android:id="@+id/cbx_is_anthology"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/lbl_toc_multiple_authors"
+                    android:text="@string/lbl_anthology"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -74,7 +74,7 @@
                     android:hint="@string/lbl_author"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
+                    app:layout_constraintTop_toBottomOf="@id/cbx_is_anthology"
                     >
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView

@@ -289,6 +289,8 @@ public class LastDodoSearchEngine
             }
         }
 
+        // post-process all found data.
+
         // It seems the site only lists a single number, although a book can be in several
         // Series.
         if (tmpSeriesNr != null && !tmpSeriesNr.isEmpty()) {
@@ -308,9 +310,14 @@ public class LastDodoSearchEngine
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-            bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
+            if (TocEntry.hasMultipleAuthors(toc)) {
+                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+            } else {
+                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+            }
         }
 
+        // store accumulated ArrayList's *after* we parsed the TOC
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
@@ -325,6 +332,8 @@ public class LastDodoSearchEngine
         if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
             bookData.putString(DBKey.KEY_LANGUAGE, "nld");
         }
+
+
 
         if (isCancelled()) {
             return;

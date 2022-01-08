@@ -66,7 +66,7 @@ public class BookAsWork
     }
 
     @Override
-    public char getType() {
+    public char getWorkType() {
         return AuthorWork.TYPE_BOOK;
     }
 

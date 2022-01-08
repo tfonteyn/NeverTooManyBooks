@@ -589,7 +589,7 @@ public class OpenLibrarySearchEngine
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
+                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
                 }
             }
         }

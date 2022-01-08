@@ -43,7 +43,7 @@ public interface AuthorWork {
      *
      * @return type
      */
-    char getType();
+    char getWorkType();
 
     /**
      * Get the database row id of the entity.

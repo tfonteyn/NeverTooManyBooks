@@ -116,8 +116,8 @@ public class IsfdbSearchEngine
     /** But to encode the search url (a GET), the charset must be 8859-1. */
     @SuppressWarnings("WeakerAccess")
     static final String CHARSET_ENCODE_URL = "iso-8859-1";
-    /** Map ISFDB book types to {@link Book.TocBits}. */
-    static final Map<String, Integer> TYPE_MAP = new HashMap<>();
+    /** Map ISFDB book types to {@link Book.ContentType}. */
+    static final Map<String, Book.ContentType> TYPE_MAP = new HashMap<>();
     /** Preferences prefix. */
     private static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
@@ -191,29 +191,28 @@ public class IsfdbSearchEngine
      * as OMNIBUS publications
      *
      * Put all these together into the Anthology bucket.
-     * After processing TOC_MULTIPLE_AUTHORS is added when needed.
      *
      * Reminder: a "Digest" is a format, not a type.
      */
     static {
         // multiple works, one author
-        TYPE_MAP.put("coll", Book.TOC_MULTIPLE_WORKS);
-        TYPE_MAP.put("COLLECTION", Book.TOC_MULTIPLE_WORKS);
+        TYPE_MAP.put("coll", Book.ContentType.Collection);
+        TYPE_MAP.put("COLLECTION", Book.ContentType.Collection);
 
         // multiple works, multiple authors
-        TYPE_MAP.put("anth", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("ANTHOLOGY", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("anth", Book.ContentType.Anthology);
+        TYPE_MAP.put("ANTHOLOGY", Book.ContentType.Anthology);
 
         // multiple works that have previously been published independently
-        TYPE_MAP.put("omni", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
-        TYPE_MAP.put("OMNIBUS", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        TYPE_MAP.put("omni", Book.ContentType.Collection);
+        TYPE_MAP.put("OMNIBUS", Book.ContentType.Collection);
 
-        // we assume magazines have multiple authors.
-        TYPE_MAP.put("MAGAZINE", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
+        // we assume magazines have multiple authors; i.e. they are considered anthologies
+        TYPE_MAP.put("MAGAZINE", Book.ContentType.Anthology);
 
         // others, treated as a standard book.
-        // TYPE_MAP.put("novel", 0);
-        // TYPE_MAP.put("NOVEL", 0);
+        // TYPE_MAP.put("novel", Book.ContentType.Book);
+        // TYPE_MAP.put("NOVEL", Book.ContentType.Book);
         //
         // TYPE_MAP.put("chap", 0);
         // TYPE_MAP.put("CHAPBOOK", 0);
@@ -737,9 +736,9 @@ public class IsfdbSearchEngine
                         // <li><b>Type:</b> COLLECTION
                         tmpString = nextSibling.toString().trim();
                         bookData.putString(SiteField.BOOK_TYPE, tmpString);
-                        final Integer type = TYPE_MAP.get(tmpString);
+                        final Book.ContentType type = TYPE_MAP.get(tmpString);
                         if (type != null) {
-                            bookData.putLong(DBKey.BITMASK_TOC, type);
+                            bookData.putLong(DBKey.BITMASK_TOC, type.value);
                         }
                     }
                 } else if ("Cover:".equalsIgnoreCase(fieldName)) {
@@ -806,17 +805,24 @@ public class IsfdbSearchEngine
         //ENHANCE: the site is adding language to the data; revisit. For now, default to English
         bookData.putString(DBKey.KEY_LANGUAGE, "eng");
 
+
+        // post-process all found data.
+
         final ArrayList<TocEntry> toc = parseToc(context, document);
         if (!toc.isEmpty()) {
             // We always store the toc even if there is only a single entry.
             // ISFDB provides the *original* publication year in the toc which we want to preserve.
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
             if (toc.size() > 1) {
-                bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
+                if (TocEntry.hasMultipleAuthors(toc)) {
+                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+                } else {
+                    bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+                }
             }
         }
 
-        // store accumulated ArrayList's *after* we got the TOC
+        // store accumulated ArrayList's *after* we parsed the TOC
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
@@ -829,31 +835,16 @@ public class IsfdbSearchEngine
 
         checkForSeriesNameInTitle(bookData);
 
-        if (isCancelled()) {
-            return;
-        }
-
-        // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
-        if (!toc.isEmpty()) {
-            @Book.TocBits
-            long type = bookData.getLong(DBKey.BITMASK_TOC);
-            if (TocEntry.hasMultipleAuthors(toc)) {
-                type |= Book.TOC_MULTIPLE_AUTHORS;
-            }
-            bookData.putLong(DBKey.BITMASK_TOC, type);
-        }
-
         // try to deduce the first publication date from the TOC
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            tmpString = ParseUtils
-                    .digits(toc.get(0).getFirstPublicationDate().getIsoString());
+            tmpString = ParseUtils.digits(toc.get(0).getFirstPublicationDate().getIsoString());
             if (!tmpString.isEmpty()) {
                 bookData.putString(DBKey.DATE_FIRST_PUBLICATION, tmpString);
             }
         } else if (toc.size() > 1) {
-            // we gamble and take what we found in the TOC
+            // we gamble and take what we found while parsing the TOC (first entry with a year)
             if (mFirstPublicationYear != null) {
                 bookData.putString(DBKey.DATE_FIRST_PUBLICATION, mFirstPublicationYear);
             }

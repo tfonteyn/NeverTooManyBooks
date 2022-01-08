@@ -477,10 +477,14 @@ public class StripInfoSearchEngine
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-            bookData.putLong(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS);
+            if (TocEntry.hasMultipleAuthors(toc)) {
+                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Anthology.value);
+            } else {
+                bookData.putLong(DBKey.BITMASK_TOC, Book.ContentType.Collection.value);
+            }
         }
 
-        // store accumulated ArrayList's *after* we got the TOC
+        // store accumulated ArrayList's *after* we parsed the TOC
         if (!mAuthors.isEmpty()) {
             bookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
@@ -494,20 +498,6 @@ public class StripInfoSearchEngine
         // It's extremely unlikely, but should the language be missing, add dutch.
         if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
             bookData.putString(DBKey.KEY_LANGUAGE, "nld");
-        }
-
-        if (isCancelled()) {
-            return;
-        }
-
-        // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
-        if (toc != null && !toc.isEmpty()) {
-            @Book.TocBits
-            long type = bookData.getLong(DBKey.BITMASK_TOC);
-            if (TocEntry.hasMultipleAuthors(toc)) {
-                type |= Book.TOC_MULTIPLE_AUTHORS;
-            }
-            bookData.putLong(DBKey.BITMASK_TOC, type);
         }
 
         if (isCancelled()) {

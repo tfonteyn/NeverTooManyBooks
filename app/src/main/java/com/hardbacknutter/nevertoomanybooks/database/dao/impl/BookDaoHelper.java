@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -46,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -103,7 +101,16 @@ public class BookDaoHelper {
             mBook.putString(DBKey.KEY_TITLE_OB, SqlEncode
                     .orderByColumn(obTitle, mBookLocale));
         }
-        processBitmask();
+
+        // store only valid bits. The 'get' will normalise any incorrect 'long' value
+        if (mBook.contains(DBKey.BITMASK_TOC)) {
+            mBook.setContentType(mBook.getContentType());
+        }
+
+        if (mBook.contains(DBKey.BITMASK_EDITION)) {
+            mBook.putLong(DBKey.BITMASK_EDITION,
+                          mBook.getLong(DBKey.BITMASK_EDITION) & Book.Edition.BITMASK_ALL_BITS);
+        }
 
         // cleanup/build all price related fields
         processPrice(DBKey.PRICE_LISTED);
@@ -119,27 +126,6 @@ public class BookDaoHelper {
         processNullsAndBlanks();
 
         return this;
-    }
-
-    private void processBitmask() {
-        // Handle TOC_BITMASK only, no handling of actual titles here,
-        // but making sure TOC_MULTIPLE_AUTHORS is correct.
-        final ArrayList<TocEntry> tocEntries = mBook.getParcelableArrayList(Book.BKEY_TOC_LIST);
-        if (!tocEntries.isEmpty()) {
-            @Book.TocBits
-            long type = mBook.getLong(DBKey.BITMASK_TOC);
-            if (TocEntry.hasMultipleAuthors(tocEntries)) {
-                type |= Book.TOC_MULTIPLE_AUTHORS;
-            }
-            mBook.putLong(DBKey.BITMASK_TOC, type);
-        }
-
-        // make sure we only store valid bits
-        if (mBook.contains(DBKey.BITMASK_EDITION)) {
-            final long validBits = mBook.getLong(DBKey.BITMASK_EDITION)
-                                   & Book.Edition.BITMASK_ALL;
-            mBook.putLong(DBKey.BITMASK_EDITION, validBits);
-        }
     }
 
     /**

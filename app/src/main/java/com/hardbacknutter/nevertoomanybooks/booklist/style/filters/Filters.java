@@ -114,7 +114,7 @@ public class Filters {
                 isPersistent, persistenceLayer, R.string.lbl_edition, PK_FILTER_EDITION_BITMASK,
                 new DomainExpression(DOM_BOOK_EDITION_BITMASK,
                                      TBL_BOOKS.dot(DBKey.BITMASK_EDITION)),
-                Book.Edition.BITMASK_ALL));
+                Book.Edition.BITMASK_ALL_BITS));
 
         //URGENT: filtering on bookshelves:
         // this and related code all works fine, but is clashing with how

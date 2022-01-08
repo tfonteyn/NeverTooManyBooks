@@ -110,29 +110,45 @@
             tools:text="@sample/data.json/book/title"
             />
 
+        <ImageView
+            android:id="@+id/icon_read"
+            style="@style/Flag.Read"
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/title"
+            tools:ignore="ContentDescription"
+            />
+
         <RatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Field.RatingBar.Indicator"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <ImageView
-            android:id="@+id/icon_read"
-            style="@style/Flag.Read"
-            app:layout_constraintEnd_toEndOf="parent"
+        <TextView
+            android:id="@+id/lbl_anthology_or_collection"
+            style="@style/Field.Anthology"
+            android:text="@string/lbl_anthology"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/rating"
+            />
+
+        <Button
+            android:id="@+id/btn_show_toc"
+            style="@style/Button.Action.Open"
+            android:text="@string/btn_show_toc"
+            app:layout_constraintEnd_toEndOf="@id/icon_read"
             app:layout_constraintTop_toBottomOf="@id/title"
-            tools:ignore="ContentDescription"
+            tools:visibility="visible"
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_read_bottom"
+            android:id="@+id/barrier_rating_btn_toc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,icon_read"
+            app:constraint_referenced_ids="rating,lbl_anthology_or_collection,btn_show_toc"
             />
 
         <TextView
@@ -140,7 +156,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_btn_toc"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -213,18 +229,6 @@
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/series_list/title_nr"
             />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/toc_section"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
-            >
-
-            <include layout="@layout/fragment_book_details_merge_toc_section" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/lbl_bookshelves"

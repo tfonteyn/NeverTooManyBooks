@@ -92,24 +92,6 @@ public class Book
         implements ItemWithTitle, AuthorWork {
 
     /**
-     * {@link DBKey#BITMASK_TOC}
-     * <p>
-     * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
-     * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
-     * <p>
-     * or in other words:
-     * 0b000 = contains one 'work' and is written by a single author.
-     * 0b001 = multiple 'work' and is written by a single author (collection from ONE author)
-     * 0b010 = multiple authors cooperating on a single 'work'
-     * 0b011 = multiple authors and multiple 'work's (it's an anthology from multiple author)
-     * <p>
-     * Bit 0b010 should not actually occur, as this is a simple case of
-     * collaborating authors on a single 'work' which is covered without the use of this field.
-     */
-    public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
-    public static final int TOC_MULTIPLE_WORKS = 1;
-    public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
-    /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
@@ -603,6 +585,13 @@ public class Book
         }
     }
 
+    public ContentType getContentType() {
+        return ContentType.getType(getLong(DBKey.BITMASK_TOC));
+    }
+
+    public void setContentType(@NonNull final ContentType type) {
+        putLong(DBKey.BITMASK_TOC, type.value);
+    }
 
     /**
      * Get the name of the loanee (if any).
@@ -626,11 +615,6 @@ public class Book
             return loanee;
         }
     }
-
-    public boolean isAvailable() {
-        return getLoanee().isEmpty();
-    }
-
 
     /**
      * Toggle the read-status for this book.
@@ -1158,14 +1142,56 @@ public class Book
     }
 
     @Override
-    public char getType() {
+    public char getWorkType() {
         return AuthorWork.TYPE_BOOK;
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
-    public @interface TocBits {
+    /**
+     * Database representation of column {@link DBKey#BITMASK_TOC}
+     * <p>
+     * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
+     * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
+     * <p>
+     * or in other words:
+     * 0b000 = contains one 'work' and is written by a single author.
+     * 0b001 = multiple 'work' and is written by a single author (collection from ONE author)
+     * 0b010 = multiple authors cooperating on a single 'work'
+     * 0b011 = multiple authors and multiple 'work's (it's an anthology from multiple author)
+     * <p>
+     * Bit 0b010 should not actually occur, as this is a simple case of
+     * collaborating authors on a single 'work' which is covered without the use of this field.
+     * <p>
+     * It's an enum because there are only 3 possible bit combinations.
+     * The db field should probably just be an int instead of a bitmask.
+     */
+    public enum ContentType {
+        /** Single work. One or more authors. */
+        Book(0b000),
+        /** Multiple works, all by a single Author. */
+        Collection(0b001),
+        /** Multiple works, multiple Authors. */
+        Anthology(0b011);
 
+        private static final int BIT_MULTIPLE_WORKS = 1;
+        private static final int BIT_MULTIPLE_AUTHORS = 1 << 1;
+
+        public final int value;
+
+        ContentType(final int value) {
+            this.value = value;
+        }
+
+        public static ContentType getType(final long value) {
+            if ((value & BIT_MULTIPLE_WORKS) == 0) {
+                return Book;
+            }
+
+            if ((value & BIT_MULTIPLE_AUTHORS) == 0) {
+                return Collection;
+            } else {
+                return Anthology;
+            }
+        }
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -1174,23 +1200,23 @@ public class Book
 
     }
 
+    /**
+     * Database representation of column {@link DBKey#BITMASK_EDITION}.
+     * <p>
+     * 0b00000000 = a generic edition, or we simply don't know what edition it is.
+     * 0b00000001 = first edition
+     * 0b00000010 = first impression
+     * 0b00000100 = limited edition
+     * 0b00001000 = slipcase
+     * 0b00010000 = signed
+     * <p>
+     * 0b10000000 = book club
+     * <p>
+     * NEWTHINGS: edition: add bit flag and add to mask
+     * Never change the bit value!
+     */
     public static final class Edition {
 
-        /*
-         * {@link DBDefinitions#KEY_EDITION_BITMASK}.
-         * <p>
-         * 0%00000000 = a generic edition, or we simply don't know what edition it is.
-         * 0%00000001 = first edition
-         * 0%00000010 = first impression
-         * 0%00000100 = limited edition
-         * 0%00001000 = slipcase
-         * 0%00010000 = signed
-         * <p>
-         * 0%10000000 = book club
-         * <p>
-         * NEWTHINGS: edition: add bit flag and add to mask
-         * Never change the bit value!
-         */
         /** first edition ever of this work/content/story. */
         public static final int FIRST = 1;
         /** First printing of 'this' edition. */
@@ -1209,12 +1235,12 @@ public class Book
         @VisibleForTesting
         public static final int BOOK_CLUB = 1 << 7;
         /** Bitmask for all editions. Bit 5/6 not in use for now. */
-        public static final int BITMASK_ALL = FIRST
-                                              | FIRST_IMPRESSION
-                                              | LIMITED
-                                              | SLIPCASE
-                                              | SIGNED
-                                              | BOOK_CLUB;
+        public static final int BITMASK_ALL_BITS = FIRST
+                                                   | FIRST_IMPRESSION
+                                                   | LIMITED
+                                                   | SLIPCASE
+                                                   | SIGNED
+                                                   | BOOK_CLUB;
 
         /** mapping the edition bit to a resource string for displaying. Ordered. */
         private static final Map<Integer, Integer> ALL = new LinkedHashMap<>();
@@ -1222,7 +1248,7 @@ public class Book
         /*
          * NEWTHINGS: edition: add label for the type
          *
-         * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
+         * This is a LinkedHashMap, the order below is the order these will show up on the screen.
          */
         static {
             ALL.put(FIRST, R.string.lbl_edition_first_edition);
@@ -1237,13 +1263,19 @@ public class Book
         private Edition() {
         }
 
+        /**
+         * Retrieve a <strong>copy</strong> of the ALL map,
+         * with the string resource id as the user Locale actual String.
+         *
+         * @param context Current context
+         *
+         * @return map
+         */
         @NonNull
         public static Map<Integer, String> getEditions(@NonNull final Context context) {
-            final Map<Integer, String> map = new LinkedHashMap<>();
-            for (final Map.Entry<Integer, Integer> entry : ALL.entrySet()) {
-                map.put(entry.getKey(), context.getString(entry.getValue()));
-            }
-            return map;
+            final Map<Integer, String> result = new LinkedHashMap<>();
+            ALL.forEach((key, value) -> result.put(key, context.getString(value)));
+            return result;
         }
     }
 }

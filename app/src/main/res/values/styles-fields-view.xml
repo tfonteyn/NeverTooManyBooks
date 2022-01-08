@@ -99,20 +99,28 @@
         <item name="android:layout_marginEnd">@dimen/field_margin_start</item>
     </style>
 
-    <style name="Field.RatingBar" parent="Widget.AppCompat.RatingBar.Small">
+    <style name="Field.RatingBar.Small" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:numStars">5</item>
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
 
-    <!-- The switch on the book details screen to show/hide the TOC. -->
-    <style name="Field.ShowOrHideToc" parent="Widget.Material3.CompoundButton.Switch">
+    <style name="Field.RatingBar.Indicator" parent="Widget.AppCompat.RatingBar.Indicator">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
-        <item name="android:buttonTint">@android:color/transparent</item>
-        <item name="android:contentDescription">@string/lbl_table_of_content</item>
-        <item name="android:visibility">gone</item>
+        <item name="android:numStars">5</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
+
+    <style name="Field.Anthology" parent="Label">
+        <item name="android:drawablePadding">@dimen/drawable_padding_end</item>
+        <item name="drawableEndCompat">@drawable/ic_baseline_check_24</item>
+        <item name="drawableTint">?attr/colorSecondary</item>
+    </style>
+
 </resources>

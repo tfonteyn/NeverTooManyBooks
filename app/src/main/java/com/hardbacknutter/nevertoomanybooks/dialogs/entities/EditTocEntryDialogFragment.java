@@ -121,10 +121,12 @@ public class EditTocEntryDialogFragment
         mVb.toolbar.setSubtitle(mBookTitle);
 
         mVb.title.setText(mTitle);
-        mVb.firstPublication.setText(String.valueOf(mFirstPublicationDate.getYearValue()));
+        if (!mFirstPublicationDate.isEmpty()) {
+            mVb.firstPublication.setText(String.valueOf(mFirstPublicationDate.getYearValue()));
+        }
 
         updateMultiAuthor(mHasMultipleAuthors);
-        mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
+        mVb.cbxIsAnthology.setOnCheckedChangeListener(
                 (v, isChecked) -> updateMultiAuthor(isChecked));
     }
 
@@ -141,7 +143,8 @@ public class EditTocEntryDialogFragment
 
     private void updateMultiAuthor(final boolean isChecked) {
         mHasMultipleAuthors = isChecked;
-        mVb.cbxMultipleAuthors.setChecked(mHasMultipleAuthors);
+        mVb.cbxIsAnthology.setChecked(mHasMultipleAuthors);
+
         if (mHasMultipleAuthors) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions

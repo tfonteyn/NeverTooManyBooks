@@ -334,9 +334,9 @@ class IsfdbPublicationListHandler
                 case XML_TYPE: {
                     final String tmpString = mBuilder.toString().trim();
                     addIfNotPresent(IsfdbSearchEngine.SiteField.BOOK_TYPE, tmpString);
-                    final Integer type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
+                    final Book.ContentType type = IsfdbSearchEngine.TYPE_MAP.get(tmpString);
                     if (type != null) {
-                        mPublicationData.putLong(DBKey.BITMASK_TOC, type);
+                        mPublicationData.putLong(DBKey.BITMASK_TOC, type.value);
                     }
                     break;
                 }

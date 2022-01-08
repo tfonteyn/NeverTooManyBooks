@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -80,7 +81,7 @@ public abstract class BookFields {
      * @return {@code true} if in use
      */
     public boolean isShowField(@NonNull final SharedPreferences global,
-                               @ListScreenBookFields.Key @NonNull final String key) {
+                               @Key @NonNull final String key) {
 
         // Disabled in the Global style overrules the local style
         if (!global.getBoolean(key, true)) {
@@ -100,7 +101,7 @@ public abstract class BookFields {
      * @param key  for the field
      * @param show value to set
      */
-    void setShowField(@ListScreenBookFields.Key @NonNull final String key,
+    void setShowField(@Key @NonNull final String key,
                       final boolean show) {
         //noinspection ConstantConditions
         mFields.get(key).set(show);
@@ -145,4 +146,19 @@ public abstract class BookFields {
         return "mFields=" + mFields;
     }
 
+    @StringDef({ListScreenBookFields.PK_COVERS,
+                ListScreenBookFields.PK_AUTHOR,
+                ListScreenBookFields.PK_PUBLISHER,
+                ListScreenBookFields.PK_PUB_DATE,
+                ListScreenBookFields.PK_ISBN,
+                ListScreenBookFields.PK_FORMAT,
+                ListScreenBookFields.PK_LOCATION,
+                ListScreenBookFields.PK_RATING,
+                ListScreenBookFields.PK_BOOKSHELVES,
+//                DetailScreenBookFields.PK_COVER[0],
+//                DetailScreenBookFields.PK_COVER[1],
+                DetailScreenBookFields.PK_SHOW_TOC_BY_DEFAULT})
+    @interface Key {
+
+    }
 }

@@ -254,6 +254,11 @@
         <item name="android:insetRight">4dp</item>
     </style>
 
+    <style name="Button.Action.Open" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- A button which will take the user to some external website. -->
     <style name="Button.Url" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:layout_width">wrap_content</item>

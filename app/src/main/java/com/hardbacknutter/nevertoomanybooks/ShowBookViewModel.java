@@ -32,8 +32,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -195,6 +198,20 @@ public class ShowBookViewModel
     }
 
     /**
+     * Get the currently displayed book.
+     *
+     * @return current book
+     */
+    @NonNull
+    public Book getCurrentBook() {
+        // Sanity check
+        if (mCurrentBook == null) {
+            mCurrentBook = getBookAtPosition(0);
+        }
+        return Objects.requireNonNull(mCurrentBook);
+    }
+
+    /**
      * Check if this book available in our library; or if it was lend out.
      *
      * @param position pager position to get the book for
@@ -284,6 +301,22 @@ public class ShowBookViewModel
         } else {
             // let the style decide
             return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
+        }
+    }
+
+    boolean isShowTocByDefault(@NonNull final SharedPreferences global) {
+        // Globally disabled overrules style setting
+        if (!DBKey.isUsed(global, DBKey.BITMASK_TOC)) {
+            return false;
+        }
+
+        if (mStyle == null) {
+            // there is no style and the global preference was true.
+            return true;
+        } else {
+            // let the style decide
+            return mStyle.getDetailScreenBookFields()
+                         .isShowField(global, DetailScreenBookFields.PK_SHOW_TOC_BY_DEFAULT);
         }
     }
 }

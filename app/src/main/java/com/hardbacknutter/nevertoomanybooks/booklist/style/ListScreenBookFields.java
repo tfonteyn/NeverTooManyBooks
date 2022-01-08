@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
 import androidx.core.math.MathUtils;
 
 import java.util.ArrayList;
@@ -243,16 +242,4 @@ public class ListScreenBookFields
                + '}';
     }
 
-    @StringDef({PK_COVERS,
-                PK_AUTHOR,
-                PK_PUBLISHER,
-                PK_PUB_DATE,
-                PK_ISBN,
-                PK_FORMAT,
-                PK_LOCATION,
-                PK_RATING,
-                PK_BOOKSHELVES})
-    @interface Key {
-
-    }
 }

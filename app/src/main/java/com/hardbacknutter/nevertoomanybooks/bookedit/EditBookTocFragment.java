@@ -131,8 +131,8 @@ public class EditBookTocFragment
             new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
-                                     final boolean hasMultipleAuthors) {
-                    onEntryUpdated(tocEntry, hasMultipleAuthors);
+                                     final boolean isAnthology) {
+                    onEntryUpdated(tocEntry, isAnthology);
                 }
             };
 
@@ -140,9 +140,9 @@ public class EditBookTocFragment
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
                 @Override
-                public void onResult(@Book.TocBits final long tocBitMask,
+                public void onResult(@NonNull final Book.ContentType contentType,
                                      @NonNull final List<TocEntry> tocEntries) {
-                    onIsfdbDataConfirmed(tocBitMask, tocEntries);
+                    onIsfdbDataConfirmed(contentType, tocEntries);
                 }
 
                 @Override
@@ -230,9 +230,19 @@ public class EditBookTocFragment
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
-        mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
-                (v, isChecked) -> updateMultiAuthor(isChecked));
-        // adding a new entry
+        mVb.rbIsCollection.setOnClickListener(v -> {
+            mVm.getBook().setStage(EntityStage.Stage.Dirty);
+            updateAnthology();
+        });
+        mVb.rbIsAnthology.setOnClickListener(v -> {
+            mVm.getBook().setStage(EntityStage.Stage.Dirty);
+            updateAnthology();
+        });
+        mVb.rbIsNeither.setOnClickListener(v -> {
+            mVm.getBook().setStage(EntityStage.Stage.Dirty);
+            updateAnthology();
+        });
+
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
         final Resources res = getResources();
@@ -255,8 +265,11 @@ public class EditBookTocFragment
     }
 
     private void onEntryUpdated(@NonNull final TocEntry tocEntry,
-                                final boolean hasMultipleAuthors) {
-        updateMultiAuthor(hasMultipleAuthors);
+                                final boolean isAnthology) {
+        if (isAnthology) {
+            mVb.rbIsAnthology.setChecked(true);
+        }
+        updateAnthology();
 
         if (mEditPosition == null) {
             // It's a new entry for the list.
@@ -280,22 +293,43 @@ public class EditBookTocFragment
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
-        populateTocBits(book);
+        populateTocBits(book.getContentType());
 
         // hide unwanted fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
     }
 
+    private void populateTocBits(@NonNull final Book.ContentType contentType) {
+        switch (contentType) {
+            case Collection:
+                mVb.rbIsCollection.setChecked(true);
+                break;
+
+            case Anthology:
+                mVb.rbIsAnthology.setChecked(true);
+                break;
+
+            case Book:
+            default:
+                mVb.rbIsNeither.setChecked(true);
+                break;
+        }
+
+        updateAnthology();
+    }
+
     @Override
     public void onSaveFields(@NonNull final Book book) {
         super.onSaveFields(book);
 
-        // Combine the separate checkboxes into the single field.
-        book.setBit(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_WORKS,
-                    mVb.cbxIsAnthology.isChecked());
-        book.setBit(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_AUTHORS,
-                    mVb.cbxMultipleAuthors.isChecked());
+        if (mVb.rbIsCollection.isChecked()) {
+            book.setContentType(Book.ContentType.Collection);
+        } else if (mVb.rbIsAnthology.isChecked()) {
+            book.setContentType(Book.ContentType.Anthology);
+        } else {
+            book.setContentType(Book.ContentType.Book);
+        }
     }
 
     @Override
@@ -378,7 +412,7 @@ public class EditBookTocFragment
         mEditPosition = position;
 
         final TocEntry tocEntry = mList.get(position);
-        mEditTocEntryLauncher.launch(mVm.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked());
+        mEditTocEntryLauncher.launch(mVm.getBook(), tocEntry, mVb.rbIsAnthology.isChecked());
     }
 
     /**
@@ -404,15 +438,12 @@ public class EditBookTocFragment
         }
     }
 
-    private void populateTocBits(@NonNull final Book book) {
-        mVb.cbxIsAnthology.setChecked(book.isBitSet(DBKey.BITMASK_TOC,
-                                                    Book.TOC_MULTIPLE_WORKS));
-        updateMultiAuthor(book.isBitSet(DBKey.BITMASK_TOC, Book.TOC_MULTIPLE_AUTHORS));
-    }
-
-    private void updateMultiAuthor(final boolean isChecked) {
-        mVb.cbxMultipleAuthors.setChecked(isChecked);
-        if (isChecked) {
+    /**
+     * If the radiobutton 'anthology' is on, then we need to show the Author field.
+     * Otherwise, hide it.
+     */
+    private void updateAnthology() {
+        if (mVb.rbIsAnthology.isChecked()) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new ExtArrayAdapter<>(
@@ -450,7 +481,7 @@ public class EditBookTocFragment
         }
 
         final Author author;
-        if (mVb.cbxMultipleAuthors.isChecked()) {
+        if (mVb.rbIsAnthology.isChecked()) {
             author = Author.from(mVb.author.getText().toString().trim());
         } else {
             //noinspection ConstantConditions
@@ -479,7 +510,7 @@ public class EditBookTocFragment
         } else {
             mList.add(tocEntry);
             // clear the form for next entry and scroll to the new item
-            if (mVb.cbxMultipleAuthors.isChecked()) {
+            if (mVb.rbIsAnthology.isChecked()) {
                 final Author author = mVm.getPrimaryAuthor(getContext());
                 mVb.author.setText(author.getLabel(getContext()));
                 mVb.author.selectAll();
@@ -546,12 +577,12 @@ public class EditBookTocFragment
         }
     }
 
-    private void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
+    private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
-        if (tocBitMask != 0) {
+        if (contentType != Book.ContentType.Book) {
             final Book book = mVm.getBook();
-            book.putLong(DBKey.BITMASK_TOC, tocBitMask);
-            populateTocBits(book);
+            book.setContentType(contentType);
+            populateTocBits(book.getContentType());
         }
 
         // append the new data
@@ -589,8 +620,7 @@ public class EditBookTocFragment
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
         private boolean mHasOtherEditions;
-        @Book.TocBits
-        private long mTocBitMask;
+        private Book.ContentType mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
         @Override
@@ -603,7 +633,7 @@ public class EditBookTocFragment
             mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                  "BKEY_TOC_LIST");
 
-            mTocBitMask = args.getLong(DBKey.BITMASK_TOC);
+            mTocBitMask = Book.ContentType.getType(args.getLong(DBKey.BITMASK_TOC));
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
@@ -663,10 +693,10 @@ public class EditBookTocFragment
 
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
-                                  @Book.TocBits final long tocBitMask,
+                                  @NonNull final Book.ContentType tocBitMask,
                                   @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
-                result.putLong(TOC_BIT_MASK, tocBitMask);
+                result.putLong(TOC_BIT_MASK, tocBitMask.value);
                 result.putParcelableArrayList(TOC_LIST, tocEntries);
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
@@ -701,7 +731,7 @@ public class EditBookTocFragment
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     searchNextEdition();
                 } else {
-                    onResult(result.getLong(TOC_BIT_MASK),
+                    onResult(Book.ContentType.getType(result.getLong(TOC_BIT_MASK)),
                              Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST)));
                 }
             }
@@ -709,10 +739,10 @@ public class EditBookTocFragment
             /**
              * Callback handler.
              *
-             * @param tocBitMask bit flags
-             * @param tocEntries the list of entries
+             * @param contentType bit flags
+             * @param tocEntries  the list of entries
              */
-            public abstract void onResult(@Book.TocBits long tocBitMask,
+            public abstract void onResult(@NonNull final Book.ContentType contentType,
                                           @NonNull List<TocEntry> tocEntries);
 
             /**

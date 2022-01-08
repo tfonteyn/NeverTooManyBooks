@@ -439,7 +439,7 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mVm.getWorks().get(position).getType();
+            return mVm.getWorks().get(position).getWorkType();
         }
 
         @Override

@@ -86,8 +86,7 @@ class IsfdbBookHandlerTest
         assertEquals("159", mRawData.getString(DBKey.KEY_PAGES));
         assertEquals("pb", mRawData.getString(DBKey.KEY_FORMAT));
         assertEquals("COLLECTION", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
-        assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
-                     mRawData.getLong(DBKey.BITMASK_TOC));
+        assertEquals(Book.ContentType.Anthology.value, mRawData.getLong(DBKey.BITMASK_TOC));
 
         assertEquals("13665857", mRawData.getString(DBKey.SID_OCLC));
 

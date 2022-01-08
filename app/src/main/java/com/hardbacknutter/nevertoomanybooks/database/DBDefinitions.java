@@ -243,7 +243,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_UUID;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_EDITION_BITMASK;
-    /** {@link #TBL_BOOKS}. See {@link Book#TOC_SINGLE_AUTHOR_SINGLE_WORK}. */
+    /** {@link #TBL_BOOKS}. See {@link Book.ContentType}. */
     public static final Domain DOM_BOOK_TOC_BITMASK;
     /**
      * {@link #TBL_BOOKS}.
@@ -715,7 +715,7 @@ public final class DBDefinitions {
         DOM_BOOK_TOC_BITMASK =
                 new Domain.Builder(DBKey.BITMASK_TOC, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK)
+                        .withDefault(Book.ContentType.Book.value)
                         .build();
 
         /* ======================================================================================

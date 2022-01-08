@@ -53,7 +53,7 @@ class BitmaskFilterTest
                 Filters.PK_FILTER_EDITION_BITMASK,
                 new DomainExpression(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                                      DBDefinitions.TBL_BOOKS.dot(DBKey.BITMASK_EDITION)),
-                Book.Edition.BITMASK_ALL);
+                Book.Edition.BITMASK_ALL_BITS);
 
         p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);
         assertTrue(p1.isActive(mContext));

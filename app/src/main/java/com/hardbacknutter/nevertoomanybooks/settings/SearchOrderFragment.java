@@ -69,7 +69,6 @@ public class SearchOrderFragment
     private ItemTouchHelper mItemTouchHelper;
 
     /* The View model. */
-    @SuppressWarnings("FieldCanBeLocal")
     private SearchAdminViewModel mVm;
 
     /** View Binding. */

@@ -1629,6 +1629,10 @@
     <string name="lbl_story_in_multiple_books">This story is present in multiple books:\n\n%1s</string>
     <string name="lbl_book_detail_screen">Book detail screen</string>
     <string name="lbl_show_toc_by_default">Show Table Of Content by default</string>
+    <string name="btn_show_toc">TOC</string>
+    <string name="btn_show_toc_long">Show Table Of Content</string>
+    <string name="lbl_collection">Collection</string>
+    <string name="neither">Neither</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
