@@ -698,16 +698,24 @@ public class ShowBookFragment
                 }
 
                 if (mUseToc) {
-                    mVb.btnShowToc.setOnClickListener(v -> {
-                        final Fragment fragment = new TocFragment();
-                        mFm.beginTransaction()
-                           .setReorderingAllowed(true)
-                           .addToBackStack(TocFragment.TAG)
-                           .replace(R.id.main_fragment, fragment, TocFragment.TAG)
-                           .commit();
-                    });
+                    // Smaller displays have a button to switch to a new screen with the TOC.
+                    if (mVb.btnShowToc != null) {
+                        mVb.btnShowToc.setOnClickListener(v -> {
+                            final Fragment fragment = new TocFragment();
+                            mFm.beginTransaction()
+                               .setReorderingAllowed(true)
+                               .addToBackStack(TocFragment.TAG)
+                               .replace(R.id.main_fragment, fragment, TocFragment.TAG)
+                               .commit();
+                        });
+                    }
                 } else {
-                    mVb.btnShowToc.setVisibility(View.GONE);
+                    // Larger displays show the TOC on the same screen.
+                    if (mVb.btnShowToc != null) {
+                        mVb.btnShowToc.setVisibility(View.GONE);
+                    } else if (mVb.tocFrame != null) {
+                        mVb.tocFrame.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -721,10 +729,6 @@ public class ShowBookFragment
                                   @NonNull final Book book) {
                 fields.setParentView(mVb.getRoot());
                 fields.setAll(book);
-
-                if (mUseLoanee) {
-                    onBindLoanee(book.getLoanee());
-                }
 
                 switch (book.getContentType()) {
                     case Collection:
@@ -743,11 +747,12 @@ public class ShowBookFragment
                         break;
                 }
 
+                if (mUseLoanee) {
+                    bindLoanee(book);
+                }
+
                 if (mUseToc) {
-                    final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
-                    mVb.btnShowToc.setVisibility(tocList.isEmpty() ? View.GONE : View.VISIBLE);
-                } else {
-                    mVb.btnShowToc.setVisibility(View.GONE);
+                    bindToc(book);
                 }
 
                 fields.setVisibility(mVb.getRoot(), true, false);
@@ -770,13 +775,11 @@ public class ShowBookFragment
              * Inflates 'lend-to' field showing a person the book was lend to.
              * Allows returning the book via a context menu.
              *
-             * <strong>Note:</strong> we pass in the loanee and handle visibility local as this
-             * method can be called from anywhere.
-             *
-             * @param loanee the one who shall not be mentioned.
+             * @param book to load
              */
-            private void onBindLoanee(@Nullable final String loanee) {
-                if (loanee != null && !loanee.isEmpty()) {
+            private void bindLoanee(@NonNull final Book book) {
+                final String loanee = book.getLoanee();
+                if (!loanee.isEmpty()) {
                     mVb.lendTo.setText(
                             itemView.getContext().getString(R.string.lbl_lend_out_to_name, loanee));
                     mVb.lendTo.setVisibility(View.VISIBLE);
@@ -787,10 +790,36 @@ public class ShowBookFragment
                             itemView.getResources().getInteger(R.integer.MENU_ORDER_LENDING),
                             R.string.menu_lend_return_book));
                 } else {
-                    mVb.lendTo.setVisibility(View.GONE);
                     mVb.lendTo.setText("");
+                    mVb.lendTo.setVisibility(View.GONE);
                 }
             }
+
+            /**
+             * Smaller displays have a button to switch to a new screen with the TOC.
+             * Larger displays show the TOC on the same screen.
+             *
+             * @param book to load
+             */
+            private void bindToc(@NonNull final Book book) {
+                if (mVb.btnShowToc != null) {
+                    final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                    mVb.btnShowToc.setVisibility(tocList.isEmpty() ? View.GONE : View.VISIBLE);
+
+                } else if (mVb.tocFrame != null) {
+                    final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                    if (!tocList.isEmpty()) {
+                        mVb.tocFrame.setVisibility(View.VISIBLE);
+                        final Fragment fragment = new TocFragment();
+                        mFm.beginTransaction()
+                           .replace(R.id.toc_frame, fragment, TocFragment.TAG)
+                           .commit();
+                    } else {
+                        mVb.tocFrame.setVisibility(View.GONE);
+                    }
+                }
+            }
+
 
             /**
              * If all field Views are View.GONE, set the section View to View.GONE as well.
