@@ -21,9 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceMultiBinding;
 
 /**
  * Add a list of CheckBox options to a RecyclerView.
@@ -81,9 +79,9 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View view = mInflater.inflate(R.layout.row_choice_multi, parent, false);
-        final Holder holder = new Holder(view);
-        holder.buttonView.setOnClickListener(v -> onItemCheckChanged(holder));
+        final RowChoiceMultiBinding vb = RowChoiceMultiBinding.inflate(mInflater, parent, false);
+        final Holder holder = new Holder(vb);
+        holder.vb.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;
     }
 
@@ -93,15 +91,15 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
         final Pair<ID, CS> item = mItems.get(position);
 
         final boolean checked = mSelection.contains(item.first);
-        holder.buttonView.setChecked(checked);
-        holder.buttonView.setText(item.second);
+        holder.vb.btnOption.setChecked(checked);
+        holder.vb.btnOption.setText(item.second);
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
 
         final int position = holder.getAbsoluteAdapterPosition();
 
-        final boolean selected = holder.buttonView.isChecked();
+        final boolean selected = holder.vb.btnOption.isChecked();
 
         final ID itemId = mItems.get(position).first;
         if (selected) {
@@ -112,7 +110,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update view first
-            holder.buttonView.post(() -> mOnSelectionListener.onSelected(itemId, selected));
+            holder.vb.btnOption.post(() -> mOnSelectionListener.onSelected(itemId, selected));
         }
     }
 
@@ -144,11 +142,11 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final CheckBox buttonView;
+        private final RowChoiceMultiBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            buttonView = itemView.findViewById(R.id.btn_option);
+        Holder(@NonNull final RowChoiceMultiBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 }
