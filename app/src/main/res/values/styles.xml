@@ -33,6 +33,12 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
     </style>
 
+    <style name="Label.Checked">
+        <item name="android:drawablePadding">@dimen/drawable_padding_end</item>
+        <item name="drawableEndCompat">@drawable/ic_baseline_check_24</item>
+        <item name="drawableTint">?attr/colorSecondary</item>
+    </style>
+
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
     <!-- *************************************************************************************** -->
