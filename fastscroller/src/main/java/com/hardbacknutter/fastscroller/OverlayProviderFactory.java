@@ -43,6 +43,13 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.Consumer;
 
 
@@ -50,10 +57,19 @@ import java.util.function.Consumer;
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
  * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
-final class PopupStyles {
+public final class OverlayProviderFactory {
+
+    /** Don't show any overlay. */
+    public static final int STYLE_NONE = 0;
+    /** Show a static (non-moving) overlay. Classic BC. */
+    public static final int STYLE_STATIC = 1;
+    /** Dynamic Material Design. */
+    public static final int STYLE_MD1 = 2;
+    /** Dynamic Material Design 2. */
+    public static final int STYLE_MD2 = 3;
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    static final Consumer<TextView> MD = popupView -> {
+    private static final Consumer<TextView> MD1 = popupView -> {
         final Resources res = popupView.getResources();
         final int minimumSize = res.getDimensionPixelSize(R.dimen.fs_md_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
@@ -77,7 +93,7 @@ final class PopupStyles {
     };
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    static final Consumer<TextView> CLASSIC = popupView -> {
+    private static final Consumer<TextView> STATIC = popupView -> {
         final Resources res = popupView.getResources();
         popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_width));
         popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_height));
@@ -99,7 +115,7 @@ final class PopupStyles {
         popupView.setTextAppearance(R.style.TextAppearance_Material3_TitleMedium);
     };
 
-    static final Consumer<TextView> MD2 = popupView -> {
+    private static final Consumer<TextView> MD2 = popupView -> {
         final Resources res = popupView.getResources();
         popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_width));
         popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_height));
@@ -124,6 +140,32 @@ final class PopupStyles {
     };
 
 
-    private PopupStyles() {
+    private OverlayProviderFactory() {
+    }
+
+    @Nullable
+    static FastScroller.OverlayProvider create(final int overlayType,
+                                               final int thumbWidth,
+                                               @NonNull final RecyclerView recyclerView) {
+        switch (overlayType) {
+            case STYLE_MD2:
+                return new FastScrollerOverlay(recyclerView, null, thumbWidth, MD2);
+
+            case STYLE_MD1:
+                return new FastScrollerOverlay(recyclerView, null, thumbWidth, MD1);
+
+            case STYLE_STATIC:
+                return new ClassicOverlay(recyclerView, null, thumbWidth, STATIC);
+
+            case STYLE_NONE:
+            default:
+                return null;
+        }
+    }
+
+    @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_MD1, STYLE_MD2})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Style {
+
     }
 }

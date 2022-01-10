@@ -20,13 +20,15 @@
 package com.hardbacknutter.fastscroller;
 
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.function.Consumer;
 
 /**
  * Display a label-style overlay, always at the same place near the top of the screen.
@@ -42,14 +44,15 @@ class ClassicOverlay
     /**
      * Constructor.
      *
-     * @param view          to hook up
-     * @param padding       (optional) fixed padding overruling the view's padding
-     * @param thumbDrawable the thumb/drag-handle
+     * @param view       to hook up
+     * @param padding    (optional) fixed padding overruling the view's padding
+     * @param thumbWidth Width of the thumb/drag-handle
      */
     ClassicOverlay(@NonNull final RecyclerView view,
                    @Nullable final Rect padding,
-                   @NonNull final Drawable thumbDrawable) {
-        super(view, padding, thumbDrawable, PopupStyles.CLASSIC);
+                   final int thumbWidth,
+                   @NonNull final Consumer<TextView> popupStyle) {
+        super(view, padding, thumbWidth, popupStyle);
     }
 
     @Override

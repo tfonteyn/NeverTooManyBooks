@@ -22,7 +22,6 @@ package com.hardbacknutter.fastscroller;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +47,7 @@ class FastScrollerOverlay
         implements FastScroller.OverlayProvider {
 
     @NonNull
-    private final RecyclerView mView;
+    private final RecyclerView mRecyclerView;
     @NonNull
     private final TextView mPopupView;
     @NonNull
@@ -67,30 +66,30 @@ class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param view          to hook up
-     * @param padding       (optional) fixed padding overruling the view's padding
-     * @param thumbDrawable the thumb/drag-handle
-     * @param popupStyle    for the TextView
+     * @param recyclerView to hook up
+     * @param padding      (optional) fixed padding overruling the view's padding
+     * @param thumbWidth   Width of the thumb/drag-handle
+     * @param popupStyle   for the TextView
      */
-    FastScrollerOverlay(@NonNull final RecyclerView view,
+    FastScrollerOverlay(@NonNull final RecyclerView recyclerView,
                         @Nullable final Rect padding,
-                        @NonNull final Drawable thumbDrawable,
+                        final int thumbWidth,
                         @NonNull final Consumer<TextView> popupStyle) {
 
-        final Context context = view.getContext();
+        final Context context = recyclerView.getContext();
 
-        mView = view;
+        mRecyclerView = recyclerView;
         mUserPadding = padding;
-        mAnimationHelper = new DefaultAnimationHelper(mView);
+        mAnimationHelper = new DefaultAnimationHelper(mRecyclerView);
 
-        mThumbWidth = thumbDrawable.getIntrinsicWidth();
+        mThumbWidth = thumbWidth;
 
         mPopupView = new TextView(context);
         mPopupView.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         popupStyle.accept(mPopupView);
 
-        final ViewGroupOverlay overlay = mView.getOverlay();
+        final ViewGroupOverlay overlay = mRecyclerView.getOverlay();
         overlay.add(mPopupView);
 
         mPopupView.setAlpha(0);
@@ -109,7 +108,7 @@ class FastScrollerOverlay
             mUserPadding = new Rect();
         }
         mUserPadding.set(left, top, right, bottom);
-        mView.invalidate();
+        mRecyclerView.invalidate();
     }
 
     @NonNull
@@ -117,10 +116,10 @@ class FastScrollerOverlay
         if (mUserPadding != null) {
             mTempRect.set(mUserPadding);
         } else {
-            mTempRect.set(mView.getPaddingLeft(),
-                          mView.getPaddingTop(),
-                          mView.getPaddingRight(),
-                          mView.getPaddingBottom());
+            mTempRect.set(mRecyclerView.getPaddingLeft(),
+                          mRecyclerView.getPaddingTop(),
+                          mRecyclerView.getPaddingRight(),
+                          mRecyclerView.getPaddingBottom());
         }
         return mTempRect;
     }
@@ -131,11 +130,11 @@ class FastScrollerOverlay
     public void showOverlay(final boolean isDragging,
                             final int thumbCenter) {
 
-        if (!(mView.getAdapter() instanceof FastScroller.PopupTextProvider)) {
+        if (!(mRecyclerView.getAdapter() instanceof FastScroller.PopupTextProvider)) {
             return;
         }
 
-        final RecyclerView.LayoutManager layoutManager = mView.getLayoutManager();
+        final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (!(layoutManager instanceof LinearLayoutManager)) {
             return;
         }
@@ -145,7 +144,7 @@ class FastScrollerOverlay
             return;
         }
 
-        final String[] popupLines = ((FastScroller.PopupTextProvider) mView.getAdapter())
+        final String[] popupLines = ((FastScroller.PopupTextProvider) mRecyclerView.getAdapter())
                 .getPopupText(position);
 
         // Do we have at least one line of text ?
@@ -164,12 +163,12 @@ class FastScrollerOverlay
                 }
             }
 
-            final int layoutDirection = mView.getLayoutDirection();
+            final int layoutDirection = mRecyclerView.getLayoutDirection();
             mPopupView.setLayoutDirection(layoutDirection);
 
             final boolean isLayoutRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL;
-            final int viewWidth = mView.getWidth();
-            final int viewHeight = mView.getHeight();
+            final int viewWidth = mRecyclerView.getWidth();
+            final int viewHeight = mRecyclerView.getHeight();
 
             final Rect padding = getPadding();
 
@@ -229,14 +228,14 @@ class FastScrollerOverlay
                                                  viewHeight - padding.bottom
                                                  - popupLayoutParams.bottomMargin - popupHeight);
 
-            layoutView(mView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
+            layoutView(mRecyclerView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
         }
 
         if (mIsDragging != isDragging) {
             mIsDragging = isDragging;
 
             if (mIsDragging) {
-                mView.getParent().requestDisallowInterceptTouchEvent(true);
+                mRecyclerView.getParent().requestDisallowInterceptTouchEvent(true);
             }
 
             if (mIsDragging) {

@@ -33,21 +33,21 @@
          Original Android: R.dimen.fastscroll_margin=0dp -->
     <dimen name="fs_margin">0dp</dimen>
 
-    <!-- fast scroller - PopupStyles.CLASSIC styling -->
+    <!-- fast scroller - OverlayProviderFactory.CLASSIC styling -->
     <dimen name="fs_classic_popup_min_width">120dp</dimen>
     <dimen name="fs_classic_popup_min_height">64dp</dimen>
     <dimen name="fs_classic_popup_margin_end">16dp</dimen>
 
-    <!-- fast scroller - PopupStyles.MD styling -->
+    <!-- fast scroller - OverlayProviderFactory.MD styling -->
     <dimen name="fs_md_popup_min_size">60dp</dimen>
     <dimen name="fs_md_popup_margin_end">16dp</dimen>
 
-    <!-- fast scroller - PopupStyles.MD2 styling -->
+    <!-- fast scroller - OverlayProviderFactory.MD2 styling -->
     <dimen name="fs_md2_popup_min_width">78dp</dimen>
     <dimen name="fs_md2_popup_min_height">64dp</dimen>
     <dimen name="fs_md2_popup_margin_end">14dp</dimen>
     <dimen name="fs_md2_popup_elevation">4dp</dimen>
-    <!-- fast scroller - PopupStyles.MD2 background styling -->
+    <!-- fast scroller - OverlayProviderFactory.MD2 background styling -->
     <dimen name="fs_md2_popup_bg_padding_start">16dp</dimen>
     <dimen name="fs_md2_popup_bg_padding_end">29dp</dimen>
 </resources>

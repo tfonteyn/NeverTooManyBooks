@@ -28,14 +28,10 @@ import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * This is the glue class which hooks up the RecyclerView with the actual
@@ -63,7 +59,7 @@ public final class FastScroller {
      * @param overlayType  Optional overlay
      */
     public static void attach(@NonNull final RecyclerView recyclerView,
-                              @OverlayProvider.Style final int overlayType) {
+                              @OverlayProviderFactory.Style final int overlayType) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
@@ -89,27 +85,9 @@ public final class FastScroller {
                 resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
         );
 
-        final OverlayProvider overlay;
-        switch (overlayType) {
-            case OverlayProvider.STYLE_MD2:
-                overlay = new FastScrollerOverlay(recyclerView, null, thumbDrawable,
-                                                  PopupStyles.MD2);
-                break;
+        final OverlayProvider overlay = OverlayProviderFactory
+                .create(overlayType, thumbDrawable.getIntrinsicWidth(), recyclerView);
 
-            case OverlayProvider.STYLE_MD1:
-                overlay = new FastScrollerOverlay(recyclerView, null, thumbDrawable,
-                                                  PopupStyles.MD);
-                break;
-
-            case OverlayProvider.STYLE_STATIC:
-                overlay = new ClassicOverlay(recyclerView, null, thumbDrawable);
-                break;
-
-            case OverlayProvider.STYLE_NONE:
-            default:
-                overlay = null;
-                break;
-        }
         fastScroller.setOverlayProvider(overlay);
 
         recyclerView.setOnApplyWindowInsetsListener(
@@ -177,16 +155,6 @@ public final class FastScroller {
 
     public interface OverlayProvider {
 
-        /** Don't show any overlay. */
-        int STYLE_NONE = 0;
-
-        /** Show a static (non-moving) overlay. Classic BC. */
-        int STYLE_STATIC = 1;
-        /** Dynamic Material Design. */
-        int STYLE_MD1 = 2;
-        /** Dynamic Material Design 2. */
-        int STYLE_MD2 = 3;
-
         /**
          * Called to draw the overlay.
          *
@@ -209,10 +177,5 @@ public final class FastScroller {
                         int right,
                         int bottom);
 
-        @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_MD1, STYLE_MD2})
-        @Retention(RetentionPolicy.SOURCE)
-        @interface Style {
-
-        }
     }
 }
