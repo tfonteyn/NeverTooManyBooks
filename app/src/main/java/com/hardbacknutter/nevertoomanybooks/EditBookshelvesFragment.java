@@ -28,7 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -42,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -230,11 +230,11 @@ public class EditBookshelvesFragment
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final TextView nameView;
+        private final RowEditBookshelfBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.name);
+        Holder(@NonNull final RowEditBookshelfBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 
@@ -263,14 +263,15 @@ public class EditBookshelvesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = mInflater.inflate(R.layout.row_edit_bookshelf, parent, false);
-            final Holder holder = new Holder(view);
+            final RowEditBookshelfBinding vb = RowEditBookshelfBinding
+                    .inflate(mInflater, parent, false);
+            final Holder holder = new Holder(vb);
 
             // click -> set the row as 'selected'.
-            holder.nameView.setOnClickListener(
+            holder.vb.name.setOnClickListener(
                     v -> mVm.setSelectedPosition(holder.getBindingAdapterPosition()));
 
-            holder.nameView.setOnLongClickListener(v -> {
+            holder.vb.name.setOnLongClickListener(v -> {
                 mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
                 return true;
             });
@@ -283,7 +284,7 @@ public class EditBookshelvesFragment
 
             final Bookshelf bookshelf = mVm.getBookshelf(position);
 
-            holder.nameView.setText(bookshelf.getName());
+            holder.vb.name.setText(bookshelf.getName());
             holder.itemView.setSelected(position == mVm.getSelectedPosition());
         }
 
