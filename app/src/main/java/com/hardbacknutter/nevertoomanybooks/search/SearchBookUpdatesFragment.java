@@ -342,6 +342,7 @@ public class SearchBookUpdatesFragment
     static class Holder
             extends RecyclerView.ViewHolder {
 
+        @NonNull
         private final RowUpdateFromInternetBinding vb;
 
         Holder(@NonNull final RowUpdateFromInternetBinding vb) {
