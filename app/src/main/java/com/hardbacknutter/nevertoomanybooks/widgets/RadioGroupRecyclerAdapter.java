@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,9 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowChoiceSingleBinding;
 
 /**
  * Add a list of RadioButtons to a RecyclerView.
@@ -79,9 +77,9 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
     @NonNull
     public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                      final int viewType) {
-        final View view = mInflater.inflate(R.layout.row_choice_single, parent, false);
-        final Holder holder = new Holder(view);
-        holder.buttonView.setOnClickListener(v -> onItemCheckChanged(holder));
+        final RowChoiceSingleBinding vb = RowChoiceSingleBinding.inflate(mInflater, parent, false);
+        final Holder holder = new Holder(vb);
+        holder.vb.btnOption.setOnClickListener(v -> onItemCheckChanged(holder));
         return holder;
     }
 
@@ -91,8 +89,8 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         final Pair<ID, CS> item = mItems.get(position);
 
         final boolean checked = mSelection != null && mSelection == item.first;
-        holder.buttonView.setChecked(checked);
-        holder.buttonView.setText(item.second);
+        holder.vb.btnOption.setChecked(checked);
+        holder.vb.btnOption.setText(item.second);
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
@@ -104,7 +102,7 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         notifyDataSetChanged();
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update the view first
-            holder.buttonView.post(() -> mOnSelectionListener.onSelected(mSelection));
+            holder.vb.btnOption.post(() -> mOnSelectionListener.onSelected(mSelection));
         }
     }
 
@@ -135,11 +133,11 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final CompoundButton buttonView;
+        private final RowChoiceSingleBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            buttonView = itemView.findViewById(R.id.btn_option);
+        Holder(@NonNull final RowChoiceSingleBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 }
