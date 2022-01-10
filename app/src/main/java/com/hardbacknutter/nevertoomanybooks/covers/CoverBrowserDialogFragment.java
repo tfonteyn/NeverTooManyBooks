@@ -25,8 +25,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -52,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -395,19 +394,16 @@ public class CoverBrowserDialogFragment
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final ImageView imageView;
-        @NonNull
-        final TextView siteView;
+        private final RowCoverBrowserGalleryBinding vb;
 
-        Holder(@NonNull final View itemView,
+        Holder(@NonNull final RowCoverBrowserGalleryBinding vb,
                final int maxWidth,
                final int maxHeight) {
-            super(itemView);
+            super(vb.getRoot());
+            this.vb = vb;
 
-            siteView = itemView.findViewById(R.id.lbl_site);
-            imageView = itemView.findViewById(R.id.coverImage0);
-            imageView.getLayoutParams().width = maxWidth;
-            imageView.getLayoutParams().height = maxHeight;
+            vb.coverImage0.getLayoutParams().width = maxWidth;
+            vb.coverImage0.getLayoutParams().height = maxHeight;
         }
     }
 
@@ -443,9 +439,9 @@ public class CoverBrowserDialogFragment
         @NonNull
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final View view = getLayoutInflater()
-                    .inflate(R.layout.row_cover_browser_gallery, parent, false);
-            return new Holder(view, mMaxWidth, mMaxHeight);
+            final RowCoverBrowserGalleryBinding vb = RowCoverBrowserGalleryBinding
+                    .inflate(getLayoutInflater(), parent, false);
+            return new Holder(vb, mMaxWidth, mMaxHeight);
         }
 
         @Override
@@ -466,34 +462,35 @@ public class CoverBrowserDialogFragment
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
-                ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
+                ImageUtils.setPlaceholder(holder.vb.coverImage0, mMaxWidth, mMaxHeight,
                                           R.drawable.ic_baseline_image_24, 0);
                 // and queue a request for it.
                 mVm.fetchGalleryImage(isbn);
-                holder.siteView.setText("");
+                holder.vb.lblSite.setText("");
 
             } else {
                 // check if it's good
                 final File file = imageFileInfo.getFile();
                 if (file != null && file.exists()) {
                     // YES, load it into the view.
-                    mImageLoader.loadAndDisplay(holder.imageView, file, null);
+                    mImageLoader.loadAndDisplay(holder.vb.coverImage0, file, null);
 
                     // keep this statement here, or we would need to call file.exists() twice
-                    holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
+                    holder.vb.coverImage0.setOnClickListener(
+                            v -> onGalleryImageSelected(imageFileInfo));
 
-                    holder.siteView.setText(SearchEngineRegistry
-                                                    .getInstance()
-                                                    .getByEngineId(imageFileInfo.getEngineId())
-                                                    .getLabelId());
+                    holder.vb.lblSite.setText(SearchEngineRegistry
+                                                      .getInstance()
+                                                      .getByEngineId(imageFileInfo.getEngineId())
+                                                      .getLabelId());
 
                 } else {
                     // no file. Theoretically we should not get here,
                     // as a failed search should have removed the isbn from the edition list,
                     // but race-conditions + paranoia...
-                    ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
+                    ImageUtils.setPlaceholder(holder.vb.coverImage0, mMaxWidth, mMaxHeight,
                                               R.drawable.ic_baseline_broken_image_24, 0);
-                    holder.siteView.setText("");
+                    holder.vb.lblSite.setText("");
                 }
             }
         }
