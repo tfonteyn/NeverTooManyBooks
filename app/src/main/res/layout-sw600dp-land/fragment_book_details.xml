@@ -119,7 +119,7 @@
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/icon_read"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
@@ -144,7 +144,7 @@
 
         <TextView
             android:id="@+id/lbl_anthology_or_collection"
-            style="@style/Field.Anthology"
+            style="@style/Label.Checked"
             android:text="@string/lbl_anthology"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/rating"
@@ -203,29 +203,12 @@
             android:id="@+id/series_title"
             style="@style/Field.Generic.Small"
             app:layout_constraintEnd_toStartOf="@id/col2"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/lbl_series"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/series_list/title_nr"
             />
-
-        <TextView
-            android:id="@+id/lbl_bookshelves"
-            style="@style/Label"
-            android:text="@string/lbl_bookshelves"
-            app:layout_constraintStart_toStartOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
-            />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/bookshelves"
-            style="@style/ChipGroup"
-            app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-            >
-            <!-- chips will be added here dynamically -->
-        </com.google.android.material.chip.ChipGroup>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/personal_data_section"
@@ -233,29 +216,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
             <include layout="@layout/fragment_book_details_merge_personal_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/Label"
-            android:text="@string/lbl_personal_notes"
-            app:layout_constraintStart_toStartOf="@id/personal_data_section"
-            app:layout_constraintTop_toBottomOf="@id/personal_data_section"
-            />
-
-        <TextView
-            android:id="@+id/notes"
-            style="@style/Field.Notes"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="@id/lbl_notes"
-            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/notes/short"
-            />
 
         <TextView
             android:id="@+id/description"
@@ -267,12 +232,14 @@
             tools:text="@tools:sample/lorem/random"
             />
 
+        <!--
+        DO NOT add
+                    android:name="com.hardbacknutter.nevertoomanybooks.TocFragment"
+        -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
-            android:name="com.hardbacknutter.nevertoomanybooks.TocFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="@dimen/screen_border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"

@@ -103,7 +103,7 @@
         <TextView
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/icon_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
@@ -128,8 +128,9 @@
 
         <TextView
             android:id="@+id/lbl_anthology_or_collection"
-            style="@style/Field.Anthology"
+            style="@style/Label.Checked"
             android:text="@string/lbl_anthology"
+            app:layout_constraintBottom_toTopOf="@id/barrier_rating_btn_toc"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/rating"
             />
@@ -137,9 +138,11 @@
         <Button
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.Open"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:text="@string/btn_show_toc"
-            app:layout_constraintEnd_toEndOf="@id/icon_read"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            android:contentDescription="@string/btn_show_toc_long"
+            app:layout_constraintStart_toEndOf="@id/lbl_anthology_or_collection"
+            app:layout_constraintTop_toBottomOf="@id/rating"
             tools:visibility="visible"
             />
 
@@ -193,8 +196,8 @@
         <TextView
             android:id="@+id/genre"
             style="@style/Field.Generic"
-            app:layout_constraintStart_toStartOf="@id/lbl_genre"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_genre"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/genre/name"
@@ -218,41 +221,6 @@
             tools:text="@sample/data.json/series_list/title_nr"
             />
 
-        <TextView
-            android:id="@+id/lbl_bookshelves"
-            style="@style/Label"
-            android:text="@string/lbl_bookshelves"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/series_title"
-            />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/bookshelves"
-            style="@style/ChipGroup"
-            app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-            >
-            <!-- chips will be added here dynamically -->
-        </com.google.android.material.chip.ChipGroup>
-
-        <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/Label"
-            android:text="@string/lbl_personal_notes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves"
-            />
-
-        <TextView
-            android:id="@+id/notes"
-            style="@style/Field.Notes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/lbl_notes"
-            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/notes/short"
-            />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/personal_data_section"
             android:layout_width="0dp"
@@ -260,7 +228,7 @@
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
             <include layout="@layout/fragment_book_details_merge_personal_section" />

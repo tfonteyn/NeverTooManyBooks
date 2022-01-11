@@ -19,6 +19,9 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    Used by TocFragment to display the TOC list for a book.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,27 +31,50 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
+    <!-- "invisible" by default (NOT 'gone' as we want the space allocated) -->
+    <ImageButton
+        android:id="@+id/btn_multiple_books"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@android:color/transparent"
+        android:contentDescription="@string/tip_authors_works_multiple_books"
+        android:src="@drawable/ic_baseline_library_books_24"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TouchTargetSizeCheck"
+        tools:visibility="visible"
+        />
+
+    <!-- android:textIsSelectable="false" because we want to be able to click on the row -->
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle"
-        android:drawableStart="@drawable/ic_baseline_library_books_24"
-        android:drawablePadding="@dimen/drawable_padding_start"
-        android:textIsSelectable="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/year"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_multiple_books"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UseCompatTextViewDrawableXml"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
         tools:text="@sample/data.json/book/title"
         />
 
     <TextView
         android:id="@+id/year"
+        style="@style/Field.Generic.Small"
+        app:layout_constraintBaseline_toBaselineOf="@id/author"
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="(1971)"
+        />
+
+    <TextView
+        android:id="@+id/author"
         style="@style/Field.Generic.Inline.Small"
-        android:textIsSelectable="false"
-        app:layout_constraintBaseline_toBaselineOf="@id/title"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="(1951)"
+        app:layout_constraintStart_toEndOf="@id/year"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="@sample/data.json/author/full_name"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

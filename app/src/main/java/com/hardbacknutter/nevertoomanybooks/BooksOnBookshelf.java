@@ -523,9 +523,7 @@ public class BooksOnBookshelf
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
 
         // Optional overlay
-        final int overlayType = Prefs.getIntListPref(
-                global, Prefs.pk_booklist_fastscroller_overlay,
-                FastScroller.OverlayProvider.STYLE_MD2);
+        final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.list, overlayType);
 
         // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
@@ -1855,11 +1853,11 @@ public class BooksOnBookshelf
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final BooksonbookshelfHeaderBinding mVb;
+        final BooksonbookshelfHeaderBinding vb;
 
         HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
             super(vb.getRoot());
-            mVb = vb;
+            this.vb = vb;
         }
     }
 
@@ -1885,16 +1883,16 @@ public class BooksOnBookshelf
             final Context context = holder.itemView.getContext();
             String header;
             header = mVm.getHeaderStyleName(context);
-            holder.mVb.styleName.setText(header);
-            holder.mVb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.styleName.setText(header);
+            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = mVm.getHeaderFilterText(context);
-            holder.mVb.filterText.setText(header);
-            holder.mVb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.filterText.setText(header);
+            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = mVm.getHeaderBookCount(context);
-            holder.mVb.bookCount.setText(header);
-            holder.mVb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.vb.bookCount.setText(header);
+            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
         }
 
         @Override

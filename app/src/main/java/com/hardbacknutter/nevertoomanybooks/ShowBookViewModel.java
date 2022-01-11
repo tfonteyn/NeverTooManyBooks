@@ -32,8 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
@@ -101,7 +99,7 @@ public class ShowBookViewModel
     @NonNull
     @Override
     public Intent getResultIntent() {
-        // always set the *current* book id, so the BoB list can reposition correctly.
+        // The book id will allow the BoB list to reposition correctly.
         if (mCurrentBook != null) {
             mResultIntent.putExtra(DBKey.PK_ID, mCurrentBook.getId());
         }
@@ -195,20 +193,6 @@ public class ShowBookViewModel
             mCurrentBook = Book.from(mNavHelper.getBookIdAtRow(position + 1), mBookDao);
         }
         return mCurrentBook;
-    }
-
-    /**
-     * Get the currently displayed book.
-     *
-     * @return current book
-     */
-    @NonNull
-    public Book getCurrentBook() {
-        // Sanity check
-        if (mCurrentBook == null) {
-            mCurrentBook = getBookAtPosition(0);
-        }
-        return Objects.requireNonNull(mCurrentBook);
     }
 
     /**

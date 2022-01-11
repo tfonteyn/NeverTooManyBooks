@@ -24,8 +24,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,7 +33,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -46,22 +45,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
@@ -145,9 +142,7 @@ public class AuthorWorksFragment
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
-        final int overlayType = Prefs.getIntListPref(global,
-                                                     Prefs.pk_booklist_fastscroller_overlay,
-                                                     FastScroller.OverlayProvider.STYLE_MD2);
+        final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.authorWorks, overlayType);
 
         mAdapter = new TocAdapter(context);
@@ -276,41 +271,44 @@ public class AuthorWorksFragment
     private void gotoBook(final int position) {
         final AuthorWork work = mVm.getWorks().get(position);
 
-        if (work instanceof TocEntry) {
-            final TocEntry tocEntry = (TocEntry) work;
-            final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
-            if (bookIdList.size() == 1) {
+        switch (work.getWorkType()) {
+            case AuthorWork.TYPE_TOC: {
+                final TocEntry tocEntry = (TocEntry) work;
+                final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
+                if (bookIdList.size() == 1) {
+                    // open new activity to show the book, 'back' will return to this one.
+                    //noinspection ConstantConditions
+                    final Intent intent = ShowBookFragment
+                            .createIntent(getContext(), bookIdList.get(0));
+                    startActivity(intent);
+
+                } else {
+                    // multiple books, open the list as a NEW ACTIVITY
+                    final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
+                            .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
+                            // Open the list expanded, as otherwise you end up with
+                            // the author as a single line, and no books shown at all,
+                            // which can be quite confusing to the user.
+                            .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
+                                      RebuildBooklist.EXPANDED);
+
+                    if (mVm.isAllBookshelves()) {
+                        intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,
+                                        Bookshelf.ALL_BOOKS);
+                    }
+                    startActivity(intent);
+                }
+                break;
+            }
+            case AuthorWork.TYPE_BOOK: {
                 // open new activity to show the book, 'back' will return to this one.
                 //noinspection ConstantConditions
-                final Intent intent = ShowBookFragment
-                        .createIntent(getContext(), bookIdList.get(0));
+                final Intent intent = ShowBookFragment.createIntent(getContext(), work.getId());
                 startActivity(intent);
-
-            } else {
-                // multiple books, open the list as a NEW ACTIVITY
-                final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                        .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
-                        // Open the list expanded, as otherwise you end up with
-                        // the author as a single line, and no books shown at all,
-                        // which can be quite confusing to the user.
-                        .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                  RebuildBooklist.EXPANDED);
-
-                if (mVm.isAllBookshelves()) {
-                    intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
-                }
-
-                startActivity(intent);
+                break;
             }
-
-        } else if (work instanceof BookAsWork) {
-            // open new activity to show the book, 'back' will return to this one.
-            //noinspection ConstantConditions
-            final Intent intent = ShowBookFragment.createIntent(getContext(), work.getId());
-            startActivity(intent);
-
-        } else {
-            throw new IllegalArgumentException(String.valueOf(work));
+            default:
+                throw new IllegalArgumentException(String.valueOf(work));
         }
     }
 
@@ -321,19 +319,11 @@ public class AuthorWorksFragment
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final TextView titleView;
-        @Nullable
-        final TextView authorView;
-        @Nullable
-        final TextView firstPublicationView;
+        private final RowAuthorWorkBinding vb;
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            titleView = itemView.findViewById(R.id.title);
-            // optional
-            authorView = itemView.findViewById(R.id.author);
-            // optional
-            firstPublicationView = itemView.findViewById(R.id.year);
+        Holder(@NonNull final RowAuthorWorkBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
         }
     }
 
@@ -343,44 +333,41 @@ public class AuthorWorksFragment
 
         /** Cached inflater. */
         private final LayoutInflater mInflater;
-        /** Show the row indicator icon. */
-        private final ColorStateList mDrawableOn;
-        /** Hide the row indicator icon. */
-        private final ColorStateList mDrawableOff;
+
+        private final String mBookStr;
+        private final Drawable mBookEntryIcon;
+
+        private final String mMultipleBooksStr;
+        private final Drawable mTocEntryIcon;
 
         /**
          * Constructor.
          *
          * @param context Current context
          */
+        @SuppressLint("UseCompatLoadingForDrawables")
         TocAdapter(@NonNull final Context context) {
             mInflater = LayoutInflater.from(context);
 
             final Resources.Theme theme = context.getTheme();
-            mDrawableOn = context.getResources().getColorStateList(
-                    AttrUtils.getResId(context, R.attr.colorControlNormal), theme);
-            mDrawableOff = context.getResources().getColorStateList(
-                    android.R.color.transparent, theme);
+            final Resources res = context.getResources();
+
+            // The entry is an actual book
+            mBookStr = res.getString(R.string.lbl_book);
+            mBookEntryIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
+            // The entry is a story (etc...) which appears in multiple books.
+            mMultipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
+            mTocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final char type = (char) viewType;
-            final View itemView;
-            switch (type) {
-                case AuthorWork.TYPE_TOC:
-                    itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
-                    break;
-                case AuthorWork.TYPE_BOOK:
-                    itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
-                    break;
-                default:
-                    throw new IllegalArgumentException(String.valueOf(viewType));
-            }
 
-            final Holder holder = new Holder(itemView);
+            final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(mInflater, parent, false);
+
+            final Holder holder = new Holder(vb);
 
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
@@ -397,49 +384,48 @@ public class AuthorWorksFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            final Context context = getContext();
+            final Context context = mInflater.getContext();
 
             final AuthorWork work = mVm.getWorks().get(position);
-            //noinspection ConstantConditions
-            holder.titleView.setText(work.getLabel(context));
 
-            // optional
-            if (holder.authorView != null) {
-                final Author author = Objects.requireNonNull(work.getPrimaryAuthor(),
-                                                             "work.getPrimaryAuthor()");
-                holder.authorView.setText(author.getLabel(context));
+            holder.vb.title.setText(work.getLabel(context));
+
+            final PartialDate date = work.getFirstPublicationDate();
+            if (date.isEmpty()) {
+                holder.vb.year.setVisibility(View.GONE);
+            } else {
+                // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
+                // cut the date to just the year.
+                final String fp = context.getString(R.string.brackets,
+                                                    String.valueOf(date.getYearValue()));
+                holder.vb.year.setText(fp);
+                holder.vb.year.setVisibility(View.VISIBLE);
             }
-            // optional
-            if (holder.firstPublicationView != null) {
-                final PartialDate date = work.getFirstPublicationDate();
-                if (date.isEmpty()) {
-                    holder.firstPublicationView.setVisibility(View.GONE);
-                } else {
-                    // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
-                    // cut the date to just the year.
-                    final String fp = context.getString(R.string.brackets,
-                                                        String.valueOf(date.getYearValue()));
-                    holder.firstPublicationView.setText(fp);
-                    holder.firstPublicationView.setVisibility(View.VISIBLE);
+
+            switch (work.getWorkType()) {
+                case AuthorWork.TYPE_TOC: {
+                    // show the icon if this entry appears in more than one book in our collection
+                    if (work.getBookCount() > 1) {
+                        holder.vb.btnType.setImageDrawable(mTocEntryIcon);
+                        holder.vb.btnType.setVisibility(View.VISIBLE);
+                        holder.vb.btnType.setContentDescription(mMultipleBooksStr);
+                    } else {
+                        holder.vb.btnType.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+                }
+                case AuthorWork.TYPE_BOOK: {
+                    holder.vb.btnType.setImageDrawable(mBookEntryIcon);
+                    holder.vb.btnType.setVisibility(View.VISIBLE);
+                    holder.vb.btnType.setContentDescription(mBookStr);
+                    break;
+                }
+                default: {
+                    // we should never get here... flw
+                    holder.vb.btnType.setVisibility(View.INVISIBLE);
+                    break;
                 }
             }
-
-            if (work instanceof TocEntry) {
-                // show the icon if this entry appears in more than one book in our collection
-                // We do this by changing the color between 'normal' and 'transparent'
-                if (work.getBookCount() > 1) {
-                    // colorControlNormal
-                    holder.titleView.setCompoundDrawableTintList(mDrawableOn);
-                } else {
-                    // transparent
-                    holder.titleView.setCompoundDrawableTintList(mDrawableOff);
-                }
-            }
-        }
-
-        @Override
-        public int getItemViewType(final int position) {
-            return mVm.getWorks().get(position).getWorkType();
         }
 
         @Override

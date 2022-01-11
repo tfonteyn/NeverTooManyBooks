@@ -56,6 +56,7 @@
     <style name="Field.BookTitle">
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:maxLines">2</item>
     </style>
 
     <style name="Field.BookTitle.Large">
@@ -115,12 +116,6 @@
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
-    </style>
-
-    <style name="Field.Anthology" parent="Label">
-        <item name="android:drawablePadding">@dimen/drawable_padding_end</item>
-        <item name="drawableEndCompat">@drawable/ic_baseline_check_24</item>
-        <item name="drawableTint">?attr/colorSecondary</item>
     </style>
 
 </resources>

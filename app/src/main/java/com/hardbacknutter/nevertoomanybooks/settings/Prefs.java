@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.fastscroller.OverlayProviderFactory;
 
 /**
  * All keys <strong>MUST</strong> be kept in sync with "src/main/res/xml/preferences*.xml"
@@ -101,8 +101,9 @@ public final class Prefs {
         }
     }
 
-    public static int getIntListPref(@NonNull final String key,
-                                     final int defValue) {
-        return getIntListPref(ServiceLocator.getGlobalPreferences(), key, defValue);
+    public static int getFastScrollerOverlayType(@NonNull final SharedPreferences preferences) {
+        return getIntListPref(preferences,
+                              pk_booklist_fastscroller_overlay,
+                              OverlayProviderFactory.STYLE_MD2);
     }
 }
