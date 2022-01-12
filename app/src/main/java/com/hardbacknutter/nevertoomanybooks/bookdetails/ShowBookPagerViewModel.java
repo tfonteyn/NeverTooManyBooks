@@ -78,8 +78,8 @@ public class ShowBookPagerViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void init(@NonNull final Bundle args) {
         if (mInitialBookId == 0) {
-            mInitialBookId = args.getLong(DBKey.PK_ID, 0);
-            SanityCheck.requirePositiveValue(mInitialBookId, DBKey.PK_ID);
+            mInitialBookId = args.getLong(DBKey.FK_BOOK, 0);
+            SanityCheck.requirePositiveValue(mInitialBookId, DBKey.FK_BOOK);
 
             // optional
             mStyleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);

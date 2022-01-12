@@ -54,7 +54,7 @@ public class AddBookBySearchContract
                                           final long bookId,
                                           final boolean modified) {
         final Intent resultIntent = new Intent()
-                .putExtra(DBKey.PK_ID, bookId)
+                .putExtra(DBKey.FK_BOOK, bookId)
                 .putExtra(Entity.BKEY_DATA_MODIFIED, modified);
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();

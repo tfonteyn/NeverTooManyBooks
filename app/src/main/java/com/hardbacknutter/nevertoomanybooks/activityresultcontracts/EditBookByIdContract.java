@@ -50,7 +50,7 @@ public class EditBookByIdContract
                           R.layout.activity_edit_book)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
                           EditBookFragment.class.getName())
-                .putExtra(DBKey.PK_ID, (long) bookId);
+                .putExtra(DBKey.FK_BOOK, (long) bookId);
     }
 
     @Override

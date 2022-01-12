@@ -50,7 +50,7 @@ public class TocViewModel
 
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        mBookId = args.getLong(DBKey.PK_ID, 0);
+        mBookId = args.getLong(DBKey.FK_BOOK, 0);
         mBookTitle = args.getString(DBKey.KEY_TITLE);
         tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
         final ArrayList<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);

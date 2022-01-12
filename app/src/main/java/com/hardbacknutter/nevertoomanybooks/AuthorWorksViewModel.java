@@ -73,7 +73,7 @@ public class AuthorWorksViewModel
         if (mBookDao == null) {
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
-            final long authorId = args.getLong(DBKey.PK_ID, 0);
+            final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
             mAuthor = Objects.requireNonNull(
                     ServiceLocator.getInstance().getAuthorDao().getById(authorId),

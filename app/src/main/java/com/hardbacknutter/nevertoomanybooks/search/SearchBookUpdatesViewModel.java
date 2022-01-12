@@ -474,7 +474,7 @@ public class SearchBookUpdatesViewModel
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {
-                results.putLong(DBKey.PK_ID, mBookIdList.get(0));
+                results.putLong(DBKey.FK_BOOK, mBookIdList.get(0));
             }
         }
 

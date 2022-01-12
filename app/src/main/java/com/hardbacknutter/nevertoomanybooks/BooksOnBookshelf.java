@@ -1443,7 +1443,7 @@ public class BooksOnBookshelf
             }
 
             // If we got an id back, make any (potential) rebuild re-position to it.
-            final long bookId = data.getLong(DBKey.PK_ID, 0);
+            final long bookId = data.getLong(DBKey.FK_BOOK, 0);
             if (bookId > 0) {
                 mVm.setDesiredCentralBookId(bookId);
             }

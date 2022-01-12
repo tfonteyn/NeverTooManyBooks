@@ -137,7 +137,7 @@ public class EditBookViewModel
 
     /**
      * <ul>
-     * <li>{@link DBKey#PK_ID}  book id</li>
+     * <li>{@link DBKey#FK_BOOK}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -146,7 +146,7 @@ public class EditBookViewModel
     public Intent getResultIntent() {
         // always set the *current* book, so the BoB list can reposition correctly.
         if (mBook != null) {
-            mResultIntent.putExtra(DBKey.PK_ID, mBook.getId());
+            mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
         }
         return mResultIntent;
     }
@@ -174,7 +174,7 @@ public class EditBookViewModel
                     mBook = Book.from(bookData);
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    final long bookId = args.getLong(DBKey.PK_ID, 0);
+                    final long bookId = args.getLong(DBKey.FK_BOOK, 0);
                     if (bookId > 0) {
                         mBook = Book.from(bookId, ServiceLocator.getInstance().getBookDao());
                     } else {

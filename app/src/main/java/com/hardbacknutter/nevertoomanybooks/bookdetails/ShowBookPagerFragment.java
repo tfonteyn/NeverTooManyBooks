@@ -60,7 +60,7 @@ public class ShowBookPagerFragment
                 public void handleOnBackPressed() {
                     final long bookId = mVm.getBookIdAtPosition(mVb.pager.getCurrentItem());
                     final Intent resultIntent = new Intent();
-                    resultIntent.putExtra(DBKey.PK_ID, bookId);
+                    resultIntent.putExtra(DBKey.FK_BOOK, bookId);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
@@ -80,7 +80,7 @@ public class ShowBookPagerFragment
                           R.layout.activity_book_details)
                 .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
                           ShowBookPagerFragment.class.getName())
-                .putExtra(DBKey.PK_ID, bookId);
+                .putExtra(DBKey.FK_BOOK, bookId);
     }
 
     public static Intent createIntent(@NonNull final Context context,
@@ -149,7 +149,7 @@ public class ShowBookPagerFragment
         public Fragment createFragment(final int position) {
             final ShowBookDetailsFragment fragment = new ShowBookDetailsFragment();
             final Bundle args = new Bundle();
-            args.putLong(DBKey.PK_ID, mVm.getBookIdAtPosition(position));
+            args.putLong(DBKey.FK_BOOK, mVm.getBookIdAtPosition(position));
             args.putString(ListStyle.BKEY_STYLE_UUID, mVm.getStyleUuid());
             fragment.setArguments(args);
             return fragment;

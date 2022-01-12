@@ -55,7 +55,7 @@ public class AuthorWorksContract
                                @NonNull final Input input) {
         return FragmentHostActivity
                 .createIntent(context, AuthorWorksFragment.class)
-                .putExtra(DBKey.PK_ID, input.authorId)
+                .putExtra(DBKey.FK_AUTHOR, input.authorId)
                 .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
     }
 

@@ -90,7 +90,7 @@ public class ShowBookDetailsViewModel
 
     /**
      * <ul>
-     * <li>{@link DBKey#PK_ID}  book id</li>
+     * <li>{@link DBKey#FK_BOOK}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -98,7 +98,7 @@ public class ShowBookDetailsViewModel
     @Override
     public Intent getResultIntent() {
         if (mBook != null) {
-            mResultIntent.putExtra(DBKey.PK_ID, mBook.getId());
+            mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
         }
         return mResultIntent;
     }
@@ -129,8 +129,8 @@ public class ShowBookDetailsViewModel
 
             mFieldsMap = initFields(context);
 
-            final long bookId = args.getLong(DBKey.PK_ID, 0);
-            SanityCheck.requirePositiveValue(bookId, DBKey.PK_ID);
+            final long bookId = args.getLong(DBKey.FK_BOOK, 0);
+            SanityCheck.requirePositiveValue(bookId, DBKey.FK_BOOK);
             mBook = Book.from(bookId, mBookDao);
         }
     }

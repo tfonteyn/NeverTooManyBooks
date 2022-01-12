@@ -88,7 +88,7 @@ public class EditStyleContract
         }
 
         return new Output(
-                Objects.requireNonNull(data.getString(BKEY_TEMPLATE_UUID), "BKEY_TEMPLATE_UUID"),
+                Objects.requireNonNull(data.getString(BKEY_TEMPLATE_UUID), BKEY_TEMPLATE_UUID),
                 data.getBoolean(BKEY_STYLE_MODIFIED, false),
                 data.getString(ListStyle.BKEY_STYLE_UUID));
     }

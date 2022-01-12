@@ -129,10 +129,9 @@ public class EditLenderDialogFragment
         mPeople = loaneeDao.getList();
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
-        mBookId = args.getLong(DBKey.PK_ID);
-        mBookTitle = Objects.requireNonNull(args.getString(DBKey.KEY_TITLE), "KEY_TITLE");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        mBookId = args.getLong(DBKey.FK_BOOK);
+        mBookTitle = Objects.requireNonNull(args.getString(DBKey.KEY_TITLE), DBKey.KEY_TITLE);
 
         if (savedInstanceState == null) {
             mLoanee = loaneeDao.getLoaneeByBookId(mBookId);
@@ -277,7 +276,7 @@ public class EditLenderDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putLong(DBKey.PK_ID, book.getId());
+            args.putLong(DBKey.FK_BOOK, book.getId());
             args.putString(DBKey.KEY_TITLE, book.getString(DBKey.KEY_TITLE));
 
             final DialogFragment frag = new EditLenderDialogFragment();
@@ -296,7 +295,7 @@ public class EditLenderDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putLong(DBKey.PK_ID, bookId);
+            args.putLong(DBKey.FK_BOOK, bookId);
             args.putString(DBKey.KEY_TITLE, bookTitle);
 
             final DialogFragment frag = new EditLenderDialogFragment();

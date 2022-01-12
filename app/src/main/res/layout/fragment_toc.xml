@@ -19,15 +19,34 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/toc"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screen_border"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_toc_entry"
-    />
+    >
+
+    <TextView
+        android:id="@+id/lbl_toc"
+        style="@style/Label"
+        android:text="@string/lbl_table_of_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/toc"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_toc"
+        tools:listitem="@layout/row_toc_entry"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

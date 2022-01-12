@@ -435,8 +435,6 @@ public class ShowBookDetailsFragment
             if (mVb.btnShowToc != null) {
                 mVb.btnShowToc.setVisibility(View.GONE);
             } else if (mVb.tocFrame != null) {
-                //noinspection ConstantConditions
-                mVb.lblToc.setVisibility(View.GONE);
                 mVb.tocFrame.setVisibility(View.GONE);
             }
         }
@@ -499,7 +497,7 @@ public class ShowBookDetailsFragment
             mVb.btnShowToc.setOnClickListener(v -> {
                 final Fragment fragment = new TocFragment();
                 final Bundle args = new Bundle();
-                args.putLong(DBKey.PK_ID, book.getId());
+                args.putLong(DBKey.FK_BOOK, book.getId());
                 args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST,
                                             book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
@@ -525,10 +523,8 @@ public class ShowBookDetailsFragment
     private void bindTocFrame(@NonNull final Book book) {
         final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
         if (tocList.isEmpty()) {
-            mVb.lblToc.setVisibility(View.GONE);
             mVb.tocFrame.setVisibility(View.GONE);
         } else {
-            mVb.lblToc.setVisibility(View.VISIBLE);
             mVb.tocFrame.setVisibility(View.VISIBLE);
 
             final TocFragment fragment = new TocFragment();

@@ -244,16 +244,6 @@
             tools:text="@tools:sample/lorem/random"
             />
 
-        <TextView
-            android:id="@+id/lbl_toc"
-            style="@style/Label"
-            android:text="@string/lbl_table_of_content"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:visibility="visible"
-            />
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
             android:layout_width="0dp"
@@ -262,7 +252,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_toc"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
             />

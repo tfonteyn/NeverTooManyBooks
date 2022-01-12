@@ -44,7 +44,7 @@ public class EditBookshelvesContract
     public static void setResultAndFinish(@NonNull final Activity activity,
                                           final long bookshelfId) {
         final Intent resultIntent = new Intent()
-                .putExtra(DBKey.PK_ID, bookshelfId);
+                .putExtra(DBKey.FK_BOOKSHELF, bookshelfId);
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();
     }
@@ -74,6 +74,6 @@ public class EditBookshelvesContract
         }
 
         // the last edited/inserted shelf
-        return intent.getLongExtra(DBKey.PK_ID, Bookshelf.DEFAULT);
+        return intent.getLongExtra(DBKey.FK_BOOKSHELF, Bookshelf.DEFAULT);
     }
 }
