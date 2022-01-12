@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.nevertoomanybooks.BaseFragment;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;

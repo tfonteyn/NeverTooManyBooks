@@ -41,8 +41,8 @@ public final class MenuHelper {
     private MenuHelper() {
     }
 
-    static void setupSearchActionView(@NonNull final Activity activity,
-                                      @NonNull final Menu menu) {
+    public static void setupSearchActionView(@NonNull final Activity activity,
+                                             @NonNull final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
         if (searchItem != null) {
             // Reminder: we let the SearchView handle its own icons.

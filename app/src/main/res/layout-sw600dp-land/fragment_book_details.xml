@@ -254,7 +254,6 @@
             tools:visibility="visible"
             />
 
-        <!-- DO NOT add android:name="com.hardbacknutter.nevertoomanybooks.TocFragment" -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
             android:layout_width="0dp"

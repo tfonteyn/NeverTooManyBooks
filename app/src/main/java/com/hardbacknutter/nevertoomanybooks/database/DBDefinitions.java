@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.ShowBookViewModel;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -168,7 +167,7 @@ public final class DBDefinitions {
 
     /**
      * Foreign key between the list table {@link Booklist}
-     * and the navigator table used by {@link ShowBookViewModel}.
+     * and the navigator table used in the ViewPager displaying individual books.
      */
     public static final Domain DOM_FK_BL_ROW_ID;
 
