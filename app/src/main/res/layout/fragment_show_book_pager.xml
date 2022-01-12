@@ -19,32 +19,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.viewpager2.widget.ViewPager2
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|top"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/cover_operation_progress_bar"
-        style="@style/Progress.Circle"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+    android:layout_gravity="center_vertical|top"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    />

@@ -40,9 +40,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -52,22 +51,22 @@ public class TocFragment
 
     public static final String TAG = "TocFragment";
 
-    /** The Fragment ViewModel. */
-    private ShowBookViewModel mVm;
-
     /** View Binding. */
     private FragmentTocBinding mVb;
 
+    private TocViewModel mVm;
+
     /** The Adapter. */
     @SuppressWarnings("FieldCanBeLocal")
-    private TocEntryAdapter mAdapter;
+    private TocAdapter mAdapter;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mVm = new ViewModelProvider(this).get(TocViewModel.class);
         //noinspection ConstantConditions
-        mVm = new ViewModelProvider(getActivity()).get(ShowBookViewModel.class);
+        mVm.init(getContext(), requireArguments());
     }
 
     @Override
@@ -88,26 +87,30 @@ public class TocFragment
 
         final Context context = getContext();
 
-        mVb.toc.setHasFixedSize(true);
         //noinspection ConstantConditions
-        mVb.toc.addItemDecoration(
-                new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.toc.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        // Optional overlay
-        final int overlayType = Prefs.getIntListPref(global,
-                                                     Prefs.pk_booklist_fastscroller_overlay,
-                                                     FastScroller.OverlayProvider.STYLE_MD2);
+        final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.toc, overlayType);
 
-        final List<TocEntry> tocList = mVm.getCurrentBook()
-                                          .getParcelableArrayList(Book.BKEY_TOC_LIST);
-        mAdapter = new TocEntryAdapter(context, tocList);
+        mAdapter = new TocAdapter(context, mVm.getTocList());
         mVb.toc.setAdapter(mAdapter);
+        mVb.toc.setHasFixedSize(true);
+
+        // Author/Book-title are only present when this fragment is full-screen
+        final String authors = mVm.getAuthors();
+        if (authors != null) {
+            setTitle(authors);
+        }
+        final String bookTitle = mVm.getBookTitle();
+        if (bookTitle != null) {
+            setSubtitle(bookTitle);
+        }
     }
 
-    private static class TocEntryAdapter
-            extends RecyclerView.Adapter<TocEntryAdapter.Holder>
+    private static class TocAdapter
+            extends RecyclerView.Adapter<TocAdapter.Holder>
             implements FastScroller.PopupTextProvider {
 
         /** Cached inflater. */
@@ -122,8 +125,8 @@ public class TocFragment
          * @param context Current context.
          * @param tocList to show
          */
-        TocEntryAdapter(@NonNull final Context context,
-                        @NonNull final List<TocEntry> tocList) {
+        TocAdapter(@NonNull final Context context,
+                   @NonNull final List<TocEntry> tocList) {
             mInflater = LayoutInflater.from(context);
             mTocList = tocList;
         }
@@ -132,49 +135,44 @@ public class TocFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            final RowTocEntryWithAuthorBinding vb = RowTocEntryWithAuthorBinding
-                    .inflate(mInflater, parent, false);
+            final RowTocEntryBinding vb = RowTocEntryBinding.inflate(mInflater, parent, false);
             return new Holder(vb);
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            final TocEntry tocEntry = mTocList.get(position);
             final Context context = mInflater.getContext();
+
+            final TocEntry tocEntry = mTocList.get(position);
 
             holder.vb.title.setText(tocEntry.getLabel(context));
             holder.vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
 
-            final boolean isSet = tocEntry.getBookCount() > 1;
-            if (isSet) {
-                holder.vb.cbxMultipleBooks.setVisibility(View.VISIBLE);
-                holder.vb.cbxMultipleBooks.setOnClickListener(v -> {
+            final PartialDate date = tocEntry.getFirstPublicationDate();
+            if (date.isEmpty()) {
+                holder.vb.year.setVisibility(View.GONE);
+            } else {
+                // show full date string (if available)
+                holder.vb.year.setText(context.getString(R.string.brackets, date.getIsoString()));
+                holder.vb.year.setVisibility(View.VISIBLE);
+            }
+
+            // show the icon if this entry appears in more than one book in our collection
+            if (tocEntry.getBookCount() > 1) {
+                holder.vb.btnMultipleBooks.setVisibility(View.VISIBLE);
+                holder.vb.btnMultipleBooks.setOnClickListener(v -> {
                     final String titles = tocEntry
                             .getBookTitles()
                             .stream()
                             .map(bt -> context.getString(R.string.list_element, bt.second))
                             .collect(Collectors.joining("\n"));
                     StandardDialogs.infoPopup(
-                            holder.vb.cbxMultipleBooks,
+                            holder.vb.btnMultipleBooks,
                             context.getString(R.string.lbl_story_in_multiple_books, titles));
                 });
             }
-
-            final PartialDate date = tocEntry.getFirstPublicationDate();
-            if (date.isEmpty()) {
-                holder.vb.year.setVisibility(View.GONE);
-            } else {
-                holder.vb.year.setVisibility(View.VISIBLE);
-                // show full date string (if available)
-                holder.vb.year.setText(context.getString(R.string.brackets, date.getIsoString()));
-            }
         }
-
-//        @Override
-//        public int getItemViewType(final int position) {
-//            return mTocList.get(position).getType();
-//        }
 
         @Override
         public int getItemCount() {
@@ -191,9 +189,10 @@ public class TocFragment
         static class Holder
                 extends RecyclerView.ViewHolder {
 
-            private final RowTocEntryWithAuthorBinding vb;
+            @NonNull
+            private final RowTocEntryBinding vb;
 
-            Holder(@NonNull final RowTocEntryWithAuthorBinding vb) {
+            Holder(@NonNull final RowTocEntryBinding vb) {
                 super(vb.getRoot());
                 this.vb = vb;
             }

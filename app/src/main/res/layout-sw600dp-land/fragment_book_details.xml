@@ -49,6 +49,18 @@
             app:layout_constraintGuide_percent="0.67"
             />
 
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/cover_operation_progress_bar"
+            style="@style/Progress.Circle"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/progress_margin_top"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"
+            />
+
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
@@ -232,19 +244,28 @@
             tools:text="@tools:sample/lorem/random"
             />
 
-        <!--
-        DO NOT add
-                    android:name="com.hardbacknutter.nevertoomanybooks.TocFragment"
-        -->
+        <TextView
+            android:id="@+id/lbl_toc"
+            style="@style/Label"
+            android:text="@string/lbl_table_of_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:visibility="visible"
+            />
+
+        <!-- DO NOT add android:name="com.hardbacknutter.nevertoomanybooks.TocFragment" -->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_toc"
             tools:layout="@layout/fragment_toc"
+            tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

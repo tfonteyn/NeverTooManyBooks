@@ -278,7 +278,7 @@ public class AuthorWorksFragment
                 if (bookIdList.size() == 1) {
                     // open new activity to show the book, 'back' will return to this one.
                     //noinspection ConstantConditions
-                    final Intent intent = ShowBookFragment
+                    final Intent intent = ShowBookPagerFragment
                             .createIntent(getContext(), bookIdList.get(0));
                     startActivity(intent);
 
@@ -303,7 +303,8 @@ public class AuthorWorksFragment
             case AuthorWork.TYPE_BOOK: {
                 // open new activity to show the book, 'back' will return to this one.
                 //noinspection ConstantConditions
-                final Intent intent = ShowBookFragment.createIntent(getContext(), work.getId());
+                final Intent intent = ShowBookPagerFragment
+                        .createIntent(getContext(), work.getId());
                 startActivity(intent);
                 break;
             }
