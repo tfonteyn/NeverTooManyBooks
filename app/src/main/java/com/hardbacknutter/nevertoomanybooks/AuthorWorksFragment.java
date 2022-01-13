@@ -135,7 +135,7 @@ public class AuthorWorksFragment
 
         //noinspection ConstantConditions
         setTitle(mVm.getScreenTitle(context));
-        setSubtitle(mVm.getScreenSubtitle());
+        setSubtitle(mVm.getScreenSubtitle(context));
 
         mVb.authorWorks.setHasFixedSize(true);
         mVb.authorWorks.addItemDecoration(
@@ -212,7 +212,7 @@ public class AuthorWorksFragment
             mAdapter.notifyDataSetChanged();
             //noinspection ConstantConditions
             setTitle(mVm.getScreenTitle(getContext()));
-            setSubtitle(mVm.getScreenSubtitle());
+            setSubtitle(mVm.getScreenSubtitle(getContext()));
             return true;
         }
 

@@ -163,7 +163,7 @@ public class AuthorWorksViewModel
     }
 
     /**
-     * Screen title consists of the author name + the number of entries shown.
+     * Activity title consists of the author name + the number of entries shown.
      *
      * @param context Current context
      *
@@ -176,16 +176,20 @@ public class AuthorWorksViewModel
     }
 
     /**
-     * Screen subtitle will show the bookshelf name (or nothing if all-shelves).
+     * Activity subtitle will show the bookshelf name or nothing if all-shelves.
+     *
+     * @param context Current context
      *
      * @return subtitle
      */
     @Nullable
-    String getScreenSubtitle() {
+    String getScreenSubtitle(@NonNull final Context context) {
         if (mAllBookshelves) {
             return null;
         } else {
-            return mBookshelf.getName();
+            return context.getString(R.string.name_colon_value,
+                                     context.getString(R.string.lbl_bookshelf),
+                                     mBookshelf.getName());
         }
     }
 
