@@ -102,11 +102,13 @@ public class Styles {
      */
     @NonNull
     public ListStyle getStyleOrDefault(@NonNull final Context context,
-                                       @NonNull final String uuid) {
-        // Try to get user or builtin style
-        final ListStyle style = getStyle(context, uuid);
-        if (style != null) {
-            return style;
+                                       @Nullable final String uuid) {
+        if (uuid != null) {
+            // Try to get user or builtin style
+            final ListStyle style = getStyle(context, uuid);
+            if (style != null) {
+                return style;
+            }
         }
 
         // fall back to the user default.

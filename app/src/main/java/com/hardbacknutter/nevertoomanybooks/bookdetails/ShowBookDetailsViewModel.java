@@ -27,7 +27,6 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -74,17 +73,17 @@ public class ShowBookDetailsViewModel
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+
     private final MutableLiveData<BookMessage> mBookLd = new MutableLiveData<>();
     /** Database Access. */
     private BookDao mBookDao;
-    /** <strong>Optionally</strong> passed. */
-    @Nullable
-    private ListStyle mStyle;
+
     private Book mBook;
 
     /** The fields used. */
     private Fields mFieldsMap;
 
+    private ListStyle mStyle;
     private boolean mUseLoanee;
     private boolean mUseToc;
 
@@ -117,10 +116,8 @@ public class ShowBookDetailsViewModel
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
-            if (styleUuid != null) {
-                mStyle = ServiceLocator.getInstance().getStyles()
-                                       .getStyleOrDefault(context, styleUuid);
-            }
+            mStyle = ServiceLocator.getInstance().getStyles()
+                                   .getStyleOrDefault(context, styleUuid);
 
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -352,13 +349,8 @@ public class ShowBookDetailsViewModel
             return false;
         }
 
-        if (mStyle == null) {
-            // there is no style and the global preference was true.
-            return true;
-        } else {
-            // let the style decide
-            return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
-        }
+        // let the style decide
+        return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
     }
 
     public static class BookMessage

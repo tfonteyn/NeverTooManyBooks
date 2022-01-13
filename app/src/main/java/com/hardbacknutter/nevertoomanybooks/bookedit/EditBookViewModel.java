@@ -82,9 +82,8 @@ public class EditBookViewModel
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
 
-    /** <strong>Optionally</strong> passed in via the arguments. */
-    @Nullable
     private ListStyle mStyle;
+
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
@@ -163,10 +162,8 @@ public class EditBookViewModel
         if (mBook == null) {
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
-                if (styleUuid != null) {
-                    mStyle = ServiceLocator.getInstance().getStyles()
-                                           .getStyleOrDefault(context, styleUuid);
-                }
+                mStyle = ServiceLocator.getInstance().getStyles()
+                                       .getStyleOrDefault(context, styleUuid);
 
                 // 1. Do we have a bundle? e.g. after an internet search
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
@@ -371,15 +368,9 @@ public class EditBookViewModel
             return false;
         }
 
-        if (mStyle == null) {
-            // there is no style and the global preference was true.
-            return true;
-        } else {
-            // let the style decide
-            return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
-        }
+        // let the style decide
+        return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
     }
-
 
     @NonNull
     List<Bookshelf> getAllBookshelves() {
