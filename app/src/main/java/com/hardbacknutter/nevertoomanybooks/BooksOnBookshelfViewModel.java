@@ -304,14 +304,14 @@ public class BooksOnBookshelfViewModel
      * Should be called after <strong>a style was changed/selected</strong>.
      * The style should exist (id != 0), or if it doesn't, the default style will be used instead.
      *
-     * @param context Current context
-     * @param uuid    the style to apply
+     * @param context   Current context
+     * @param styleUuid the style to apply
      */
     void onStyleChanged(@NonNull final Context context,
-                        @NonNull final String uuid) {
+                        @NonNull final String styleUuid) {
         // Always validate first
         final ListStyle style = ServiceLocator.getInstance().getStyles()
-                                              .getStyleOrDefault(context, uuid);
+                                              .getStyleOrDefault(context, styleUuid);
         changeStyle(context, style);
     }
 
