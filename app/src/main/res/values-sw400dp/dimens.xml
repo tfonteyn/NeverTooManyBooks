@@ -25,5 +25,6 @@
     land: w683dp h387dp
     -->
 <resources>
+    <dimen name="bob_list_end_margin">4dp</dimen>
     <dimen name="progress_width">380dp</dimen>
 </resources>

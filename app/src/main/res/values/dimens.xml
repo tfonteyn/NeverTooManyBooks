@@ -99,6 +99,8 @@
     <dimen name="bob_group_level_padding_start">8dp</dimen>
     <dimen name="bob_group_level_bullet_padding">4dp</dimen>
 
+    <!-- on larger screens we'll add an end-margin to allow easier scrolling. -->
+    <dimen name="bob_list_end_margin">0dp</dimen>
 
     <!-- The text size (in sp units, but in float notation) for all text in a book list row.
          For reference:

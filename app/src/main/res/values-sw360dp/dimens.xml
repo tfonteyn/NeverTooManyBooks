@@ -28,6 +28,8 @@
     <dimen name="field_margin_start">8dp</dimen>
     <dimen name="field_margin_inline">12dp</dimen>
 
+    <dimen name="bob_list_end_margin">2dp</dimen>
+
     <dimen name="screen_min_width">340dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 </resources>
