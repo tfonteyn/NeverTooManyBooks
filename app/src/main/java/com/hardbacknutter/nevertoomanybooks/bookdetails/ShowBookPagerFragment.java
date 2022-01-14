@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentShowBookPagerBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsPagerBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 public class ShowBookPagerFragment
@@ -48,7 +48,7 @@ public class ShowBookPagerFragment
     public static final String TAG = "ShowBookPagerFragment";
 
     /** View Binding with the ViewPager2. */
-    private FragmentShowBookPagerBinding mVb;
+    private FragmentBookDetailsPagerBinding mVb;
 
     @SuppressWarnings("FieldCanBeLocal")
     private ShowBookPagerAdapter mPagerAdapter;
@@ -114,7 +114,7 @@ public class ShowBookPagerFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        mVb = FragmentShowBookPagerBinding.inflate(inflater, container, false);
+        mVb = FragmentBookDetailsPagerBinding.inflate(inflater, container, false);
         return mVb.getRoot();
     }
 
