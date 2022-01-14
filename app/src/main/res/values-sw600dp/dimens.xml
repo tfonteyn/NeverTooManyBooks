@@ -28,4 +28,5 @@
 -->
 <resources>
 
+    <dimen name="progress_margin_top">200dp</dimen>
 </resources>
