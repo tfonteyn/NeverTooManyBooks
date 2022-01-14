@@ -84,6 +84,9 @@ public interface TocEntryDao {
 
     /**
      * Return a list of paired book-id and book-title 's for the given TOC id.
+     * <p>
+     * The titles are returned "as-is". If re-ordering is needed, the caller must do this
+     * after getting the list.
      *
      * @param id TOC id
      *

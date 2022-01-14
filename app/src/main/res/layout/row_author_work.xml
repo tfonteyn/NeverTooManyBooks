@@ -28,15 +28,12 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
-    <!-- "invisible" by default (NOT 'gone' as we want the space allocated)
-        hence we also set the minWidth == minHeight of the row
-     -->
     <ImageButton
         android:id="@+id/btn_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minWidth="?attr/listPreferredItemHeightSmall"
         android:backgroundTint="@android:color/transparent"
+        android:minWidth="?attr/listPreferredItemHeightSmall"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

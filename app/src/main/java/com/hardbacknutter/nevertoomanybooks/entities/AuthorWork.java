@@ -23,6 +23,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -33,9 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  */
 public interface AuthorWork {
 
-    /** As used by the DAO. */
+    /** {@link TocEntry}; 'T' as returned by the DAO SQL. */
     char TYPE_TOC = 'T';
-    /** As used by the DAO. */
+    /** {@link Book}; 'B'  as returned by the DAO SQL. */
     char TYPE_BOOK = 'B';
 
     /**
@@ -70,6 +74,33 @@ public interface AuthorWork {
     @Nullable
     Author getPrimaryAuthor();
 
+    /**
+     * Get the list of book titles this work is present in.
+     * <p>
+     * The default implementation assumes the work <strong>is</strong> a Book,
+     * and simply returns the (single) id/title.
+     *
+     * @param context Current context
+     *
+     * @return list with id/title pairs
+     */
+    @NonNull
+    default List<Pair<Long, String>> getBookTitles(@NonNull final Context context) {
+        final List<Pair<Long, String>> list = new ArrayList<>();
+        list.add(new Pair<>(getId(), getLabel(context)));
+        return list;
+    }
+
+    /**
+     * Get the number of books this work is present in.
+     * <p>
+     * The default implementation assumes the work <strong>is</strong> a Book.
+     * <p>
+     * Dev. note: calling this SHOULD be faster then calling {@link #getBookTitles(Context)}
+     * and the size of that list.
+     *
+     * @return count
+     */
     default int getBookCount() {
         return 1;
     }

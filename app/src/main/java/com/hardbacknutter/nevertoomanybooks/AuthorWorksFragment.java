@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +32,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -45,6 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
@@ -60,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 
 /**
@@ -146,7 +147,7 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.authorWorks, overlayType);
 
-        mAdapter = new TocAdapter(context);
+        mAdapter = new TocAdapter(context, mVm.getWorks());
         mVb.authorWorks.setAdapter(mAdapter);
 
         final Resources res = getResources();
@@ -318,7 +319,7 @@ public class AuthorWorksFragment
      * Row ViewHolder for {@link TocAdapter}.
      */
     private static class Holder
-            extends RecyclerView.ViewHolder {
+            extends TocBaseAdapter.TocHolder {
 
         @NonNull
         private final RowAuthorWorkBinding vb;
@@ -327,49 +328,49 @@ public class AuthorWorksFragment
             super(vb.getRoot());
             this.vb = vb;
         }
+
+        @NonNull
+        @Override
+        public ImageButton getIconBtnView() {
+            return vb.btnType;
+        }
+
+        @NonNull
+        @Override
+        public TextView getTitleView() {
+            return vb.title;
+        }
+
+        @NonNull
+        @Override
+        public TextView getFirstPublicationView() {
+            return vb.year;
+        }
     }
 
     public class TocAdapter
-            extends RecyclerView.Adapter<Holder>
-            implements FastScroller.PopupTextProvider {
-
-        /** Cached inflater. */
-        private final LayoutInflater mInflater;
-
-        private final String mBookStr;
-        private final Drawable mBookEntryIcon;
-
-        private final String mMultipleBooksStr;
-        private final Drawable mTocEntryIcon;
+            extends TocBaseAdapter {
 
         /**
          * Constructor.
          *
          * @param context Current context
+         * @param tocList to show
          */
         @SuppressLint("UseCompatLoadingForDrawables")
-        TocAdapter(@NonNull final Context context) {
-            mInflater = LayoutInflater.from(context);
-
-            final Resources.Theme theme = context.getTheme();
-            final Resources res = context.getResources();
-
-            // The entry is an actual book
-            mBookStr = res.getString(R.string.lbl_book);
-            mBookEntryIcon = res.getDrawable(R.drawable.ic_baseline_book_24, theme);
-            // The entry is a story (etc...) which appears in multiple books.
-            mMultipleBooksStr = res.getString(R.string.tip_authors_works_multiple_books);
-            mTocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
+        TocAdapter(@NonNull final Context context,
+                   @NonNull final List<AuthorWork> tocList) {
+            super(context, tocList);
         }
 
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(mInflater, parent, false);
-
             final Holder holder = new Holder(vb);
+
+            initTypeButton(holder.vb.btnType, viewType);
 
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
@@ -380,67 +381,6 @@ public class AuthorWorksFragment
             });
 
             return holder;
-        }
-
-        @SuppressLint("UseCompatTextViewDrawableApis")
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            final Context context = mInflater.getContext();
-
-            final AuthorWork work = mVm.getWorks().get(position);
-
-            holder.vb.title.setText(work.getLabel(context));
-
-            final PartialDate date = work.getFirstPublicationDate();
-            if (date.isEmpty()) {
-                holder.vb.year.setVisibility(View.GONE);
-            } else {
-                // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
-                // cut the date to just the year.
-                final String fp = context.getString(R.string.brackets,
-                                                    String.valueOf(date.getYearValue()));
-                holder.vb.year.setText(fp);
-                holder.vb.year.setVisibility(View.VISIBLE);
-            }
-
-            switch (work.getWorkType()) {
-                case AuthorWork.TYPE_TOC: {
-                    // show the icon if this entry appears in more than one book in our collection
-                    if (work.getBookCount() > 1) {
-                        holder.vb.btnType.setImageDrawable(mTocEntryIcon);
-                        holder.vb.btnType.setVisibility(View.VISIBLE);
-                        holder.vb.btnType.setContentDescription(mMultipleBooksStr);
-                    } else {
-                        holder.vb.btnType.setVisibility(View.INVISIBLE);
-                    }
-                    break;
-                }
-                case AuthorWork.TYPE_BOOK: {
-                    holder.vb.btnType.setImageDrawable(mBookEntryIcon);
-                    holder.vb.btnType.setVisibility(View.VISIBLE);
-                    holder.vb.btnType.setContentDescription(mBookStr);
-                    break;
-                }
-                default: {
-                    // we should never get here... flw
-                    holder.vb.btnType.setVisibility(View.INVISIBLE);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mVm.getWorks().size();
-        }
-
-        @NonNull
-        @Override
-        public String[] getPopupText(final int position) {
-            final String title = mVm.getWorks().get(position)
-                                    .getLabel(mInflater.getContext());
-            return new String[]{title};
         }
     }
 }

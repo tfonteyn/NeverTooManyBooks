@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -39,14 +41,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 public class TocFragment
         extends BaseFragment {
@@ -96,7 +99,10 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.toc, overlayType);
 
-        mAdapter = new TocAdapter(context, mVm.getTocList());
+        mAdapter = new TocAdapter(context, mVm.getTocList()
+                                              .stream()
+                                              .map(t -> (AuthorWork) t)
+                                              .collect(Collectors.toList()));
         mVb.toc.setAdapter(mAdapter);
         mVb.toc.setHasFixedSize(true);
 
@@ -111,15 +117,46 @@ public class TocFragment
         }
     }
 
-    private static class TocAdapter
-            extends RecyclerView.Adapter<TocAdapter.Holder>
-            implements FastScroller.PopupTextProvider {
+    /**
+     * Row ViewHolder for {@link AuthorWorksFragment.TocAdapter}.
+     */
+    private static class Holder
+            extends TocBaseAdapter.TocHolder {
 
-        /** Cached inflater. */
         @NonNull
-        private final LayoutInflater mInflater;
+        private final RowTocEntryBinding vb;
+
+        Holder(@NonNull final RowTocEntryBinding vb) {
+            super(vb.getRoot());
+            this.vb = vb;
+        }
+
         @NonNull
-        private final List<TocEntry> mTocList;
+        @Override
+        public ImageButton getIconBtnView() {
+            return vb.btnType;
+        }
+
+        @NonNull
+        @Override
+        public TextView getTitleView() {
+            return vb.title;
+        }
+
+        @NonNull
+        @Override
+        public TextView getFirstPublicationView() {
+            return vb.year;
+        }
+
+        @NonNull
+        public TextView getAuthorView() {
+            return vb.author;
+        }
+    }
+
+    private static class TocAdapter
+            extends TocBaseAdapter {
 
         /**
          * Constructor.
@@ -127,10 +164,10 @@ public class TocFragment
          * @param context Current context.
          * @param tocList to show
          */
+        @SuppressLint("UseCompatLoadingForDrawables")
         TocAdapter(@NonNull final Context context,
-                   @NonNull final List<TocEntry> tocList) {
-            mInflater = LayoutInflater.from(context);
-            mTocList = tocList;
+                   @NonNull final List<AuthorWork> tocList) {
+            super(context, tocList);
         }
 
         @NonNull
@@ -138,66 +175,23 @@ public class TocFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
             final RowTocEntryBinding vb = RowTocEntryBinding.inflate(mInflater, parent, false);
-            return new Holder(vb);
-        }
+            final Holder holder = new Holder(vb);
 
-        @Override
-        public void onBindViewHolder(@NonNull final Holder holder,
-                                     final int position) {
-            final Context context = mInflater.getContext();
+            initTypeButton(holder.vb.btnType, viewType);
 
-            final TocEntry tocEntry = mTocList.get(position);
+            holder.vb.btnType.setOnClickListener(v -> {
+                final String titles = mTocList
+                        .get(holder.getBindingAdapterPosition())
+                        .getBookTitles(v.getContext())
+                        .stream()
+                        .map(bt -> v.getContext().getString(R.string.list_element, bt.second))
+                        .collect(Collectors.joining("\n"));
+                StandardDialogs.infoPopup(
+                        holder.vb.btnType,
+                        v.getContext().getString(R.string.lbl_story_in_multiple_books, titles));
+            });
 
-            holder.vb.title.setText(tocEntry.getLabel(context));
-            holder.vb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
-
-            final PartialDate date = tocEntry.getFirstPublicationDate();
-            if (date.isEmpty()) {
-                holder.vb.year.setVisibility(View.GONE);
-            } else {
-                // show full date string (if available)
-                holder.vb.year.setText(context.getString(R.string.brackets, date.getIsoString()));
-                holder.vb.year.setVisibility(View.VISIBLE);
-            }
-
-            // show the icon if this entry appears in more than one book in our collection
-            if (tocEntry.getBookCount() > 1) {
-                holder.vb.btnMultipleBooks.setVisibility(View.VISIBLE);
-                holder.vb.btnMultipleBooks.setOnClickListener(v -> {
-                    final String titles = tocEntry
-                            .getBookTitles()
-                            .stream()
-                            .map(bt -> context.getString(R.string.list_element, bt.second))
-                            .collect(Collectors.joining("\n"));
-                    StandardDialogs.infoPopup(
-                            holder.vb.btnMultipleBooks,
-                            context.getString(R.string.lbl_story_in_multiple_books, titles));
-                });
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mTocList.size();
-        }
-
-        @NonNull
-        @Override
-        public String[] getPopupText(final int position) {
-            final String title = mTocList.get(position).getLabel(mInflater.getContext());
-            return new String[]{title};
-        }
-
-        static class Holder
-                extends RecyclerView.ViewHolder {
-
-            @NonNull
-            private final RowTocEntryBinding vb;
-
-            Holder(@NonNull final RowTocEntryBinding vb) {
-                super(vb.getRoot());
-                this.vb = vb;
-            }
+            return holder;
         }
     }
 }

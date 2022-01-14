@@ -300,8 +300,10 @@ public class TocEntry
         mAuthor = author;
     }
 
+    @Override
     @NonNull
-    public List<Pair<Long, String>> getBookTitles() {
+    public List<Pair<Long, String>> getBookTitles(@NonNull final Context context) {
+        //URGENT: titles are NOT reordered as per user Preferences!
         return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId);
     }
 
