@@ -33,6 +33,14 @@
         android:layout_margin="@dimen/screen_border"
         >
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50"
+            />
+
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/cover_operation_progress_bar"
             style="@style/Progress.Circle"
@@ -48,6 +56,7 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
+            app:layout_constraintEnd_toStartOf="@id/coverImage1"
             android:layout_width="@dimen/cover_details_0_width"
             android:layout_height="@dimen/cover_details_0_height"
             android:contentDescription="@string/lbl_cover_front"
@@ -74,8 +83,8 @@
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coverImage0"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintTop_toBottomOf="@id/title"
             tools:src="@sample/covers"
             />
         <!--
@@ -144,17 +153,6 @@
             app:layout_constraintBottom_toTopOf="@id/barrier_rating_btn_toc"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/rating"
-            />
-
-        <Button
-            android:id="@+id/btn_show_toc"
-            style="@style/Button.Action.Open"
-            android:layout_marginStart="@dimen/field_margin_inline"
-            android:text="@string/btn_show_toc"
-            android:contentDescription="@string/btn_show_toc_long"
-            app:layout_constraintStart_toEndOf="@id/lbl_anthology_or_collection"
-            app:layout_constraintTop_toBottomOf="@id/rating"
-            tools:visibility="visible"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -242,6 +240,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
+            app:constraint_referenced_ids="coverImage0,coverImage1"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_bottom_pd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
             app:constraint_referenced_ids="coverImage0,coverImage1,personal_data_section"
             />
 
@@ -250,9 +256,23 @@
             style="@style/Field.Description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
+            />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/toc_frame"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom_pd"
+            tools:layout="@layout/fragment_toc"
+            tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
