@@ -519,17 +519,17 @@ public class BooksOnBookshelf
 
     private void createBooklistView(@NonNull final SharedPreferences global) {
         //noinspection ConstantConditions
-        mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
-        mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
+        mLayoutManager = (LinearLayoutManager) mVb.content.list.getLayoutManager();
+        mVb.content.list.addItemDecoration(new TopLevelItemDecoration(this));
 
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
-        FastScroller.attach(mVb.list, overlayType);
+        FastScroller.attach(mVb.content.list, overlayType);
 
         // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
-        mVb.list.setItemViewCacheSize(20);
-        mVb.list.setDrawingCacheEnabled(true);
-        mVb.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        mVb.content.list.setItemViewCacheSize(20);
+        mVb.content.list.setDrawingCacheEnabled(true);
+        mVb.content.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
     }
 
     /**
@@ -570,15 +570,15 @@ public class BooksOnBookshelf
                             .build(),
                     new HeaderAdapter(), mAdapter);
 
-            mVb.list.setAdapter(concatAdapter);
+            mVb.content.list.setAdapter(concatAdapter);
 
             // make the list view visible!
-            mVb.list.setVisibility(View.VISIBLE);
+            mVb.content.list.setVisibility(View.VISIBLE);
 
             return mAdapter.getItemCount();
 
         } else {
-            mVb.list.setVisibility(View.GONE);
+            mVb.content.list.setVisibility(View.GONE);
             return 0;
         }
     }
@@ -596,7 +596,7 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu(@NonNull final SharedPreferences global) {
-        mFabMenu.attach(mVb.list);
+        mFabMenu.attach(mVb.content.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
                 .setEnabled(EditBookExternalIdFragment.isShowTab(global));
@@ -1487,7 +1487,7 @@ public class BooksOnBookshelf
         if (!mVm.isBuilding()) {
             mVb.progressCircle.show();
             // Invisible... theoretically this means the page should not re-layout
-            mVb.list.setVisibility(View.INVISIBLE);
+            mVb.content.list.setVisibility(View.INVISIBLE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 final SimpleDateFormat dateFormat =
@@ -1617,7 +1617,7 @@ public class BooksOnBookshelf
      */
     private void displayList() {
         if (createListAdapter(true) > 0) {
-            mVb.list.post(() -> scrollToSavedPosition(true));
+            mVb.content.list.post(() -> scrollToSavedPosition(true));
         }
     }
 
@@ -1628,9 +1628,9 @@ public class BooksOnBookshelf
      */
     private void displayList(@NonNull final BooklistNode node) {
         if (createListAdapter(true) > 0) {
-            mVb.list.post(() -> {
+            mVb.content.list.post(() -> {
                 scrollToSavedPosition(false);
-                mVb.list.post(() -> scrollTo(node));
+                mVb.content.list.post(() -> scrollTo(node));
             });
         }
     }
@@ -1644,7 +1644,7 @@ public class BooksOnBookshelf
     private void displayList(@Nullable final List<BooklistNode> targetNodes) {
         if (createListAdapter(true) > 0) {
             if (targetNodes != null) {
-                mVb.list.post(() -> {
+                mVb.content.list.post(() -> {
                     scrollToSavedPosition(false);
                     final BooklistNode node;
                     if (targetNodes.size() == 1) {
@@ -1652,10 +1652,10 @@ public class BooksOnBookshelf
                     } else {
                         node = findBestNode(targetNodes);
                     }
-                    mVb.list.post(() -> scrollTo(node));
+                    mVb.content.list.post(() -> scrollTo(node));
                 });
             } else {
-                mVb.list.post(() -> scrollToSavedPosition(true));
+                mVb.content.list.post(() -> scrollToSavedPosition(true));
             }
         }
     }
@@ -1714,13 +1714,13 @@ public class BooksOnBookshelf
      */
     private int getViewOffset() {
         // the list.getChildAt; not the layoutManager.getChildAt (not sure why...)
-        final View topView = mVb.list.getChildAt(0);
+        final View topView = mVb.content.list.getChildAt(0);
         if (topView == null) {
             return 0;
 
         } else {
             // currently our padding is 0, but this is future-proof
-            final int paddingTop = mVb.list.getPaddingTop();
+            final int paddingTop = mVb.content.list.getPaddingTop();
             final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                     topView.getLayoutParams();
             return topView.getTop() - lp.topMargin - paddingTop;
@@ -1757,7 +1757,7 @@ public class BooksOnBookshelf
         }
         // after layout, save the final position
         if (save) {
-            mVb.list.post(this::saveListPosition);
+            mVb.content.list.post(this::saveListPosition);
         }
     }
 
@@ -1833,7 +1833,7 @@ public class BooksOnBookshelf
         }
 
         // after layout, save the final position
-        mVb.list.post(this::saveListPosition);
+        mVb.content.list.post(this::saveListPosition);
     }
 
     @SuppressLint("LogConditional")
