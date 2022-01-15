@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -40,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * This class can be used in two ways:
  * <ol>
  *     <li>with a {@link TextAccessor}: the value is stored in the accessor,<br>
- *         This is meant to be used with a {@link PartialDatePickerDialogFragment}.</li>
+ *         This is meant to be used with a Date-Picker (i.e. the user selects a date).</li>
  *     <li>with an {@link EditTextAccessor}: the value will be extracted from the View.<br>
  *         This is meant to be used as a free-entry field (i.e. the user types in the date).</li>
  * </ol>

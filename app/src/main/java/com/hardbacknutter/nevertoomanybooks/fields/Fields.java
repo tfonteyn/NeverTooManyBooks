@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
@@ -50,14 +51,19 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *          As new view types are added, it will be necessary to add new {@link FieldViewAccessor}
  *          implementations.
  *          In some specific circumstances, an accessor can be defined manually.</li>
- *      <li> Custom data accessors and formatter to provide application-specific data rules.</li>
+ *      <li> Custom data accessors and formatters to provide application-specific data rules.</li>
  *      <li> simplified extraction of data.</li>
  * </ul>
  * <p>
- * Formatter and Accessors
+ * Accessors
  * <p>
- * It is up to each accessor to decide what to do with any formatter defined for a field.
- * Formatters only really make sense for TextView and EditText elements.
+ * A {@link FieldViewAccessor} handles interactions between the value and the View
+ * (with an optional {@link FieldFormatter}).
+ * <p>
+ * Formatters
+ * <p>
+ * A Formatter can be set on any class extending {@link TextAccessor},
+ * i.e. for TextView and EditText elements.
  * Formatters should implement {@link FieldFormatter#format(Context, Object)} where the Object
  * is transformed to a String - DO NOT CHANGE class variables while doing this.
  * In contrast {@link FieldFormatter#apply} CAN change class variables
@@ -65,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <p>
  * This way, other code can access {@link FieldFormatter#format(Context, Object)}
  * without side-effects.
- *
+ * <p>
  * <ul>Data flows to and from a view as follows:
  *      <li>IN  (no formatter ):<br>
  *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
