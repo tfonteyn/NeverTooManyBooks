@@ -110,11 +110,6 @@ public interface FieldViewAccessor<T, V extends View> {
      */
     void setError(@Nullable String errorText);
 
-    @Nullable
-    default FieldFormatter<T> getFormatter() {
-        return null;
-    }
-
     /**
      * Get the value from the view associated with the Field and return it as an Object.
      * <p>
