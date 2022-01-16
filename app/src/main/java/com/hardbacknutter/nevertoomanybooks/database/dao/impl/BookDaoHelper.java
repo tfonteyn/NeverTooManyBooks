@@ -477,7 +477,7 @@ public class BookDaoHelper {
             SanityCheck.requireValue(uuid, "uuid");
         }
 
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
+        for (int cIdx = 0; cIdx < Book.BKEY_TMP_FILE_SPEC.length; cIdx++) {
             if (mBook.contains(Book.BKEY_TMP_FILE_SPEC[cIdx])) {
                 final String fileSpec = mBook.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
 

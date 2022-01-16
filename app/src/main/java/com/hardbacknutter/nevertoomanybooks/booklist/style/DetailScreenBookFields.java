@@ -54,7 +54,7 @@ public class DetailScreenBookFields
 
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
-        for (int cIdx = 0; cIdx < 2; cIdx++) {
+        for (int cIdx = 0; cIdx < PK_COVER.length; cIdx++) {
             addField(new PBoolean(isPersistent, persistenceLayer,
                                   PK_COVER[cIdx],
                                   DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])));
