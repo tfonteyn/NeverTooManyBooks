@@ -177,8 +177,7 @@ public class EditBookNotesFragment
         // only bother when it's in use
         final Field<?, ?> readCbx = getField(R.id.cbx_read);
         if (readCbx.isUsed(global)) {
-            //noinspection ConstantConditions
-            readCbx.getView().setOnClickListener(v -> {
+            readCbx.requireView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;
                 if (cb.isChecked()) {
                     final Field<String, TextView> readEnd = getField(R.id.read_end);

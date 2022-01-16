@@ -259,6 +259,11 @@ public class Field<T, V extends View> {
         return mFieldViewAccessor.getView();
     }
 
+    @NonNull
+    public V requireView() {
+        return Objects.requireNonNull(mFieldViewAccessor.getView());
+    }
+
     void setAfterFieldChangeListener(@Nullable final Fields.AfterChangeListener listener) {
         mAfterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
     }

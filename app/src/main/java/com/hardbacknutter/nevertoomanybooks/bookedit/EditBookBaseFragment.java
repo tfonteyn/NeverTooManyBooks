@@ -372,8 +372,7 @@ public abstract class EditBookBaseFragment
                 dp.setDateParser(mDateParser, true);
                 dp.onResume(mDatePickerListener);
 
-                //noinspection ConstantConditions
-                endField.getView().setOnClickListener(
+                endField.requireView().setOnClickListener(
                         v -> dp.launch(startField.getValue(), endField.getValue(),
                                        mDatePickerListener
                                       ));
@@ -403,9 +402,8 @@ public abstract class EditBookBaseFragment
             dp.setDateParser(mDateParser, true);
             dp.onResume(mDatePickerListener);
 
-            //noinspection ConstantConditions
-            field.getView().setOnClickListener(v -> dp.launch(field.getValue(),
-                                                              mDatePickerListener));
+            field.requireView().setOnClickListener(v -> dp.launch(field.getValue(),
+                                                                  mDatePickerListener));
         }
     }
 
@@ -421,8 +419,7 @@ public abstract class EditBookBaseFragment
                               @StringRes final int titleId) {
         final Field<String, TextView> field = getField(fieldId);
         if (field.isUsed(global)) {
-            //noinspection ConstantConditions
-            field.getView().setOnClickListener(v -> mPartialDatePickerLauncher
+            field.requireView().setOnClickListener(v -> mPartialDatePickerLauncher
                     .launch(titleId, field.getId(), field.getValue(), false));
         }
     }
