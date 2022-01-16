@@ -28,6 +28,7 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
@@ -42,18 +43,22 @@ public final class MenuHelper {
     }
 
     public static void setupSearchActionView(@NonNull final Activity activity,
+                                             @NonNull final MenuInflater inflater,
                                              @NonNull final Menu menu) {
-        final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
-        if (searchItem != null) {
-            // Reminder: we let the SearchView handle its own icons.
-            // The hint text is defined in xml/searchable.xml
-            final SearchView searchView = (SearchView) searchItem.getActionView();
-            final SearchManager searchManager = (SearchManager)
-                    activity.getSystemService(Context.SEARCH_SERVICE);
-            final SearchableInfo si = searchManager.getSearchableInfo(
-                    new ComponentName(activity, BooksOnBookshelf.class.getName()));
-            searchView.setSearchableInfo(si);
+        MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
+        if (searchItem == null) {
+            inflater.inflate(R.menu.sav_search, menu);
+            searchItem = menu.findItem(R.id.MENU_SEARCH);
         }
+
+        // Reminder: we let the SearchView handle its own icons.
+        // The hint text is defined in xml/searchable.xml
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        final SearchManager searchManager = (SearchManager)
+                activity.getSystemService(Context.SEARCH_SERVICE);
+        final SearchableInfo si = searchManager.getSearchableInfo(
+                new ComponentName(activity, BooksOnBookshelf.class.getName()));
+        searchView.setSearchableInfo(si);
     }
 
     /**
