@@ -41,7 +41,7 @@
 
     <!-- This is the initial place holder only. -->
     <ImageView
-        android:id="@+id/coverImage0"
+        android:id="@id/cover_image_0"
         style="@style/CoverImage.BrowserGallery"
         android:src="@drawable/ic_baseline_image_24"
         tools:ignore="ContentDescription"

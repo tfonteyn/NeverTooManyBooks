@@ -30,7 +30,7 @@
     >
 
     <com.hardbacknutter.nevertoomanybooks.covers.CropImageView
-        android:id="@+id/coverImage0"
+        android:id="@id/cover_image_0"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

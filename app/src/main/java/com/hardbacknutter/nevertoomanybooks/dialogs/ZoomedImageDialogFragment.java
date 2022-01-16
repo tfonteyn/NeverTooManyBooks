@@ -91,7 +91,7 @@ public class ZoomedImageDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mImageView = view.findViewById(R.id.coverImage0);
+        mImageView = view.findViewById(R.id.cover_image_0);
         mImageView.setOnClickListener(v -> dismiss());
     }
 

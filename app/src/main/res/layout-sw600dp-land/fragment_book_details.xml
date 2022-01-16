@@ -25,6 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_scroller"
     style="@style/TopNestedScroller"
+    tools:viewBindingIgnore="true"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,12 +63,12 @@
             />
 
         <ImageView
-            android:id="@+id/coverImage0"
+            android:id="@id/cover_image_0"
             style="@style/CoverImage"
             android:layout_width="@dimen/cover_details_0_width"
             android:layout_height="@dimen/cover_details_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintEnd_toStartOf="@id/coverImage1"
+            app:layout_constraintEnd_toStartOf="@id/cover_image_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -86,13 +87,13 @@
             tools:src="@drawable/ic_add_a_photo"
         -->
         <ImageView
-            android:id="@+id/coverImage1"
+            android:id="@id/cover_image_1"
             style="@style/CoverImage"
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toTopOf="@id/coverImage0"
+            app:layout_constraintStart_toEndOf="@id/cover_image_0"
+            app:layout_constraintTop_toTopOf="@id/cover_image_0"
             tools:src="@sample/covers"
             />
         <!--
@@ -114,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,coverImage1"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1"
             />
 
         <TextView

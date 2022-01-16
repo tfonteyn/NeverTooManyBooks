@@ -81,7 +81,7 @@
                 />
 
             <ImageView
-                android:id="@+id/coverImage0"
+                android:id="@id/cover_image_0"
                 style="@style/CoverImage"
                 android:layout_width="@dimen/cover_scale_4_width"
                 android:layout_height="@dimen/cover_scale_4_height"
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/coverImage0"
+                app:layout_constraintStart_toEndOf="@id/cover_image_0"
                 app:layout_constraintTop_toBottomOf="@id/title"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
