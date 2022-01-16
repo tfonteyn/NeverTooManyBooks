@@ -971,7 +971,7 @@ public class BooklistAdapter
             mBookshelvesView = itemView.findViewById(R.id.shelves);
 
             mCoverLongestSide = coverLongestSide;
-            mCoverView = itemView.findViewById(R.id.coverImage0);
+            mCoverView = itemView.findViewById(R.id.cover_image_0);
             if (mInUse.cover) {
                 // Do not go overkill here by adding a full-blown CoverHandler.
                 // We only provide zooming by clicking on the image.
