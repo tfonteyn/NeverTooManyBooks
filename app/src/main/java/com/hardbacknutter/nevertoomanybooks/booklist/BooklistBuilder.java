@@ -430,8 +430,11 @@ class BooklistBuilder {
 
         /** Table used by the triggers to track the most recent/current row headings. */
         private TableDefinition mTriggerHelperTable;
-        private String mTriggerHelperLevelTriggerName;
+        /** Trigger name - inserts headers for each level during the initial insert. */
+        private String[] mTriggerHelperLevelTriggerName;
+        /** Trigger name - maintain the 'current' value during the initial insert. */
         private String mTriggerHelperCurrentValueTriggerName;
+
         private Collection<TableDefinition> mLeftOuterJoins;
 
         /**
@@ -720,6 +723,8 @@ class BooklistBuilder {
 
             final int groupCount = mStyle.getGroups().size();
 
+            mTriggerHelperLevelTriggerName = new String[groupCount];
+
             /*
              * For each grouping, starting with the lowest, build a trigger to update the next
              * level up as necessary. i.o.w. each level has a dedicated trigger.
@@ -776,10 +781,10 @@ class BooklistBuilder {
                 }
 
                 // (re)Create the trigger
-                mTriggerHelperLevelTriggerName = mListTable.getName() + "_TG_LEVEL_" + level;
-                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
+                mTriggerHelperLevelTriggerName[index] = mListTable.getName() + "_TG_LEVEL_" + level;
+                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName[index]);
                 final String levelTgSql =
-                        "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
+                        "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName[index]
                         + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
                         + "\n WHEN NEW." + DBKey.KEY_BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
@@ -820,7 +825,9 @@ class BooklistBuilder {
                 db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
             }
             if (mTriggerHelperLevelTriggerName != null) {
-                db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
+                for (final String name : mTriggerHelperLevelTriggerName) {
+                    db.execSQL(DROP_TRIGGER_IF_EXISTS_ + name);
+                }
             }
             if (mTriggerHelperTable != null) {
                 db.drop(mTriggerHelperTable.getName());
