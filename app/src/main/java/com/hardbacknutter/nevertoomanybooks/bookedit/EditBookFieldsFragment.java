@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -180,39 +181,37 @@ public class EditBookFieldsFragment
 
     private void createCoverDelegates(@NonNull final SharedPreferences global) {
         final Resources res = getResources();
+        final TypedArray width = res.obtainTypedArray(R.array.cover_edit_width);
+        final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
+        try {
+            for (int cIdx = 0; cIdx < width.length(); cIdx++) {
+                if (mVm.isCoverUsed(global, cIdx)) {
+                    final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
+                    final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
-        if (mVm.isCoverUsed(global, 0)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
+                    mCoverHandler[cIdx] = new CoverHandler(this, this, cIdx, maxWidth, maxHeight);
+                    mCoverHandler[cIdx].onViewCreated(this);
+                    mCoverHandler[cIdx].setProgressView(mVb.coverOperationProgressBar);
+                    mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
 
-            mCoverHandler[0] = new CoverHandler(this, this, 0, maxWidth, maxHeight);
-            mCoverHandler[0].onViewCreated(this);
-            mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
-            mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
-
-            //noinspection ConstantConditions
-            mCoverHandler[0].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
-            //noinspection ConstantConditions
-            mCoverHandler[0].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
-        } else {
-            mVb.coverImage0.setVisibility(View.GONE);
-        }
-
-        if (mVm.isCoverUsed(global, 1)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
-
-            mCoverHandler[1] = new CoverHandler(this, this, 1, maxWidth, maxHeight);
-            mCoverHandler[1].onViewCreated(this);
-            mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
-            mCoverHandler[1].setBookSupplier(() -> mVm.getBook());
-
-            //noinspection ConstantConditions
-            mCoverHandler[1].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
-            //noinspection ConstantConditions
-            mCoverHandler[1].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
-        } else {
-            mVb.coverImage1.setVisibility(View.GONE);
+                    //noinspection ConstantConditions
+                    mCoverHandler[cIdx].setCoverBrowserTitleSupplier(
+                            () -> mVb.title.getText().toString());
+                    //noinspection ConstantConditions
+                    mCoverHandler[cIdx].setCoverBrowserIsbnSupplier(
+                            () -> mVb.isbn.getText().toString());
+                } else {
+                    // This is silly... ViewBinding has no arrays.
+                    if (cIdx == 0) {
+                        mVb.coverImage0.setVisibility(View.GONE);
+                    } else {
+                        mVb.coverImage1.setVisibility(View.GONE);
+                    }
+                }
+            }
+        } finally {
+            width.recycle();
+            height.recycle();
         }
     }
 
