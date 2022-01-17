@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherB
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -154,7 +153,7 @@ public class EditBookPublisherListDialogFragment
 
         mVb.publisherList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        mList = mVm.getBook().getPublishers();
         mListAdapter = new PublisherListAdapter(getContext(), mList,
                                                 vh -> mItemTouchHelper.startDrag(vh));
         mVb.publisherList.setAdapter(mListAdapter);

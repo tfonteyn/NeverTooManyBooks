@@ -262,8 +262,7 @@ public class CalibreContentServerWriter
                     localBook.getString(DBKey.UTC_DATE_LAST_UPDATED));
 
         final JSONArray authors = new JSONArray();
-        for (final Author author
-                : localBook.<Author>getParcelableArrayList(Book.BKEY_AUTHOR_LIST)) {
+        for (final Author author : localBook.getAuthors()) {
             authors.put(author.getFormattedName(true));
         }
         changes.put(CalibreBook.AUTHOR_ARRAY, authors);

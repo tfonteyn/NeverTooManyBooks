@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -53,7 +54,7 @@ public class TocViewModel
         mBookId = args.getLong(DBKey.FK_BOOK, 0);
         mBookTitle = args.getString(DBKey.KEY_TITLE);
         tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
-        final ArrayList<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         if (authorList != null) {
             authors = Author.getCondensedNames(context, authorList);
             if (BuildConfig.DEBUG /* always */) {

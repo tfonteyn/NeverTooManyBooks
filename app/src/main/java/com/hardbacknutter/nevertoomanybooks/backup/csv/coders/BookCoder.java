@@ -181,22 +181,18 @@ public class BookCoder {
         line.add(encode(book.getLong(DBKey.PK_ID)));
         line.add(encode(book.getString(DBKey.KEY_BOOK_UUID)));
         line.add(encode(book.getString(DBKey.UTC_DATE_LAST_UPDATED)));
-        line.add(encode(mAuthorCoder.encodeList(
-                book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST))));
+        line.add(encode(mAuthorCoder.encodeList(book.getAuthors())));
         line.add(encode(book.getString(DBKey.KEY_TITLE)));
         line.add(encode(book.getString(DBKey.KEY_ISBN)));
-        line.add(encode(mPublisherCoder.encodeList(
-                book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST))));
+        line.add(encode(mPublisherCoder.encodeList(book.getPublishers())));
         line.add(encode(book.getString(DBKey.KEY_PRINT_RUN)));
         line.add(encode(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
         line.add(encode(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
         line.add(encode(book.getLong(DBKey.BITMASK_EDITION)));
         line.add(encode(book.getFloat(DBKey.KEY_RATING)));
-        line.add(encode(mBookshelfCoder.encodeList(
-                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST))));
+        line.add(encode(mBookshelfCoder.encodeList(book.getBookshelves())));
         line.add(encode(book.getInt(DBKey.BOOL_READ)));
-        line.add(encode(mSeriesCoder.encodeList(
-                book.getParcelableArrayList(Book.BKEY_SERIES_LIST))));
+        line.add(encode(mSeriesCoder.encodeList(book.getSeries())));
         line.add(encode(book.getString(DBKey.KEY_PAGES)));
         line.add(encode(book.getString(DBKey.KEY_PRIVATE_NOTES)));
         line.add(encode(book.getInt(DBKey.KEY_BOOK_CONDITION)));
@@ -214,7 +210,7 @@ public class BookCoder {
         line.add(encode(book.getString(DBKey.KEY_COLOR)));
         line.add(encode(book.getInt(DBKey.BOOL_SIGNED)));
         line.add(encode(book.getString(DBKey.KEY_LOANEE)));
-        line.add(encode(mTocCoder.encodeList(book.getParcelableArrayList(Book.BKEY_TOC_LIST))));
+        line.add(encode(mTocCoder.encodeList(book.getToc())));
         line.add(encode(book.getString(DBKey.KEY_DESCRIPTION)));
         line.add(encode(book.getString(DBKey.KEY_GENRE)));
         line.add(encode(book.getString(DBKey.KEY_LANGUAGE)));
@@ -319,7 +315,7 @@ public class BookCoder {
         }
 
         // check/add a title
-        if (book.getString(DBKey.KEY_TITLE).isEmpty()) {
+        if (book.getTitle().isEmpty()) {
             book.putString(DBKey.KEY_TITLE, context.getString(R.string.unknown_title));
         }
 

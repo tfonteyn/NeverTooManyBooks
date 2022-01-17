@@ -123,8 +123,8 @@ public class AmazonHandler {
     public void prepareMenu(@NonNull final Menu menu,
                             @NonNull final Book book) {
 
-        final boolean hasAuthor = !book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST).isEmpty();
-        final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_LIST).isEmpty();
+        final boolean hasAuthor = !book.getAuthors().isEmpty();
+        final boolean hasSeries = !book.getSeries().isEmpty();
 
         prepareMenu(menu, hasAuthor, hasSeries);
     }

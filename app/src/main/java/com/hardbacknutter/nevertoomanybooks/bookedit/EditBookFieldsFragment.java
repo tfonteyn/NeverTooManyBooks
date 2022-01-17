@@ -164,7 +164,7 @@ public class EditBookFieldsFragment
             mVb.bookshelves.setOnClickListener(v -> {
                 final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
                 final ArrayList<Entity> selectedItems = new ArrayList<>(
-                        mVm.getBook().getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST));
+                        mVm.getBook().getBookshelves());
 
                 mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
                                                 R.id.bookshelves, allItems, selectedItems);

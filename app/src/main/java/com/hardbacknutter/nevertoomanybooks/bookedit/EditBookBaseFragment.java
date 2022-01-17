@@ -244,14 +244,13 @@ public abstract class EditBookBaseFragment
             setSubtitle(null);
         } else {
             // Existing book
-            String title = book.getString(DBKey.KEY_TITLE);
+            String title = book.getTitle();
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
             setTitle(title);
             //noinspection ConstantConditions
-            setSubtitle(Author.getCondensedNames(
-                    getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
+            setSubtitle(Author.getCondensedNames(getContext(), book.getAuthors()));
         }
     }
 

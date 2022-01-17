@@ -489,11 +489,6 @@ public class Series
         }
     }
 
-    /**
-     * Get the unformatted title.
-     *
-     * @return title
-     */
     @NonNull
     @Override
     public String getTitle() {

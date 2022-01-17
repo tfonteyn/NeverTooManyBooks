@@ -358,8 +358,7 @@ public class PublisherDaoImpl
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId, bookDao);
 
-                final Collection<Publisher> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+                final Collection<Publisher> fromBook = book.getPublishers();
                 final Collection<Publisher> destList = new ArrayList<>();
 
                 for (final Publisher item : fromBook) {

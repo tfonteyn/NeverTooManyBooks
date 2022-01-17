@@ -140,6 +140,11 @@ public interface ItemWithTitle {
                              .getBoolean(Prefs.pk_sort_title_reordered, true);
     }
 
+    /**
+     * Get the <strong>unformatted</strong> title.
+     *
+     * @return title
+     */
     @NonNull
     String getTitle();
 

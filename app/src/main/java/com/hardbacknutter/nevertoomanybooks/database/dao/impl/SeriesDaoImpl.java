@@ -390,8 +390,7 @@ public class SeriesDaoImpl
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId, bookDao);
 
-                final Collection<Series> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+                final Collection<Series> fromBook = book.getSeries();
                 final Collection<Series> destList = new ArrayList<>();
 
                 for (final Series item : fromBook) {

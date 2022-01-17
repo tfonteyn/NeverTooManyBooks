@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBind
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -155,7 +154,7 @@ public class EditBookSeriesListDialogFragment
         // set up the list view. The adapter is setup in onPopulateViews
         mVb.seriesList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        mList = mVm.getBook().getSeries();
         mListAdapter = new SeriesListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.seriesList.setAdapter(mListAdapter);

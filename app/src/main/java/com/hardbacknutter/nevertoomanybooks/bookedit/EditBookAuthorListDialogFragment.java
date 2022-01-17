@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorList
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -162,7 +161,7 @@ public class EditBookAuthorListDialogFragment
 
         mVb.authorList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        mList = mVm.getBook().getAuthors();
         mListAdapter = new AuthorListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mVb.authorList.setAdapter(mListAdapter);

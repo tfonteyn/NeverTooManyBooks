@@ -632,7 +632,7 @@ public class EditBookViewModel
                               @NonNull final Author modified) {
 
         if (ServiceLocator.getInstance().getAuthorDao().insert(context, modified) > 0) {
-            final ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final List<Author> list = mBook.getAuthors();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
@@ -668,7 +668,7 @@ public class EditBookViewModel
                               @NonNull final Series modified) {
         if (ServiceLocator.getInstance().getSeriesDao()
                           .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final ArrayList<Series> list = mBook.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final ArrayList<Series> list = mBook.getSeries();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.
@@ -706,8 +706,7 @@ public class EditBookViewModel
 
         if (ServiceLocator.getInstance().getPublisherDao()
                           .insert(context, modified, mBook.getLocale(context)) > 0) {
-            final ArrayList<Publisher> list = mBook
-                    .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            final ArrayList<Publisher> list = mBook.getPublishers();
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
             // That's ok, it will get garbage collected from the database sooner or later.

@@ -689,8 +689,7 @@ public class AuthorDaoImpl
             for (final long bookId : getBookIds(source.getId())) {
                 final Book book = Book.from(bookId, bookDao);
 
-                final Collection<Author> fromBook =
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+                final Collection<Author> fromBook = book.getAuthors();
                 final Collection<Author> destList = new ArrayList<>();
 
                 for (final Author item : fromBook) {

@@ -198,7 +198,7 @@ public class BookDaoImpl
                     .filterValues(mDb.getTableInfo(TBL_BOOKS));
 
             // Make sure we have at least one author
-            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final List<Author> authors = book.getAuthors();
             if (authors.isEmpty()) {
                 throw new DaoWriteException("No authors for book=" + book);
             }
@@ -436,16 +436,14 @@ public class BookDaoImpl
 
         if (book.contains(Book.BKEY_BOOKSHELF_LIST)) {
             // Bookshelves will be inserted if new, but not updated
-            insertBookBookshelf(context,
-                                book.getId(),
-                                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST));
+            insertBookBookshelf(context, book.getId(), book.getBookshelves());
         }
 
         if (book.contains(Book.BKEY_AUTHOR_LIST)) {
             // Authors will be inserted if new, but not updated
             insertAuthors(context,
                           book.getId(),
-                          book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST),
+                          book.getAuthors(),
                           lookupLocale,
                           bookLocale);
         }
@@ -454,7 +452,7 @@ public class BookDaoImpl
             // Series will be inserted if new, but not updated
             insertSeries(context,
                          book.getId(),
-                         book.getParcelableArrayList(Book.BKEY_SERIES_LIST),
+                         book.getSeries(),
                          lookupLocale,
                          bookLocale);
         }
@@ -463,7 +461,7 @@ public class BookDaoImpl
             // Publishers will be inserted if new, but not updated
             insertPublishers(context,
                              book.getId(),
-                             book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST),
+                             book.getPublishers(),
                              lookupLocale,
                              bookLocale);
         }
@@ -474,7 +472,7 @@ public class BookDaoImpl
             // AND update existing ones if needed.
             insertOrUpdateToc(context,
                               book.getId(),
-                              book.getParcelableArrayList(Book.BKEY_TOC_LIST),
+                              book.getToc(),
                               lookupLocale,
                               bookLocale);
         }

@@ -317,7 +317,7 @@ public class SearchBookUpdatesViewModel
                 //noinspection ConstantConditions
                 mCurrentFieldsWanted = mSyncProcessor.filter(mCurrentBook);
 
-                final String title = mCurrentBook.getString(DBKey.KEY_TITLE);
+                final String title = mCurrentBook.getTitle();
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)

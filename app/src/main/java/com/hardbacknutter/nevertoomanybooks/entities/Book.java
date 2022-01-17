@@ -37,6 +37,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -146,6 +147,7 @@ public class Book
 
     /** Log tag. */
     private static final String TAG = "Book";
+
     /**
      * Single front/back cover file specs.
      * <p>
@@ -154,12 +156,14 @@ public class Book
     public static final String[] BKEY_TMP_FILE_SPEC = {
             TAG + ":fileSpec:0",
             TAG + ":fileSpec:1"};
+
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
      * <p>
      * <br>type: {@code Serializable}
      */
     public static final String BKEY_BOOK_ID_LIST = TAG + ":id_list";
+
     /**
      * Bundle key to pass a Bundle with book data around.
      * i.e. before the data becomes an actual {@link Book}.
@@ -440,11 +444,6 @@ public class Book
         putLong(DBKey.PK_ID, id);
     }
 
-    /**
-     * Get the unformatted title.
-     *
-     * @return title
-     */
     @Override
     @NonNull
     public String getTitle() {
@@ -510,6 +509,10 @@ public class Book
         return Objects.requireNonNullElse(bookLocale, fallbackLocale);
     }
 
+    @NonNull
+    public ArrayList<Bookshelf> getBookshelves() {
+        return getParcelableArrayList(BKEY_BOOKSHELF_LIST);
+    }
 
     /**
      * Get the first author in the list of authors for this book.
@@ -518,8 +521,13 @@ public class Book
      */
     @Nullable
     public Author getPrimaryAuthor() {
-        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
+        final List<Author> authors = getAuthors();
         return authors.isEmpty() ? null : authors.get(0);
+    }
+
+    @NonNull
+    public ArrayList<Author> getAuthors() {
+        return getParcelableArrayList(BKEY_AUTHOR_LIST);
     }
 
     /**
@@ -529,8 +537,13 @@ public class Book
      */
     @Nullable
     public Series getPrimarySeries() {
-        final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
+        final List<Series> list = getSeries();
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @NonNull
+    public ArrayList<Series> getSeries() {
+        return getParcelableArrayList(BKEY_SERIES_LIST);
     }
 
     /**
@@ -540,8 +553,18 @@ public class Book
      */
     @Nullable
     public Publisher getPrimaryPublisher() {
-        final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
+        final List<Publisher> list = getPublishers();
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @NonNull
+    public ArrayList<Publisher> getPublishers() {
+        return getParcelableArrayList(BKEY_PUBLISHER_LIST);
+    }
+
+    @NonNull
+    public ArrayList<TocEntry> getToc() {
+        return getParcelableArrayList(BKEY_TOC_LIST);
     }
 
     @NonNull
@@ -1097,7 +1120,7 @@ public class Book
      */
     @NonNull
     public Intent getShareIntent(@NonNull final Context context) {
-        final String title = getString(DBKey.KEY_TITLE);
+        final String title = getTitle();
 
         final Author author = getPrimaryAuthor();
         final String authorStr = author != null ? author.getFormattedName(true)

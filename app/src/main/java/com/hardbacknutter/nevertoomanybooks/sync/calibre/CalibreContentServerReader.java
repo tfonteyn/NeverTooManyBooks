@@ -36,6 +36,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.net.ssl.SSLException;
 
@@ -721,8 +722,7 @@ public class CalibreContentServerReader
         localBook.setCalibreLibrary(mLibrary);
 
         // Current list, will be empty for new books
-        final ArrayList<Bookshelf> bookShelves = localBook
-                .getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        final List<Bookshelf> bookShelves = localBook.getBookshelves();
 
         // Add the physical library mapped Bookshelf
         //noinspection ConstantConditions

@@ -219,7 +219,7 @@ public class EditBookTocFragment
                 new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
 
-        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_TOC_LIST);
+        mList = mVm.getBook().getToc();
         mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
@@ -553,8 +553,7 @@ public class EditBookTocFragment
             // update the book with Series information that was gathered from the TOC
             final List<Series> series = result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (series != null && !series.isEmpty()) {
-                final ArrayList<Series> inBook =
-                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+                final ArrayList<Series> inBook = book.getSeries();
                 // add, weeding out duplicates
                 for (final Series s : series) {
                     if (!inBook.contains(s)) {

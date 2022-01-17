@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.ShowBookViewModel;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -219,10 +219,10 @@ public class BookTest {
         assertEquals(mBookId[0], book.getId());
         checkBookAfterInitialInsert(book);
 
-        ArrayList<Author> authors;
+        List<Author> authors;
         String uuid;
-        final ArrayList<Bookshelf> bookshelves;
-        final ArrayList<Publisher> publishers;
+        final List<Bookshelf> bookshelves;
+        final List<Publisher> publishers;
         File cover;
         final File[] tempFiles;
 
@@ -233,7 +233,7 @@ public class BookTest {
         book.putString(DBKey.KEY_TITLE, BOOK_TITLE + "0_upd");
         book.setStage(EntityStage.Stage.Dirty);
 
-        authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        authors = book.getAuthors();
         authors.add(mAuthor[1]);
 
         book.setCover(1, new File(tempDir, Constants.COVER[1]));
@@ -254,15 +254,15 @@ public class BookTest {
 
         uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
-        assertEquals(BOOK_TITLE + "0_upd", book.getString(DBKey.KEY_TITLE));
-        bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        assertEquals(BOOK_TITLE + "0_upd", book.getTitle());
+        bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
         assertEquals(mBookshelf[0], bookshelves.get(0));
-        authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        authors = book.getAuthors();
         assertEquals(2, authors.size());
         assertEquals(mAuthor[0], authors.get(0));
         assertEquals(mAuthor[1], authors.get(1));
-        publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        publishers = book.getPublishers();
         assertEquals(1, publishers.size());
         assertEquals(mPublisher[0], publishers.get(0));
 
@@ -340,18 +340,14 @@ public class BookTest {
         mBook[0] = prepareAndInsertBook(context, bookDao);
         mBookId[0] = mBook[0].getId();
 
-        final ShowBookViewModel vm = new ShowBookViewModel();
+        final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
         final Bundle args = new Bundle();
-        args.putLong(DBKey.PK_ID, mBookId[0]);
-        try {
-            vm.init(context, args);
-            final Book retrieved = vm.getBookAtPosition(1);
-            assertEquals(mBookId[0], retrieved.getId());
-            checkBookAfterInitialInsert(retrieved);
+        args.putLong(DBKey.FK_BOOK, mBookId[0]);
 
-        } finally {
-            vm.onCleared();
-        }
+        vm.init(context, args);
+        final Book retrieved = vm.getBook();
+        assertEquals(mBookId[0], retrieved.getId());
+        checkBookAfterInitialInsert(retrieved);
     }
 
     /*
@@ -397,7 +393,7 @@ public class BookTest {
 
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());
-        assertEquals(BOOK_TITLE + "0", book.getString(DBKey.KEY_TITLE));
+        assertEquals(BOOK_TITLE + "0", book.getTitle());
 
         assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBKey.SID_ISFDB));
 
@@ -405,17 +401,15 @@ public class BookTest {
         assertEquals("", book.getString(DBKey.SID_LCCN));
 
 
-        final ArrayList<Bookshelf> bookshelves = book
-                .getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        final List<Bookshelf> bookshelves = book.getBookshelves();
         assertEquals(1, bookshelves.size());
         assertEquals(mBookshelf[0], bookshelves.get(0));
 
-        final ArrayList<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final List<Author> authors = book.getAuthors();
         assertEquals(1, authors.size());
         assertEquals(mAuthor[0], authors.get(0));
 
-        final ArrayList<Publisher> publishers = book
-                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final List<Publisher> publishers = book.getPublishers();
         assertEquals(1, publishers.size());
         assertEquals(mPublisher[0], publishers.get(0));
 

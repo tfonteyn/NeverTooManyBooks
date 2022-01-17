@@ -431,7 +431,7 @@ public class XmlRecordWriter
                 final Book book = Book.from(cursor);
                 final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 
-                String title = book.getString(DBKey.KEY_TITLE);
+                String title = book.getTitle();
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = context.getString(R.string.unknown_title);
@@ -528,8 +528,7 @@ public class XmlRecordWriter
                         book.getString(DBKey.KEY_PRIVATE_NOTES)));
 
 
-                final ArrayList<Author> authors =
-                        book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+                final List<Author> authors = book.getAuthors();
                 if (!authors.isEmpty()) {
                     writer.write('<' + Book.BKEY_AUTHOR_LIST);
                     writer.write(XmlUtils.sizeAttr(authors.size()));
@@ -542,8 +541,7 @@ public class XmlRecordWriter
                     writer.write("</" + Book.BKEY_AUTHOR_LIST + ">\n");
                 }
 
-                final ArrayList<Series> seriesList =
-                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+                final List<Series> seriesList = book.getSeries();
                 if (!seriesList.isEmpty()) {
                     writer.write('<' + Book.BKEY_SERIES_LIST);
                     writer.write(XmlUtils.sizeAttr(seriesList.size()));
@@ -558,8 +556,7 @@ public class XmlRecordWriter
                     writer.write("</" + Book.BKEY_SERIES_LIST + ">\n");
                 }
 
-                final ArrayList<Publisher> publishers =
-                        book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+                final List<Publisher> publishers = book.getPublishers();
                 if (!publishers.isEmpty()) {
                     writer.write('<' + Book.BKEY_PUBLISHER_LIST);
                     writer.write(XmlUtils.sizeAttr(publishers.size()));
@@ -572,8 +569,7 @@ public class XmlRecordWriter
                     writer.write("</" + Book.BKEY_PUBLISHER_LIST + ">\n");
                 }
 
-                final ArrayList<Bookshelf> bookshelves =
-                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+                final List<Bookshelf> bookshelves = book.getBookshelves();
                 if (!bookshelves.isEmpty()) {
                     writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
                     writer.write(XmlUtils.sizeAttr(bookshelves.size()));
@@ -586,8 +582,7 @@ public class XmlRecordWriter
                     writer.write("</" + Book.BKEY_BOOKSHELF_LIST + ">\n");
                 }
 
-                final ArrayList<TocEntry> tocEntries =
-                        book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+                final List<TocEntry> tocEntries = book.getToc();
                 if (!tocEntries.isEmpty()) {
                     writer.write('<' + Book.BKEY_TOC_LIST);
                     writer.write(XmlUtils.sizeAttr(tocEntries.size()));
