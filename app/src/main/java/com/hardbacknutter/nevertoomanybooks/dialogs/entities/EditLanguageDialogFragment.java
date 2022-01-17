@@ -30,7 +30,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Language.
@@ -49,8 +50,7 @@ public class EditLanguageDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language,
-              RowChangeListener.LANGUAGE);
+        super(R.string.lbl_language, R.string.lbl_language, DBKey.KEY_LANGUAGE);
     }
 
     /**
@@ -74,7 +74,7 @@ public class EditLanguageDialogFragment
         }
 
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, editLang);
 
         final DialogFragment frag = new EditLanguageDialogFragment();

@@ -36,7 +36,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -84,7 +84,7 @@ public class EditPublisherDialogFragment
     public static void launch(@NonNull final FragmentActivity activity,
                               @NonNull final Publisher publisher) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putParcelable(DBKey.FK_PUBLISHER, publisher);
 
         final DialogFragment frag = new EditPublisherDialogFragment();
@@ -176,10 +176,8 @@ public class EditPublisherDialogFragment
                 success = publisherDao.update(context, mPublisher, bookLocale);
             }
             if (success) {
-                RowChangeListener
-                        .setResult(this, mRequestKey,
-                                   RowChangeListener.PUBLISHER,
-                                   mPublisher.getId());
+                RowChangedListener.setResult(this, mRequestKey,
+                                             DBKey.FK_PUBLISHER, mPublisher.getId());
                 return true;
             }
         } else {
@@ -194,10 +192,10 @@ public class EditPublisherDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             publisherDao.merge(context, mPublisher, existingId);
-                            RowChangeListener.setResult(
+                            RowChangedListener.setResult(
                                     this, mRequestKey,
                                     // return the publisher who 'lost' it's books
-                                    RowChangeListener.PUBLISHER,
+                                    DBKey.FK_PUBLISHER,
                                     mPublisher.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);

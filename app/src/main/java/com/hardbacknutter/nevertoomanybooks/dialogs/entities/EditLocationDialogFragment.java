@@ -29,7 +29,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Location.
@@ -44,8 +45,7 @@ public class EditLocationDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLocationDialogFragment() {
-        super(R.string.lbl_location, R.string.lbl_location,
-              RowChangeListener.LOCATION);
+        super(R.string.lbl_location, R.string.lbl_location, DBKey.KEY_LOCATION);
     }
 
     /**
@@ -56,7 +56,7 @@ public class EditLocationDialogFragment
     public static void launch(@NonNull final FragmentActivity activity,
                               @NonNull final String text) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, text);
 
         final DialogFragment frag = new EditLocationDialogFragment();

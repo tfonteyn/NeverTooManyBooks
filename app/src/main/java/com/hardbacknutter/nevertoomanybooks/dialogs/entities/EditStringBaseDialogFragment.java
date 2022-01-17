@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -53,8 +53,8 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @RowChangeListener.Change
-    private final int mFieldFlag;
+    @NonNull
+    private final String mDataKey;
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     /** View Binding. */
@@ -67,18 +67,17 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param titleId   for the dialog (i.e. the toolbar)
-     * @param label     to use for the 'hint' of the input field
-     * @param fieldFlag one of the {@link RowChangeListener.Change} bits
+     * @param titleId for the dialog (i.e. the toolbar)
+     * @param label   to use for the 'hint' of the input field
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
-                                 @RowChangeListener.Change final int fieldFlag) {
+                                 @NonNull final String dataKey) {
         super(R.layout.dialog_edit_string);
 
         mDialogTitleId = titleId;
         mLabelId = label;
-        mFieldFlag = fieldFlag;
+        mDataKey = dataKey;
     }
 
     @Override
@@ -168,7 +167,7 @@ public abstract class EditStringBaseDialogFragment
 
         onSave(mOriginalText, mCurrentText);
 
-        RowChangeListener.setResult(this, mRequestKey, mFieldFlag, 0);
+        RowChangedListener.setResult(this, mRequestKey, mDataKey, 0);
         return true;
     }
 

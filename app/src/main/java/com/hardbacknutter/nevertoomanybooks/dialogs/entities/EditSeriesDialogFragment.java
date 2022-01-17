@@ -36,7 +36,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.booklist.RowChangeListener;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowChangedListener;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -84,7 +84,7 @@ public class EditSeriesDialogFragment
     public static void launch(@NonNull final FragmentActivity activity,
                               @NonNull final Series series) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, RowChangeListener.REQUEST_KEY);
+        args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putParcelable(DBKey.FK_SERIES, series);
 
         final DialogFragment frag = new EditSeriesDialogFragment();
@@ -175,9 +175,8 @@ public class EditSeriesDialogFragment
                 success = seriesDao.update(context, mSeries, bookLocale);
             }
             if (success) {
-                RowChangeListener
-                        .setResult(this, mRequestKey,
-                                   RowChangeListener.SERIES, mSeries.getId());
+                RowChangedListener.setResult(this, mRequestKey,
+                                             DBKey.FK_SERIES, mSeries.getId());
                 return true;
             }
         } else {
@@ -192,10 +191,10 @@ public class EditSeriesDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             seriesDao.merge(context, mSeries, existingId);
-                            RowChangeListener.setResult(
+                            RowChangedListener.setResult(
                                     this, mRequestKey,
                                     // return the series who 'lost' it's books
-                                    RowChangeListener.SERIES, mSeries.getId());
+                                    DBKey.FK_SERIES, mSeries.getId());
                         } catch (@NonNull final DaoWriteException e) {
                             Logger.error(TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
