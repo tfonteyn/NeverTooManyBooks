@@ -244,6 +244,16 @@
             app:constraint_referenced_ids="cover_image_0,cover_image_1"
             />
 
+        <TextView
+            android:id="@+id/description"
+            style="@style/Field.Description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            tools:ignore="SelectableText"
+            tools:text="@tools:sample/lorem/random"
+            />
+
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_covers_bottom_pd"
             android:layout_width="wrap_content"
@@ -252,21 +262,11 @@
             app:constraint_referenced_ids="cover_image_0,cover_image_1,personal_data_section"
             />
 
-        <TextView
-            android:id="@+id/description"
-            style="@style/Field.Description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
-            tools:ignore="SelectableText"
-            tools:text="@tools:sample/lorem/random"
-            />
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/toc_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="@dimen/field_label_margin_top"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
