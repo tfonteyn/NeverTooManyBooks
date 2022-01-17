@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -239,7 +239,6 @@ public class BooklistCursor
     }
 
     /**
-     * Not called by our own code any more. But leaving here for now.
      * This implementation actually just clears/closes all cursors.
      */
     @Override
