@@ -86,7 +86,7 @@ public class StripInfoBePreferencesFragment
         etp.setSummaryProvider(preference -> {
             final String value = ((EditTextPreference) preference).getText();
             if (value == null || value.isEmpty()) {
-                return getString(R.string.info_not_set);
+                return getString(R.string.preference_not_set);
             } else {
                 return "********";
             }

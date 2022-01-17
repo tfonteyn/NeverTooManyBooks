@@ -28,7 +28,7 @@
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_baseline_link_24"
             android:key="amazon.host.url"
-            android:summary="@string/info_not_set"
+            android:summary="@string/preference_not_set"
             android:title="@string/lbl_website_address" />
 
     </PreferenceCategory>

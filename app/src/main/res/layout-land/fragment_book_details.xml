@@ -152,7 +152,7 @@
             android:id="@+id/btn_show_toc"
             style="@style/Button.Action.Open"
             android:layout_marginStart="@dimen/field_margin_inline"
-            android:text="@string/btn_show_toc"
+            android:text="@string/lbl_toc"
             android:contentDescription="@string/btn_show_toc_long"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology_or_collection"
             app:layout_constraintTop_toBottomOf="@id/rating"

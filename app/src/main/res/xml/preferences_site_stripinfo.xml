@@ -38,7 +38,7 @@
             android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_person_24"
             android:key="stripinfo.host.user"
-            android:summary="@string/info_not_set"
+            android:summary="@string/preference_not_set"
             android:title="@string/username"
             />
 
@@ -47,7 +47,7 @@
             android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_password_24"
             android:key="stripinfo.host.password"
-            android:summary="@string/info_not_set"
+            android:summary="@string/preference_not_set"
             android:title="@string/password"
             />
 

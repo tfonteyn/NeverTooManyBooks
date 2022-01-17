@@ -27,7 +27,7 @@
     <EditTextPreference
         android:icon="@drawable/ic_baseline_edit_24"
         android:key="style.booklist.name"
-        android:summary="@string/info_not_set"
+        android:summary="@string/preference_not_set"
         android:title="@string/lbl_name"
         />
 

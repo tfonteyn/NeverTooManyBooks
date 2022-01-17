@@ -139,17 +139,17 @@
     <string name="X_lbl_failed">Échoué</string>
     <string name="X_lbl_queued">En file d\'attente</string>
     <string name="hint_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
-    <string name="hint_empty_author">(L\'auteur est manquant)</string>
-    <string name="hint_empty_day">(Jour non défini)</string>
-    <string name="hint_empty_field">(Vide)</string>
-    <string name="hint_empty_language">(Aucune langue renseignée)</string>
-    <string name="hint_empty_month">(Mois non défini)</string>
-    <string name="hint_empty_publisher">(Aucun éditeur)</string>
-    <string name="hint_empty_rating">(Non classé)</string>
-    <string name="hint_empty_read_status">(Statut lu inconnu)</string>
-    <string name="hint_empty_series">(Pas de série)</string>
-    <string name="hint_empty_year">(Année non définie)</string>
-    <string name="info_not_set">Non définie</string>
+    <string name="bob_empty_author">(L\'auteur est manquant)</string>
+    <string name="bob_empty_day">(Jour non défini)</string>
+    <string name="bob_empty_field">(Vide)</string>
+    <string name="bob_empty_language">(Aucune langue renseignée)</string>
+    <string name="bob_empty_month">(Mois non défini)</string>
+    <string name="bob_empty_publisher">(Aucun éditeur)</string>
+    <string name="bob_empty_rating">(Non classé)</string>
+    <string name="bob_empty_read_status">(Statut lu inconnu)</string>
+    <string name="bob_empty_series">(Pas de série)</string>
+    <string name="bob_empty_year">(Année non définie)</string>
+    <string name="preference_not_set">Non définie</string>
     <string name="X_info_authorized_needed">Autoriser l\'accès</string>
     <string name="info_authorized">Autorisé</string>
     <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur «OK» pour les appliquer, ou appuyez sur «Tous les livres» pour les ignorer toutes.</string>
@@ -490,12 +490,12 @@
     <string name="style_builtin_update_date">Date de mise à jour</string>
     <string name="style_is_builtin">Par défaut</string>
     <string name="style_is_user_defined">Défini par l\'utilisateur</string>
-    <string name="tab_lbl_alternative_editions">Éditions alt.</string>
-    <string name="tab_lbl_content">Contenu</string>
-    <string name="tab_lbl_details">Détails</string>
-    <string name="tab_lbl_ext_id">ID externe</string>
-    <string name="tab_lbl_notes">Notes</string>
-    <string name="tab_lbl_publication">Édition</string>
+    <string name="lbl_alternative_editions">Éditions alt.</string>
+    <string name="lbl_toc">Contenu</string>
+    <string name="lbl_details">Détails</string>
+    <string name="lbl_ext_id">ID externe</string>
+    <string name="lbl_notes">Notes</string>
+    <string name="lbl_publication_tab">Édition</string>
     <string name="tip_authors_book_may_appear_more_than_once">S\'il est affiché pour chacun de ses auteurs, un livre peut apparaître plusieurs fois dans la liste. Dans ce cas, supprimer l\'un de ces livres supprimera toutes ses copies de la liste.</string>
     <string name="tip_authors_works_book">Livre.</string>
     <string name="tip_authors_works_multiple_books">L\'entrée est présente dans plusieurs livres.</string>
@@ -692,5 +692,12 @@
 
     <string name="lbl_login_to_search">connectez-vous pour rechercher</string>
     <string name="lbl_sync_date">Depuis</string>
+    <string name="btn_show_toc_long">Afficher la table des matières</string>
+    <string name="lbl_collection">Collection</string>
+    <string name="neither">Non plus</string>
+    <string name="lbl_story_in_multiple_books">Cette histoire est présente dans plusieurs livres :\n\n%1s</string>
+    <string name="lbl_sql_query">Requête SQL</string>
+    <string name="lbl_book_detail_screen">Page de détails du livre</string>
+    <string name="lbl_date_last_updated">Date de la dernière mise à jour</string>
 
 </resources>

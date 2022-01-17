@@ -110,7 +110,7 @@ public class CalibrePreferencesFragment
         etp.setSummaryProvider(preference -> {
             final String value = ((EditTextPreference) preference).getText();
             if (value == null || value.isEmpty()) {
-                return getString(R.string.info_not_set);
+                return getString(R.string.preference_not_set);
             } else {
                 return "********";
             }
@@ -179,7 +179,7 @@ public class CalibrePreferencesFragment
         //noinspection ConstantConditions
         final Uri uri = CalibreContentServer.getFolderUri(getContext()).orElse(null);
         if (uri == null) {
-            preference.setSummary(R.string.info_not_set);
+            preference.setSummary(R.string.preference_not_set);
         } else {
             final DocumentFile df = DocumentFile.fromTreeUri(getContext(), uri);
             if (df != null) {
@@ -194,7 +194,7 @@ public class CalibrePreferencesFragment
                 preference.setSummary(name);
             } else {
                 // should never happen... flw
-                preference.setSummary(R.string.info_not_set);
+                preference.setSummary(R.string.preference_not_set);
             }
         }
     }
@@ -238,7 +238,7 @@ public class CalibrePreferencesFragment
             preference.setSummary(R.string.error_certificate_invalid);
 
         } catch (@NonNull final IOException e) {
-            preference.setSummary(R.string.info_not_set);
+            preference.setSummary(R.string.preference_not_set);
         }
     }
 }

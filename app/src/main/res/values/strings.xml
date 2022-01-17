@@ -580,6 +580,11 @@
     <!-- [VERIFIED] -->
     <string name="system_default">(System default)</string>
 
+    <!-- generic place holder text for preference fields which are NOT SET.
+     The actual text is different from hint_empty_field in Translations.
+     [VERIFIED] Copy from androidx.preferences# not_set; WITHOUT brackets-->
+    <string name="preference_not_set">Not Set</string>
+
     <!-- Preference Category -->
     <string name="pg_image_cache">Image cache</string>
     <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
@@ -727,10 +732,6 @@
     <!-- Dialog title. -->
     <string name="lbl_scope_of_change">Scope of Change</string>
     <!-- Dialog title. -->
-    <string name="X_lbl_select_an_action">Select an action</string>
-    <!-- Dialog title. -->
-    <string name="X_lbl_select_style">Select Style</string>
-    <!-- Dialog title. -->
     <string name="lbl_duplicate_book">Copy this book</string>
 
     <!-- Dialog title. -->
@@ -877,7 +878,7 @@
     <!-- "view all works of an author" menu option - show only Books -->
     <string name="menu_author_works_book">Books only</string>
     <!-- "view all works of an author" menu option - show only TOC entries -->
-    <string name="menu_author_works_toc">Toc only</string>
+    <string name="menu_author_works_toc">Only Table Of Content titles</string>
 
     <!-- Cover image context menu option -->
     <string name="menu_cover_crop">Crop</string>
@@ -1029,6 +1030,11 @@
 
     <string name="btn_show_list">Show list</string>
 
+    <!-- Button text; shown only on larger screens - max 25 chars?
+        On smaller screens, "tab_lbl_toc" is used.
+    -->
+    <string name="btn_show_toc_long">Show Table Of Content</string>
+
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
 
@@ -1037,45 +1043,41 @@
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag to reorder this list</string>
 
+
     <!-- ####################################################################################### -->
-    <!-- == Hints for input fields.  == -->
+    <!-- == BoB specific place holder text for empty fields.  == -->
     <!-- ####################################################################################### -->
 
-    <!-- generic place holder text for preference fields which are NOT SET.
-         The actual text is different from hint_empty_field in Translations.
-         [VERIFIED] Copy from androidx.preferences# not_set; WITHOUT brackets-->
-    <string name="info_not_set">Not Set</string>
-
-    <!-- generic place holder text for EMPTY fields.
+    <!-- BoB generic place holder text for EMPTY fields.
          The actual text is different from info_not_set in Translations.
          [VERIFIED] Copy from android-29#keyguard_accessibility_widget_empty_slot -->
-    <string name="hint_empty_field">(Not Set)</string>
+    <string name="bob_empty_field">(Not Set)</string>
 
-    <!-- specific place holder text for Author rows.
+    <!-- BoB specific place holder text for Author rows.
      Theoretically this string will never be shown unless there is ever bad data. -->
-    <string name="hint_empty_author">(The author is missing)</string>
+    <string name="bob_empty_author">(The author is missing)</string>
 
-    <!-- specific place holder text for Series rows. -->
-    <string name="hint_empty_series">(No Series)</string>
+    <!-- BoB specific place holder text for Series rows. -->
+    <string name="bob_empty_series">(No Series)</string>
 
-    <!-- specific place holder text for Publisher rows. -->
-    <string name="hint_empty_publisher">(No Publisher)</string>
+    <!-- BoB specific place holder text for Publisher rows. -->
+    <string name="bob_empty_publisher">(No Publisher)</string>
 
-    <!-- specific place holder text for Language rows. -->
-    <string name="hint_empty_language">(Language not set)</string>
+    <!-- BoB specific place holder text for Language rows. -->
+    <string name="bob_empty_language">(Language not set)</string>
 
-    <!-- specific place holder text for Read/Unread rows.
+    <!-- BoB specific place holder text for Read/Unread rows.
          Theoretically this string will never be shown unless there is ever bad data. -->
-    <string name="hint_empty_read_status">(Read status unknown)</string>
-    <!-- specific place holder text for Rating rows. -->
-    <string name="hint_empty_rating">(Not rated)</string>
+    <string name="bob_empty_read_status">(Read status unknown)</string>
+    <!-- BoB specific place holder text for Rating rows. -->
+    <string name="bob_empty_rating">(Not rated)</string>
 
-    <!-- specific place holder text for Year rows. -->
-    <string name="hint_empty_year">(Year not set)</string>
-    <!-- specific place holder text for Month rows. -->
-    <string name="hint_empty_month">(Month not set)</string>
-    <!-- specific place holder text for Day rows. -->
-    <string name="hint_empty_day">(Day not set)</string>
+    <!-- BoB specific place holder text for Year rows. -->
+    <string name="bob_empty_year">(Year not set)</string>
+    <!-- BoB specific place holder text for Month rows. -->
+    <string name="bob_empty_month">(Month not set)</string>
+    <!-- BoB specific place holder text for Day rows. -->
+    <string name="bob_empty_day">(Day not set)</string>
 
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->
@@ -1217,18 +1219,18 @@
     <!-- ####################################################################################### -->
 
     <!-- Edit book: Name of the 'Details' tab -->
-    <string name="tab_lbl_details">Details</string>
+    <string name="lbl_details">Details</string>
     <!-- Edit book: Name of the 'Publication' tab. -->
-    <string name="tab_lbl_publication">Publication</string>
+    <string name="lbl_publication_tab">Publication</string>
     <!-- Edit book: Name of the 'Notes' tab.-->
-    <string name="tab_lbl_notes">Notes</string>
-    <!-- Edit book: Name of the 'Table Of Content' (formerly 'Anthology') tab. -->
-    <string name="tab_lbl_content">TOC</string>
+    <string name="lbl_notes">Notes</string>
+    <!-- Edit book: Name of the 'Table Of Content' tab. -->
+    <string name="lbl_toc">TOC</string>
     <!-- Edit book: Name of the 'External website id' tab.-->
-    <string name="tab_lbl_ext_id">External ID</string>
+    <string name="lbl_ext_id">External ID</string>
 
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
-    <string name="tab_lbl_alternative_editions">Alt. Ed.</string>
+    <string name="lbl_alternative_editions">Alt. Ed.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
@@ -1239,17 +1241,11 @@
     <!-- [VERIFIED] -->
     <string name="no">No</string>
 
-
     <!-- [VERIFIED] Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
 
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
-
-    <string name="X_lbl_completed">Completed</string>
-    <string name="X_lbl_failed">Failed</string>
-    <string name="X_lbl_queued">Queued</string>
-    <string name="X_lbl_updated">Updated</string>
 
     <!-- [VERIFIED] -->
     <string name="username">Username</string>
@@ -1262,6 +1258,8 @@
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
     <string name="strict">Strict</string>
+
+    <string name="neither">Neither</string>
 
     <!-- 'and' as used in lists:  x and y -->
     <string name="list_and">and</string>
@@ -1354,7 +1352,11 @@
     <string name="lbl_price_paid">Price paid</string>
 
     <string name="lbl_rating">Rating</string>
+
     <string name="lbl_anthology">Anthology</string>
+    <string name="lbl_collection">Collection</string>
+    <string name="lbl_story_in_multiple_books">This story is present in multiple books:\n\n%1s</string>
+
     <string name="lbl_format">Format</string>
     <!-- [VERIFIED] -->
     <string name="lbl_color">Color</string>
@@ -1524,6 +1526,11 @@
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
 
+    <string name="X_lbl_completed">Completed</string>
+    <string name="X_lbl_failed">Failed</string>
+    <string name="X_lbl_queued">Queued</string>
+    <string name="X_lbl_updated">Updated</string>
+
     <!-- [VERIFIED] Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
 
@@ -1546,6 +1553,9 @@
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <!-- when warned you have unsaved edits -->
     <string name="X_btn_continue_edit">Continue Editing</string>
+
+    <string name="X_lbl_select_an_action">Select an action</string>
+    <string name="X_lbl_select_style">Select Style</string>
 
     <string name="X_lbl_delete_book">Delete Book</string>
     <string name="X_lbl_delete_series">Delete Series</string>
@@ -1624,15 +1634,8 @@
     <string name="lbl_timeouts">Timeouts</string>
     <string name="lbl_website_address">Site address (URL)</string>
 
-
     <string name="lbl_sql_query">SQL query</string>
-    <string name="lbl_story_in_multiple_books">This story is present in multiple books:\n\n%1s</string>
-    <string name="lbl_book_detail_screen">Book detail screen</string>
-    <string name="lbl_show_toc_by_default">Show Table Of Content by default</string>
-    <string name="btn_show_toc">Show TOC</string>
-    <string name="btn_show_toc_long">Show Table Of Content</string>
-    <string name="lbl_collection">Collection</string>
-    <string name="neither">Neither</string>
+    <string name="lbl_book_detail_screen">Book details page</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

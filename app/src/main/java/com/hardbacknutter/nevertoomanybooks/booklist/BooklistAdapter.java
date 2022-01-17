@@ -205,6 +205,7 @@ public class BooklistAdapter
         mNodeData = new CursorRow(mCursor);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void clearCursor() {
         mCursor = null;
         mNodeData = null;
@@ -426,14 +427,14 @@ public class BooklistAdapter
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_author);
+                    return context.getString(R.string.bob_empty_author);
                 } else {
                     return text;
                 }
             }
             case BooklistGroup.SERIES: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_series);
+                    return context.getString(R.string.bob_empty_series);
 
                 } else if (mReorderTitleForDisplaying) {
                     return ItemWithTitle.reorder(context, text, tmpLocale);
@@ -443,7 +444,7 @@ public class BooklistAdapter
             }
             case BooklistGroup.PUBLISHER: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_publisher);
+                    return context.getString(R.string.bob_empty_publisher);
 
                 } else if (mReorderTitleForDisplaying) {
                     return ItemWithTitle.reorder(context, text, tmpLocale);
@@ -453,7 +454,7 @@ public class BooklistAdapter
             }
             case BooklistGroup.READ_STATUS: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_read_status);
+                    return context.getString(R.string.bob_empty_read_status);
                 } else {
                     if (ParseUtils.parseBoolean(text, true)) {
                         return context.getString(R.string.lbl_read);
@@ -464,7 +465,7 @@ public class BooklistAdapter
             }
             case BooklistGroup.LANGUAGE: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_language);
+                    return context.getString(R.string.bob_empty_language);
                 } else {
                     return ServiceLocator.getInstance().getLanguages()
                                          .getDisplayNameFromISO3(context, text);
@@ -486,7 +487,7 @@ public class BooklistAdapter
             case BooklistGroup.RATING: {
                 // This is the text based formatting, as used by the level/scroller text.
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_rating);
+                    return context.getString(R.string.bob_empty_rating);
                 } else {
                     try {
                         // Locale independent.
@@ -517,7 +518,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
             case BooklistGroup.DATE_READ_YEAR: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_year);
+                    return context.getString(R.string.bob_empty_year);
                 } else {
                     return text;
                 }
@@ -530,7 +531,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
             case BooklistGroup.DATE_READ_MONTH: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_month);
+                    return context.getString(R.string.bob_empty_month);
                 } else {
                     try {
                         final int m = Integer.parseInt(text);
@@ -552,7 +553,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_LAST_UPDATE_DAY:
             case BooklistGroup.DATE_READ_DAY: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_day);
+                    return context.getString(R.string.bob_empty_day);
                 } else {
                     return text;
                 }
@@ -565,7 +566,7 @@ public class BooklistAdapter
             case BooklistGroup.COLOR:
             default: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_field);
+                    return context.getString(R.string.bob_empty_field);
                 } else {
                     return text;
                 }
