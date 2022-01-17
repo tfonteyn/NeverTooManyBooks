@@ -146,15 +146,6 @@
             android:title="@string/lbl_cover_back"
             />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
-            android:key="style.details.show.toc"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_show_toc_by_default"
-            />
-
     </PreferenceCategory>
 
     <PreferenceCategory

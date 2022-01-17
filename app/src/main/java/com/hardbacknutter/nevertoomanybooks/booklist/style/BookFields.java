@@ -156,8 +156,8 @@ public abstract class BookFields {
                 ListScreenBookFields.PK_RATING,
                 ListScreenBookFields.PK_BOOKSHELVES,
 //                DetailScreenBookFields.PK_COVER[0],
-//                DetailScreenBookFields.PK_COVER[1],
-                DetailScreenBookFields.PK_SHOW_TOC_BY_DEFAULT})
+//                DetailScreenBookFields.PK_COVER[1]
+    })
     @interface Key {
 
     }
