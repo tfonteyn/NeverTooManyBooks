@@ -32,10 +32,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -130,7 +132,24 @@ class FastScrollerOverlay
     public void showOverlay(final boolean isDragging,
                             final int thumbCenter) {
 
-        if (!(mRecyclerView.getAdapter() instanceof FastScroller.PopupTextProvider)) {
+        RecyclerView.Adapter<? extends RecyclerView.ViewHolder> adapter =
+                (RecyclerView.Adapter<? extends RecyclerView.ViewHolder>)
+                        mRecyclerView.getAdapter();
+
+        if (adapter instanceof ConcatAdapter) {
+            final Optional<? extends RecyclerView.Adapter<? extends RecyclerView.ViewHolder>>
+                    first = ((ConcatAdapter) adapter)
+                    .getAdapters()
+                    .stream()
+                    .filter(a -> a instanceof FastScroller.PopupTextProvider)
+                    .findFirst();
+
+            if (first.isPresent()) {
+                adapter = first.get();
+            }
+        }
+
+        if (!(adapter instanceof FastScroller.PopupTextProvider)) {
             return;
         }
 
@@ -144,7 +163,7 @@ class FastScrollerOverlay
             return;
         }
 
-        final String[] popupLines = ((FastScroller.PopupTextProvider) mRecyclerView.getAdapter())
+        final String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
                 .getPopupText(position);
 
         // Do we have at least one line of text ?
