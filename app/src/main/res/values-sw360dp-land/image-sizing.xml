@@ -31,8 +31,8 @@
 <resources>
     <dimen name="cover_details_0_height">300dp</dimen>
     <dimen name="cover_details_0_width">192dp</dimen>
-    <dimen name="cover_details_1_height">200dp</dimen>
-    <dimen name="cover_details_1_width">128dp</dimen>
+    <dimen name="cover_details_1_height">150dp</dimen>
+    <dimen name="cover_details_1_width">96dp</dimen>
 
     <dimen name="cover_edit_0_height">200dp</dimen>
     <dimen name="cover_edit_0_width">128dp</dimen>
