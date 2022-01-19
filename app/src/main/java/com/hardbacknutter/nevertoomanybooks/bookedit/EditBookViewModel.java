@@ -136,14 +136,14 @@ public class EditBookViewModel
 
     /**
      * <ul>
-     * <li>{@link DBKey#FK_BOOK}  book id</li>
-     * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
+     * <li>{@link DBKey#FK_BOOK}: book id</li>
+     * <li>{@link Entity#BKEY_DATA_MODIFIED}: boolean</li>
      * </ul>
      */
     @NonNull
     @Override
     public Intent getResultIntent() {
-        // always set the *current* book, so the BoB list can reposition correctly.
+        // always set the *current* book, so the BoB list can reposition more accurately.
         if (mBook != null) {
             mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
         }

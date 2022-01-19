@@ -115,6 +115,11 @@ public class StyleViewModel
         mResultIntent.putExtra(EditStyleContract.BKEY_STYLE_MODIFIED, true);
     }
 
+    /**
+     * {@link EditStyleContract#BKEY_TEMPLATE_UUID}: String
+     * {@link ListStyle#BKEY_STYLE_UUID}: String
+     * {@link EditStyleContract#BKEY_STYLE_MODIFIED}: boolean
+     */
     @NonNull
     @Override
     public Intent getResultIntent() {

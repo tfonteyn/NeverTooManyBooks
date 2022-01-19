@@ -521,7 +521,7 @@ class BooklistBuilder {
             addDomain(new DomainExpression(
                     DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroups().size() + 1)), false);
 
-            // The group is the book group (duh)
+            // The BooklistGroup for a book is always BooklistGroup.BOOK (duh)
             addDomain(new DomainExpression(
                     DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)), false);
 

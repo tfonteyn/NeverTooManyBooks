@@ -114,6 +114,9 @@ public class SyncReaderViewModel
         mMetaData = metaData;
     }
 
+    /**
+     * {@link SyncReader#BKEY_RESULTS}: {@link ReaderResults}
+     */
     @Override
     @NonNull
     public Intent getResultIntent() {

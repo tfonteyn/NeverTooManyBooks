@@ -115,6 +115,9 @@ public class ImportViewModel
         mMetaData = metaData;
     }
 
+    /**
+     * {@link ArchiveReader#BKEY_RESULTS}: {@link ImportResults}
+     */
     @Override
     @NonNull
     public Intent getResultIntent() {
