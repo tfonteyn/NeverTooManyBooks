@@ -52,19 +52,6 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
             />
-        <!--
-        Normal, portrait:
-            tools:layout_height="@dimen/cover_details_0_height"
-            tools:layout_width="@dimen/cover_details_0_width"
-            tools:src="@sample/covers"
-        Normal, landscape:
-            tools:layout_height="@dimen/cover_details_0_width"
-            tools:layout_width="@dimen/cover_details_0_height"
-            tools:src="@sample/landscape"
-        Placeholder:
-            tools:background="@drawable/outline_rounded"
-            tools:src="@drawable/ic_add_a_photo"
-        -->
 
         <ImageView
             android:id="@id/cover_image_1"
@@ -76,19 +63,6 @@
             app:layout_constraintTop_toBottomOf="@id/cover_image_0"
             tools:src="@sample/covers"
             />
-        <!--
-        Normal, portrait:
-            tools:layout_height="@dimen/cover_details_1_height"
-            tools:layout_width="@dimen/cover_details_1_width"
-            tools:src="@sample/covers"
-        Normal, landscape:
-            tools:layout_height="@dimen/cover_details_1_width"
-            tools:layout_width="@dimen/cover_details_1_height"
-            tools:src="@sample/landscape"
-        Placeholder:
-            tools:background="@drawable/outline_rounded"
-            tools:src="@drawable/ic_add_a_photo"
-        -->
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_covers_bottom"
