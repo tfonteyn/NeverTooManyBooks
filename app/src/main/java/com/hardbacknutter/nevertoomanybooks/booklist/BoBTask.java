@@ -296,7 +296,7 @@ public class BoBTask
             }
 
             // Get the row(s) which will be used to determine new cursor position
-            return new Outcome(booklist, booklist.getBookNodes(mDesiredCentralBookId));
+            return new Outcome(booklist, booklist.getVisibleBookNodes(mDesiredCentralBookId));
 
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
             if (booklist != null) {
@@ -327,14 +327,24 @@ public class BoBTask
     public static class Outcome {
 
         @NonNull
-        public final Booklist list;
-        @Nullable
-        public final List<BooklistNode> targetRows;
+        private final Booklist mList;
+        @NonNull
+        private final List<BooklistNode> mTargetNodes;
 
         Outcome(@NonNull final Booklist list,
-                @Nullable final List<BooklistNode> targetRows) {
-            this.list = list;
-            this.targetRows = targetRows;
+                @NonNull final List<BooklistNode> targetNodes) {
+            this.mList = list;
+            this.mTargetNodes = targetNodes;
+        }
+
+        @NonNull
+        public Booklist getList() {
+            return mList;
+        }
+
+        @NonNull
+        public List<BooklistNode> getTargetNodes() {
+            return mTargetNodes;
         }
     }
 }

@@ -65,6 +65,8 @@ public class Booklist
     private static final String _WHERE_ = " WHERE ";
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
+    private static final String UPDATE_ = "UPDATE ";
+    private static final String _SET_ = " SET ";
 
     /** Log tag. */
     private static final String TAG = "Booklist";
@@ -97,26 +99,18 @@ public class Booklist
     private final TableDefinition mNavTable;
 
     /**
-     * The temp table holding the state (expand,visibility,...) for all rows in the list-table.
+     * A helper DAO to maintain the current list table.
      * <p>
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final BooklistNodeDao mRowStateDAO;
+    private final BooklistNodeDao mBooklistNodeDao;
 
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int mTotalBooks = -1;
 
     /** Total number of unique books in current list. */
     private int mDistinctBooks = -1;
-
-    /** {@link #getBookNodes}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String mSqlGetBookNodes;
-
-    /** {@link #ensureNodeIsVisible}. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private String mSqlEnsureNodeIsVisible;
 
     /**
      * DEBUG: double check on mCloseWasCalled to control
@@ -133,6 +127,15 @@ public class Booklist
     @Nullable
     private BooklistCursor mCursor;
 
+
+    /** {@link #getVisibleBookNodes}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String mSqlGetBookNodes;
+
+    /** {@link #ensureNodeIsVisible}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String mSqlEnsureNodeIsVisible;
+
     /** {@link #getNodeByRowId}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetNodeByRowId;
@@ -141,25 +144,33 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetCurrentBookIdList;
 
-    /** {@link #getNextBookWithoutCover}. */
+    /** {@link #getNextBookWithoutCover(long)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetNextBookWithoutCover;
 
-    /** {@link #getOffsetCursor}. */
+    /** {@link #getOffsetCursor(int, int)}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetOffsetCursor;
+
+    /** {@link #updateBookRead(long, boolean)}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String mSqlUpdateBookRead;
+
+    /** {@link #updateBookLoanee(long, String)}. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private String mSqlUpdateBookLoanee;
 
     Booklist(final int instanceId,
              @NonNull final SynchronizedDb db,
              @NonNull final TableDefinition listTable,
              @NonNull final TableDefinition navTable,
-             @NonNull final BooklistNodeDao rowStateDAO) {
+             @NonNull final BooklistNodeDao booklistNodeDao) {
 
         mInstanceId = instanceId;
         mDb = db;
         mListTable = listTable;
         mNavTable = navTable;
-        mRowStateDAO = rowStateDAO;
+        mBooklistNodeDao = booklistNodeDao;
     }
 
     @NonNull
@@ -294,7 +305,7 @@ public class Booklist
      */
     public void setAllNodes(@IntRange(from = 1) final int topLevel,
                             final boolean expand) {
-        mRowStateDAO.setAllNodes(topLevel, expand);
+        mBooklistNodeDao.setAllNodes(topLevel, expand);
         mCursor = null;
     }
 
@@ -309,13 +320,13 @@ public class Booklist
      */
     @NonNull
     public BooklistNode setNode(final long rowId,
-                                @BooklistNode.NextState final int nextState,
+                                @NonNull final BooklistNode.NextState nextState,
                                 final int relativeChildLevel) {
         final BooklistNode node = getNodeByRowId(rowId);
         node.setNextState(nextState);
-        mRowStateDAO.setNode(node.getRowId(), node.getLevel(),
-                             node.isExpanded(), relativeChildLevel);
-        findAndSetListPosition(node);
+        mBooklistNodeDao.setNode(node.getRowId(), node.getLevel(),
+                                 node.isExpanded(), relativeChildLevel);
+        node.updateAdapterPosition(mDb, mListTable);
         return node;
     }
 
@@ -343,8 +354,9 @@ public class Booklist
                 String.valueOf(rowId)})) {
 
             if (cursor.moveToFirst()) {
-                final BooklistNode node = new BooklistNode(cursor);
-                findAndSetListPosition(node);
+                final BooklistNode node = new BooklistNode();
+                node.from(cursor);
+                node.updateAdapterPosition(mDb, mListTable);
                 return node;
             } else {
                 throw new IllegalArgumentException("rowId not found: " + rowId);
@@ -359,37 +371,15 @@ public class Booklist
      *
      * @param bookId the book to find
      *
-     * @return the node(s), or {@code null} if none
+     * @return list of visible nodes, can be empty, but never {@code null}
      */
-    @Nullable
-    public List<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
-        // sanity check
-        if (bookId == 0) {
-            return null;
-        }
-
-        if (mSqlGetBookNodes == null) {
-            mSqlGetBookNodes =
-                    SELECT_ + BooklistNode.getColumns(mListTable)
-                    + _FROM_ + mListTable.ref()
-                    + _WHERE_ + mListTable.dot(DBKey.FK_BOOK) + "=?";
-        }
-
-        // get all positions the book is on
-        final List<BooklistNode> nodeList = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(mSqlGetBookNodes, new String[]{
-                String.valueOf(bookId)})) {
-
-            while (cursor.moveToNext()) {
-                final BooklistNode node = new BooklistNode(cursor);
-                findAndSetListPosition(node);
-                nodeList.add(node);
-            }
-        }
+    @NonNull
+    public List<BooklistNode> getVisibleBookNodes(@IntRange(from = 0) final long bookId) {
+        final List<BooklistNode> nodeList = getBookNodes(bookId);
 
         if (nodeList.isEmpty()) {
             // the book is not present
-            return null;
+            return nodeList;
         }
 
         // We have nodes; first get the ones that are currently visible
@@ -407,40 +397,47 @@ public class Booklist
             nodeList.forEach(this::ensureNodeIsVisible);
 
             // Recalculate all positions
-            nodeList.forEach(this::findAndSetListPosition);
+            nodeList.forEach(node -> node.updateAdapterPosition(mDb, mListTable));
 
             return nodeList;
         }
     }
 
     /**
-     * Update the passed node with the actual list position,
-     * <strong>taking into account invisible rows</strong>.
+     * Get <strong>all</strong> nodes for the given book id
      *
-     * @param node to set
+     * @param bookId to use
+     *
+     * @return list of nodes, can be empty, but never {@code null}
      */
-    private void findAndSetListPosition(@NonNull final BooklistNode node) {
-        // We need to count the visible rows between the start of the list,
-        // and the given row, to determine the ACTUAL row we want.
-        final int count;
-        try (SynchronizedStatement stmt = mDb.compileStatement(
-                SELECT_COUNT_FROM_ + mListTable.getName()
-                + _WHERE_ + DBKey.KEY_BL_NODE_VISIBLE + "=1" + _AND_ + DBKey.PK_ID + "<?")) {
+    @NonNull
+    private List<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
+        final List<BooklistNode> nodeList = new ArrayList<>();
 
-            stmt.bindLong(1, node.getRowId());
-            count = (int) stmt.simpleQueryForLongOrZero();
+        // sanity check
+        if (bookId == 0) {
+            return nodeList;
         }
 
-        final int pos;
-        if (node.isVisible()) {
-            // If the specified row is visible, then the count _is_ the position.
-            pos = count;
-        } else {
-            // otherwise it's the previous visible row == count-1 (or the top row)
-            pos = count > 0 ? count - 1 : 0;
+        if (mSqlGetBookNodes == null) {
+            mSqlGetBookNodes =
+                    SELECT_ + BooklistNode.getColumns(mListTable)
+                    + _FROM_ + mListTable.ref()
+                    + _WHERE_ + mListTable.dot(DBKey.FK_BOOK) + "=?";
         }
 
-        node.setAdapterPosition(pos);
+        // get all positions the book is on
+        try (Cursor cursor = mDb.rawQuery(mSqlGetBookNodes, new String[]{
+                String.valueOf(bookId)})) {
+
+            final BooklistNode node = new BooklistNode();
+            while (cursor.moveToNext()) {
+                node.from(cursor);
+                node.updateAdapterPosition(mDb, mListTable);
+                nodeList.add(node);
+            }
+        }
+        return nodeList;
     }
 
     /**
@@ -459,9 +456,7 @@ public class Booklist
                     + _AND_ + DBKey.KEY_BL_NODE_LEVEL + "=?";
         }
 
-        node.setExpanded(true);
-        node.setVisible(true);
-
+        node.setFullyVisible();
         String nodeKey = node.getKey();
 
         // levels are 1.. based; start with lowest level above books, working up to root.
@@ -482,12 +477,78 @@ public class Booklist
 
         // Now process the collected nodes from the root downwards.
         for (final Pair<Long, Integer> n : nodes) {
-            mRowStateDAO.setNode(n.first, n.second,
-                                 // Expand (and make visible) the given node
-                                 true,
-                                 // do this for only ONE level
-                                 1);
+            mBooklistNodeDao.setNode(n.first, n.second,
+                                     // Expand (and make visible) the given node
+                                     true,
+                                     // do this for only ONE level
+                                     1);
         }
+    }
+
+    /**
+     * Allows updating the current list-table without requiring a whole new build
+     * with the 'read' status of a book. Will update all nodes for the given book.
+     *
+     * @param bookId to update
+     * @param read   status to set
+     *
+     * @return list with the nodes which were changed.
+     */
+    @NonNull
+    public List<BooklistNode> updateBookRead(@IntRange(from = 1) final long bookId,
+                                             final boolean read) {
+        final boolean hasDomain = mListTable.getDomains()
+                                            .stream()
+                                            .map(Domain::getName)
+                                            .anyMatch(name -> name.equals(DBKey.BOOL_READ));
+        if (hasDomain) {
+            if (mSqlUpdateBookRead == null) {
+                mSqlUpdateBookRead = UPDATE_ + mListTable.getName()
+                                     + _SET_ + DBKey.BOOL_READ + "=?"
+                                     + _WHERE_ + DBKey.FK_BOOK + "=?"
+                                     + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+            }
+
+            try (SynchronizedStatement stmt = mDb.compileStatement(mSqlUpdateBookRead)) {
+                stmt.bindBoolean(1, read);
+                stmt.bindLong(2, bookId);
+                stmt.executeUpdateDelete();
+            }
+        }
+        return getBookNodes(bookId);
+    }
+
+    /**
+     * Allows updating the current list-table without requiring a whole new build
+     * with the 'loanee' of a book. Will update all nodes for the given book.
+     *
+     * @param bookId to update
+     * @param loanee loanee to set
+     *
+     * @return list with the nodes which were changed.
+     */
+    @NonNull
+    public List<BooklistNode> updateBookLoanee(@IntRange(from = 1) final long bookId,
+                                               @Nullable final String loanee) {
+        final boolean hasDomain = mListTable.getDomains()
+                                            .stream()
+                                            .map(Domain::getName)
+                                            .anyMatch(name -> name.equals(DBKey.KEY_LOANEE));
+        if (hasDomain) {
+            if (mSqlUpdateBookLoanee == null) {
+                mSqlUpdateBookLoanee = UPDATE_ + mListTable.getName()
+                                       + _SET_ + DBKey.KEY_LOANEE + "=?"
+                                       + _WHERE_ + DBKey.FK_BOOK + "=?"
+                                       + _AND_ + DBKey.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK;
+            }
+
+            try (SynchronizedStatement stmt = mDb.compileStatement(mSqlUpdateBookLoanee)) {
+                stmt.bindString(1, loanee != null ? loanee : "");
+                stmt.bindLong(2, bookId);
+                stmt.executeUpdateDelete();
+            }
+        }
+        return getBookNodes(bookId);
     }
 
     /**
@@ -539,14 +600,14 @@ public class Booklist
 
             final BooklistNode node = new BooklistNode();
             while (cursor.moveToNext()) {
-                node.from(cursor);
-                final String uuid = cursor.getString(BooklistNode.COLS);
+                final int nextCol = node.from(cursor);
+                final String uuid = cursor.getString(nextCol);
                 final File file = Book.getPersistedCoverFile(uuid, 0);
                 if (file == null || !file.exists()) {
                     // FIRST make the node visible
                     ensureNodeIsVisible(node);
                     // only now calculate the list position
-                    findAndSetListPosition(node);
+                    node.updateAdapterPosition(mDb, mListTable);
                     return node;
                 }
             }

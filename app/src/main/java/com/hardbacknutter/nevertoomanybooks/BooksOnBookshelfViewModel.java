@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -90,7 +91,7 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private Bookshelf mBookshelf;
     /** The row id we want the new list to display more-or-less in the center. */
-    private long mDesiredCentralBookId;
+    private long mCurrentCenteredBookId;
     /** Preferred booklist state in next rebuild. */
     @RebuildBooklist.Mode
     private int mRebuildMode;
@@ -378,13 +379,19 @@ public class BooksOnBookshelfViewModel
         return mListHasBeenLoaded;
     }
 
+    @IntRange(from = 0)
+    public long getCurrentCenteredBookId() {
+        return mCurrentCenteredBookId;
+    }
+
     /**
      * Set the <strong>desired</strong> book id to position the list.
+     * Pass {@code 0} to disable.
      *
      * @param bookId to use
      */
-    void setDesiredCentralBookId(@IntRange(from = 1) final long bookId) {
-        mDesiredCentralBookId = bookId;
+    void setCurrentCenteredBookId(@IntRange(from = 0) final long bookId) {
+        mCurrentCenteredBookId = bookId;
     }
 
     /**
@@ -419,24 +426,20 @@ public class BooksOnBookshelfViewModel
         }
     }
 
-
     /**
      * This is used to re-display the list in onResume.
-     * i.e. {@link #mDesiredCentralBookId} was set, but a rebuild was not needed.
+     * i.e. {@link #mCurrentCenteredBookId} was set, but a rebuild was not needed.
      *
-     * @return the node(s), or {@code null} if none
+     * @return the node(s), can be empty, but never {@code null}
      */
-    @Nullable
+    @NonNull
     List<BooklistNode> getTargetNodes() {
-        if (mDesiredCentralBookId == 0) {
-            return null;
+        if (mCurrentCenteredBookId != 0) {
+            Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+            return mBooklist.getVisibleBookNodes(mCurrentCenteredBookId);
         }
 
-        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        final long bookId = mDesiredCentralBookId;
-        mDesiredCentralBookId = 0;
-
-        return mBooklist.getBookNodes(bookId);
+        return new ArrayList<>();
     }
 
     /**
@@ -451,7 +454,7 @@ public class BooksOnBookshelfViewModel
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
     BooklistNode setNode(final long nodeRowId,
-                         @BooklistNode.NextState final int nextState,
+                         @NonNull final BooklistNode.NextState nextState,
                          final int relativeChildLevel) {
         Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
         return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
@@ -601,6 +604,10 @@ public class BooksOnBookshelfViewModel
         return mBookDao.setRead(bookId, isRead);
     }
 
+    Book getBook(@IntRange(from = 1) final long bookId) {
+        return Book.from(bookId, mBookDao);
+    }
+
     /**
      * Delete the given Series.
      *
@@ -658,13 +665,33 @@ public class BooksOnBookshelfViewModel
         return ServiceLocator.getInstance().getLoaneeDao().setLoanee(bookId, loanee);
     }
 
+    @NonNull
+    int[] onBookRead(@IntRange(from = 1) final long bookId,
+                     final boolean read) {
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+        return mBooklist.updateBookRead(bookId, read)
+                        .stream()
+                        .mapToInt(BooklistNode::getAdapterPosition)
+                        .toArray();
+    }
+
+    @NonNull
+    int[] onBookLend(@IntRange(from = 1) final long bookId,
+                     @Nullable final String loanee) {
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+        return mBooklist.updateBookLoanee(bookId, loanee).stream()
+                        .mapToInt(BooklistNode::getAdapterPosition)
+                        .toArray();
+    }
+
+
     /**
      * Queue a rebuild of the underlying cursor and data.
      */
     void buildBookList() {
         Objects.requireNonNull(mBookshelf, ERROR_NULL_BOOKLIST);
 
-        mBoBTask.build(mBookshelf, mRebuildMode, mSearchCriteria, mDesiredCentralBookId);
+        mBoBTask.build(mBookshelf, mRebuildMode, mSearchCriteria, mCurrentCenteredBookId);
     }
 
     boolean isBuilding() {
@@ -679,25 +706,28 @@ public class BooksOnBookshelfViewModel
             mBooklist.close();
         }
 
-        mBooklist = message.requireResult().list;
+        mBooklist = message.requireResult().getList();
 
         // Save a flag to say list was loaded at least once successfully
         mListHasBeenLoaded = true;
 
         // preserve the new state by default
         mRebuildMode = RebuildBooklist.FROM_SAVED_STATE;
-
-        // reset the central book id.
-        mDesiredCentralBookId = 0;
     }
 
     void onBuildCancelled() {
         // reset the central book id.
-        mDesiredCentralBookId = 0;
+        mCurrentCenteredBookId = 0;
     }
 
     void onBuildFailed() {
         // reset the central book id.
-        mDesiredCentralBookId = 0;
+        mCurrentCenteredBookId = 0;
+    }
+
+    @NonNull
+    public List<BooklistNode> getVisibleBookNodes(final long bookId) {
+        Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
+        return mBooklist.getVisibleBookNodes(bookId);
     }
 }

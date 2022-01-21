@@ -73,9 +73,9 @@ public class ShowBookContract
         final long listTableRowId;
 
         public Input(@IntRange(from = 1) final long bookId,
+                     @NonNull final String styleUuid,
                      @NonNull final String navTableName,
-                     final long listTableRowId,
-                     @NonNull final String styleUuid) {
+                     final long listTableRowId) {
             this.bookId = bookId;
             this.styleUuid = styleUuid;
             this.navTableName = navTableName;

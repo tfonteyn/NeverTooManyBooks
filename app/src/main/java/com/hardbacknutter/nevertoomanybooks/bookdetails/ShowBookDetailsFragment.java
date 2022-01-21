@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,15 +32,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
@@ -55,16 +63,15 @@ import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
+import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
@@ -77,7 +84,7 @@ public class ShowBookDetailsFragment
         extends BaseFragment
         implements CoverHandler.CoverHandlerHost {
 
-    private static final String TAG = "ShowBookDetailsFragment";
+    public static final String TAG = "ShowBookDetailsFragment";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
@@ -94,16 +101,22 @@ public class ShowBookDetailsFragment
     @Nullable
     private ViewBookOnWebsiteHandler mViewBookHandler;
 
-    private FragmentBookDetailsBinding mVb;
-
     private ShowBookDetailsViewModel mVm;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private OnBackPressedCallback mOnBackPressedCallback;
+
+    @Nullable
+    private BookChangedListener mBookChangedListener;
 
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookEditingDone);
+            new EditBookByIdContract(), data -> onBookChanged(data, null));
+
     /** User updates a book with internet data. */
     private final ActivityResultLauncher<Book> mUpdateBookLauncher = registerForActivityResult(
-            new UpdateSingleBookContract(), this::onBookEditingDone);
+            new UpdateSingleBookContract(), data -> onBookChanged(data, null));
+
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
@@ -111,10 +124,18 @@ public class ShowBookDetailsFragment
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
                     // The db was already updated, just update the book
-                    mVm.reloadBook();
+                    onBookChanged(null, DBKey.KEY_LOANEE);
                 }
             };
 
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+
+        if (context instanceof BookChangedListener) {
+            mBookChangedListener = (BookChangedListener) context;
+        }
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -134,14 +155,15 @@ public class ShowBookDetailsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        return inflater.inflate(R.layout.fragment_book_details, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // update all Fields with their current View instances
+        mVm.getFields().setParentView(view);
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
@@ -155,10 +177,22 @@ public class ShowBookDetailsFragment
         createSyncDelegates(global);
         mAmazonHandler = new AmazonHandler(context);
         mViewBookHandler = new ViewBookOnWebsiteHandler(context);
-
         createCoverDelegates(global);
 
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
+
+        if (!mVm.isEmbedded()) {
+            mOnBackPressedCallback = new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+                    getActivity().finish();
+                }
+            };
+            getActivity().getOnBackPressedDispatcher()
+                         .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+        }
     }
 
     @Override
@@ -190,26 +224,28 @@ public class ShowBookDetailsFragment
     }
 
     private void createCoverDelegates(@NonNull final SharedPreferences global) {
+        //noinspection ConstantConditions
+        final CircularProgressIndicator progressView =
+                getView().findViewById(R.id.cover_operation_progress_bar);
+
         final Resources res = getResources();
+        final TypedArray width = res.obtainTypedArray(R.array.cover_details_width);
+        final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
+        try {
+            for (int cIdx = 0; cIdx < width.length(); cIdx++) {
+                if (mVm.isCoverUsed(global, cIdx)) {
+                    final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
+                    final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
-        if (mVm.isCoverUsed(global, 0)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
-
-            mCoverHandler[0] = new CoverHandler(this, this, 0, maxWidth, maxHeight);
-            mCoverHandler[0].onViewCreated(this);
-            mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
-            mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
-        }
-
-        if (mVm.isCoverUsed(global, 1)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
-
-            mCoverHandler[1] = new CoverHandler(this, this, 1, maxWidth, maxHeight);
-            mCoverHandler[1].onViewCreated(this);
-            mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
-            mCoverHandler[1].setBookSupplier(() -> mVm.getBook());
+                    mCoverHandler[cIdx] = new CoverHandler(this, this, cIdx, maxWidth, maxHeight);
+                    mCoverHandler[cIdx].onViewCreated(this);
+                    mCoverHandler[cIdx].setProgressView(progressView);
+                    mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
+                }
+            }
+        } finally {
+            width.recycle();
+            height.recycle();
         }
     }
 
@@ -217,10 +253,21 @@ public class ShowBookDetailsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        // add the search action view
-        inflater.inflate(R.menu.sav_search, menu);
+        if (mVm.isEmbedded()) {
+            //URGENT: add some sort of menu divider
+            //        MenuCompat.setGroupDividerEnabled(menu, true);
+//            menu.add(Menu.NONE, R.id.MENU_DIVIDER,
+//                     getResources().getInteger(R.integer.MENU_ORDER_DIVIDER_BOOK_DETAILS), "")
+//                .setEnabled(false);
+        }
+
+        if (mBookChangedListener != null) {
+            menu.add(Menu.NONE, R.id.MENU_SYNC_LIST_WITH_DETAILS,
+                     getResources().getInteger(R.integer.MENU_ORDER_SYNC_LIST_WITH_DETAILS),
+                     R.string.menu_book_sync_list_with_details);
+        }
         //noinspection ConstantConditions
-        MenuHelper.setupSearchActionView(getActivity(), menu);
+        MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
 
         inflater.inflate(R.menu.book, menu);
 
@@ -281,21 +328,30 @@ public class ShowBookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
-            final String title = book.getString(DBKey.KEY_TITLE);
-            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            final String title = book.getTitle();
+            final List<Author> authors = book.getAuthors();
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(context, title, authors, () -> {
                 mVm.deleteBook();
-
-                //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
-                getActivity().finish();
+                // Callback - used when we're running inside another component; e.g. the BoB
+                if (mBookChangedListener != null) {
+                    mBookChangedListener.onBookDeleted(book.getId());
+                } else {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+                    getActivity().finish();
+                }
             });
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
             // toggle 'read' status of the book
-            mVm.toggleRead();
+            final boolean read = mVm.toggleRead();
+            mVm.getFields().getField(R.id.read).setValue(read);
+            // Callback - used when we're running inside another component; e.g. the BoB
+            if (mBookChangedListener != null) {
+                mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
+            }
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
@@ -303,7 +359,7 @@ public class ShowBookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            mVm.deleteLoan();
+            deleteLoanee(book);
             return true;
 
         } else if (itemId == R.id.MENU_SHARE) {
@@ -322,6 +378,11 @@ public class ShowBookDetailsFragment
             mUpdateBookLauncher.launch(book);
             return true;
 
+        } else if (itemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
+            if (mBookChangedListener != null) {
+                mBookChangedListener.onSyncBook(book.getId());
+            }
+            return true;
         }
 
         if (mCalibreHandler != null && mCalibreHandler.onItemSelected(itemId, book)) {
@@ -344,35 +405,52 @@ public class ShowBookDetailsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            mVm.deleteLoan();
+            deleteLoanee(mVm.getBook());
             return true;
         }
 
         return super.onContextItemSelected(item);
     }
 
+    private void deleteLoanee(@NonNull final Book book) {
+        mVm.deleteLoan();
+        bindLoanee(book);
+        // Callback - used when we're running inside another component; e.g. the BoB
+        if (mBookChangedListener != null) {
+            mBookChangedListener.onBookUpdated(book, DBKey.KEY_LOANEE);
+        }
+    }
+
     /**
-     * Called when the user has finished editing (manual or internet update) a Book.
+     * Called when the Book was changed somehow.
      *
-     * @param data returned from the editor Activity
+     * @param data (optional) with intent extras
+     * @param key  the item that was changed.
+     *             Pass {@code null} to indicate ALL data was potentially changed.
      */
-    private void onBookEditingDone(@Nullable final Bundle data) {
+    private void onBookChanged(@Nullable final Bundle data,
+                               @Nullable final String key) {
         if (data != null) {
             // pass the data up
             mVm.getResultIntent().putExtras(data);
         }
         mVm.reloadBook();
+
+        // Callback - used when we're running inside another component; e.g. the BoB
+        if (mBookChangedListener != null) {
+            mBookChangedListener.onBookUpdated(mVm.getBook(), key);
+        }
     }
 
     @Override
     public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
-        mVm.reloadBook();
+        //TODO: mCoverHandler[cIdx].onBindView(...);
+        onBookChanged(null, null);
     }
 
     private void setActivityTitle(@NonNull final Book book) {
         //noinspection ConstantConditions
-        String authors = Author.getCondensedNames(
-                getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
+        String authors = Author.getCondensedNames(getContext(), book.getAuthors());
 
         if (BuildConfig.DEBUG /* always */) {
             authors = "[" + book.getId() + "] " + authors;
@@ -382,7 +460,6 @@ public class ShowBookDetailsFragment
     }
 
     private void onBindBook(@NonNull final ShowBookDetailsViewModel.BookMessage message) {
-
         final boolean isNewEvent = message.isNewEvent();
         if (isNewEvent) {
             bindBook(message.book);
@@ -390,60 +467,23 @@ public class ShowBookDetailsFragment
     }
 
     private void bindBook(@NonNull final Book book) {
-        // update all Fields with their current View instances
-        final Fields fields = mVm.getFields();
-        fields.setParentView(mVb.getRoot());
-        fields.setAll(book);
-
-        if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onBindView(mVb.coverImage0, book);
-        }
-        if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onBindView(mVb.coverImage1, book);
+        if (!mVm.isEmbedded()) {
+            setActivityTitle(book);
         }
 
-        switch (book.getContentType()) {
-            case Collection:
-                mVb.lblAnthologyOrCollection.setVisibility(View.VISIBLE);
-                mVb.lblAnthologyOrCollection.setText(R.string.lbl_collection);
-                break;
+        mVm.getFields().setAll(book);
 
-            case Anthology:
-                mVb.lblAnthologyOrCollection.setVisibility(View.VISIBLE);
-                mVb.lblAnthologyOrCollection.setText(R.string.lbl_anthology);
-                break;
+        bindCoverImages(book);
+        bindLoanee(book);
+        bindToc(book);
 
-            case Book:
-            default:
-                mVb.lblAnthologyOrCollection.setVisibility(View.GONE);
-                break;
-        }
-
-        if (mVm.useLoanee()) {
-            bindLoanee(book);
-        } else {
-            mVb.lendTo.setVisibility(View.GONE);
-        }
-
-        if (mVm.useToc()) {
-            if (mVb.btnShowToc != null) {
-                bindTocButton(book);
-            } else if (mVb.tocFrame != null) {
-                bindTocFrame(book);
-            }
-        } else {
-            if (mVb.btnShowToc != null) {
-                mVb.btnShowToc.setVisibility(View.GONE);
-            } else if (mVb.tocFrame != null) {
-                mVb.tocFrame.setVisibility(View.GONE);
-            }
-        }
-
-        mVm.getFields().setVisibility(mVb.getRoot(), true, false);
+        //noinspection ConstantConditions
+        mVm.getFields().setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
+        final View pubView = getView().findViewById(R.id.publication_section);
         final FragmentBookDetailsMergePublicationSectionBinding vbPub =
-                FragmentBookDetailsMergePublicationSectionBinding.bind(mVb.publicationSection);
+                FragmentBookDetailsMergePublicationSectionBinding.bind(pubView);
         setSectionVisibility(vbPub.lblPublication,
                              vbPub.publisher,
                              vbPub.datePublished,
@@ -454,9 +494,25 @@ public class ShowBookDetailsFragment
                              vbPub.pages);
 
         // All views should now have proper visibility set, so fix their focus order.
-        ViewFocusOrder.fix(mVb.getRoot());
+        ViewFocusOrder.fix(getView());
+    }
 
-        setActivityTitle(book);
+    private void bindCoverImages(@NonNull final Book book) {
+        final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
+        try {
+            for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
+                //noinspection ConstantConditions
+                final ImageView view = getView().findViewById(coverResIds.getResourceId(cIdx, 0));
+                if (mCoverHandler[cIdx] != null) {
+                    mCoverHandler[cIdx].onBindView(view, book);
+                    mCoverHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
+                } else if (view != null) {
+                    view.setVisibility(View.GONE);
+                }
+            }
+        } finally {
+            coverResIds.recycle();
+        }
     }
 
     /**
@@ -466,19 +522,63 @@ public class ShowBookDetailsFragment
      * @param book to load
      */
     private void bindLoanee(@NonNull final Book book) {
-        final String loanee = book.getLoanee();
-        if (loanee.isEmpty()) {
-            mVb.lendTo.setText("");
-            mVb.lendTo.setVisibility(View.GONE);
+        //noinspection ConstantConditions
+        final TextView lendTo = getView().findViewById(R.id.lend_to);
+        if (mVm.useLoanee()) {
+            final String loanee = book.getLoanee();
+            if (loanee.isEmpty()) {
+                lendTo.setText("");
+                lendTo.setVisibility(View.GONE);
+            } else {
+                lendTo.setText(getString(R.string.lbl_lend_out_to_name, loanee));
+                lendTo.setVisibility(View.VISIBLE);
+                //TODO: convert to ExtPopupMenu context menu.... if I can be bothered. */
+                lendTo.setOnCreateContextMenuListener((menu, v, menuInfo) -> menu.add(
+                        Menu.NONE,
+                        R.id.MENU_BOOK_LOAN_DELETE,
+                        getResources().getInteger(R.integer.MENU_ORDER_LENDING),
+                        R.string.menu_lend_return_book));
+            }
         } else {
-            mVb.lendTo.setText(getString(R.string.lbl_lend_out_to_name, loanee));
-            mVb.lendTo.setVisibility(View.VISIBLE);
-            //TODO: convert to ExtPopupMenu context menu.... if I can be bothered. */
-            mVb.lendTo.setOnCreateContextMenuListener((menu, v, menuInfo) -> menu.add(
-                    Menu.NONE,
-                    R.id.MENU_BOOK_LOAN_DELETE,
-                    getResources().getInteger(R.integer.MENU_ORDER_LENDING),
-                    R.string.menu_lend_return_book));
+            lendTo.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindToc(@NonNull final Book book) {
+        //noinspection ConstantConditions
+        final TextView lblAnthologyOrCollection =
+                getView().findViewById(R.id.lbl_anthology_or_collection);
+        switch (book.getContentType()) {
+            case Collection:
+                lblAnthologyOrCollection.setVisibility(View.VISIBLE);
+                lblAnthologyOrCollection.setText(R.string.lbl_collection);
+                break;
+
+            case Anthology:
+                lblAnthologyOrCollection.setVisibility(View.VISIBLE);
+                lblAnthologyOrCollection.setText(R.string.lbl_anthology);
+                break;
+
+            case Book:
+            default:
+                lblAnthologyOrCollection.setVisibility(View.GONE);
+                break;
+        }
+
+        final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
+        final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
+        if (mVm.useToc()) {
+            if (btnShowToc != null) {
+                bindTocButton(btnShowToc, book);
+            } else if (tocFrame != null) {
+                bindTocFrame(tocFrame, book);
+            }
+        } else {
+            if (btnShowToc != null) {
+                btnShowToc.setVisibility(View.GONE);
+            } else if (tocFrame != null) {
+                tocFrame.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -488,18 +588,19 @@ public class ShowBookDetailsFragment
      * @param book to load
      */
     @SuppressWarnings("ConstantConditions")
-    private void bindTocButton(@NonNull final Book book) {
-        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+    private void bindTocButton(@NonNull final Button showTocBtn,
+                               @NonNull final Book book) {
+
+        final ArrayList<TocEntry> tocList = book.getToc();
         if (tocList.isEmpty()) {
-            mVb.btnShowToc.setVisibility(View.GONE);
+            showTocBtn.setVisibility(View.GONE);
         } else {
-            mVb.btnShowToc.setVisibility(View.VISIBLE);
-            mVb.btnShowToc.setOnClickListener(v -> {
+            showTocBtn.setVisibility(View.VISIBLE);
+            showTocBtn.setOnClickListener(v -> {
                 final Fragment fragment = new TocFragment();
                 final Bundle args = new Bundle();
                 args.putLong(DBKey.FK_BOOK, book.getId());
-                args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST,
-                                            book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
+                args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, book.getAuthors());
                 args.putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
                 fragment.setArguments(args);
 
@@ -519,13 +620,13 @@ public class ShowBookDetailsFragment
      *
      * @param book to load
      */
-    @SuppressWarnings("ConstantConditions")
-    private void bindTocFrame(@NonNull final Book book) {
-        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+    private void bindTocFrame(@NonNull final FragmentContainerView tocFrame,
+                              @NonNull final Book book) {
+        final ArrayList<TocEntry> tocList = book.getToc();
         if (tocList.isEmpty()) {
-            mVb.tocFrame.setVisibility(View.GONE);
+            tocFrame.setVisibility(View.GONE);
         } else {
-            mVb.tocFrame.setVisibility(View.VISIBLE);
+            tocFrame.setVisibility(View.VISIBLE);
 
             final TocFragment fragment = new TocFragment();
             final Bundle args = new Bundle();

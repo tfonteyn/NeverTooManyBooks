@@ -70,6 +70,14 @@ public class ShowBookDetailsViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
+    private static final String TAG = "ShowBookDetailsViewModel";
+
+    /**
+     * Whether to run this fragment in embedded mode (i.e. inside a frame on the BoB screen).
+     * We could (should?) use a boolean resource in "sw800" instead.
+     */
+    public static final String BKEY_EMBEDDED = TAG + ":emb";
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
@@ -87,15 +95,18 @@ public class ShowBookDetailsViewModel
     private boolean mUseLoanee;
     private boolean mUseToc;
 
+    private boolean mEmbedded;
+
     /**
      * <ul>
-     * <li>{@link DBKey#FK_BOOK}  book id</li>
-     * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
+     * <li>{@link DBKey#FK_BOOK}: book id</li>
+     * <li>{@link Entity#BKEY_DATA_MODIFIED}: boolean</li>
      * </ul>
      */
     @NonNull
     @Override
     public Intent getResultIntent() {
+        // always set the *current* book, so the BoB list can reposition more accurately.
         if (mBook != null) {
             mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
         }
@@ -115,6 +126,8 @@ public class ShowBookDetailsViewModel
         if (mBookDao == null) {
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
+            mEmbedded = args.getBoolean(BKEY_EMBEDDED, false);
+
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             mStyle = ServiceLocator.getInstance().getStyles()
                                    .getStyleOrDefault(context, styleUuid);
@@ -130,6 +143,10 @@ public class ShowBookDetailsViewModel
             SanityCheck.requirePositiveValue(bookId, DBKey.FK_BOOK);
             mBook = Book.from(bookId, mBookDao);
         }
+    }
+
+    public boolean isEmbedded() {
+        return mEmbedded;
     }
 
     @NonNull
@@ -239,7 +256,7 @@ public class ShowBookDetailsViewModel
                    DBKey.DATE_READ_END)
               .setRelatedFields(R.id.lbl_read_end);
 
-        fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBKey.BOOL_READ);
+        fields.add(R.id.read, new BooleanIndicatorAccessor(), DBKey.BOOL_READ);
 
         fields.add(R.id.signed, new BooleanIndicatorAccessor(), DBKey.BOOL_SIGNED);
 

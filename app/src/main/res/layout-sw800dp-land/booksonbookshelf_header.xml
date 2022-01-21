@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <!--
   ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
@@ -26,31 +24,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/statusBarColor"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/bob_list_end_margin"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintEnd_toStartOf="@id/details_frame"
-        app:layout_constraintHorizontal_weight="0.33"
+    <TextView
+        android:id="@+id/style_name"
+        style="@style/BoB.Header"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/booksonbookshelf_row_book_scale_3"
-        tools:showIn="@layout/booksonbookshelf"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="@sample/data.json/styles/name"
         />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/details_frame"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="0.66"
-        app:layout_constraintStart_toEndOf="@id/list"
-        tools:layout="@layout/fragment_book_details"
+    <TextView
+        android:id="@+id/filter_text"
+        style="@style/BoB.Header.Small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/style_name"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="the optional search text"
         />
+
+    <TextView
+        android:id="@+id/book_count"
+        style="@style/BoB.Header.Small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_text"
+        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:text="@string/txt_displaying_n_books_in_m_entries"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
