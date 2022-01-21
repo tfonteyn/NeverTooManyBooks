@@ -32,6 +32,8 @@ import java.util.Objects;
 
 /**
  * A data class representing a domain + the sql column expression and optional sorting flag.
+ * <p>
+ * Immutable.
  */
 public class DomainExpression
         implements Parcelable {
@@ -107,7 +109,7 @@ public class DomainExpression
      *
      * @param in Parcel to construct the object from
      */
-    DomainExpression(@NonNull final Parcel in) {
+    private DomainExpression(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mDomain = in.readParcelable(Domain.class.getClassLoader());
         mExpression = in.readString();
