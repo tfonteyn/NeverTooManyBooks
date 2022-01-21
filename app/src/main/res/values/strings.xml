@@ -1636,6 +1636,7 @@
 
     <string name="lbl_sql_query">SQL query</string>
     <string name="lbl_book_detail_screen">Book details page</string>
+    <string name="menu_book_sync_list_with_details">Sync/scroll the list</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
