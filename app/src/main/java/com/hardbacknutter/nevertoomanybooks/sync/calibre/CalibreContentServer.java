@@ -146,21 +146,18 @@ public class CalibreContentServer {
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL =
             PREF_KEY + Prefs.pk_suffix_host_url;
-    private static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_connect;
-    private static final String PK_READ_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_read;
-
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
-
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: Number of items returned in 'this' call. */
     static final String RESPONSE_TAG_NUM = "num";
-
+    private static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_connect;
+    private static final String PK_READ_TIMEOUT_IN_SECONDS =
+            PREF_KEY + Prefs.pk_suffix_timeout_read;
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
     /** Custom field for {@link SyncReaderMetaData}. */
@@ -249,7 +246,12 @@ public class CalibreContentServer {
 
         // accommodate the (usually) self-signed CA certificate
         if ("https".equals(mServerUri.getScheme())) {
-            mSslContext = getSslContext(context);
+            try {
+                mSslContext = getSslContext(getCertificate(context));
+            } catch (@NonNull final IOException ignore) {
+                // we are (have to) assuming that the server CA is loaded
+                // in the Android system keystore.
+            }
         }
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
@@ -1300,20 +1302,17 @@ public class CalibreContentServer {
     /**
      * Create the custom SSLContext if there is a custom CA file configured.
      *
-     * @param context Current context
+     * @param ca the server CA
      *
      * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
      *
      * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @Nullable
-    private SSLContext getSslContext(@NonNull final Context context)
+    private SSLContext getSslContext(@NonNull final X509Certificate ca)
             throws CertificateException, SSLException {
 
         try {
-            final X509Certificate ca = getCertificate(context);
-
             final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
             keyStore.setCertificateEntry(SERVER_CA, ca);
