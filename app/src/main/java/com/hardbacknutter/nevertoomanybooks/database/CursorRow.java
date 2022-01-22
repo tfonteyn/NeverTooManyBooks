@@ -59,8 +59,8 @@ public class CursorRow
         mDateParser = new ISODateParser();
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Set<String> keySet() {
         return new HashSet<>(Arrays.asList(mCursor.getColumnNames()));
     }
@@ -70,10 +70,12 @@ public class CursorRow
      *
      * @return {@code true} if this cursor contains the specified domain.
      */
+    @Override
     public boolean contains(@NonNull final String key) {
         return mCursor.getColumnIndex(key) > -1;
     }
 
+    @Override
     @Nullable
     public String getString(@NonNull final String key,
                             @Nullable final String defValue)
@@ -96,6 +98,7 @@ public class CursorRow
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
+    @Override
     public boolean getBoolean(@NonNull final String key)
             throws ColumnNotPresentException {
         return getInt(key) == 1;
@@ -108,6 +111,7 @@ public class CursorRow
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
+    @Override
     public int getInt(@NonNull final String key)
             throws ColumnNotPresentException {
 
@@ -116,7 +120,7 @@ public class CursorRow
             throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
-        //     return null; // 0
+        //     return 0;
         // }
         return mCursor.getInt(col);
     }
@@ -128,6 +132,7 @@ public class CursorRow
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
+    @Override
     public long getLong(@NonNull final String key)
             throws ColumnNotPresentException {
 
@@ -136,7 +141,7 @@ public class CursorRow
             throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
-        //     return null; // 0
+        //     return 0;
         // }
         return mCursor.getLong(col);
     }
@@ -148,6 +153,7 @@ public class CursorRow
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
+    @Override
     public double getDouble(@NonNull final String key)
             throws ColumnNotPresentException {
 
@@ -156,29 +162,29 @@ public class CursorRow
             throw new ColumnNotPresentException(key);
         }
         // if (mCursor.isNull(col)) {
-        //     return null; // 0
+        //     return 0;
         // }
         return mCursor.getDouble(col);
     }
 
-    /**
-     * @param key to get
-     *
-     * @return the byte array (blob) of the column
-     *
-     * @throws ColumnNotPresentException if the column was not present.
-     */
-    public byte[] getBlob(@NonNull final String key)
-            throws ColumnNotPresentException {
-
-        final int col = mCursor.getColumnIndex(key);
-        if (col == -1) {
-            throw new ColumnNotPresentException(key);
-        }
-        // if (mCursor.isNull(col)) {
-        //     return null;
-        // }
-        return mCursor.getBlob(col);
-    }
+//    /**
+//     * @param key to get
+//     *
+//     * @return the byte array (blob) of the column
+//     *
+//     * @throws ColumnNotPresentException if the column was not present.
+//     */
+//    public byte[] getBlob(@NonNull final String key)
+//            throws ColumnNotPresentException {
+//
+//        final int col = mCursor.getColumnIndex(key);
+//        if (col == -1) {
+//            throw new ColumnNotPresentException(key);
+//        }
+//        // if (mCursor.isNull(col)) {
+//        //     return null;
+//        // }
+//        return mCursor.getBlob(col);
+//    }
 
 }
