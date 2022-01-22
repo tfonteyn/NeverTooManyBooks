@@ -79,29 +79,4 @@
         android:icon="@drawable/ic_baseline_share_24"
         android:orderInCategory="@integer/MENU_ORDER_SHARE"
         android:title="@string/whichSendApplication" />
-
-    <item
-        android:id="@id/SUBMENU_CALIBRE"
-        android:orderInCategory="@integer/MENU_ORDER_CALIBRE"
-        android:icon="@drawable/ic_baseline_cloud_24"
-        android:title="@string/site_calibre"
-        android:visible="false">
-        <menu>
-            <item
-                android:id="@id/MENU_CALIBRE_READ"
-                android:icon="@drawable/ic_baseline_menu_book_24"
-                android:title="@string/lbl_read" />
-
-            <!-- title always set from code; the below is just a placeholder. -->
-            <item
-                android:id="@id/MENU_CALIBRE_DOWNLOAD"
-                android:icon="@drawable/ic_baseline_cloud_download_24"
-                android:title="@string/book_format_ebook" />
-
-            <item
-                android:id="@id/MENU_CALIBRE_SETTINGS"
-                android:icon="@drawable/ic_baseline_settings_24"
-                android:title="@string/lbl_settings" />
-        </menu>
-    </item>
 </menu>

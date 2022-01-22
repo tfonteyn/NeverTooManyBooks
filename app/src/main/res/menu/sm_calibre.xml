@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@id/SUBMENU_CALIBRE"
+        android:icon="@drawable/ic_baseline_cloud_24"
+        android:orderInCategory="@integer/MENU_ORDER_CALIBRE"
+        android:title="@string/site_calibre">
+        <menu>
+            <item
+                android:id="@id/MENU_CALIBRE_READ"
+                android:icon="@drawable/ic_baseline_menu_book_24"
+                android:title="@string/lbl_read" />
+
+            <!-- title always set from code; the below is just a placeholder. -->
+            <item
+                android:id="@id/MENU_CALIBRE_DOWNLOAD"
+                android:icon="@drawable/ic_baseline_cloud_download_24"
+                android:title="@string/book_format_ebook" />
+
+            <item
+                android:id="@id/MENU_CALIBRE_SETTINGS"
+                android:icon="@drawable/ic_baseline_settings_24"
+                android:title="@string/lbl_settings" />
+        </menu>
+    </item>
+</menu>
