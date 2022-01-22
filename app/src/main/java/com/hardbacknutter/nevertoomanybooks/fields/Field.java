@@ -83,7 +83,7 @@ public class Field<T, V extends View> {
 
     /**
      * The preference key (field-name) to check if this Field is used or not.
-     * i.e. the key to be used for {@code App.isUsed(mIsUsedKey)}.
+     * i.e. the key to be used for {@link DBKey#isUsed(SharedPreferences, String)}.
      */
     @NonNull
     private final String mIsUsedKey;
