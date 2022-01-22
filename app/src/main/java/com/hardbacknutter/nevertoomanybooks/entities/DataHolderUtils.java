@@ -22,24 +22,36 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 
 /**
  * Methods to extract a number of objects from a {@link DataHolder}.
- * <p>
- * It is <strong>NOT</strong> the intention of passing a {@link Book} in!
- * For some methods this will work, for others it will fail (return {@code null}).
  */
 public final class DataHolderUtils {
 
     private DataHolderUtils() {
+    }
+
+    public static boolean hasAuthor(@NonNull final DataHolder rowData) {
+        if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
+            final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            return !list.isEmpty();
+        } else {
+            return rowData.getLong(DBKey.FK_AUTHOR) > 0;
+        }
+    }
+
+    public static boolean hasSeries(@NonNull final DataHolder rowData) {
+        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
+            final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            return !list.isEmpty();
+        } else {
+            return rowData.getLong(DBKey.FK_SERIES) > 0;
+        }
     }
 
     /**
@@ -67,21 +79,27 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Author getAuthor(@NonNull final DataHolder rowData) {
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-        if (rowData.contains(DBKey.FK_AUTHOR)) {
+        if (rowData.contains(Book.BKEY_AUTHOR_LIST)) {
+            // Ideally the row contains the data as a list. Simply return the first one.
+            final List<Author> list = rowData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            return list.isEmpty() ? null : list.get(0);
+
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            // The rowData is flagged as containing book data without being a full Book object.
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // sanity check
+            if (bookId > 0) {
+                final List<Author> list = ServiceLocator.getInstance().getAuthorDao()
+                                                        .getAuthorsByBookId(bookId);
+                return list.isEmpty() ? null : list.get(0);
+            }
+        } else if (rowData.contains(DBKey.FK_AUTHOR)) {
             final long id = rowData.getLong(DBKey.FK_AUTHOR);
             if (id > 0) {
-                return authorDao.getById(id);
-            }
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            // This is the same as calling getBook(rowData).getPrimaryAuthor()
-            // but should be slightly faster.
-            final List<Author> authors = authorDao.getAuthorsByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
-            if (!authors.isEmpty()) {
-                return authors.get(0);
+                return ServiceLocator.getInstance().getAuthorDao().getById(id);
             }
         }
+
         return null;
     }
 
@@ -94,21 +112,27 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Series getSeries(@NonNull final DataHolder rowData) {
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-        if (rowData.contains(DBKey.FK_SERIES)) {
+        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
+            // Ideally the row contains the data as a list. Simply return the first one.
+            final List<Series> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            return list.isEmpty() ? null : list.get(0);
+
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            // The rowData is flagged as containing book data without being a full Book object.
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // sanity check
+            if (bookId > 0) {
+                final List<Series> list = ServiceLocator.getInstance().getSeriesDao()
+                                                        .getSeriesByBookId(bookId);
+                return list.isEmpty() ? null : list.get(0);
+            }
+        } else if (rowData.contains(DBKey.FK_SERIES)) {
             final long id = rowData.getLong(DBKey.FK_SERIES);
             if (id > 0) {
-                return seriesDao.getById(rowData.getLong(DBKey.FK_SERIES));
-            }
-        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            // This is the same as calling getBook(rowData).getPrimarySeries()
-            // but should be slightly faster.
-            final ArrayList<Series> series = seriesDao.getSeriesByBookId(
-                    rowData.getLong(DBKey.FK_BOOK));
-            if (!series.isEmpty()) {
-                return series.get(0);
+                return ServiceLocator.getInstance().getSeriesDao().getById(id);
             }
         }
+
         return null;
     }
 
@@ -121,11 +145,27 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Publisher getPublisher(@NonNull final DataHolder rowData) {
-        // When needed, add code similar to getAuthor to use a BooklistGroup.BOOK
-        final long id = rowData.getLong(DBKey.FK_PUBLISHER);
-        if (id > 0) {
-            return ServiceLocator.getInstance().getPublisherDao().getById(id);
+        if (rowData.contains(Book.BKEY_PUBLISHER_LIST)) {
+            // Ideally the row contains the data as a list. Simply return the first one.
+            final List<Publisher> list = rowData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            return list.isEmpty() ? null : list.get(0);
+
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            // The rowData is flagged as containing book data without being a full Book object.
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // sanity check
+            if (bookId > 0) {
+                final List<Publisher> list = ServiceLocator.getInstance().getPublisherDao()
+                                                           .getPublishersByBookId(bookId);
+                return list.isEmpty() ? null : list.get(0);
+            }
+        } else if (rowData.contains(DBKey.FK_PUBLISHER)) {
+            final long id = rowData.getLong(DBKey.FK_PUBLISHER);
+            if (id > 0) {
+                return ServiceLocator.getInstance().getPublisherDao().getById(id);
+            }
         }
+
         return null;
     }
 
@@ -138,11 +178,27 @@ public final class DataHolderUtils {
      */
     @Nullable
     public static Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        // When needed, add code similar to getAuthor to use a BooklistGroup.BOOK
-        final long id = rowData.getLong(DBKey.FK_BOOKSHELF);
-        if (id > 0) {
-            return ServiceLocator.getInstance().getBookshelfDao().getById(id);
+        if (rowData.contains(Book.BKEY_SERIES_LIST)) {
+            // Ideally the row contains the data as a list. Simply return the first one.
+            final List<Bookshelf> list = rowData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            return list.isEmpty() ? null : list.get(0);
+
+        } else if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            // The rowData is flagged as containing book data without being a full Book object.
+            final long bookId = rowData.getLong(DBKey.FK_BOOK);
+            // sanity check
+            if (bookId > 0) {
+                final List<Bookshelf> list = ServiceLocator.getInstance().getBookshelfDao()
+                                                           .getBookshelvesByBookId(bookId);
+                return list.isEmpty() ? null : list.get(0);
+            }
+        } else if (rowData.contains(DBKey.FK_BOOKSHELF)) {
+            final long id = rowData.getLong(DBKey.FK_BOOKSHELF);
+            if (id > 0) {
+                return ServiceLocator.getInstance().getBookshelfDao().getById(id);
+            }
         }
+
         return null;
     }
 }

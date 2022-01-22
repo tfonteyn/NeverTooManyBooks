@@ -20,10 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.database.Cursor;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -122,4 +124,19 @@ public interface DataHolder {
     @Nullable
     String getString(@NonNull String key,
                      @Nullable String defValue);
+
+    /**
+     * Get a {@link Parcelable} {@link ArrayList} from the collection.
+     * <p>
+     * This default implementation simply returns an empty list.
+     *
+     * @param key Key of data object
+     * @param <T> type of objects in the list
+     *
+     * @return The list, can be empty, but never {@code null}
+     */
+    @NonNull
+    default <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
+        return new ArrayList<>();
+    }
 }
