@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskStartException;
 import com.hardbacknutter.org.json.JSONException;
 
 class SingleFileDownloadTask
@@ -52,17 +53,18 @@ class SingleFileDownloadTask
         mServer = server;
     }
 
-    public boolean download(@NonNull final Book book,
-                            @NonNull final Uri folder) {
+    public void download(@NonNull final Book book,
+                         @NonNull final Uri folder) {
         mBook = book;
         mFolder = folder;
 
         // sanity check
         if (mBook.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
-            return false;
+            //TODO: use a better message
+            setFailure(new TaskStartException(R.string.error_download_failed));
+            return;
         }
         execute();
-        return true;
     }
 
     @NonNull
