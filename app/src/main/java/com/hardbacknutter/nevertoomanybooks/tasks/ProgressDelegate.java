@@ -85,7 +85,6 @@ public class ProgressDelegate {
         if (mPreventSleep) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-
         mVb.getRoot().setVisibility(View.VISIBLE);
         return this;
     }

@@ -191,7 +191,7 @@ public abstract class SearchBookBaseFragment
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(getString(R.string.progress_msg_searching))
+                        .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> mCoordinator.cancelTask(message.taskId))
                         .show(getActivity().getWindow());

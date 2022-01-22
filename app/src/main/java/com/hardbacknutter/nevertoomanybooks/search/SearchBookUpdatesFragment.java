@@ -321,7 +321,7 @@ public class SearchBookUpdatesFragment
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(getString(R.string.progress_msg_searching))
+                        .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))

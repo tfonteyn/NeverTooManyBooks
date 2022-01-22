@@ -557,7 +557,7 @@ public class ImportFragment
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(getString(R.string.lbl_importing))
+                        .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
                         .show(getActivity().getWindow());

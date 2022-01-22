@@ -368,7 +368,7 @@ public class SettingsFragment
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(getString(R.string.lbl_moving_data))
+                        .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
