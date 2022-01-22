@@ -25,6 +25,7 @@
     land: w533dp h296dp
 -->
 <resources>
+    <!-- Predefined id's for cover image views; so we can use them in an array. -->
     <item name="cover_image_0" type="id" />
     <item name="cover_image_1" type="id" />
     <array name="cover_images">
@@ -38,7 +39,11 @@
     <!-- Maximum space a zoomed cover can use of the screen; 0..100 -->
     <integer name="cover_zoom_screen_percentage">95</integer>
 
-    <!-- Book details screen. Front cover at the top, back cover below. -->
+    <!-- Book details screen.
+        0: Front cover
+        1: back cover
+        These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
+        -->
     <dimen name="cover_details_0_height">200dp</dimen>
     <dimen name="cover_details_0_width">128dp</dimen>
     <dimen name="cover_details_1_height">100dp</dimen>
@@ -53,7 +58,11 @@
         <item>@dimen/cover_details_1_width</item>
     </array>
 
-    <!-- Book edit screen. Displayed side by side. -->
+    <!-- Book edit screen.
+        0: Front cover
+        1: back cover
+        These are the MAXIMUM dimensions. Images will always be scaled to fit this box.
+        -->
     <dimen name="cover_edit_0_height">100dp</dimen>
     <dimen name="cover_edit_0_width">64dp</dimen>
     <dimen name="cover_edit_1_height">100dp</dimen>
