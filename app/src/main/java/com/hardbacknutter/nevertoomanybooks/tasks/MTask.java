@@ -71,7 +71,7 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    protected void onFinished(@NonNull final FinishedMessage<Result> message) {
+    protected void setFinished(@NonNull final FinishedMessage<Result> message) {
         mFinishedObservable.postValue(message);
     }
 
@@ -93,7 +93,7 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    protected void onCancelled(@NonNull final FinishedMessage<Result> message) {
+    protected void setCancelled(@NonNull final FinishedMessage<Result> message) {
         mCancelObservable.postValue(message);
     }
 
@@ -112,7 +112,7 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    protected void onFailure(@NonNull final Exception e) {
+    protected void setFailure(@NonNull final Exception e) {
         mFailureObservable.postValue(new FinishedMessage<>(getTaskId(), e));
     }
 

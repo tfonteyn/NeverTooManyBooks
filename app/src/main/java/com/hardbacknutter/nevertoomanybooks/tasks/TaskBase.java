@@ -126,13 +126,13 @@ abstract class TaskBase<Result>
                 final Result result = doWork(context);
                 final FinishedMessage<Result> message = new FinishedMessage<>(getTaskId(), result);
                 if (isCancelled()) {
-                    onCancelled(message);
+                    setCancelled(message);
                 } else {
-                    onFinished(message);
+                    setFinished(message);
                 }
             } catch (@NonNull final Exception e) {
                 Logger.error(mTaskName, e);
-                onFailure(e);
+                setFailure(e);
             }
 
             mStatus = Status.Finished;
@@ -153,11 +153,11 @@ abstract class TaskBase<Result>
     protected abstract Result doWork(@NonNull Context context)
             throws Exception;
 
-    protected abstract void onFinished(@NonNull FinishedMessage<Result> message);
+    protected abstract void setFinished(@NonNull FinishedMessage<Result> message);
 
-    protected abstract void onCancelled(@NonNull FinishedMessage<Result> message);
+    protected abstract void setCancelled(@NonNull FinishedMessage<Result> message);
 
-    protected abstract void onFailure(@NonNull Exception e);
+    protected abstract void setFailure(@NonNull Exception e);
 
     @AnyThread
     public boolean cancel() {
