@@ -44,9 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 
 /**
- * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
- * This is only in code. The texts shown to the user have not changed.
- * <p>
  * Class to manage the display of 'tips' within the application. Each tip dialog has
  * a 'Do not show again' option, that results in an update to the preferences which
  * are checked by this code.
