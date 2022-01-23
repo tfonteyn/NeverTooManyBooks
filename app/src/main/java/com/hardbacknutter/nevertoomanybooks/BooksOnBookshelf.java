@@ -31,9 +31,11 @@ import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
@@ -93,7 +95,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
@@ -115,7 +116,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
@@ -124,7 +124,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -190,15 +189,9 @@ public class BooksOnBookshelf
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
 
-    /** Delegate for Calibre. */
+    /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-    /** Delegate for Amazon. */
-    @Nullable
-    private AmazonHandler mAmazonHandler;
-    /** Delegate for viewing a book on an external website. */
-    @Nullable
-    private ViewBookOnWebsiteHandler mViewBookHandler;
 
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
@@ -491,17 +484,11 @@ public class BooksOnBookshelf
      * @param global Global preferences
      */
     private void createHandlers(@NonNull final SharedPreferences global) {
-
-        if (mAmazonHandler == null) {
-            mAmazonHandler = new AmazonHandler(this);
-        }
-        if (mViewBookHandler == null) {
-            mViewBookHandler = new ViewBookOnWebsiteHandler(this);
-        }
-
         if (mCalibreHandler == null && SyncServer.CalibreCS.isEnabled(global)) {
             try {
-                mCalibreHandler = new CalibreHandler(this, this);
+                mCalibreHandler = new CalibreHandler(this, this)
+                        .setProgressDialogView(findViewById(R.id.progress_frame));
+
                 mCalibreHandler.onViewCreated(this, mVb.getRoot());
             } catch (@NonNull final SSLException | CertificateException ignore) {
                 // ignore
@@ -560,7 +547,7 @@ public class BooksOnBookshelf
                             .setIsolateViewTypes(true)
                             .setStableIdMode(ConcatAdapter.Config.StableIdMode.ISOLATED_STABLE_IDS)
                             .build(),
-                    new HeaderAdapter(), mAdapter);
+                    new HeaderAdapter(this), mAdapter);
 
             mVb.content.list.setAdapter(concatAdapter);
 
@@ -862,9 +849,13 @@ public class BooksOnBookshelf
         final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
-                getMenuInflater().inflate(R.menu.book, menu);
-                getMenuInflater().inflate(R.menu.sm_view_on_site, menu);
-                getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
+                final MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.book, menu);
+                if (mCalibreHandler != null) {
+                    mCalibreHandler.onCreateMenu(menu, inflater);
+                }
+                mVm.getViewBookHandler().onCreateMenu(menu, inflater);
+                mVm.getAmazonHandler().onCreateMenu(menu, inflater);
 
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(this);
@@ -873,52 +864,44 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
-                // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+                // specifically check KEY_LOANEE independent from the style in use.
                 final boolean useLending = DBKey.isUsed(global, DBKey.KEY_LOANEE);
                 final boolean isAvailable = mVm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
-                if (mCalibreHandler != null && SyncServer.CalibreCS.isEnabled(global)) {
+                if (mCalibreHandler != null) {
                     final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
-                    mCalibreHandler.prepareMenu(menu, book);
+                    mCalibreHandler.onPrepareMenu(this, menu, book);
                 }
 
-                if (mViewBookHandler != null) {
-                    mViewBookHandler.prepareMenu(menu, rowData);
-                }
-
-                if (mAmazonHandler != null) {
-                    mAmazonHandler.prepareMenu(menu, rowData);
-                }
+                mVm.getViewBookHandler().onPrepareMenu(menu, rowData);
+                mVm.getAmazonHandler().onPrepareMenu(menu, rowData);
                 break;
             }
             case BooklistGroup.AUTHOR: {
-                getMenuInflater().inflate(R.menu.author, menu);
-                getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
+                final MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.author, menu);
+                mVm.getAmazonHandler().onCreateMenu(menu, inflater);
 
                 final boolean complete = rowData.getBoolean(DBKey.BOOL_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                if (mAmazonHandler != null) {
-                    mAmazonHandler.prepareMenu(menu, rowData);
-                }
+                mVm.getAmazonHandler().onPrepareMenu(menu, rowData);
                 break;
             }
             case BooklistGroup.SERIES: {
                 if (rowData.getLong(DBKey.FK_SERIES) != 0) {
-                    getMenuInflater().inflate(R.menu.series, menu);
-                    getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
+                    final MenuInflater inflater = getMenuInflater();
+                    inflater.inflate(R.menu.series, menu);
+                    mVm.getAmazonHandler().onCreateMenu(menu, inflater);
 
-                    final boolean complete =
-                            rowData.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE);
+                    final boolean complete = rowData.getBoolean(DBKey.BOOL_SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    if (mAmazonHandler != null) {
-                        mAmazonHandler.prepareMenu(menu, rowData);
-                    }
+                    mVm.getAmazonHandler().onPrepareMenu(menu, rowData);
                 }
                 break;
             }
@@ -1244,15 +1227,15 @@ public class BooksOnBookshelf
             return true;
         }
 
-        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(itemId, rowData)) {
+        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(this, itemId, rowData)) {
             return true;
         }
 
-        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, rowData)) {
+        if (mVm.getAmazonHandler().onItemSelected(this, itemId, rowData)) {
             return true;
         }
 
-        if (mViewBookHandler != null && mViewBookHandler.onItemSelected(itemId, rowData)) {
+        if (mVm.getViewBookHandler().onItemSelected(this, itemId, rowData)) {
             return true;
         }
 
@@ -1928,18 +1911,26 @@ public class BooksOnBookshelf
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final BooksonbookshelfHeaderBinding vb;
+        final TextView styleName;
+        final TextView filterText;
+        final TextView bookCount;
 
-        HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
-            super(vb.getRoot());
-            this.vb = vb;
+        HeaderViewHolder(@NonNull final View itemView) {
+            super(itemView);
+            styleName = itemView.findViewById(R.id.style_name);
+            filterText = itemView.findViewById(R.id.filter_text);
+            bookCount = itemView.findViewById(R.id.book_count);
         }
     }
 
     private class HeaderAdapter
             extends RecyclerView.Adapter<HeaderViewHolder> {
 
-        HeaderAdapter() {
+        @NonNull
+        private final LayoutInflater mInflater;
+
+        HeaderAdapter(@NonNull final Context context) {
+            mInflater = LayoutInflater.from(context);
             setHasStableIds(true);
         }
 
@@ -1947,9 +1938,8 @@ public class BooksOnBookshelf
         @Override
         public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                                    final int viewType) {
-            final BooksonbookshelfHeaderBinding vb = BooksonbookshelfHeaderBinding.inflate(
-                    LayoutInflater.from(parent.getContext()), parent, false);
-            return new HeaderViewHolder(vb);
+            final View view = mInflater.inflate(R.layout.booksonbookshelf_header, parent, false);
+            return new HeaderViewHolder(view);
         }
 
         @Override
@@ -1958,16 +1948,16 @@ public class BooksOnBookshelf
             final Context context = holder.itemView.getContext();
             String header;
             header = mVm.getHeaderStyleName(context);
-            holder.vb.styleName.setText(header);
-            holder.vb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.styleName.setText(header);
+            holder.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = mVm.getHeaderFilterText(context);
-            holder.vb.filterText.setText(header);
-            holder.vb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.filterText.setText(header);
+            holder.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
 
             header = mVm.getHeaderBookCount(context);
-            holder.vb.bookCount.setText(header);
-            holder.vb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+            holder.bookCount.setText(header);
+            holder.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
         }
 
         @Override

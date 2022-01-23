@@ -27,6 +27,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -63,8 +64,10 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 
 public class ShowBookDetailsViewModel
         extends ViewModel
@@ -82,7 +85,7 @@ public class ShowBookDetailsViewModel
     @NonNull
     private final Intent mResultIntent = new Intent();
 
-    private final MutableLiveData<BookMessage> mBookLd = new MutableLiveData<>();
+    private final MutableLiveData<BookMessage> mBookUpdate = new MutableLiveData<>();
     /** Database Access. */
     private BookDao mBookDao;
 
@@ -96,6 +99,11 @@ public class ShowBookDetailsViewModel
     private boolean mUseToc;
 
     private boolean mEmbedded;
+
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookHandler;
+    @Nullable
+    private AmazonHandler mAmazonHandler;
 
     /**
      * <ul>
@@ -145,12 +153,28 @@ public class ShowBookDetailsViewModel
         }
     }
 
-    public boolean isEmbedded() {
+    @NonNull
+    ViewBookOnWebsiteHandler getViewBookHandler() {
+        if (mViewBookHandler == null) {
+            mViewBookHandler = new ViewBookOnWebsiteHandler();
+        }
+        return mViewBookHandler;
+    }
+
+    @NonNull
+    AmazonHandler getAmazonHandler() {
+        if (mAmazonHandler == null) {
+            mAmazonHandler = new AmazonHandler();
+        }
+        return mAmazonHandler;
+    }
+
+    boolean isEmbedded() {
         return mEmbedded;
     }
 
     @NonNull
-    public Fields getFields() {
+    Fields getFields() {
         return mFieldsMap;
     }
 
@@ -269,13 +293,13 @@ public class ShowBookDetailsViewModel
 
     @NonNull
     public MutableLiveData<BookMessage> onBookLoaded() {
-        return mBookLd;
+        return mBookUpdate;
     }
 
     void reloadBook() {
         Objects.requireNonNull(mBook, "Book not loaded yet");
         mBook = Book.from(mBook.getId(), mBookDao);
-        mBookLd.setValue(new BookMessage(mBook, -1));
+        mBookUpdate.setValue(new BookMessage(mBook));
     }
 
     @NonNull
@@ -285,11 +309,11 @@ public class ShowBookDetailsViewModel
         return mBook;
     }
 
-    public boolean useLoanee() {
+    boolean useLoanee() {
         return mUseLoanee;
     }
 
-    public boolean useToc() {
+    boolean useToc() {
         return mUseToc;
     }
 
@@ -374,14 +398,11 @@ public class ShowBookDetailsViewModel
             implements LiveDataEvent {
 
         public final Book book;
-        public int tracker;
         /** {@link LiveDataEvent}. */
         private boolean mHasBeenHandled;
 
-        public BookMessage(@NonNull final Book book,
-                           final int tracker) {
+        public BookMessage(@NonNull final Book book) {
             this.book = book;
-            this.tracker = tracker;
         }
 
         @Override

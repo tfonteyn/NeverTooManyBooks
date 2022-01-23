@@ -87,6 +87,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 /**
  * A delegate class for handling a displayed Cover.
  * Offers context menus and all operations applicable on a Cover image.
+ * <p>
+ * Context/View dependent!
  */
 public class CoverHandler {
 
@@ -97,8 +99,9 @@ public class CoverHandler {
     private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
 
     /**
-     * After taking a picture, do nothing. Never change the value.
-     * This is stored in user preferences.
+     * Never change these values. This is stored in user preferences.
+     * <p>
+     * After taking a picture, do nothing.
      */
     private static final int ACTION_DONE = 0;
     /** After taking a picture, crop. */
@@ -114,14 +117,16 @@ public class CoverHandler {
     private final int mMaxWidth;
     private final int mMaxHeight;
     @NonNull
-    private final CoverHandlerHost mCoverHandlerHost;
+    private final CoverHandlerOwner mCoverHandlerOwner;
     @NonNull
     private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher;
-    @NonNull
-    private final ImageViewLoader mImageLoader;
-    /** The host view; used for context, resources, Snackbar. */
-    private View mView;
+    /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
     private final CoverHandlerViewModel mVm;
+    /** The fragment root view; used for context, resources, Snackbar. */
+    private View mFragmentView;
+    @Nullable
+    private ImageViewLoader mImageLoader;
+
     private ActivityResultLauncher<String> mCameraPermissionLauncher;
     private ActivityResultLauncher<Uri> mTakePictureLauncher;
     private ActivityResultLauncher<CropImageActivity.ResultContract.Input> mCropPictureLauncher;
@@ -135,31 +140,29 @@ public class CoverHandler {
     /** Optional progress bar to display during operations. */
     @Nullable
     private CircularProgressIndicator mProgressIndicator;
-    /** Used to display a hint if user rotates a camera image. */
-    private boolean mShowHintAboutRotating;
 
     /**
      * Constructor.
      *
-     * @param coverHandlerHost the hosting component
-     * @param cIdx             0..n image index
-     * @param maxWidth         the maximum width for the cover
-     * @param maxHeight        the maximum height for the cover
+     * @param coverHandlerOwner the hosting component
+     * @param cIdx              0..n image index
+     * @param maxWidth          the maximum width for the cover
+     * @param maxHeight         the maximum height for the cover
      */
-    public CoverHandler(@NonNull final CoverHandlerHost coverHandlerHost,
-                        @NonNull final ViewModelStoreOwner viewModelStoreOwner,
+    public CoverHandler(@NonNull final CoverHandlerOwner coverHandlerOwner,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         final int maxWidth,
                         final int maxHeight) {
-        mCoverHandlerHost = coverHandlerHost;
+        mCoverHandlerOwner = coverHandlerOwner;
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
 
-        mVm = new ViewModelProvider(viewModelStoreOwner)
+        // reminder: this VM is shared between multiple CoverHandler instances
+        // owned by the mCoverHandlerOwner.
+        // e.g. mCIdx etc should not be stored in the VM.
+        mVm = new ViewModelProvider(mCoverHandlerOwner)
                 .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
-
-        mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, mMaxWidth, mMaxHeight);
 
         mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
             @Override
@@ -169,45 +172,32 @@ public class CoverHandler {
         };
     }
 
-    public void onViewCreated(@NonNull final Fragment fragment) {
+    public CoverHandler onFragmentViewCreated(@NonNull final Fragment fragment) {
+        mFragmentView = fragment.requireView();
 
-        //noinspection ConstantConditions
-        onViewCreated(fragment.getView(),
-                      fragment.getViewLifecycleOwner(),
-                      fragment.getChildFragmentManager(),
-                      fragment);
-    }
-
-    /**
-     * Host (Fragment/Activity) independent initializer.
-     *
-     * @param view the hosting component root view
-     */
-    public void onViewCreated(@NonNull final View view,
-                              @NonNull final LifecycleOwner lifecycleOwner,
-                              @NonNull final FragmentManager fm,
-                              @NonNull final ActivityResultCaller caller) {
-        mView = view;
-
-        mCameraPermissionLauncher = caller.registerForActivityResult(
+        mCameraPermissionLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
                         takePicture(true);
                     }
                 });
-        mTakePictureLauncher = caller.registerForActivityResult(
+        mTakePictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.TakePicture(), this::onTakePictureResult);
 
-        mGetFromFileLauncher = caller.registerForActivityResult(
+        mGetFromFileLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.GetContent(), this::onGetContentResult);
 
-        mEditPictureLauncher = caller.registerForActivityResult(
+        mEditPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
 
-        mCropPictureLauncher = caller.registerForActivityResult(
+        mCropPictureLauncher = ((ActivityResultCaller) fragment).registerForActivityResult(
                 new CropImageActivity.ResultContract(), this::onGetContentResult);
 
-        mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
+
+        final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
+
+        mCoverBrowserLauncher.registerForFragmentResult(fragment.getChildFragmentManager(),
+                                                        lifecycleOwner);
 
         mVm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
@@ -218,21 +208,27 @@ public class CoverHandler {
                 onAfterTransform(message.requireResult());
             }
         });
+
+        return this;
     }
 
-    public void setProgressView(@Nullable final CircularProgressIndicator progressIndicator) {
-        mProgressIndicator = progressIndicator;
+    public CoverHandler setProgressView(@Nullable final CircularProgressIndicator progressView) {
+        mProgressIndicator = progressView;
+        return this;
     }
 
-    public void setBookSupplier(@NonNull final Supplier<Book> bookSupplier) {
+    public CoverHandler setBookSupplier(@NonNull final Supplier<Book> bookSupplier) {
         mBookSupplier = bookSupplier;
+        return this;
     }
 
-    public void onBindView(@NonNull final ImageView view,
-                           @NonNull final Book book) {
-        // dev warning: in NO circumstances keep a reference to either the view or book!
-        final File file = book.getCoverFile(mCIdx);
+    public void onBindView(@NonNull final ImageView view) {
+        // dev warning: in NO circumstances keep a reference to the view!
+        final File file = mBookSupplier.get().getCoverFile(mCIdx);
         if (file != null) {
+            if (mImageLoader == null) {
+                mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, mMaxWidth, mMaxHeight);
+            }
             mImageLoader.loadAndDisplay(view, file, null);
             view.setBackground(null);
         } else {
@@ -306,19 +302,19 @@ public class CoverHandler {
         final int itemId = menuItem.getItemId();
 
         final Book book = mBookSupplier.get();
-        final Context context = mView.getContext();
+        final Context context = mFragmentView.getContext();
 
         if (itemId == R.id.MENU_DELETE) {
             book.removeCover(mCIdx);
-            mCoverHandlerHost.refresh(mCIdx);
+            mCoverHandlerOwner.refresh(mCIdx);
             return true;
 
         } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
             // Just a submenu; skip, but display a hint if user is rotating a camera image
-            if (mShowHintAboutRotating) {
+            if (mVm.isShowTipAboutRotating()) {
                 TipManager.getInstance()
                           .display(context, R.string.tip_autorotate_camera_images, null);
-                mShowHintAboutRotating = false;
+                mVm.setShowTipAboutRotating(false);
             }
             return true;
 
@@ -375,12 +371,14 @@ public class CoverHandler {
         return false;
     }
 
-    public void setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
+    public CoverHandler setCoverBrowserIsbnSupplier(@NonNull final Supplier<String> supplier) {
         mCoverBrowserIsbnSupplier = supplier;
+        return this;
     }
 
-    public void setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
+    public CoverHandler setCoverBrowserTitleSupplier(@NonNull final Supplier<String> supplier) {
         mCoverBrowserTitleSupplier = supplier;
+        return this;
     }
 
     /**
@@ -413,7 +411,7 @@ public class CoverHandler {
             }
         }
 
-        Snackbar.make(mView, R.string.warning_requires_isbn, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(mFragmentView, R.string.warning_requires_isbn, Snackbar.LENGTH_LONG).show();
     }
 
     /**
@@ -435,7 +433,7 @@ public class CoverHandler {
             mBookSupplier.get().removeCover(mCIdx);
         }
 
-        mCoverHandlerHost.refresh(mCIdx);
+        mCoverHandlerOwner.refresh(mCIdx);
     }
 
     /**
@@ -494,7 +492,8 @@ public class CoverHandler {
                 context.getPackageManager()
                        .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (resInfoList.isEmpty()) {
-            Snackbar.make(mView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mFragmentView, R.string.error_no_image_editor, Snackbar.LENGTH_LONG)
+                    .show();
         } else {
             // We do not know which app will be used, so need to grant permission to all.
             for (final ResolveInfo resolveInfo : resInfoList) {
@@ -510,7 +509,7 @@ public class CoverHandler {
     }
 
     private void onEditPictureResult(@NonNull final ActivityResult activityResult) {
-        final Context context = mView.getContext();
+        final Context context = mFragmentView.getContext();
         if (activityResult.getResultCode() == Activity.RESULT_OK) {
             try {
                 final File file = getTempFile();
@@ -537,7 +536,7 @@ public class CoverHandler {
      */
     private void onGetContentResult(@Nullable final Uri uri) {
         if (uri != null) {
-            final Context context = mView.getContext();
+            final Context context = mFragmentView.getContext();
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
                 final File file = FileUtils.copy(is, getTempFile());
@@ -564,7 +563,7 @@ public class CoverHandler {
      *                       i.e. when called from the {@link #mCameraPermissionLauncher}
      */
     private void takePicture(final boolean alreadyGranted) {
-        final Context context = mView.getContext();
+        final Context context = mFragmentView.getContext();
         if (alreadyGranted ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
@@ -588,7 +587,7 @@ public class CoverHandler {
 
     private void onTakePictureResult(final boolean result) {
         if (result) {
-            final Context context = mView.getContext();
+            final Context context = mFragmentView.getContext();
             File file = null;
             try {
                 file = getTempFile();
@@ -638,7 +637,7 @@ public class CoverHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
-        final Context context = mView.getContext();
+        final Context context = mFragmentView.getContext();
         try {
             final File srcFile = mBookSupplier.get().createTempCoverFile(mCIdx);
             showProgress();
@@ -659,7 +658,7 @@ public class CoverHandler {
                        + "|file=" + result.getFile().getAbsolutePath());
         }
 
-        final Context context = mView.getContext();
+        final Context context = mFragmentView.getContext();
 
         // The bitmap != null decides if the operation was successful.
         if (null != result.getBitmap()) {
@@ -680,7 +679,7 @@ public class CoverHandler {
                     default:
                         mBookSupplier.get().setCover(mCIdx, result.getFile());
                         // must use a post to force the View to update.
-                        mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
+                        mFragmentView.post(() -> mCoverHandlerOwner.refresh(mCIdx));
                         return;
                 }
             } catch (@NonNull final CoverStorageException | IOException e) {
@@ -693,7 +692,7 @@ public class CoverHandler {
         // transformation failed
         mBookSupplier.get().removeCover(mCIdx);
         // must use a post to force the View to update.
-        mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
+        mFragmentView.post(() -> mCoverHandlerOwner.refresh(mCIdx));
     }
 
     /**
@@ -706,7 +705,7 @@ public class CoverHandler {
     @NonNull
     private File getTempFile()
             throws CoverStorageException {
-        return new File(CoverDir.getTemp(mView.getContext()), TAG + "_" + mCIdx + ".jpg");
+        return new File(CoverDir.getTemp(mFragmentView.getContext()), TAG + "_" + mCIdx + ".jpg");
     }
 
     /**
@@ -732,7 +731,8 @@ public class CoverHandler {
         }
     }
 
-    public interface CoverHandlerHost {
+    public interface CoverHandlerOwner
+            extends ViewModelStoreOwner {
 
         /**
          * Refresh/reload the given image into its View.

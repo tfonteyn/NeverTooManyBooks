@@ -19,12 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
@@ -35,9 +45,95 @@ public class CalibreHandlerViewModel
 
     private SingleFileDownloadTask mSingleFileDownloadTask;
 
-    public void init(@NonNull final CalibreContentServer server) {
-        if (mSingleFileDownloadTask == null) {
-            mSingleFileDownloadTask = new SingleFileDownloadTask(server);
+    private CalibreContentServer mServer;
+
+    @Nullable
+    private Book mTempBook;
+
+    public void init(@NonNull final Context context)
+            throws CertificateException, SSLException {
+        if (mServer == null) {
+            mServer = new CalibreContentServer(context);
+            mSingleFileDownloadTask = new SingleFileDownloadTask(mServer);
+        }
+    }
+
+    @NonNull
+    Book getAndResetTempBook() {
+        final Book book = Objects.requireNonNull(mTempBook, "mTempBook");
+        mTempBook = null;
+        return book;
+    }
+
+    void setTempBook(@NonNull final Book book) {
+        mTempBook = book;
+    }
+
+    /**
+     * Check if we have the book in the local folder.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param context Current context
+     * @param book    to check
+     *
+     * @return {@code true} if we have the file
+     */
+    public boolean existsLocally(@NonNull final Context context,
+                                 @NonNull final Book book) {
+        try {
+            getDocumentUri(context, book);
+            return true;
+
+        } catch (@NonNull final FileNotFoundException ignore) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the book file from the local folder.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param context Current context
+     * @param book    to get
+     *
+     * @return book
+     *
+     * @throws FileNotFoundException on ...
+     */
+    @NonNull
+    public Uri getDocumentUri(@NonNull final Context context,
+                              @NonNull final Book book)
+            throws FileNotFoundException {
+
+        final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
+        if (optFolderUri.isPresent()) {
+            try {
+                return mServer.getDocumentFile(context, book, optFolderUri.get(), false)
+                              .getUri();
+            } catch (@NonNull final IOException e) {
+                // Keep it simple.
+                throw new FileNotFoundException(optFolderUri.get().toString());
+            }
+        }
+        throw new FileNotFoundException("Folder not configured");
+    }
+
+    /**
+     * Start the download task.
+     *
+     * @param book   to download
+     * @param folder to store the result
+     */
+    public void startDownload(@NonNull final Book book,
+                              @NonNull final Uri folder) {
+        mSingleFileDownloadTask.download(book, folder);
+    }
+
+    public void cancelTask(@IdRes final int taskId) {
+        if (taskId == mSingleFileDownloadTask.getTaskId()) {
+            mSingleFileDownloadTask.cancel();
+        } else {
+            throw new IllegalArgumentException("taskId=" + taskId);
         }
     }
 
@@ -59,18 +155,5 @@ public class CalibreHandlerViewModel
     @NonNull
     public LiveData<FinishedMessage<Uri>> onFinished() {
         return mSingleFileDownloadTask.onFinished();
-    }
-
-    public boolean download(@NonNull final Book book,
-                            @NonNull final Uri folder) {
-        return mSingleFileDownloadTask.download(book, folder);
-    }
-
-    public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mSingleFileDownloadTask.getTaskId()) {
-            mSingleFileDownloadTask.cancel();
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
     }
 }

@@ -53,8 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -98,6 +100,11 @@ public class BooksOnBookshelfViewModel
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
+
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookHandler;
+    @Nullable
+    private AmazonHandler mAmazonHandler;
 
     @NonNull
     public LiveData<ProgressMessage> onProgress() {
@@ -172,6 +179,22 @@ public class BooksOnBookshelfViewModel
 
     void resetPreferredListRebuildMode(@NonNull final Context context) {
         mRebuildMode = RebuildBooklist.getPreferredMode(context);
+    }
+
+    @NonNull
+    ViewBookOnWebsiteHandler getViewBookHandler() {
+        if (mViewBookHandler == null) {
+            mViewBookHandler = new ViewBookOnWebsiteHandler();
+        }
+        return mViewBookHandler;
+    }
+
+    @NonNull
+    AmazonHandler getAmazonHandler() {
+        if (mAmazonHandler == null) {
+            mAmazonHandler = new AmazonHandler();
+        }
+        return mAmazonHandler;
     }
 
     /**

@@ -55,8 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
@@ -92,10 +90,7 @@ public abstract class EditBookBaseFragment
             };
     /** Listener for all field changes. MUST keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener = this::onAfterFieldChange;
-    @Nullable
-    private AmazonHandler mAmazonHandler;
-    @Nullable
-    private ViewBookOnWebsiteHandler mViewBookOnWebsiteHandler;
+
     private DateParser mDateParser;
 
     /**
@@ -146,11 +141,7 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Context context = getContext();
         //noinspection ConstantConditions
-        mViewBookOnWebsiteHandler = new ViewBookOnWebsiteHandler(context);
-        mAmazonHandler = new AmazonHandler(context);
-
         mDateParser = new FullDateParser(getContext());
 
         final FragmentManager fm = getChildFragmentManager();
@@ -166,22 +157,17 @@ public abstract class EditBookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
-            inflater.inflate(R.menu.sm_view_on_site, menu);
-        }
-        if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
-            inflater.inflate(R.menu.sm_search_on_amazon, menu);
-        }
+        mVm.getViewBookHandler().onCreateMenu(menu, inflater);
+        mVm.getAmazonHandler().onCreateMenu(menu, inflater);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mVm.getBook();
-        //noinspection ConstantConditions
-        mViewBookOnWebsiteHandler.prepareMenu(menu, book);
-        //noinspection ConstantConditions
-        mAmazonHandler.prepareMenu(menu, book);
+
+        mVm.getViewBookHandler().onPrepareMenu(menu, book);
+        mVm.getAmazonHandler().onPrepareMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -190,14 +176,15 @@ public abstract class EditBookBaseFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final Book book = mVm.getBook();
+        final Context context = getContext();
         final int itemId = item.getItemId();
 
-        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
+        //noinspection ConstantConditions
+        if (mVm.getAmazonHandler().onItemSelected(context, itemId, book)) {
             return true;
         }
 
-        //noinspection ConstantConditions
-        if (mViewBookOnWebsiteHandler.onItemSelected(item.getItemId(), book)) {
+        if (mVm.getViewBookHandler().onItemSelected(context, item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);

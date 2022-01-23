@@ -28,6 +28,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 public class CoverHandlerViewModel
         extends ViewModel {
 
+    /** Used to display a tip dialog when the user rotates a camera image. */
+    private boolean mShowTipAboutRotating = true;
+
     private final TransFormTask mTransFormTask = new TransFormTask();
 
     @NonNull
@@ -37,5 +40,13 @@ public class CoverHandlerViewModel
 
     public void execute(@NonNull final TransFormTask.Transformation transformation) {
         mTransFormTask.transform(transformation);
+    }
+
+    public boolean isShowTipAboutRotating() {
+        return mShowTipAboutRotating;
+    }
+
+    public void setShowTipAboutRotating(final boolean show) {
+        mShowTipAboutRotating = show;
     }
 }

@@ -62,6 +62,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class EditBookViewModel
@@ -134,6 +136,11 @@ public class EditBookViewModel
     /** The currently displayed tab. */
     private int mCurrentTab;
 
+    @Nullable
+    private ViewBookOnWebsiteHandler mViewBookHandler;
+    @Nullable
+    private AmazonHandler mAmazonHandler;
+
     /**
      * <ul>
      * <li>{@link DBKey#FK_BOOK}: book id</li>
@@ -199,6 +206,22 @@ public class EditBookViewModel
 
     void setCurrentTab(final int currentTab) {
         mCurrentTab = currentTab;
+    }
+
+    @NonNull
+    ViewBookOnWebsiteHandler getViewBookHandler() {
+        if (mViewBookHandler == null) {
+            mViewBookHandler = new ViewBookOnWebsiteHandler();
+        }
+        return mViewBookHandler;
+    }
+
+    @NonNull
+    AmazonHandler getAmazonHandler() {
+        if (mAmazonHandler == null) {
+            mAmazonHandler = new AmazonHandler();
+        }
+        return mAmazonHandler;
     }
 
     @NonNull

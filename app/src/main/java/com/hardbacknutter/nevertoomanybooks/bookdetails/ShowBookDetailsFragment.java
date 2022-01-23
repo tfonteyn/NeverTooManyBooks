@@ -53,7 +53,6 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import javax.net.ssl.SSLException;
 
@@ -66,23 +65,20 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class ShowBookDetailsFragment
         extends BaseFragment
-        implements CoverHandler.CoverHandlerHost {
+        implements CoverHandler.CoverHandlerOwner {
 
     public static final String TAG = "ShowBookDetailsFragment";
 
@@ -91,15 +87,9 @@ public class ShowBookDetailsFragment
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
-    /** Delegate for Calibre. */
+    /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-
-    @Nullable
-    private AmazonHandler mAmazonHandler;
-    @Nullable
-    private ViewBookOnWebsiteHandler mViewBookHandler;
 
     private ShowBookDetailsViewModel mVm;
 
@@ -174,10 +164,11 @@ public class ShowBookDetailsFragment
         //noinspection ConstantConditions
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
-        createSyncDelegates(global);
-        mAmazonHandler = new AmazonHandler(context);
-        mViewBookHandler = new ViewBookOnWebsiteHandler(context);
         createCoverDelegates(global);
+
+        // We must create them here, even if the Book has no matching sync id,
+        // because #onCreateOptionsMenu uses them before the Book is loaded.
+        createSyncDelegates(global);
 
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
@@ -202,7 +193,7 @@ public class ShowBookDetailsFragment
     }
 
     /**
-     * Create the optional launcher and delegates.
+     * Create the optional sync delegates.
      *
      * @param global Global preferences
      */
@@ -211,7 +202,8 @@ public class ShowBookDetailsFragment
         if (SyncServer.CalibreCS.isEnabled(global)) {
             try {
                 //noinspection ConstantConditions
-                mCalibreHandler = new CalibreHandler(getContext(), this);
+                mCalibreHandler = new CalibreHandler(getContext(), this)
+                        .setProgressDialogView(getProgressFrame());
                 mCalibreHandler.onViewCreated(this);
             } catch (@NonNull final SSLException | CertificateException ignore) {
                 // ignore
@@ -237,10 +229,10 @@ public class ShowBookDetailsFragment
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
-                    mCoverHandler[cIdx] = new CoverHandler(this, this, cIdx, maxWidth, maxHeight);
-                    mCoverHandler[cIdx].onViewCreated(this);
-                    mCoverHandler[cIdx].setProgressView(progressView);
-                    mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
+                    mCoverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
+                            .setBookSupplier(() -> mVm.getBook())
+                            .setProgressView(progressView)
+                            .onFragmentViewCreated(this);
                 }
             }
         } finally {
@@ -270,16 +262,15 @@ public class ShowBookDetailsFragment
         MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
 
         inflater.inflate(R.menu.book, menu);
-
         // duplicating is not supported from inside this fragment
         menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
-        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
-            inflater.inflate(R.menu.sm_view_on_site, menu);
+        if (mCalibreHandler != null) {
+            mCalibreHandler.onCreateMenu(menu, inflater);
         }
-        if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
-            inflater.inflate(R.menu.sm_search_on_amazon, menu);
-        }
+        mVm.getViewBookHandler().onCreateMenu(menu, inflater);
+        mVm.getAmazonHandler().onCreateMenu(menu, inflater);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -287,31 +278,27 @@ public class ShowBookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mVm.getBook();
 
+        final Context context = getContext();
+
         //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBKey.BOOL_READ);
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
-        // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+        // specifically check KEY_LOANEE independent from the style in use.
         final boolean useLending = DBKey.isUsed(global, DBKey.KEY_LOANEE);
         final boolean isAvailable = mVm.isAvailable();
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
-        if (SyncServer.CalibreCS.isEnabled(global)) {
-            //noinspection ConstantConditions
-            mCalibreHandler.prepareMenu(menu, book);
+        if (mCalibreHandler != null) {
+            mCalibreHandler.onPrepareMenu(context, menu, book);
         }
-
-        //noinspection ConstantConditions
-        mViewBookHandler.prepareMenu(menu, book);
-
-        //noinspection ConstantConditions
-        mAmazonHandler.prepareMenu(menu, book);
+        mVm.getViewBookHandler().onPrepareMenu(menu, book);
+        mVm.getAmazonHandler().onPrepareMenu(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -370,7 +357,7 @@ public class ShowBookDetailsFragment
         } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
             //noinspection ConstantConditions
             final Intent intent = SettingsHostActivity
-                    .createIntent(getContext(), CalibrePreferencesFragment.class);
+                    .createIntent(context, CalibrePreferencesFragment.class);
             startActivity(intent);
             return true;
 
@@ -385,15 +372,17 @@ public class ShowBookDetailsFragment
             return true;
         }
 
-        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(itemId, book)) {
+        //noinspection ConstantConditions
+        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(context, itemId, book)) {
             return true;
         }
 
-        if (mAmazonHandler != null && mAmazonHandler.onItemSelected(itemId, book)) {
+        //noinspection ConstantConditions
+        if (mVm.getAmazonHandler().onItemSelected(context, itemId, book)) {
             return true;
         }
 
-        if (mViewBookHandler != null && mViewBookHandler.onItemSelected(item.getItemId(), book)) {
+        if (mVm.getViewBookHandler().onItemSelected(context, item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -473,7 +462,7 @@ public class ShowBookDetailsFragment
 
         mVm.getFields().setAll(book);
 
-        bindCoverImages(book);
+        bindCoverImages();
         bindLoanee(book);
         bindToc(book);
 
@@ -481,30 +470,46 @@ public class ShowBookDetailsFragment
         mVm.getFields().setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
-        final View pubView = getView().findViewById(R.id.publication_section);
-        final FragmentBookDetailsMergePublicationSectionBinding vbPub =
-                FragmentBookDetailsMergePublicationSectionBinding.bind(pubView);
-        setSectionVisibility(vbPub.lblPublication,
-                             vbPub.publisher,
-                             vbPub.datePublished,
-                             vbPub.priceListed,
-                             vbPub.format,
-                             vbPub.color,
-                             vbPub.language,
-                             vbPub.pages);
+        setSectionVisibility(R.id.lbl_publication,
+                             R.id.publisher,
+                             R.id.date_published,
+                             R.id.price_listed,
+                             R.id.format,
+                             R.id.color,
+                             R.id.language,
+                             R.id.pages);
 
         // All views should now have proper visibility set, so fix their focus order.
         ViewFocusOrder.fix(getView());
     }
 
-    private void bindCoverImages(@NonNull final Book book) {
+    /**
+     * If all field Views are View.GONE, set the section View to View.GONE as well.
+     * Otherwise, set the section View to View.VISIBLE.
+     *
+     * @param sectionLabel field to set
+     * @param fieldViews   to check
+     */
+    private void setSectionVisibility(final int sectionLabel,
+                                      final Integer... fieldViews) {
+
+        final View parent = getView();
+        //noinspection ConstantConditions
+        final boolean visible = Arrays.stream(fieldViews)
+                                      .map(parent::findViewById)
+                                      .map(v -> ((View) v).getVisibility())
+                                      .anyMatch(vis -> vis != View.GONE);
+        parent.findViewById(sectionLabel).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void bindCoverImages() {
         final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
         try {
             for (int cIdx = 0; cIdx < coverResIds.length(); cIdx++) {
                 //noinspection ConstantConditions
                 final ImageView view = getView().findViewById(coverResIds.getResourceId(cIdx, 0));
                 if (mCoverHandler[cIdx] != null) {
-                    mCoverHandler[cIdx].onBindView(view, book);
+                    mCoverHandler[cIdx].onBindView(view);
                     mCoverHandler[cIdx].attachOnClickListeners(getChildFragmentManager(), view);
                 } else if (view != null) {
                     view.setVisibility(View.GONE);
@@ -637,21 +642,5 @@ public class ShowBookDetailsFragment
                     .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                     .commit();
         }
-    }
-
-    /**
-     * If all field Views are View.GONE, set the section View to View.GONE as well.
-     * Otherwise, set the section View to View.VISIBLE.
-     *
-     * @param sectionView field to set
-     * @param fieldViews  to check
-     */
-    private void setSectionVisibility(@NonNull final View sectionView,
-                                      @NonNull final View... fieldViews) {
-
-        final boolean visible = Arrays.stream(fieldViews)
-                                      .filter(Objects::nonNull)
-                                      .anyMatch(v -> v.getVisibility() != View.GONE);
-        sectionView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

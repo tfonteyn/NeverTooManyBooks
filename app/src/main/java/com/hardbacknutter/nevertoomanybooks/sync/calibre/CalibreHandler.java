@@ -19,13 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
+import android.view.Window;
 
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,7 +44,6 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,33 +63,32 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * A delegate class for handling a Calibre enabled Book.
+ * <p>
+ * Context/View dependent!
  */
 public class CalibreHandler {
 
     /** Whether to show any sync menus at all. */
     public static final String PK_ENABLED = CalibreContentServer.PREF_KEY + ".enabled";
 
-    /** The Calibre API object. */
     @NonNull
-    private final CalibreContentServer mServer;
+    private final CalibreHandlerViewModel mVm;
 
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
 
-    /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
-    @Nullable
-    private Book mTempBookWhileRunningPickFolder;
+    /** The host Window. */
+    private Window mWindow;
 
-    private Activity mActivity;
-
-    /** The host view; used for context, resources, Snackbar. */
+    /** The host view; used for context, resources. */
     private View mView;
 
+    /** Optionally set during initializing. */
+    @Nullable
+    private View mProgressDialogView;
+    /** Created only when actually needed. */
     @Nullable
     private ProgressDelegate mProgressDelegate;
-
-    @NonNull
-    private final CalibreHandlerViewModel mVm;
 
     /**
      * Constructor.
@@ -102,10 +101,9 @@ public class CalibreHandler {
     public CalibreHandler(@NonNull final Context context,
                           @NonNull final ViewModelStoreOwner viewModelStoreOwner)
             throws CertificateException, SSLException {
-        mServer = new CalibreContentServer(context);
 
         mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
-        mVm.init(mServer);
+        mVm.init(context);
     }
 
     /**
@@ -128,7 +126,7 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final FragmentActivity activity,
                               @NonNull final View view) {
-        onViewCreated(activity,
+        onViewCreated(activity.getWindow(),
                       view,
                       activity,
                       activity);
@@ -141,7 +139,7 @@ public class CalibreHandler {
      */
     public void onViewCreated(@NonNull final Fragment fragment) {
         //noinspection ConstantConditions
-        onViewCreated(fragment.getActivity(),
+        onViewCreated(fragment.getActivity().getWindow(),
                       fragment.getView(),
                       fragment.getViewLifecycleOwner(),
                       fragment);
@@ -150,25 +148,21 @@ public class CalibreHandler {
     /**
      * Host (Fragment/Activity) independent initializer.
      *
-     * @param activity the hosting Activity
-     * @param view     the hosting component root view
+     * @param window the hosting component window
+     * @param view   the hosting component root view
      */
-    private void onViewCreated(@NonNull final Activity activity,
+    private void onViewCreated(@NonNull final Window window,
                                @NonNull final View view,
                                @NonNull final LifecycleOwner lifecycleOwner,
                                @NonNull final ActivityResultCaller caller) {
-        mActivity = activity;
+        mWindow = window;
         mView = view;
 
         mPickFolderLauncher = caller.registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(), uri -> {
                     if (uri != null) {
                         CalibreContentServer.setFolderUri(mView.getContext(), uri);
-                        Objects.requireNonNull(mTempBookWhileRunningPickFolder,
-                                               "mTempBookWhileRunningPickFolder");
-                        final Book book = mTempBookWhileRunningPickFolder;
-                        mTempBookWhileRunningPickFolder = null;
-                        download(book, uri);
+                        mVm.startDownload(mVm.getAndResetTempBook(), uri);
                     }
                 });
 
@@ -178,27 +172,35 @@ public class CalibreHandler {
         mVm.onProgress().observe(lifecycleOwner, this::onProgress);
     }
 
+    public void onCreateMenu(@NonNull final Menu menu,
+                             @NonNull final MenuInflater inflater) {
+        if (menu.findItem(R.id.SUBMENU_CALIBRE) == null) {
+            inflater.inflate(R.menu.sm_calibre, menu);
+        }
+    }
+
     /**
      * Add a Calibre submenu with read/download/settings options as appropriate for the given Book.
      *
      * @param menu to add to
      * @param book to use
      */
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final Book book) {
+    public void onPrepareMenu(@NonNull final Context context,
+                              @NonNull final Menu menu,
+                              @NonNull final Book book) {
 
-        final boolean calibre = !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
+        final boolean hasCalibreId = !book.getString(DBKey.KEY_CALIBRE_BOOK_UUID).isEmpty();
 
-        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
-        if (calibre) {
-            if (CalibreContentServer.getFolderUri(mView.getContext()).isPresent()) {
+        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(hasCalibreId);
+        if (hasCalibreId) {
+            if (CalibreContentServer.getFolderUri(context).isPresent()) {
                 // conditional
                 menu.findItem(R.id.MENU_CALIBRE_READ)
-                    .setVisible(existsLocally(book));
+                    .setVisible(mVm.existsLocally(context, book));
 
                 // always shown
                 menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
-                    .setTitle(mView.getContext().getString(
+                    .setTitle(context.getString(
                             R.string.menu_download_ebook_format,
                             book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)))
                     .setVisible(true);
@@ -224,140 +226,60 @@ public class CalibreHandler {
     }
 
     /**
-     * Called from a details screen. i.e. the data comes from a {@link Book}.
-     *
-     * @param menuItemId to check
-     * @param book       data to use
-     */
-    public boolean onItemSelected(@IdRes final int menuItemId,
-                                  @NonNull final Book book) {
-        if (menuItemId == R.id.MENU_CALIBRE_READ) {
-            read(book);
-            return true;
-
-        } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            download(book);
-            return true;
-
-        }
-        return false;
-    }
-
-    /**
      * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
      *
      * @param menuItemId to check
      * @param rowData    data to use
      */
-    public boolean onItemSelected(@IdRes final int menuItemId,
+    public boolean onItemSelected(@NonNull final Context context,
+                                  @IdRes final int menuItemId,
                                   @NonNull final DataHolder rowData) {
+        return onItemSelected(context, menuItemId,
+                              Objects.requireNonNull(DataHolderUtils.getBook(rowData)));
+    }
 
+    /**
+     * Called from a details screen. i.e. the data comes from a {@link Book}.
+     *
+     * @param menuItemId to check
+     * @param book       data to use
+     */
+    public boolean onItemSelected(@NonNull final Context context,
+                                  @IdRes final int menuItemId,
+                                  @NonNull final Book book) {
         if (menuItemId == R.id.MENU_CALIBRE_READ) {
-            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
-            read(book);
+            // Open the given book for reading.
+            // This only works if the user has not renamed the file outside of this app.
+            try {
+                final Uri uri = mVm.getDocumentUri(context, book);
+                openBookUri(context, uri);
+            } catch (@NonNull final FileNotFoundException e) {
+                Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
+            }
             return true;
 
         } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
-            download(book);
+            final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(context);
+            if (optionalUri.isPresent()) {
+                mVm.startDownload(book, optionalUri.get());
+            } else {
+                // ask for a download folder
+                mVm.setTempBook(book);
+                mPickFolderLauncher.launch(null);
+            }
             return true;
 
         }
         return false;
     }
 
-    /**
-     * Open the given book for reading.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param book to get
-     */
-    public void read(@NonNull final Book book) {
-        try {
-            openBookUri(getDocumentUri(mView.getContext(), book));
-
-        } catch (@NonNull final FileNotFoundException e) {
-            Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Download the given book.
-     * <p>
-     * Will ask for a download folder if not done before.
-     *
-     * @param book to get
-     */
-    public void download(@NonNull final Book book) {
-        final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(mView.getContext());
-        if (optionalUri.isPresent()) {
-            download(book, optionalUri.get());
-        } else {
-            mTempBookWhileRunningPickFolder = book;
-            mPickFolderLauncher.launch(null);
-        }
-    }
-
-    private void download(@NonNull final Book book,
-                          @NonNull final Uri folder) {
-        if (!mVm.download(book, folder)) {
-            //TODO: better message
-            Snackbar.make(mView, R.string.error_download_failed, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Check if we have the book in the local folder.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param book to check
-     *
-     * @return {@code true} if we have the file
-     */
-    private boolean existsLocally(@NonNull final Book book) {
-        try {
-            getDocumentUri(mView.getContext(), book);
-            return true;
-
-        } catch (@NonNull final FileNotFoundException ignore) {
-            return false;
-        }
-    }
-
-    /**
-     * Get the book file from the local folder.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param context Current context
-     * @param book    to get
-     *
-     * @return book
-     *
-     * @throws FileNotFoundException on ...
-     */
-    @NonNull
-    private Uri getDocumentUri(@NonNull final Context context,
-                               @NonNull final Book book)
-            throws FileNotFoundException {
-
-        final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
-        if (optFolderUri.isPresent()) {
-            try {
-                return mServer.getDocumentFile(context, book, optFolderUri.get(), false).getUri();
-            } catch (@NonNull final IOException e) {
-                // Keep it simple.
-                throw new FileNotFoundException(optFolderUri.get().toString());
-            }
-        }
-        throw new FileNotFoundException("Folder not configured");
-    }
-
-    private void openBookUri(@NonNull final Uri uri) {
+    private void openBookUri(@NonNull final Context context,
+                             @NonNull final Uri uri) {
         final Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        mView.getContext().startActivity(Intent.createChooser(
-                intent, mView.getContext().getString(R.string.whichViewApplication)));
+        context.startActivity(Intent.createChooser(
+                intent, context.getString(R.string.whichViewApplication)));
     }
 
     private void onFinished(@NonNull final FinishedMessage<Uri> message) {
@@ -365,7 +287,8 @@ public class CalibreHandler {
 
         if (message.isNewEvent()) {
             Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.lbl_read, v -> openBookUri(message.requireResult()))
+                    .setAction(R.string.lbl_read,
+                               v -> openBookUri(v.getContext(), message.requireResult()))
                     .show();
         }
     }
@@ -394,24 +317,30 @@ public class CalibreHandler {
         }
     }
 
+    public CalibreHandler setProgressDialogView(@NonNull final View progressDialogView) {
+        mProgressDialogView = progressDialogView;
+        return this;
+    }
+
     private void onProgress(@NonNull final ProgressMessage message) {
         if (message.isNewEvent()) {
-            if (mProgressDelegate == null) {
-                mProgressDelegate = new ProgressDelegate(
-                        mActivity.findViewById(R.id.progress_frame))
-                        .setTitle(mActivity.getString(R.string.progress_msg_downloading))
-                        .setPreventSleep(true)
-                        .setIndeterminate(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
-                        .show(mActivity.getWindow());
+            if (mProgressDialogView != null) {
+                if (mProgressDelegate == null) {
+                    mProgressDelegate = new ProgressDelegate(mProgressDialogView)
+                            .setTitle(R.string.progress_msg_downloading)
+                            .setPreventSleep(true)
+                            .setIndeterminate(true)
+                            .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                            .show(mWindow);
+                }
+                mProgressDelegate.onProgress(message);
             }
-            mProgressDelegate.onProgress(message);
         }
     }
 
     private void closeProgressDialog() {
         if (mProgressDelegate != null) {
-            mProgressDelegate.dismiss(mActivity.getWindow());
+            mProgressDelegate.dismiss(mWindow);
             mProgressDelegate = null;
         }
     }

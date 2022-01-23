@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class EditBookFieldsFragment
         extends EditBookBaseFragment
-        implements CoverHandler.CoverHandlerHost {
+        implements CoverHandler.CoverHandlerOwner {
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
@@ -189,17 +189,13 @@ public class EditBookFieldsFragment
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
-                    mCoverHandler[cIdx] = new CoverHandler(this, this, cIdx, maxWidth, maxHeight);
-                    mCoverHandler[cIdx].onViewCreated(this);
-                    mCoverHandler[cIdx].setProgressView(mVb.coverOperationProgressBar);
-                    mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
-
                     //noinspection ConstantConditions
-                    mCoverHandler[cIdx].setCoverBrowserTitleSupplier(
-                            () -> mVb.title.getText().toString());
-                    //noinspection ConstantConditions
-                    mCoverHandler[cIdx].setCoverBrowserIsbnSupplier(
-                            () -> mVb.isbn.getText().toString());
+                    mCoverHandler[cIdx] = new CoverHandler(this, cIdx, maxWidth, maxHeight)
+                            .setBookSupplier(() -> mVm.getBook())
+                            .setProgressView(mVb.coverOperationProgressBar)
+                            .onFragmentViewCreated(this)
+                            .setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString())
+                            .setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
                 } else {
                     // This is silly... ViewBinding has no arrays.
                     if (cIdx == 0) {
@@ -274,12 +270,12 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
 
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onBindView(mVb.coverImage0, book);
+            mCoverHandler[0].onBindView(mVb.coverImage0);
             mCoverHandler[0].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage0);
         }
 
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onBindView(mVb.coverImage1, book);
+            mCoverHandler[1].onBindView(mVb.coverImage1);
             mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
 
@@ -292,7 +288,7 @@ public class EditBookFieldsFragment
     public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
         if (mCoverHandler[cIdx] != null) {
             final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
-            mCoverHandler[cIdx].onBindView(view, mVm.getBook());
+            mCoverHandler[cIdx].onBindView(view);
         }
     }
 
