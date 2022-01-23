@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
@@ -639,7 +638,9 @@ public class EditBookTocFragment
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-            final DialogTocConfirmBinding vb = DialogTocConfirmBinding.inflate(getLayoutInflater());
+            final View rootView = getLayoutInflater()
+                    .inflate(R.layout.dialog_toc_confirm, null, false);
+            final TextView contentView = rootView.findViewById(R.id.content);
 
             final boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
             if (hasToc) {
@@ -650,17 +651,17 @@ public class EditBookTocFragment
                                 .append(mTocEntries.stream()
                                                    .map(entry -> entry.getLabel(getContext()))
                                                    .collect(Collectors.joining(", ")));
-                vb.content.setText(message);
+                contentView.setText(message);
 
             } else {
-                vb.content.setText(getString(R.string.error_auto_toc_population_failed));
+                contentView.setText(R.string.error_auto_toc_population_failed);
             }
 
             //noinspection ConstantConditions
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_baseline_warning_24)
-                            .setView(vb.getRoot())
+                            .setView(rootView)
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();
 
