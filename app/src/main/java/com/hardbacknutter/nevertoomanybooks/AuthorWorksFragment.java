@@ -52,7 +52,6 @@ import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -98,7 +97,7 @@ public class AuthorWorksFragment
     private TocAdapter mAdapter;
 
     /** View Binding. */
-    private FragmentAuthorWorksBinding mVb;
+    private RecyclerView mWorksListView;
     private ExtPopupMenu mContextMenu;
 
     @Override
@@ -116,8 +115,9 @@ public class AuthorWorksFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        mVb = FragmentAuthorWorksBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        final View view = inflater.inflate(R.layout.fragment_author_works, container, false);
+        mWorksListView = view.findViewById(R.id.author_works);
+        return view;
     }
 
     @Override
@@ -138,17 +138,16 @@ public class AuthorWorksFragment
         setTitle(mVm.getScreenTitle(context));
         setSubtitle(mVm.getScreenSubtitle(context));
 
-        mVb.authorWorks.setHasFixedSize(true);
-        mVb.authorWorks.addItemDecoration(
-                new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mWorksListView.setHasFixedSize(true);
+        mWorksListView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
-        FastScroller.attach(mVb.authorWorks, overlayType);
+        FastScroller.attach(mWorksListView, overlayType);
 
         mAdapter = new TocAdapter(context, mVm.getWorks());
-        mVb.authorWorks.setAdapter(mAdapter);
+        mWorksListView.setAdapter(mAdapter);
 
         final Resources res = getResources();
         final Menu menu = ExtPopupMenu.createMenu(context);
