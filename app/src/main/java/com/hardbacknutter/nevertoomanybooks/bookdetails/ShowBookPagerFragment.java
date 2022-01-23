@@ -33,13 +33,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsPagerBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 public class ShowBookPagerFragment
@@ -48,7 +48,7 @@ public class ShowBookPagerFragment
     public static final String TAG = "ShowBookPagerFragment";
 
     /** View Binding with the ViewPager2. */
-    private FragmentBookDetailsPagerBinding mVb;
+    private ViewPager2 mViewPager;
 
     @SuppressWarnings("FieldCanBeLocal")
     private ShowBookPagerAdapter mPagerAdapter;
@@ -58,7 +58,7 @@ public class ShowBookPagerFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final long bookId = mVm.getBookIdAtPosition(mVb.pager.getCurrentItem());
+                    final long bookId = mVm.getBookIdAtPosition(mViewPager.getCurrentItem());
                     final Intent resultIntent = new Intent();
                     resultIntent.putExtra(DBKey.FK_BOOK, bookId);
                     //noinspection ConstantConditions
@@ -114,8 +114,10 @@ public class ShowBookPagerFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        mVb = FragmentBookDetailsPagerBinding.inflate(inflater, container, false);
-        return mVb.getRoot();
+        final View view = inflater.inflate(R.layout.fragment_book_details_pager, container, false);
+        // pager == view; but keep it future-proof
+        mViewPager = view.findViewById(R.id.pager);
+        return view;
     }
 
     @Override
@@ -128,8 +130,8 @@ public class ShowBookPagerFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mPagerAdapter = new ShowBookPagerAdapter(this);
-        mVb.pager.setAdapter(mPagerAdapter);
-        mVb.pager.setCurrentItem(mVm.getInitialPagerPosition(), false);
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setCurrentItem(mVm.getInitialPagerPosition(), false);
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
