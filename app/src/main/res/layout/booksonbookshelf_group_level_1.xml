@@ -25,6 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/ROW_ONCLICK_TARGET"
     style="@style/BoB.Group.Level1"
+    tools:viewBindingIgnore="true"
     >
 
     <TextView

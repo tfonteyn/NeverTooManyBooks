@@ -30,6 +30,7 @@
     android:longClickable="true"
     android:orientation="vertical"
     tools:ignore="TouchTargetSizeCheck"
+    tools:viewBindingIgnore="true"
     >
 
     <ImageView

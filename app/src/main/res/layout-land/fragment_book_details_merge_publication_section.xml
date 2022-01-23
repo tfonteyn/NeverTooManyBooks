@@ -24,6 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/fragment_book_details"
+    tools:viewBindingIgnore="true"
     >
 
     <androidx.constraintlayout.widget.Guideline

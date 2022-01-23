@@ -21,8 +21,10 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/ROW_ONCLICK_TARGET"
     style="@style/BoB.Group.Rating"
+    tools:viewBindingIgnore="true"
     >
 
     <RatingBar

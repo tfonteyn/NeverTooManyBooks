@@ -37,4 +37,5 @@
     android:textColor="?android:attr/textColorPrimaryInverse"
     android:textIsSelectable="true"
     tools:text="@tools:sample/lorem/random"
+    tools:viewBindingIgnore="true"
     />

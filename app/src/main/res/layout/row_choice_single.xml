@@ -34,4 +34,5 @@
     android:textAppearance="?attr/textAppearanceListItem"
     android:textColor="?android:attr/textColorAlertDialogListItem"
     tools:text="@sample/data.json/styles/name"
+    tools:viewBindingIgnore="true"
     />

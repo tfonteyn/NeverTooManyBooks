@@ -27,6 +27,7 @@
     android:layout_height="wrap_content"
     android:background="?android:attr/statusBarColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:viewBindingIgnore="true"
     >
 
     <TextView
