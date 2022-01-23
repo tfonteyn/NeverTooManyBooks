@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.databinding.PopupMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
@@ -50,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 public class ExtPopupMenu {
 
     @NonNull
-    private final PopupMenuBinding mVb;
+    private final VBLite mVb;
 
     private final int mPaddingBottom;
     private final int mXOffset;
@@ -73,6 +72,7 @@ public class ExtPopupMenu {
      * @param menu     the menu options to show
      * @param listener callback handler
      */
+    @SuppressLint("InflateParams")
     public ExtPopupMenu(@NonNull final Context context,
                         @NonNull final Menu menu,
                         @NonNull final ExtPopupMenuListener listener) {
@@ -82,14 +82,14 @@ public class ExtPopupMenu {
         mPaddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         mXOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
-        mVb = PopupMenuBinding.inflate(LayoutInflater.from(context));
+        mVb = new VBLite(LayoutInflater.from(context).inflate(R.layout.popup_menu, null, false));
 
         final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
         mVb.itemList.setAdapter(adapter);
 
         mPopupWindow = new PopupWindow(context);
         mPopupWindow.setFocusable(true);
-        mPopupWindow.setContentView(mVb.getRoot());
+        mPopupWindow.setContentView(mVb.rootView);
 
         mPopupWindow.setBackgroundDrawable(
                 AttrUtils.getDrawable(context, R.attr.popupMenuBackground));
@@ -196,6 +196,25 @@ public class ExtPopupMenu {
         @SuppressWarnings("UnusedReturnValue")
         boolean onMenuItemSelected(@NonNull MenuItem menuItem,
                                    int position);
+    }
+
+    private static class VBLite {
+
+        @NonNull
+        public final RecyclerView itemList;
+        @NonNull
+        public final TextView message;
+        @NonNull
+        public final TextView title;
+        @NonNull
+        private final View rootView;
+
+        VBLite(@NonNull final View rootView) {
+            this.rootView = rootView;
+            itemList = rootView.findViewById(R.id.item_list);
+            message = rootView.findViewById(R.id.message);
+            title = rootView.findViewById(R.id.title);
+        }
     }
 
     /**

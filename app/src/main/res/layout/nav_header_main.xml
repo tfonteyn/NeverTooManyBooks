@@ -31,6 +31,7 @@
     android:paddingTop="@dimen/nav_header_vertical_padding"
     android:paddingRight="@dimen/nav_header_horizontal_padding"
     android:paddingBottom="@dimen/nav_header_vertical_padding"
+    tools:viewBindingIgnore="true"
     >
 
     <ImageView
