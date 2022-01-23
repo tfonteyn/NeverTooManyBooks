@@ -89,13 +89,13 @@
             android:title="@string/pt_bob_cover_show"
             />
 
-        <!-- default listStyle.IMAGE_SCALE_3_MEDIUM == 3 -->
+        <!-- default listStyle.IMAGE_SCALE_2_MEDIUM == 2 -->
         <SeekBarPreference
-            android:defaultValue="3"
+            android:defaultValue="2"
             android:dependency="style.booklist.show.thumbnails"
             android:icon="@drawable/ic_baseline_photo_size_select_large_24"
             android:key="style.booklist.scale.thumbnails"
-            android:max="5"
+            android:max="3"
             android:title="@string/pt_bob_cover_scale"
             app:min="1"
             />

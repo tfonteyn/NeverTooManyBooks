@@ -36,7 +36,7 @@
         android:layout_marginEnd="@dimen/bob_list_end_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/booksonbookshelf_row_book_scale_3"
+        tools:listitem="@layout/booksonbookshelf_row_book_scale_2"
         tools:showIn="@layout/booksonbookshelf"
         />
 

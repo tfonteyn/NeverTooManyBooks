@@ -277,12 +277,9 @@
     <!-- SeekBarPreference - Summary text - Scale thumbnails in the list view. -->
     <string-array name="pe_bob_thumbnail_scale">
         <item>@string/size_hidden</item>
-        <item>@string/size_x_small</item>
         <item>@string/size_small</item>
         <item>@string/size_medium</item>
         <item>@string/size_large</item>
-        <item>@string/size_x_large</item>
-        <item>@string/size_xx_large</item>
     </string-array>
 
     <!-- MultiSelectListPreference - Determines which author type is considered the primary author of a book -->

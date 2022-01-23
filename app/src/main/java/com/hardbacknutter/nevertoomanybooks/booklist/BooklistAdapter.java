@@ -194,10 +194,10 @@ public class BooklistAdapter
         // The thumbnail scale defines the Book layout file to use.
         // The layout names ending in 3/4 are ONLY as reference,
         // with the hardcoded values in them always replaced at runtime.
-        if (frontCoverScale > ListStyle.IMAGE_SCALE_3_MEDIUM) {
-            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
-        } else {
+        if (frontCoverScale > ListStyle.IMAGE_SCALE_2_MEDIUM) {
             mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
+        } else {
+            mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
         }
 
         // now the actual new cursor
@@ -928,9 +928,10 @@ public class BooklistAdapter
          * <strong>Note:</strong> the itemView can be re-used.
          * Hence make sure to explicitly set visibility.
          *
-         * @param adapter     the hosting adapter
-         * @param itemView    the view specific for this holder
-         * @param fieldsInUse which fields are used
+         * @param adapter          the hosting adapter
+         * @param itemView         the view specific for this holder
+         * @param fieldsInUse      which fields are used
+         * @param coverLongestSide Longest side for a cover in pixels.
          */
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,

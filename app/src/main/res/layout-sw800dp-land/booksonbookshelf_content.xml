@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toStartOf="@id/details_frame"
         app:layout_constraintHorizontal_weight="0.33"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/booksonbookshelf_row_book_scale_3"
+        tools:listitem="@layout/booksonbookshelf_row_book_scale_2"
         tools:showIn="@layout/booksonbookshelf"
         />
 

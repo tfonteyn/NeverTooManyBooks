@@ -114,11 +114,9 @@ public class ListScreenBookFields
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();
 
         if (isShowField(global, PK_COVERS)) {
-            // clamping because we removed value "6" which would make us crash if the user
-            // had it configured... and paranoia
             return MathUtils.clamp(mThumbnailScale.getValue(),
-                                   ListStyle.IMAGE_SCALE_1_VERY_SMALL,
-                                   ListStyle.IMAGE_SCALE_5_VERY_LARGE);
+                                   ListStyle.IMAGE_SCALE_1_SMALL,
+                                   ListStyle.IMAGE_SCALE_3_LARGE);
         }
         return ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
     }

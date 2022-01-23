@@ -55,18 +55,14 @@ public interface ListStyle {
     /** Thumbnail Scaling. */
     int IMAGE_SCALE_0_NOT_DISPLAYED = 0;
     /** Thumbnail Scaling. */
-    int IMAGE_SCALE_1_VERY_SMALL = 1;
+    int IMAGE_SCALE_1_SMALL = 1;
     /** Thumbnail Scaling. */
-    int IMAGE_SCALE_2_SMALL = 2;
+    int IMAGE_SCALE_2_MEDIUM = 2;
     /** Thumbnail Scaling. */
-    int IMAGE_SCALE_3_MEDIUM = 3;
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_4_LARGE = 4;
-    /** Thumbnail Scaling. */
-    int IMAGE_SCALE_5_VERY_LARGE = 5;
+    int IMAGE_SCALE_3_LARGE = 3;
 
     /** Thumbnail Scaling. */
-    int IMAGE_SCALE_DEFAULT = IMAGE_SCALE_3_MEDIUM;
+    int IMAGE_SCALE_DEFAULT = IMAGE_SCALE_2_MEDIUM;
     /**
      * The (arbitrary) position for a style which is not on the user preferred style list.
      * i.e. it's at the very end.
@@ -262,8 +258,7 @@ public interface ListStyle {
     }
 
     @IntDef({IMAGE_SCALE_0_NOT_DISPLAYED,
-             IMAGE_SCALE_1_VERY_SMALL, IMAGE_SCALE_2_SMALL, IMAGE_SCALE_3_MEDIUM,
-             IMAGE_SCALE_4_LARGE, IMAGE_SCALE_5_VERY_LARGE})
+             IMAGE_SCALE_1_SMALL, IMAGE_SCALE_2_MEDIUM, IMAGE_SCALE_3_LARGE})
     @Retention(RetentionPolicy.SOURCE)
     @interface CoverScale {
 

@@ -86,23 +86,21 @@
     <dimen name="cover_browser_preview_width">160dp</dimen>
 
     <!-- BoB screen. We use a square space for the image so both portrait/landscape cover images work out.
-         The sizes are calculated at {0, 1, 2, 3, 5, 8} * 50dp
-         Width is set at a ratio 0.64.
-    (0.60 is common for paperbacks)
+         The sizes are calculated at {0, 2, 3, 5} * 40dp
+         Width is set at a ratio 0.60 (common for paperbacks)
     -->
     <array name="cover_book_list_longest_side">
         <item>0dp</item>
-        <item>50dp</item>
-        <item>100dp</item>
-        <!-- size index 3 is the default. -->
-        <item>150dp</item>
-        <item>250dp</item>
-        <item>400dp</item>
+        <item>80dp</item>
+        <!-- the default. -->
+        <item>120dp</item>
+        <item>200dp</item>
     </array>
 
     <!-- used as defaults in the layout. Will be adjusted according user preferences. -->
-    <dimen name="cover_scale_3_height">150dp</dimen>
-    <dimen name="cover_scale_3_width">96dp</dimen>
-    <dimen name="cover_scale_4_height">250dp</dimen>
-    <dimen name="cover_scale_4_width">160dp</dimen>
+    <dimen name="cover_scale_2_height">120dp</dimen>
+    <dimen name="cover_scale_2_width">72dp</dimen>
+
+    <dimen name="cover_scale_3_height">200dp</dimen>
+    <dimen name="cover_scale_3_width">120dp</dimen>
 </resources>
