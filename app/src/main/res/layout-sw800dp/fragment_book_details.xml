@@ -170,8 +170,8 @@
             android:id="@+id/lbl_genre"
             style="@style/Label"
             android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/publication_section"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/author"
             />
 
         <TextView
@@ -188,7 +188,7 @@
             android:id="@+id/lbl_series"
             style="@style/Label"
             android:text="@string/lbl_series"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
@@ -208,28 +208,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
             <include layout="@layout/fragment_book_details_merge_personal_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers_bottom_pd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,personal_data_section"
-            />
-
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom_pd"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />
