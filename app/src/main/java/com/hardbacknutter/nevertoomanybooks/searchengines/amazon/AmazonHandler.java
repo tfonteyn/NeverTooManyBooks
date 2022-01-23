@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
@@ -35,15 +36,16 @@ import java.net.URLEncoder;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 
+/**
+ * Stateless.
+ */
 public class AmazonHandler {
 
     /**
@@ -63,43 +65,23 @@ public class AmazonHandler {
      */
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
-    @NonNull
-    private final Context mContext;
-
-    public AmazonHandler(@NonNull final Context context) {
-        mContext = context;
+    public void onCreateMenu(@NonNull final Menu menu,
+                             @NonNull final MenuInflater inflater) {
+        if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
+            inflater.inflate(R.menu.sm_search_on_amazon, menu);
+        }
     }
 
-    @NonNull
-    private static String encodeSearchString(@Nullable final String search) {
-        if (search == null || search.isEmpty()) {
-            return "";
-        }
-
-        final StringBuilder out = new StringBuilder(search.length());
-        char prev = ' ';
-        for (final char curr : search.toCharArray()) {
-            if (Character.isLetterOrDigit(curr)) {
-                out.append(curr);
-                prev = curr;
-            } else {
-                if (!Character.isWhitespace(prev)) {
-                    out.append(' ');
-                }
-                prev = ' ';
-            }
-        }
-        return out.toString().trim();
-    }
-
-    private void prepareMenu(@NonNull final Menu menu,
-                             final boolean hasAuthor,
-                             final boolean hasSeries) {
+    public void onPrepareMenu(@NonNull final Menu menu,
+                              @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
         if (subMenuItem == null) {
             return;
         }
+
+        final boolean hasAuthor = DataHolderUtils.hasAuthor(rowData);
+        final boolean hasSeries = DataHolderUtils.hasSeries(rowData);
 
         final boolean show = hasAuthor || hasSeries;
         subMenuItem.setVisible(show);
@@ -114,102 +96,21 @@ public class AmazonHandler {
         }
     }
 
-    /**
-     * Called from a details screen. i.e. the data comes from a {@link Book}.
-     *
-     * @param menu to add to
-     * @param book data to use
-     */
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final Book book) {
-
-        final boolean hasAuthor = !book.getAuthors().isEmpty();
-        final boolean hasSeries = !book.getSeries().isEmpty();
-
-        prepareMenu(menu, hasAuthor, hasSeries);
-    }
-
-    /**
-     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
-     *
-     * @param menu    to add to
-     * @param rowData data to use
-     */
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final DataHolder rowData) {
-
-        final boolean hasAuthor;
-        if (rowData.contains(DBKey.FK_AUTHOR)) {
-            hasAuthor = rowData.getLong(DBKey.FK_AUTHOR) > 0;
-        } else {
-            hasAuthor = false;
-        }
-
-        final boolean hasSeries;
-        if (rowData.contains(DBKey.FK_SERIES)) {
-            hasSeries = rowData.getLong(DBKey.FK_SERIES) > 0;
-        } else {
-            hasSeries = false;
-        }
-
-        prepareMenu(menu, hasAuthor, hasSeries);
-    }
-
-    /**
-     * Called from a details screen. i.e. the data comes from a {@link Book}.
-     *
-     * @param menuItemId to check
-     * @param book       data to use
-     */
-    public boolean onItemSelected(@IdRes final int menuItemId,
-                                  @NonNull final Book book) {
-
-        if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
-            final Author author = book.getPrimaryAuthor();
-            if (author != null) {
-                startSearchActivity(author, null);
-            }
-            return true;
-
-        } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
-            final Series series = book.getPrimarySeries();
-            if (series != null) {
-                startSearchActivity(null, series);
-            }
-            return true;
-
-        } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
-            final Author author = book.getPrimaryAuthor();
-            final Series series = book.getPrimarySeries();
-            if (author != null && series != null) {
-                startSearchActivity(author, series);
-            }
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
-     *
-     * @param menuItemId to check
-     * @param rowData    data to use
-     */
-    public boolean onItemSelected(@IdRes final int menuItemId,
+    public boolean onItemSelected(@NonNull final Context context,
+                                  @IdRes final int menuItemId,
                                   @NonNull final DataHolder rowData) {
 
         if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
             final Author author = DataHolderUtils.getAuthor(rowData);
             if (author != null) {
-                startSearchActivity(author, null);
+                startSearchActivity(context, author, null);
             }
             return true;
 
         } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
             final Series series = DataHolderUtils.getSeries(rowData);
             if (series != null) {
-                startSearchActivity(null, series);
+                startSearchActivity(context, null, series);
             }
             return true;
 
@@ -217,7 +118,7 @@ public class AmazonHandler {
             final Author author = DataHolderUtils.getAuthor(rowData);
             final Series series = DataHolderUtils.getSeries(rowData);
             if (author != null && series != null) {
-                startSearchActivity(author, series);
+                startSearchActivity(context, author, series);
             }
             return true;
         }
@@ -228,10 +129,12 @@ public class AmazonHandler {
     /**
      * Start an intent to search for an author and/or series on the Amazon website.
      *
-     * @param author to search for
-     * @param series to search for
+     * @param context Current context from which the Activity will be started
+     * @param author  to search for
+     * @param series  to search for
      */
-    private void startSearchActivity(@Nullable final Author author,
+    private void startSearchActivity(@NonNull final Context context,
+                                     @Nullable final Author author,
                                      @Nullable final Series series) {
         if (BuildConfig.DEBUG /* always */) {
             if (author == null && series == null) {
@@ -242,8 +145,7 @@ public class AmazonHandler {
         String fields = "";
 
         if (author != null) {
-            final String cAuthor = encodeSearchString(
-                    author.getFormattedName(true));
+            final String cAuthor = encodeSearchString(author.getFormattedName(true));
             if (!cAuthor.isEmpty()) {
                 try {
                     fields += "&field-author="
@@ -273,6 +175,28 @@ public class AmazonHandler {
                                                .getHostUrl()
                            + ADV_SEARCH_BOOKS
                            + fields.trim();
-        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    @NonNull
+    private String encodeSearchString(@Nullable final String search) {
+        if (search == null || search.isEmpty()) {
+            return "";
+        }
+
+        final StringBuilder out = new StringBuilder(search.length());
+        char prev = ' ';
+        for (final char curr : search.toCharArray()) {
+            if (Character.isLetterOrDigit(curr)) {
+                out.append(curr);
+                prev = curr;
+            } else {
+                if (!Character.isWhitespace(prev)) {
+                    out.append(' ');
+                }
+                prev = ' ';
+            }
+        }
+        return out.toString().trim();
     }
 }

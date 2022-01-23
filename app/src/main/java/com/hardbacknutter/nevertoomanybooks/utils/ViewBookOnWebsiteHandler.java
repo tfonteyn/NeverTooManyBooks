@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
@@ -39,13 +40,16 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
+/**
+ * Stateless.
+ */
 public class ViewBookOnWebsiteHandler {
 
-    @NonNull
-    private final Context mContext;
-
-    public ViewBookOnWebsiteHandler(@NonNull final Context context) {
-        mContext = context;
+    public void onCreateMenu(@NonNull final Menu menu,
+                             @NonNull final MenuInflater inflater) {
+        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
+            inflater.inflate(R.menu.sm_view_on_site, menu);
+        }
     }
 
     /**
@@ -55,8 +59,8 @@ public class ViewBookOnWebsiteHandler {
      * @param menu    root menu
      * @param rowData the row data
      */
-    public void prepareMenu(@NonNull final Menu menu,
-                            @NonNull final DataHolder rowData) {
+    public void onPrepareMenu(@NonNull final Menu menu,
+                              @NonNull final DataHolder rowData) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
@@ -90,7 +94,8 @@ public class ViewBookOnWebsiteHandler {
         subMenuItem.setVisible(subMenuVisible);
     }
 
-    public boolean onItemSelected(@IdRes final int menuItemId,
+    public boolean onItemSelected(@NonNull final Context context,
+                                  @IdRes final int menuItemId,
                                   @NonNull final DataHolder rowData) {
 
         final Optional<SearchEngineConfig> oConfig = SearchEngineRegistry
@@ -105,7 +110,7 @@ public class ViewBookOnWebsiteHandler {
 
                 final String externalId = rowData.getString(domain.getName());
                 final String url = searchEngine.createBrowserUrl(externalId);
-                mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
 
