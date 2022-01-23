@@ -25,6 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:viewBindingIgnore="true"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -50,7 +51,7 @@
         >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/styles"
+            android:id="@+id/stylesList"
             style="@style/Dialog.Body"
             android:layout_width="match_parent"
             android:layout_height="0dp"
