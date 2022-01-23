@@ -89,7 +89,7 @@ public class StylePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final RecyclerView stylesListView = view.findViewById(R.id.stylesList);
+        final RecyclerView stylesListView = view.findViewById(R.id.styles_list);
 
         loadStyles();
 

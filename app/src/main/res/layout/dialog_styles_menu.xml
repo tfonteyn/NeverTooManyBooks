@@ -51,7 +51,7 @@
         >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/stylesList"
+            android:id="@+id/styles_list"
             style="@style/Dialog.Body"
             android:layout_width="match_parent"
             android:layout_height="0dp"
