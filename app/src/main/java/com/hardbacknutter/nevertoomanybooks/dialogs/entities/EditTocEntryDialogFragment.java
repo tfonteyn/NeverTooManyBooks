@@ -149,7 +149,7 @@ public class EditTocEntryDialogFragment
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new ExtArrayAdapter<>(
-                        getContext(), R.layout.dropdown_menu_popup_item,
+                        getContext(), R.layout.popup_dropdown_menu_item,
                         ExtArrayAdapter.FilterType.Diacritic,
                         ServiceLocator.getInstance().getAuthorDao()
                                       .getNames(DBKey.KEY_AUTHOR_FORMATTED));

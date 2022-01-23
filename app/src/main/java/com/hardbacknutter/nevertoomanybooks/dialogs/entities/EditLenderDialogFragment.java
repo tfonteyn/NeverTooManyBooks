@@ -152,7 +152,7 @@ public class EditLenderDialogFragment
         mVb.toolbar.setSubtitle(mBookTitle);
 
         //noinspection ConstantConditions
-        mAdapter = new ExtArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+        mAdapter = new ExtArrayAdapter<>(getContext(), R.layout.popup_dropdown_menu_item,
                                          ExtArrayAdapter.FilterType.Diacritic, mPeople);
         mVb.lendTo.setAdapter(mAdapter);
         mVb.lendTo.setText(mCurrentEdit);

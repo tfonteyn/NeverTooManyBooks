@@ -119,7 +119,7 @@ public class EditPublisherDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getPublisherDao().getNames());
 

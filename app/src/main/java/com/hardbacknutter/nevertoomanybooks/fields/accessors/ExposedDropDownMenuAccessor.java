@@ -75,7 +75,7 @@ public class ExposedDropDownMenuAccessor
                                        final boolean isEditable) {
 
         mAdapter = ExtArrayAdapter.createFromResource(
-                context, R.layout.dropdown_menu_popup_item,
+                context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, arrayResId);
 
         mIsEditable = isEditable;

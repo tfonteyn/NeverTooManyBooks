@@ -124,12 +124,12 @@ public class EditAuthorDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
-                context, R.layout.dropdown_menu_popup_item,
+                context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.KEY_AUTHOR_FAMILY_NAME));
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
-                context, R.layout.dropdown_menu_popup_item,
+                context, R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 authorDao.getNames(DBKey.KEY_AUTHOR_GIVEN_NAMES));
 

@@ -33,4 +33,5 @@
     android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     android:textAppearance="?attr/textAppearanceListItem"
     tools:text="@sample/data.json/context_menu/name"
+    tools:viewBindingIgnore="true"
     />

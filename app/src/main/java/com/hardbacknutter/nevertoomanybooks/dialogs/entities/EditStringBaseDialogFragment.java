@@ -124,7 +124,7 @@ public abstract class EditStringBaseDialogFragment
         if (objects != null) {
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
+                    getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic, objects);
             mVb.editString.setAdapter(adapter);
         }

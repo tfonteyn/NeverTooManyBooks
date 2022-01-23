@@ -132,7 +132,7 @@ public class EditBookPublisherListDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
         mVb.publisher.setAdapter(nameAdapter);
         mVb.publisher.setOnFocusChangeListener((v, hasFocus) -> {
@@ -402,7 +402,7 @@ public class EditBookPublisherListDialogFragment
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
+                    getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllPublisherNames());
 
             mVb.name.setText(mCurrentEdit.getName());

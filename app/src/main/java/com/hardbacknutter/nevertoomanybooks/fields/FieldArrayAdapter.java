@@ -47,7 +47,7 @@ public class FieldArrayAdapter
     public FieldArrayAdapter(@NonNull final Context context,
                              @NonNull final List<String> objects,
                              @Nullable final FieldFormatter<String> formatter) {
-        super(context, R.layout.dropdown_menu_popup_item, FilterType.Diacritic, objects);
+        super(context, R.layout.popup_dropdown_menu_item, FilterType.Diacritic, objects);
         mFormatter = formatter;
     }
 

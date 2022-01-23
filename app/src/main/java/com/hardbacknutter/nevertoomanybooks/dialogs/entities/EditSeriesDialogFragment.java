@@ -118,7 +118,7 @@ public class EditSeriesDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic,
                 ServiceLocator.getInstance().getSeriesDao().getNames());
 

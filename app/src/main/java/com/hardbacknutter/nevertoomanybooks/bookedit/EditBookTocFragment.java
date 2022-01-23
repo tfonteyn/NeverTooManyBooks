@@ -447,7 +447,7 @@ public class EditBookTocFragment
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new ExtArrayAdapter<>(
-                        getContext(), R.layout.dropdown_menu_popup_item,
+                        getContext(), R.layout.popup_dropdown_menu_item,
                         ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }

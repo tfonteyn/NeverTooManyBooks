@@ -140,7 +140,7 @@ public class EditBookAuthorListDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorNames());
         mVb.author.setAdapter(nameAdapter);
         mVb.author.setOnFocusChangeListener((v, hasFocus) -> {
@@ -453,11 +453,11 @@ public class EditBookAuthorListDialogFragment
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
+                    getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorFamilyNames());
 
             final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
+                    getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorGivenNames());
 
             mVb.familyName.setText(mCurrentEdit.getFamilyName());

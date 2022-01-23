@@ -208,7 +208,7 @@ public class ExportFragment
         final ArrayList<String> list = fo.second;
 
         final ExtArrayAdapter<String> archiveFormatAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Passthrough, list);
         mVb.archiveFormat.setAdapter(archiveFormatAdapter);
         mVb.archiveFormat.setOnItemClickListener(

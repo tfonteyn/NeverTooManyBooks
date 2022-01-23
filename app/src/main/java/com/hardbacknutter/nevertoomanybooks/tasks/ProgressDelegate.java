@@ -27,12 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.ProgressDialogBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogProgressBinding;
 
 public class ProgressDelegate {
 
     /** View Binding. */
-    private final ProgressDialogBinding mVb;
+    private final DialogProgressBinding mVb;
     /** Control FLAG_KEEP_SCREEN_ON. (e.g. during a backup etc...) */
     private boolean mPreventSleep;
     /** intermediate storage for the type of ProgressBar. */
@@ -44,7 +44,7 @@ public class ProgressDelegate {
      * @param view the FrameLayout view of the Progress dialog
      */
     public ProgressDelegate(@NonNull final View view) {
-        mVb = ProgressDialogBinding.bind(view);
+        mVb = DialogProgressBinding.bind(view);
     }
 
     @NonNull

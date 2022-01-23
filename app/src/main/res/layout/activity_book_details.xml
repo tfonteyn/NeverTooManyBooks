@@ -57,7 +57,7 @@
         <!-- used by the Sync handler(s) -->
         <include
             android:id="@+id/progress_frame"
-            layout="@layout/progress_dialog"
+            layout="@layout/dialog_progress"
             android:visibility="gone"
             tools:visibility="visible"
             />

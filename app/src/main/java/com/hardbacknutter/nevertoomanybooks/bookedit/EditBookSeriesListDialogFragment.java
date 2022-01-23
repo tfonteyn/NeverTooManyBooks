@@ -132,7 +132,7 @@ public class EditBookSeriesListDialogFragment
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
+                getContext(), R.layout.popup_dropdown_menu_item,
                 ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
         mVb.seriesTitle.setAdapter(nameAdapter);
         mVb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
@@ -418,7 +418,7 @@ public class EditBookSeriesListDialogFragment
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> titleAdapter = new ExtArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item,
+                    getContext(), R.layout.popup_dropdown_menu_item,
                     ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
 
             mVb.seriesTitle.setText(mCurrentEdit.getTitle());
