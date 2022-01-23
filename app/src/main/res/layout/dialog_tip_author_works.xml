@@ -24,6 +24,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Dialog.Body"
     android:orientation="vertical"
+    tools:viewBindingIgnore="true"
     >
 
     <TextView
