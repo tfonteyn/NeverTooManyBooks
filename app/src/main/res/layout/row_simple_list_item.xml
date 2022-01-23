@@ -37,5 +37,6 @@
     android:textAppearance="?attr/textAppearanceLargePopupMenu"
     tools:drawableStart="@drawable/ic_baseline_image_24"
     tools:text="@sample/data.json/context_menu/name"
+    tools:viewBindingIgnore="true"
     />
 
