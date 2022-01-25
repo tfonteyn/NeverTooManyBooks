@@ -33,24 +33,43 @@
         android:layout_margin="@dimen/screen_border"
         >
 
+        <CheckBox
+            android:id="@+id/cbx_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:text="@string/lbl_read"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:checked="true"
+            />
+
         <RatingBar
             android:id="@+id/rating"
             style="@style/Edit.Rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_read_rating_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="cbx_read,rating"
             />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_start"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rating"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_rating_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -75,7 +94,7 @@
             android:id="@+id/lbl_read_end"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_end"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             >
@@ -98,34 +117,13 @@
             tools:visibility="visible"
             />
 
-        <CheckBox
-            android:id="@+id/cbx_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/field_margin_inline"
-            android:text="@string/lbl_read"
-            app:layout_constraintBottom_toTopOf="@id/barrier_read_bottom"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1"
-            tools:checked="true"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_read_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,lbl_read_start,lbl_read_end,cbx_read"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_date_acquired"
-            app:layout_constraintEnd_toStartOf="@id/cbx_read"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_bottom"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -230,6 +228,7 @@
             android:id="@+id/cbx_signed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_label_margin_top"
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/lbl_signed"
             app:layout_constraintStart_toStartOf="parent"

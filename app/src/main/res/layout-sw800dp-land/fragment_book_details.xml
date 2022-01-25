@@ -94,8 +94,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/barrier_covers_bottom"
             app:layout_constraintEnd_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/cover_image_0"
+            app:layout_constraintTop_toTopOf="@id/cover_image_0"
             tools:visibility="visible"
             />
 

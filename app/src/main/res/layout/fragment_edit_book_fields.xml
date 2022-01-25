@@ -41,16 +41,27 @@
             android:layout_width="@dimen/cover_edit_0_width"
             android:layout_height="@dimen/cover_edit_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            android:focusable="true"
             app:layout_constraintEnd_toStartOf="@id/cover_image_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
             />
 
-        <LinearLayout
+        <ImageView
+            android:id="@id/cover_image_1"
+            style="@style/CoverImage"
+            android:layout_width="@dimen/cover_edit_1_width"
+            android:layout_height="@dimen/cover_edit_1_height"
+            android:contentDescription="@string/lbl_cover_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cover_image_0"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@sample/covers"
+            />
 
-            style="@style/Progress.Container"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/cover_operation_progress_bar"
+            style="@style/Progress.Circle"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
@@ -59,26 +70,6 @@
             app:layout_constraintStart_toStartOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="@id/cover_image_0"
             tools:visibility="visible"
-            >
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/cover_operation_progress_bar"
-                style="@style/Progress.Circle"
-                />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@id/cover_image_1"
-            style="@style/CoverImage"
-            android:layout_width="@dimen/cover_edit_1_width"
-            android:layout_height="@dimen/cover_edit_1_height"
-            android:contentDescription="@string/lbl_cover_front"
-            android:focusable="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cover_image_0"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@drawable/bg_outline_rounded"
-            tools:src="@drawable/ic_baseline_image_24"
             />
 
         <androidx.constraintlayout.widget.Barrier
