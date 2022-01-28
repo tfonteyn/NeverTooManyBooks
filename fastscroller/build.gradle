@@ -44,15 +44,15 @@ android {
         }
     }
 
-    lintOptions {
-        // allow command line builds to complete
-        abortOnError false
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.hardbacknutter.fastscroller'
 }
 
 dependencies {

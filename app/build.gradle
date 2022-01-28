@@ -96,6 +96,8 @@ if (project.hasProperty("NeverTooManyBooks.email")
 }
 
 android {
+    namespace 'com.hardbacknutter.nevertoomanybooks'
+
     compileSdk rootProject.ext.sdkVersion
 
     defaultConfig {
@@ -171,11 +173,6 @@ android {
         }
     }
 
-    lintOptions {
-        // allow command line builds to complete
-        abortOnError false
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -223,6 +220,10 @@ android {
         }
     }
 
+    lint {
+        // allow command line builds to complete
+        abortOnError false
+    }
 }
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
