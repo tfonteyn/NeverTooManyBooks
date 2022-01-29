@@ -187,7 +187,7 @@ public class Fields {
      */
     public void setAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            final Field<?, ?> field = mAllFields.valueAt(f);
+            final Field<?, ? extends View> field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 // do NOT call onChanged, as this is the initial load
                 field.setInitialValue(dataManager);
@@ -202,7 +202,7 @@ public class Fields {
      */
     public void getAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
-            final Field<?, ?> field = mAllFields.valueAt(f);
+            final Field<?, ? extends View> field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 field.getValue(dataManager);
             }
@@ -256,13 +256,12 @@ public class Fields {
     @NonNull
     public String toString() {
         return "Fields{"
-               + ", mAllFields=" + mAllFields
+               + "mAllFields=" + mAllFields
                + '}';
     }
 
     public interface AfterChangeListener {
 
-        void afterFieldChange(@NonNull Field<?, ?> field);
+        void afterFieldChange(@NonNull Field<?, ? extends View> field);
     }
-
 }
