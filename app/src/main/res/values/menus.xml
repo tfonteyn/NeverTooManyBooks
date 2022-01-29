@@ -80,12 +80,8 @@
 
     <integer name="MENU_ORDER_NEXT_MISSING_COVER">999</integer>
 
-
     <!-- Used by the ExtPopupMenu. -->
     <item name="MENU_DIVIDER" type="id" />
-
-    <item name="MENU_GROUP_CALIBRE" type="id" />
-    <item name="MENU_GROUP_STRIPINFO" type="id" />
 
     <item name="MENU_EDIT" type="id" />
     <item name="MENU_DELETE" type="id" />
@@ -142,11 +138,12 @@
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->
-    <item name="MENU_STYLE_PICKER" type="id" />
-    <item name="MENU_LEVEL_PREFERRED_EXPAND" type="id" />
-    <item name="MENU_LEVEL_PREFERRED_COLLAPSE" type="id" />
+    <item name="MENU_GROUP_BOB" type="id" />
+    <item name="MENU_LEVEL_PREFERRED_EXPANSION" type="id" />
     <item name="MENU_LEVEL_EXPAND" type="id" />
     <item name="MENU_LEVEL_COLLAPSE" type="id" />
+
+    <item name="MENU_STYLE_PICKER" type="id" />
     <item name="MENU_LEVEL_TOGGLE" type="id" />
 
     <!-- Context menu on BoB list. Let the user skip to the next book without a cover. -->
@@ -187,11 +184,14 @@
     <item name="MENU_SETTINGS" type="id" />
     <item name="MENU_ABOUT" type="id" />
 
+    <item name="MENU_GROUP_CALIBRE" type="id" />
     <item name="SUBMENU_SYNC" type="id" />
     <item name="SUBMENU_SYNC_CALIBRE" type="id" />
     <item name="MENU_SYNC_CALIBRE_BOOKSHELVES" type="id" />
     <item name="MENU_SYNC_CALIBRE_IMPORT" type="id" />
     <item name="MENU_SYNC_CALIBRE_EXPORT" type="id" />
+
+    <item name="MENU_GROUP_STRIPINFO" type="id" />
     <item name="SUBMENU_SYNC_STRIP_INFO" type="id" />
     <item name="MENU_SYNC_STRIP_INFO_IMPORT" type="id" />
     <item name="MENU_SYNC_STRIP_INFO_EXPORT" type="id" />

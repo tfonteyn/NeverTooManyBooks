@@ -42,6 +42,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
@@ -246,18 +247,9 @@ public class ShowBookDetailsFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         if (mVm.isEmbedded()) {
-            //URGENT: add some sort of menu divider
-            //        MenuCompat.setGroupDividerEnabled(menu, true);
-//            menu.add(Menu.NONE, R.id.MENU_DIVIDER,
-//                     getResources().getInteger(R.integer.MENU_ORDER_DIVIDER_BOOK_DETAILS), "")
-//                .setEnabled(false);
+            MenuCompat.setGroupDividerEnabled(menu, true);
         }
 
-        if (mBookChangedListener != null) {
-            menu.add(Menu.NONE, R.id.MENU_SYNC_LIST_WITH_DETAILS,
-                     getResources().getInteger(R.integer.MENU_ORDER_SYNC_LIST_WITH_DETAILS),
-                     R.string.menu_book_sync_list_with_details);
-        }
         //noinspection ConstantConditions
         MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
 
@@ -268,8 +260,7 @@ public class ShowBookDetailsFragment
         if (mCalibreHandler != null) {
             mCalibreHandler.onCreateMenu(menu, inflater);
         }
-        mVm.getViewBookHandler().onCreateMenu(menu, inflater);
-        mVm.getAmazonHandler().onCreateMenu(menu, inflater);
+        mVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -280,25 +271,22 @@ public class ShowBookDetailsFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBKey.BOOL_READ);
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
         // specifically check KEY_LOANEE independent from the style in use.
-        final boolean useLending = DBKey.isUsed(global, DBKey.KEY_LOANEE);
+        final boolean useLending = mVm.useLoanee();
         final boolean isAvailable = mVm.isAvailable();
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
         if (mCalibreHandler != null) {
+            //noinspection ConstantConditions
             mCalibreHandler.onPrepareMenu(context, menu, book);
         }
-        mVm.getViewBookHandler().onPrepareMenu(menu, book);
-        mVm.getAmazonHandler().onPrepareMenu(menu, book);
+        mVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -378,13 +366,11 @@ public class ShowBookDetailsFragment
         }
 
         //noinspection ConstantConditions
-        if (mVm.getAmazonHandler().onItemSelected(context, itemId, book)) {
+        if (mVm.getMenuHandlers().stream()
+               .anyMatch(h -> h.onItemSelected(context, itemId, book))) {
             return true;
         }
 
-        if (mVm.getViewBookHandler().onItemSelected(context, item.getItemId(), book)) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 

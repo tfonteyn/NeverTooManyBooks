@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
@@ -56,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 public class BooksOnBookshelfViewModel
         extends ViewModel {
@@ -101,6 +102,7 @@ public class BooksOnBookshelfViewModel
     @Nullable
     private Booklist mBooklist;
 
+    // Not using a list here as we need separate access to the amazon handler
     @Nullable
     private ViewBookOnWebsiteHandler mViewBookHandler;
     @Nullable
@@ -182,7 +184,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    ViewBookOnWebsiteHandler getViewBookHandler() {
+    MenuHandler getViewBookHandler() {
         if (mViewBookHandler == null) {
             mViewBookHandler = new ViewBookOnWebsiteHandler();
         }
@@ -190,7 +192,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    AmazonHandler getAmazonHandler() {
+    MenuHandler getAmazonHandler() {
         if (mAmazonHandler == null) {
             mAmazonHandler = new AmazonHandler();
         }

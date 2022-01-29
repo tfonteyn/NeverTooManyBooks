@@ -27,13 +27,13 @@ import android.os.Bundle;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -66,8 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.ViewBookOnWebsiteHandler;
 
 public class ShowBookDetailsViewModel
         extends ViewModel
@@ -77,7 +77,7 @@ public class ShowBookDetailsViewModel
 
     /**
      * Whether to run this fragment in embedded mode (i.e. inside a frame on the BoB screen).
-     * We could (should?) use a boolean resource in "sw800" instead.
+     * We could (should?) use a boolean resource in "sw800-land" instead.
      */
     public static final String BKEY_EMBEDDED = TAG + ":emb";
 
@@ -86,24 +86,17 @@ public class ShowBookDetailsViewModel
     private final Intent mResultIntent = new Intent();
 
     private final MutableLiveData<BookMessage> mBookUpdate = new MutableLiveData<>();
+    private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
+
     /** Database Access. */
     private BookDao mBookDao;
-
     private Book mBook;
-
     /** The fields used. */
     private Fields mFieldsMap;
-
     private ListStyle mStyle;
     private boolean mUseLoanee;
     private boolean mUseToc;
-
     private boolean mEmbedded;
-
-    @Nullable
-    private ViewBookOnWebsiteHandler mViewBookHandler;
-    @Nullable
-    private AmazonHandler mAmazonHandler;
 
     /**
      * <ul>
@@ -134,6 +127,7 @@ public class ShowBookDetailsViewModel
         if (mBookDao == null) {
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
+//            context.getResources().getBoolean(R.bool.book_details_embedded)
             mEmbedded = args.getBoolean(BKEY_EMBEDDED, false);
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
@@ -154,19 +148,12 @@ public class ShowBookDetailsViewModel
     }
 
     @NonNull
-    ViewBookOnWebsiteHandler getViewBookHandler() {
-        if (mViewBookHandler == null) {
-            mViewBookHandler = new ViewBookOnWebsiteHandler();
+    List<MenuHandler> getMenuHandlers() {
+        if (mMenuHandlers.isEmpty()) {
+            mMenuHandlers.add(new ViewBookOnWebsiteHandler());
+            mMenuHandlers.add(new AmazonHandler());
         }
-        return mViewBookHandler;
-    }
-
-    @NonNull
-    AmazonHandler getAmazonHandler() {
-        if (mAmazonHandler == null) {
-            mAmazonHandler = new AmazonHandler();
-        }
-        return mAmazonHandler;
+        return mMenuHandlers;
     }
 
     boolean isEmbedded() {
