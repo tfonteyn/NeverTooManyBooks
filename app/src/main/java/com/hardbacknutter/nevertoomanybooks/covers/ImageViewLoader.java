@@ -23,8 +23,10 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -73,15 +75,67 @@ public class ImageViewLoader {
     }
 
     /**
+     * Load a placeholder drawable in the given view.
+     *
+     * @param imageView View to populate
+     * @param drawable  drawable to use
+     */
+    @UiThread
+    public void placeholder(@NonNull final ImageView imageView,
+                            @DrawableRes final int drawable) {
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.width = mMaxWidth;
+        lp.height = mMaxHeight;
+        imageView.setLayoutParams(lp);
+
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
+        imageView.setImageResource(drawable);
+    }
+
+    /**
+     * Load the image bitmap into the given view.
+     * The image is scaled to fit the box exactly preserving the aspect ratio.
+     *
+     * @param imageView View to populate
+     * @param bitmap    The Bitmap of the image
+     */
+    @UiThread
+    public void fromBitmap(@NonNull final ImageView imageView,
+                           @NonNull final Bitmap bitmap) {
+
+        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        if (bitmap.getWidth() < bitmap.getHeight()) {
+            // image is portrait; limit the height
+            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            lp.height = mMaxHeight;
+        } else {
+            // image is landscape; limit the width
+            lp.width = mMaxWidth;
+            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        imageView.setLayoutParams(lp);
+
+        // padding MUST be 0dp to allow scaling ratio to work properly
+        imageView.setPadding(0, 0, 0, 0);
+        imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setImageBitmap(bitmap);
+    }
+
+    /**
+     * Load the file in a background thread and display it in the given view.
+     *
      * @param imageView to populate
      * @param file      to load, must be valid
      * @param onSuccess (optional) Consumer to execute after successfully displaying the image
      */
     @UiThread
-    public void loadAndDisplay(@NonNull final ImageView imageView,
-                               @NonNull final File file,
-                               @Nullable final Consumer<Bitmap> onSuccess) {
+    public void fromFile(@NonNull final ImageView imageView,
+                         @NonNull final File file,
+                         @Nullable final Consumer<Bitmap> onSuccess) {
 
+        // TODO: not 100% convinced that using 'this' is a safe approach.
+        // maybe replace with a UUID.randomUUID()
         imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
         final WeakReference<ImageView> viewWeakReference = new WeakReference<>(imageView);
 
@@ -99,15 +153,14 @@ public class ImageViewLoader {
                     // clear the association
                     view.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                     if (bitmap != null) {
-                        ImageUtils.setImageView(view, mMaxWidth, mMaxHeight, bitmap, 0);
+                        fromBitmap(view, bitmap);
                         if (onSuccess != null) {
                             onSuccess.accept(bitmap);
                         }
                     } else {
                         // We only get here if we THOUGHT we had an image, but we failed to
                         // load/decode it. So use 'broken-image' icon and preserve the space
-                        ImageUtils.setPlaceholder(view, mMaxWidth, mMaxHeight,
-                                                  R.drawable.ic_baseline_broken_image_24, 0);
+                        placeholder(view, R.drawable.ic_baseline_broken_image_24);
                     }
                 }
             });

@@ -318,7 +318,7 @@ public class CoverBrowserDialogFragment
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
             if (file != null && file.exists()) {
-                mPreviewLoader.loadAndDisplay(mVb.preview, file, (bitmap) -> {
+                mPreviewLoader.fromFile(mVb.preview, file, (bitmap) -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mVm.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
@@ -462,8 +462,8 @@ public class CoverBrowserDialogFragment
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
-                ImageUtils.setPlaceholder(holder.vb.coverImage0, mMaxWidth, mMaxHeight,
-                                          R.drawable.ic_baseline_image_24, 0);
+                mImageLoader.placeholder(holder.vb.coverImage0,
+                                         R.drawable.ic_baseline_image_24);
                 // and queue a request for it.
                 mVm.fetchGalleryImage(isbn);
                 holder.vb.lblSite.setText("");
@@ -473,7 +473,7 @@ public class CoverBrowserDialogFragment
                 final File file = imageFileInfo.getFile();
                 if (file != null && file.exists()) {
                     // YES, load it into the view.
-                    mImageLoader.loadAndDisplay(holder.vb.coverImage0, file, null);
+                    mImageLoader.fromFile(holder.vb.coverImage0, file, null);
 
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.vb.coverImage0.setOnClickListener(
@@ -488,8 +488,8 @@ public class CoverBrowserDialogFragment
                     // no file. Theoretically we should not get here,
                     // as a failed search should have removed the isbn from the edition list,
                     // but race-conditions + paranoia...
-                    ImageUtils.setPlaceholder(holder.vb.coverImage0, mMaxWidth, mMaxHeight,
-                                              R.drawable.ic_baseline_broken_image_24, 0);
+                    mImageLoader.placeholder(holder.vb.coverImage0,
+                                             R.drawable.ic_baseline_broken_image_24);
                     holder.vb.lblSite.setText("");
                 }
             }

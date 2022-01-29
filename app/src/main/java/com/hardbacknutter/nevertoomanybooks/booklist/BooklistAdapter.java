@@ -1210,8 +1210,8 @@ public class BooklistAdapter
                             .getCover(context, uuid, 0, mCoverLongestSide, mCoverLongestSide);
 
                     if (bitmap != null) {
-                        ImageUtils.setImageView(mCoverView, mCoverLongestSide, mCoverLongestSide,
-                                                bitmap, 0);
+                        //noinspection ConstantConditions
+                        mImageLoader.fromBitmap(mCoverView, bitmap);
                         return;
                     }
                 }
@@ -1235,7 +1235,7 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 //noinspection ConstantConditions
-                mImageLoader.loadAndDisplay(mCoverView, file, bitmap -> {
+                mImageLoader.fromFile(mCoverView, file, bitmap -> {
                     if (bitmap != null) {
                         ServiceLocator.getInstance().getCoverCacheDao().saveCover(
                                 uuid, 0, bitmap, mCoverLongestSide, mCoverLongestSide);
@@ -1244,7 +1244,7 @@ public class BooklistAdapter
             } else {
                 // Cache not used: Get the image from the file system and display it.
                 //noinspection ConstantConditions
-                mImageLoader.loadAndDisplay(mCoverView, file, null);
+                mImageLoader.fromFile(mCoverView, file, null);
             }
         }
     }

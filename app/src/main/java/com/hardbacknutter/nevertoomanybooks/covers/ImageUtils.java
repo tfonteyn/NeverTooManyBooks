@@ -21,27 +21,16 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-
 
 public final class ImageUtils {
 
@@ -49,82 +38,12 @@ public final class ImageUtils {
     static final int MAX_IMAGE_WIDTH_PX = 600;
     static final int MAX_IMAGE_HEIGHT_PX = 1000;
 
-    /** Log tag. */
-    private static final String TAG = "ImageUtils";
     /** The minimum side (height/width) an image must be to be considered valid; in pixels. */
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
 
     private ImageUtils() {
-    }
-
-    /**
-     * Set a placeholder drawable in the view.
-     *
-     * @param imageView    View to populate
-     * @param layoutWidth  layout width parameter
-     * @param layoutHeight layout height parameter
-     * @param drawable     drawable to use
-     * @param background   (optional) drawable to use for the background; use {@code 0} for none
-     */
-    @UiThread
-    public static void setPlaceholder(@NonNull final ImageView imageView,
-                                      final int layoutWidth,
-                                      final int layoutHeight,
-                                      @DrawableRes final int drawable,
-                                      @DrawableRes final int background) {
-        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = layoutWidth;
-        lp.height = layoutHeight;
-        imageView.setLayoutParams(lp);
-
-        imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setImageResource(drawable);
-
-        if (background != 0) {
-            imageView.setBackgroundResource(background);
-        }
-    }
-
-    /**
-     * Load the image bitmap into the destination view.
-     * The image is scaled to fit the box exactly preserving the aspect ratio.
-     *
-     * @param imageView  View to populate
-     * @param maxWidth   Maximum width of the ImageView
-     * @param maxHeight  Maximum height of the ImageView
-     * @param bitmap     The Bitmap of the image
-     * @param background (optional) drawable to use for the background; use {@code 0} for none
-     */
-    @UiThread
-    public static void setImageView(@NonNull final ImageView imageView,
-                                    final int maxWidth,
-                                    final int maxHeight,
-                                    @NonNull final Bitmap bitmap,
-                                    @DrawableRes final int background) {
-
-        final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        if (bitmap.getWidth() < bitmap.getHeight()) {
-            // image is portrait; limit the height
-            lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = maxHeight;
-        } else {
-            // image is landscape; limit the width
-            lp.width = maxWidth;
-            lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        imageView.setLayoutParams(lp);
-
-        // padding MUST be 0dp to allow scaling ratio to work properly
-        imageView.setPadding(0, 0, 0, 0);
-        imageView.setAdjustViewBounds(true);
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        imageView.setImageBitmap(bitmap);
-
-        if (background != 0) {
-            imageView.setBackgroundResource(background);
-        }
     }
 
     /**
@@ -164,7 +83,6 @@ public final class ImageUtils {
         }
         return isGood;
     }
-
 
     /**
      * Decode the image from the given file and scale to fit the given bounds,
@@ -219,31 +137,6 @@ public final class ImageUtils {
         // Decode bitmap for real
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(srcFile.getAbsolutePath(), options);
-    }
-
-    /**
-     * Save the given bitmap to the destination file using PNG format at 100% quality..
-     *
-     * @param bitmap  to save
-     * @param dstFile to write to
-     *
-     * @return {@code true} for success
-     */
-    @WorkerThread
-    static boolean saveBitmap(@NonNull final Bitmap bitmap,
-                              @NonNull final File dstFile) {
-        try {
-            try (OutputStream os = new FileOutputStream(dstFile.getAbsoluteFile())) {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-            }
-            return true;
-
-        } catch (@NonNull final IOException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "", e);
-            }
-            return false;
-        }
     }
 
     /**

@@ -32,7 +32,9 @@ import androidx.annotation.WorkerThread;
 import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -97,24 +99,42 @@ public class TransFormTask
             }
         }
 
-        // Write out to the destination file
         if (bitmap != null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-                Log.d(TAG, "saving bitmap to destination="
-                           + mTransformation.getDestFile());
-            }
-
-            if (!ImageUtils.saveBitmap(bitmap, mTransformation.getDestFile())) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "Bitmap save FAILED");
-                }
-                bitmap = null;
-            }
+            bitmap = writeFile(bitmap);
         }
 
         return new TransformedData(bitmap,
                                    mTransformation.getDestFile(),
                                    mTransformation.getReturnCode());
+    }
+
+    /**
+     * Write out to the destination file
+     *
+     * @param bitmap to write
+     *
+     * @return (potentially) compressed bitmap; or {@code null} on any error.
+     */
+    @Nullable
+    private Bitmap writeFile(@NonNull final Bitmap bitmap) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Log.d(TAG, "saving bitmap to destination=" + mTransformation.getDestFile());
+        }
+
+        try {
+            try (OutputStream os = new FileOutputStream(
+                    mTransformation.getDestFile().getAbsoluteFile())) {
+                if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
+                    return bitmap;
+                }
+            }
+        } catch (@NonNull final IOException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "Bitmap save FAILED", e);
+            }
+        }
+
+        return null;
     }
 
 

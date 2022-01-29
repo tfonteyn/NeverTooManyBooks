@@ -114,19 +114,16 @@ public class CoverHandler {
     /** Index of the image we're handling. */
     @IntRange(from = 0, to = 1)
     private final int mCIdx;
-    private final int mMaxWidth;
-    private final int mMaxHeight;
     @NonNull
     private final CoverHandlerOwner mCoverHandlerOwner;
     @NonNull
     private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher;
     /** Main used is to run transformation tasks. Shared among all current CoverHandlers. */
     private final CoverHandlerViewModel mVm;
+    @NonNull
+    private final ImageViewLoader mImageLoader;
     /** The fragment root view; used for context, resources, Snackbar. */
     private View mFragmentView;
-    @Nullable
-    private ImageViewLoader mImageLoader;
-
     private ActivityResultLauncher<String> mCameraPermissionLauncher;
     private ActivityResultLauncher<Uri> mTakePictureLauncher;
     private ActivityResultLauncher<CropImageActivity.ResultContract.Input> mCropPictureLauncher;
@@ -155,14 +152,12 @@ public class CoverHandler {
                         final int maxHeight) {
         mCoverHandlerOwner = coverHandlerOwner;
         mCIdx = cIdx;
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
 
-        // reminder: this VM is shared between multiple CoverHandler instances
-        // owned by the mCoverHandlerOwner.
-        // e.g. mCIdx etc should not be stored in the VM.
+        // We could store idx in the VM, but there really is no point
         mVm = new ViewModelProvider(mCoverHandlerOwner)
                 .get(String.valueOf(mCIdx), CoverHandlerViewModel.class);
+
+        mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, maxWidth, maxHeight);
 
         mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
             @Override
@@ -226,15 +221,11 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to the view!
         final File file = mBookSupplier.get().getCoverFile(mCIdx);
         if (file != null) {
-            if (mImageLoader == null) {
-                mImageLoader = new ImageViewLoader(ASyncExecutor.MAIN, mMaxWidth, mMaxHeight);
-            }
-            mImageLoader.loadAndDisplay(view, file, null);
+            mImageLoader.fromFile(view, file, null);
             view.setBackground(null);
         } else {
-            ImageUtils.setPlaceholder(view, mMaxWidth, mMaxHeight,
-                                      R.drawable.ic_baseline_add_a_photo_24,
-                                      R.drawable.bg_outline_rounded);
+            mImageLoader.placeholder(view, R.drawable.ic_baseline_add_a_photo_24);
+            view.setBackgroundResource(R.drawable.bg_outline_rounded);
         }
     }
 
