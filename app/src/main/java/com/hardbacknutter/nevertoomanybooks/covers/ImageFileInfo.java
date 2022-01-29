@@ -96,7 +96,7 @@ public class ImageFileInfo
      *
      * @param in Parcel to construct the object from
      */
-    ImageFileInfo(@NonNull final Parcel in) {
+    private ImageFileInfo(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mIsbn = in.readString();
         mFileSpec = in.readString();
