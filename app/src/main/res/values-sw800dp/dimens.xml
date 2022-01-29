@@ -20,6 +20,8 @@
   -->
 
 <resources>
+    <integer name="window_class">2</integer>
+
     <dimen name="til_field_margin">4dp</dimen>
 
     <dimen name="screen_border">8dp</dimen>

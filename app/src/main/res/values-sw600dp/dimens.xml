@@ -27,6 +27,7 @@
     land: w683dp h387dp
 -->
 <resources>
+    <integer name="window_class">1</integer>
 
     <dimen name="progress_margin_top">200dp</dimen>
 </resources>

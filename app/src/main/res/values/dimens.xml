@@ -42,6 +42,12 @@
     land: w533dp h296dp
 -->
 <resources>
+    <!--
+     https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
+          No idea why they calculate them in the above link.
+      0: compact; 1: medium; 2: expanded
+    -->
+    <integer name="window_class">0</integer>
 
     <!-- The minimum width for layouts which are centered.
         android:layout_width="wrap_content"
