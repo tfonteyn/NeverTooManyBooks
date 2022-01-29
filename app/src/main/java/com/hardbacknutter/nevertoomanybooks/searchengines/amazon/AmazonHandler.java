@@ -42,11 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Stateless.
  */
-public class AmazonHandler {
+public class AmazonHandler
+        implements MenuHandler {
 
     /**
      * The search url for books when opening a browser activity.
@@ -65,6 +67,7 @@ public class AmazonHandler {
      */
     private static final String ADV_SEARCH_BOOKS = "/gp/search?index=books";
 
+    @Override
     public void onCreateMenu(@NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
@@ -72,6 +75,7 @@ public class AmazonHandler {
         }
     }
 
+    @Override
     public void onPrepareMenu(@NonNull final Menu menu,
                               @NonNull final DataHolder rowData) {
 
@@ -96,6 +100,7 @@ public class AmazonHandler {
         }
     }
 
+    @Override
     public boolean onItemSelected(@NonNull final Context context,
                                   @IdRes final int menuItemId,
                                   @NonNull final DataHolder rowData) {

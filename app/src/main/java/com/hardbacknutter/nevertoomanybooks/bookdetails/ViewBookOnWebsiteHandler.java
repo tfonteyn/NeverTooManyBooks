@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.content.Context;
 import android.content.Intent;
@@ -39,12 +39,15 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
+import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 /**
  * Stateless.
  */
-public class ViewBookOnWebsiteHandler {
+public class ViewBookOnWebsiteHandler
+        implements MenuHandler {
 
+    @Override
     public void onCreateMenu(@NonNull final Menu menu,
                              @NonNull final MenuInflater inflater) {
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
@@ -59,6 +62,7 @@ public class ViewBookOnWebsiteHandler {
      * @param menu    root menu
      * @param rowData the row data
      */
+    @Override
     public void onPrepareMenu(@NonNull final Menu menu,
                               @NonNull final DataHolder rowData) {
 
@@ -94,6 +98,7 @@ public class ViewBookOnWebsiteHandler {
         subMenuItem.setVisible(subMenuVisible);
     }
 
+    @Override
     public boolean onItemSelected(@NonNull final Context context,
                                   @IdRes final int menuItemId,
                                   @NonNull final DataHolder rowData) {
