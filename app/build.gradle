@@ -96,8 +96,6 @@ if (project.hasProperty("NeverTooManyBooks.email")
 }
 
 android {
-    namespace 'com.hardbacknutter.nevertoomanybooks'
-
     compileSdk rootProject.ext.sdkVersion
 
     defaultConfig {

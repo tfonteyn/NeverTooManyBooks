@@ -52,7 +52,6 @@ android {
     lint {
         abortOnError false
     }
-    namespace 'com.hardbacknutter.fastscroller'
 }
 
 dependencies {
