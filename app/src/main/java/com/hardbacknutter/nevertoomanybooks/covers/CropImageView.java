@@ -141,7 +141,7 @@ public class CropImageView
      * @param bitmap to crop
      */
     @UiThread
-    public void initCropView(@NonNull final Bitmap bitmap) {
+    void initCropView(@NonNull final Bitmap bitmap) {
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
 
@@ -485,9 +485,9 @@ public class CropImageView
         }
     }
 
-    void zoomTo(final float scale,
-                final float centerX,
-                final float centerY) {
+    private void zoomTo(final float scale,
+                        final float centerX,
+                        final float centerY) {
         final float deltaScale = Math.max(scale, mMaxZoom) / getScale();
         mSuppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
         setImageMatrix(getImageViewMatrix());
