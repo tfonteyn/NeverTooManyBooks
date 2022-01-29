@@ -715,7 +715,19 @@ public class BooksOnBookshelf
         mFabMenu.hideMenu();
 
         final boolean showECPreferred = mVm.getCurrentStyle(this).getTopLevel() > 1;
-        menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
+        menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showECPreferred);
+
+        final boolean bookDetailsVisible = hasEmbeddedDetailsFrame();
+
+        menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(bookDetailsVisible);
+        // Added by the fragment; will not be present if we've not opened a book yet.
+        // but if we did, and then rotated the display which hides the fragment...
+        // we MUST remove the menu which Android does not remove automatically.
+        // Android is really a pile of ....
+        final MenuItem bookGroup = menu.findItem(R.id.MENU_GROUP_BOOK);
+        if (bookGroup != null) {
+            bookGroup.setVisible(bookDetailsVisible);
+        }
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -731,7 +743,7 @@ public class BooksOnBookshelf
             mOnStylePickerLauncher.launch(mVm.getCurrentStyle(this), false);
             return true;
 
-        } else if (itemId == R.id.MENU_LEVEL_PREFERRED_COLLAPSE) {
+        } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
             expandAllNodes(mVm.getCurrentStyle(this).getTopLevel(), false);
             return true;
 
