@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
@@ -195,18 +194,16 @@ public class Book
     /**
      * Constructor. Load the book details from the database.
      *
-     * @param bookId  of book
-     * @param bookDao Database Access
+     * @param bookId of book
      *
      * @return new instance
      */
     @NonNull
-    public static Book from(@IntRange(from = 1) final long bookId,
-                            @NonNull final BookDao bookDao) {
+    public static Book from(@IntRange(from = 1) final long bookId) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         final Book book = new Book();
-        try (Cursor bookCursor = bookDao.fetchById(bookId)) {
+        try (Cursor bookCursor = ServiceLocator.getInstance().getBookDao().fetchById(bookId)) {
             if (bookCursor.moveToFirst()) {
                 book.load(bookId, bookCursor);
             }

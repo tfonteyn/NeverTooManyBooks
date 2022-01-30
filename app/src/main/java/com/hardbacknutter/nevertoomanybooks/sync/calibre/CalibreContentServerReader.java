@@ -404,14 +404,14 @@ public class CalibreContentServerReader
                     case Overwrite: {
                         // Get the full local book data; overwrite it with remote data
                         // as needed, and update. We don't use a delta.
-                        final Book book = Book.from(databaseBookId, mBookDao);
+                        final Book book = Book.from(databaseBookId);
                         updateBook(context, calibreBook, book);
                         break;
                     }
                     case OnlyNewer: {
                         // Get the full local book data; overwrite it with remote data
                         // as needed, and update. We don't use a delta.
-                        final Book book = Book.from(databaseBookId, mBookDao);
+                        final Book book = Book.from(databaseBookId);
                         // Should always be Non Null
                         final LocalDateTime localDate = mDateParser.parse(
                                 book.getString(DBKey.UTC_DATE_LAST_UPDATED));

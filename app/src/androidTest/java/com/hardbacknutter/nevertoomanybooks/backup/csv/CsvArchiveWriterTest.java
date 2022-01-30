@@ -134,7 +134,7 @@ public class CsvArchiveWriterTest
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         bookDao.delete(deletedBookId);
 
-        final Book book = Book.from(modifiedBookId, bookDao);
+        final Book book = Book.from(modifiedBookId);
         book.putString(DBKey.KEY_PRIVATE_NOTES,
                        "MODIFIED" + book.getString(DBKey.KEY_PRIVATE_NOTES));
         bookDao.update(context, book, 0);

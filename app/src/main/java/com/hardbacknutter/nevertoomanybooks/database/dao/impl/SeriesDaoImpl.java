@@ -388,7 +388,7 @@ public class SeriesDaoImpl
 
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
-                final Book book = Book.from(bookId, bookDao);
+                final Book book = Book.from(bookId);
 
                 final Collection<Series> fromBook = book.getSeries();
                 final Collection<Series> destList = new ArrayList<>();

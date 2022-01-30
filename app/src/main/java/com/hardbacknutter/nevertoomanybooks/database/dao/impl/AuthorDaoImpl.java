@@ -687,7 +687,7 @@ public class AuthorDaoImpl
 
             final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
             for (final long bookId : getBookIds(source.getId())) {
-                final Book book = Book.from(bookId, bookDao);
+                final Book book = Book.from(bookId);
 
                 final Collection<Author> fromBook = book.getAuthors();
                 final Collection<Author> destList = new ArrayList<>();

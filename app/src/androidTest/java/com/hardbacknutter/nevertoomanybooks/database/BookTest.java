@@ -215,7 +215,7 @@ public class BookTest {
         /*
          * test the inserted book
          */
-        Book book = Book.from(mBookId[0], bookDao);
+        Book book = Book.from(mBookId[0]);
         assertEquals(mBookId[0], book.getId());
         checkBookAfterInitialInsert(book);
 
@@ -249,7 +249,7 @@ public class BookTest {
         /*
          * test the updated book
          */
-        book = Book.from(mBookId[0], bookDao);
+        book = Book.from(mBookId[0]);
         assertEquals(mBookId[0], book.getId());
 
         uuid = book.getString(DBKey.KEY_BOOK_UUID);
@@ -288,7 +288,7 @@ public class BookTest {
         /*
          * Delete the second cover of the read-only book
          */
-        book = Book.from(mBookId[0], bookDao);
+        book = Book.from(mBookId[0]);
         assertEquals(mBookId[0], book.getId());
 
         uuid = book.getString(DBKey.KEY_BOOK_UUID);
@@ -344,7 +344,7 @@ public class BookTest {
         final Bundle args = new Bundle();
         args.putLong(DBKey.FK_BOOK, mBookId[0]);
 
-        vm.init(context, args);
+        vm.init(args);
         final Book retrieved = vm.getBook();
         assertEquals(mBookId[0], retrieved.getId());
         checkBookAfterInitialInsert(retrieved);
@@ -354,7 +354,7 @@ public class BookTest {
      * Create and insert a book.
      */
     private Book prepareAndInsertBook(@NonNull final Context context,
-                                      @NonNull final BookDao db)
+                                      @NonNull final BookDao bookDao)
             throws DaoWriteException, CoverStorageException, IOException {
 
         final Book book = new Book();
@@ -376,7 +376,7 @@ public class BookTest {
                      book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
-        final long bookId = db.insert(context, book, 0);
+        final long bookId = bookDao.insert(context, book, 0);
         book.setStage(EntityStage.Stage.Clean);
 
         assertTrue(bookId > 0);

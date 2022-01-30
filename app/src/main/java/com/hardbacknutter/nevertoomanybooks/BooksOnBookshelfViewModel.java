@@ -630,7 +630,7 @@ public class BooksOnBookshelfViewModel
     }
 
     Book getBook(@IntRange(from = 1) final long bookId) {
-        return Book.from(bookId, mBookDao);
+        return Book.from(bookId);
     }
 
     /**
