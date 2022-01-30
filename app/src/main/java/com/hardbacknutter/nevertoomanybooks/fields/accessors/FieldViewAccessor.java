@@ -143,12 +143,15 @@ public interface FieldViewAccessor<T, V extends View> {
     void getValue(@NonNull DataManager target);
 
     /**
-     * Fetch the value from the passed DataManager, and set the Field.
+     * Fetch the value from the passed {@link DataManager}, and set the Field.
      * <p>
      * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
      * in the database.
+     * <p>
+     * We pass in the {@link DataManager} so that implementations can fetch multiple items
+     * from it as needed or coerce the type(s), and not just the main value.
      *
-     * @param source DataManager to load the Field value from
+     * @param source {@link DataManager} to load the Field value from
      */
     void setInitialValue(@NonNull DataManager source);
 
