@@ -65,7 +65,7 @@ public final class DataHolderUtils {
     public static Book getBook(@NonNull final DataHolder rowData) {
         final long bookId = rowData.getLong(DBKey.FK_BOOK);
         if (bookId > 0) {
-            return Book.from(bookId, ServiceLocator.getInstance().getBookDao());
+            return Book.from(bookId);
         }
         return null;
     }
