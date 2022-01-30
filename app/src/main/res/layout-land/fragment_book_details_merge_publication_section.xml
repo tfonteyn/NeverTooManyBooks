@@ -28,7 +28,7 @@
     >
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col1"
+        android:id="@+id/pub_section_middle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -73,7 +73,7 @@
         android:id="@+id/lbl_publication"
         style="@style/Label"
         android:text="@string/lbl_publication"
-        app:layout_constraintStart_toStartOf="@id/col1"
+        app:layout_constraintStart_toStartOf="@id/pub_section_middle"
         app:layout_constraintTop_toTopOf="parent"
         />
 
@@ -167,7 +167,7 @@
     <TextView
         android:id="@+id/print_run"
         style="@style/Field.Generic.Small"
-        app:layout_constraintEnd_toStartOf="@id/col1"
+        app:layout_constraintEnd_toStartOf="@id/pub_section_middle"
         app:layout_constraintStart_toStartOf="@id/lbl_print_run"
         app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
         tools:ignore="SelectableText"
