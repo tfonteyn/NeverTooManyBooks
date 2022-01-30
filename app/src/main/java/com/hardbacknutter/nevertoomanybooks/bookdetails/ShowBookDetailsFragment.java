@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class ShowBookDetailsFragment
@@ -82,6 +83,12 @@ public class ShowBookDetailsFragment
         implements CoverHandler.CoverHandlerOwner {
 
     public static final String TAG = "ShowBookDetailsFragment";
+
+    /**
+     * Whether to run this fragment in embedded mode (i.e. inside a frame on the BoB screen).
+     * We could (should?) use a boolean resource in "sw800-land" instead.
+     */
+    public static final String BKEY_EMBEDDED = TAG + ":emb";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
@@ -92,6 +99,7 @@ public class ShowBookDetailsFragment
     @Nullable
     private CalibreHandler mCalibreHandler;
 
+    private ShowBookDetailsActivityViewModel mAVm;
     private ShowBookDetailsViewModel mVm;
 
     @SuppressWarnings("FieldCanBeLocal")
@@ -99,6 +107,8 @@ public class ShowBookDetailsFragment
 
     @Nullable
     private BookChangedListener mBookChangedListener;
+
+    private boolean mEmbedded;
 
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher = registerForActivityResult(
@@ -133,9 +143,17 @@ public class ShowBookDetailsFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mVm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        final Bundle args = requireArguments();
+
+        // mEmbedded = getResources().getBoolean(R.bool.book_details_embedded)
+        mEmbedded = args.getBoolean(BKEY_EMBEDDED, false);
+
         //noinspection ConstantConditions
-        mVm.init(getContext(), requireArguments());
+        mAVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
+        mAVm.init(getActivity(), args);
+
+        mVm = new ViewModelProvider(this).get(ShowBookDetailsViewModel.class);
+        mVm.init(args);
 
         mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
@@ -154,7 +172,7 @@ public class ShowBookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // update all Fields with their current View instances
-        mVm.getFields().setParentView(view);
+        mAVm.getFields().setParentView(view);
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
@@ -173,7 +191,7 @@ public class ShowBookDetailsFragment
 
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
-        if (!mVm.isEmbedded()) {
+        if (!mEmbedded) {
             mOnBackPressedCallback = new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
@@ -226,7 +244,7 @@ public class ShowBookDetailsFragment
         final TypedArray height = res.obtainTypedArray(R.array.cover_details_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (mVm.isCoverUsed(global, cIdx)) {
+                if (mAVm.isCoverUsed(global, cIdx)) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
@@ -246,7 +264,7 @@ public class ShowBookDetailsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        if (mVm.isEmbedded()) {
+        if (mEmbedded) {
             MenuCompat.setGroupDividerEnabled(menu, true);
         }
 
@@ -260,7 +278,7 @@ public class ShowBookDetailsFragment
         if (mCalibreHandler != null) {
             mCalibreHandler.onCreateMenu(menu, inflater);
         }
-        mVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
+        mAVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -277,7 +295,7 @@ public class ShowBookDetailsFragment
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
         // specifically check KEY_LOANEE independent from the style in use.
-        final boolean useLending = mVm.useLoanee();
+        final boolean useLending = mAVm.useLoanee();
         final boolean isAvailable = mVm.isAvailable();
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
@@ -286,7 +304,7 @@ public class ShowBookDetailsFragment
             //noinspection ConstantConditions
             mCalibreHandler.onPrepareMenu(context, menu, book);
         }
-        mVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+        mAVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -322,7 +340,7 @@ public class ShowBookDetailsFragment
         } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
             // toggle 'read' status of the book
             final boolean read = mVm.toggleRead();
-            mVm.getFields().getField(R.id.read).setValue(read);
+            mAVm.getField(R.id.read).setValue(read);
             // Callback - used when we're running inside another component; e.g. the BoB
             if (mBookChangedListener != null) {
                 mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
@@ -366,8 +384,8 @@ public class ShowBookDetailsFragment
         }
 
         //noinspection ConstantConditions
-        if (mVm.getMenuHandlers().stream()
-               .anyMatch(h -> h.onItemSelected(context, itemId, book))) {
+        if (mAVm.getMenuHandlers().stream()
+                .anyMatch(h -> h.onItemSelected(context, itemId, book))) {
             return true;
         }
 
@@ -434,26 +452,26 @@ public class ShowBookDetailsFragment
         setSubtitle(book.getString(DBKey.KEY_TITLE));
     }
 
-    private void onBindBook(@NonNull final ShowBookDetailsViewModel.BookMessage message) {
+    private void onBindBook(@NonNull final LiveDataEvent<Book> message) {
         final boolean isNewEvent = message.isNewEvent();
         if (isNewEvent) {
-            bindBook(message.book);
+            bindBook(message.getData());
         }
     }
 
     private void bindBook(@NonNull final Book book) {
-        if (!mVm.isEmbedded()) {
+        if (!mEmbedded) {
             setActivityTitle(book);
         }
 
-        mVm.getFields().setAll(book);
+        mAVm.getFields().setAll(book);
 
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
 
         //noinspection ConstantConditions
-        mVm.getFields().setVisibility(getView(), true, false);
+        mAVm.getFields().setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionVisibility(R.id.lbl_publication,
@@ -515,7 +533,7 @@ public class ShowBookDetailsFragment
     private void bindLoanee(@NonNull final Book book) {
         //noinspection ConstantConditions
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        if (mVm.useLoanee()) {
+        if (mAVm.useLoanee()) {
             final String loanee = book.getLoanee();
             if (loanee.isEmpty()) {
                 lendTo.setText("");
@@ -558,7 +576,7 @@ public class ShowBookDetailsFragment
 
         final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
         final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
-        if (mVm.useToc()) {
+        if (mAVm.useToc()) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
             } else if (tocFrame != null) {
