@@ -96,7 +96,7 @@ public class ProgressDelegate {
         mVb.getRoot().setVisibility(View.GONE);
     }
 
-    public void onProgress(@NonNull final ProgressMessage message) {
+    public void onProgress(@NonNull final TaskProgress message) {
 
         // mode change requested ?
         if (message.indeterminate == null) {

@@ -124,7 +124,8 @@ abstract class TaskBase<Result>
             final Context context = ServiceLocator.getLocalizedAppContext();
             try {
                 final Result result = doWork(context);
-                final FinishedMessage<Result> message = new FinishedMessage<>(getTaskId(), result);
+                final TaskResult<Result> message =
+                        new TaskResult<>(getTaskId(), result);
                 if (isCancelled()) {
                     setCancelled(message);
                 } else {
@@ -153,9 +154,9 @@ abstract class TaskBase<Result>
     protected abstract Result doWork(@NonNull Context context)
             throws Exception;
 
-    protected abstract void setFinished(@NonNull FinishedMessage<Result> message);
+    protected abstract void setFinished(@NonNull TaskResult<Result> message);
 
-    protected abstract void setCancelled(@NonNull FinishedMessage<Result> message);
+    protected abstract void setCancelled(@NonNull TaskResult<Result> message);
 
     protected abstract void setFailure(@NonNull Exception e);
 
@@ -177,7 +178,7 @@ abstract class TaskBase<Result>
 
     /**
      * Send a progress update.
-     * Convenience method which builds the {@link ProgressMessage} based
+     * Convenience method which builds the {@link TaskProgress} based
      * on the current progress counters and the passed data.
      * <p>
      * Can be called from inside {@link #doWork}.
@@ -190,13 +191,13 @@ abstract class TaskBase<Result>
     public void publishProgress(final int delta,
                                 @Nullable final String text) {
         mProgressCurrentPos += delta;
-        publishProgress(new ProgressMessage(mTaskId, text,
-                                            mProgressCurrentPos, mProgressMaxPos,
-                                            mIndeterminate));
+        publishProgress(new TaskProgress(mTaskId, text,
+                                         mProgressCurrentPos, mProgressMaxPos,
+                                         mIndeterminate));
     }
 
     /**
-     * Only takes effect when the next ProgressMessage is send to the client.
+     * Only takes effect when the next {@link TaskProgress} is send to the client.
      *
      * @param indeterminate true/false to enable/disable the indeterminate mode
      *                      or {@code null} to tell the receiver to revert back to its initial mode.
@@ -214,7 +215,7 @@ abstract class TaskBase<Result>
     }
 
     /**
-     * Only takes effect when the next ProgressMessage is send to the client.
+     * Only takes effect when the next {@link TaskProgress} is send to the client.
      *
      * @param maxPosition value
      */

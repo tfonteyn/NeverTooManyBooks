@@ -59,9 +59,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -353,7 +354,8 @@ public class ExportFragment
         }
     }
 
-    private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
+    private void onExportCancelled(
+            @NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -364,11 +366,11 @@ public class ExportFragment
         }
     }
 
-    private void onExportFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.requireResult();
+            final Exception e = message.getData().requireResult();
 
             @StringRes
             final int title = mVm.getExportHelper().isBackup()
@@ -396,11 +398,11 @@ public class ExportFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final FinishedMessage<ExportResults> message) {
+    private void onExportFinished(@NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final ExportResults results = message.requireResult();
+            final ExportResults results = message.getData().requireResult();
 
             final List<String> items = extractExportedItems(results);
             if (items.isEmpty()) {
@@ -533,17 +535,17 @@ public class ExportFragment
         }
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

@@ -50,9 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesS
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
@@ -153,10 +154,10 @@ public abstract class SearchBookBaseFragment
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {
+    private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            final Bundle result = message.requireResult();
+            final Bundle result = message.getData().requireResult();
 
             final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
             if (searchErrors != null) {
@@ -186,17 +187,17 @@ public abstract class SearchBookBaseFragment
         Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mCoordinator.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mCoordinator.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

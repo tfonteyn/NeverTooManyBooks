@@ -55,9 +55,10 @@ import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -135,7 +136,7 @@ public class SearchBookUpdatesFragment
         // An individual book search finished.
         //noinspection ConstantConditions
         mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
-                mVm.processOne(getContext(), message.getResult()));
+                mVm.processOne(getContext(), message.getData().getResult()));
         // User cancelled the update
         mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
@@ -273,10 +274,10 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onAllDone(@NonNull final FinishedMessage<Bundle> message) {
+    private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            final Bundle result = message.getResult();
+            final Bundle result = message.getData().getResult();
             if (result != null) {
                 // The result will contain:
                 // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
@@ -292,10 +293,10 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onAbort(@NonNull final FinishedMessage<Exception> message) {
+    private void onAbort(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            final Exception e = message.getResult();
+            final Exception e = message.getData().getResult();
 
             final Context context = getContext();
             //noinspection ConstantConditions
@@ -316,7 +317,7 @@ public class SearchBookUpdatesFragment
         }
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
@@ -324,10 +325,10 @@ public class SearchBookUpdatesFragment
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

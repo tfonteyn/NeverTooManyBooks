@@ -36,8 +36,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 public class SyncReaderViewModel
@@ -95,12 +96,12 @@ public class SyncReaderViewModel
     }
 
     @NonNull
-    public LiveData<FinishedMessage<SyncReaderMetaData>> onMetaDataRead() {
+    public LiveData<LiveDataEvent<TaskResult<SyncReaderMetaData>>> onMetaDataRead() {
         return mReadMetaDataTask.onFinished();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onMetaDataFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onMetaDataFailure() {
         return mReadMetaDataTask.onFailure();
     }
 
@@ -208,22 +209,22 @@ public class SyncReaderViewModel
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mReaderTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ReaderResults>> onImportCancelled() {
+    LiveData<LiveDataEvent<TaskResult<ReaderResults>>> onImportCancelled() {
         return mReaderTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onImportFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onImportFailure() {
         return mReaderTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ReaderResults>> onImportFinished() {
+    LiveData<LiveDataEvent<TaskResult<ReaderResults>>> onImportFinished() {
         return mReaderTask.onFinished();
     }
 

@@ -35,14 +35,14 @@ public interface ProgressListener
      * @param message to send
      */
     @WorkerThread
-    void publishProgress(@NonNull final ProgressMessage message);
+    void publishProgress(@NonNull final TaskProgress message);
 
     /**
      * Advance progress by 'delta'.
      * <p>
-     * Convenience method which should build the {@link ProgressMessage} based
+     * Convenience method which should build the {@link TaskProgress} based
      * on the current progress counters and the passed data and call
-     * {@link #publishProgress(ProgressMessage)}.
+     * {@link #publishProgress(TaskProgress)}.
      * <p>
      * See {@link TaskBase} for the default implementation.
      *

@@ -52,9 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesA
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -363,7 +364,7 @@ public class SettingsFragment
         preference.setIcon(icon);
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
@@ -371,10 +372,10 @@ public class SettingsFragment
                         .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 
@@ -386,11 +387,11 @@ public class SettingsFragment
         }
     }
 
-    private void onMoveFinished(@NonNull final FinishedMessage<Integer> message) {
+    private void onMoveFinished(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            if (setStorageVolume(message.requireResult())) {
+            if (setStorageVolume(message.getData().requireResult())) {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
             }
@@ -411,13 +412,13 @@ public class SettingsFragment
         }
     }
 
-    private void onMoveFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.requireResult())
+            final String msg = ExMsg.map(context, message.getData().requireResult())
                                     .orElse(getString(R.string.error_unknown_long,
                                                       getString(R.string.lbl_send_debug)));
 
@@ -431,7 +432,7 @@ public class SettingsFragment
         }
     }
 
-    private void onMoveCancelled(@NonNull final FinishedMessage<Integer> message) {
+    private void onMoveCancelled(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {

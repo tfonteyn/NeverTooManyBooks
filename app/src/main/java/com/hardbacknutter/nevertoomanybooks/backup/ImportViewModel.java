@@ -39,8 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReadMetaDataTas
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class ImportViewModel
         extends ViewModel
@@ -97,12 +98,12 @@ public class ImportViewModel
     }
 
     @NonNull
-    public LiveData<FinishedMessage<ArchiveMetaData>> onMetaDataRead() {
+    public LiveData<LiveDataEvent<TaskResult<ArchiveMetaData>>> onMetaDataRead() {
         return mReadMetaDataTask.onFinished();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onMetaDataFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onMetaDataFailure() {
         return mReadMetaDataTask.onFailure();
     }
 
@@ -170,22 +171,22 @@ public class ImportViewModel
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mReaderTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ImportResults>> onImportCancelled() {
+    LiveData<LiveDataEvent<TaskResult<ImportResults>>> onImportCancelled() {
         return mReaderTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onImportFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onImportFailure() {
         return mReaderTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ImportResults>> onImportFinished() {
+    LiveData<LiveDataEvent<TaskResult<ImportResults>>> onImportFinished() {
         return mReaderTask.onFinished();
     }
 

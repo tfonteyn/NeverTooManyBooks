@@ -55,7 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -211,11 +212,11 @@ public class CoverBrowserDialogFragment
      *
      * @param message the result of {@link SearchEditionsTask}
      */
-    private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
+    private void showGallery(@NonNull final LiveDataEvent<TaskResult<Collection<String>>> message) {
         Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
 
         if (message.isNewEvent()) {
-            final Collection<String> result = message.getResult();
+            final Collection<String> result = message.getData().getResult();
 
             if (result == null || result.isEmpty()) {
                 mVb.progressBar.hide();

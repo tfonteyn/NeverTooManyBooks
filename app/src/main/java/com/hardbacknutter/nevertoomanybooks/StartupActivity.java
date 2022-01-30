@@ -46,7 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -120,7 +121,7 @@ public class StartupActivity
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
         mVb.version.setText(info.getVersionName());
 
-        mVm.onProgress().observe(this, message -> onProgress(message.text));
+        mVm.onProgress().observe(this, message -> onProgress(message.getData().text));
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());
         mVm.onFailure().observe(this, this::onFailure);
@@ -305,10 +306,10 @@ public class StartupActivity
     }
 
     // Not called for now, see {@link StartupViewModel} #mTaskListener.
-    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         if (message.isNewEvent()) {
             @Nullable
-            final Exception e = message.getResult();
+            final Exception e = message.getData().getResult();
 
             if (e instanceof CoverStorageException) {
                 onExternalStorageException((CoverStorageException) e);

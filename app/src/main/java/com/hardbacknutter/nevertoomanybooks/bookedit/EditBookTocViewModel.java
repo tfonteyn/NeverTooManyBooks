@@ -30,7 +30,8 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.IsfdbGetEditionsTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class EditBookTocViewModel
@@ -44,17 +45,17 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<List<Edition>>> onIsfdbEditions() {
+    LiveData<LiveDataEvent<TaskResult<List<Edition>>>> onIsfdbEditions() {
         return mIsfdbGetEditionsTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<List<Edition>>> onIsfdbEditionsCancelled() {
+    LiveData<LiveDataEvent<TaskResult<List<Edition>>>> onIsfdbEditionsCancelled() {
         return mIsfdbGetEditionsTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onIsfdbEditionsFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbEditionsFailure() {
         return mIsfdbGetEditionsTask.onFailure();
     }
 
@@ -64,17 +65,17 @@ public class EditBookTocViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<Bundle>> onIsfdbBook() {
+    LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBook() {
         return mIsfdbGetBookTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Bundle>> onIsfdbBookCancelled() {
+    LiveData<LiveDataEvent<TaskResult<Bundle>>> onIsfdbBookCancelled() {
         return mIsfdbGetBookTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onIsfdbBookFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onIsfdbBookFailure() {
         return mIsfdbGetBookTask.onFailure();
     }
 

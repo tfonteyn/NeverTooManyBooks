@@ -69,7 +69,7 @@ public abstract class LTask<Result>
      */
     @Override
     @WorkerThread
-    public void publishProgress(@NonNull final ProgressMessage message) {
+    public void publishProgress(@NonNull final TaskProgress message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onProgress(message);
@@ -88,7 +88,7 @@ public abstract class LTask<Result>
      */
     @Override
     @WorkerThread
-    protected void setFinished(@NonNull final FinishedMessage<Result> message) {
+    protected void setFinished(@NonNull final TaskResult<Result> message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onFinished(message);
@@ -107,7 +107,7 @@ public abstract class LTask<Result>
      */
     @Override
     @WorkerThread
-    protected void setCancelled(@NonNull final FinishedMessage<Result> message) {
+    protected void setCancelled(@NonNull final TaskResult<Result> message) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onCancelled(message);
@@ -130,7 +130,7 @@ public abstract class LTask<Result>
     protected void setFailure(@NonNull final Exception e) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onFailure(new FinishedMessage<>(getTaskId(), e));
+                mTaskListener.get().onFailure(new TaskResult<>(getTaskId(), e));
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "onFailure|" + LISTENER_WAS_DEAD);

@@ -46,9 +46,10 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildTitleOrderByColumnTask;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -79,9 +80,9 @@ public class StartupViewModel
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
 
-    private final MutableLiveData<FinishedMessage<Void>> mFinished = new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
-    private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Void>>> mFinished = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailure = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgress = new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
@@ -92,19 +93,19 @@ public class StartupViewModel
          * Called when any startup task completes. If no more tasks, let the activity know.
          */
         @Override
-        public void onFinished(@NonNull final FinishedMessage<Boolean> message) {
+        public void onFinished(@NonNull final TaskResult<Boolean> message) {
             //TaskListener, don't check if (message.isNewEvent())
             cleanup(message.getTaskId());
         }
 
         @Override
-        public void onCancelled(@NonNull final FinishedMessage<Boolean> message) {
+        public void onCancelled(@NonNull final TaskResult<Boolean> message) {
             //TaskListener, don't check if (message.isNewEvent())
             cleanup(message.getTaskId());
         }
 
         @Override
-        public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+        public void onFailure(@NonNull final TaskResult<Exception> message) {
             //TaskListener, don't check if (message.isNewEvent())
             // We don't care about the status; just finish
             cleanup(message.getTaskId());
@@ -120,8 +121,8 @@ public class StartupViewModel
         }
 
         @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            mProgress.setValue(message);
+        public void onProgress(@NonNull final TaskProgress message) {
+            mProgress.setValue(new LiveDataEvent<>(message));
         }
     };
 
@@ -282,7 +283,7 @@ public class StartupViewModel
      * @return the Result which can be considered to be complete and correct.
      */
     @NonNull
-    public LiveData<FinishedMessage<Void>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<Void>>> onFinished() {
         return mFinished;
     }
 
@@ -292,17 +293,17 @@ public class StartupViewModel
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
         return mFailure;
     }
 
     /**
      * Forwards progress messages for the client to display.
      *
-     * @return a {@link ProgressMessage} with the progress counter, a text message, ...
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<ProgressMessage> onProgress() {
+    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mProgress;
     }
 

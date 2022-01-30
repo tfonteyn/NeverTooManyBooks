@@ -62,9 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
@@ -342,9 +343,9 @@ public class ImportFragment
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
+    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<ArchiveMetaData>> message) {
         if (message.isNewEvent()) {
-            mVm.setMetaData(message.getResult());
+            mVm.setMetaData(message.getData().getResult());
             showArchiveDetails();
         }
     }
@@ -400,11 +401,11 @@ public class ImportFragment
                 .show();
     }
 
-    private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.requireResult();
+            final Exception e = message.getData().requireResult();
 
             final Context context = getContext();
             //noinspection ConstantConditions
@@ -422,11 +423,12 @@ public class ImportFragment
         }
     }
 
-    private void onImportCancelled(@NonNull final FinishedMessage<ImportResults> message) {
+    private void onImportCancelled(
+            @NonNull final LiveDataEvent<TaskResult<ImportResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final ImportResults result = message.getResult();
+            final ImportResults result = message.getData().getResult();
             if (result != null) {
                 onImportFinished(R.string.progress_end_import_partially_complete, result);
             } else {
@@ -444,11 +446,12 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final FinishedMessage<ImportResults> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<ImportResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            onImportFinished(R.string.progress_end_import_complete, message.requireResult());
+            onImportFinished(R.string.progress_end_import_complete,
+                             message.getData().requireResult());
         }
     }
 
@@ -552,17 +555,17 @@ public class ImportFragment
                 .collect(Collectors.joining("\n")));
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

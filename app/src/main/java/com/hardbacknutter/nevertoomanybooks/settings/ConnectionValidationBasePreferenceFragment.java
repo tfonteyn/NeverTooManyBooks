@@ -30,9 +30,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -72,7 +73,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    protected void onProgress(@NonNull final ProgressMessage message) {
+    protected void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
@@ -80,10 +81,10 @@ public abstract class ConnectionValidationBasePreferenceFragment
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> cancelTask(message.taskId))
+                        .setOnCancelListener(v -> cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 
@@ -95,11 +96,11 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    protected void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
+    protected void onSuccess(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Boolean result = message.getResult();
+            final Boolean result = message.getData().getResult();
             if (result != null) {
                 if (result) {
                     //noinspection ConstantConditions
@@ -116,11 +117,11 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    protected void onFailure(@NonNull final FinishedMessage<Exception> message) {
+    protected void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getResult();
+            final Exception e = message.getData().getResult();
 
             final Context context = getContext();
             //noinspection ConstantConditions

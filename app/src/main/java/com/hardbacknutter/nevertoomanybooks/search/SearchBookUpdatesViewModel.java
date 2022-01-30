@@ -52,8 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class SearchBookUpdatesViewModel
@@ -66,8 +67,8 @@ public class SearchBookUpdatesViewModel
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
 
-    private final MutableLiveData<FinishedMessage<Bundle>> mListFinished = new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Exception>> mListFailed = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> mListFinished = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mListFailed = new MutableLiveData<>();
 
     /**
      * Current and original book data.
@@ -110,13 +111,13 @@ public class SearchBookUpdatesViewModel
 
     /** Observable. */
     @NonNull
-    LiveData<FinishedMessage<Bundle>> onAllDone() {
+    LiveData<LiveDataEvent<TaskResult<Bundle>>> onAllDone() {
         return mListFinished;
     }
 
     /** Observable. */
     @NonNull
-    LiveData<FinishedMessage<Exception>> onAbort() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onAbort() {
         return mListFailed;
     }
 
@@ -429,10 +430,11 @@ public class SearchBookUpdatesViewModel
         }
 
         //update the counter, another one done.
-        mSearchCoordinatorProgress.setValue(new ProgressMessage(
+        final TaskProgress taskProgress = new TaskProgress(
                 R.id.TASK_ID_UPDATE_FIELDS, null,
                 mCurrentProgressCounter, mCurrentCursorCount, null
-        ));
+        );
+        mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
 
         // On to the next book in the list.
         return nextBook(context);
@@ -480,13 +482,15 @@ public class SearchBookUpdatesViewModel
 
         if (e != null) {
             Logger.error(TAG, e);
-            final FinishedMessage<Exception> message =
-                    new FinishedMessage<>(R.id.TASK_ID_UPDATE_FIELDS, e);
+            final LiveDataEvent<TaskResult<Exception>> message =
+                    new LiveDataEvent<>(
+                            new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
             mListFailed.setValue(message);
 
         } else {
-            final FinishedMessage<Bundle> message =
-                    new FinishedMessage<>(R.id.TASK_ID_UPDATE_FIELDS, results);
+            final LiveDataEvent<TaskResult<Bundle>> message =
+                    new LiveDataEvent<>(
+                            new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
             if (mIsCancelled) {
                 mSearchCoordinatorCancelled.setValue(message);
             } else {

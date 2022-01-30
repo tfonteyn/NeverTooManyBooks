@@ -31,8 +31,9 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class SyncWriterViewModel
         extends ViewModel {
@@ -84,22 +85,22 @@ public class SyncWriterViewModel
 
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mWriterTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<FinishedMessage<SyncWriterResults>> onExportCancelled() {
+    LiveData<LiveDataEvent<TaskResult<SyncWriterResults>>> onExportCancelled() {
         return mWriterTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onExportFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onExportFailure() {
         return mWriterTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<SyncWriterResults>> onExportFinished() {
+    LiveData<LiveDataEvent<TaskResult<SyncWriterResults>>> onExportFinished() {
         return mWriterTask.onFinished();
     }
 

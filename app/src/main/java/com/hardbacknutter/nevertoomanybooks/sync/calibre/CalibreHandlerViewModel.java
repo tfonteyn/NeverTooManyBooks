@@ -37,8 +37,9 @@ import java.util.Optional;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CalibreHandlerViewModel
         extends ViewModel {
@@ -138,22 +139,22 @@ public class CalibreHandlerViewModel
     }
 
     @NonNull
-    public LiveData<ProgressMessage> onProgress() {
+    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mSingleFileDownloadTask.onProgressUpdate();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Uri>> onCancelled() {
+    public LiveData<LiveDataEvent<TaskResult<Uri>>> onCancelled() {
         return mSingleFileDownloadTask.onCancelled();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
         return mSingleFileDownloadTask.onFailure();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Uri>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<Uri>>> onFinished() {
         return mSingleFileDownloadTask.onFinished();
     }
 }

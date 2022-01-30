@@ -35,14 +35,14 @@ public class TaskListenerToLiveData<Result>
         implements TaskListener<Result> {
 
     @NonNull
-    private final MutableLiveData<FinishedMessage<Result>> mOnFinished;
+    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> mOnFinished;
     @NonNull
-    private final MutableLiveData<FinishedMessage<Exception>> mOnFailure;
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mOnFailure;
 
     @Nullable
-    private MutableLiveData<FinishedMessage<Result>> mOnCancelled;
+    private MutableLiveData<LiveDataEvent<TaskResult<Result>>> mOnCancelled;
     @Nullable
-    private MutableLiveData<ProgressMessage> mOnProgress;
+    private MutableLiveData<LiveDataEvent<TaskProgress>> mOnProgress;
 
     /**
      * Constructor.
@@ -51,8 +51,8 @@ public class TaskListenerToLiveData<Result>
      * @param onFailure  observable
      */
     public TaskListenerToLiveData(
-            @NonNull final MutableLiveData<FinishedMessage<Result>> onFinished,
-            @NonNull final MutableLiveData<FinishedMessage<Exception>> onFailure) {
+            @NonNull final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onFinished,
+            @NonNull final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> onFailure) {
         mOnFinished = onFinished;
         mOnFailure = onFailure;
     }
@@ -66,7 +66,7 @@ public class TaskListenerToLiveData<Result>
      */
     @NonNull
     public TaskListenerToLiveData<Result> setOnCancelled(
-            @Nullable final MutableLiveData<FinishedMessage<Result>> onCancelled) {
+            @Nullable final MutableLiveData<LiveDataEvent<TaskResult<Result>>> onCancelled) {
         mOnCancelled = onCancelled;
         return this;
     }
@@ -80,28 +80,28 @@ public class TaskListenerToLiveData<Result>
      */
     @NonNull
     public TaskListenerToLiveData<Result> setOnProgress(
-            @Nullable final MutableLiveData<ProgressMessage> onProgress) {
+            @Nullable final MutableLiveData<LiveDataEvent<TaskProgress>> onProgress) {
         mOnProgress = onProgress;
         return this;
     }
 
-    public void onFinished(@NonNull final FinishedMessage<Result> message) {
-        mOnFinished.setValue(message);
+    public void onFinished(@NonNull final TaskResult<Result> message) {
+        mOnFinished.setValue(new LiveDataEvent<>(message));
     }
 
-    public void onFailure(@NonNull final FinishedMessage<Exception> message) {
-        mOnFailure.setValue(message);
+    public void onFailure(@NonNull final TaskResult<Exception> message) {
+        mOnFailure.setValue(new LiveDataEvent<>(message));
     }
 
-    public void onCancelled(@NonNull final FinishedMessage<Result> message) {
+    public void onCancelled(@NonNull final TaskResult<Result> message) {
         if (mOnCancelled != null) {
-            mOnCancelled.setValue(message);
+            mOnCancelled.setValue(new LiveDataEvent<>(message));
         }
     }
 
-    public void onProgress(@NonNull final ProgressMessage message) {
+    public void onProgress(@NonNull final TaskProgress message) {
         if (mOnProgress != null) {
-            mOnProgress.setValue(message);
+            mOnProgress.setValue(new LiveDataEvent<>(message));
         }
     }
 }

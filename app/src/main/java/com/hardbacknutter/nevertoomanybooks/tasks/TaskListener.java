@@ -44,28 +44,28 @@ public interface TaskListener<Result> {
      *
      * @param message result of the task
      */
-    void onFinished(@NonNull FinishedMessage<Result> message);
+    void onFinished(@NonNull TaskResult<Result> message);
 
     /**
      * Called when a task was cancelled.
      *
      * @param message (partial) result of the task
      */
-    void onCancelled(@NonNull FinishedMessage<Result> message);
+    void onCancelled(@NonNull TaskResult<Result> message);
 
     /**
      * Called when a task failed.
      *
      * @param message The result is the Exception.
      */
-    void onFailure(@NonNull FinishedMessage<Exception> message);
+    void onFailure(@NonNull TaskResult<Exception> message);
 
     /**
      * Progress messages.
      *
      * @param message with updates
      */
-    default void onProgress(@NonNull final ProgressMessage message) {
+    default void onProgress(@NonNull final TaskProgress message) {
         // ignore by default
     }
 }

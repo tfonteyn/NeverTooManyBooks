@@ -55,8 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 
 public class BooksOnBookshelfViewModel
@@ -109,22 +110,22 @@ public class BooksOnBookshelfViewModel
     private AmazonHandler mAmazonHandler;
 
     @NonNull
-    public LiveData<ProgressMessage> onProgress() {
+    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mBoBTask.onProgressUpdate();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<BoBTask.Outcome>> onCancelled() {
+    public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onCancelled() {
         return mBoBTask.onCancelled();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
         return mBoBTask.onFailure();
     }
 
     @NonNull
-    public LiveData<FinishedMessage<BoBTask.Outcome>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<BoBTask.Outcome>>> onFinished() {
         return mBoBTask.onFinished();
     }
 
@@ -723,7 +724,7 @@ public class BooksOnBookshelfViewModel
         return mBoBTask.isRunning();
     }
 
-    void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+    void onBuildFinished(@NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         //we already checked, don't check if (message.isNewEvent())
 
         // the new build is completely done. We can safely discard the previous one.
@@ -731,7 +732,7 @@ public class BooksOnBookshelfViewModel
             mBooklist.close();
         }
 
-        mBooklist = message.requireResult().getList();
+        mBooklist = message.getData().requireResult().getList();
 
         // Save a flag to say list was loaded at least once successfully
         mListHasBeenLoaded = true;

@@ -35,8 +35,9 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriterTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 @SuppressWarnings("WeakerAccess")
 public class ExportViewModel
@@ -114,22 +115,22 @@ public class ExportViewModel
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mWriterTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ExportResults>> onExportCancelled() {
+    LiveData<LiveDataEvent<TaskResult<ExportResults>>> onExportCancelled() {
         return mWriterTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onExportFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onExportFailure() {
         return mWriterTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<ExportResults>> onExportFinished() {
+    LiveData<LiveDataEvent<TaskResult<ExportResults>>> onExportFinished() {
         return mWriterTask.onFinished();
     }
 

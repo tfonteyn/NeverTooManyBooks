@@ -81,7 +81,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsFragment;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookDetailsViewModel;
 import com.hardbacknutter.nevertoomanybooks.bookedit.EditBookExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.BoBTask;
 import com.hardbacknutter.nevertoomanybooks.booklist.BookChangedListener;
@@ -123,7 +122,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -1542,7 +1542,8 @@ public class BooksOnBookshelf
      *
      * @param message from the task; contains the (optional) target rows.
      */
-    private void onBuildFinished(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+    private void onBuildFinished(
+            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
@@ -1551,7 +1552,7 @@ public class BooksOnBookshelf
 
             mVm.onBuildFinished(message);
 
-            displayList(message.requireResult().getTargetNodes());
+            displayList(message.getData().requireResult().getTargetNodes());
         }
     }
 
@@ -1560,7 +1561,8 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    private void onBuildCancelled(@NonNull final FinishedMessage<BoBTask.Outcome> message) {
+    private void onBuildCancelled(
+            @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             mVm.onBuildCancelled();
@@ -1578,7 +1580,7 @@ public class BooksOnBookshelf
      *
      * @param message from the task
      */
-    private void onBuildFailed(@NonNull final FinishedMessage<Exception> message) {
+    private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         mVb.progressCircle.hide();
         if (message.isNewEvent()) {
             mVm.onBuildFailed();
@@ -1896,7 +1898,7 @@ public class BooksOnBookshelf
     private void openEmbeddedBookDetails(final long bookId) {
         final ShowBookDetailsFragment fragment = new ShowBookDetailsFragment();
         final Bundle args = new Bundle();
-        args.putBoolean(ShowBookDetailsViewModel.BKEY_EMBEDDED, true);
+        args.putBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, true);
         args.putLong(DBKey.FK_BOOK, bookId);
         args.putString(ListStyle.BKEY_STYLE_UUID, mVm.getCurrentStyle(this).getUuid());
         fragment.setArguments(args);

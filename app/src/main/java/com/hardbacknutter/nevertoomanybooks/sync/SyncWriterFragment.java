@@ -48,9 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 public class SyncWriterFragment
@@ -182,7 +183,8 @@ public class SyncWriterFragment
     }
 
 
-    private void onExportCancelled(@NonNull final FinishedMessage<SyncWriterResults> message) {
+    private void onExportCancelled(
+            @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -193,11 +195,11 @@ public class SyncWriterFragment
         }
     }
 
-    private void onExportFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.requireResult();
+            final Exception e = message.getData().requireResult();
 
             @StringRes
             final int title = R.string.error_export_failed;
@@ -223,11 +225,12 @@ public class SyncWriterFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final FinishedMessage<SyncWriterResults> message) {
+    private void onExportFinished(
+            @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final SyncWriterResults results = message.requireResult();
+            final SyncWriterResults results = message.getData().requireResult();
 
             final List<String> items = extractExportedItems(results);
             if (items.isEmpty()) {
@@ -275,17 +278,17 @@ public class SyncWriterFragment
         return items;
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

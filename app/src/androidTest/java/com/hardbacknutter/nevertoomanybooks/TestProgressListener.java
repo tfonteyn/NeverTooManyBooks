@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 
 public class TestProgressListener
         implements ProgressListener {
@@ -54,7 +54,7 @@ public class TestProgressListener
     }
 
     @Override
-    public void publishProgress(@NonNull final ProgressMessage message) {
+    public void publishProgress(@NonNull final TaskProgress message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG  /* always */) {
             Log.d(mTag + "|publishProgress", "message=" + message);
@@ -68,7 +68,7 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        Log.d(mTag + "|setProgressIsIndeterminate", "" + indeterminate);
+        Log.d(mTag + "|setProgressIsIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class TestProgressListener
 
     @Override
     public void setMaxPos(final int maxPosition) {
-        Log.d(mTag + "|setProgressMaxPos", "" + maxPosition);
+        Log.d(mTag + "|setProgressMaxPos", String.valueOf(maxPosition));
         mProgressMaxPos = maxPosition;
     }
 }

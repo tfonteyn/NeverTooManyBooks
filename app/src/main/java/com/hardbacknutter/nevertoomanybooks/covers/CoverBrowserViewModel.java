@@ -44,8 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CoverBrowserViewModel
         extends ViewModel {
@@ -91,7 +92,7 @@ public class CoverBrowserViewModel
     /** FetchImageTask listener. */
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<>() {
         @Override
-        public void onFinished(@NonNull final FinishedMessage<ImageFileInfo> message) {
+        public void onFinished(@NonNull final TaskResult<ImageFileInfo> message) {
             //TaskListener, don't check if (message.isNewEvent())
             final ImageFileInfo result = message.getResult();
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
@@ -104,7 +105,7 @@ public class CoverBrowserViewModel
         }
 
         @Override
-        public void onCancelled(@NonNull final FinishedMessage<ImageFileInfo> message) {
+        public void onCancelled(@NonNull final TaskResult<ImageFileInfo> message) {
             //TaskListener, don't check if (message.isNewEvent())
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
@@ -116,7 +117,7 @@ public class CoverBrowserViewModel
         }
 
         @Override
-        public void onFailure(@NonNull final FinishedMessage<Exception> message) {
+        public void onFailure(@NonNull final TaskResult<Exception> message) {
             //TaskListener, don't check if (message.isNewEvent())
             if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
@@ -357,17 +358,17 @@ public class CoverBrowserViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<Collection<String>>> onSearchEditionsTaskFinished() {
+    LiveData<LiveDataEvent<TaskResult<Collection<String>>>> onSearchEditionsTaskFinished() {
         return mSearchEditionsTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onSearchEditionsTaskFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onSearchEditionsTaskFailure() {
         return mSearchEditionsTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Collection<String>>> onSearchEditionsTaskCancelled() {
+    LiveData<LiveDataEvent<TaskResult<Collection<String>>>> onSearchEditionsTaskCancelled() {
         return mSearchEditionsTask.onCancelled();
     }
 

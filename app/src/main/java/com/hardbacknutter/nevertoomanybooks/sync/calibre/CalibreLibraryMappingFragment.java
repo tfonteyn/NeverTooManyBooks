@@ -45,7 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -129,9 +130,10 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void onMetaDataRead(@NonNull final FinishedMessage<SyncReaderMetaData> message) {
+    private void onMetaDataRead(
+            @NonNull final LiveDataEvent<TaskResult<SyncReaderMetaData>> message) {
         if (message.isNewEvent()) {
-            mVm.setMetaData(message.requireResult());
+            mVm.setMetaData(message.getData().requireResult());
             mLibraryArrayAdapter.notifyDataSetChanged();
 
             onLibrarySelected(0);
@@ -179,9 +181,9 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         if (message.isNewEvent()) {
-            final Exception e = message.getResult();
+            final Exception e = message.getData().getResult();
 
             final Context context = getContext();
 

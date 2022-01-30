@@ -56,9 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -228,9 +229,10 @@ public class SyncReaderFragment
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void onMetaDataRead(@NonNull final FinishedMessage<SyncReaderMetaData> message) {
+    private void onMetaDataRead(
+            @NonNull final LiveDataEvent<TaskResult<SyncReaderMetaData>> message) {
         if (message.isNewEvent()) {
-            mVm.setMetaData(message.getResult());
+            mVm.setMetaData(message.getData().getResult());
             showAvailableInfo();
         }
     }
@@ -320,11 +322,11 @@ public class SyncReaderFragment
         mVb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));
     }
 
-    private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onImportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.requireResult();
+            final Exception e = message.getData().requireResult();
 
             final Context context = getContext();
             //noinspection ConstantConditions
@@ -342,11 +344,12 @@ public class SyncReaderFragment
         }
     }
 
-    private void onImportCancelled(@NonNull final FinishedMessage<ReaderResults> message) {
+    private void onImportCancelled(
+            @NonNull final LiveDataEvent<TaskResult<ReaderResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final ReaderResults result = message.getResult();
+            final ReaderResults result = message.getData().getResult();
             if (result != null) {
                 onImportFinished(R.string.progress_end_import_partially_complete, result);
             } else {
@@ -364,11 +367,12 @@ public class SyncReaderFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final FinishedMessage<ReaderResults> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<ReaderResults>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            onImportFinished(R.string.progress_end_import_complete, message.requireResult());
+            onImportFinished(R.string.progress_end_import_complete,
+                             message.getData().requireResult());
         }
     }
 
@@ -426,17 +430,17 @@ public class SyncReaderFragment
                     .collect(Collectors.joining("\n"));
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message);
+            mProgressDelegate.onProgress(message.getData());
         }
     }
 

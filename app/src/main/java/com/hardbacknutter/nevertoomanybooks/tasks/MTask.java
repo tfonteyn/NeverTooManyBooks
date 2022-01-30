@@ -33,13 +33,13 @@ import androidx.lifecycle.MutableLiveData;
 public abstract class MTask<Result>
         extends TaskBase<Result> {
 
-    private final MutableLiveData<FinishedMessage<Result>> mFinishedObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> mFinishedObservable =
             new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Result>> mCancelObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Result>>> mCancelObservable =
             new MutableLiveData<>();
-    private final MutableLiveData<FinishedMessage<Exception>> mFailureObservable =
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailureObservable =
             new MutableLiveData<>();
-    private final MutableLiveData<ProgressMessage> mProgressObservable =
+    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgressObservable =
             new MutableLiveData<>();
 
     /**
@@ -60,7 +60,7 @@ public abstract class MTask<Result>
      * @return the {@link Result} which can be considered to be complete and correct.
      */
     @NonNull
-    public LiveData<FinishedMessage<Result>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<Result>>> onFinished() {
         return mFinishedObservable;
     }
 
@@ -71,8 +71,8 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    protected void setFinished(@NonNull final FinishedMessage<Result> message) {
-        mFinishedObservable.postValue(message);
+    protected void setFinished(@NonNull final TaskResult<Result> message) {
+        mFinishedObservable.postValue(new LiveDataEvent<>(message));
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class MTask<Result>
      * complete/correct (if at all) this result is.
      */
     @NonNull
-    public LiveData<FinishedMessage<Result>> onCancelled() {
+    public LiveData<LiveDataEvent<TaskResult<Result>>> onCancelled() {
         return mCancelObservable;
     }
 
@@ -93,8 +93,8 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    protected void setCancelled(@NonNull final FinishedMessage<Result> message) {
-        mCancelObservable.postValue(message);
+    protected void setCancelled(@NonNull final TaskResult<Result> message) {
+        mCancelObservable.postValue(new LiveDataEvent<>(message));
     }
 
     /**
@@ -103,7 +103,7 @@ public abstract class MTask<Result>
      * @return the result is the Exception
      */
     @NonNull
-    public LiveData<FinishedMessage<Exception>> onFailure() {
+    public LiveData<LiveDataEvent<TaskResult<Exception>>> onFailure() {
         return mFailureObservable;
     }
 
@@ -113,16 +113,16 @@ public abstract class MTask<Result>
     @Override
     @WorkerThread
     protected void setFailure(@NonNull final Exception e) {
-        mFailureObservable.postValue(new FinishedMessage<>(getTaskId(), e));
+        mFailureObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
     }
 
     /**
      * Observable to receive progress.
      *
-     * @return a {@link ProgressMessage} with the progress counter, a text message, ...
+     * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<ProgressMessage> onProgressUpdate() {
+    public LiveData<LiveDataEvent<TaskProgress>> onProgressUpdate() {
         return mProgressObservable;
     }
 
@@ -131,7 +131,7 @@ public abstract class MTask<Result>
      */
     @Override
     @WorkerThread
-    public void publishProgress(@NonNull final ProgressMessage message) {
-        mProgressObservable.postValue(message);
+    public void publishProgress(@NonNull final TaskProgress message) {
+        mProgressObservable.postValue(new LiveDataEvent<>(message));
     }
 }

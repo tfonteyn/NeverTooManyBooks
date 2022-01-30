@@ -200,7 +200,7 @@ public class CoverHandler {
             }
             hideProgress();
             if (message.isNewEvent()) {
-                onAfterTransform(message.requireResult());
+                onAfterTransform(message.getData().requireResult());
             }
         });
 

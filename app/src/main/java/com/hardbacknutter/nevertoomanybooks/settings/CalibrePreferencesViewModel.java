@@ -32,9 +32,10 @@ import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CalibrePreferencesViewModel
         extends ViewModel {
@@ -48,17 +49,17 @@ public class CalibrePreferencesViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<Boolean>> onConnectionSuccessful() {
+    LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionSuccessful() {
         return mValidateConnectionTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onConnectionFailed() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onConnectionFailed() {
         return mValidateConnectionTask.onFailure();
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgressUpdate() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgressUpdate() {
         return mValidateConnectionTask.onProgressUpdate();
     }
 

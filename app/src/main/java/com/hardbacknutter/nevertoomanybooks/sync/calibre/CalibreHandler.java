@@ -55,10 +55,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
@@ -282,18 +282,18 @@ public class CalibreHandler {
                 intent, context.getString(R.string.whichViewApplication)));
     }
 
-    private void onFinished(@NonNull final FinishedMessage<Uri> message) {
+    private void onFinished(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
             Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
                     .setAction(R.string.lbl_read,
-                               v -> openBookUri(v.getContext(), message.requireResult()))
+                               v -> openBookUri(v.getContext(), message.getData().requireResult()))
                     .show();
         }
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent message) {
+    private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -301,11 +301,11 @@ public class CalibreHandler {
         }
     }
 
-    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getResult();
+            final Exception e = message.getData().getResult();
 
             final Context context = mView.getContext();
             final String msg = ExMsg
@@ -322,7 +322,7 @@ public class CalibreHandler {
         return this;
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         if (message.isNewEvent()) {
             if (mProgressDialogView != null) {
                 if (mProgressDelegate == null) {
@@ -330,10 +330,10 @@ public class CalibreHandler {
                             .setTitle(R.string.progress_msg_downloading)
                             .setPreventSleep(true)
                             .setIndeterminate(true)
-                            .setOnCancelListener(v -> mVm.cancelTask(message.taskId))
+                            .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
                             .show(mWindow);
                 }
-                mProgressDelegate.onProgress(message);
+                mProgressDelegate.onProgress(message.getData());
             }
         }
     }

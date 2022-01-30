@@ -28,9 +28,10 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.StorageMoverTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 /**
  * Shared on the Activity level as it's needed by more than 1 Fragment.
@@ -67,22 +68,22 @@ public class SettingsViewModel
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgress() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mStorageMoverTask.onProgressUpdate();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Integer>> onMoveCancelled() {
+    LiveData<LiveDataEvent<TaskResult<Integer>>> onMoveCancelled() {
         return mStorageMoverTask.onCancelled();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onMoveFailure() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onMoveFailure() {
         return mStorageMoverTask.onFailure();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Integer>> onMoveFinished() {
+    LiveData<LiveDataEvent<TaskResult<Integer>>> onMoveFinished() {
         return mStorageMoverTask.onFinished();
     }
 

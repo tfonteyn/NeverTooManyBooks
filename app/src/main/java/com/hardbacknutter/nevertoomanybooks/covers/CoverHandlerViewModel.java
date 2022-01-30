@@ -23,7 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CoverHandlerViewModel
         extends ViewModel {
@@ -34,7 +35,7 @@ public class CoverHandlerViewModel
     private final TransFormTask mTransFormTask = new TransFormTask();
 
     @NonNull
-    public LiveData<FinishedMessage<TransFormTask.TransformedData>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>> onFinished() {
         return mTransFormTask.onFinished();
     }
 

@@ -33,9 +33,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 public class StripInfoBePreferencesViewModel
@@ -50,17 +51,17 @@ public class StripInfoBePreferencesViewModel
     }
 
     @NonNull
-    LiveData<FinishedMessage<Boolean>> onConnectionSuccessful() {
+    LiveData<LiveDataEvent<TaskResult<Boolean>>> onConnectionSuccessful() {
         return mValidateConnectionTask.onFinished();
     }
 
     @NonNull
-    LiveData<FinishedMessage<Exception>> onConnectionFailed() {
+    LiveData<LiveDataEvent<TaskResult<Exception>>> onConnectionFailed() {
         return mValidateConnectionTask.onFailure();
     }
 
     @NonNull
-    LiveData<ProgressMessage> onProgressUpdate() {
+    LiveData<LiveDataEvent<TaskProgress>> onProgressUpdate() {
         return mValidateConnectionTask.onProgressUpdate();
     }
 

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 /**
@@ -29,21 +30,16 @@ import androidx.lifecycle.LiveData;
  * <p>
  * Modified from the article: the client must call {@link #isNewEvent()},
  * so we can pass {@code null} as valid data.
- * <p>
- * Example implementation:
- * <pre>
- *     {@code
- *          private boolean mHasBeenHandled;
- *
- *          public boolean isNewEvent() {
- *              boolean isNew = !mHasBeenHandled;
- *              mHasBeenHandled = true;
- *              return isNew;
- *          }
- *     }
- * </pre>
  */
-public interface LiveDataEvent {
+public class LiveDataEvent<T> {
+
+    @NonNull
+    private final T mData;
+    private boolean mHasBeenHandled;
+
+    public LiveDataEvent(@NonNull final T data) {
+        mData = data;
+    }
 
     /**
      * Check if the data needs handling, or can be ignored.
@@ -51,5 +47,28 @@ public interface LiveDataEvent {
      * @return {@code true} if this is a new event that needs handling.
      * {@code false} if the client can choose not to handle it.
      */
-    boolean isNewEvent();
+    public boolean isNewEvent() {
+        final boolean isNew = !mHasBeenHandled;
+        mHasBeenHandled = true;
+        return isNew;
+    }
+
+    /**
+     * Get the payload.
+     *
+     * @return data
+     */
+    @NonNull
+    public T getData() {
+        return mData;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "LiveDataEvent{" +
+               "mHasBeenHandled=" + mHasBeenHandled +
+               ", mData=" + mData +
+               '}';
+    }
 }

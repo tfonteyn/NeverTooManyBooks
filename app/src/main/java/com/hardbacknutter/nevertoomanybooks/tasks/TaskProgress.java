@@ -23,10 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Value class holding progress data.
+ * Value class holding Task progress data.
  */
-public class ProgressMessage
-        implements LiveDataEvent {
+public class TaskProgress {
 
     public final int taskId;
 
@@ -50,14 +49,11 @@ public class ProgressMessage
     @Nullable
     public final Boolean indeterminate;
 
-    /** {@link LiveDataEvent}. */
-    private boolean mHasBeenHandled;
-
-    public ProgressMessage(final int taskId,
-                           @Nullable final String text,
-                           final int position,
-                           final int maxPosition,
-                           @Nullable final Boolean indeterminate) {
+    public TaskProgress(final int taskId,
+                        @Nullable final String text,
+                        final int position,
+                        final int maxPosition,
+                        @Nullable final Boolean indeterminate) {
         this.taskId = taskId;
         this.text = text;
 
@@ -66,8 +62,8 @@ public class ProgressMessage
         this.position = position;
     }
 
-    public ProgressMessage(final int taskId,
-                           @Nullable final String text) {
+    public TaskProgress(final int taskId,
+                        @Nullable final String text) {
         this.taskId = taskId;
         this.text = text;
 
@@ -77,18 +73,10 @@ public class ProgressMessage
     }
 
     @Override
-    public boolean isNewEvent() {
-        final boolean isNew = !mHasBeenHandled;
-        mHasBeenHandled = true;
-        return isNew;
-    }
-
-    @Override
     @NonNull
     public String toString() {
-        return "ProgressMessage{"
-               + "mHasBeenHandled=" + mHasBeenHandled
-               + ", taskId=" + taskId
+        return "TaskProgress{"
+               + "taskId=" + taskId
                + ", indeterminate=" + indeterminate
                + ", maxPosition=" + maxPosition
                + ", position=" + position
