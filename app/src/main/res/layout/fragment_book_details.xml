@@ -21,8 +21,8 @@
 
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_scroller"
     style="@style/TopNestedScroller"
     tools:viewBindingIgnore="true"
@@ -166,7 +166,10 @@
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
-            <include layout="@layout/fragment_book_details_merge_publication_section" />
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_section"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.Barrier

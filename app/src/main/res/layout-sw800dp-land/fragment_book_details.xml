@@ -171,7 +171,10 @@
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
-            <include layout="@layout/fragment_book_details_merge_publication_section" />
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_section"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

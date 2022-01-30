@@ -163,7 +163,10 @@
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
-            <include layout="@layout/fragment_book_details_merge_publication_section" />
+            <include
+                android:id="@+id/publication_content"
+                layout="@layout/fragment_book_details_merge_publication_section"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -215,12 +218,20 @@
             <include layout="@layout/fragment_book_details_merge_personal_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_bottom_pub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="barrier_covers_bottom,publication_section"
+            />
+
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom_pub"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />
@@ -233,8 +244,10 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/personal_data_section"
+            app:layout_constraintVertical_bias="0.0"
             tools:layout="@layout/fragment_toc"
             tools:visibility="visible"
             />
