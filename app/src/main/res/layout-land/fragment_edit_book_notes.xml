@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- TODO: this is not the cleanest layout
+    It's more or less ok on a phone but looks ugly on a sw600-land tablet
+    -->
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TopNestedScroller"
+    tools:viewBindingIgnore="true"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/screen_border"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_read"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:text="@string/lbl_read"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:checked="true"
+            />
+
+        <RatingBar
+            android:id="@+id/rating"
+            style="@style/Edit.Rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_read_rating_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="cbx_read,rating,cbx_signed"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_read_start"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_read_start"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_rating_bottom"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/read_start"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/read_start_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
+            app:layout_constraintTop_toTopOf="@id/lbl_read_start"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_read_end"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_read_end"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/read_end"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/read_end_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_read_end"
+            app:layout_constraintEnd_toEndOf="@id/lbl_read_end"
+            app:layout_constraintTop_toTopOf="@id/lbl_read_end"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_date_acquired"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_date_acquired"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_read_end"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/date_acquired"
+                style="@style/TIE.ReadOnly"
+                tools:text="@sample/data.json/date/long"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/date_acquired_clear"
+            style="@style/TIL.EditText.ClearButton"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_date_acquired"
+            app:layout_constraintEnd_toEndOf="@id/lbl_date_acquired"
+            app:layout_constraintTop_toTopOf="@id/lbl_date_acquired"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_paid_currency"
+            style="@style/TIL.AutoCompleteTextView"
+            android:layout_width="wrap_content"
+            android:hint="@string/lbl_currency"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/price_paid_currency"
+                style="@style/EditText.Currency"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                tools:text="EUR"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_paid"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_price_paid"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/price_paid"
+                style="@style/EditText.Price.Paid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="12.99"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_condition"
+            style="@style/TIL.ExposedDropdownMenu"
+            android:hint="@string/lbl_condition"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/barrier_read_rating_bottom"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/condition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@string/lbl_condition_reading_copy"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_condition_cover"
+            style="@style/TIL.ExposedDropdownMenu"
+            android:hint="@string/lbl_dust_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/lbl_condition"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/condition_cover"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@string/lbl_condition_dust_cover_missing_or_bad"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/cbx_signed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:text="@string/lbl_signed"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:checked="true"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_location"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/lbl_condition_cover"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/location"
+                style="@style/autoCompleteTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="2"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_personal_notes"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_personal_notes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/notes"
+                style="@style/notesTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:text="@tools:sample/lorem/random"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

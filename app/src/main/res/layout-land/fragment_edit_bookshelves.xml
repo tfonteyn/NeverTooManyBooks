@@ -28,7 +28,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screen_border"
     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-    app:spanCount="1"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:spanCount="3"
     tools:listitem="@layout/row_edit_bookshelf"
     />
