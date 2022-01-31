@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,20 +29,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
-
-    /** Log tag. */
-    private static final String TAG = "EditBookExternalIdFrag";
 
     public static boolean isShowTab(@NonNull final SharedPreferences global) {
         return global.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
@@ -49,8 +47,8 @@ public class EditBookExternalIdFragment
 
     @NonNull
     @Override
-    public String getFragmentId() {
-        return TAG;
+    public FragmentId getFragmentId() {
+        return FragmentId.ExternalId;
     }
 
     @Override
@@ -62,34 +60,17 @@ public class EditBookExternalIdFragment
     }
 
     @Override
-    protected void onInitFields(@NonNull final Fields fields) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        // These FieldFormatters can be shared between multiple fields.
-        final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
-
-        fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBKey.SID_GOODREADS_BOOK)
-              .setRelatedFields(R.id.lbl_site_goodreads);
-
-        fields.add(R.id.site_isfdb, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBKey.SID_ISFDB)
-              .setRelatedFields(R.id.lbl_site_isfdb);
-
-        fields.add(R.id.site_library_thing, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBKey.SID_LIBRARY_THING)
-              .setRelatedFields(R.id.lbl_site_library_thing);
-
-        fields.add(R.id.site_strip_info_be, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBKey.SID_STRIP_INFO)
-              .setRelatedFields(R.id.lbl_site_strip_info_be);
-
-        fields.add(R.id.site_open_library, new EditTextAccessor<>(),
-                   DBKey.SID_OPEN_LIBRARY)
-              .setRelatedFields(R.id.lbl_site_open_library);
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        mVm.initFields(context, FragmentId.ExternalId, FieldGroup.ExternalId);
     }
 
     @Override
-    void onPopulateViews(@NonNull final Fields fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
@@ -97,6 +78,6 @@ public class EditBookExternalIdFragment
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
         //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, true);
+        fields.forEach(field -> field.setVisibility(getView(), false, true));
     }
 }

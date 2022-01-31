@@ -20,50 +20,29 @@
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.PreferenceManager;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.SqlEncode;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.ExposedDropDownMenuAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookNotesFragment";
-
     @NonNull
     @Override
-    public String getFragmentId() {
-        return TAG;
+    public FragmentId getFragmentId() {
+        return FragmentId.Notes;
     }
 
     @Override
@@ -75,146 +54,21 @@ public class EditBookNotesFragment
     }
 
     @Override
-    protected void onInitFields(@NonNull final Fields fields) {
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         final Context context = getContext();
-
-        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
-
-        // These FieldFormatters can be shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
-
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(true), DBKey.BOOL_READ);
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(true), DBKey.BOOL_SIGNED);
-
-        fields.add(R.id.rating, new RatingBarAccessor(true), DBKey.KEY_RATING);
-
-        fields.add(R.id.notes, new EditTextAccessor<>(), DBKey.KEY_PRIVATE_NOTES)
-              .setRelatedFields(R.id.lbl_notes);
-
-        // MUST be defined before the currency.
-        fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
-                   DBKey.PRICE_PAID);
-        fields.add(R.id.price_paid_currency,
-                   new AutoCompleteTextAccessor(() -> mVm.getAllPricePaidCurrencyCodes()),
-                   DBKey.PRICE_PAID_CURRENCY)
-              .setRelatedFields(R.id.lbl_price_paid,
-                                R.id.lbl_price_paid_currency, R.id.price_paid_currency);
-
         //noinspection ConstantConditions
-        fields.add(R.id.condition,
-                   new ExposedDropDownMenuAccessor(context, R.array.conditions_book, true),
-                   DBKey.KEY_BOOK_CONDITION)
-              .setRelatedFields(R.id.lbl_condition);
-        fields.add(R.id.condition_cover,
-                   new ExposedDropDownMenuAccessor(context, R.array.conditions_dust_cover, true),
-                   DBKey.KEY_BOOK_CONDITION_COVER)
-              .setRelatedFields(R.id.lbl_condition_cover);
-
-        fields.add(R.id.location, new AutoCompleteTextAccessor(() -> mVm.getAllLocations()),
-                   DBKey.KEY_LOCATION)
-              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
-
-        fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
-                   DBKey.DATE_ACQUIRED)
-              .setResetButton(R.id.date_acquired_clear, "")
-              .setTextInputLayout(R.id.lbl_date_acquired);
-
-        fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
-                   DBKey.DATE_READ_START)
-              .setResetButton(R.id.read_start_clear, "")
-              .setTextInputLayout(R.id.lbl_read_start)
-              .setFieldValidator(this::validateReadStartAndEndFields);
-
-        fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
-                   DBKey.DATE_READ_END)
-              .setResetButton(R.id.read_end_clear, "")
-              .setTextInputLayout(R.id.lbl_read_end)
-              .setFieldValidator(this::validateReadStartAndEndFields);
+        mVm.initFields(context, FragmentId.Notes, FieldGroup.Notes);
     }
 
     @Override
-    void onPopulateViews(@NonNull final Fields fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
-        if (book.isNew()) {
-            // new books defaults. Do this here and not in the parent class,
-            // so when the user does not actually display this page, these will not be used.
-            book.putString(DBKey.DATE_ACQUIRED, SqlEncode.date(LocalDateTime.now()));
-
-            if (DBKey.isUsed(global, DBKey.KEY_BOOK_CONDITION)) {
-                book.putInt(DBKey.KEY_BOOK_CONDITION, Book.CONDITION_AS_NEW);
-            }
-        }
 
         super.onPopulateViews(fields, book);
-        // With all Views populated, (re-)add the helpers which rely on fields having valid views
-
-        addReadCheckboxOnClickListener(global);
-
-        addDatePicker(global, R.id.date_acquired, R.string.lbl_date_acquired);
-
-        addDateRangePicker(global, R.string.lbl_read,
-                           R.id.read_start, R.string.lbl_read_start,
-                           R.id.read_end, R.string.lbl_read_end);
-
-        // hide unwanted fields
         //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, false);
-    }
-
-    /**
-     * Set the OnClickListener for the 'read' fields.
-     * <p>
-     * When user checks 'read', set the read-end date to today (unless set before)
-     *
-     * @param global Global preferences
-     */
-    private void addReadCheckboxOnClickListener(@NonNull final SharedPreferences global) {
-        // only bother when it's in use
-        final Field<?, ?> readCbx = getField(R.id.cbx_read);
-        if (readCbx.isUsed(global)) {
-            readCbx.requireView().setOnClickListener(v -> {
-                final Checkable cb = (Checkable) v;
-                if (cb.isChecked()) {
-                    final Field<String, TextView> readEnd = getField(R.id.read_end);
-                    if (readEnd.isEmpty()) {
-                        readEnd.setValue(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        readEnd.onChanged();
-                    }
-                }
-            });
-        }
-    }
-
-    private void validateReadStartAndEndFields(@NonNull final Field<String, TextView> field) {
-        // we ignore the passed field, so we can use this validator for both fields.
-        final Field<String, TextView> startField = getField(R.id.read_start);
-        final Field<String, TextView> endField = getField(R.id.read_end);
-
-        final String start = startField.getValue();
-        if (start == null || start.isEmpty()) {
-            startField.setError(null);
-            endField.setError(null);
-            return;
-        }
-
-        final String end = endField.getValue();
-        if (end == null || end.isEmpty()) {
-            startField.setError(null);
-            endField.setError(null);
-            return;
-        }
-
-        if (start.compareToIgnoreCase(end) > 0) {
-            endField.setError(getString(R.string.vldt_read_start_after_end));
-
-        } else {
-            startField.setError(null);
-            endField.setError(null);
-        }
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 }

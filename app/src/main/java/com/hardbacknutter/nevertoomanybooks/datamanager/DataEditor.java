@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,18 +22,18 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 
 /**
  * Interface supported by an editor object.
  *
- * @param <T> type of DataManager; normally a {@link Book}
+ * @param <T> type of {@link DataManager}
  */
 public interface DataEditor<T extends DataManager> {
 
     /** A non-null replacement for {@link Fragment#getTag()}. */
     @NonNull
-    String getFragmentId();
+    FragmentId getFragmentId();
 
     /** {@link Fragment#isResumed()}. */
     boolean isResumed();
@@ -41,9 +41,9 @@ public interface DataEditor<T extends DataManager> {
     /**
      * Save the contents of all Fields to the {@link DataManager}.
      *
-     * @param dataManager to save the data to
+     * @param target to save the data to
      */
-    void onSaveFields(@NonNull T dataManager);
+    void onSaveFields(@NonNull T target);
 
     /**
      * Check for unfinished user edits.

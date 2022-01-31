@@ -60,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
+import com.hardbacknutter.nevertoomanybooks.utils.WindowClass;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class EditBookFragment
@@ -201,26 +203,20 @@ public class EditBookFragment
 
         final Book book = mVm.getBook();
         // list of fragment tags
-        final Collection<String> unfinishedEdits = mVm.getUnfinishedEdits();
+        final Collection<FragmentId> unfinishedEdits = mVm.getUnfinishedEdits();
 
         final List<Fragment> fragments = getParentFragmentManager().getFragments();
         for (int i = 0; i < fragments.size(); i++) {
             final Fragment fragment = fragments.get(i);
-            // Nor really needed to check for being a DataEditor,
+            // Not really needed to check for being a DataEditor,
             // but this leaves the possibility to add non-DataEditor fragments.
             if (fragment instanceof DataEditor) {
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = (DataEditor<Book>) fragment;
 
-//                Log.d(TAG, "checkUnfinishedEdits=" + checkUnfinishedEdits
-//                           + "|tag=" + dataEditor.getFragmentId()
-//                           + "|isResumed=" + dataEditor.isResumed()
-//                           + "|unfinishedEdits= " + unfinishedEdits
-//                                   .contains(dataEditor.getFragmentId()));
-
                 // 1. Fragments which went through onPause (i.e. are NOT resumed)
                 // have saved their *confirmed* data, but might have unfinished edits
-                // as previously logged in mBookViewModel.getUnfinishedEdits()
+                // as previously logged in {@link EditBookViewModel#getUnfinishedEdits()}
                 if (!dataEditor.isResumed()
                     && checkUnfinishedEdits
                     && unfinishedEdits.contains(dataEditor.getFragmentId())) {
@@ -330,9 +326,13 @@ public class EditBookFragment
             mTabs.add(new TabInfo(EditBookPublicationFragment.class,
                                   R.string.lbl_publication_tab,
                                   R.string.lbl_publication));
-            mTabs.add(new TabInfo(EditBookNotesFragment.class,
-                                  R.string.lbl_notes,
-                                  R.string.lbl_personal_notes));
+
+            // on EXPANDED screens the notes fields are incorporated in the publication fragment
+            if (WindowClass.getCurrent(container) != WindowClass.EXPANDED) {
+                mTabs.add(new TabInfo(EditBookNotesFragment.class,
+                                      R.string.lbl_notes,
+                                      R.string.lbl_personal_notes));
+            }
 
             if (DBKey.isUsed(global, DBKey.BITMASK_TOC)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class,

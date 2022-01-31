@@ -63,9 +63,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
-import com.hardbacknutter.nevertoomanybooks.tasks.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -153,8 +156,8 @@ public class EditBookTocFragment
 
     @NonNull
     @Override
-    public String getFragmentId() {
-        return TAG;
+    public FragmentId getFragmentId() {
+        return FragmentId.Toc;
     }
 
     @Override
@@ -181,8 +184,11 @@ public class EditBookTocFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
+
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        mVm.initFields(context, FragmentId.Toc, FieldGroup.Toc);
 
         mEditTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
         mEditTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
@@ -213,13 +219,12 @@ public class EditBookTocFragment
             }
         });
 
-        //noinspection ConstantConditions
         mVb.tocList.addItemDecoration(
-                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+                new DividerItemDecoration(context, RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
 
         mList = mVm.getBook().getToc();
-        mListAdapter = new TocListEditAdapter(getContext(), mList,
+        mListAdapter = new TocListEditAdapter(context, mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mVb.tocList.setAdapter(mListAdapter);
@@ -245,7 +250,7 @@ public class EditBookTocFragment
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
         final Resources res = getResources();
-        final Menu menu = ExtPopupMenu.createMenu(getContext());
+        final Menu menu = ExtPopupMenu.createMenu(context);
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_baseline_edit_24);
@@ -253,7 +258,7 @@ public class EditBookTocFragment
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
 
-        mContextMenu = new ExtPopupMenu(getContext(), menu, this::onContextItemSelected);
+        mContextMenu = new ExtPopupMenu(context, menu, this::onContextItemSelected);
 
         // ready for user input
         if (mVb.author.getVisibility() == View.VISIBLE) {
@@ -283,20 +288,14 @@ public class EditBookTocFragment
     }
 
     @Override
-    void onInitFields(@NonNull final Fields fields) {
-        // no fields as such in this fragment
-    }
-
-    @Override
-    void onPopulateViews(@NonNull final Fields fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
         populateTocBits(book.getContentType());
 
-        // hide unwanted fields
         //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, false);
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
     private void populateTocBits(@NonNull final Book.ContentType contentType) {
@@ -526,11 +525,11 @@ public class EditBookTocFragment
     /**
      * We got one or more editions from ISFDB.
      */
-    private void onIsfdbEditions(@NonNull final FinishedMessage<List<Edition>> message) {
+    private void onIsfdbEditions(@NonNull final LiveDataEvent<TaskResult<List<Edition>>> message) {
         if (message.isNewEvent()) {
             // Stores the urls locally as the user might want to try the next in line
             mIsfdbEditions.clear();
-            final List<Edition> result = message.getResult();
+            final List<Edition> result = message.getData().getResult();
             if (result != null) {
                 mIsfdbEditions.addAll(result);
             }
@@ -538,9 +537,9 @@ public class EditBookTocFragment
         }
     }
 
-    private void onIsfdbBook(@NonNull final FinishedMessage<Bundle> message) {
+    private void onIsfdbBook(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         if (message.isNewEvent()) {
-            final Bundle result = message.getResult();
+            final Bundle result = message.getData().getResult();
             if (result == null) {
                 Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show();

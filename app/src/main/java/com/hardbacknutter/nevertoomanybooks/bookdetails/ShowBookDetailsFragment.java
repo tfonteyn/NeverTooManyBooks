@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditLenderDialogFra
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
@@ -171,17 +172,17 @@ public class ShowBookDetailsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Context context = getContext();
+        //noinspection ConstantConditions
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+
         // update all Fields with their current View instances
-        mAVm.getFields().setParentView(view);
+        mAVm.getFields().forEach(field -> field.setParentView(global, view));
 
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
-        final Context context = getContext();
-
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         createCoverDelegates(global);
 
@@ -340,7 +341,7 @@ public class ShowBookDetailsFragment
         } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
             // toggle 'read' status of the book
             final boolean read = mVm.toggleRead();
-            mAVm.getField(R.id.read).setValue(read);
+            mAVm.requireField(R.id.read).setValue(read);
             // Callback - used when we're running inside another component; e.g. the BoB
             if (mBookChangedListener != null) {
                 mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
@@ -464,14 +465,16 @@ public class ShowBookDetailsFragment
             setActivityTitle(book);
         }
 
-        mAVm.getFields().setAll(book);
+        final List<Field<?, ? extends View>> fields = mAVm.getFields();
+
+        Field.load(book, fields);
 
         bindCoverImages();
         bindLoanee(book);
         bindToc(book);
 
         //noinspection ConstantConditions
-        mAVm.getFields().setVisibility(getView(), true, false);
+        fields.forEach(field -> field.setVisibility(getView(), true, false));
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionVisibility(R.id.lbl_publication,
@@ -484,6 +487,7 @@ public class ShowBookDetailsFragment
                              R.id.pages);
 
         // All views should now have proper visibility set, so fix their focus order.
+        //noinspection ConstantConditions
         ViewFocusOrder.fix(getView());
     }
 

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
@@ -36,17 +37,70 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
 /**
  * Field definition contains all information and methods necessary
  * to manage display and extraction of data in a view.
+ * <ul>Features provides are:
+ *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
+ *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
+ *          will work as expected as will setting the value of an ExposedDropDownMenu).
+ *          As new view types are added, it will be necessary to add new {@link FieldViewAccessor}
+ *          implementations.
+ *          In some specific circumstances, an accessor can be defined manually.</li>
+ *      <li> Custom data accessors and formatters to provide application-specific data rules.</li>
+ *      <li> simplified extraction of data.</li>
+ * </ul>
+ * <p>
+ * Accessors
+ * <p>
+ * A {@link FieldViewAccessor} handles interactions between the value and the View
+ * (with an optional {@link FieldFormatter}).
+ * <p>
+ * Formatters
+ * <p>
+ * A Formatter can be set on any class extending {@link TextAccessor},
+ * i.e. for TextView and EditText elements.
+ * Formatters should implement {@link FieldFormatter#format(Context, Object)} where the Object
+ * is transformed to a String - DO NOT CHANGE class variables while doing this.
+ * In contrast {@link FieldFormatter#apply} CAN change class variables
+ * but should leave the real formatter to the format method.
+ * <p>
+ * This way, other code can access {@link FieldFormatter#format(Context, Object)}
+ * without side-effects.
+ * <p>
+ * <ul>Data flows to and from a view as follows:
+ *      <li>IN  (no formatter ):<br>
+ *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setValue(Object)} ->
+ *          populates the View.</li>
+ *      <li>IN  (with formatter):<br>
+ *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setValue(Object)} ->
+ *          {@link FieldFormatter#apply} ->
+ *          populates the View.</li>
+ *       <li>OUT (no formatter ):
+ *          View ->
+ *          {@link FieldViewAccessor#getValue()} ->
+ *          {@link FieldViewAccessor#getValue(DataManager)}</li>
+ *      <li>OUT (with formatter):
+ *          View ->
+ *          {@link EditFieldFormatter#extract} ->
+ *          {@link FieldViewAccessor#getValue()} ->
+ *          {@link FieldViewAccessor#getValue(DataManager)}</li>
+ * </ul>
  *
  * @param <T> type of Field value.
  * @param <V> type of View for this field
@@ -61,6 +115,7 @@ public class Field<T, V extends View> {
     @NonNull
     private final FieldViewAccessor<T, V> mFieldViewAccessor;
 
+    private final FragmentId mFragmentId;
     /** Field ID. */
     @IdRes
     private final int mId;
@@ -94,7 +149,7 @@ public class Field<T, V extends View> {
     @Nullable
     private FieldValidator<T, V> mValidator;
     @Nullable
-    private WeakReference<Fields.AfterChangeListener> mAfterFieldChangeListener;
+    private WeakReference<AfterFieldChangeListener> mAfterFieldChangeListener;
     @IdRes
     private int mErrorViewId;
     @IdRes
@@ -110,17 +165,39 @@ public class Field<T, V extends View> {
     /**
      * Constructor.
      *
+     * @param id       for this field.
+     * @param accessor to use
+     * @param key      Key used to access a {@link DataManager}
+     *                 Set to {@code ""} to suppress all access.
+     *                 (also used as the preference key to check if this Field is used or not)
+     */
+    public Field(@NonNull final FragmentId fragmentId,
+                 @IdRes final int id,
+                 @NonNull final FieldViewAccessor<T, V> accessor,
+                 @NonNull final String key) {
+        this(fragmentId, id, accessor, key, key);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param id        for this field.
      * @param accessor  to use
      * @param key       Key used to access a {@link DataManager}
      *                  Set to {@code ""} to suppress all access.
      * @param entityKey The preference key to check if this Field is used or not
      */
-    Field(@IdRes final int id,
-          @NonNull final FieldViewAccessor<T, V> accessor,
-          @NonNull final String key,
-          @NonNull final String entityKey) {
+    public Field(@NonNull final FragmentId fragmentId,
+                 @IdRes final int id,
+                 @NonNull final FieldViewAccessor<T, V> accessor,
+                 @NonNull final String key,
+                 @NonNull final String entityKey) {
 
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(key, "key");
+        }
+
+        mFragmentId = fragmentId;
         mId = id;
         mKey = key;
         mIsUsedKey = entityKey;
@@ -129,6 +206,33 @@ public class Field<T, V extends View> {
         mFieldViewAccessor.setField(this);
     }
 
+    /**
+     * Load all fields from the passed {@link DataManager}.
+     * The values will be passed from the DataManager to the individual fields;
+     * then to the view accessor; the optional formatter; and finally into the View.
+     *
+     * @param dataManager {@link DataManager} to load Field objects from.
+     */
+    public static void load(@NonNull final DataManager dataManager,
+                            @NonNull final List<Field<?, ? extends View>> fields) {
+
+        // do NOT call onChanged, as this is the initial load
+        fields.stream()
+              .filter(Field::isAutoPopulated)
+              .forEach(field -> field.setInitialValue(dataManager));
+    }
+
+    /**
+     * Save all fields to the passed {@link DataManager}.
+     *
+     * @param dataManager {@link DataManager} to put Field objects in.
+     */
+    public static void save(@NonNull final List<Field<?, ? extends View>> fields,
+                            @NonNull final DataManager dataManager) {
+        fields.stream()
+              .filter(Field::isAutoPopulated)
+              .forEach(field -> field.getValue(dataManager));
+    }
 
     /**
      * set the field ID's which should follow visibility with this Field.
@@ -216,6 +320,15 @@ public class Field<T, V extends View> {
         return this;
     }
 
+    /**
+     * Get the {@link FragmentId} in which this Field is handled.
+     *
+     * @return id
+     */
+    @NonNull
+    public FragmentId getFragmentId() {
+        return mFragmentId;
+    }
 
     @IdRes
     public int getId() {
@@ -231,8 +344,8 @@ public class Field<T, V extends View> {
      * @param parent of the field View
      */
     @CallSuper
-    void setParentView(@NonNull final SharedPreferences global,
-                       @NonNull final View parent) {
+    public void setParentView(@NonNull final SharedPreferences global,
+                              @NonNull final View parent) {
         mFieldViewAccessor.setView(parent.findViewById(mId));
         if (isUsed(global)) {
             if (mErrorViewId != 0) {
@@ -264,7 +377,7 @@ public class Field<T, V extends View> {
         return Objects.requireNonNull(mFieldViewAccessor.getView());
     }
 
-    void setAfterFieldChangeListener(@Nullable final Fields.AfterChangeListener listener) {
+    public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
         mAfterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
     }
 
@@ -372,18 +485,6 @@ public class Field<T, V extends View> {
     }
 
     /**
-     * Load the field from the passed {@link DataManager}.
-     * <p>
-     * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
-     * in the database.
-     *
-     * @param source DataManager to load the Field objects from
-     */
-    public void setInitialValue(@NonNull final DataManager source) {
-        mFieldViewAccessor.setInitialValue(source);
-    }
-
-    /**
      * Set the value directly. (e.g. upon another field changing... etc...)
      *
      * @param value to set
@@ -393,6 +494,18 @@ public class Field<T, V extends View> {
         if (mValidator != null) {
             mValidator.validate(this);
         }
+    }
+
+    /**
+     * Load the field from the passed {@link DataManager}.
+     * <p>
+     * This is used for the <strong>INITIAL LOAD</strong>, i.e. the value as stored
+     * in the database.
+     *
+     * @param source DataManager to load the Field objects from
+     */
+    public void setInitialValue(@NonNull final DataManager source) {
+        mFieldViewAccessor.setInitialValue(source);
     }
 
     @NonNull
@@ -405,7 +518,7 @@ public class Field<T, V extends View> {
      *
      * @return {@code true} if it can
      */
-    boolean isAutoPopulated() {
+    private boolean isAutoPopulated() {
         return !mKey.isEmpty();
     }
 
@@ -421,12 +534,12 @@ public class Field<T, V extends View> {
     }
 
     /**
-     * Propagate the fact that this field was changed to the {@link Fields.AfterChangeListener}.
+     * Propagate the fact that this field was changed to the {@link AfterFieldChangeListener}.
      */
     @CallSuper
     public void onChanged() {
         if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
-            mAfterFieldChangeListener.get().afterFieldChange(this);
+            mAfterFieldChangeListener.get().onAfterFieldChange(this);
 
         } else {
             if (BuildConfig.DEBUG /* always */) {
@@ -457,5 +570,10 @@ public class Field<T, V extends View> {
                + ", mFieldDataAccessor=" + mFieldViewAccessor
                + ", mValidator=" + mValidator
                + '}';
+    }
+
+    public interface AfterFieldChangeListener {
+
+        void onAfterFieldChange(@NonNull Field<?, ? extends View> field);
     }
 }

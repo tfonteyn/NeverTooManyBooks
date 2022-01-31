@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -43,7 +44,6 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.MenuHelper;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -52,19 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
-import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
+import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class EditBookFieldsFragment
@@ -82,12 +74,13 @@ public class EditBookFieldsFragment
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final ArrayList<Entity> selectedItems) {
-                    final Field<List<Entity>, TextView> field = getField(fieldId);
+                    final Field<List<Entity>, TextView> field = mVm.requireField(fieldId);
                     mVm.getBook().putParcelableArrayList(field.getKey(), selectedItems);
                     field.setValue(selectedItems);
                     field.onChanged();
                 }
             };
+
     /** The scanner. */
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
@@ -95,6 +88,7 @@ public class EditBookFieldsFragment
                     mVm.getBook().putString(DBKey.KEY_ISBN, barCode);
                 }
             });
+
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
@@ -102,6 +96,7 @@ public class EditBookFieldsFragment
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
+
     /** The level of checking the ISBN code. */
     @ISBN.Validity
     private int mIsbnValidityCheck;
@@ -110,8 +105,8 @@ public class EditBookFieldsFragment
 
     @NonNull
     @Override
-    public String getFragmentId() {
-        return TAG;
+    public FragmentId getFragmentId() {
+        return FragmentId.Main;
     }
 
     @Override
@@ -133,26 +128,29 @@ public class EditBookFieldsFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
+        final Context context = getContext();
         //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
+        mVm.initFields(context, FragmentId.Main, FieldGroup.Main);
+
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         createCoverDelegates(global);
 
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         mVm.onAuthorList().observe(getViewLifecycleOwner(),
-                                   authors -> getField(R.id.author).setValue(authors));
+                                   authors -> mVm.requireField(R.id.author)
+                                                 .setValue(authors));
 
         // no listener/callback. We share the book view model in the Activity scope
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .launch(getChildFragmentManager()));
 
-        if (getField(R.id.series_title).isUsed(global)) {
+        if (DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
             mVm.onSeriesList().observe(getViewLifecycleOwner(),
-                                       series -> getField(R.id.series_title).setValue(series));
+                                       series -> mVm.requireField(R.id.series_title)
+                                                    .setValue(series));
 
             // no listener/callback. We share the book view model in the Activity scope
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
@@ -160,16 +158,14 @@ public class EditBookFieldsFragment
         }
 
         // Bookshelves editor (dialog)
-        if (getField(R.id.bookshelves).isUsed(global)) {
-            mVb.bookshelves.setOnClickListener(v -> {
-                final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
-                final ArrayList<Entity> selectedItems = new ArrayList<>(
-                        mVm.getBook().getBookshelves());
+        mVb.bookshelves.setOnClickListener(v -> {
+            final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
+            final ArrayList<Entity> selectedItems = new ArrayList<>(
+                    mVm.getBook().getBookshelves());
 
-                mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
-                                                R.id.bookshelves, allItems, selectedItems);
-            });
-        }
+            mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
+                                            R.id.bookshelves, allItems, selectedItems);
+        });
 
         mIsbnValidityCheck = ISBN.getEditValidityLevel(global);
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
@@ -212,56 +208,7 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    protected void onInitFields(@NonNull final Fields fields) {
-
-        final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
-
-        final Locale userLocale = getResources().getConfiguration().getLocales().get(0);
-
-        fields.add(R.id.author, new TextViewAccessor<>(
-                           new AuthorListFormatter(Author.Details.Short, true, false)),
-                   Book.BKEY_AUTHOR_LIST, DBKey.FK_AUTHOR)
-              .setErrorViewId(R.id.lbl_author)
-              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
-
-        fields.add(R.id.series_title, new TextViewAccessor<>(
-                           new SeriesListFormatter(Series.Details.Short, true, false)),
-                   Book.BKEY_SERIES_LIST, DBKey.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series);
-
-        fields.add(R.id.title, new EditTextAccessor<>(), DBKey.KEY_TITLE)
-              .setErrorViewId(R.id.lbl_title)
-              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
-
-        fields.add(R.id.description, new EditTextAccessor<>(), DBKey.KEY_DESCRIPTION)
-              .setRelatedFields(R.id.lbl_description);
-
-        // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(R.id.isbn, new EditTextAccessor<>(), DBKey.KEY_ISBN)
-              .setRelatedFields(R.id.lbl_isbn);
-
-        fields.add(R.id.language, new AutoCompleteTextAccessor(
-                           () -> mVm.getAllLanguagesCodes(),
-                           new LanguageFormatter(userLocale), true),
-                   DBKey.KEY_LANGUAGE)
-              .setErrorViewId(R.id.lbl_language)
-              .setFieldValidator(field -> field.setErrorIfEmpty(nonBlankRequired));
-
-        fields.add(R.id.genre, new AutoCompleteTextAccessor(() -> mVm.getAllGenres()),
-                   DBKey.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre);
-
-        // Personal fields
-
-        // The Bookshelves are a read-only text field. A click will bring up an editor.
-        // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
-        fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   Book.BKEY_BOOKSHELF_LIST, DBKey.FK_BOOKSHELF)
-              .setRelatedFields(R.id.lbl_bookshelves);
-    }
-
-    @Override
-    void onPopulateViews(@NonNull final Fields fields,
+    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().pruneAuthors(getContext(), true);
@@ -279,9 +226,8 @@ public class EditBookFieldsFragment
             mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
 
-        // hide unwanted and empty fields
         //noinspection ConstantConditions
-        fields.setVisibility(getView(), false, false);
+        fields.forEach(field -> field.setVisibility(getView(), false, false));
     }
 
     @Override
