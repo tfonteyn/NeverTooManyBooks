@@ -37,9 +37,9 @@
     {"name": "Office"}
   ],
   "shelves": [
-    {"name": "Literature"},
-    {"name": "Favourites"},
     {"name": "British writers"},
+    {"name": "Favourites"},
+    {"name": "Literature"},
     {"name": "Top shelf"}
   ],
   "library": [
