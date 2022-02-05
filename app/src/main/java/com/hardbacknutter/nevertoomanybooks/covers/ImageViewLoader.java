@@ -51,27 +51,45 @@ public class ImageViewLoader {
     @NonNull
     private final Executor mExecutor;
 
-    private final int mMaxWidth;
-    private final int mMaxHeight;
+    private final int mWidth;
+    private final int mHeight;
+
+    @NonNull
+    private final ImageView.ScaleType mScaleType;
+
+    private final boolean mEnforceMaxSize;
+
+    @UiThread
+    public ImageViewLoader(@NonNull final Executor executor,
+                           final int width,
+                           final int height) {
+        this(executor, ImageView.ScaleType.FIT_START, width, height, true);
+    }
 
     /**
      * Constructor.
      *
-     * @param executor  to use
-     * @param maxWidth  Maximum desired width of the image
-     * @param maxHeight Maximum desired height of the image
+     * @param executor       to use
+     * @param scaleType      to use for images (ignored for placeholders)
+     * @param width          Desired width of the image
+     * @param height         Desired height of the image
+     * @param enforceMaxSize if {@code true}, then use the desired size as the maximum size
      */
     @UiThread
     public ImageViewLoader(@NonNull final Executor executor,
-                           final int maxWidth,
-                           final int maxHeight) {
+                           @NonNull final ImageView.ScaleType scaleType,
+                           final int width,
+                           final int height,
+                           final boolean enforceMaxSize) {
 
         mHandler = new Handler(Looper.getMainLooper());
 
         mExecutor = executor;
 
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
+        mScaleType = scaleType;
+        mWidth = width;
+        mHeight = height;
+        mEnforceMaxSize = enforceMaxSize;
     }
 
     /**
@@ -84,10 +102,14 @@ public class ImageViewLoader {
     public void placeholder(@NonNull final ImageView imageView,
                             @DrawableRes final int drawable) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-        lp.width = mMaxWidth;
-        lp.height = mMaxHeight;
+        lp.width = mWidth;
+        lp.height = mHeight;
         imageView.setLayoutParams(lp);
 
+        imageView.setPadding(0, 0, 0, 0);
+        imageView.setAdjustViewBounds(true);
+        imageView.setMaxHeight(Integer.MAX_VALUE);
+        imageView.setMaxWidth(Integer.MAX_VALUE);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(drawable);
     }
@@ -103,22 +125,32 @@ public class ImageViewLoader {
     public void fromBitmap(@NonNull final ImageView imageView,
                            @NonNull final Bitmap bitmap) {
 
+        // Modifying the layout parameters is mainly for zooming,
+        // but is sometimes (why?) needed elsewhere.
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         if (bitmap.getWidth() < bitmap.getHeight()) {
             // image is portrait; limit the height
             lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            lp.height = mMaxHeight;
+            lp.height = mHeight;
         } else {
             // image is landscape; limit the width
-            lp.width = mMaxWidth;
+            lp.width = mWidth;
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         imageView.setLayoutParams(lp);
 
         // padding MUST be 0dp to allow scaling ratio to work properly
         imageView.setPadding(0, 0, 0, 0);
+        // essential, so lets not reply on it having been set in xml
         imageView.setAdjustViewBounds(true);
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        if (mEnforceMaxSize) {
+            imageView.setMaxHeight(mHeight);
+            imageView.setMaxWidth(mWidth);
+        } else {
+            imageView.setMaxHeight(Integer.MAX_VALUE);
+            imageView.setMaxWidth(Integer.MAX_VALUE);
+        }
+        imageView.setScaleType(mScaleType);
         imageView.setImageBitmap(bitmap);
     }
 
@@ -143,7 +175,7 @@ public class ImageViewLoader {
             Thread.currentThread().setName(TAG);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             // do the actual background work.
-            final Bitmap bitmap = ImageUtils.decodeFile(file, mMaxWidth, mMaxHeight);
+            final Bitmap bitmap = ImageUtils.decodeFile(file, mWidth, mHeight);
 
             // all done; back to the UI thread.
             mHandler.post(() -> {
