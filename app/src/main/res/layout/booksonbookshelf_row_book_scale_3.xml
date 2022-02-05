@@ -87,6 +87,7 @@
                 android:layout_width="@dimen/cover_scale_3_width"
                 android:layout_height="@dimen/cover_scale_3_height"
                 android:contentDescription="@string/lbl_cover_front"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title"

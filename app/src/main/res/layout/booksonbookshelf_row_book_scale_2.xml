@@ -38,6 +38,7 @@
             android:layout_width="@dimen/cover_scale_2_width"
             android:layout_height="@dimen/cover_scale_2_height"
             android:contentDescription="@string/lbl_cover_front"
+            android:scaleType="fitCenter"
             app:layout_constraintEnd_toStartOf="@id/row"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
