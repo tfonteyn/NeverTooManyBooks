@@ -74,9 +74,6 @@
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/name"
                         style="@style/acPersonalNameTextEntry"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:completionThreshold="2"
                         android:imeOptions="actionNext"
                         tools:ignore="LabelFor"
                         />

@@ -76,9 +76,6 @@
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/series_title"
                         style="@style/acTitleTextEntry"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:completionThreshold="2"
                         android:imeOptions="actionNext"
                         tools:ignore="LabelFor"
                         />

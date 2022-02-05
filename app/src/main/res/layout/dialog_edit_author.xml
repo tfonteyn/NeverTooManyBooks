@@ -69,9 +69,6 @@
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/family_name"
                         style="@style/acPersonalNameTextEntry"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:completionThreshold="2"
                         android:imeOptions="actionNext"
                         tools:ignore="LabelFor"
                         />
@@ -90,9 +87,6 @@
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/given_names"
                         style="@style/acPersonalNameTextEntry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:completionThreshold="2"
                         android:imeOptions="actionDone"
                         tools:ignore="LabelFor"
                         />

@@ -119,8 +119,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/external_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:drawableStart="@drawable/ic_baseline_apps_24"
                 android:enabled="false"
                 android:imeOptions="actionSearch"

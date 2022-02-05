@@ -37,11 +37,9 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
-        <!-- no style used on purpose -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TIE.EditText"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -58,11 +56,9 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
         >
 
-        <!-- no style used on purpose -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TIE.EditText"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -79,11 +75,9 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
 
-        <!-- no style used on purpose -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/series_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TIE.EditText"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -100,11 +94,9 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_series"
         >
 
-        <!-- no style used on purpose -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/publisher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TIE.EditText"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -121,11 +113,9 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
         >
 
-        <!-- no style used on purpose -->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/keywords"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TIE.EditText"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
