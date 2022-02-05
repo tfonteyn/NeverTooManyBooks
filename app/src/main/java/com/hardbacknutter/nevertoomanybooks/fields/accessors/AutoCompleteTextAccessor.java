@@ -34,30 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * The value is the text of the AutoCompleteTextView.
  * <p>
  * A {@code null} value is always handled as {@code ""}.
- *
- * <pre>
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_genre"
- *             style="@style/TIL.AutoCompleteTextView"
- *             android:hint="@string/lbl_genre"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
- *             >
- *
- *             <com.google.android.material.textfield.MaterialAutoCompleteTextView
- *                 android:id="@+id/genre"
- *                 style="@style/autoCompleteTextEntry"
- *                 android:completionThreshold="2"
- *                 android:layout_width="match_parent"
- *                 android:layout_height="wrap_content"
- *                 android:imeOptions="actionNext"
- *                 tools:ignore="LabelFor"
- *                 tools:text="Fiction"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>
- * </pre>
  */
 public class AutoCompleteTextAccessor
         extends BaseEditTextAccessor<String, AutoCompleteTextView> {

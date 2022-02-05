@@ -33,29 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * The actual value is simply stored in a local variable.
  * No attempt to extract is done.
  *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_description"
- *             style="@style/TIL.EditText"
- *             android:hint="@string/lbl_description"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
- *             >
- *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/description"
- *                 style="@style/notesTextEntry"
- *                 android:layout_width="match_parent"
- *                 android:layout_height="wrap_content"
- *                 tools:ignore="Autofill"
- *                 tools:text="@tools:sample/lorem/random"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
- *
  * @param <T> type of Field value.
  */
 public class TextViewAccessor<T>

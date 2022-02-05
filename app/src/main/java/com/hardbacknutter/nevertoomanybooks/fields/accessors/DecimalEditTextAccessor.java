@@ -39,29 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
  * <p>
  * A {@code null} or {@code 0} value is always displayed as an empty {@code String}.
- *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_price_paid"
- *             style="@style/TIL.EditText"
- *             android:hint="@string/lbl_price_paid"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
- *             >
- *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/price_paid"
- *                 style="@style/priceTextEntry"
- *                 android:layout_height="wrap_content"
- *                 android:layout_width="match_parent"
- *                 tools:ignore="Autofill"
- *                 tools:text="12.99"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
  */
 public class DecimalEditTextAccessor
         extends EditTextAccessor<Number> {

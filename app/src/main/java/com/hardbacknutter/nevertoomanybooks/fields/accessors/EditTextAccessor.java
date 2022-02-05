@@ -28,29 +28,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 /**
  * Stores and retrieves data from an EditText.
  *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_title"
- *             style="@style/TIL.EditText"
- *             android:hint="@string/lbl_title"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_author"
- *             >
- *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/title"
- *                 style="@style/titleTextEntry"
- *                 android:layout_width="match_parent"
- *                 android:layout_height="wrap_content"
- *                 tools:ignore="Autofill"
- *                 tools:text="@sample/data.json/book/title"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
- *
  * @param <T> type of Field value.
  */
 public class EditTextAccessor<T>
