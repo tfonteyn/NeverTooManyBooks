@@ -101,7 +101,7 @@ android {
     defaultConfig {
         applicationId "com.hardbacknutter.nevertoomanybooks"
         versionCode 13
-        versionName = "2.9.5"
+        versionName = "2.9.7"
 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.sdkVersion
@@ -222,6 +222,21 @@ android {
         // allow command line builds to complete
         abortOnError false
     }
+
+    // This configuration specifies how an app bundle should be split
+    // in terms of language, density and cpu architecture (abi).
+    // The default values are true. This means a split will be generated.
+    bundle {
+        language {
+            enableSplit = false
+        }
+//        density {
+//            enableSplit = true
+//        }
+//        abi {
+//            enableSplit = true
+//        }
+    }
 }
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
@@ -232,8 +247,6 @@ dependencies {
 
     // https://github.com/google/desugar_jdk_libs
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:${desugar_version}")
-    //
-//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlin_version}")
 
     implementation("androidx.activity:activity:${androidx_activity_version}")
     implementation("androidx.annotation:annotation:${androidx_annotation_version}")
