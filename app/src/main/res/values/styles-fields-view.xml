@@ -94,6 +94,7 @@
     <!-- Lend out to X. -->
     <style name="Field.LendOutToBar">
         <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <!-- https://github.com/material-components/material-components-android/issues/2538 -->
         <item name="android:background">?attr/colorSurfaceInverse</item>
         <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
         <!-- we want it centered, hence use and end-margin equal to the start margin -->
