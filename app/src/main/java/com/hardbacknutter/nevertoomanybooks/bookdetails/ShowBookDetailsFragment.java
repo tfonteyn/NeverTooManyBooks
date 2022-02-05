@@ -476,7 +476,12 @@ public class ShowBookDetailsFragment
         //noinspection ConstantConditions
         fields.forEach(field -> field.setVisibility(getView(), true, false));
 
-        // Hide the Publication section label if none of the publishing fields are shown.
+        // Hide the 'Edition' label if neither edition chips or print-run fields are shown
+        setSectionVisibility(R.id.lbl_edition,
+                             R.id.edition,
+                             R.id.print_run);
+
+        // Hide the 'Publication' label if none of the publishing fields are shown.
         setSectionVisibility(R.id.lbl_publication,
                              R.id.publisher,
                              R.id.date_published,

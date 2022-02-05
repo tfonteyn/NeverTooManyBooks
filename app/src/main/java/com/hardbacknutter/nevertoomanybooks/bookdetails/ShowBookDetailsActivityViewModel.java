@@ -238,15 +238,20 @@ public class ShowBookDetailsActivityViewModel
                                 DBKey.DATE_FIRST_PUBLICATION)
                             .setRelatedFields(R.id.lbl_first_publication));
 
+        mFields.add(new Field<>(FragmentId.Main, R.id.edition,
+                                new BitmaskChipGroupAccessor(Book.Edition::getEditions, false),
+                                DBKey.BITMASK_EDITION)
+                            .setRelatedFields(R.id.lbl_edition));
+
         mFields.add(new Field<>(FragmentId.Main, R.id.print_run,
                                 new TextViewAccessor<>(),
-                                DBKey.KEY_PRINT_RUN)
-                            .setRelatedFields(R.id.lbl_print_run));
+                                DBKey.KEY_PRINT_RUN));
 
         mFields.add(new Field<>(FragmentId.Main, R.id.price_listed,
                                 new TextViewAccessor<>(moneyFormatter),
                                 DBKey.PRICE_LISTED)
                             .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed));
+
 
         // Personal fields
         mFields.add(new Field<>(FragmentId.Main, R.id.bookshelves,
@@ -261,11 +266,6 @@ public class ShowBookDetailsActivityViewModel
                                 new TextViewAccessor<>(dateFormatter),
                                 DBKey.DATE_ACQUIRED)
                             .setRelatedFields(R.id.lbl_date_acquired));
-
-        mFields.add(new Field<>(FragmentId.Main, R.id.edition,
-                                new BitmaskChipGroupAccessor(Book.Edition::getEditions, false),
-                                DBKey.BITMASK_EDITION)
-                            .setRelatedFields(R.id.lbl_edition));
 
         mFields.add(new Field<>(FragmentId.Main, R.id.location,
                                 new TextViewAccessor<>(),
