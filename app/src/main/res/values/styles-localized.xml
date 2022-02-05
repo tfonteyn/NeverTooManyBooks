@@ -27,31 +27,28 @@
     <!-- *************************************************************************************** -->
 
     <!-- Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="titleTextEntry">
+    <style name="titleTextEntry" parent="TIE.EditText">
         <item name="android:inputType">textCapWords</item>
     </style>
+
+    <!-- Personal Notes, Description. -->
+    <style name="notesTextEntry" parent="TIE.EditText">
+        <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
+    </style>
+
+
     <!-- AutoComplete; Titles of Books, Series, Bookshelf, TocEntry's (Anthology titles) , ... -->
-    <style name="acTitleTextEntry">
+    <style name="acTitleTextEntry" parent="TIE.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 
     <!-- AutoComplete; 'human' names. e.g. Author (first/given), Publisher, ... -->
-    <style name="acPersonalNameTextEntry">
+    <style name="acPersonalNameTextEntry" parent="TIE.AutoComplete">
         <item name="android:inputType">textPersonName|textCapWords</item>
     </style>
 
-    <!-- Personal Notes, Description. -->
-    <style name="notesTextEntry">
-        <item name="android:inputType">textLongMessage|textMultiLine|textCapSentences|textAutoCorrect</item>
-    </style>
-
-    <!-- The number of book pages - it's a generic string, not limited to numbers only. -->
-    <style name="pagesTextEntry">
-        <item name="android:inputType">textCapWords</item>
-    </style>
-
     <!-- AutoComplete fields: format, genre, language, color,location. -->
-    <style name="autoCompleteTextEntry">
+    <style name="autoCompleteTextEntry" parent="TIE.AutoComplete">
         <item name="android:inputType">textCapWords</item>
     </style>
 

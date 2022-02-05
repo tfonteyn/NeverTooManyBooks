@@ -22,11 +22,13 @@
 <!--
     Edit fields;
     'TIL'      == com.google.android.material.textfield.TextInputLayout
+
     'TIE'      == com.google.android.material.textfield.TextInputEditText
+               or com.google.android.material.textfield.MaterialAutoCompleteTextView
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Button (icon only) positioned 'after' an EditText; serving as a extended edit action. -->
+    <!-- Button (icon only) positioned at the end of an EditText; serving as a extended edit action. -->
     <style name="TIL.EditText.Button" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:enabled">true</item>
         <item name="android:layout_width">48dp</item>
@@ -38,15 +40,8 @@
         <item name="iconPadding">0dp</item>
     </style>
 
-    <!-- generic input field. -->
-    <style name="TIL.EditText" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
-        <item name="endIconMode">clear_text</item>
-    </style>
-
-    <style name="TIL.EditText.ClearButton" parent="Widget.AppCompat.ImageButton">
+    <!-- mimic the endIconMode="clear_text" for fields where using the builtin icon does not work -->
+    <style name="TIL.EditText.ClearButton" parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:visibility">invisible</item>
@@ -54,6 +49,15 @@
         <item name="android:src">@drawable/ic_baseline_cancel_24</item>
         <item name="android:background">@null</item>
         <item name="android:contentDescription">@string/action_clear</item>
+    </style>
+
+
+    <!-- generic input field. -->
+    <style name="TIL.EditText" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <item name="endIconMode">clear_text</item>
     </style>
 
     <!-- a fixed width box for an external id field. -->
@@ -101,7 +105,7 @@
 
     <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
     <style name="TIL.ExposedDropdownMenu"
-        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- make the drop down arrow better visible. -->
@@ -113,10 +117,16 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="TIE" parent="Widget.AppCompat.EditText">
+    <!-- Base style; not to be used directly in layouts. -->
+    <style name="TIE" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
+    <!-- Generic input field + base style for some localized styles.
+         com.google.android.material.textfield.TextInputEditText
+         -->
+    <style name="TIE.EditText" />
 
     <!-- A disabled/read-only edit text field on which an onClickListener can be installed.
          Not localized.
@@ -157,13 +167,20 @@
         <item name="android:digits">1234567890xX</item>
     </style>
 
-    <!-- *************************************************************************************** -->
+    <!-- generic auto-complete
+         com.google.android.material.textfield.MaterialAutoCompleteTextView
+    -->
+    <style name="TIE.AutoComplete" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:completionThreshold">2</item>
+    </style>
 
     <!-- International three character currency code (uppercase).
-     Not localized.
-     com.google.android.material.textfield.MaterialAutoCompleteTextView
+         Not localized.
+         com.google.android.material.textfield.MaterialAutoCompleteTextView
     -->
-    <style name="EditText.Currency" parent="Widget.AppCompat.AutoCompleteTextView">
+    <style name="TIE.Currency" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
@@ -176,7 +193,7 @@
     </style>
 
     <!-- com.google.android.material.textfield.TextInputEditText -->
-    <style name="EditText.Price" parent="Widget.AppCompat.EditText">
+    <style name="TIE.Price">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
@@ -186,23 +203,22 @@
     </style>
 
     <!-- The price LISTED field. This field can come from a search, hence it must be text based. -->
-    <style name="EditText.Price.Listed">
+    <style name="TIE.Price.Listed">
         <item name="android:inputType">textCapWords</item>
     </style>
 
-    <style name="EditText.Price.Paid">
+    <!-- Price PAID is user input only -->
+    <style name="TIE.Price.Paid">
         <item name="android:inputType">numberDecimal</item>
     </style>
 
-    <!-- Editable RatingBar. -->
+    <!-- *************************************************************************************** -->
+
+    <!-- Editable RatingBar.  -->
     <style name="Edit.Rating" parent="Widget.AppCompat.RatingBar">
         <item name="android:numStars">5</item>
-        <!-- serves as it's own label. -->
-        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
-        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <!-- don't add a margin to top/bottom; the height is already 57dp which is 1dp more then actually wanted.-->
+        <item name="android:layout_marginStart">@dimen/til_field_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_field_margin</item>
     </style>
-
-    <!--    <style name="Edit.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">-->
-
-    <!--    </style>-->
 </resources>
