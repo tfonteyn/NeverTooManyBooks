@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
@@ -291,7 +292,8 @@ public abstract class EditBookBaseFragment
                 mVm.getField(R.id.price_paid).ifPresent(
                         paidField -> {
                             if (!field.isEmpty() && paidField.isEmpty()) {
-                                final Double value = (Double) field.getValue();
+                                // Normally its always a double; but technically it might not be.
+                                final Double value = ParseUtils.toDouble(field.getValue(), null);
                                 mVm.getBook().put(DBKey.PRICE_PAID, value);
                                 //noinspection unchecked
                                 ((Field<Double, ? extends View>) paidField).setValue(value);
