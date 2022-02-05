@@ -59,8 +59,6 @@
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/cover_operation_progress_bar"
             style="@style/Progress.Circle"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
             app:layout_constraintEnd_toEndOf="@id/cover_image_1"
@@ -107,8 +105,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/title"
                 style="@style/titleTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="@sample/data.json/book/title"
@@ -128,9 +124,6 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/language"
                 style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="@sample/data.json/language/name"
@@ -159,8 +152,8 @@
         <Button
             android:id="@+id/btn_scan"
             style="@style/TIL.EditText.Button"
-            app:icon="@drawable/ic_barcode"
             android:contentDescription="@string/menu_barcode_scan"
+            app:icon="@drawable/ic_barcode"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
@@ -186,13 +179,32 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_genre"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_genre"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/genre"
+                style="@style/autoCompleteTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/genre/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_bookshelves"
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -204,44 +216,21 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_genre"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_genre"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-            >
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/genre"
-                style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
-                tools:text="Fiction"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_description"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
+            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/description"
                 style="@style/notesTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"
+                tools:maxLines="10"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

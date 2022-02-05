@@ -38,6 +38,7 @@
     <TextView
         android:id="@+id/first_publication"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_first_publication"
         app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
         tools:ignore="SelectableText"
@@ -55,6 +56,7 @@
     <TextView
         android:id="@+id/isbn"
         style="@style/Field.Isbn.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_isbn"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
         tools:ignore="SelectableText"
@@ -72,6 +74,7 @@
     <TextView
         android:id="@+id/publisher"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/lbl_publication"
         tools:ignore="SelectableText"
@@ -81,6 +84,7 @@
     <TextView
         android:id="@+id/date_published"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
@@ -90,51 +94,39 @@
     <TextView
         android:id="@+id/price_listed"
         style="@style/Field.Generic.Inline.Small"
-        app:layout_constraintStart_toEndOf="@id/date_published"
-        app:layout_constraintTop_toBottomOf="@id/publisher"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_publication"
+        app:layout_constraintTop_toBottomOf="@id/date_published"
         tools:ignore="SelectableText"
         tools:text="$45"
-        />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_format_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="isbn,publisher,date_published,price_listed"
         />
 
     <TextView
         android:id="@+id/format"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
-        app:layout_constraintTop_toBottomOf="@id/barrier_format_bottom"
+        app:layout_constraintTop_toBottomOf="@id/price_listed"
         tools:ignore="SelectableText"
         tools:text="@string/book_format_hardcover"
         />
 
     <TextView
         android:id="@+id/color"
-        style="@style/Field.Generic.Inline.Small"
-        app:layout_constraintStart_toEndOf="@id/format"
-        app:layout_constraintTop_toBottomOf="@id/barrier_format_bottom"
+        style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_publication"
+        app:layout_constraintTop_toBottomOf="@id/format"
         tools:ignore="SelectableText"
-        tools:text="color"
-        />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_language_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="format,color,barrier_format_bottom"
+        tools:text="@sample/data.json/color/name"
         />
 
     <TextView
         android:id="@+id/language"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
-        app:layout_constraintTop_toBottomOf="@id/barrier_language_bottom"
+        app:layout_constraintTop_toBottomOf="@id/color"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/language/name"
         />
@@ -142,6 +134,7 @@
     <TextView
         android:id="@+id/pages"
         style="@style/Field.Generic.Small"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/language"
         tools:ignore="SelectableText"
@@ -149,9 +142,9 @@
         />
 
     <TextView
-        android:id="@+id/lbl_print_run"
+        android:id="@+id/lbl_edition"
         style="@style/Label"
-        android:text="@string/lbl_print_run"
+        android:text="@string/lbl_edition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pages"
         />
@@ -159,47 +152,38 @@
     <TextView
         android:id="@+id/print_run"
         style="@style/Field.Generic.Small"
-        app:layout_constraintStart_toStartOf="@id/lbl_print_run"
-        app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+        app:layout_constraintStart_toStartOf="@id/lbl_edition"
+        app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         tools:ignore="SelectableText"
         tools:text="limited to 150 copies"
-        />
-
-    <TextView
-        android:id="@+id/lbl_edition"
-        style="@style/Label"
-        android:text="@string/lbl_edition"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/print_run"
         />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/edition"
         style="@style/ChipGroup"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
-        app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+        app:layout_constraintTop_toBottomOf="@id/print_run"
         >
-        <!-- chips will be added here dynamically -->
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            style="?attr/appChipDisplayStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/lbl_edition_first_edition"-->
-        <!--            />-->
+        <!--         chips will be added here dynamically -->
+        <!--            <com.google.android.material.chip.Chip-->
+        <!--                style="?attr/appChipDisplayStyle"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/lbl_edition_first_edition"-->
+        <!--                />-->
 
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            style="?attr/appChipDisplayStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/lbl_edition_first_impression"-->
-        <!--            />-->
+        <!--            <com.google.android.material.chip.Chip-->
+        <!--                style="?attr/appChipDisplayStyle"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/lbl_edition_first_impression"-->
+        <!--                />-->
 
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            style="?attr/appChipDisplayStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/lbl_edition_book_club"-->
-        <!--            />-->
+        <!--            <com.google.android.material.chip.Chip-->
+        <!--                style="?attr/appChipDisplayStyle"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/lbl_edition_book_club"-->
+        <!--                />-->
     </com.google.android.material.chip.ChipGroup>
-
 </merge>

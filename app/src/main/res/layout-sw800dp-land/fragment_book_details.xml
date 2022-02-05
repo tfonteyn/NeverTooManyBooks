@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.68"
+            app:layout_constraintGuide_percent="0.7"
             />
 
         <ImageView
@@ -67,33 +67,19 @@
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="@id/cover_image_0"
             tools:src="@sample/covers"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers_end"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="end"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/cover_operation_progress_bar"
             style="@style/Progress.Circle"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/barrier_covers_bottom"
-            app:layout_constraintEnd_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
+            app:layout_constraintEnd_toEndOf="@id/cover_image_1"
             app:layout_constraintStart_toStartOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="@id/cover_image_0"
             tools:visibility="visible"
@@ -235,9 +221,10 @@
             style="@style/Field.Description"
             app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintTop_toBottomOf="@id/cover_image_0"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
+            tools:maxLines="10"
             />
 
         <androidx.fragment.app.FragmentContainerView

@@ -44,12 +44,9 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/format"
                 style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
-                tools:text="Hardcover"
+                tools:text="@sample/data.json/format/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -66,12 +63,9 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/color"
                 style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
-                tools:text="Black &amp; White"
+                tools:text="@sample/data.json/color/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -158,11 +152,9 @@
             >
 
         <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/pages"
-                style="@style/pagesTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
+            android:id="@+id/pages"
+            style="@style/TIE.EditText"
+            android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="999"
                 />
@@ -181,7 +173,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_listed_currency"
-                style="@style/EditText.Currency"
+                style="@style/TIE.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="USD"
@@ -200,9 +192,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_listed"
-                style="@style/EditText.Price.Listed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.Price.Listed"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="14.99"
@@ -222,8 +212,6 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/print_run"
                 style="@style/notesTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="limited to 150 copies"

@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
+            app:layout_constraintGuide_percent="0.6"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -152,7 +152,7 @@
             style="@style/TIL.EditText.Isbn"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toStartOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -176,22 +176,14 @@
             app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title,lbl_language"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_series"
             app:endIconMode="none"
             app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -207,7 +199,7 @@
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_genre"
             app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
 
@@ -220,7 +212,6 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
@@ -262,8 +253,8 @@
                 style="@style/notesTextEntry"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
-                tools:text="@tools:sample/lorem/random"
                 tools:maxLines="10"
+                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

@@ -149,6 +149,8 @@
 
     <!-- The margin on top of a generic section/group of data on a screen. -->
     <dimen name="section_margin_top">4dp</dimen>
+    <!-- margin (start or end) applied to the 2nd, 3rd.. section on a line. -->
+    <dimen name="section_margin_inline">40dp</dimen>
 
     <!-- compliments "?attr/dialogPreferredPadding" which is used for start/end.
          the 18/12 is taken from "abc_dialog_padding_top_material" -->
@@ -168,6 +170,7 @@
     <dimen name="field_margin_start">4dp</dimen>
     <!-- margin (start or end) applied to the 2nd, 3rd.. field on a line of fields. -->
     <dimen name="field_margin_inline">6dp</dimen>
+    <dimen name="field_margin_inline_large">12dp</dimen>
 
 
     <!-- The width of an on-screen menu/action/url button.

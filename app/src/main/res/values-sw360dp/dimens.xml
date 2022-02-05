@@ -27,6 +27,7 @@
 <resources>
     <dimen name="field_margin_start">8dp</dimen>
     <dimen name="field_margin_inline">12dp</dimen>
+    <dimen name="field_margin_inline_large">48dp</dimen>
 
     <dimen name="bob_list_end_margin">2dp</dimen>
 

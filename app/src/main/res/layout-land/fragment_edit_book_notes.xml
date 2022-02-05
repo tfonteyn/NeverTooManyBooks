@@ -105,7 +105,7 @@
             android:id="@+id/lbl_read_end"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_read_end"
-            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
+            app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_read_start"
             >
@@ -166,7 +166,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_paid_currency"
-                style="@style/EditText.Currency"
+                style="@style/TIE.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="EUR"
@@ -185,9 +185,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_paid"
-                style="@style/EditText.Price.Paid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.Price.Paid"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="12.99"
@@ -259,9 +257,6 @@
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/location"
                 style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:completionThreshold="2"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
@@ -280,11 +275,10 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/notes"
                 style="@style/notesTextEntry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="@tools:sample/lorem/random"
+                tools:maxLines="5"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

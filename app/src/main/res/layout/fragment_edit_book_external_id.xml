@@ -43,8 +43,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -64,8 +63,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -85,8 +83,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_library_thing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -106,8 +103,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_open_library"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="abc123"
@@ -126,8 +122,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_strip_info_be"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TIE.EditText"
                 android:imeOptions="actionDone"
                 android:inputType="number"
                 tools:ignore="Autofill"
