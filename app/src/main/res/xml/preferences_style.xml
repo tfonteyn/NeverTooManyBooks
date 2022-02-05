@@ -178,7 +178,7 @@
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_author_type"
             android:entryValues="@array/pv_author_type"
-            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
+            android:icon="@drawable/ic_baseline_looks_one_24"
             android:key="style.booklist.group.authors.primary.type"
             android:title="@string/pt_primary_author_type"
             app:isPreferenceVisible="false"
