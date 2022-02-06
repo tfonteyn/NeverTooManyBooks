@@ -116,8 +116,8 @@ public class CalibreLibraryMappingFragment
                 addBookshelf(bookshelf, mVb.bookshelf);
 
             } catch (@NonNull final DaoWriteException e) {
-                //TODO: better error msg
-                Snackbar.make(mVb.getRoot(), R.string.error_unknown, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mVb.getRoot(), e.getUserMessage(getContext()),
+                              Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -183,12 +183,9 @@ public class CalibreLibraryMappingFragment
 
     private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         if (message.isNewEvent()) {
-            final Exception e = message.getData().getResult();
-
             final Context context = getContext();
-
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_network_site_access_failed,
                                                       CalibreContentServer.getHostUrl()));
             new MaterialAlertDialogBuilder(context)
@@ -257,7 +254,7 @@ public class CalibreLibraryMappingFragment
                     addBookshelf(bookshelf, holder.mVb.bookshelf);
 
                 } catch (@NonNull final DaoWriteException e) {
-                    Snackbar.make(holder.itemView, R.string.error_unknown,
+                    Snackbar.make(holder.itemView, e.getUserMessage(getContext()),
                                   Snackbar.LENGTH_LONG).show();
                 }
             });

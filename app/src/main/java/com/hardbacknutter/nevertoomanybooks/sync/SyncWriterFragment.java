@@ -31,7 +31,6 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -199,20 +198,15 @@ public class SyncWriterFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getData().requireResult();
-
-            @StringRes
-            final int title = R.string.error_export_failed;
-
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown));
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(title)
+                    .setTitle(R.string.error_export_failed)
                     .setMessage(msg)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()

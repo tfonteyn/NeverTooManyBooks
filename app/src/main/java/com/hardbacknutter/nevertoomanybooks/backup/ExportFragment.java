@@ -370,8 +370,6 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getData().requireResult();
-
             @StringRes
             final int title = mVm.getExportHelper().isBackup()
                               ? R.string.error_backup_failed
@@ -379,7 +377,7 @@ public class ExportFragment
 
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown));
 
             //noinspection ConstantConditions

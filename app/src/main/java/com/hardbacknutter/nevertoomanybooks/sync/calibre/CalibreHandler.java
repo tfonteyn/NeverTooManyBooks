@@ -305,11 +305,9 @@ public class CalibreHandler {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getData().getResult();
-
             final Context context = mView.getContext();
             final String msg = ExMsg
-                    .map(context, e)
+                    .map(context, message.getData().getResult())
                     .orElse(context.getString(R.string.error_network_site_access_failed,
                                               CalibreContentServer.getHostUrl()));
 

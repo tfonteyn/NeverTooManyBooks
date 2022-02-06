@@ -418,7 +418,7 @@ public class SettingsFragment
         if (message.isNewEvent()) {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().requireResult())
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown_long,
                                                       getString(R.string.lbl_send_debug)));
 

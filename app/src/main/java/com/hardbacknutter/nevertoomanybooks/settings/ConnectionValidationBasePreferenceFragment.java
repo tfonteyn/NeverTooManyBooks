@@ -121,11 +121,9 @@ public abstract class ConnectionValidationBasePreferenceFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            final Exception e = message.getData().getResult();
-
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown));
 
             new MaterialAlertDialogBuilder(context)

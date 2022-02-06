@@ -295,12 +295,11 @@ public class SearchBookUpdatesFragment
 
     private void onAbort(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
-        if (message.isNewEvent()) {
-            final Exception e = message.getData().getResult();
 
+        if (message.isNewEvent()) {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, e)
+            final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown_long,
                                                       getString(R.string.lbl_send_debug)));
 

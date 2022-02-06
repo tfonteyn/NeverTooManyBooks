@@ -510,9 +510,7 @@ public class CoverHandler {
                     return;
                 }
             } catch (@NonNull final CoverStorageException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e.getUserMessage(context));
             }
         }
 
@@ -566,9 +564,7 @@ public class CoverHandler {
                 mTakePictureLauncher.launch(uri);
 
             } catch (@NonNull final CoverStorageException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e.getUserMessage(context));
             }
 
         } else {
@@ -584,9 +580,7 @@ public class CoverHandler {
                 file = getTempFile();
 
             } catch (@NonNull final CoverStorageException e) {
-                StandardDialogs.showError(context, ExMsg
-                        .map(context, e)
-                        .orElse(context.getString(R.string.error_unknown)));
+                StandardDialogs.showError(context, e.getUserMessage(context));
             }
 
             if (file != null && file.exists()) {
