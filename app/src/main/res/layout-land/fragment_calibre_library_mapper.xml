@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/TopCentered"
+    android:layout_width="match_parent"
+    android:visibility="invisible"
+    tools:visibility="visible"
+    >
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/col1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"
+        />
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/Text.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_library"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseCompatTextViewDrawableXml"
+        />
+
+    <ImageButton
+        android:id="@+id/inf_ext_not_installed"
+        style="@style/Button.InfoPopup"
+        android:contentDescription="@string/lbl_calibre_content_server_extension_info"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/header"
+        app:layout_constraintStart_toEndOf="@id/header"
+        tools:visibility="visible"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_library_name"
+        style="@style/Button.DropdownMenu"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginEnd="@dimen/field_margin_inline"
+        app:layout_constraintEnd_toStartOf="@id/btn_create"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/library_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/library/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_create"
+        style="@style/Button.Action.Submit"
+        android:text="@string/action_create"
+        app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
+        app:layout_constraintEnd_toStartOf="@id/col1"
+        app:layout_constraintTop_toTopOf="@id/lbl_library_name"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_bookshelf"
+        style="@style/Button.DropdownMenu"
+        android:hint="@string/lbl_bookshelf"
+        android:paddingTop="@dimen/field_label_margin_top"
+        app:layout_constraintEnd_toStartOf="@id/col1"
+        app:layout_constraintStart_toStartOf="@id/lbl_library_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/bookshelf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/shelves/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/header_vlibs"
+        style="@style/Text.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_virtual_libraries"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/virtualLibraries"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/screen_border"
+        android:nestedScrollingEnabled="true"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/col1"
+        app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+        tools:itemCount="4"
+        tools:listitem="@layout/row_edit_calibre_library"
+        tools:visibility="visible"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
