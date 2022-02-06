@@ -189,9 +189,9 @@
             style="@style/TIL.EditText"
             android:hint="@string/lbl_series"
             app:endIconMode="none"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/col2"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -206,8 +206,8 @@
             android:id="@+id/lbl_genre"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_genre"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
 
@@ -229,7 +229,7 @@
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -240,21 +240,13 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_description_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_isbn,lbl_bookshelves,lbl_series,lbl_genre"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_description"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_description"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_description_top"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText

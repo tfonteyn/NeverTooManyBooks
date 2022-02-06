@@ -125,7 +125,7 @@
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_language"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
@@ -138,6 +138,14 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title"
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
@@ -173,9 +181,9 @@
             style="@style/TIL.EditText"
             android:hint="@string/lbl_series"
             app:endIconMode="none"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/col2"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -190,8 +198,8 @@
             android:id="@+id/lbl_genre"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_genre"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             >
 
@@ -210,9 +218,9 @@
             style="@style/TIL.EditText"
             android:hint="@string/lbl_bookshelves"
             app:endIconMode="none"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -227,9 +235,9 @@
             android:id="@+id/lbl_description"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_description"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText
