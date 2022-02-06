@@ -90,7 +90,7 @@
     </style>
 
     <!-- The content container/row for a book in the booklist. -->
-    <style name="BoB.Group.Book" parent="Widget.Material3.CardView.Outlined">
+    <style name="BoB.Group.Book" parent="Widget.Material3.CardView.Elevated">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/bob_book_card_margin</item>
