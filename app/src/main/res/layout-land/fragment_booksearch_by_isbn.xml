@@ -36,7 +36,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_isbn"
-        style="@style/TIL.EditText.Isbn"
+        style="@style/TIL.Isbn"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
         app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toTopOf="parent"

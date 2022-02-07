@@ -33,7 +33,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/site_goodreads"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +43,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -54,7 +54,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_isfdb"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:hint="@string/site_isfdb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +63,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -74,7 +74,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_library_thing"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:hint="@string/site_library_thing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -83,7 +83,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_library_thing"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionNext"
                 android:inputType="number"
                 tools:ignore="Autofill"
@@ -94,7 +94,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_open_library"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:hint="@string/site_open_library"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +103,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_open_library"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="abc123"
@@ -113,7 +113,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_strip_info_be"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:hint="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +122,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_strip_info_be"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionDone"
                 android:inputType="number"
                 tools:ignore="Autofill"

@@ -119,7 +119,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
-            style="@style/TIL.EditText.ExternalId"
+            style="@style/TIL.ExternalId"
             android:hint="@string/lbl_site_book_id"
             android:paddingStart="@dimen/field_margin_inline"
             android:paddingEnd="@dimen/field_margin_inline"
@@ -129,7 +129,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/external_id"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:drawableStart="@drawable/ic_baseline_apps_24"
                 android:enabled="false"
                 android:imeOptions="actionSearch"

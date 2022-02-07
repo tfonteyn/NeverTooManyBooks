@@ -21,7 +21,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="autoCompleteTextEntry" parent="TIE.AutoComplete">
+    <style name="autoCompleteTextEntry" parent="TIA">
         <item name="android:inputType">textCapSentences</item>
     </style>
 

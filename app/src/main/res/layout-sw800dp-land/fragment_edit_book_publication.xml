@@ -89,9 +89,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_publisher"
-            app:endIconMode="none"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_color"
@@ -107,7 +106,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_first_publication"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -124,7 +123,7 @@
 
         <ImageButton
             android:id="@+id/first_publication_clear"
-            style="@style/TIL.EditText.ClearButton"
+            style="@style/TIL.Button.Clear"
             app:layout_constraintBottom_toBottomOf="@id/lbl_first_publication"
             app:layout_constraintEnd_toEndOf="@id/lbl_first_publication"
             app:layout_constraintTop_toTopOf="@id/lbl_first_publication"
@@ -134,7 +133,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_published"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_date_published"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -151,7 +150,7 @@
 
         <ImageButton
             android:id="@+id/date_published_clear"
-            style="@style/TIL.EditText.ClearButton"
+            style="@style/TIL.Button.Clear"
             app:layout_constraintBottom_toBottomOf="@id/lbl_date_published"
             app:layout_constraintEnd_toEndOf="@id/lbl_date_published"
             app:layout_constraintTop_toTopOf="@id/lbl_date_published"
@@ -161,7 +160,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
-            style="@style/TIL.EditText"
+            style="@style/TIL"
             android:hint="@string/lbl_pages"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -170,7 +169,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pages"
-                style="@style/TIE.EditText"
+                style="@style/TIE"
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="999"
@@ -190,7 +189,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_listed_currency"
-                style="@style/TIE.Currency"
+                style="@style/TIA.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="USD"
@@ -200,7 +199,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_listed"
-            style="@style/TIL.EditText"
+            style="@style/TIL"
             android:hint="@string/lbl_price_listed"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
@@ -219,7 +218,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_print_run"
-            style="@style/TIL.EditText"
+            style="@style/TIL"
             android:hint="@string/lbl_print_run"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -268,7 +267,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_read_start"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -285,7 +284,7 @@
 
         <ImageButton
             android:id="@+id/read_start_clear"
-            style="@style/TIL.EditText.ClearButton"
+            style="@style/TIL.Button.Clear"
             app:layout_constraintBottom_toBottomOf="@id/lbl_read_start"
             app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
             app:layout_constraintTop_toTopOf="@id/lbl_read_start"
@@ -295,7 +294,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_end"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -312,7 +311,7 @@
 
         <ImageButton
             android:id="@+id/read_end_clear"
-            style="@style/TIL.EditText.ClearButton"
+            style="@style/TIL.Button.Clear"
             app:layout_constraintBottom_toBottomOf="@id/lbl_read_end"
             app:layout_constraintEnd_toEndOf="@id/lbl_read_end"
             app:layout_constraintTop_toTopOf="@id/lbl_read_end"
@@ -322,7 +321,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
-            style="@style/TIL.EditText"
+            style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_date_acquired"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -339,7 +338,7 @@
 
         <ImageButton
             android:id="@+id/date_acquired_clear"
-            style="@style/TIL.EditText.ClearButton"
+            style="@style/TIL.Button.Clear"
             app:layout_constraintBottom_toBottomOf="@id/lbl_date_acquired"
             app:layout_constraintEnd_toEndOf="@id/lbl_date_acquired"
             app:layout_constraintTop_toTopOf="@id/lbl_date_acquired"
@@ -358,7 +357,7 @@
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_paid_currency"
-                style="@style/TIE.Currency"
+                style="@style/TIA.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="EUR"
@@ -368,7 +367,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid"
-            style="@style/TIL.EditText"
+            style="@style/TIL"
             android:hint="@string/lbl_price_paid"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
@@ -497,7 +496,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_personal_notes"
-            style="@style/TIL.EditText"
+            style="@style/TIL"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/col2"

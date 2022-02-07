@@ -30,7 +30,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_author"
-        style="@style/TIL.EditText"
+        style="@style/TIL"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/author"
-            style="@style/TIE.EditText"
+            style="@style/TIE"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -49,7 +49,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_title"
-        style="@style/TIL.EditText"
+        style="@style/TIL"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,7 +58,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
-            style="@style/TIE.EditText"
+            style="@style/TIE"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -68,7 +68,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_series"
-        style="@style/TIL.EditText"
+        style="@style/TIL"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,7 +77,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/series_title"
-            style="@style/TIE.EditText"
+            style="@style/TIE"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -87,7 +87,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_publisher"
-        style="@style/TIL.EditText"
+        style="@style/TIL"
         android:hint="@string/lbl_publisher"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +96,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/publisher"
-            style="@style/TIE.EditText"
+            style="@style/TIE"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"
@@ -106,7 +106,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_keywords"
-        style="@style/TIL.EditText"
+        style="@style/TIL"
         android:hint="@string/lbl_keywords"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +115,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/keywords"
-            style="@style/TIE.EditText"
+            style="@style/TIE"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine"
             tools:ignore="Autofill"

@@ -24,12 +24,12 @@
     'TIL'      == com.google.android.material.textfield.TextInputLayout
 
     'TIE'      == com.google.android.material.textfield.TextInputEditText
-               or com.google.android.material.textfield.MaterialAutoCompleteTextView
+    'TIA'      == com.google.android.material.textfield.MaterialAutoCompleteTextView
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Button (icon only) positioned at the end of an EditText; serving as a extended edit action. -->
-    <style name="TIL.EditText.Button" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="TIL.Button.ExtEdit" parent="Widget.Material3.Button.OutlinedButton">
         <item name="android:enabled">true</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">0dp</item>
@@ -41,7 +41,7 @@
     </style>
 
     <!-- mimic the endIconMode="clear_text" for fields where using the builtin icon does not work -->
-    <style name="TIL.EditText.ClearButton" parent="Widget.Material3.Button.IconButton">
+    <style name="TIL.Button.Clear" parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:visibility">invisible</item>
@@ -51,34 +51,38 @@
         <item name="android:contentDescription">@string/action_clear</item>
     </style>
 
-
-    <!-- generic input field. -->
-    <style name="TIL.EditText" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+    <!-- generic input field with clear-text icon at the end. -->
+    <style name="TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/til_field_margin</item>
         <item name="endIconMode">clear_text</item>
     </style>
 
+    <!-- See matching "TIE.ReadOnly" -->
+    <style name="TIL.ReadOnly">
+        <item name="endIconMode">none</item>
+    </style>
+
     <!-- a fixed width box for an external id field. -->
-    <style name="TIL.EditText.ExternalId">
+    <style name="TIL.ExternalId">
         <item name="android:layout_width">280dp</item>
     </style>
 
     <!-- a fixed width box for a 4-digit year. -->
-    <style name="TIL.EditText.Year">
+    <style name="TIL.Year">
         <item name="android:hint">@string/lbl_year</item>
         <item name="android:layout_width">120dp</item>
     </style>
 
     <!-- a fixed width box for a books number in a series. -->
-    <style name="TIL.EditText.SeriesNum">
+    <style name="TIL.SeriesNum">
         <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:layout_width">200dp</item>
     </style>
 
     <!-- TextWatcher handles the icon. -->
-    <style name="TIL.EditText.Isbn">
+    <style name="TIL.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
         <item name="startIconTint">?attr/colorSecondary</item>
@@ -117,20 +121,15 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- Base style; not to be used directly in layouts. -->
+    <!-- Generic input field + base style for some localized styles. -->
     <style name="TIE" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <!-- Generic input field + base style for some localized styles.
-         com.google.android.material.textfield.TextInputEditText
-         -->
-    <style name="TIE.EditText" />
-
     <!-- A disabled/read-only edit text field on which an onClickListener can be installed.
          Not localized.
-         com.google.android.material.textfield.TextInputEditText
+         See matching "TIL.ReadOnly"
      -->
     <style name="TIE.ReadOnly">
         <item name="android:inputType">none</item>
@@ -142,7 +141,6 @@
 
     <!-- Dedicated series 'number' field.
          Not localized.
-         com.google.android.material.textfield.TextInputEditText
      -->
     <style name="TIE.SeriesNumber">
         <item name="android:inputType">text</item>
@@ -151,7 +149,6 @@
 
     <!-- Plain 4 digit year field.
          Not localized.
-         com.google.android.material.textfield.TextInputEditText
      -->
     <style name="TIE.Year">
         <item name="android:inputType">number</item>
@@ -160,42 +157,16 @@
 
     <!-- ISBN / EAN or other code
          Not localized.
-         com.google.android.material.textfield.TextInputEditText
      -->
     <style name="TIE.Isbn">
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
         <item name="android:digits">1234567890xX</item>
     </style>
 
-    <!-- generic auto-complete
-         com.google.android.material.textfield.MaterialAutoCompleteTextView
-    -->
-    <style name="TIE.AutoComplete" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:completionThreshold">2</item>
-    </style>
-
-    <!-- International three character currency code (uppercase).
+    <!-- Base style; not to be used directly in layouts.
          Not localized.
-         com.google.android.material.textfield.MaterialAutoCompleteTextView
-    -->
-    <style name="TIE.Currency" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAlignment">viewEnd</item>
-        <item name="android:inputType">text|textCapCharacters</item>
-        <item name="android:minWidth">120dp</item>
-        <item name="android:maxLength">3</item>
-        <item name="android:completionThreshold">1</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:background">@null</item>
-    </style>
-
-    <!-- com.google.android.material.textfield.TextInputEditText -->
+     -->
     <style name="TIE.Price">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
@@ -214,7 +185,31 @@
 
     <!-- *************************************************************************************** -->
 
-    <!-- Editable RatingBar.  -->
+    <!-- generic auto-complete. -->
+    <style name="TIA" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:completionThreshold">2</item>
+    </style>
+
+    <!-- International three character currency code (uppercase).
+         Not localized.
+    -->
+    <style name="TIA.Currency" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:inputType">text|textCapCharacters</item>
+        <item name="android:minWidth">120dp</item>
+        <item name="android:maxLength">3</item>
+        <item name="android:completionThreshold">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+
+    <!-- *************************************************************************************** -->
+
     <style name="Edit.Rating" parent="Widget.AppCompat.RatingBar">
         <item name="android:numStars">5</item>
         <!-- don't add a margin to top/bottom; the height is already 57dp which is 1dp more then actually wanted.-->
