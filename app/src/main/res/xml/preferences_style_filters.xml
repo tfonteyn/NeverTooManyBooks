@@ -70,7 +70,7 @@
             android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.editions"
             android:title="@string/lbl_edition"
-            app:disregardButtonText="@string/bookshelf_all_books" />
+            app:disregardButtonText="@string/btn_all_books" />
 
         <ListPreference
             android:defaultValue="-1"
@@ -88,7 +88,7 @@
             android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.bookshelves"
             android:title="@string/lbl_bookshelves"
-            app:disregardButtonText="@string/bookshelf_all_books" />
+            app:disregardButtonText="@string/btn_all_books" />
         />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -62,6 +62,7 @@
     <string name="book_format_paperback">Pocket</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="bookshelf_all_books">Alle Boeken</string>
+    <string name="btn_all_books">Alle Boeken</string>
     <string name="lbl_export_books_option_all">Alle Boeken</string>
     <string name="lbl_import_books_option_all">Alle Boeken</string>
     <string name="bookshelf_my_books">Mijn Boeken</string>
@@ -80,7 +81,7 @@
     <string name="confirm_delete_bookshelf">Echt boekenplank „%1$s” verwijderen? De boeken zelf worden niet verwijderd. Ze zullen nog steeds aanwezig zijn op alle andere schappen, of op de „%2$s” -plank.</string>
     <string name="confirm_delete_publisher">Wilt je werkelijk de uitgever „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de uitgever te bewerken en de naam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
-    <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
+    <string name="confirm_delete_toc_entry_everywhere">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
     <string name="confirm_email_file">Wilt je dit bestand naar iemand e-mailen?</string>
     <string name="confirm_merge_authors">De auteur die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
@@ -695,4 +696,5 @@
     <string name="lbl_sql_query">SQL-query</string>
     <string name="lbl_book_detail_screen">Pagina met boekdetails</string>
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importeer alleen boeken die sinds \n deze datum zijn gewijzigd</string>
 </resources>

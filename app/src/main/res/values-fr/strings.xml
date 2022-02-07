@@ -65,6 +65,7 @@
     <string name="book_format_paperback">Livre de poche</string>
     <string name="book_format_softcover">Broché</string>
     <string name="bookshelf_all_books">Tous les livres</string>
+    <string name="btn_all_books">Tous les livres</string>
     <string name="lbl_export_books_option_all">Tous les livres</string>
     <string name="lbl_import_books_option_all">Tous les livres</string>
     <string name="bookshelf_my_books">Mes livres</string>
@@ -83,7 +84,7 @@
     <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Voulez-vous vraiment supprimer l\'étagère «%1$s»? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
     <string name="confirm_delete_publisher" tools:ignore="TypographyQuotes">Supprimer l\'éditeur «%1$s»?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\nEnvisagez de modifier l\'éditeur et de remplacer le nom pour conserver ces données.</string>
     <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver ces données.</string>
-    <string name="confirm_delete_toc_entry">Vraiment supprimer le titre «%1$s» (par %2$s)? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Vraiment supprimer le titre «%1$s» (par %2$s)? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>
     <string name="confirm_duplicate_book_message">Le livre que vous tentez d\'ajouter existe déjà dans la base de donnnées. Êtes vous certain de vouloir en ajouter une nouvelle copie ?</string>
     <string name="confirm_email_file">Souhaitez-vous envoyer ce fichier par e-mail à quelqu\'un?</string>
     <string name="confirm_merge_authors">L\'auteur que vous renommez existe déjà. Voulez-vous les fusionner?</string>
@@ -699,5 +700,6 @@
     <string name="lbl_sql_query">Requête SQL</string>
     <string name="lbl_book_detail_screen">Page de détails du livre</string>
     <string name="lbl_date_last_updated">Date de la dernière mise à jour</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importer uniquement les livres qui ont été \n modifiés depuis cette date</string>
 
 </resources>

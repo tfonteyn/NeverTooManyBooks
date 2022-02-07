@@ -50,6 +50,7 @@
     <string name="book_format_paperback">Miękka</string>
     <string name="book_format_softcover">Miękka okładka</string>
     <string name="bookshelf_all_books">Wszystkie książki</string>
+    <string name="btn_all_books">Wszystkie książki</string>
     <string name="lbl_export_books_option_all">Wszystkie książki</string>
     <string name="lbl_import_books_option_all">Wszystkie książki</string>
     <string name="bookshelf_my_books">Moje książki</string>
@@ -71,7 +72,7 @@
     <string name="confirm_scope_for_change">Zmieniłeś:\n „%1$s”\n na\n „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s.\n\n Czy chcesz kontynuować?</string>
     <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
-    <string name="confirm_delete_toc_entry">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
     <string name="confirm_email_file">Czy chcesz wysłać do kogoś ten plik e-mailem?</string>
     <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
@@ -695,4 +696,5 @@
     <string name="lbl_sql_query">Zapytanie SQL</string>
     <string name="lbl_book_detail_screen">Strona ze szczegółami książki</string>
     <string name="lbl_date_last_updated">Data ostatniej aktualizacji</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importuj tylko książki, które \n zostały zmodyfikowane od tej daty</string>
 </resources>

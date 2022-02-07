@@ -310,8 +310,16 @@
 
     <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
-    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”?  The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
-    <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
+    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”? The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
+
+    <string name="confirm_delete_toc_entry_everywhere">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
+
+    <string name="confirm_remove_toc_entry">Remove the title “%1$s” by %2$s from this book?</string>
+
+    <!-- param 1: work title
+         param 2: author
+         param 3: the text on the button for making a global change. e.g. "All books" -->
+    <string name="confirm_scope_for_delete">Delete the title “%1$s” by %2$s\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” cannot be undone!</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
 
@@ -323,7 +331,7 @@
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
     <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
 
-    <!-- param 1: previous and param 2: new name, each time as a single string.
+    <!-- param 1: previous name; param 2: new name - each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.</string>
 
@@ -776,7 +784,11 @@
     <string name="lbl_import_books_option_new_and_updated">New and updated books</string>
     <!-- Info text for the RB -->
     <string name="txt_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
-    <string name="lbl_import_books_option_new_and_updated_cutoff_date">cutoff date</string>
+    <!-- Text above an EditText which has a label of "Since" and contains a date.
+         Hence this string can/should be read as "Only import books modified since this date"
+         Translated strings are usually longer... add one or more '\n' as needed.
+         -->
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Only import books modified</string>
     <string name="lbl_sync_date">Since</string>
 
     <!-- Radio button text -->
@@ -1038,7 +1050,8 @@
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
 
-    <string name="btn_this_book">This Book</string>
+    <string name="btn_this_book">This book only</string>
+    <string name="btn_all_books">All books</string>
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag to reorder this list</string>
@@ -1209,7 +1222,7 @@
     <!-- == Defaults for bookshelf names == -->
     <!-- ####################################################################################### -->
 
-    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
+    <!-- Name of virtual bookshelf which displays all books. -->
     <string name="bookshelf_all_books">All Books</string>
     <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
     <string name="bookshelf_my_books">My Books</string>
@@ -1636,7 +1649,7 @@
 
     <string name="lbl_sql_query">SQL query</string>
     <string name="lbl_book_detail_screen">Book details page</string>
-    <string name="menu_book_sync_list_with_details">Sync/scroll the list</string>
+    <string name="menu_book_sync_list_with_details">Synchronize/scroll the list</string>
 
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->

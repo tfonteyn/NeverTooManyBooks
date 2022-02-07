@@ -95,7 +95,7 @@ public final class StandardDialogs {
                                              @NonNull final Entity modified,
                                              @NonNull final Runnable onAllBooks,
                                              @NonNull final Runnable onThisBook) {
-        final String allBooks = context.getString(R.string.bookshelf_all_books);
+        final String allBooks = context.getString(R.string.btn_all_books);
         final String message = context.getString(R.string.confirm_scope_for_change,
                                                  original.getLabel(context),
                                                  modified.getLabel(context),
@@ -220,7 +220,7 @@ public final class StandardDialogs {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.action_delete)
-                .setMessage(context.getString(R.string.confirm_delete_toc_entry,
+                .setMessage(context.getString(R.string.confirm_delete_toc_entry_everywhere,
                                               title,
                                               author.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

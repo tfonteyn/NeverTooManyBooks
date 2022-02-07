@@ -52,6 +52,7 @@
     <string name="book_format_softcover">Tapa blanda</string>
     <string name="book_format_paperback_large">Rústica PUR</string>
     <string name="bookshelf_all_books">Todos los libros</string>
+    <string name="btn_all_books">Todos los libros</string>
     <string name="lbl_export_books_option_all">Todos los libros</string>
     <string name="lbl_import_books_option_all">Todos los libros</string>
     <string name="bookshelf_my_books">Mis Libros</string>
@@ -73,7 +74,7 @@
     <string name="confirm_scope_for_change">Ha cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo quiere aplicar este cambio?\n\nNota: La opción «%3$s» se aplicará de manera inmediata.</string>
     <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s.\n\n ¿Está seguro de que desea continuar?</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
-    <string name="confirm_delete_toc_entry">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
+    <string name="confirm_delete_toc_entry_everywhere">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>
     <string name="confirm_email_file">¿Le gustaría enviar este archivo por correo electrónico a alguien?</string>
     <string name="confirm_merge_bookshelves">La estantería al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
@@ -698,4 +699,5 @@
     <string name="lbl_sql_query">consulta SQL</string>
     <string name="lbl_book_detail_screen">Página de detalles del libro</string>
     <string name="lbl_date_last_updated">Fecha de última actualización</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Solo importa libros que hayan sido \n modificados desde esta fecha</string>
 </resources>

@@ -51,6 +51,7 @@
     <string name="book_format_paperback_large">Ciltsiz / Iri</string>
     <string name="book_format_softcover">Yumuşak kapak</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
+    <string name="btn_all_books">Tüm kitaplar</string>
     <string name="lbl_export_books_option_all">Tüm kitaplar</string>
     <string name="lbl_import_books_option_all">Tüm kitaplar</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
@@ -73,7 +74,7 @@
     <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s.\n\nSürdürmek istediğinizden emin misiniz?</string>
     <string name="confirm_delete_publisher">“%1$s” yayıncısını gerçekten silmek istiyor musunuz?\n\nKitapların kendileri silinmeyecek.\n\nBu verileri korumak için yayıncıyı düzenlemeyi ve yayıncı adını başka bir yayıncının adıyla değiştirmeyi düşünün.</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
-    <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
+    <string name="confirm_delete_toc_entry_everywhere">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
     <string name="confirm_email_file">Bu dosyayı birisine e-posta ile göndermek ister misiniz?</string>
     <string name="confirm_merge_bookshelves">Yeniden adlandırılan kitap rafı zaten var. Onları birleştirmek ister misiniz?</string>
@@ -696,4 +697,5 @@
     <string name="lbl_sql_query">SQL sorgusu</string>
     <string name="lbl_book_detail_screen">Kitap ayrıntıları sayfası</string>
     <string name="lbl_date_last_updated">Son güncelleme tarihi</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Yalnızca bu tarihten sonra \n değiştirilen kitapları içe aktarın</string>
 </resources>

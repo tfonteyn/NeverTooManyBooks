@@ -64,6 +64,7 @@
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="bookshelf_all_books">Alle Bücher</string>
+    <string name="btn_all_books">Alle Bücher</string>
     <string name="lbl_export_books_option_all">Alle Bücher</string>
     <string name="lbl_import_books_option_all">Alle Bücher</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
@@ -82,7 +83,7 @@
     <string name="confirm_delete_bookshelf">Bücherregal „%1$s“ wirklich löschen? Die Bücher selbst werden nicht gelöscht. Sie sind weiterhin in anderen Regalen oder im Regal „%2$s“ vorhanden.</string>
     <string name="confirm_delete_publisher">Herausgeber „%1$s“ wirklich löschen?\n\nDie Bücher selbst werden nicht gelöscht.\n\nBetrachten Sie, den Herausgeber zu bearbeiten und den Herausgebernamen in den Namen eines anderen Herausgebers zu ändern, um diese Daten zu erhalten.</string>
     <string name="confirm_delete_series">Serie „%1$s“ wirklich löschen?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
-    <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
+    <string name="confirm_delete_toc_entry_everywhere">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
     <string name="confirm_email_file">Möchten Sie diese Datei per E-Mail an jemanden senden?</string>
     <string name="confirm_merge_authors">Der Autor, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
@@ -698,5 +699,6 @@
     <string name="lbl_sql_query">SQL-Abfrage</string>
     <string name="lbl_book_detail_screen">Seite mit den Buchdetails</string>
     <string name="lbl_date_last_updated">Datum zuletzt aktualisiert</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importieren Sie nur Bücher, die seit \n diesem Datum geändert wurden</string>
 
 </resources>
