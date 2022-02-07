@@ -228,20 +228,8 @@
         <item name="iconPadding">12dp</item>
     </style>
 
-    <!-- The added padding/stroke items are copied from: "Widget.Material3.Button.OutlinedButton" -->
-    <style name="Button.Menu.Outlined">
-        <!-- @dimen/m3_btn_icon_btn_padding_left -->
-        <item name="android:paddingLeft">16dp</item>
-        <!-- @dimen/m3_btn_icon_btn_padding_right -->
-        <item name="android:paddingRight">24dp</item>
-        <!-- @dimen/m3_btn_stroke_size -->
-        <item name="strokeWidth">1dp</item>
-        <!-- @color/m3_button_outline_color_selector -->
-        <item name="strokeColor">@color/button_outline_color_selector</item>
-    </style>
-
     <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
-    <style name="Button.Action.Submit" parent="Widget.Material3.Button">
+    <style name="Button.Action.Submit" parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
@@ -260,13 +248,13 @@
         <item name="android:insetRight">4dp</item>
     </style>
 
-    <style name="Button.Action.Open" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="Button.Action.Open" parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!-- A button which will take the user to some external website. -->
-    <style name="Button.Url" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="Button.Url" parent="Widget.Material3.Button.ElevatedButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>

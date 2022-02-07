@@ -28,20 +28,20 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Button (icon only) positioned at the end of an EditText; serving as a extended edit action. -->
-    <style name="TIL.Button.ExtEdit" parent="Widget.Material3.Button.OutlinedButton">
+    <style name="TIL.Button" parent="Widget.Material3.Button.IconButton" />
+
+    <!-- Icon button positioned at the end of an EditText; serving as a extended edit action. -->
+    <style name="TIL.Button.ExtEdit">
         <item name="android:enabled">true</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_marginTop">6dp</item>
         <item name="android:layout_marginStart">8dp</item>
-        <item name="iconTint">?attr/editTextColor</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconPadding">0dp</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- mimic the endIconMode="clear_text" for fields where using the builtin icon does not work -->
-    <style name="TIL.Button.Clear" parent="Widget.Material3.Button.IconButton">
+    <style name="TIL.Button.Clear">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:visibility">invisible</item>
