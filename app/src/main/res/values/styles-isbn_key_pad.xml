@@ -24,7 +24,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base style; not to be used directly in layouts. -->
-    <style name="IsbnKeyPad" parent="Widget.Material3.Button">
+    <style name="IsbnKeyPad" parent="Widget.Material3.Button.ElevatedButton">
         <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
         <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
         <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
@@ -37,14 +37,15 @@
     </style>
 
     <style name="IsbnKeyPad.SearchButton">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="IsbnKeyPad.BackspaceButton">
-        <item name="android:layout_marginStart">8dp</item>
+    <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- yes, LEFT! - this is to offset the icon so its centered -->
-        <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
+        <item name="android:scaleX">1.5</item>
+        <item name="android:scaleY">1.5</item>
         <item name="icon">@drawable/ic_baseline_backspace_24</item>
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
