@@ -139,6 +139,7 @@ public interface AppLocale {
      */
     void unregisterOnLocaleChangedListener(@NonNull OnLocaleChangedListener listener);
 
+    @FunctionalInterface
     interface OnLocaleChangedListener {
 
         void onLocaleChanged(@NonNull Context context);

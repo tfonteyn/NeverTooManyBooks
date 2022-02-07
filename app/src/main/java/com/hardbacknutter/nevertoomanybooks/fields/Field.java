@@ -572,6 +572,7 @@ public class Field<T, V extends View> {
                + '}';
     }
 
+    @FunctionalInterface
     public interface AfterFieldChangeListener {
 
         void onAfterFieldChange(@NonNull Field<?, ? extends View> field);

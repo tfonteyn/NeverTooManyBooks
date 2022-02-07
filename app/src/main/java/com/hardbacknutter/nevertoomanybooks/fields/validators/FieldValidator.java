@@ -29,6 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
  * Interface for all field-level validators.
  * Could be replaced with a {@code Consumer<Field<T, V>>}.
  */
+@FunctionalInterface
 public interface FieldValidator<T, V extends View> {
 
     /**

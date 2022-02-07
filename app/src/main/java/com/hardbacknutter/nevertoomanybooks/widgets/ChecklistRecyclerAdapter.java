@@ -131,6 +131,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
         return mItems.size();
     }
 
+    @FunctionalInterface
     public interface SelectionListener<ID> {
 
         void onSelected(@NonNull ID id,

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets.datepicker;
 
 import androidx.annotation.NonNull;
 
+@FunctionalInterface
 public interface DatePickerListener {
 
     long NO_SELECTION = -1L;

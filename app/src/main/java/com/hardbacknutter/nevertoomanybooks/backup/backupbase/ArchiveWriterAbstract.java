@@ -421,6 +421,7 @@ public abstract class ArchiveWriterAbstract
                                     final boolean compress)
             throws IOException;
 
+    @FunctionalInterface
     public interface SupportsCovers {
 
         /**

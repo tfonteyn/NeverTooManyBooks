@@ -36,6 +36,7 @@ import java.util.Objects;
  * Allows to be notified of non-book changes made.
  * The listener {@link #onChange(String, long)} must interpret the key to deduce what the id means.
  */
+@FunctionalInterface
 public interface RowChangedListener
         extends FragmentResultListener {
 

@@ -204,6 +204,7 @@ public final class TipManager {
         tip.display(context, tipKey, args, postRun);
     }
 
+    @FunctionalInterface
     public interface TipOwner {
 
         @StringRes

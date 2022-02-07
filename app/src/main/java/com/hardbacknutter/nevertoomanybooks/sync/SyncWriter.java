@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+@FunctionalInterface
 @SuppressWarnings("RedundantThrows")
 public interface SyncWriter
         extends Closeable {

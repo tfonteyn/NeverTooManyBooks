@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 /**
  * Encapsulates getting the title and whether to reorder it.
  */
+@FunctionalInterface
 public interface ItemWithTitle {
 
     /**

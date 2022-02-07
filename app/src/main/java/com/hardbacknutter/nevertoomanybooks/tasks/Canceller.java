@@ -25,6 +25,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
  * A minimalistic interface for a Task (or similar, e.g. {@link SearchCoordinator})
  * which can be passed to another class.
  */
+@FunctionalInterface
 public interface Canceller {
 
     /**

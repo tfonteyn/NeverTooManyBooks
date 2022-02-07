@@ -123,6 +123,7 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         return mItems.size();
     }
 
+    @FunctionalInterface
     public interface SelectionListener<ID> {
 
         void onSelected(@Nullable ID id);

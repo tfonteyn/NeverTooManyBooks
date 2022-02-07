@@ -183,6 +183,7 @@ public class ExtPopupMenu {
         mPopupWindow.showAtLocation(anchor, Gravity.CENTER, 0, 0);
     }
 
+    @FunctionalInterface
     public interface ExtPopupMenuListener {
 
         /**

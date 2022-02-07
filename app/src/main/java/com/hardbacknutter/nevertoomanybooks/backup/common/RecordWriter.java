@@ -33,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
+@FunctionalInterface
 public interface RecordWriter
         extends Closeable {
 

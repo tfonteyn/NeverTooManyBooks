@@ -24,6 +24,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
+@FunctionalInterface
 public interface ResultIntentOwner {
 
     /**

@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+@FunctionalInterface
 @SuppressWarnings("RedundantThrows")
 public interface SyncReader
         extends Closeable {

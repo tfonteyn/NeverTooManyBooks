@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 /**
  * Implements Closeable to enforce a cleanup structure.
  */
+@FunctionalInterface
 public interface RecordReader
         extends Closeable {
 

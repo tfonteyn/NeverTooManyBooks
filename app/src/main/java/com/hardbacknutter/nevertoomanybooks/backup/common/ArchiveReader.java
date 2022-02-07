@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+@FunctionalInterface
 public interface ArchiveReader
         extends Closeable {
 

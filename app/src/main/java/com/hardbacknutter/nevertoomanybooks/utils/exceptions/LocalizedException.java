@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 /**
  * Produces a guaranteed localized message for displaying to the user.
  */
+@FunctionalInterface
 public interface LocalizedException {
 
     @NonNull

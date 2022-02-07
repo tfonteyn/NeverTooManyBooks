@@ -564,6 +564,7 @@ public interface SearchEngine {
     }
 
     /** Optional. */
+    @FunctionalInterface
     interface AlternativeEditions {
 
         /**
