@@ -80,9 +80,12 @@ public class StartupViewModel
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Void>>> mFinished = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailure = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgress = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Void>>> mFinished =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailure =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskProgress>> mProgress =
+            new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull

@@ -67,8 +67,10 @@ public class SearchBookUpdatesViewModel
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> mListFinished = new MutableLiveData<>();
-    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mListFailed = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>> mListFinished =
+            new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mListFailed =
+            new MutableLiveData<>();
 
     /**
      * Current and original book data.
