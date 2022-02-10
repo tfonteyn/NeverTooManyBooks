@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,15 +138,15 @@ class ISBNTest
             final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertTrue(isbn0.isType(ISBN.TYPE_ISBN10));
-            assertFalse(isbn1.isType(ISBN.TYPE_ISBN10));
+            assertTrue(isbn0.isType(ISBN.Type.Isbn10));
+            assertFalse(isbn1.isType(ISBN.Type.Isbn10));
         }
         for (final String[] isbnPair : createInvalidIsbnList()) {
             final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.TYPE_ISBN10));
-            assertFalse(isbn1.isType(ISBN.TYPE_ISBN10));
+            assertFalse(isbn0.isType(ISBN.Type.Isbn10));
+            assertFalse(isbn1.isType(ISBN.Type.Isbn10));
         }
     }
 
@@ -156,15 +156,15 @@ class ISBNTest
             final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.TYPE_ISBN13));
-            assertTrue(isbn1.isType(ISBN.TYPE_ISBN13));
+            assertFalse(isbn0.isType(ISBN.Type.Isbn13));
+            assertTrue(isbn1.isType(ISBN.Type.Isbn13));
         }
         for (final String[] isbnPair : createInvalidIsbnList()) {
             final ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
             final ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
 
-            assertFalse(isbn0.isType(ISBN.TYPE_ISBN13));
-            assertFalse(isbn1.isType(ISBN.TYPE_ISBN13));
+            assertFalse(isbn0.isType(ISBN.Type.Isbn13));
+            assertFalse(isbn1.isType(ISBN.Type.Isbn13));
         }
     }
 
@@ -175,8 +175,8 @@ class ISBNTest
             final ISBN isbn13 = ISBN.createISBN(isbnPair[1]);
 
             try {
-                assertEquals(isbn10.asText(ISBN.TYPE_ISBN13), isbn13.asText(ISBN.TYPE_ISBN13));
-                assertEquals(isbn10.asText(ISBN.TYPE_ISBN10), isbn13.asText(ISBN.TYPE_ISBN10));
+                assertEquals(isbn10.asText(ISBN.Type.Isbn13), isbn13.asText(ISBN.Type.Isbn13));
+                assertEquals(isbn10.asText(ISBN.Type.Isbn10), isbn13.asText(ISBN.Type.Isbn10));
             } catch (@NonNull final NumberFormatException e) {
                 fail(e);
             }
@@ -246,7 +246,7 @@ class ISBNTest
         for (final String[] upcPair : createIsbnUpcList()) {
             final ISBN isbn = ISBN.create(upcPair[0]);
             assertNotNull(isbn);
-            assertTrue(isbn.isType(ISBN.TYPE_ISBN10));
+            assertTrue(isbn.isType(ISBN.Type.Isbn10));
             assertTrue(isbn.isValid(false));
             assertEquals(upcPair[1], isbn.asText());
         }
@@ -257,7 +257,7 @@ class ISBNTest
         for (final String[] upcPair : createUpcAList()) {
             final ISBN upc = ISBN.create(upcPair[0]);
             assertNotNull(upc);
-            assertTrue(upc.isType(ISBN.TYPE_UPC_A));
+            assertTrue(upc.isType(ISBN.Type.UpcA));
             assertTrue(upc.isValid(false));
             assertEquals(upcPair[1], upc.asText());
         }
@@ -268,7 +268,7 @@ class ISBNTest
         for (final String[] eanPair : createEanList()) {
             final ISBN ean = ISBN.create(eanPair[0]);
             assertNotNull(ean);
-            assertTrue(ean.isType(ISBN.TYPE_EAN13));
+            assertTrue(ean.isType(ISBN.Type.Ean13));
             assertTrue(ean.isValid(false));
             assertEquals(eanPair[1], ean.asText());
         }

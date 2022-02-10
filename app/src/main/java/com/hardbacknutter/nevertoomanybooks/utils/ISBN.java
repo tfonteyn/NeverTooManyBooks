@@ -75,15 +75,11 @@ public class ISBN {
     public static final int VALIDITY_NONE = 0;
     public static final int VALIDITY_LOOSE = 1;
     public static final int VALIDITY_STRICT = 2;
-    public static final int TYPE_ISBN10 = 1;
-    /** ISBN-13 is a subtype of EAN-13. See {@link #isType(int)}. */
-    public static final int TYPE_ISBN13 = 2;
-    static final int TYPE_EAN13 = 3;
-    static final int TYPE_UPC_A = 4;
-    static final int TYPE_INVALID = 0;
-    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
+
     /** Log tag. */
     private static final String TAG = "ISBN";
+
+    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
     private static final String ERROR_WRONG_SIZE = "Wrong size: ";
     private static final String ERROR_INVALID_CHARACTER = "Invalid character: ";
     private static final String ERROR_UNABLE_TO_CONVERT =
@@ -156,8 +152,8 @@ public class ISBN {
     }
 
     /** The type of code, determined at creation time. */
-    @Type
-    private final int mType;
+    @NonNull
+    private final Type mType;
     /** The code as a pure text string. The raw input string for invalid codes. */
     @NonNull
     private final String mAsText;
@@ -188,8 +184,8 @@ public class ISBN {
                 final boolean strictIsbn) {
 
         List<Integer> digits = null;
-        @Type
-        int type = TYPE_INVALID;
+
+        Type type = Type.Invalid;
 
         if (str != null && !str.isEmpty()) {
             final String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
@@ -199,14 +195,14 @@ public class ISBN {
                     digits = toDigits(cleanStr);
                     type = getType(digits);
 
-                    if (type == TYPE_UPC_A) {
+                    if (type == Type.UpcA) {
                         // is this UPC_A convertible to ISBN ?
                         final String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
                         if (isbnPrefix != null) {
                             // yes, convert to ISBN-10
                             digits = toDigits(isbnPrefix + cleanStr.substring(12));
                             digits.add(calculateIsbn10Checksum(digits));
-                            type = TYPE_ISBN10;
+                            type = Type.Isbn10;
                         }
                     }
                 } catch (@NonNull final NumberFormatException e) {
@@ -216,17 +212,17 @@ public class ISBN {
                 }
 
                 // strict ISBN required?
-                if (strictIsbn && type != TYPE_ISBN10 && type != TYPE_ISBN13) {
-                    type = TYPE_INVALID;
+                if (strictIsbn && type != Type.Isbn10 && type != Type.Isbn13) {
+                    type = Type.Invalid;
                 }
             }
         }
 
         // Make sure the internal status is uniform.
-        if (type == TYPE_INVALID) {
+        if (type == Type.Invalid) {
             mDigits = null;
             mAsText = str != null ? str : "";
-            mType = TYPE_INVALID;
+            mType = Type.Invalid;
 
         } else {
             mDigits = digits;
@@ -399,17 +395,17 @@ public class ISBN {
      */
     public boolean isValid(final boolean strictIsbn) {
         if (strictIsbn) {
-            return mType == TYPE_ISBN13 || mType == TYPE_ISBN10;
+            return mType == Type.Isbn13 || mType == Type.Isbn10;
         } else {
-            return mType != TYPE_INVALID;
+            return mType != Type.Invalid;
         }
     }
 
     @VisibleForTesting
-    boolean isType(@Type final int type) {
-        if (type == TYPE_EAN13) {
+    boolean isType(@NonNull final Type type) {
+        if (type == Type.Ean13) {
             // ISBN 13 is a sub-type of EAN13
-            return mType == TYPE_EAN13 || mType == TYPE_ISBN13;
+            return mType == Type.Ean13 || mType == Type.Isbn13;
         }
         return mType == type;
     }
@@ -421,7 +417,7 @@ public class ISBN {
      * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
      */
     public boolean isIsbn10Compat() {
-        return mType == TYPE_ISBN10 || (mType == TYPE_ISBN13 && mAsText.startsWith("978"));
+        return mType == Type.Isbn10 || (mType == Type.Isbn13 && mAsText.startsWith("978"));
     }
 
     /**
@@ -448,23 +444,23 @@ public class ISBN {
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    public String asText(@Type final int type)
+    public String asText(@NonNull final Type type)
             throws NumberFormatException {
 
-        if (type == TYPE_INVALID) {
+        if (type == Type.Invalid) {
             return mAsText;
         }
         Objects.requireNonNull(mDigits, "mDigits");
 
         switch (type) {
-            case TYPE_ISBN13: {
+            case Isbn13: {
                 // already in ISBN-13 format?
-                if (mType == TYPE_ISBN13) {
+                if (mType == Type.Isbn13) {
                     return mAsText;
                 }
 
                 // Must be ISBN10 or we cannot convert
-                if (mType == TYPE_ISBN10) {
+                if (mType == Type.Isbn10) {
                     final List<Integer> digits = new ArrayList<>();
                     // standard prefix 978
                     digits.add(9);
@@ -482,14 +478,14 @@ public class ISBN {
                 }
                 break;
             }
-            case TYPE_ISBN10: {
+            case Isbn10: {
                 // already in ISBN-10 format?
-                if (mType == TYPE_ISBN10) {
+                if (mType == Type.Isbn10) {
                     return mAsText;
                 }
 
                 // must be ISBN13 *AND* compatible with converting to ISBN10
-                if (mType == TYPE_ISBN13 || !mAsText.startsWith("978")) {
+                if (mType == Type.Isbn13 || !mAsText.startsWith("978")) {
                     // drop the first 3 digits, and copy the next 9.
                     final List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
@@ -502,16 +498,16 @@ public class ISBN {
                 break;
             }
 
-            case TYPE_EAN13:
+            case Ean13:
                 // No conversion
-                if (mType == TYPE_EAN13) {
+                if (mType == Type.Ean13) {
                     return mAsText;
                 }
                 break;
 
-            case TYPE_UPC_A:
+            case UpcA:
                 // No conversion
-                if (mType == TYPE_UPC_A) {
+                if (mType == Type.UpcA) {
                     return mAsText;
                 }
                 break;
@@ -578,20 +574,20 @@ public class ISBN {
      *
      * @return type
      */
-    @Type
-    private int getType(@Nullable final List<Integer> digits)
+    @NonNull
+    private Type getType(@Nullable final List<Integer> digits)
             throws NumberFormatException {
         // don't test the type here, this method is used to determine the type!
 
         if (digits == null) {
-            return TYPE_INVALID;
+            return Type.Invalid;
         }
 
         final int size = digits.size();
 
         if (size == 10) {
             if (calculateIsbn10Checksum(digits) == digits.get(digits.size() - 1)) {
-                return TYPE_ISBN10;
+                return Type.Isbn10;
             }
 
         } else if (size == 13) {
@@ -601,20 +597,20 @@ public class ISBN {
                     && digits.get(0) == 9
                     && digits.get(1) == 7
                     && (digits.get(2) == 8 || digits.get(2) == 9)) {
-                    return TYPE_ISBN13;
+                    return Type.Isbn13;
                 } else {
-                    return TYPE_EAN13;
+                    return Type.Ean13;
                 }
             }
         } else if (digits.size() > 11) {
             // a UPC_A barcode might be longer than 12 characters due to allowed extensions.
             // But only 12 characters are 'the' UPC_A code.
             if (calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
-                return TYPE_UPC_A;
+                return Type.UpcA;
             }
         }
 
-        return TYPE_INVALID;
+        return Type.Invalid;
     }
 
     /**
@@ -801,7 +797,7 @@ public class ISBN {
         final ISBN cmp = (ISBN) obj;
 
         // If either is invalid, no match
-        if (mType == TYPE_INVALID || cmp.isType(TYPE_INVALID)) {
+        if (mType == Type.Invalid || cmp.isType(Type.Invalid)) {
             return false;
         }
         if (mDigits == null || cmp.mDigits == null) {
@@ -840,10 +836,13 @@ public class ISBN {
         return true;
     }
 
-    @IntDef({TYPE_INVALID, TYPE_ISBN10, TYPE_ISBN13, TYPE_EAN13, TYPE_UPC_A})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Type {
-
+    public enum Type {
+        Invalid,
+        Isbn10,
+        /** ISBN-13 is a subtype of EAN-13. See {@link #isType(Type)}. */
+        Isbn13,
+        Ean13,
+        UpcA
     }
 
     @IntDef({VALIDITY_NONE, VALIDITY_LOOSE, VALIDITY_STRICT})
@@ -994,7 +993,7 @@ public class ISBN {
                     case 13: {
                         final ISBN isbn = new ISBN(str, mIsbnValidityCheck == VALIDITY_STRICT);
                         if (isbn.isIsbn10Compat()) {
-                            mAltIsbn = isbn.asText(TYPE_ISBN10);
+                            mAltIsbn = isbn.asText(Type.Isbn10);
                             mLayout.setStartIconVisible(true);
                             mLayout.setStartIconOnClickListener(
                                     view -> mEditText.setText(mAltIsbn));
@@ -1006,7 +1005,7 @@ public class ISBN {
                     case 10: {
                         final ISBN isbn = new ISBN(str, mIsbnValidityCheck == VALIDITY_STRICT);
                         if (isbn.isValid(mIsbnValidityCheck == VALIDITY_STRICT)) {
-                            mAltIsbn = isbn.asText(TYPE_ISBN13);
+                            mAltIsbn = isbn.asText(Type.Isbn13);
                             mLayout.setStartIconVisible(true);
                             mLayout.setStartIconOnClickListener(
                                     view -> mEditText.setText(mAltIsbn));
