@@ -22,14 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -47,11 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public class SearchTask
         extends LTask<Bundle> {
 
-    static final int BY_EXTERNAL_ID = 0;
-    static final int BY_ISBN = 1;
-    static final int BY_BARCODE = 2;
-    static final int BY_TEXT = 3;
-
     /** Log tag. */
     private static final String TAG = "SearchTask";
 
@@ -61,8 +53,7 @@ public class SearchTask
     @Nullable
     private boolean[] mFetchCovers;
     /** What criteria to search by. */
-    @By
-    private int mBy;
+    private By mBy;
     /** Search criteria. Usage depends on {@link #mBy}. */
     @Nullable
     private String mExternalId;
@@ -101,7 +92,7 @@ public class SearchTask
         mSearchEngine.setCaller(this);
     }
 
-    void setSearchBy(@By final int by) {
+    void setSearchBy(@NonNull final By by) {
         mBy = by;
     }
 
@@ -193,25 +184,25 @@ public class SearchTask
 
         final Bundle bookData;
         switch (mBy) {
-            case BY_EXTERNAL_ID:
+            case ExternalId:
                 SanityCheck.requireValue(mExternalId, "mExternalId");
                 bookData = ((SearchEngine.ByExternalId) mSearchEngine)
                         .searchByExternalId(context, mExternalId, mFetchCovers);
                 break;
 
-            case BY_ISBN:
+            case Isbn:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                         .searchByIsbn(context, mIsbnStr, mFetchCovers);
                 break;
 
-            case BY_BARCODE:
+            case Barcode:
                 SanityCheck.requireValue(mIsbnStr, "mIsbnStr");
                 bookData = ((SearchEngine.ByBarcode) mSearchEngine)
                         .searchByBarcode(context, mIsbnStr, mFetchCovers);
                 break;
 
-            case BY_TEXT:
+            case Text:
                 bookData = ((SearchEngine.ByText) mSearchEngine)
                         .search(context, mIsbnStr, mAuthor, mTitle, mPublisher, mFetchCovers);
                 break;
@@ -225,9 +216,10 @@ public class SearchTask
         return bookData;
     }
 
-    @IntDef({BY_EXTERNAL_ID, BY_ISBN, BY_BARCODE, BY_TEXT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface By {
-
+    public enum By {
+        ExternalId,
+        Isbn,
+        Barcode,
+        Text
     }
 }

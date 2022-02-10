@@ -782,26 +782,26 @@ public class SearchCoordinator
 
         if (externalId != null && !externalId.isEmpty()
             && (searchEngine instanceof SearchEngine.ByExternalId)) {
-            task.setSearchBy(SearchTask.BY_EXTERNAL_ID);
+            task.setSearchBy(SearchTask.By.ExternalId);
             task.setExternalId(externalId);
 
         } else if (mIsbn.isValid(true)
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
-            task.setSearchBy(SearchTask.BY_ISBN);
+            task.setSearchBy(SearchTask.By.Isbn);
             if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10()
                 && mIsbn.isIsbn10Compat()) {
-                task.setIsbn(mIsbn.asText(ISBN.TYPE_ISBN10));
+                task.setIsbn(mIsbn.asText(ISBN.Type.Isbn10));
             } else {
                 task.setIsbn(mIsbn.asText());
             }
 
         } else if (mIsbn.isValid(false)
                    && (searchEngine instanceof SearchEngine.ByBarcode)) {
-            task.setSearchBy(SearchTask.BY_BARCODE);
+            task.setSearchBy(SearchTask.By.Barcode);
             task.setIsbn(mIsbn.asText());
 
         } else if (searchEngine instanceof SearchEngine.ByText) {
-            task.setSearchBy(SearchTask.BY_TEXT);
+            task.setSearchBy(SearchTask.By.Text);
             task.setIsbn(mIsbn.asText());
             task.setAuthor(mAuthorSearchText);
             task.setTitle(mTitleSearchText);
