@@ -81,6 +81,13 @@ public enum SyncServer
     private final boolean mSyncDateIsUserEditable;
 
 
+    /**
+     * Constructor.
+     *
+     * @param label                  will be displayed to the user
+     * @param hasLastUpdateDateField whether the server provides a 'last update' field we can use
+     * @param syncDateUserEditable   whether the user can manually influence the sync date
+     */
     SyncServer(@StringRes final int label,
                final boolean hasLastUpdateDateField,
                final boolean syncDateUserEditable) {
