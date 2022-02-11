@@ -42,7 +42,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,8 +59,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -97,17 +94,6 @@ public class CoverHandler {
 
     /** FragmentResultListener request key. Append the mCIdx value! */
     private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
-
-    /**
-     * Never change these values. This is stored in user preferences.
-     * <p>
-     * After taking a picture, do nothing.
-     */
-    private static final int ACTION_DONE = 0;
-    /** After taking a picture, crop. */
-    private static final int ACTION_CROP = 1;
-    /** After taking a picture, edit. */
-    private static final int ACTION_EDIT = 2;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
 
@@ -602,16 +588,14 @@ public class CoverHandler {
                 }
 
                 // What action (if any) should we take after we're done?
-                @NextAction
-                final int action = Prefs
-                        .getIntListPref(global, Prefs.pk_camera_image_action, ACTION_DONE);
+                final NextAction action = NextAction.getLevel(global);
 
                 showProgress();
                 mVm.execute(new TransFormTask.Transformation(file)
                                     .setScale(true)
                                     .setSurfaceRotation(surfaceRotation)
                                     .setRotation(explicitRotation)
-                                    .setReturnCode(action));
+                                    .setNextAction(action));
             }
         }
     }
@@ -638,7 +622,7 @@ public class CoverHandler {
     private void onAfterTransform(@NonNull final TransFormTask.TransformedData result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "onAfterTransform"
-                       + "|returnCode=" + result.getReturnCode()
+                       + "|nextAction=" + result.getNextAction()
                        + "|bitmap=" + (result.getBitmap() != null)
                        + "|file=" + result.getFile().getAbsolutePath());
         }
@@ -650,18 +634,17 @@ public class CoverHandler {
             // sanity check: if the bitmap was good, the file will be good.
             Objects.requireNonNull(result.getFile(), "file");
             try {
-                switch (result.getReturnCode()) {
-                    case ACTION_CROP:
+                switch (result.getNextAction()) {
+                    case Crop:
                         mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
                                 result.getFile(), getTempFile()));
                         return;
 
-                    case ACTION_EDIT:
+                    case Edit:
                         editPicture(context, result.getFile());
                         return;
 
-                    case ACTION_DONE:
-                    default:
+                    case Done:
                         mBookSupplier.get().setCover(mCIdx, result.getFile());
                         // must use a post to force the View to update.
                         mFragmentView.post(() -> mCoverHandlerOwner.refresh(mCIdx));
@@ -727,9 +710,41 @@ public class CoverHandler {
         void refresh(int cIdx);
     }
 
-    @IntDef({ACTION_DONE, ACTION_CROP, ACTION_EDIT})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface NextAction {
+    public enum NextAction {
+        /** After taking a picture, do nothing. */
+        Done(0),
+        /** After taking a picture, crop. */
+        Crop(1),
+        /** After taking a picture, start an editor. */
+        Edit(2);
 
+        public final int value;
+
+        NextAction(final int value) {
+            this.value = value;
+        }
+
+        /**
+         * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
+         *
+         * @param global Global preferences
+         *
+         * @return Validity level
+         */
+        @NonNull
+        public static NextAction getLevel(@NonNull final SharedPreferences global) {
+
+            final int value = Prefs.getIntListPref(global, Prefs.pk_camera_image_action,
+                                                   Done.value);
+            switch (value) {
+                case 2:
+                    return Edit;
+                case 1:
+                    return Crop;
+                case 0:
+                default:
+                    return Done;
+            }
+        }
     }
 }

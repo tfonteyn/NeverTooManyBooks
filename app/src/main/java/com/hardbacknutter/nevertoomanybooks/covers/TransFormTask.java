@@ -105,7 +105,7 @@ public class TransFormTask
 
         return new TransformedData(bitmap,
                                    mTransformation.getDestFile(),
-                                   mTransformation.getReturnCode());
+                                   mTransformation.getNextAction());
     }
 
     /**
@@ -242,23 +242,25 @@ public class TransFormTask
         private final Bitmap mBitmap;
         @NonNull
         private final File mFile;
-        private final int mReturnCode;
+        @NonNull
+        private final CoverHandler.NextAction mNextAction;
 
         /**
          * Constructor.
          *
-         * @param bitmap     resulting bitmap; or {@code null} on failure
-         * @param file       If the bitmap is set, the transformed file.
-         *                   If the bitmap is {@code null}, the file value MUST BE IGNORED.
-         * @param returnCode as set in {@link Transformation#setReturnCode(int)};
-         *                   or {@code 0} if not set.
+         * @param bitmap resulting bitmap; or {@code null} on failure
+         * @param file   If the bitmap is set, the transformed file.
+         *               If the bitmap is {@code null}, the file value MUST BE IGNORED.
+         * @param action as set in
+         *               {@link Transformation#setNextAction(CoverHandler.NextAction)};
+         *               or {@code 0} if not set.
          */
         TransformedData(@Nullable final Bitmap bitmap,
                         @NonNull final File file,
-                        final int returnCode) {
+                        @NonNull final CoverHandler.NextAction action) {
             mBitmap = bitmap;
             mFile = file;
-            mReturnCode = returnCode;
+            mNextAction = action;
         }
 
         @Nullable
@@ -271,15 +273,16 @@ public class TransFormTask
             return mFile;
         }
 
-        int getReturnCode() {
-            return mReturnCode;
+        @NonNull
+        CoverHandler.NextAction getNextAction() {
+            return mNextAction;
         }
 
         @Override
         @NonNull
         public String toString() {
             return "TransformedData{"
-                   + "mReturnCode=" + mReturnCode
+                   + "mNextAction=" + mNextAction
                    + ", mBitmap=" + (mBitmap != null)
                    + ", mFile=" + mFile.getAbsolutePath() + '}';
         }
@@ -300,7 +303,7 @@ public class TransFormTask
         private int mExplicitRotation;
         private int mSurfaceRotation;
 
-        private int mReturnCode;
+        private CoverHandler.NextAction mNextAction;
 
         /**
          * Constructor.
@@ -426,19 +429,20 @@ public class TransFormTask
             return this;
         }
 
-        int getReturnCode() {
-            return mReturnCode;
+        @NonNull
+        CoverHandler.NextAction getNextAction() {
+            return mNextAction;
         }
 
         /**
          * Set an optional return code which will be passed back.
          *
-         * @param returnCode to pass back
+         * @param action to pass back
          *
          * @return {@code this} (for chaining)
          */
-        Transformation setReturnCode(final int returnCode) {
-            mReturnCode = returnCode;
+        Transformation setNextAction(@NonNull final CoverHandler.NextAction action) {
+            mNextAction = action;
             return this;
         }
     }
