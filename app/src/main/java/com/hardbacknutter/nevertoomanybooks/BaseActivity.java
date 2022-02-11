@@ -30,7 +30,6 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,8 +43,6 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
@@ -81,29 +78,23 @@ public abstract class BaseActivity
     /** Used by {@link #showError} Snackbar.LENGTH_LONG is 2750 ms. */
     public static final int ERROR_DELAY_MS = 3000;
 
-    /** Situation normal. */
-    private static final int ACTIVITY_IS_RUNNING = 0;
-    /** Activity is in need of recreating. */
-    private static final int ACTIVITY_REQUIRES_RECREATE = 1;
-    /** A {@link #recreate()} action has been triggered. */
-    private static final int ACTIVITY_IS_RECREATING = 2;
-
     /**
      * internal; Stage of Activity  doing/needing setIsRecreating() action.
      * See {@link #onResume()}.
      * <p>
      * Note this is a static!
      */
-    @ActivityStatus
-    private static int sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
+    @NonNull
+    private static Recreating sActivityRecreateStatus = Recreating.No;
 
     private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
             registerForActivityResult(new EditBookshelvesContract(),
-                                      bookshelfId -> {});
+                                      bookshelfId -> {
+                                      });
     private final ActivityResultLauncher<String> mSettingsLauncher =
             registerForActivityResult(new SettingsContract(), recreateActivity -> {
                 if (recreateActivity) {
-                    sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
+                    sActivityRecreateStatus = Recreating.Required;
                 }
             });
     /** Optional - The side/navigation panel. */
@@ -112,8 +103,7 @@ public abstract class BaseActivity
     /** Locale at {@link #onCreate} time. */
     private String mInitialLocaleSpec;
     /** Night-mode at {@link #onCreate} time. */
-    @NightMode.NightModeId
-    private int mInitialNightModeId;
+    private NightMode.Mode mInitialNightModeId;
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
@@ -222,23 +212,23 @@ public abstract class BaseActivity
     public boolean recreateIfNeeded() {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
+        if (sActivityRecreateStatus == Recreating.Required
             || ServiceLocator.getInstance().getAppLocale().isChanged(global, mInitialLocaleSpec)
             || NightMode.getInstance().isChanged(global, mInitialNightModeId)) {
 
-            sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
+            sActivityRecreateStatus = Recreating.Yes;
             recreate();
             return true;
 
         } else {
-            sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
+            sActivityRecreateStatus = Recreating.No;
         }
 
         return false;
     }
 
     boolean isRecreating() {
-        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
+        return sActivityRecreateStatus == Recreating.Yes;
     }
 
     /**
@@ -317,12 +307,13 @@ public abstract class BaseActivity
         view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
     }
 
-    @IntDef({ACTIVITY_IS_RUNNING,
-             ACTIVITY_REQUIRES_RECREATE,
-             ACTIVITY_IS_RECREATING})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ActivityStatus {
-
+    private enum Recreating {
+        /** Situation normal. */
+        No,
+        /** Activity is in need of recreating. */
+        Required,
+        /** A {@link #recreate()} action has been triggered. */
+        Yes
     }
 
 }
