@@ -23,34 +23,24 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /** Singleton. */
 public final class NightMode {
 
-    /**
-     * We're not using the actual {@link AppCompatDelegate} mode constants
-     * due to 'day-night' being different depending on the OS version.
-     */
-    private static final int MODE_NOT_SET = -1;
-    private static final int MODE_DAY_NIGHT = 0;
-    private static final int MODE_LIGHT = 1;
-    private static final int MODE_DARK = 2;
-
     /** Singleton. */
     private static NightMode sInstance;
 
-    /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
-    @NightModeId
-    private int mCurrentMode = MODE_NOT_SET;
+    /**
+     * Cache the User-specified theme currently in use.
+     * {@link Mode#NotSet} to force an update at App startup.
+     */
+    @NonNull
+    private Mode mCurrentMode = Mode.NotSet;
 
     /**
      * Constructor. Use {@link #getInstance()}.
@@ -80,9 +70,7 @@ public final class NightMode {
      * <pre>
      * {@code
      *    public void onCreate(@Nullable final Bundle savedInstanceState) {
-     *        // apply the user-preferred Theme before super.onCreate is called.
      *        NightMode.getInstance().apply(this);
-     *
      *        super.onCreate(savedInstanceState);
      *    }
      * }
@@ -92,45 +80,81 @@ public final class NightMode {
      *
      * @return the applied mode
      */
-    @NightModeId
-    public int apply(@NonNull final Context context) {
+    @NonNull
+    public Mode apply(@NonNull final Context context) {
         // Always read from prefs.
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        mCurrentMode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
-
-        final int dnMode;
-        switch (mCurrentMode) {
-            case MODE_NOT_SET:
-            case MODE_DAY_NIGHT:
-                if (Build.VERSION.SDK_INT >= 29) {
-                    dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                } else {
-                    dnMode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
-                }
-                break;
-
-            case MODE_DARK:
-                dnMode = AppCompatDelegate.MODE_NIGHT_YES;
-                break;
-
-            case MODE_LIGHT:
-            default:
-                dnMode = AppCompatDelegate.MODE_NIGHT_NO;
-                break;
-        }
-        AppCompatDelegate.setDefaultNightMode(dnMode);
+        mCurrentMode = Mode.getMode(global);
+        mCurrentMode.apply();
         return mCurrentMode;
     }
 
     public boolean isChanged(@NonNull final SharedPreferences global,
-                             @NightModeId final int mode) {
-        mCurrentMode = Prefs.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+                             @NonNull final Mode mode) {
+        mCurrentMode = Mode.getMode(global);
         return mode != mCurrentMode;
     }
 
-    @IntDef({MODE_NOT_SET, MODE_DAY_NIGHT, MODE_DARK, MODE_LIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NightModeId {
+    /**
+     * We're not using the actual {@link AppCompatDelegate} mode constants
+     * due to 'day-night' being different depending on the OS version.
+     */
+    public enum Mode {
+        NotSet(-1),
+        DayNight(0),
+        Light(1),
+        Dark(2);
 
+        private final int value;
+
+        Mode(final int value) {
+            this.value = value;
+        }
+
+        /**
+         * Get the mode to use.
+         *
+         * @param global Global preferences
+         *
+         * @return mode
+         */
+        @NonNull
+        public static Mode getMode(@NonNull final SharedPreferences global) {
+            final int value = Prefs.getIntListPref(global, Prefs.pk_ui_theme, DayNight.value);
+            switch (value) {
+                case 2:
+                    return Dark;
+                case 1:
+                    return Light;
+                case 0:
+                    return DayNight;
+                default:
+                    return NotSet;
+            }
+        }
+
+        public void apply() {
+            final int dnMode;
+            switch (this) {
+                case NotSet:
+                case DayNight:
+                    if (Build.VERSION.SDK_INT >= 29) {
+                        dnMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                    } else {
+                        dnMode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+                    }
+                    break;
+
+                case Dark:
+                    dnMode = AppCompatDelegate.MODE_NIGHT_YES;
+                    break;
+
+                case Light:
+                default:
+                    dnMode = AppCompatDelegate.MODE_NIGHT_NO;
+                    break;
+            }
+            AppCompatDelegate.setDefaultNightMode(dnMode);
+        }
     }
 }
