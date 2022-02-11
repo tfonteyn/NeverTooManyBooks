@@ -79,7 +79,7 @@ public abstract class FFBaseDialogFragment
     //  SHORT_DURATION_MS = 1500;
     //  LONG_DURATION_MS = 2750;
     private static final int USE_DEFAULT = -1;
-    /** The <strong>Dialog</strong> toolbar. Not to be confused with the Activity's ActionBar! */
+    /** The <strong>Dialog</strong> Toolbar. Not to be confused with the Activity's Toolbar! */
     Toolbar mDialogToolbar;
     @Nullable
     private View mButtonPanel;
