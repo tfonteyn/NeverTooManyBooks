@@ -72,8 +72,6 @@ public class ShowBookDetailsActivityViewModel
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> mFields = new ArrayList<>();
     private ListStyle mStyle;
-    private boolean mUseLoanee;
-    private boolean mUseToc;
 
     /**
      * Pseudo constructor.
@@ -87,11 +85,6 @@ public class ShowBookDetailsActivityViewModel
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             mStyle = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-
-            mUseLoanee = DBKey.isUsed(global, DBKey.KEY_LOANEE);
-            mUseToc = DBKey.isUsed(global, DBKey.BITMASK_TOC);
-
             initFields(context);
 
             mMenuHandlers.add(new ViewBookOnWebsiteHandler());
@@ -104,12 +97,14 @@ public class ShowBookDetailsActivityViewModel
         return mMenuHandlers;
     }
 
-    boolean useLoanee() {
-        return mUseLoanee;
+    boolean useLoanee(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        return DBKey.isUsed(global, DBKey.KEY_LOANEE);
     }
 
-    boolean useToc() {
-        return mUseToc;
+    boolean useToc(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        return DBKey.isUsed(global, DBKey.BITMASK_TOC);
     }
 
     /**

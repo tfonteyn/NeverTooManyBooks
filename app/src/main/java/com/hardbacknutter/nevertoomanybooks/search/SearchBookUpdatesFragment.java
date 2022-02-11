@@ -32,9 +32,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -77,6 +78,9 @@ public class SearchBookUpdatesFragment
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** The extended SearchCoordinator. */
     private SearchBookUpdatesViewModel mVm;
     private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
@@ -96,7 +100,6 @@ public class SearchBookUpdatesFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
         //noinspection ConstantConditions
@@ -117,18 +120,21 @@ public class SearchBookUpdatesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
         final Bundle args = getArguments();
 
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
-            setTitle(args.getString(BKEY_SCREEN_TITLE));
+            toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
-            setTitle(R.string.lbl_select_fields);
+            toolbar.setTitle(R.string.lbl_select_fields);
         }
 
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+            toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
         // Progress from individual searches AND overall progress
@@ -155,6 +161,7 @@ public class SearchBookUpdatesFragment
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
+        mVb.fieldList.setHasFixedSize(true);
         initAdapter();
 
         if (savedInstanceState == null) {
@@ -170,7 +177,6 @@ public class SearchBookUpdatesFragment
     }
 
     private void initAdapter() {
-        mVb.fieldList.setHasFixedSize(true);
         //noinspection ConstantConditions
         mVb.fieldList.setAdapter(new SyncFieldAdapter(getContext(), mVm.getSyncFields()));
     }
@@ -181,41 +187,6 @@ public class SearchBookUpdatesFragment
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        final Resources r = getResources();
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
-                 R.string.lbl_websites)
-            .setIcon(R.drawable.ic_baseline_find_in_page_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_baseline_undo_24);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-            mEditSitesLauncher.launch(mVm.getSiteList());
-            return true;
-
-        } else if (itemId == R.id.MENU_RESET) {
-            mVm.resetPreferences();
-            initAdapter();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -336,6 +307,41 @@ public class SearchBookUpdatesFragment
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
             mProgressDelegate = null;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            final Resources r = getResources();
+            menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                     r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
+                     R.string.lbl_websites)
+                .setIcon(R.drawable.ic_baseline_find_in_page_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
+                .setIcon(R.drawable.ic_baseline_undo_24);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
+                mEditSitesLauncher.launch(mVm.getSiteList());
+                return true;
+
+            } else if (itemId == R.id.MENU_RESET) {
+                mVm.resetPreferences();
+                initAdapter();
+                return true;
+            }
+
+            return false;
         }
     }
 

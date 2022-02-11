@@ -27,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
@@ -99,12 +98,12 @@ public class ViewBookOnWebsiteHandler
     }
 
     @Override
-    public boolean onItemSelected(@NonNull final Context context,
-                                  @IdRes final int menuItemId,
-                                  @NonNull final DataHolder rowData) {
+    public boolean onMenuItemSelected(@NonNull final Context context,
+                                      @NonNull final MenuItem menuItem,
+                                      @NonNull final DataHolder rowData) {
 
         final Optional<SearchEngineConfig> oConfig = SearchEngineRegistry
-                .getInstance().getByMenuId(menuItemId);
+                .getInstance().getByMenuId(menuItem.getItemId());
         if (oConfig.isPresent()) {
             final Domain domain = oConfig.get().getExternalIdDomain();
             if (domain != null) {

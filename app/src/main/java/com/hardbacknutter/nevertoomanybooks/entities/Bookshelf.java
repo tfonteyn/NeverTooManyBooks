@@ -73,6 +73,7 @@ public class Bookshelf
     };
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT = 1;
+
     /**
      * the virtual 'All Books' representing our complete library.
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
@@ -156,7 +157,7 @@ public class Bookshelf
      *
      * @param in Parcel to construct the object from
      */
-    Bookshelf(@NonNull final Parcel in) {
+    private Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
         mName = in.readString();

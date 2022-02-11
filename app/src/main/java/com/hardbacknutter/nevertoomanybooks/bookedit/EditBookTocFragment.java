@@ -31,13 +31,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -56,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -112,6 +113,8 @@ public class EditBookTocFragment
      */
     @NonNull
     private final List<Edition> mIsfdbEditions = new ArrayList<>();
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     /** the rows. A reference to the parcelled list in the Book. */
     private ArrayList<TocEntry> mList;
     /** View Binding. */
@@ -127,7 +130,6 @@ public class EditBookTocFragment
      */
     @Nullable
     private Integer mEditPosition;
-
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
             new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
@@ -137,7 +139,6 @@ public class EditBookTocFragment
                     onEntryUpdated(tocEntry, isAnthology);
                 }
             };
-
     private EditBookTocViewModel mEditTocVm;
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
             new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
@@ -186,6 +187,10 @@ public class EditBookTocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
         final Context context = getContext();
         //noinspection ConstantConditions
         mVm.initFields(context, FragmentId.Toc, FieldGroup.Toc);
@@ -219,8 +224,7 @@ public class EditBookTocFragment
             }
         });
 
-        mVb.tocList.addItemDecoration(
-                new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.tocList.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
 
         mList = mVm.getBook().getToc();
@@ -337,47 +341,6 @@ public class EditBookTocFragment
         return !mVb.title.getText().toString().isEmpty();
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.isfdb_menu_populate_toc);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
-            final Book book = mVm.getBook();
-            final long isfdbId = book.getLong(DBKey.SID_ISFDB);
-            if (isfdbId != 0) {
-                Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
-                              Snackbar.LENGTH_LONG).show();
-                mEditTocVm.searchBook(isfdbId);
-                return true;
-            }
-
-            final String isbnStr = book.getString(DBKey.KEY_ISBN);
-            if (!isbnStr.isEmpty()) {
-                final ISBN isbn = ISBN.createISBN(isbnStr);
-                if (isbn.isValid(true)) {
-                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
-                                  Snackbar.LENGTH_LONG).show();
-                    mEditTocVm.searchByIsbn(isbn);
-                    return true;
-                }
-            }
-            Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
-                          Snackbar.LENGTH_LONG).show();
-            return false;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * Using {@link ExtPopupMenu} for context menus.
      *
@@ -420,19 +383,63 @@ public class EditBookTocFragment
      */
     private void deleteEntry(final int position) {
         final TocEntry tocEntry = mList.get(position);
-        if (tocEntry.getId() != 0) {
-            //noinspection ConstantConditions
-            StandardDialogs.deleteTocEntry(getContext(),
-                                           tocEntry.getTitle(),
-                                           tocEntry.getPrimaryAuthor(), () -> {
-                        if (mVm.deleteTocEntry(getContext(), tocEntry)) {
-                            mList.remove(tocEntry);
-                            mListAdapter.notifyItemRemoved(position);
-                        }
-                    });
-        } else {
+        if (tocEntry.getId() == 0) {
+            // It's a newly added entry, not saved; just remove it from the list.
             mList.remove(tocEntry);
             mListAdapter.notifyItemRemoved(position);
+
+        } else {
+            final Context context = getContext();
+            if (tocEntry.getBookCount() == 1) {
+                // The entry is saved, but only occurs in this single book.
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.action_delete)
+                        .setMessage(context.getString(R.string.confirm_remove_toc_entry,
+                                                      tocEntry.getTitle(),
+                                                      tocEntry.getPrimaryAuthor()
+                                                              .getLabel(context)))
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(R.string.action_delete, (d, w) -> {
+                            // We don't actually delete anything here as the user must be
+                            // able to cancel the edit. So just remove it from the list.
+                            mList.remove(tocEntry);
+                            mListAdapter.notifyItemRemoved(position);
+                        })
+                        .create()
+                        .show();
+
+            } else {
+                // The entry is saved and occurs in multiple books.
+                // Offer deleting from this book only (i.e. 'remove') or an actual delete from
+                // all books.
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(context)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.action_delete)
+                        .setMessage(context.getString(R.string.confirm_scope_for_delete,
+                                                      tocEntry.getTitle(),
+                                                      tocEntry.getPrimaryAuthor()
+                                                              .getLabel(context),
+                                                      context.getString(R.string.btn_all_books)))
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setNeutralButton(R.string.btn_this_book, (d, w) -> {
+                            // We don't actually delete anything here as the user must be
+                            // able to cancel the edit. So just remove it from the list.
+                            mList.remove(tocEntry);
+                            mListAdapter.notifyItemRemoved(position);
+                        })
+                        .setPositiveButton(R.string.btn_all_books, (d, w) -> {
+                            // This is a hard delete and done immediately.
+                            if (mVm.deleteTocEntry(context, tocEntry)) {
+                                mList.remove(tocEntry);
+                                mListAdapter.notifyItemRemoved(position);
+                            }
+                        })
+                        .create()
+                        .show();
+            }
         }
     }
 
@@ -835,6 +842,47 @@ public class EditBookTocFragment
         protected void onDelete(final int adapterPosition,
                                 @NonNull final TocEntry item) {
             deleteEntry(adapterPosition);
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0,
+                     R.string.isfdb_menu_populate_toc);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+
+            if (menuItem.getItemId() == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
+                final Book book = mVm.getBook();
+                final long isfdbId = book.getLong(DBKey.SID_ISFDB);
+                if (isfdbId != 0) {
+                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                                  Snackbar.LENGTH_LONG).show();
+                    mEditTocVm.searchBook(isfdbId);
+                    return true;
+                }
+
+                final String isbnStr = book.getString(DBKey.KEY_ISBN);
+                if (!isbnStr.isEmpty()) {
+                    final ISBN isbn = ISBN.createISBN(isbnStr);
+                    if (isbn.isValid(true)) {
+                        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                                      Snackbar.LENGTH_LONG).show();
+                        mEditTocVm.searchByIsbn(isbn);
+                        return true;
+                    }
+                }
+                Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
+                              Snackbar.LENGTH_LONG).show();
+                return true;
+            }
+            return false;
         }
     }
 }

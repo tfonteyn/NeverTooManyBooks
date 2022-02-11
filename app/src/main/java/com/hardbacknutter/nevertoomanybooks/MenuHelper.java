@@ -35,6 +35,8 @@ import android.widget.SearchView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 public final class MenuHelper {
@@ -45,11 +47,18 @@ public final class MenuHelper {
     public static void setupSearchActionView(@NonNull final Activity activity,
                                              @NonNull final MenuInflater inflater,
                                              @NonNull final Menu menu) {
-        MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
+        final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
         if (searchItem == null) {
             inflater.inflate(R.menu.sav_search, menu);
-            searchItem = menu.findItem(R.id.MENU_SEARCH);
         }
+
+        setupSearchActionView(activity, menu);
+    }
+
+    public static void setupSearchActionView(@NonNull final Activity activity,
+                                             @NonNull final Menu menu) {
+        final MenuItem searchItem = Objects.requireNonNull(menu.findItem(R.id.MENU_SEARCH),
+                                                           "Missing search menu item");
 
         // Reminder: we let the SearchView handle its own icons.
         // The hint text is defined in xml/searchable.xml

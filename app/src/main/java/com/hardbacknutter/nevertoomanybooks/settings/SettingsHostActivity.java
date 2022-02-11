@@ -41,8 +41,8 @@ public class SettingsHostActivity
     public static Intent createIntent(@NonNull final Context context,
                                       @NonNull final Class<? extends Fragment> fragmentClass) {
         return new Intent(context, SettingsHostActivity.class)
-                .putExtra(BKEY_ACTIVITY, R.layout.activity_main)
-                .putExtra(BKEY_FRAGMENT_CLASS, fragmentClass.getName());
+                .putExtra(FragmentHostActivity.BKEY_ACTIVITY, R.layout.activity_main)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS, fragmentClass.getName());
     }
 
     @Override

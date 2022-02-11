@@ -19,21 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
@@ -44,24 +43,14 @@ public class EditBookshelvesViewModel
 
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
 
-    private final MutableLiveData<Void> mSelectedPositionChanged = new MutableLiveData<>();
-
     /** Currently selected row. */
     private int mSelectedPosition = RecyclerView.NO_POSITION;
 
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
-    /** the selected bookshelf id, can be {@code 0} for none. */
-    private long mSelectedBookshelfId;
-
-    long getSelectedBookshelfId() {
-        return mSelectedBookshelfId;
-    }
 
     /**
      * Pseudo constructor.
-     * <p>
-     * Loads the book data upon first start.
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
@@ -69,23 +58,24 @@ public class EditBookshelvesViewModel
         if (mList == null) {
             mList = ServiceLocator.getInstance().getBookshelfDao().getAll();
             if (args != null) {
-                // set as the initial result
-                mSelectedBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
-                mSelectedPosition = findSelectedPosition(mSelectedBookshelfId);
+                final long id = args.getLong(BKEY_CURRENT_BOOKSHELF);
+                SanityCheck.requirePositiveValue(id);
+                mSelectedPosition = findSelectedPosition(id);
             }
         }
     }
 
-    void reloadListAndSetSelectedPosition(final long bookshelfId) {
-        mList.clear();
-        mList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
-        setSelectedPosition(findSelectedPosition(bookshelfId));
-    }
-
-    private int findSelectedPosition(final long bookshelfId) {
+    /**
+     * Find the position in the list of the Bookshelf with the given id,
+     *
+     * @param id to find
+     *
+     * @return position
+     */
+    private int findSelectedPosition(final long id) {
         for (int i = 0; i < mList.size(); i++) {
             final Bookshelf bookshelf = mList.get(i);
-            if (bookshelf.getId() == bookshelfId) {
+            if (bookshelf.getId() == id) {
                 return i;
             }
         }
@@ -93,8 +83,21 @@ public class EditBookshelvesViewModel
     }
 
     @NonNull
-    ArrayList<Bookshelf> getBookshelves() {
+    ArrayList<Bookshelf> getList() {
         return mList;
+    }
+
+    /**
+     * Get the currently selected Bookshelf.
+     *
+     * @return Bookshelf, or {@code null} if none selected (which should never happen... flw)
+     */
+    @Nullable
+    Bookshelf getSelectedBookshelf() {
+        if (mSelectedPosition != RecyclerView.NO_POSITION) {
+            return mList.get(mSelectedPosition);
+        }
+        return null;
     }
 
     @NonNull
@@ -108,31 +111,48 @@ public class EditBookshelvesViewModel
 
     void setSelectedPosition(final int position) {
         mSelectedPosition = position;
-        // update the fragment -> it will update the adapter
-        mSelectedPositionChanged.setValue(null);
-        // update the activity result.
-        mSelectedBookshelfId = getBookshelf(mSelectedPosition).getId();
     }
 
-    @NonNull
-    LiveData<Void> onSelectedPositionChanged() {
-        return mSelectedPositionChanged;
+    /**
+     * Verify and set the position 'above' as the new selected position.
+     *
+     * @return the new 'selected' position
+     */
+    public int findAndSelect(final int position) {
+        mSelectedPosition = MathUtils.clamp(position - 1, 0, mList.size() - 1);
+        return mSelectedPosition;
     }
 
-    @NonNull
-    Bookshelf createNewBookshelf(@NonNull final Context context) {
-        return new Bookshelf("", ServiceLocator.getInstance().getStyles()
-                                               .getDefault(context));
+    /**
+     * Called after a Bookshelf has been edited.
+     * Reloads the entire list, and sets the edited row as the selected.
+     *
+     * @param bookshelfId id of the modified Bookshelf
+     */
+    void onBookshelfEdited(final long bookshelfId) {
+        mList.clear();
+        mList.addAll(ServiceLocator.getInstance().getBookshelfDao().getAll());
+        mSelectedPosition = findSelectedPosition(bookshelfId);
     }
 
-    void deleteBookshelf(final int position) {
-        final Bookshelf bookshelf = mList.get(position);
+    /**
+     * Delete the given Bookshelf.
+     *
+     * @param bookshelf to delete
+     */
+    void deleteBookshelf(@NonNull final Bookshelf bookshelf) {
         ServiceLocator.getInstance().getBookshelfDao().delete(bookshelf);
         mList.remove(bookshelf);
+        mSelectedPosition = RecyclerView.NO_POSITION;
     }
 
-    void purgeBLNS() {
+    /**
+     * User explicitly wants to purge the BLNS for the given Bookshelf.
+     *
+     * @param bookshelfId to purge
+     */
+    void purgeBLNS(final long bookshelfId) {
         ServiceLocator.getInstance().getBookshelfDao()
-                      .purgeNodeStates(mList.get(mSelectedPosition).getId());
+                      .purgeNodeStates(bookshelfId);
     }
 }

@@ -25,6 +25,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -65,15 +66,16 @@ public abstract class StyleBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
         final ListStyle style = mVm.getStyle();
         if (style.getId() == 0) {
-            mActionBar.setTitle(R.string.lbl_clone_style);
+            toolbar.setTitle(R.string.lbl_clone_style);
         } else {
-            mActionBar.setTitle(R.string.lbl_edit_style);
+            toolbar.setTitle(R.string.lbl_edit_style);
         }
 
         //noinspection ConstantConditions
-        mActionBar.setSubtitle(style.getLabel(getContext()));
+        toolbar.setSubtitle(style.getLabel(getContext()));
     }
 
     @Override

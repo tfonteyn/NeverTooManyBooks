@@ -38,6 +38,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -88,10 +90,10 @@ public class ImportFragment
      * Also see {@link #mOpenUriLauncher}.
      */
     private static final String MIME_TYPES = "*/*";
-
+    @NonNull
+    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     /** The ViewModel. */
     protected ImportViewModel mVm;
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -121,7 +123,6 @@ public class ImportFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
@@ -140,7 +141,11 @@ public class ImportFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.lbl_import);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
+        toolbar.setTitle(R.string.lbl_import);
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
@@ -162,36 +167,6 @@ public class ImportFragment
             // start the import process by asking the user for a Uri
             mOpenUriLauncher.launch(MIME_TYPES);
         }
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_go, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        menuItem.setEnabled(false);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        final MenuItem menuItem = getToolbar().getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-        menuItem.setEnabled(mVm.isReadyToGo());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            mVm.startImport();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -347,6 +322,7 @@ public class ImportFragment
         if (message.isNewEvent()) {
             mVm.setMetaData(message.getData().getResult());
             showArchiveDetails();
+            mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
         }
     }
 
@@ -572,6 +548,38 @@ public class ImportFragment
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
             mProgressDelegate = null;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            menuItem.setEnabled(false);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(menuItem.getTitle());
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+
+            onPrepareMenu(menu);
+        }
+
+        private void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ACTION_CONFIRM)
+                .setEnabled(mVm.isReadyToGo());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                mVm.startImport();
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -97,7 +97,6 @@ public class SearchAdminFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
@@ -128,7 +127,7 @@ public class SearchAdminFragment
         final TabLayout tabPanel = getActivity().findViewById(R.id.tab_panel);
 
         if (types.size() == 1) {
-            setSubtitle(types.get(0).getLabelId());
+            getToolbar().setSubtitle(types.get(0).getLabelId());
             tabPanel.setVisibility(View.GONE);
         }
 

@@ -22,8 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -36,7 +36,7 @@ public interface MenuHandler {
     void onPrepareMenu(@NonNull Menu menu,
                        @NonNull DataHolder rowData);
 
-    boolean onItemSelected(@NonNull Context context,
-                           @IdRes int menuItemId,
-                           @NonNull DataHolder rowData);
+    boolean onMenuItemSelected(@NonNull Context context,
+                               @NonNull final MenuItem menuItem,
+                               @NonNull DataHolder rowData);
 }

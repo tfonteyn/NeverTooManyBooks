@@ -58,6 +58,8 @@
     <integer name="MENU_ORDER_LENDING">710</integer>
     <integer name="MENU_ORDER_SHARE">720</integer>
 
+    <integer name="MENU_ORDER_PURGE_BLNS">730</integer>
+
     <integer name="MENU_ORDER_CALIBRE">750</integer>
 
     <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
@@ -224,6 +226,7 @@
     <!-- options menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
 
+    <item name="MENU_GROUP_BLNS" type="id" />
     <item name="MENU_PURGE_BLNS" type="id" />
 
     <!-- options menu -->

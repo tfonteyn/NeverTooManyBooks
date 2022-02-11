@@ -31,6 +31,7 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
 
 import java.util.Locale;
 
@@ -64,18 +65,16 @@ public class SqliteShellFragment
             + " UNION "
             + "SELECT 'T' AS T, tbl_name FROM sqlite_temp_master WHERE type='table'"
             + " ORDER BY tbl_name";
-
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     private boolean mAllowUpdates;
-
     /** View Binding. */
     private FragmentSqliteShellBinding mVb;
-
     private SynchronizedDb mDb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         final Bundle args = getArguments();
         if (args != null) {
@@ -98,6 +97,8 @@ public class SqliteShellFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getToolbar().addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
         final WebSettings settings = mVb.output.getSettings();
         settings.setTextZoom(75);
     }
@@ -112,43 +113,11 @@ public class SqliteShellFragment
 //        settings.setTextZoom(settings.getTextZoom() + 10);
 //    }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
-            .setIcon(mAllowUpdates ? R.drawable.ic_baseline_warning_24
-                                   : R.drawable.ic_baseline_directions_run_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,
-                 R.string.debug_sq_shell_list_tables)
-            .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
-            executeSql(mVb.input.getText().toString().trim());
-            return true;
-
-        } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
-            executeSql(SQL_LIST_TABLES);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void executeSql(@NonNull final String sql) {
         final String lcSql = sql.toLowerCase(Locale.ROOT);
         try {
             if (lcSql.startsWith("update") || lcSql.startsWith("delete")) {
-                setTitle("");
+                getToolbar().setTitle("");
 
                 if (mAllowUpdates) {
                     try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
@@ -163,7 +132,7 @@ public class SqliteShellFragment
                 }
             } else {
                 try (Cursor cursor = mDb.rawQuery(sql, null)) {
-                    setTitle(STR_LAST_COUNT + cursor.getCount());
+                    getToolbar().setTitle(STR_LAST_COUNT + cursor.getCount());
 
                     final StringBuilder sb = new StringBuilder("<table>");
                     final String[] columnNames = cursor.getColumnNames();
@@ -189,10 +158,43 @@ public class SqliteShellFragment
                 }
             }
         } catch (@NonNull final Exception e) {
-            setTitle("");
+            getToolbar().setTitle("");
 
             mVb.output.loadDataWithBaseURL(null, String.valueOf(e.getMessage()),
                                            TEXT_HTML, UTF_8, null);
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
+                .setIcon(mAllowUpdates ? R.drawable.ic_baseline_warning_24
+                                       : R.drawable.ic_baseline_directions_run_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,
+                     R.string.debug_sq_shell_list_tables)
+                .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
+                executeSql(mVb.input.getText().toString().trim());
+                return true;
+
+            } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
+                executeSql(SQL_LIST_TABLES);
+                return true;
+            }
+            return false;
         }
     }
 }

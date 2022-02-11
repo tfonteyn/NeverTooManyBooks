@@ -92,6 +92,16 @@ public interface ListStyle {
     void setId(long id);
 
     /**
+     * Get a short description of the type of this style.
+     *
+     * @param context Current context
+     *
+     * @return description
+     */
+    @NonNull
+    String getTypeDescription(@NonNull Context context);
+
+    /**
      * Get the label to use. This is for <strong>displaying only</strong>.
      *
      * @param context Current context

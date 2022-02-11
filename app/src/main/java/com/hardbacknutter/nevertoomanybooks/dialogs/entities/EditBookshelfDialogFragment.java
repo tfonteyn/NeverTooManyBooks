@@ -212,6 +212,16 @@ public class EditBookshelfDialogFragment
         }
 
         /**
+         * Launch the dialog with a new Bookshelf.
+         *
+         * @param context Current context
+         */
+        public void launchNewBookshelf(@NonNull final Context context) {
+            launch(new Bookshelf("", ServiceLocator.getInstance().getStyles()
+                                                   .getDefault(context)));
+        }
+
+        /**
          * Launch the dialog.
          *
          * @param bookshelf to edit.

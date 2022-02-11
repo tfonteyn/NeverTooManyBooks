@@ -31,6 +31,8 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -64,13 +66,16 @@ public class SyncWriterFragment
 
     /** View Binding. */
     private FragmentSyncExportBinding mVb;
+
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     @Nullable
     private ProgressDelegate mProgressDelegate;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SyncWriterViewModel.class);
@@ -91,12 +96,15 @@ public class SyncWriterFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.setTitle(mVm.getSyncServer().getLabel());
+
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
         mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        setTitle(mVm.getSyncServer().getLabel());
 
         // Check if the task is already running (e.g. after a screen rotation...)
         // Note that after a screen rotation, the full-options screen will NOT be re-shown.
@@ -128,28 +136,6 @@ public class SyncWriterFragment
                 })
                 .create()
                 .show();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_go, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (mVm.getConfig().getExporterEntries().size() > 1) {
-                mVm.startExport();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -293,4 +279,31 @@ public class SyncWriterFragment
             mProgressDelegate = null;
         }
     }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(menuItem.getTitle());
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                if (mVm.getConfig().getExporterEntries().size() > 1) {
+                    mVm.startExport();
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

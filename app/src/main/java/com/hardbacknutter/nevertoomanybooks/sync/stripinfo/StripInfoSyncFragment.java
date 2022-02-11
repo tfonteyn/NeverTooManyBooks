@@ -30,6 +30,8 @@ import android.view.ViewGroup;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -53,14 +55,11 @@ public class StripInfoSyncFragment
 
     public static final String TAG = "StripInfoSyncFragment";
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** View Binding. */
     private FragmentSyncStripinfoBinding mVb;
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
     @Nullable
     @Override
@@ -75,7 +74,10 @@ public class StripInfoSyncFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.action_synchronize);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.setTitle(R.string.action_synchronize);
 
         mVb.btnImport.setOnClickListener(v -> {
             if (StripInfoAuth.isUsernameSet()) {
@@ -113,29 +115,6 @@ public class StripInfoSyncFragment
         });
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        menu.add(R.id.MENU_GROUP_STRIPINFO, R.id.MENU_STRIP_INFO_SETTING, 0,
-                 R.string.lbl_settings)
-            .setIcon(R.drawable.ic_baseline_settings_24);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_STRIP_INFO_SETTING) {
-            openSettings();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void openSettings() {
         final Fragment fragment = new StripInfoBePreferencesFragment();
         final FragmentManager fm = getParentFragmentManager();
@@ -144,5 +123,26 @@ public class StripInfoSyncFragment
           .addToBackStack(StripInfoBePreferencesFragment.TAG)
           .replace(R.id.main_fragment, fragment, StripInfoBePreferencesFragment.TAG)
           .commit();
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(R.id.MENU_GROUP_STRIPINFO, R.id.MENU_STRIP_INFO_SETTING, 0,
+                     R.string.lbl_settings)
+                .setIcon(R.drawable.ic_baseline_settings_24);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_STRIP_INFO_SETTING) {
+                openSettings();
+                return true;
+            }
+            return false;
+        }
     }
 }

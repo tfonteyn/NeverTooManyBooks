@@ -35,7 +35,10 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -96,11 +99,12 @@ public abstract class EditBookBaseFragment
 
     private DateParser mDateParser;
 
+    @NonNull
+    final MenuHandlersMenuProvider mMenuHandlersMenuProvider = new MenuHandlersMenuProvider();
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
     }
@@ -111,41 +115,14 @@ public abstract class EditBookBaseFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mMenuHandlersMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
         //noinspection ConstantConditions
         mDateParser = new FullDateParser(getContext());
 
         mPartialDatePickerLauncher.registerForFragmentResult(getChildFragmentManager(), this);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        mVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final Book book = mVm.getBook();
-
-        mVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @CallSuper
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final Context context = getContext();
-        final int itemId = item.getItemId();
-        final Book book = mVm.getBook();
-
-        //noinspection ConstantConditions
-        if (mVm.getMenuHandlers().stream()
-               .anyMatch(h -> h.onItemSelected(context, itemId, book))) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @CallSuper
@@ -186,25 +163,24 @@ public abstract class EditBookBaseFragment
         // Dev note: DO NOT use a 'this' reference directly
         fields.forEach(field -> field.setAfterFieldChangeListener(mAfterFieldChangeListener));
 
-
-
         // All views should now have proper visibility set, so fix their focus order.
         //noinspection ConstantConditions
         ViewFocusOrder.fix(getView());
 
+        final Toolbar toolbar = getToolbar();
         // Set the activity title
         if (book.isNew()) {
             // New book
-            setTitle(R.string.lbl_add_book);
-            setSubtitle(null);
+            toolbar.setTitle(R.string.lbl_add_book);
+            toolbar.setSubtitle(null);
         } else {
             // Existing book
             String title = book.getTitle();
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
-            setTitle(title);
-            setSubtitle(Author.getCondensedNames(context, book.getAuthors()));
+            toolbar.setTitle(title);
+            toolbar.setSubtitle(Author.getCondensedNames(context, book.getAuthors()));
         }
     }
 
@@ -301,6 +277,9 @@ public abstract class EditBookBaseFragment
                         });
             }
         }
+
+        //URGENT: calling onPrepareMenu here is mostly enough, but not 100% accurate
+        mMenuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
     @Override
@@ -509,5 +488,33 @@ public abstract class EditBookBaseFragment
          */
         public abstract void onResult(@NonNull T original,
                                       @NonNull T modified);
+    }
+
+    private class MenuHandlersMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            mVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, menuInflater));
+
+            onPrepareMenu(menu);
+        }
+
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            final Book book = mVm.getBook();
+
+            mVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final Context context = getContext();
+            final Book book = mVm.getBook();
+
+            //noinspection ConstantConditions
+            return mVm.getMenuHandlers().stream()
+                      .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
+        }
     }
 }

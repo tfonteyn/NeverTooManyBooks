@@ -1124,8 +1124,8 @@ public class BookDaoImpl
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
             try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_VALID_ISBN,
-                                              new String[]{isbn.asText(ISBN.TYPE_ISBN10),
-                                                           isbn.asText(ISBN.TYPE_ISBN13)})) {
+                                              new String[]{isbn.asText(ISBN.Type.Isbn10),
+                                                           isbn.asText(ISBN.Type.Isbn13)})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));

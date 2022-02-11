@@ -33,8 +33,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -108,19 +106,19 @@ public abstract class BaseActivity
                     sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                 }
             });
+    /** Optional - The side/navigation panel. */
+    @Nullable
+    DrawerLayout mDrawerLayout;
     /** Locale at {@link #onCreate} time. */
     private String mInitialLocaleSpec;
     /** Night-mode at {@link #onCreate} time. */
     @NightMode.NightModeId
     private int mInitialNightModeId;
-    /** Optional - The side/navigation panel. */
-    @Nullable
-    private DrawerLayout mDrawerLayout;
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
-    /** Flag indicating this Activity is a self-proclaimed root Activity. */
-    private boolean mHomeIsRootMenu;
+
+    private Toolbar mToolbar;
 
     /**
      * Hide the keyboard.
@@ -131,6 +129,15 @@ public abstract class BaseActivity
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @NonNull
+    public Toolbar getToolbar() {
+        if (mToolbar == null) {
+            mToolbar = Objects.requireNonNull((Toolbar) findViewById(R.id.toolbar),
+                                              "R.id.toolbar");
+        }
+        return mToolbar;
     }
 
     @Override
@@ -156,15 +163,7 @@ public abstract class BaseActivity
         super.onCreate(savedInstanceState);
     }
 
-    protected void initToolbar() {
-        final Toolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
-        // Normal setup of the action bar now
-        updateActionBar(isTaskRoot());
-    }
-
+    @CallSuper
     void initNavDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
@@ -172,35 +171,6 @@ public abstract class BaseActivity
             mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
     }
-
-    @Override
-    public void setTitle(@StringRes final int title) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(title);
-        } else {
-            super.setTitle(title);
-        }
-    }
-
-    @Override
-    public void setTitle(@Nullable final CharSequence title) {
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(title);
-        } else {
-            super.setTitle(title);
-        }
-    }
-
-    public void setSubtitle(@StringRes final int title) {
-        Objects.requireNonNull(getSupportActionBar()).setSubtitle(title);
-    }
-
-    public void setSubtitle(@Nullable final CharSequence title) {
-        Objects.requireNonNull(getSupportActionBar()).setSubtitle(title);
-    }
-
 
     /**
      * Manually add the first fragment for the given container. Not added to the BackStack.
@@ -230,21 +200,6 @@ public abstract class BaseActivity
               .setReorderingAllowed(true)
               .add(containerViewId, fragment, fragmentTag)
               .commit();
-        }
-    }
-
-    void updateActionBar(final boolean isRoot) {
-        mHomeIsRootMenu = isRoot;
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // default on all activities is to show the "up" (back) button
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
-            if (mHomeIsRootMenu) {
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
-            } else {
-                actionBar.setHomeAsUpIndicator(null);
-            }
         }
     }
 
@@ -286,7 +241,6 @@ public abstract class BaseActivity
         return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
     }
 
-
     /**
      * If the drawer is open and the user click the back-button, close the drawer
      * and ignore the back-press.
@@ -304,7 +258,6 @@ public abstract class BaseActivity
             super.onBackPressed();
         }
     }
-
 
     @Nullable
     protected MenuItem getNavigationMenuItem(@SuppressWarnings("SameParameterValue")
@@ -348,33 +301,6 @@ public abstract class BaseActivity
     void closeNavigationDrawer() {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        }
-    }
-
-    /**
-     * TODO:  https://developer.android.com/training/appbar/up-action
-     */
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            // Default handler for home icon
-            case android.R.id.home: {
-                // Is this the real (or self-proclaimed) root activity?
-                if (isTaskRoot() && mHomeIsRootMenu) {
-                    if (mDrawerLayout != null) {
-                        mDrawerLayout.openDrawer(GravityCompat.START);
-                        return true;
-                    }
-                }
-                // otherwise, home is an 'up' event. Simulate the user pressing the 'back' key.
-                onBackPressed();
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 

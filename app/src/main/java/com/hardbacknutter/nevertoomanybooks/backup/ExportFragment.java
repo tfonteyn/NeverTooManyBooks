@@ -37,7 +37,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -80,6 +82,9 @@ public class ExportFragment
     /** The ViewModel. */
     private ExportViewModel mVm;
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
@@ -93,7 +98,6 @@ public class ExportFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
@@ -113,7 +117,10 @@ public class ExportFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setTitle(R.string.menu_backup_and_export);
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
+        toolbar.setTitle(R.string.menu_backup_and_export);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
@@ -155,28 +162,6 @@ public class ExportFragment
                 })
                 .create()
                 .show();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_go, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (mVm.getExportHelper().getRecordTypes().size() > 1) {
-                exportPickUri();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -554,4 +539,31 @@ public class ExportFragment
             mProgressDelegate = null;
         }
     }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(menuItem.getTitle());
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                if (mVm.getExportHelper().getRecordTypes().size() > 1) {
+                    exportPickUri();
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

@@ -35,6 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -271,6 +272,27 @@ public final class StandardDialogs {
     }
 
     /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param style     ListStyle we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteStyle(@NonNull final Context context,
+                                   @NonNull final ListStyle style,
+                                   @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setTitle(R.string.action_delete)
+                .setMessage(context.getString(R.string.confirm_delete_style,
+                                              style.getLabel(context)))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
      * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
      *
      * @param context     Current context
@@ -298,12 +320,7 @@ public final class StandardDialogs {
 
     public static void showError(@NonNull final Context context,
                                  @StringRes final int msgId) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(msgId)
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
+        showError(context, context.getString(msgId));
     }
 
     public static void showError(@NonNull final Context context,

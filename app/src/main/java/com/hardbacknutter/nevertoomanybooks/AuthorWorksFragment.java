@@ -38,7 +38,9 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -57,11 +59,11 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
+import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
 /**
  * Display all TocEntry's for an Author.
@@ -82,6 +84,9 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
+    @NonNull
+    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel mVm;
     /** Set the hosting Activity result, and close it. */
@@ -93,9 +98,18 @@ public class AuthorWorksFragment
                     AuthorWorksContract.setResultAndFinish(getActivity(), mVm.isDataModified());
                 }
             };
-    /** The Adapter. */
-    private TocAdapter mAdapter;
 
+    /** React to changes in the adapter. */
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
+                }
+            };
+
+    /** The Adapter. */
+    private TocAdapter mListAdapter;
     /** View Binding. */
     private RecyclerView mWorksListView;
     private ExtPopupMenu mContextMenu;
@@ -103,7 +117,6 @@ public class AuthorWorksFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection ConstantConditions
@@ -125,18 +138,21 @@ public class AuthorWorksFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
+        final Context context = getContext();
+
+        //noinspection ConstantConditions
+        toolbar.setTitle(mVm.getScreenTitle(context));
+        toolbar.setSubtitle(mVm.getScreenSubtitle(context));
+
         // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        final Context context = getContext();
-
-        //noinspection ConstantConditions
-        setTitle(mVm.getScreenTitle(context));
-        setSubtitle(mVm.getScreenSubtitle(context));
 
         mWorksListView.setHasFixedSize(true);
         mWorksListView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
@@ -146,8 +162,9 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mWorksListView, overlayType);
 
-        mAdapter = new TocAdapter(context, mVm.getWorks());
-        mWorksListView.setAdapter(mAdapter);
+        mListAdapter = new TocAdapter(context, mVm.getWorks());
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
+        mWorksListView.setAdapter(mListAdapter);
 
         final Resources res = getResources();
         final Menu menu = ExtPopupMenu.createMenu(context);
@@ -162,62 +179,6 @@ public class AuthorWorksFragment
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        inflater.inflate(R.menu.author_works, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
-        // show if we got here with a specific bookshelf selected.
-        // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
-        all.setVisible(mVm.getBookshelfId() != Bookshelf.ALL_BOOKS);
-
-        all.setChecked(mVm.isAllBookshelves());
-
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
-            item.setChecked(true);
-            mVm.reloadWorkList(true, true);
-            mAdapter.notifyDataSetChanged();
-            return true;
-
-        } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
-            item.setChecked(true);
-            mVm.reloadWorkList(true, false);
-            mAdapter.notifyDataSetChanged();
-            return true;
-
-        } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
-            item.setChecked(true);
-            mVm.reloadWorkList(false, true);
-            mAdapter.notifyDataSetChanged();
-            return true;
-
-        } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
-            final boolean checked = !item.isChecked();
-            item.setChecked(checked);
-            mVm.setAllBookshelves(checked);
-            mVm.reloadWorkList();
-            mAdapter.notifyDataSetChanged();
-            //noinspection ConstantConditions
-            setTitle(mVm.getScreenTitle(getContext()));
-            setSubtitle(mVm.getScreenSubtitle(getContext()));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * Using {@link ExtPopupMenu} for context menus.
@@ -242,25 +203,29 @@ public class AuthorWorksFragment
 
     private void deleteWork(final int position,
                             @NonNull final AuthorWork work) {
-        if (work instanceof TocEntry) {
-            //noinspection ConstantConditions
-            StandardDialogs.deleteTocEntry(
-                    getContext(), work.getLabel(getContext()),
-                    work.getPrimaryAuthor(), () -> {
-                        mVm.delete(getContext(), work);
-                        mAdapter.notifyItemRemoved(position);
-                    });
-
-        } else if (work instanceof BookAsWork) {
-            //noinspection ConstantConditions
-            StandardDialogs.deleteBook(
-                    getContext(), work.getLabel(getContext()),
-                    Collections.singletonList(work.getPrimaryAuthor()), () -> {
-                        mVm.delete(getContext(), work);
-                        mAdapter.notifyItemRemoved(position);
-                    });
-        } else {
-            throw new IllegalArgumentException(String.valueOf(work));
+        switch (work.getWorkType()) {
+            case AuthorWork.TYPE_TOC: {
+                //noinspection ConstantConditions
+                StandardDialogs.deleteTocEntry(
+                        getContext(), work.getLabel(getContext()),
+                        work.getPrimaryAuthor(), () -> {
+                            mVm.delete(getContext(), work);
+                            mListAdapter.notifyItemRemoved(position);
+                        });
+                break;
+            }
+            case AuthorWork.TYPE_BOOK: {
+                //noinspection ConstantConditions
+                StandardDialogs.deleteBook(
+                        getContext(), work.getLabel(getContext()),
+                        Collections.singletonList(work.getPrimaryAuthor()), () -> {
+                            mVm.delete(getContext(), work);
+                            mListAdapter.notifyItemRemoved(position);
+                        });
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(String.valueOf(work));
         }
     }
 
@@ -344,6 +309,68 @@ public class AuthorWorksFragment
         @Override
         public TextView getFirstPublicationView() {
             return vb.year;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.author_works, menu);
+
+            onPrepareMenu(menu);
+        }
+
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            // show if we got here with a specific bookshelf selected.
+            // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.
+            menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES)
+                .setVisible(mVm.getBookshelfId() != Bookshelf.ALL_BOOKS)
+                .setChecked(mVm.isAllBookshelves());
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
+                menuItem.setChecked(true);
+                mVm.reloadWorkList(true, true);
+                mListAdapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
+                menuItem.setChecked(true);
+                mVm.reloadWorkList(true, false);
+                mListAdapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
+                menuItem.setChecked(true);
+                mVm.reloadWorkList(false, true);
+                mListAdapter.notifyDataSetChanged();
+                return true;
+
+            } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
+                final boolean checked = !menuItem.isChecked();
+                menuItem.setChecked(checked);
+                mVm.setAllBookshelves(checked);
+                mVm.reloadWorkList();
+                mListAdapter.notifyDataSetChanged();
+
+                final Toolbar toolbar = getToolbar();
+
+                //noinspection ConstantConditions
+                toolbar.setTitle(mVm.getScreenTitle(getContext()));
+                toolbar.setSubtitle(mVm.getScreenSubtitle(getContext()));
+                return true;
+            }
+
+            return false;
         }
     }
 

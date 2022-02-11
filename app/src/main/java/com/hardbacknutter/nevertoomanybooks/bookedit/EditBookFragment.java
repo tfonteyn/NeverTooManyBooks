@@ -32,10 +32,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -77,6 +78,9 @@ public class EditBookFragment
     /** View Binding. */
     private FragmentEditBookBinding mVb;
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -97,7 +101,6 @@ public class EditBookFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
@@ -119,6 +122,9 @@ public class EditBookFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -133,31 +139,6 @@ public class EditBookFragment
             tab.setText(tabInfo.titleId);
             tab.setContentDescription(tabInfo.contentDescriptionId);
         }).attach();
-
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_save, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @CallSuper
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_ACTION_CONFIRM) {
-            prepareSave(true);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -387,4 +368,31 @@ public class EditBookFragment
             }
         }
     }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_save, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(menuItem.getTitle());
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_ACTION_CONFIRM) {
+                prepareSave(true);
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

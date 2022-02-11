@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -72,7 +73,6 @@ public class SearchBookByTextFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
         mVm.init();
@@ -91,7 +91,10 @@ public class SearchBookByTextFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.lbl_search_for_books);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mSearchSitesToolbarMenuProvider, getViewLifecycleOwner());
+        toolbar.setTitle(R.string.lbl_search_for_books);
 
         if (mVm.usePublisher()) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);

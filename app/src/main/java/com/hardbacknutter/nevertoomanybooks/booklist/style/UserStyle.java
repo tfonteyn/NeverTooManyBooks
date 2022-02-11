@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
@@ -151,6 +152,12 @@ public class UserStyle
     public static UserStyle createFromImport(@NonNull final Context context,
                                              @NonNull final String uuid) {
         return new UserStyle(context, uuid);
+    }
+
+    @NonNull
+    @Override
+    public String getTypeDescription(@NonNull final Context context) {
+        return context.getString(R.string.style_is_user_defined);
     }
 
     @NonNull

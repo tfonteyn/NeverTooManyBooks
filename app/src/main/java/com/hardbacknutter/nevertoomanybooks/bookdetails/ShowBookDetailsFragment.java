@@ -38,13 +38,15 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -109,6 +111,9 @@ public class ShowBookDetailsFragment
     @Nullable
     private BookChangedListener mBookChangedListener;
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     private boolean mEmbedded;
 
     /** User edits a book. */
@@ -142,7 +147,6 @@ public class ShowBookDetailsFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         final Bundle args = requireArguments();
 
@@ -187,7 +191,7 @@ public class ShowBookDetailsFragment
         createCoverDelegates(global);
 
         // We must create them here, even if the Book has no matching sync id,
-        // because #onCreateOptionsMenu uses them before the Book is loaded.
+        // because the menu setup uses them before the Book is loaded.
         createSyncDelegates(global);
 
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
@@ -204,12 +208,6 @@ public class ShowBookDetailsFragment
             getActivity().getOnBackPressedDispatcher()
                          .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        bindBook(mVm.getBook());
     }
 
     /**
@@ -262,157 +260,9 @@ public class ShowBookDetailsFragment
     }
 
     @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        if (mEmbedded) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-        }
-
-        //noinspection ConstantConditions
-        MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
-
-        inflater.inflate(R.menu.book, menu);
-        // duplicating is not supported from inside this fragment
-        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
-
-        if (mCalibreHandler != null) {
-            mCalibreHandler.onCreateMenu(menu, inflater);
-        }
-        mAVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final Book book = mVm.getBook();
-
-        final Context context = getContext();
-
-        final boolean isSaved = !book.isNew();
-        final boolean isRead = book.getBoolean(DBKey.BOOL_READ);
-        menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
-        menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
-
-        // specifically check KEY_LOANEE independent from the style in use.
-        final boolean useLending = mAVm.useLoanee();
-        final boolean isAvailable = mVm.isAvailable();
-        menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
-        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
-
-        if (mCalibreHandler != null) {
-            //noinspection ConstantConditions
-            mCalibreHandler.onPrepareMenu(context, menu, book);
-        }
-        mAVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
-
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final Context context = getContext();
-        final Book book = mVm.getBook();
-
-        final int itemId = item.getItemId();
-        if (itemId == R.id.MENU_BOOK_EDIT) {
-            mEditBookLauncher.launch(book.getId());
-            return true;
-
-        } else if (itemId == R.id.MENU_BOOK_DELETE) {
-            final String title = book.getTitle();
-            final List<Author> authors = book.getAuthors();
-            //noinspection ConstantConditions
-            StandardDialogs.deleteBook(context, title, authors, () -> {
-                mVm.deleteBook();
-                // Callback - used when we're running inside another component; e.g. the BoB
-                if (mBookChangedListener != null) {
-                    mBookChangedListener.onBookDeleted(book.getId());
-                } else {
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
-                    getActivity().finish();
-                }
-            });
-            return true;
-
-        } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
-            // toggle 'read' status of the book
-            final boolean read = mVm.toggleRead();
-            mAVm.requireField(R.id.read).setValue(read);
-            // Callback - used when we're running inside another component; e.g. the BoB
-            if (mBookChangedListener != null) {
-                mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
-            }
-            return true;
-
-        } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
-            mEditLenderLauncher.launch(book);
-            return true;
-
-        } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            deleteLoanee(book);
-            return true;
-
-        } else if (itemId == R.id.MENU_SHARE) {
-            //noinspection ConstantConditions
-            startActivity(book.getShareIntent(context));
-            return true;
-
-        } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
-            //noinspection ConstantConditions
-            final Intent intent = SettingsHostActivity
-                    .createIntent(context, CalibrePreferencesFragment.class);
-            startActivity(intent);
-            return true;
-
-        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            mUpdateBookLauncher.launch(book);
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
-            if (mBookChangedListener != null) {
-                mBookChangedListener.onSyncBook(book.getId());
-            }
-            return true;
-        }
-
-        //noinspection ConstantConditions
-        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(context, itemId, book)) {
-            return true;
-        }
-
-        //noinspection ConstantConditions
-        if (mAVm.getMenuHandlers().stream()
-                .anyMatch(h -> h.onItemSelected(context, itemId, book))) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            deleteLoanee(mVm.getBook());
-            return true;
-        }
-
-        return super.onContextItemSelected(item);
-    }
-
-    private void deleteLoanee(@NonNull final Book book) {
-        mVm.deleteLoan();
-        bindLoanee(book);
-        // Callback - used when we're running inside another component; e.g. the BoB
-        if (mBookChangedListener != null) {
-            mBookChangedListener.onBookUpdated(book, DBKey.KEY_LOANEE);
-        }
+    public void onResume() {
+        super.onResume();
+        bindBook(mVm.getBook());
     }
 
     /**
@@ -442,17 +292,6 @@ public class ShowBookDetailsFragment
         onBookChanged(null, null);
     }
 
-    private void setActivityTitle(@NonNull final Book book) {
-        //noinspection ConstantConditions
-        String authors = Author.getCondensedNames(getContext(), book.getAuthors());
-
-        if (BuildConfig.DEBUG /* always */) {
-            authors = "[" + book.getId() + "] " + authors;
-        }
-        setTitle(authors);
-        setSubtitle(book.getString(DBKey.KEY_TITLE));
-    }
-
     private void onBindBook(@NonNull final LiveDataEvent<Book> message) {
         final boolean isNewEvent = message.isNewEvent();
         if (isNewEvent) {
@@ -461,8 +300,19 @@ public class ShowBookDetailsFragment
     }
 
     private void bindBook(@NonNull final Book book) {
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
         if (!mEmbedded) {
-            setActivityTitle(book);
+            //noinspection ConstantConditions
+            String authors = Author.getCondensedNames(getContext(), book.getAuthors());
+
+            if (BuildConfig.DEBUG /* always */) {
+                authors = "[" + book.getId() + "] " + authors;
+            }
+            toolbar.setTitle(authors);
+            toolbar.setSubtitle(book.getString(DBKey.KEY_TITLE));
         }
 
         final List<Field<?, ? extends View>> fields = mAVm.getFields();
@@ -496,25 +346,6 @@ public class ShowBookDetailsFragment
         ViewFocusOrder.fix(getView());
     }
 
-    /**
-     * If all field Views are View.GONE, set the section View to View.GONE as well.
-     * Otherwise, set the section View to View.VISIBLE.
-     *
-     * @param sectionLabel field to set
-     * @param fieldViews   to check
-     */
-    private void setSectionVisibility(final int sectionLabel,
-                                      final Integer... fieldViews) {
-
-        final View parent = getView();
-        //noinspection ConstantConditions
-        final boolean visible = Arrays.stream(fieldViews)
-                                      .map(parent::findViewById)
-                                      .map(v -> ((View) v).getVisibility())
-                                      .anyMatch(vis -> vis != View.GONE);
-        parent.findViewById(sectionLabel).setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
     private void bindCoverImages() {
         final TypedArray coverResIds = getResources().obtainTypedArray(R.array.cover_images);
         try {
@@ -535,14 +366,14 @@ public class ShowBookDetailsFragment
 
     /**
      * Inflates 'lend-to' field showing a person the book was lend to.
-     * Allows returning the book via a context menu.
      *
      * @param book to load
      */
     private void bindLoanee(@NonNull final Book book) {
         //noinspection ConstantConditions
         final TextView lendTo = getView().findViewById(R.id.lend_to);
-        if (mAVm.useLoanee()) {
+        //noinspection ConstantConditions
+        if (mAVm.useLoanee(getContext())) {
             final String loanee = book.getLoanee();
             if (loanee.isEmpty()) {
                 lendTo.setText("");
@@ -550,12 +381,6 @@ public class ShowBookDetailsFragment
             } else {
                 lendTo.setText(getString(R.string.lbl_lend_out_to_name, loanee));
                 lendTo.setVisibility(View.VISIBLE);
-                //TODO: convert to ExtPopupMenu context menu.... if I can be bothered. */
-                lendTo.setOnCreateContextMenuListener((menu, v, menuInfo) -> menu.add(
-                        Menu.NONE,
-                        R.id.MENU_BOOK_LOAN_DELETE,
-                        getResources().getInteger(R.integer.MENU_ORDER_LENDING),
-                        R.string.menu_lend_return_book));
             }
         } else {
             lendTo.setVisibility(View.GONE);
@@ -585,7 +410,8 @@ public class ShowBookDetailsFragment
 
         final Button btnShowToc = getView().findViewById(R.id.btn_show_toc);
         final FragmentContainerView tocFrame = getView().findViewById(R.id.toc_frame);
-        if (mAVm.useToc()) {
+        //noinspection ConstantConditions
+        if (mAVm.useToc(getContext())) {
             if (btnShowToc != null) {
                 bindTocButton(btnShowToc, book);
             } else if (tocFrame != null) {
@@ -654,6 +480,196 @@ public class ShowBookDetailsFragment
                     .beginTransaction()
                     .replace(R.id.toc_frame, fragment, TocFragment.TAG)
                     .commit();
+        }
+    }
+
+    /**
+     * If all field Views are View.GONE, set the section View to View.GONE as well.
+     * Otherwise, set the section View to View.VISIBLE.
+     *
+     * @param sectionLabel field to set
+     * @param fieldViews   to check
+     */
+    private void setSectionVisibility(final int sectionLabel,
+                                      @NonNull final Integer... fieldViews) {
+
+        final View parent = getView();
+        //noinspection ConstantConditions
+        final boolean visible = Arrays.stream(fieldViews)
+                                      .map(parent::findViewById)
+                                      .map(v -> ((View) v).getVisibility())
+                                      .anyMatch(vis -> vis != View.GONE);
+        parent.findViewById(sectionLabel).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater inflater) {
+            inflater.inflate(R.menu.book, menu);
+            // duplicating is not supported from inside this fragment
+            menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
+
+            menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(mEmbedded);
+
+            if (mEmbedded) {
+                MenuCompat.setGroupDividerEnabled(menu, true);
+            } else {
+                //noinspection ConstantConditions
+                MenuHelper.setupSearchActionView(getActivity(), inflater, menu);
+            }
+
+            if (mCalibreHandler != null) {
+                mCalibreHandler.onCreateMenu(menu, inflater);
+            }
+
+            mAVm.getMenuHandlers().forEach(h -> h.onCreateMenu(menu, inflater));
+
+            onPrepareMenu(menu);
+        }
+
+        private void onPrepareMenu(@NonNull final Menu menu) {
+            updateMenuReadOptions(menu);
+            updateMenuLendingOptions(menu);
+
+            final Book book = mVm.getBook();
+
+            if (mCalibreHandler != null) {
+                //noinspection ConstantConditions
+                mCalibreHandler.onPrepareMenu(getContext(), menu, book);
+            }
+
+            mAVm.getMenuHandlers().forEach(h -> h.onPrepareMenu(menu, book));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final Context context = getContext();
+            final Book book = mVm.getBook();
+
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_BOOK_EDIT) {
+                mEditBookLauncher.launch(book.getId());
+                return true;
+
+            } else if (itemId == R.id.MENU_BOOK_DELETE) {
+                deleteBook(book);
+                return true;
+
+            } else if (itemId == R.id.MENU_BOOK_SET_READ || itemId == R.id.MENU_BOOK_SET_UNREAD) {
+                toggleReadStatus(book);
+                return true;
+
+            } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
+                mEditLenderLauncher.launch(book);
+                return true;
+
+            } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
+                deleteLoanee(book);
+                return true;
+
+            } else if (itemId == R.id.MENU_SHARE) {
+                //noinspection ConstantConditions
+                startActivity(book.getShareIntent(context));
+                return true;
+
+            } else if (itemId == R.id.MENU_CALIBRE_SETTINGS) {
+                //noinspection ConstantConditions
+                final Intent intent = SettingsHostActivity
+                        .createIntent(context, CalibrePreferencesFragment.class);
+                startActivity(intent);
+                return true;
+
+            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                mUpdateBookLauncher.launch(book);
+                return true;
+
+            } else if (itemId == R.id.MENU_SYNC_LIST_WITH_DETAILS) {
+                if (mBookChangedListener != null) {
+                    mBookChangedListener.onSyncBook(book.getId());
+                }
+                return true;
+            }
+
+            //noinspection ConstantConditions
+            if (mCalibreHandler != null
+                && mCalibreHandler.onMenuItemSelected(context, menuItem, book)) {
+                return true;
+            }
+
+            //noinspection ConstantConditions
+            return mAVm.getMenuHandlers()
+                       .stream()
+                       .anyMatch(h -> h.onMenuItemSelected(context, menuItem, book));
+        }
+
+        private void deleteBook(@NonNull final Book book) {
+            final String title = book.getTitle();
+            final List<Author> authors = book.getAuthors();
+            //noinspection ConstantConditions
+            StandardDialogs.deleteBook(getContext(), title, authors, () -> {
+                mVm.deleteBook();
+                // Callback - used when we're running inside another component; e.g. the BoB
+                if (mBookChangedListener != null) {
+                    mBookChangedListener.onBookDeleted(book.getId());
+                } else {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+                    getActivity().finish();
+                }
+            });
+        }
+
+        private void toggleReadStatus(@NonNull final Book book) {
+            final boolean read = mVm.toggleRead();
+
+            // slower
+            //mVm.reloadBook();
+            // fast, but need to adjust ToolBar menu manually
+            mAVm.requireField(R.id.read).setValue(read);
+            if (mEmbedded) {
+                updateMenuReadOptions(getToolbar().getMenu());
+            }
+
+            // Callback - used when we're running inside another component; e.g. the BoB
+            if (mBookChangedListener != null) {
+                mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
+            }
+        }
+
+        private void deleteLoanee(@NonNull final Book book) {
+            mVm.deleteLoan();
+
+            // slower
+            //mVm.reloadBook();
+            // fast, but need to adjust ToolBar menu manually
+            bindLoanee(book);
+            if (mEmbedded) {
+                updateMenuLendingOptions(getToolbar().getMenu());
+            }
+
+            // Callback - used when we're running inside another component; e.g. the BoB
+            if (mBookChangedListener != null) {
+                mBookChangedListener.onBookUpdated(book, DBKey.KEY_LOANEE);
+            }
+        }
+
+        private void updateMenuReadOptions(@NonNull final Menu menu) {
+            final boolean isRead = mVm.getBook().getBoolean(DBKey.BOOL_READ);
+            menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
+            menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
+        }
+
+        private void updateMenuLendingOptions(@NonNull final Menu menu) {
+            // Always check KEY_LOANEE usage independent from the style in use.
+            //noinspection ConstantConditions
+            final boolean useLending = mAVm.useLoanee(getContext());
+            final boolean isAvailable = mVm.isAvailable();
+            menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
+            menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
         }
     }
 }

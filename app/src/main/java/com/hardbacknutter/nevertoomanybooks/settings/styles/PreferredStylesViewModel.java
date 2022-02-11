@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,14 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 public class PreferredStylesViewModel
         extends ViewModel {
 
-    /** the selected style at onCreate time. */
-    private String mInitialStyleUuid;
+    /** Styles manager. */
+    private Styles mStyles;
+
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
-    /** The *in-memory* list of styles. */
-    private List<ListStyle> mStyleList;
 
-    private Styles mStyles;
+    /** Currently selected row. */
+    private int mSelectedPosition = RecyclerView.NO_POSITION;
+
+    /** The *in-memory* list of styles. */
+    private List<ListStyle> mList;
 
     /**
      * Pseudo constructor.
@@ -60,12 +64,29 @@ public class PreferredStylesViewModel
               @NonNull final Bundle args) {
         if (mStyles == null) {
             mStyles = ServiceLocator.getInstance().getStyles();
+            mList = mStyles.getStyles(context, true);
 
-            mStyleList = mStyles.getStyles(context, true);
-
-            mInitialStyleUuid = Objects.requireNonNull(
-                    args.getString(ListStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
+            final String uuid = args.getString(ListStyle.BKEY_STYLE_UUID);
+            Objects.requireNonNull(uuid, "uuid");
+            mSelectedPosition = findSelectedPosition(uuid);
         }
+    }
+
+    /**
+     * Find the position in the list of the style with the given uuid,
+     *
+     * @param uuid to find
+     *
+     * @return position
+     */
+    private int findSelectedPosition(@NonNull final String uuid) {
+        for (int i = 0; i < mList.size(); i++) {
+            final ListStyle style = mList.get(i);
+            if (style.getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return RecyclerView.NO_POSITION;
     }
 
     /**
@@ -81,32 +102,128 @@ public class PreferredStylesViewModel
         mIsDirty = isDirty;
     }
 
-    /**
-     * Get the style UUID that was the selected style when this object was created.
-     *
-     * @return UUID
-     */
     @NonNull
-    String getInitialStyleUuid() {
-        return mInitialStyleUuid;
+    List<ListStyle> getList() {
+        return mList;
+    }
+
+    /**
+     * Get the currently selected ListStyle.
+     *
+     * @return ListStyle, or {@code null} if none selected (which should never happen... flw)
+     */
+    @Nullable
+    ListStyle getSelectedStyle() {
+        if (mSelectedPosition != RecyclerView.NO_POSITION) {
+            return mList.get(mSelectedPosition);
+        }
+        return null;
     }
 
     @NonNull
-    List<ListStyle> getList() {
-        return mStyleList;
+    ListStyle getStyle(final int position) {
+        return Objects.requireNonNull(mList.get(position), String.valueOf(position));
+    }
+
+    @Nullable
+    ListStyle getStyle(@NonNull final Context context,
+                       @Nullable final String uuid) {
+        if (uuid != null && !uuid.isEmpty()) {
+            return mStyles.getStyle(context, uuid);
+        } else {
+            return null;
+        }
+    }
+
+    int getSelectedPosition() {
+        return mSelectedPosition;
+    }
+
+    void setSelectedPosition(final int position) {
+        mSelectedPosition = position;
+    }
+
+    /**
+     * Look up and down in the list to find a 'preferred' row, and set it 'selected'
+     *
+     * @return the new 'selected' position
+     */
+    int findPreferredAndSelect(final int position) {
+        // first try 'above'
+        mSelectedPosition = findPreferredPosition(-1);
+        if (mSelectedPosition == RecyclerView.NO_POSITION) {
+            // if none found, try 'below'
+            mSelectedPosition = findPreferredPosition(+1);
+        }
+
+        // if no such row found, use the current row regardless
+        if (mSelectedPosition == RecyclerView.NO_POSITION) {
+            mSelectedPosition = position;
+        }
+
+        return mSelectedPosition;
+    }
+
+    /**
+     * Look up and down in the list to find a 'preferred' row.
+     *
+     * @param direction must be either {@code -1} or {@code +1}
+     *
+     * @return the new position, or {@link RecyclerView#NO_POSITION} if none could be found.
+     */
+    private int findPreferredPosition(final int direction) {
+        int newPosition = mSelectedPosition;
+        while (true) {
+            // move one up or down.
+            newPosition = newPosition + direction;
+
+            // breached the upper or lower limit ?
+            if (newPosition < 0 || newPosition >= mList.size()) {
+                return RecyclerView.NO_POSITION;
+            }
+
+            if (getStyle(newPosition).isPreferred()) {
+                return newPosition;
+            }
+        }
+    }
+
+    void onItemMove(final int fromPosition,
+                    final int toPosition) {
+        if (fromPosition == mSelectedPosition) {
+            // we're moving the selected row.
+            mSelectedPosition = toPosition;
+
+        } else if (toPosition == mSelectedPosition) {
+            if (fromPosition > mSelectedPosition) {
+                // push down
+                mSelectedPosition++;
+            } else {
+                // push up
+                mSelectedPosition--;
+            }
+        }
+    }
+
+    /**
+     * Save the preferred ListStyle menu list.
+     */
+    void updateMenuOrder() {
+        if (mIsDirty) {
+            mStyles.updateMenuOrder(mList);
+        }
     }
 
     /**
      * Called after a style has been edited.
+     * Calculates the new position in the list and sets it as selected.
      *
-     * @param style        the (potentially) modified style
+     * @param style        the modified style
      * @param templateUuid uuid of the original style we cloned (different from current)
      *                     or edited (same as current).
-     *
-     * @return position of the style in the list
      */
-    int onStyleEdited(@NonNull final ListStyle style,
-                      @NonNull final String templateUuid) {
+    void onStyleEdited(@NonNull final ListStyle style,
+                       @NonNull final String templateUuid) {
         mIsDirty = true;
 
         // Now (re)organise the list of styles.
@@ -115,8 +232,8 @@ public class PreferredStylesViewModel
         // Don't use 'indexOf' (use id instead), as the incoming style object
         // was parcelled along the way, which *might* have changed it.
         int editedRow = -1;
-        for (int i = 0; i < mStyleList.size(); i++) {
-            if (mStyleList.get(i).getId() == style.getId()) {
+        for (int i = 0; i < mList.size(); i++) {
+            if (mList.get(i).getId() == style.getId()) {
                 editedRow = i;
                 break;
             }
@@ -125,7 +242,7 @@ public class PreferredStylesViewModel
         if (editedRow < 0) {
             // Not in the list; we're adding a new Style.
             // Put it at the top and set as user-preferred
-            mStyleList.add(0, style);
+            mList.add(0, style);
             style.setPreferred(true);
             // save the preferred state
             mStyles.update(style);
@@ -134,24 +251,24 @@ public class PreferredStylesViewModel
         } else {
             // We edited an existing Style.
             // Check if we edited in-place or cloned a style
-            final ListStyle origStyle = mStyleList.get(editedRow);
+            final ListStyle origStyle = mList.get(editedRow);
             if (origStyle.equals(style)) {
                 // just a style edited in-place, update the list with the new object
-                mStyleList.set(editedRow, style);
+                mList.set(editedRow, style);
 
             } else {
                 // Check the type of the ORIGINAL (i.e. template) style.
                 if (origStyle instanceof UserStyle) {
                     // It's a clone of an user-defined style.
                     // Put it directly after the user-defined original
-                    mStyleList.add(editedRow, style);
+                    mList.add(editedRow, style);
 
                 } else if (origStyle instanceof BuiltinStyle) {
                     // It's a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // if the original style was a preferred style,
                         // replace the original row with the new one
-                        mStyleList.set(editedRow, style);
+                        mList.set(editedRow, style);
 
                         // Make the new one preferred and update it
                         style.setPreferred(true);
@@ -161,11 +278,11 @@ public class PreferredStylesViewModel
                         origStyle.setPreferred(false);
                         mStyles.update(origStyle);
 
-                        mStyleList.add(origStyle);
+                        mList.add(origStyle);
 
                     } else {
                         // Put it directly after the original
-                        mStyleList.add(editedRow, style);
+                        mList.add(editedRow, style);
                     }
                 } else {
                     throw new IllegalStateException("Unhandled style: " + style);
@@ -178,27 +295,21 @@ public class PreferredStylesViewModel
         if (BuiltinStyle.isBuiltin(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
-            mStyleList.stream()
-                      .filter(s -> s.getUuid().equalsIgnoreCase(templateUuid))
-                      .findFirst()
-                      .ifPresent(s -> {
-                          // demote the preferred state and update it
-                          s.setPreferred(false);
-                          mStyles.update(s);
-                      });
+            mList.stream()
+                 .filter(s -> s.getUuid().equalsIgnoreCase(templateUuid))
+                 .findFirst()
+                 .ifPresent(s -> {
+                     // demote the preferred state and update it
+                     s.setPreferred(false);
+                     mStyles.update(s);
+                 });
         }
 
-        return editedRow;
-    }
-
-    @Nullable
-    ListStyle getStyle(@NonNull final Context context,
-                       @NonNull final String uuid) {
-        return mStyles.getStyle(context, uuid);
+        mSelectedPosition = editedRow;
     }
 
     /**
-     * Update the given style.
+     * Update the given ListStyle.
      *
      * @param style to update
      */
@@ -207,7 +318,7 @@ public class PreferredStylesViewModel
     }
 
     /**
-     * Delete the given style.
+     * Delete the given ListStyle.
      *
      * @param context Current context
      * @param style   to delete
@@ -215,18 +326,12 @@ public class PreferredStylesViewModel
     void deleteStyle(@NonNull final Context context,
                      @NonNull final ListStyle style) {
         mStyles.delete(context, style);
-        mStyleList.remove(style);
+        mList.remove(style);
+        mSelectedPosition = RecyclerView.NO_POSITION;
     }
 
     /**
-     * Save the preferred style menu list.
-     */
-    void updateMenuOrder() {
-        mStyles.updateMenuOrder(mStyleList);
-    }
-
-    /**
-     * User explicitly wants to purge the BLNS for the given style.
+     * User explicitly wants to purge the BLNS for the given ListStyle.
      *
      * @param styleId to purge
      */

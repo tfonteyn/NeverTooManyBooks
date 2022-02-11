@@ -26,6 +26,8 @@ import android.os.Bundle;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
@@ -57,6 +59,11 @@ public class FragmentHostActivity
 
         @LayoutRes
         final int activityResId = getIntent().getIntExtra(BKEY_ACTIVITY, 0);
+        setContentView(activityResId);
+
+        initNavDrawer();
+        initToolbar();
+
         final String classname = Objects.requireNonNull(
                 getIntent().getStringExtra(BKEY_FRAGMENT_CLASS), "fragment class");
 
@@ -68,10 +75,25 @@ public class FragmentHostActivity
             throw new IllegalArgumentException(classname);
         }
 
-        setContentView(activityResId);
-        initNavDrawer();
-        initToolbar();
-
         addFirstFragment(R.id.main_fragment, fragmentClass, classname);
+    }
+
+    private void initToolbar() {
+        final Toolbar toolbar = getToolbar();
+        if (isTaskRoot()) {
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
+
+        toolbar.setNavigationOnClickListener(v -> {
+            if (isTaskRoot() && mDrawerLayout != null) {
+                // when root, show the drawer
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            } else {
+                // otherwise, home is an 'up' event. Simulate the user pressing the 'back' key.
+                onBackPressed();
+            }
+        });
     }
 }

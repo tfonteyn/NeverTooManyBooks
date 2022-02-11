@@ -33,6 +33,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -80,6 +81,10 @@ public abstract class SearchBookBaseFragment
                                               mCoordinator.setSiteList(sites);
                                           }
                                       });
+
+    @NonNull
+    final MenuProvider mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
+
     @Nullable
     private ProgressDelegate mProgressDelegate;
 
@@ -125,33 +130,6 @@ public abstract class SearchBookBaseFragment
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        final Resources r = getResources();
-        menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                 r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
-                 R.string.lbl_websites)
-            .setIcon(R.drawable.ic_baseline_find_in_page_24)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-            mEditSitesLauncher.launch(mCoordinator.getSiteList());
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
@@ -296,4 +274,29 @@ public abstract class SearchBookBaseFragment
         til.setError(getString(error));
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
+
+    private class SearchSitesToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            final Resources r = getResources();
+            menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                     r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
+                     R.string.lbl_websites)
+                .setIcon(R.drawable.ic_baseline_find_in_page_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_PREFS_SEARCH_SITES) {
+                mEditSitesLauncher.launch(mCoordinator.getSiteList());
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

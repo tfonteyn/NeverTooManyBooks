@@ -323,6 +323,8 @@
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
 
+    <string name="confirm_delete_style">Really delete style “%1$s”?</string>
+
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_series">The series you are modifying already exists. Would you like to merge them?</string>

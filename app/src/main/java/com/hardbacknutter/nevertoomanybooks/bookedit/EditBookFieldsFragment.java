@@ -38,8 +38,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -104,6 +107,9 @@ public class EditBookFieldsFragment
     private FragmentEditBookFieldsBinding mVb;
 
     @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
+    @NonNull
     @Override
     public FragmentId getFragmentId() {
         return FragmentId.Main;
@@ -129,6 +135,10 @@ public class EditBookFieldsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
 
         final Context context = getContext();
         //noinspection ConstantConditions
@@ -238,61 +248,65 @@ public class EditBookFieldsFragment
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        inflater.inflate(R.menu.sm_isbn_validity, menu);
+    private class ToolbarMenuProvider
+            implements MenuProvider {
 
-        //noinspection ConstantConditions
-        MenuHelper.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.sm_isbn_validity, menu);
 
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+            //noinspection ConstantConditions
+            MenuHelper.customizeMenuGroupTitle(getContext(), menu, R.id.sm_title_isbn_validity);
 
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        switch (mIsbnValidityCheck) {
-            case ISBN.VALIDITY_STRICT:
-                menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
-                break;
-
-            case ISBN.VALIDITY_LOOSE:
-                menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
-                break;
-
-            case ISBN.VALIDITY_NONE:
-            default:
-                menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
-                break;
+            onPrepareMenu(menu);
         }
 
-        super.onPrepareOptionsMenu(menu);
-    }
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            switch (mIsbnValidityCheck) {
+                case ISBN.VALIDITY_STRICT:
+                    menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
+                    break;
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
+                case ISBN.VALIDITY_LOOSE:
+                    menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
+                    break;
 
-        if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-            mIsbnValidityCheck = ISBN.VALIDITY_NONE;
-            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
-            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
-            return true;
-
-        } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-            mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
-            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
-            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
-            return true;
-
-        } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-            mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
-            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
-            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
-            return true;
+                case ISBN.VALIDITY_NONE:
+                default:
+                    menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
+                    break;
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
+                mIsbnValidityCheck = ISBN.VALIDITY_NONE;
+                onPrepareMenu(getToolbar().getMenu());
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+                return true;
+
+            } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
+                mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
+                onPrepareMenu(getToolbar().getMenu());
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+                return true;
+
+            } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+                mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
+                onPrepareMenu(getToolbar().getMenu());
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+                return true;
+            }
+
+            return false;
+        }
     }
 }

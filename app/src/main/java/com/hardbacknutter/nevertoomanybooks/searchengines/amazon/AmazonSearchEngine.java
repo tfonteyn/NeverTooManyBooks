@@ -248,7 +248,7 @@ public class AmazonSearchEngine
 
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn);
-        final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.TYPE_ISBN10) : validIsbn;
+        final String asin = tmp.isIsbn10Compat() ? tmp.asText(ISBN.Type.Isbn10) : validIsbn;
 
         return genericSearch(context,
                              getSiteUrl() + String.format(BY_EXTERNAL_ID, asin),

@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
@@ -55,7 +56,8 @@ public class AboutFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setTitle(R.string.lbl_about);
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_about);
 
         //noinspection ConstantConditions
         final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());

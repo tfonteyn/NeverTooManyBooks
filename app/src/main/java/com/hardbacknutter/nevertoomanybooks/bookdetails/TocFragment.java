@@ -32,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -90,6 +91,7 @@ public class TocFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
         final Context context = getContext();
 
         //noinspection ConstantConditions
@@ -109,11 +111,11 @@ public class TocFragment
         // Author/Book-title are only present when this fragment is full-screen
         final String authors = mVm.getAuthors();
         if (authors != null) {
-            setTitle(authors);
+            toolbar.setTitle(authors);
         }
         final String bookTitle = mVm.getBookTitle();
         if (bookTitle != null) {
-            setSubtitle(bookTitle);
+            toolbar.setSubtitle(bookTitle);
         }
     }
 

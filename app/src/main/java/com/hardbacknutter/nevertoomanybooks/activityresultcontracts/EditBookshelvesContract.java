@@ -42,9 +42,12 @@ public class EditBookshelvesContract
     private static final String TAG = "EditBookshelvesContract";
 
     public static void setResultAndFinish(@NonNull final Activity activity,
-                                          final long bookshelfId) {
-        final Intent resultIntent = new Intent()
-                .putExtra(DBKey.FK_BOOKSHELF, bookshelfId);
+                                          @Nullable final Bookshelf selectedBookshelf) {
+        final Intent resultIntent = new Intent();
+
+        if (selectedBookshelf != null) {
+            resultIntent.putExtra(DBKey.FK_BOOKSHELF, selectedBookshelf.getId());
+        }
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -143,6 +143,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
      * @return {@code true} if a move was done, {@code false} if not.
      */
     @Override
+    @CallSuper
     public boolean onItemMove(final int fromPosition,
                               final int toPosition) {
         Collections.swap(mItems, fromPosition, toPosition);
@@ -156,6 +157,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
      * @param position The position of the item swiped.
      */
     @Override
+    @CallSuper
     public void onItemSwiped(final int position) {
         onDelete(position, mItems.get(position));
     }

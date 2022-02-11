@@ -194,6 +194,7 @@ public abstract class FFBaseDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         mDialogToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
 
         // dialogs that are set as full-screen ONLY will NOT have a button bar.

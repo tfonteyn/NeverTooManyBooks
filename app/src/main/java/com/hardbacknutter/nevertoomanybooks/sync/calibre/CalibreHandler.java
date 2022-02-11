@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
@@ -32,7 +33,6 @@ import androidx.activity.result.ActivityResultCaller;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -228,26 +228,28 @@ public class CalibreHandler {
     /**
      * Called from a list screen. i.e. the data comes from a row {@link DataHolder}.
      *
-     * @param menuItemId to check
-     * @param rowData    data to use
+     * @param menuItem to check
+     * @param rowData  data to use
      */
-    public boolean onItemSelected(@NonNull final Context context,
-                                  @IdRes final int menuItemId,
-                                  @NonNull final DataHolder rowData) {
-        return onItemSelected(context, menuItemId,
-                              Objects.requireNonNull(DataHolderUtils.getBook(rowData)));
+    public boolean onMenuItemSelected(@NonNull final Context context,
+                                      @NonNull final MenuItem menuItem,
+                                      @NonNull final DataHolder rowData) {
+        return onMenuItemSelected(context, menuItem,
+                                  Objects.requireNonNull(DataHolderUtils.getBook(rowData)));
     }
 
     /**
      * Called from a details screen. i.e. the data comes from a {@link Book}.
      *
-     * @param menuItemId to check
+     * @param menuItem to check
      * @param book       data to use
      */
-    public boolean onItemSelected(@NonNull final Context context,
-                                  @IdRes final int menuItemId,
-                                  @NonNull final Book book) {
-        if (menuItemId == R.id.MENU_CALIBRE_READ) {
+    public boolean onMenuItemSelected(@NonNull final Context context,
+                                      @NonNull final MenuItem menuItem,
+                                      @NonNull final Book book) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_CALIBRE_READ) {
             // Open the given book for reading.
             // This only works if the user has not renamed the file outside of this app.
             try {
@@ -258,7 +260,7 @@ public class CalibreHandler {
             }
             return true;
 
-        } else if (menuItemId == R.id.MENU_CALIBRE_DOWNLOAD) {
+        } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
             final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(context);
             if (optionalUri.isPresent()) {
                 mVm.startDownload(book, optionalUri.get());

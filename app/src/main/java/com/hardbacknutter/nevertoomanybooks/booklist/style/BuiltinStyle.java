@@ -430,6 +430,12 @@ public final class BuiltinStyle
         return style;
     }
 
+    @NonNull
+    @Override
+    public String getTypeDescription(@NonNull final Context context) {
+        return context.getString(R.string.style_is_builtin);
+    }
+
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {

@@ -34,6 +34,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -75,6 +77,10 @@ public class SyncReaderFragment
 
     /** The ViewModel. */
     protected SyncReaderViewModel mVm;
+
+    @NonNull
+    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -96,7 +102,6 @@ public class SyncReaderFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SyncReaderViewModel.class);
@@ -117,6 +122,9 @@ public class SyncReaderFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -133,7 +141,7 @@ public class SyncReaderFragment
         mVm.onImportFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        setTitle(mVm.getSyncServer().getLabel());
+        toolbar.setTitle(mVm.getSyncServer().getLabel());
         // Either first time, or if the task is already running - either is fine.
         showOptions();
     }
@@ -142,35 +150,6 @@ public class SyncReaderFragment
     public void onResume() {
         super.onResume();
         mSyncDatePicker.onResume(this::onSyncDateSet);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_action_go, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        menuItem.setEnabled(false);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        final MenuItem menuItem = getToolbar().getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-        menuItem.setEnabled(mVm.isReadyToGo());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            mVm.startImport();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -302,6 +281,8 @@ public class SyncReaderFragment
 
         mVm.getConfig().getExtraArgs()
            .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
+
+        mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 
     private void updateSyncDateVisibility() {
@@ -464,4 +445,37 @@ public class SyncReaderFragment
             }
         }
     }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            menuItem.setEnabled(false);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(menuItem.getTitle());
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+
+            onPrepareMenu(menu);
+        }
+
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ACTION_CONFIRM)
+                .setEnabled(mVm.isReadyToGo());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                mVm.startImport();
+                return true;
+            }
+            return false;
+        }
+    }
+
 }

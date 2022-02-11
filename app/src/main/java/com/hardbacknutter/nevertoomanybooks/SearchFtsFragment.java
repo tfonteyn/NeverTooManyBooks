@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -135,7 +136,9 @@ public class SearchFtsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.lbl_local_search);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_local_search);
 
         if (mTitleSearchText != null) {
             mVb.title.setText(mTitleSearchText);

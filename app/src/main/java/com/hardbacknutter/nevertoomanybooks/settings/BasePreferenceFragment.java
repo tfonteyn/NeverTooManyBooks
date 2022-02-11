@@ -26,7 +26,7 @@ import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
@@ -34,7 +34,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -56,9 +55,32 @@ public abstract class BasePreferenceFragment
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-    protected ActionBar mActionBar;
+
+    private View mProgressFrame;
+    private Toolbar mToolbar;
+
     @Nullable
     private String mAutoScrollToKey;
+
+    @NonNull
+    protected View getProgressFrame() {
+        if (mProgressFrame == null) {
+            //noinspection ConstantConditions
+            mProgressFrame = Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
+                                                    "R.id.progress_frame");
+        }
+        return mProgressFrame;
+    }
+
+    @NonNull
+    protected Toolbar getToolbar() {
+        if (mToolbar == null) {
+            //noinspection ConstantConditions
+            mToolbar = Objects.requireNonNull(getActivity().findViewById(R.id.toolbar),
+                                              "R.id.toolbar");
+        }
+        return mToolbar;
+    }
 
     @Override
     @CallSuper
@@ -74,12 +96,11 @@ public abstract class BasePreferenceFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        mActionBar.setTitle(R.string.lbl_settings);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.setTitle(R.string.lbl_settings);
         // preventative erasing of any existing subtitle
-        mActionBar.setSubtitle("");
+        toolbar.setSubtitle("");
     }
 
     /**
@@ -94,13 +115,6 @@ public abstract class BasePreferenceFragment
             //noinspection ConstantConditions
             getActivity().finish();
         }
-    }
-
-    @NonNull
-    protected View getProgressFrame() {
-        //noinspection ConstantConditions
-        return Objects.requireNonNull(getActivity().findViewById(R.id.progress_frame),
-                                      "R.id.progress_frame");
     }
 
     @Override

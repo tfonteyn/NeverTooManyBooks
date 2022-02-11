@@ -44,6 +44,8 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
@@ -181,24 +183,22 @@ public class BooksOnBookshelf
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {});
-
+    @NonNull
+    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
-
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
-
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
@@ -290,11 +290,9 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
-
                 @Override
                 public void onItemSelected(final long id) {
                     if (id != mVm.getCurrentBookshelf().getId()) {
@@ -304,10 +302,8 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** React to row changes made. */
     private final RowChangedListener mRowChangedListener = this::onRowChanged;
-
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -322,9 +318,11 @@ public class BooksOnBookshelf
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
                     mVm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
+                    mToolbarMenuProvider.onPrepareMenu(mVb.toolbar.getMenu());
                     buildBookList();
                 }
             };
+
     /**
      * Accept the result from the dialog.
      */
@@ -357,10 +355,24 @@ public class BooksOnBookshelf
 
                     final DataHolder rowData = new CursorRow(cursor);
 
-                    // If it's a book, open the details page.
                     if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        openBookDetails(rowData.getLong(DBKey.PK_ID),
-                                        rowData.getLong(DBKey.FK_BOOK));
+                        // It's a book, open the details page.
+                        final long bookId = rowData.getLong(DBKey.FK_BOOK);
+                        // store the id as the current 'central' book for repositioning
+                        mVm.setCurrentCenteredBookId(bookId);
+
+                        if (hasEmbeddedDetailsFrame()) {
+                            //  On larger screens, opens the book details fragment embedded.
+                            openEmbeddedBookDetails(bookId);
+                        } else {
+                            //  On small screens, opens a ViewPager with the book details
+                            //  and swipe prev/next functionality.
+                            mDisplayBookLauncher.launch(new ShowBookContract.Input(
+                                    bookId,
+                                    mVm.getCurrentStyle(BooksOnBookshelf.this).getUuid(),
+                                    mVm.getBookNavigationTableName(),
+                                    rowData.getLong(DBKey.PK_ID)));
+                        }
                     } else {
                         // it's a level, expand/collapse.
                         setNodeState(rowData, BooklistNode.NextState.Toggle, 1);
@@ -384,8 +396,12 @@ public class BooksOnBookshelf
         mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(mVb.getRoot());
 
-        initNavDrawer();
-        initToolbar();
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+
+        createFragmentResultListeners();
+        createViewModel();
+        createSyncDelegates(global);
+        createHandlers(global);
 
         mFabMenu = new FabMenu(mVb.fab, mVb.fabOverlay,
                                mVb.fab0ScanBarcode,
@@ -394,16 +410,11 @@ public class BooksOnBookshelf
                                mVb.fab3AddManually,
                                mVb.fab4SearchExternalId);
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-
-        createFragmentResultListeners();
-        createViewModel();
-
-        createSyncDelegates(global);
-        createHandlers(global);
+        initNavDrawer();
+        initToolbar();
 
         createBookshelfSpinner();
-        // setup the view related stuff; the actual list data is generated in onResume
+        // setup the list related stuff; the actual list data is generated in onResume
         createBooklistView(global);
 
         // Initialise adapter without a cursor. We'll recreate it with a cursor when
@@ -423,6 +434,31 @@ public class BooksOnBookshelf
         if (savedInstanceState == null) {
             TipManager.getInstance().display(this, R.string.tip_book_list, null);
         }
+    }
+
+    private void initToolbar() {
+        setNavIcon();
+
+        mVb.toolbar.setNavigationOnClickListener(v -> {
+            if (isRootActivity()) {
+                mVb.drawerLayout.openDrawer(GravityCompat.START);
+            } else {
+                onBackPressed();
+            }
+        });
+        mVb.toolbar.addMenuProvider(mToolbarMenuProvider, this);
+    }
+
+    private void setNavIcon() {
+        if (isRootActivity()) {
+            mVb.toolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
+        } else {
+            mVb.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        }
+    }
+
+    boolean isRootActivity() {
+        return isTaskRoot() && mVm.getSearchCriteria().isEmpty();
     }
 
     private void createFragmentResultListeners() {
@@ -702,73 +738,6 @@ public class BooksOnBookshelf
     }
 
     @Override
-    @CallSuper
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        getMenuInflater().inflate(R.menu.bob, menu);
-        MenuHelper.setupSearchActionView(this, getMenuInflater(), menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
-        mFabMenu.hideMenu();
-
-        final boolean showECPreferred = mVm.getCurrentStyle(this).getTopLevel() > 1;
-        menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showECPreferred);
-
-        final boolean bookDetailsVisible = hasEmbeddedDetailsFrame();
-
-        menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(bookDetailsVisible);
-        // Added by the fragment; will not be present if we've not opened a book yet.
-        // but if we did, and then rotated the display which hides the fragment...
-        // we MUST remove the menu which Android does not remove automatically.
-        // Android is really a pile of ....
-        final MenuItem bookGroup = menu.findItem(R.id.MENU_GROUP_BOOK);
-        if (bookGroup != null) {
-            bookGroup.setVisible(bookDetailsVisible);
-        }
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        mFabMenu.hideMenu();
-
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_STYLE_PICKER) {
-            mOnStylePickerLauncher.launch(mVm.getCurrentStyle(this), false);
-            return true;
-
-        } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
-            expandAllNodes(mVm.getCurrentStyle(this).getTopLevel(), false);
-            return true;
-
-        } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
-            expandAllNodes(1, true);
-            return true;
-
-        } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
-            expandAllNodes(1, false);
-            return true;
-
-        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            // IMPORTANT: this is from the options menu selection.
-            // We pass the book ID's for the currently displayed list.
-            //TODO: add a fitting screen subtitle
-            //FIXME: currently disabled in the menu xml file.
-            mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                    mVm.getCurrentBookIdList(), null, null));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onBackPressed() {
         // If the FAB menu is showing, hide it and suppress the back key.
         if (mFabMenu.hideMenu()) {
@@ -778,6 +747,7 @@ public class BooksOnBookshelf
         // If the current list is has any search criteria enabled, clear them and rebuild the list.
         if (isTaskRoot() && !mVm.getSearchCriteria().isEmpty()) {
             mVm.getSearchCriteria().clear();
+            setNavIcon();
             buildBookList();
             return;
         }
@@ -798,7 +768,7 @@ public class BooksOnBookshelf
 
         // If we have search criteria enabled (i.e. we're filtering the current list)
         // then we should display the 'up' indicator. See #onBackPressed.
-        updateActionBar(mVm.getSearchCriteria().isEmpty());
+        setNavIcon();
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -1239,15 +1209,16 @@ public class BooksOnBookshelf
             return true;
         }
 
-        if (mCalibreHandler != null && mCalibreHandler.onItemSelected(this, itemId, rowData)) {
+        if (mCalibreHandler != null && mCalibreHandler.onMenuItemSelected(this, menuItem,
+                                                                          rowData)) {
             return true;
         }
 
-        if (mVm.getAmazonHandler().onItemSelected(this, itemId, rowData)) {
+        if (mVm.getAmazonHandler().onMenuItemSelected(this, menuItem, rowData)) {
             return true;
         }
 
-        if (mVm.getViewBookHandler().onItemSelected(this, itemId, rowData)) {
+        if (mVm.getViewBookHandler().onMenuItemSelected(this, menuItem, rowData)) {
             return true;
         }
 
@@ -1389,7 +1360,7 @@ public class BooksOnBookshelf
     public void editStyle(@NonNull final ListStyle style,
                           final boolean setAsPreferred) {
         mEditStyleLauncher.launch(new EditStyleContract.Input(
-                StyleViewModel.BKEY_ACTION_EDIT, style.getUuid(), setAsPreferred));
+                StyleViewModel.BKEY_ACTION_EDIT, style, setAsPreferred));
     }
 
     /**
@@ -1511,14 +1482,12 @@ public class BooksOnBookshelf
             mVb.content.list.setVisibility(View.INVISIBLE);
 
             // If the book details frame is present, wipe it
-            if (hasEmbeddedDetailsFrame()) {
-                final Fragment fragment = mVb.content.detailsFrame.getFragment();
-                if (fragment != null) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .remove(fragment)
-                            .commit();
-                }
+            final Fragment fragment = getEmbeddedDetailsFrame();
+            if (fragment != null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(fragment)
+                        .commit();
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
@@ -1625,29 +1594,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Expand/Collapse the entire list <strong>starting</strong> from the given level.
-     * <p>
-     * This is called from the options menu:
-     * <ul>
-     *     <li>Preferred level</li>
-     *     <li>expand all</li>
-     *     <li>collapse all</li>
-     * </ul>
-     *
-     * @param topLevel the desired top-level which must be kept visible
-     * @param expand   desired state
-     */
-    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
-                                final boolean expand) {
-        // It is possible that the list will be empty, if so, ignore
-        if (mAdapter != null && mAdapter.getItemCount() > 0) {
-            saveListPosition();
-            mVm.expandAllNodes(topLevel, expand);
-            displayList();
-        }
-    }
-
-    /**
      * Display the list based on the given cursor, and scroll to the last saved position.
      */
     private void displayList() {
@@ -1690,7 +1636,7 @@ public class BooksOnBookshelf
                         saveListPosition();
                         // Now show the book details if we can.
                         final long bookId = mVm.getCurrentCenteredBookId();
-                        if (hasEmbeddedDetailsFrame() && bookId != 0) {
+                        if (bookId != 0 && hasEmbeddedDetailsFrame()) {
                             // We know exactly where we want to be,
                             // do NOT reset the stored book id positioning
                             openEmbeddedBookDetails(bookId);
@@ -1712,17 +1658,20 @@ public class BooksOnBookshelf
                         mVb.content.list.post(() -> {
                             saveListPosition();
                             // and lastly, show the book details if we can.
-                            if (hasEmbeddedDetailsFrame()) {
-                                final long bookId = node.getBookId();
-                                if (bookId != 0) {
-                                    openEmbeddedBookDetails(bookId);
-                                }
+                            final long bookId = node.getBookId();
+                            if (bookId != 0 && hasEmbeddedDetailsFrame()) {
+                                openEmbeddedBookDetails(bookId);
                             }
                         });
                     });
                 }
             });
         }
+    }
+
+    @Nullable
+    private Fragment getEmbeddedDetailsFrame() {
+        return mVb.content.detailsFrame == null ? null : mVb.content.detailsFrame.getFragment();
     }
 
     private boolean hasEmbeddedDetailsFrame() {
@@ -1873,28 +1822,6 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * Called when the user taps a book-row.
-     * On small screens, opens a ViewPager with the book details and swipe prev/next functionality.
-     * On larger screens, opens the book details fragment in-situ.
-     *
-     * @param listTableRowId the row id in the list-table for the book
-     * @param bookId         id of the book to open
-     */
-    private void openBookDetails(final long listTableRowId,
-                                 final long bookId) {
-        // store the id as the current 'central' book for repositioning
-        mVm.setCurrentCenteredBookId(bookId);
-
-        if (hasEmbeddedDetailsFrame()) {
-            openEmbeddedBookDetails(bookId);
-        } else {
-            mDisplayBookLauncher.launch(new ShowBookContract.Input(
-                    bookId, mVm.getCurrentStyle(this).getUuid(),
-                    mVm.getBookNavigationTableName(), listTableRowId));
-        }
-    }
-
     private void openEmbeddedBookDetails(final long bookId) {
         final ShowBookDetailsFragment fragment = new ShowBookDetailsFragment();
         final Bundle args = new Bundle();
@@ -1934,6 +1861,83 @@ public class BooksOnBookshelf
             styleName = itemView.findViewById(R.id.style_name);
             filterText = itemView.findViewById(R.id.filter_text);
             bookCount = itemView.findViewById(R.id.book_count);
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.bob, menu);
+            MenuHelper.setupSearchActionView(BooksOnBookshelf.this, menu);
+
+            onPrepareMenu(menu);
+        }
+
+        private void onPrepareMenu(@NonNull final Menu menu) {
+            final boolean showPreferredOption =
+                    mVm.getCurrentStyle(BooksOnBookshelf.this).getTopLevel() > 1;
+            menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            mFabMenu.hideMenu();
+
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_STYLE_PICKER) {
+                mOnStylePickerLauncher.launch(mVm.getCurrentStyle(BooksOnBookshelf.this), false);
+                return true;
+
+            } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
+                expandAllNodes(mVm.getCurrentStyle(BooksOnBookshelf.this).getTopLevel(), false);
+                return true;
+
+            } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
+                expandAllNodes(1, true);
+                return true;
+
+            } else if (itemId == R.id.MENU_LEVEL_COLLAPSE) {
+                expandAllNodes(1, false);
+                return true;
+
+            } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+                // IMPORTANT: this is from the options menu selection.
+                // We pass the book ID's for the currently displayed list.
+                //TODO: add a fitting screen subtitle
+                //FIXME: currently disabled in the menu xml file.
+                mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
+                        mVm.getCurrentBookIdList(), null, null));
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Expand/Collapse the entire list <strong>starting</strong> from the given level.
+         * <p>
+         * This is called from the options menu:
+         * <ul>
+         *     <li>Preferred level</li>
+         *     <li>expand all</li>
+         *     <li>collapse all</li>
+         * </ul>
+         *
+         * @param topLevel the desired top-level which must be kept visible
+         * @param expand   desired state
+         */
+        private void expandAllNodes(@IntRange(from = 1) final int topLevel,
+                                    final boolean expand) {
+            // It is possible that the list will be empty, if so, ignore
+            if (mAdapter != null && mAdapter.getItemCount() > 0) {
+                saveListPosition();
+                mVm.expandAllNodes(topLevel, expand);
+                displayList();
+            }
         }
     }
 

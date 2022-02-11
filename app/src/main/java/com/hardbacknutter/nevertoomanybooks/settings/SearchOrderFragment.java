@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,6 +33,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -68,6 +72,9 @@ public class SearchOrderFragment
     private SearchSiteListAdapter mListAdapter;
     private ItemTouchHelper mItemTouchHelper;
 
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /* The View model. */
     private SearchAdminViewModel mVm;
 
@@ -87,7 +94,6 @@ public class SearchOrderFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
@@ -106,8 +112,13 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setTitle(R.string.lbl_settings);
-        setSubtitle(R.string.lbl_websites);
+
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
+                                Lifecycle.State.RESUMED);
+
+        toolbar.setTitle(R.string.lbl_settings);
+        toolbar.setSubtitle(R.string.lbl_websites);
 
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
         mSiteList = mVm.getList(mType);
@@ -127,33 +138,22 @@ public class SearchOrderFragment
         mItemTouchHelper.attachToRecyclerView(mVb.siteList);
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
+    /**
+     * Holder for each row.
+     */
+    private static class Holder
+            extends ItemTouchHelperViewHolderBase {
 
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_baseline_undo_24);
+        @NonNull
+        final TextView nameView;
+        @NonNull
+        final TextView infoView;
 
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.MENU_RESET) {
-            // Reset the global/original list for the type.
-            mType.resetList(ServiceLocator.getSystemLocale(),
-                            getResources().getConfiguration().getLocales().get(0));
-            // and replace the content of the local list with the (new) defaults.
-            mSiteList.clear();
-            mSiteList.addAll(mType.getSites());
-
-            mListAdapter.notifyDataSetChanged();
-            return true;
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+            nameView = itemView.findViewById(R.id.name);
+            infoView = itemView.findViewById(R.id.info);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private static class SearchSiteListAdapter
@@ -233,21 +233,30 @@ public class SearchOrderFragment
         }
     }
 
-    /**
-     * Holder for each row.
-     */
-    private static class Holder
-            extends ItemTouchHelperViewHolderBase {
+    private class ToolbarMenuProvider
+            implements MenuProvider {
 
-        @NonNull
-        final TextView nameView;
-        @NonNull
-        final TextView infoView;
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
+                .setIcon(R.drawable.ic_baseline_undo_24);
+        }
 
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.name);
-            infoView = itemView.findViewById(R.id.info);
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_RESET) {
+                // Reset the global/original list for the type.
+                mType.resetList(ServiceLocator.getSystemLocale(),
+                                getResources().getConfiguration().getLocales().get(0));
+                // and replace the content of the local list with the (new) defaults.
+                mSiteList.clear();
+                mSiteList.addAll(mType.getSites());
+                mListAdapter.notifyDataSetChanged();
+                return true;
+            }
+            return false;
         }
     }
 }

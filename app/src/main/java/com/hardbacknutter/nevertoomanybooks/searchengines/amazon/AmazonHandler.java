@@ -27,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -101,25 +100,27 @@ public class AmazonHandler
     }
 
     @Override
-    public boolean onItemSelected(@NonNull final Context context,
-                                  @IdRes final int menuItemId,
-                                  @NonNull final DataHolder rowData) {
+    public boolean onMenuItemSelected(@NonNull final Context context,
+                                      @NonNull final MenuItem menuItem,
+                                      @NonNull final DataHolder rowData) {
 
-        if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
+        final int itemId = menuItem.getItemId();
+
+        if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
             final Author author = DataHolderUtils.getAuthor(rowData);
             if (author != null) {
                 startSearchActivity(context, author, null);
             }
             return true;
 
-        } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
             final Series series = DataHolderUtils.getSeries(rowData);
             if (series != null) {
                 startSearchActivity(context, null, series);
             }
             return true;
 
-        } else if (menuItemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
             final Author author = DataHolderUtils.getAuthor(rowData);
             final Series series = DataHolderUtils.getSeries(rowData);
             if (author != null && series != null) {

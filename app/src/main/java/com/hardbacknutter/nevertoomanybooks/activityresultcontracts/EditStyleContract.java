@@ -108,10 +108,17 @@ public class EditStyleContract
         final boolean setAsPreferred;
 
         public Input(@StyleViewModel.EditAction final int action,
-                     @NonNull final String uuid,
+                     @NonNull final ListStyle style) {
+            this.action = action;
+            this.uuid = style.getUuid();
+            this.setAsPreferred = style.isPreferred();
+        }
+
+        public Input(@StyleViewModel.EditAction final int action,
+                     @NonNull final ListStyle style,
                      final boolean setAsPreferred) {
             this.action = action;
-            this.uuid = uuid;
+            this.uuid = style.getUuid();
             this.setAsPreferred = setAsPreferred;
         }
     }
