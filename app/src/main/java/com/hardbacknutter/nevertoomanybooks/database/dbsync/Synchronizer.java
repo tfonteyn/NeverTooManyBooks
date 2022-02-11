@@ -19,12 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,9 +48,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * pending locks.
  */
 public class Synchronizer {
-
-    static final int LOCK_SHARED = 1;
-    static final int LOCK_EXCLUSIVE = 2;
 
     /** Main lock for synchronization. */
     private final ReentrantLock mLock = new ReentrantLock();
@@ -186,10 +180,8 @@ public class Synchronizer {
         mLock.unlock();
     }
 
-    @IntDef({LOCK_SHARED, LOCK_EXCLUSIVE})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface LockType {
-
+    enum LockType {
+        Shared, Exclusive
     }
 
     /**
@@ -199,8 +191,8 @@ public class Synchronizer {
 
         void unlock();
 
-        @LockType
-        int getType();
+        @NonNull
+        LockType getType();
     }
 
     static class LockException
@@ -231,9 +223,9 @@ public class Synchronizer {
 
         @SuppressWarnings("SameReturnValue")
         @Override
-        @LockType
-        public int getType() {
-            return LOCK_SHARED;
+        @NonNull
+        public LockType getType() {
+            return LockType.Shared;
         }
     }
 
@@ -250,9 +242,9 @@ public class Synchronizer {
 
         @SuppressWarnings("SameReturnValue")
         @Override
-        @LockType
-        public int getType() {
-            return LOCK_EXCLUSIVE;
+        @NonNull
+        public LockType getType() {
+            return LockType.Exclusive;
         }
     }
 }

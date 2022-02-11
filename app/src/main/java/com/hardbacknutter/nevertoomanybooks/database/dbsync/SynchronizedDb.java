@@ -189,7 +189,7 @@ public class SynchronizedDb
 
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
@@ -228,7 +228,7 @@ public class SynchronizedDb
 
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
@@ -262,7 +262,7 @@ public class SynchronizedDb
 
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
@@ -297,7 +297,7 @@ public class SynchronizedDb
 
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
@@ -322,7 +322,7 @@ public class SynchronizedDb
     public SynchronizedStatement compileStatement(@NonNull final String sql) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
@@ -348,7 +348,7 @@ public class SynchronizedDb
 
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+            if (mTxLock.getType() != Synchronizer.LockType.Exclusive) {
                 throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
