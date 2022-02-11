@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.text.Editable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -31,8 +30,6 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,10 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * and the prefix 977 indicates International Standard Serial Number (ISSN).
  */
 public class ISBN {
-
-    public static final int VALIDITY_NONE = 0;
-    public static final int VALIDITY_LOOSE = 1;
-    public static final int VALIDITY_STRICT = 2;
 
     /** Log tag. */
     private static final String TAG = "ISBN";
@@ -277,18 +270,6 @@ public class ISBN {
     @NonNull
     public static ISBN createISBN(@NonNull final String isbnStr) {
         return new ISBN(isbnStr, true);
-    }
-
-    /**
-     * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
-     *
-     * @param global Global preferences
-     *
-     * @return {@link Validity} level
-     */
-    @Validity
-    public static int getEditValidityLevel(@NonNull final SharedPreferences global) {
-        return Prefs.getIntListPref(global, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
     }
 
     /**
@@ -845,10 +826,40 @@ public class ISBN {
         UpcA
     }
 
-    @IntDef({VALIDITY_NONE, VALIDITY_LOOSE, VALIDITY_STRICT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Validity {
+    public enum Validity {
+        None(0),
+        Loose(1),
+        Strict(2);
 
+        public final int value;
+
+        Validity(final int prefValue) {
+
+            value = prefValue;
+        }
+
+        /**
+         * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
+         *
+         * @param global Global preferences
+         *
+         * @return Validity level
+         */
+        @NonNull
+        public static Validity getLevel(@NonNull final SharedPreferences global) {
+
+            final int value = Prefs.getIntListPref(global, Prefs.pk_edit_book_isbn_checks,
+                                                   Loose.value);
+            switch (value) {
+                case 2:
+                    return Strict;
+                case 1:
+                    return Loose;
+                case 0:
+                default:
+                    return None;
+            }
+        }
     }
 
     public static class CleanupTextWatcher
@@ -856,8 +867,8 @@ public class ISBN {
 
         @NonNull
         private final TextInputEditText mEditText;
-        @Validity
-        private int mIsbnValidityCheck;
+        @NonNull
+        private Validity mIsbnValidityCheck;
 
         /**
          * Constructor.
@@ -866,12 +877,12 @@ public class ISBN {
          * @param isbnValidityCheck validity check-level for ISBN codes
          */
         public CleanupTextWatcher(@NonNull final TextInputEditText editText,
-                                  @Validity final int isbnValidityCheck) {
+                                  @NonNull final Validity isbnValidityCheck) {
             mEditText = editText;
             mIsbnValidityCheck = isbnValidityCheck;
         }
 
-        public void setValidityLevel(@Validity final int isbnValidityCheck) {
+        public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
             mIsbnValidityCheck = isbnValidityCheck;
             clean(mEditText.getEditableText());
         }
@@ -882,13 +893,13 @@ public class ISBN {
         }
 
         private void clean(@Nullable final Editable editable) {
-            if (mIsbnValidityCheck != VALIDITY_NONE && editable != null && editable.length() > 0) {
+            if (mIsbnValidityCheck != Validity.None && editable != null && editable.length() > 0) {
                 final String text = editable.toString().trim();
                 if (text.isEmpty()) {
                     return;
                 }
 
-                if (mIsbnValidityCheck == VALIDITY_LOOSE) {
+                if (mIsbnValidityCheck == Validity.Loose) {
                     // Text representation of ISBN-13/10 string is often
                     // split in groups of digits with '-' in between.
                     // This is, as observed, usually 10 + 3 '-' (or 10 + 2 '-' + 'x'),
@@ -950,8 +961,8 @@ public class ISBN {
 
         @Nullable
         private String mAltIsbn;
-        @Validity
-        private int mIsbnValidityCheck;
+        @NonNull
+        private Validity mIsbnValidityCheck;
 
         /**
          * Constructor.
@@ -962,7 +973,7 @@ public class ISBN {
          */
         public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
                                      @NonNull final TextInputEditText editText,
-                                     @Validity final int isbnValidityCheck) {
+                                     @NonNull final Validity isbnValidityCheck) {
             mLayout = layoutView;
             mLayout.setStartIconVisible(false);
 
@@ -970,7 +981,7 @@ public class ISBN {
             mIsbnValidityCheck = isbnValidityCheck;
         }
 
-        public void setValidityLevel(@Validity final int isbnValidityCheck) {
+        public void setValidityLevel(@NonNull final Validity isbnValidityCheck) {
             mIsbnValidityCheck = isbnValidityCheck;
             validate(mEditText.getEditableText());
         }
@@ -991,7 +1002,7 @@ public class ISBN {
                 final String str = editable.toString().trim();
                 switch (str.length()) {
                     case 13: {
-                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == VALIDITY_STRICT);
+                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == Validity.Strict);
                         if (isbn.isIsbn10Compat()) {
                             mAltIsbn = isbn.asText(Type.Isbn10);
                             mLayout.setStartIconVisible(true);
@@ -1003,8 +1014,8 @@ public class ISBN {
                     }
 
                     case 10: {
-                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == VALIDITY_STRICT);
-                        if (isbn.isValid(mIsbnValidityCheck == VALIDITY_STRICT)) {
+                        final ISBN isbn = new ISBN(str, mIsbnValidityCheck == Validity.Strict);
+                        if (isbn.isValid(mIsbnValidityCheck == Validity.Strict)) {
                             mAltIsbn = isbn.asText(Type.Isbn13);
                             mLayout.setStartIconVisible(true);
                             mLayout.setStartIconOnClickListener(
@@ -1016,7 +1027,7 @@ public class ISBN {
 
                     case 12: {
                         // UPC: indicate the code is valid, but disable the swap functionality
-                        if (mIsbnValidityCheck != VALIDITY_STRICT) {
+                        if (mIsbnValidityCheck != Validity.Strict) {
                             final ISBN isbn = new ISBN(str, false);
                             if (isbn.isValid(false)) {
                                 mLayout.setStartIconVisible(true);

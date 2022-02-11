@@ -153,8 +153,8 @@ public class SearchBookByIsbnFragment
         });
 
         // The search preference determines the level here; NOT the 'edit book'
-        final int isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.VALIDITY_STRICT
-                                                                  : ISBN.VALIDITY_NONE;
+        final ISBN.Validity isbnValidityCheck = mCoordinator.isStrictIsbn() ? ISBN.Validity.Strict
+                                                                            : ISBN.Validity.None;
 
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, isbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
@@ -418,7 +418,7 @@ public class SearchBookByIsbnFragment
                 mCoordinator.setStrictIsbn(checked);
                 onPrepareMenu(getToolbar().getMenu());
 
-                final int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
+                final ISBN.Validity validity = checked ? ISBN.Validity.Strict : ISBN.Validity.None;
                 mIsbnCleanupTextWatcher.setValidityLevel(validity);
                 mIsbnValidationTextWatcher.setValidityLevel(validity);
                 return true;

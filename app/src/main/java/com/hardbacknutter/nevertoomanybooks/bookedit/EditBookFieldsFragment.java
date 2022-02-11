@@ -101,8 +101,7 @@ public class EditBookFieldsFragment
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
 
     /** The level of checking the ISBN code. */
-    @ISBN.Validity
-    private int mIsbnValidityCheck;
+    private ISBN.Validity mIsbnValidityCheck;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
@@ -177,7 +176,7 @@ public class EditBookFieldsFragment
                                             R.id.bookshelves, allItems, selectedItems);
         });
 
-        mIsbnValidityCheck = ISBN.getEditValidityLevel(global);
+        mIsbnValidityCheck = ISBN.Validity.getLevel(global);
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
@@ -265,15 +264,15 @@ public class EditBookFieldsFragment
 
         public void onPrepareMenu(@NonNull final Menu menu) {
             switch (mIsbnValidityCheck) {
-                case ISBN.VALIDITY_STRICT:
+                case Strict:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT).setChecked(true);
                     break;
 
-                case ISBN.VALIDITY_LOOSE:
+                case Loose:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_LOOSE).setChecked(true);
                     break;
 
-                case ISBN.VALIDITY_NONE:
+                case None:
                 default:
                     menu.findItem(R.id.MENU_ISBN_VALIDITY_NONE).setChecked(true);
                     break;
@@ -285,24 +284,24 @@ public class EditBookFieldsFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
-                mIsbnValidityCheck = ISBN.VALIDITY_NONE;
+                mIsbnValidityCheck = ISBN.Validity.None;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.None);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.None);
                 return true;
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
-                mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
+                mIsbnValidityCheck = ISBN.Validity.Loose;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Loose);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Loose);
                 return true;
 
             } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
-                mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
+                mIsbnValidityCheck = ISBN.Validity.Strict;
                 onPrepareMenu(getToolbar().getMenu());
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.Validity.Strict);
+                mIsbnValidationTextWatcher.setValidityLevel(ISBN.Validity.Strict);
                 return true;
             }
 
