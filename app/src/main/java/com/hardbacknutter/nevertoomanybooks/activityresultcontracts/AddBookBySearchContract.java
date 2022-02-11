@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -66,20 +67,22 @@ public class AddBookBySearchContract
                                @NonNull final By by) {
         switch (by) {
             case Isbn:
-                return FragmentHostActivity.createIntent(context, SearchBookByIsbnFragment.class);
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByIsbnFragment.class);
 
             case Scan:
                 return FragmentHostActivity
                         .createIntent(context, SearchBookByIsbnFragment.class)
                         .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
-                                  SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
+                                  (Parcelable) SearchBookByIsbnViewModel.ScanMode.Single);
 
             case ExternalId:
                 return FragmentHostActivity
                         .createIntent(context, SearchBookByExternalIdFragment.class);
 
             case Text:
-                return FragmentHostActivity.createIntent(context, SearchBookByTextFragment.class);
+                return FragmentHostActivity
+                        .createIntent(context, SearchBookByTextFragment.class);
         }
 
         throw new IllegalArgumentException(by.name());

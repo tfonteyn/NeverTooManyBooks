@@ -24,8 +24,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -38,8 +39,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,26 +54,23 @@ public class SearchBookByIsbnViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
-    /** Manual entry by user. */
-    public static final int SCANNER_OFF = 0;
-    /** Scan and search/edit loop, until scanning is cancelled. */
-    public static final int SCANNER_MODE_SINGLE = 1;
-    /** Scan and queue the code, until scanning is cancelled. */
-    public static final int SCANNER_MODE_BATCH = 2;
-
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
     public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
 
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+
     /** Database Access. */
     private BookDao mBookDao;
-    @Mode
-    private int mScannerMode;
+
+    @NonNull
+    private ScanMode mScannerMode = ScanMode.Off;
+
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
 
@@ -93,7 +89,10 @@ public class SearchBookByIsbnViewModel
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
-                mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);
+                final ScanMode scanMode = args.getParcelable(BKEY_SCAN_MODE);
+                if (scanMode != null) {
+                    mScannerMode = scanMode;
+                }
             }
         }
     }
@@ -104,7 +103,7 @@ public class SearchBookByIsbnViewModel
      * @return flag
      */
     boolean isAutoStart() {
-        if ((mScannerMode != SCANNER_OFF) && mFirstStart) {
+        if ((mScannerMode != ScanMode.Off) && mFirstStart) {
             mFirstStart = false;
             return true;
         }
@@ -116,14 +115,14 @@ public class SearchBookByIsbnViewModel
         return mScanQueue;
     }
 
-    @Mode
-    int getScannerMode() {
+    @NonNull
+    ScanMode getScannerMode() {
         return mScannerMode;
     }
 
-    void setScannerMode(@Mode final int scannerMode) {
+    void setScannerMode(@NonNull final ScanMode scannerMode) {
         mScannerMode = scannerMode;
-        if (mScannerMode == SCANNER_MODE_SINGLE || mScannerMode == SCANNER_MODE_BATCH) {
+        if (mScannerMode == ScanMode.Single || mScannerMode == ScanMode.Batch) {
             mScanQueue.clear();
         }
     }
@@ -179,11 +178,39 @@ public class SearchBookByIsbnViewModel
         return mBookDao.getBookIdAndTitleByIsbn(code);
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SCANNER_OFF,
-             SCANNER_MODE_SINGLE,
-             SCANNER_MODE_BATCH})
-    public @interface Mode {
+    public enum ScanMode
+            implements Parcelable {
+        /** Manual entry by user. */
+        Off,
+        /** Scan and search/edit loop, until scanning is cancelled. */
+        Single,
+        /** Scan and queue the code, until scanning is cancelled. */
+        Batch;
 
+        /** {@link Parcelable}. */
+        public static final Creator<ScanMode> CREATOR = new Creator<>() {
+            @Override
+            @NonNull
+            public ScanMode createFromParcel(@NonNull final Parcel in) {
+                return values()[in.readInt()];
+            }
+
+            @Override
+            @NonNull
+            public ScanMode[] newArray(final int size) {
+                return new ScanMode[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeInt(this.ordinal());
+        }
     }
 }
