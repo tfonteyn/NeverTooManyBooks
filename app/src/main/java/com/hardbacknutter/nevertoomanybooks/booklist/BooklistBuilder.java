@@ -152,8 +152,8 @@ class BooklistBuilder {
 
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
-    @RebuildBooklist.Mode
-    private int mRebuildMode;
+    @NonNull
+    private RebuildBooklist mRebuildMode;
 
     /**
      * Constructor.
@@ -165,7 +165,7 @@ class BooklistBuilder {
      */
     BooklistBuilder(@NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf,
-                    @RebuildBooklist.Mode final int rebuildMode) {
+                    @NonNull final RebuildBooklist rebuildMode) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|Booklist"
@@ -275,7 +275,7 @@ class BooklistBuilder {
      * @param rebuildMode booklist state to use in next rebuild.
      */
     void setRebuildMode(@SuppressWarnings("SameParameterValue")
-                        @RebuildBooklist.Mode final int rebuildMode) {
+                        @NonNull final RebuildBooklist rebuildMode) {
         mRebuildMode = rebuildMode;
     }
 
@@ -329,18 +329,18 @@ class BooklistBuilder {
                                                                     mStyle, mBookshelves.get(0));
 
             switch (mRebuildMode) {
-                case RebuildBooklist.FROM_SAVED_STATE:
+                case FromSaved:
                     // all rows will be collapsed/hidden; restore the saved state
                     rowStateDAO.restoreSavedState();
                     break;
 
-                case RebuildBooklist.FROM_PREFERRED_STATE:
+                case Preferred:
                     // all rows will be collapsed/hidden; now adjust as required.
                     rowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
                     break;
 
-                case RebuildBooklist.EXPANDED:
-                case RebuildBooklist.COLLAPSED:
+                case Expanded:
+                case Collapsed:
                     // handled during table creation
                     break;
 
@@ -424,8 +424,9 @@ class BooklistBuilder {
         /** Guards from adding duplicates. */
         private final Collection<String> mOrderByDupCheck = new HashSet<>();
 
-        @RebuildBooklist.Mode
-        private final int mRebuildMode;
+        @NonNull
+        private final RebuildBooklist mRebuildMode;
+
         private String mSqlForInitialInsert;
 
         /** Table used by the triggers to track the most recent/current row headings. */
@@ -449,7 +450,7 @@ class BooklistBuilder {
         TableBuilder(final int instanceId,
                      @NonNull final ListStyle style,
                      final boolean isFilteredOnBookshelf,
-                     @RebuildBooklist.Mode final int rebuildMode) {
+                     @NonNull final RebuildBooklist rebuildMode) {
 
             mStyle = style;
             mFilteredOnBookshelf = isFilteredOnBookshelf;
@@ -585,14 +586,14 @@ class BooklistBuilder {
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
             switch (mRebuildMode) {
-                case RebuildBooklist.COLLAPSED:
-                case RebuildBooklist.FROM_PREFERRED_STATE:
-                case RebuildBooklist.FROM_SAVED_STATE:
+                case Collapsed:
+                case Preferred:
+                case FromSaved:
                     sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
                     sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
                     break;
 
-                case RebuildBooklist.EXPANDED:
+                case Expanded:
                     sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
                     sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
                     break;
@@ -746,7 +747,7 @@ class BooklistBuilder {
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
-                final int expVis = (mRebuildMode == RebuildBooklist.EXPANDED) ? 1 : 0;
+                final int expVis = (mRebuildMode == RebuildBooklist.Expanded) ? 1 : 0;
 
                 // Create the VALUES clause for the next level up
                 final StringBuilder listValues = new StringBuilder()

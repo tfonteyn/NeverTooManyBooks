@@ -97,8 +97,7 @@ public class BooksOnBookshelfViewModel
     /** The row id we want the new list to display more-or-less in the center. */
     private long mCurrentCenteredBookId;
     /** Preferred booklist state in next rebuild. */
-    @RebuildBooklist.Mode
-    private int mRebuildMode;
+    private RebuildBooklist mRebuildMode;
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
@@ -159,7 +158,7 @@ public class BooksOnBookshelfViewModel
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {
-                    mRebuildMode = args.getInt(BKEY_LIST_STATE);
+                    mRebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE));
                 }
 
                 // check for an explicit bookshelf set
@@ -170,7 +169,7 @@ public class BooksOnBookshelfViewModel
             }
         } else {
             // always preserve the state when the hosting fragment was revived
-            mRebuildMode = RebuildBooklist.FROM_SAVED_STATE;
+            mRebuildMode = RebuildBooklist.FromSaved;
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
@@ -738,7 +737,7 @@ public class BooksOnBookshelfViewModel
         mListHasBeenLoaded = true;
 
         // preserve the new state by default
-        mRebuildMode = RebuildBooklist.FROM_SAVED_STATE;
+        mRebuildMode = RebuildBooklist.FromSaved;
     }
 
     void onBuildCancelled() {

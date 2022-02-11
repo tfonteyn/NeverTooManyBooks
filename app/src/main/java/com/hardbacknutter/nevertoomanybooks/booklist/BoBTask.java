@@ -66,8 +66,7 @@ public class BoBTask
     private Bookshelf mBookshelf;
 
     /** Preferred booklist state in next rebuild. */
-    @RebuildBooklist.Mode
-    private int mRebuildMode;
+    private RebuildBooklist mRebuildMode;
 
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private SearchCriteria mSearchCriteria;
@@ -143,7 +142,7 @@ public class BoBTask
     }
 
     public void build(@NonNull final Bookshelf bookshelf,
-                      @RebuildBooklist.Mode final int mode,
+                      @NonNull final RebuildBooklist mode,
                       @NonNull final SearchCriteria searchCriteria,
                       final long desiredCentralBookId) {
         mBookshelf = bookshelf;
@@ -282,7 +281,7 @@ public class BoBTask
 
             // if we have any criteria set at all, the build should expand the book list.
             if (!mSearchCriteria.isEmpty()) {
-                builder.setRebuildMode(RebuildBooklist.EXPANDED);
+                builder.setRebuildMode(RebuildBooklist.Expanded);
             }
 
             // Build the underlying data

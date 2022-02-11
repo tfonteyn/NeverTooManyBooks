@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -256,7 +257,7 @@ public class AuthorWorksFragment
                             // the author as a single line, and no books shown at all,
                             // which can be quite confusing to the user.
                             .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                      RebuildBooklist.EXPANDED);
+                                      (Parcelable) RebuildBooklist.Expanded);
 
                     if (mVm.isAllBookshelves()) {
                         intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF,

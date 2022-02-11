@@ -20,28 +20,42 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-/**
- * id values for state preservation property.
- * See {@link Mode}.
- */
-public final class RebuildBooklist {
+public enum RebuildBooklist
+        implements Parcelable {
 
-    public static final int FROM_SAVED_STATE = 0;
-    public static final int EXPANDED = 1;
-    static final int COLLAPSED = 2;
-    static final int FROM_PREFERRED_STATE = 3;
+    FromSaved(0),
+    Expanded(1),
+    Collapsed(2),
+    Preferred(3);
 
-    private RebuildBooklist() {
+    /** {@link Parcelable}. */
+    public static final Parcelable.Creator<RebuildBooklist> CREATOR = new Parcelable.Creator<>() {
+        @Override
+        @NonNull
+        public RebuildBooklist createFromParcel(@NonNull final Parcel in) {
+            return values()[in.readInt()];
+        }
+
+        @Override
+        @NonNull
+        public RebuildBooklist[] newArray(final int size) {
+            return new RebuildBooklist[size];
+        }
+    };
+
+    private final int value;
+
+    RebuildBooklist(final int value) {
+        this.value = value;
     }
 
     /**
@@ -51,22 +65,31 @@ public final class RebuildBooklist {
      *
      * @return Mode
      */
-    @Mode
-    public static int getPreferredMode(@NonNull final Context context) {
-        final String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                              .getString(Prefs.pk_booklist_rebuild_state, null);
-        if (value != null && !value.isEmpty()) {
-            return Integer.parseInt(value);
+    public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final int value = Prefs.getIntListPref(global, Prefs.pk_booklist_rebuild_state,
+                                               FromSaved.value);
+        switch (value) {
+            case 3:
+                return Preferred;
+            case 2:
+                return Collapsed;
+            case 1:
+                return Expanded;
+            case 0:
+            default:
+                return FromSaved;
         }
-        return FROM_SAVED_STATE;
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FROM_SAVED_STATE,
-             EXPANDED,
-             COLLAPSED,
-             FROM_PREFERRED_STATE})
-    public @interface Mode {
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(this.ordinal());
     }
 }
