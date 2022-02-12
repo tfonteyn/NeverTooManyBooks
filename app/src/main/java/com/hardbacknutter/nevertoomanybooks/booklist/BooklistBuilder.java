@@ -1000,12 +1000,12 @@ class BooklistBuilder {
                 @Author.Type
                 final int primaryAuthorType = mStyle.getPrimaryAuthorType();
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
-                    // don't care about Author type, so just grab the primary (i.e. pos==1)
+                    // don't care about Author type, so just grab the first one (i.e. pos==1)
                     sql.append(_AND_)
                        .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_POSITION))
                        .append("=1");
                 } else {
-                    // grab the desired type, or if no such type, grab the 1st
+                    // grab the desired type, or if no such type, grab the first one
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
                        .append(TBL_BOOK_AUTHOR.dot(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK))
