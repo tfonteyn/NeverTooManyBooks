@@ -86,6 +86,16 @@ public interface DataHolder {
     double getDouble(@NonNull String key);
 
     /**
+     * Returns the value associated with the given key, or {@code 0.0} if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     *
+     * @return a float value
+     */
+    float getFloat(@NonNull String key);
+
+    /**
      * Returns the value associated with the given key, or {@code false} if
      * no mapping of the desired type exists for the given key.
      *

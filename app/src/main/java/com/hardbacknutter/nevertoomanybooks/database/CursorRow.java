@@ -167,6 +167,27 @@ public class CursorRow
         return mCursor.getDouble(col);
     }
 
+    /**
+     * @param key to get
+     *
+     * @return the double value of the column ({@code null} comes back as 0)
+     *
+     * @throws ColumnNotPresentException if the column was not present.
+     */
+    @Override
+    public float getFloat(@NonNull final String key)
+            throws ColumnNotPresentException {
+
+        final int col = mCursor.getColumnIndex(key);
+        if (col == -1) {
+            throw new ColumnNotPresentException(key);
+        }
+        // if (mCursor.isNull(col)) {
+        //     return 0;
+        // }
+        return mCursor.getFloat(col);
+    }
+
 //    /**
 //     * @param key to get
 //     *
