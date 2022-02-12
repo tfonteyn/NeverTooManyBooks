@@ -105,9 +105,6 @@ public class StyleFragment
 
         //noinspection ConstantConditions
         findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE)
-                // URGENT: AuthorBooklistGroup.PK_PRIMARY_TYPE
-                //  Why is this MultiSelectListPreference?
-                //  should this be a TriStateMultiSelectListPreference
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
     }
 

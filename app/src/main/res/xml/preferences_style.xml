@@ -172,8 +172,12 @@
             />
 
 
-        <!-- Enabled if Group 'Author' is present in this style. -->
-        <!-- The default is 'not set', which means we take the Author in position 1 to be the primary. -->
+        <!-- Enabled if Group 'Author' is present in this style.
+             The default is 'not set', which means we take the Author in position 1 to be the primary.
+
+             See {@link BooklistBuilder.TableBuilder#joinWithAuthors}
+             for why this is a MultiSelectListPreference?
+             -->
         <MultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_author_type"
