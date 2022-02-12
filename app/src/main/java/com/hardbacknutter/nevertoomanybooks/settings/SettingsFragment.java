@@ -420,7 +420,7 @@ public class SettingsFragment
             //noinspection ConstantConditions
             final String msg = ExMsg.map(context, message.getData().getResult())
                                     .orElse(getString(R.string.error_unknown_long,
-                                                      getString(R.string.lbl_send_debug)));
+                                                      getString(R.string.pt_maintenance)));
 
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)

@@ -82,7 +82,7 @@ public final class ExMsg {
             // we're supposed to catch all JSONException!
             Log.e(TAG, "Please report if seen", e);
             msg = context.getString(R.string.error_unknown_long,
-                                    context.getString(R.string.lbl_send_debug));
+                                    context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.FileNotFoundException) {
             msg = context.getString(R.string.httpErrorFile);
@@ -94,7 +94,7 @@ public final class ExMsg {
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
             msg = context.getString(R.string.error_unknown_long,
-                                    context.getString(R.string.lbl_send_debug));
+                                    context.getString(R.string.pt_maintenance));
 
         } else if (e instanceof java.io.EOFException) {
             msg = context.getString(R.string.error_network_failed_try_again);

@@ -324,7 +324,7 @@ public class StartupActivity
 
         final CharSequence msg = ExMsg.map(this, e)
                                       .orElse(getString(R.string.error_unknown_long,
-                                                        getString(R.string.lbl_send_debug)));
+                                                        getString(R.string.pt_maintenance)));
 
         new MaterialAlertDialogBuilder(this)
                 .setIcon(R.drawable.ic_baseline_error_24)
