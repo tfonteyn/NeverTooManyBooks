@@ -24,14 +24,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -48,14 +45,13 @@ public class StyleViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
-    public static final int BKEY_ACTION_CLONE = 0;
-    public static final int BKEY_ACTION_EDIT = 1;
-
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+
     /** The style we're editing. */
     private UserStyle mStyle;
+
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private ArrayList<WrappedGroup> mWrappedGroupList;
@@ -73,8 +69,8 @@ public class StyleViewModel
             final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));
 
             if (uuid.isEmpty()) {
-                // we're doing the global preferences, create a placeholder style with an empty uuid
-                // and let it use the standard SharedPreferences
+                // we're doing the global preferences, create a placeholder style
+                // with an empty uuid and let it use the standard SharedPreferences
                 mStyle = UserStyle.createGlobal(context);
 
             } else {
@@ -85,10 +81,11 @@ public class StyleViewModel
                                                       .getStyle(context, uuid);
                 Objects.requireNonNull(style, "uuid not found: " + uuid);
 
-                @EditAction
-                final int action = args.getInt(EditStyleContract.BKEY_ACTION, BKEY_ACTION_EDIT);
+                @EditStyleContract.EditAction
+                final int action = args.getInt(EditStyleContract.BKEY_ACTION,
+                                               EditStyleContract.ACTION_EDIT);
 
-                if (action == BKEY_ACTION_CLONE || style instanceof BuiltinStyle) {
+                if (action == EditStyleContract.ACTION_CLONE || style instanceof BuiltinStyle) {
                     mStyle = style.clone(context);
                 } else {
                     mStyle = (UserStyle) style;
@@ -173,12 +170,6 @@ public class StyleViewModel
         if (mResultIntent.getBooleanExtra(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
             ServiceLocator.getInstance().getStyles().updateOrInsert(mStyle);
         }
-    }
-
-    @IntDef({BKEY_ACTION_CLONE, BKEY_ACTION_EDIT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface EditAction {
-
     }
 
     /**

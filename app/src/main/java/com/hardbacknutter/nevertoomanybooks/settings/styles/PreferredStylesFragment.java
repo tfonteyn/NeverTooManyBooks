@@ -256,13 +256,11 @@ public class PreferredStylesFragment
         final ListStyle style = mVm.getStyle(position);
 
         if (itemId == R.id.MENU_EDIT) {
-            mEditStyleContract.launch(new EditStyleContract.Input(
-                    StyleViewModel.BKEY_ACTION_EDIT, style));
+            mEditStyleContract.launch(EditStyleContract.edit(style));
             return true;
 
         } else if (itemId == R.id.MENU_DUPLICATE) {
-            mEditStyleContract.launch(new EditStyleContract.Input(
-                    StyleViewModel.BKEY_ACTION_CLONE, style));
+            mEditStyleContract.launch(EditStyleContract.duplicate(style));
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {

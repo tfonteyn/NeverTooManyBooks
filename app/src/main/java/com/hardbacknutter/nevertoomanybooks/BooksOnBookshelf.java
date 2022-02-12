@@ -120,7 +120,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
@@ -182,47 +181,63 @@ public class BooksOnBookshelf
 
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher =
-            registerForActivityResult(new ExportContract(), success -> {});
+            registerForActivityResult(new ExportContract(), success -> {
+            });
+
     @NonNull
     private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
+
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
+
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
+
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
+
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
             registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
+
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditFinished);
+
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> mDuplicateLauncher =
             registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditFinished);
+
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> mUpdateBookLauncher =
             registerForActivityResult(new UpdateSingleBookContract(), this::onBookEditFinished);
+
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> mAddBookBySearchLauncher =
             registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
+
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
             registerForActivityResult(new UpdateBooklistContract(), this::onBookEditFinished);
+
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> mAuthorWorksLauncher =
             registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
+
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> mEditStylesLauncher =
             registerForActivityResult(new PreferredStylesContract(), data -> {
@@ -239,6 +254,7 @@ public class BooksOnBookshelf
                     }
                 }
             });
+
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsContract(), data -> {
@@ -247,6 +263,7 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesContract(), bookshelfId -> {
@@ -255,6 +272,7 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+
     /** Edit an individual style. */
     private final ActivityResultLauncher<EditStyleContract.Input> mEditStyleLauncher =
             registerForActivityResult(new EditStyleContract(), data -> {
@@ -272,12 +290,16 @@ public class BooksOnBookshelf
                     }
                 }
             });
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
+
     /** View Binding. */
     private BooksonbookshelfBinding mVb;
+
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
+
     /**
      * Accept the result from the dialog.
      */
@@ -290,6 +312,7 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -302,8 +325,10 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** React to row changes made. */
     private final RowChangedListener mRowChangedListener = this::onRowChanged;
+
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -334,6 +359,7 @@ public class BooksOnBookshelf
                     onBookUpdated(mVm.getBook(bookId), DBKey.KEY_LOANEE);
                 }
             };
+
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
 
@@ -385,6 +411,7 @@ public class BooksOnBookshelf
                     return onCreateContextMenu(v, position);
                 }
             };
+
     /**
      * The adapter used to fill the Bookshelf selector.
      */
@@ -1359,8 +1386,7 @@ public class BooksOnBookshelf
 
     public void editStyle(@NonNull final ListStyle style,
                           final boolean setAsPreferred) {
-        mEditStyleLauncher.launch(new EditStyleContract.Input(
-                StyleViewModel.BKEY_ACTION_EDIT, style, setAsPreferred));
+        mEditStyleLauncher.launch(EditStyleContract.edit(style, setAsPreferred));
     }
 
     /**

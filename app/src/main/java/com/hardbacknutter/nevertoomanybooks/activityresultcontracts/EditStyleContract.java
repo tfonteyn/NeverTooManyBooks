@@ -25,9 +25,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -36,10 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 
 public class EditStyleContract
         extends ActivityResultContract<EditStyleContract.Input, EditStyleContract.Output> {
+
+    public static final int ACTION_CLONE = 0;
+    public static final int ACTION_EDIT = 1;
 
     private static final String TAG = "EditStyleContract";
     public static final String BKEY_ACTION = TAG + ":action";
@@ -57,6 +62,22 @@ public class EditStyleContract
      * <br>type: {@code boolean}
      */
     public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
+
+    @NonNull
+    public static Input duplicate(@NonNull final ListStyle style) {
+        return new EditStyleContract.Input(ACTION_CLONE, style, style.isPreferred());
+    }
+
+    @NonNull
+    public static Input edit(@NonNull final ListStyle style) {
+        return new EditStyleContract.Input(ACTION_EDIT, style, style.isPreferred());
+    }
+
+    @NonNull
+    public static Input edit(@NonNull final ListStyle style,
+                             final boolean setAsPreferred) {
+        return new EditStyleContract.Input(ACTION_EDIT, style, setAsPreferred);
+    }
 
     @NonNull
     @Override
@@ -93,9 +114,15 @@ public class EditStyleContract
                 data.getString(ListStyle.BKEY_STYLE_UUID));
     }
 
+    @IntDef({ACTION_CLONE, ACTION_EDIT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EditAction {
+
+    }
+
     public static class Input {
 
-        @StyleViewModel.EditAction
+        @EditAction
         final int action;
 
         @NonNull
@@ -107,16 +134,9 @@ public class EditStyleContract
          */
         final boolean setAsPreferred;
 
-        public Input(@StyleViewModel.EditAction final int action,
-                     @NonNull final ListStyle style) {
-            this.action = action;
-            this.uuid = style.getUuid();
-            this.setAsPreferred = style.isPreferred();
-        }
-
-        public Input(@StyleViewModel.EditAction final int action,
-                     @NonNull final ListStyle style,
-                     final boolean setAsPreferred) {
+        Input(@EditAction final int action,
+              @NonNull final ListStyle style,
+              final boolean setAsPreferred) {
             this.action = action;
             this.uuid = style.getUuid();
             this.setAsPreferred = setAsPreferred;
