@@ -116,7 +116,7 @@ public class Filters {
                                      TBL_BOOKS.dot(DBKey.BITMASK_EDITION)),
                 Book.Edition.BITMASK_ALL_BITS));
 
-        //URGENT: filtering on bookshelves:
+        //ENHANCE: filtering on bookshelves:
         // this and related code all works fine, but is clashing with how
         // a single bookshelf is the 'main' in the BoB view.
         // i.e.

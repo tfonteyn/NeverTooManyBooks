@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
  * <p>
- * URGENT: implement the new KB url/page
+ * ENHANCE: implement the new KB url/page
  */
 public class KbNlSearchEngine
         extends SearchEngineBase

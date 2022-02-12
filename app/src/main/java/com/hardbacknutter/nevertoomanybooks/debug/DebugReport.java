@@ -61,7 +61,7 @@ public final class DebugReport {
     /**
      * Collect and send debug info using email.
      * <p>
-     * URGENT: need a better way to send the db file... mail accounts limit the size of attachments
+     * ENHANCE: need a better way to send the db file... mail accounts limit the size of attachments
      *
      * @param context Current context
      */

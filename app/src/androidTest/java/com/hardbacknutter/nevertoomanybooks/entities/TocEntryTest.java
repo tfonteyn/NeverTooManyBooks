@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-//URGENT: test 1 does not use toc id's (and passes) + test 2/3 uses id's (and fails)
+//FIXME: test 1 does not use toc id's (and passes) + test 2/3 uses id's (and fails)
 @MediumTest
 public class TocEntryTest
         extends BaseDBTest {
