@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,8 +32,6 @@ import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,7 +95,7 @@ public class Book
 
     /**
      * A book (and dustcover) condition goes from 1(worst)..5(best) or 0 for not-set.
-     * In code we only need 0/5.
+     * In code we only need 5(best) which is used as default when adding a new book.
      * <p>
      * <string-array name="conditions_book">
      * <item>@string/unknown</item>
@@ -109,7 +106,6 @@ public class Book
      * <item>@string/lbl_condition_fine</item>
      * </string-array>
      */
-    public static final int CONDITION_UNKNOWN = 0;
     public static final int CONDITION_AS_NEW = 5;
 
     /**
@@ -1212,12 +1208,6 @@ public class Book
                 return Anthology;
             }
         }
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({CONDITION_UNKNOWN, CONDITION_AS_NEW})
-    public @interface Condition {
-
     }
 
     /**
