@@ -277,12 +277,18 @@ public class BooksOnBookshelfViewModel
      */
     void setCurrentBookshelf(@NonNull final Context context,
                              final long id) {
+        final long previousBookshelfId = mBookshelf == null ? 0 : mBookshelf.getId();
+
         mBookshelf = ServiceLocator.getInstance().getBookshelfDao().getById(id);
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         mBookshelf.setAsPreferred(global);
+
+        if (previousBookshelfId != mBookshelf.getId()) {
+            mCurrentCenteredBookId = 0;
+        }
     }
 
     @SuppressWarnings("UnusedReturnValue")
