@@ -195,13 +195,11 @@
         app:constraint_referenced_ids="lbl_queue,queue"
         />
 
-    <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
+    <androidx.constraintlayout.widget.Group
         android:id="@+id/queue_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="lbl_queue,btn_clear_queue,queue"
-        app:groupApply="visibility"
-        tools:ignore="MissingConstraints"
         />
 
     <TextView
