@@ -74,7 +74,7 @@ public class ExportResults
      *
      * @param in Parcel to construct the object from
      */
-    ExportResults(@NonNull final Parcel in) {
+    private ExportResults(@NonNull final Parcel in) {
         in.readList(mBooksExported, getClass().getClassLoader());
         in.readStringList(mCoversExported);
 

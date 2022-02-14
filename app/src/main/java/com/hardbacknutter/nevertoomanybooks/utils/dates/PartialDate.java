@@ -116,7 +116,7 @@ public class PartialDate
      *
      * @param in Parcel to construct the object from
      */
-    PartialDate(@NonNull final Parcel in) {
+    private PartialDate(@NonNull final Parcel in) {
         mYearSet = in.readByte() != 0;
         mMonthSet = in.readByte() != 0;
         mDaySet = in.readByte() != 0;

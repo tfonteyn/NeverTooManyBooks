@@ -122,7 +122,7 @@ public final class Site
      *
      * @param in Parcel to construct the object from
      */
-    Site(@NonNull final Parcel in) {
+    private Site(@NonNull final Parcel in) {
         engineId = in.readInt();
         //noinspection ConstantConditions
         mType = in.readParcelable(Type.class.getClassLoader());
