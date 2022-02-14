@@ -35,14 +35,6 @@
         >
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25"
-            />
-
-        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/col2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,7 +48,6 @@
             android:layout_width="@dimen/cover_details_0_width"
             android:layout_height="@dimen/cover_details_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -69,11 +60,18 @@
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/cover_image_0"
             app:layout_constraintTop_toBottomOf="@id/cover_image_0"
             tools:src="@sample/covers"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1"
             />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -92,7 +90,7 @@
             style="@style/Field.LendOutToBar"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@sample/data.json/lend_out_to/full"
             tools:visibility="visible"
@@ -102,7 +100,7 @@
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/book/title"
@@ -112,7 +110,7 @@
             android:id="@+id/read"
             style="@style/Label.Checked"
             android:text="@string/lbl_read"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
@@ -120,7 +118,7 @@
             android:id="@+id/lbl_anthology_or_collection"
             style="@style/Label.Checked"
             android:text="@string/lbl_anthology"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/read"
             />
 
@@ -143,7 +141,7 @@
             android:id="@+id/author"
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/barrier_flags_rating_bottom"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
@@ -155,7 +153,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toEndOf="@id/col2"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
