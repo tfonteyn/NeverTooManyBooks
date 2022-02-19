@@ -140,9 +140,9 @@ public final class Logger {
         for (final Object parameter : params) {
             if (parameter instanceof Exception) {
                 e = (Exception) parameter;
-                continue;
+            } else {
+                message.append(parameter.toString()).append('|');
             }
-            message.append(parameter.toString()).append('|');
         }
         message.append('.');
         if (e != null) {
