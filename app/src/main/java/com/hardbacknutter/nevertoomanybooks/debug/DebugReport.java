@@ -22,8 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
+import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -165,5 +168,26 @@ public final class DebugReport {
         sb.append("\n\n");
 
         Logger.warn(TAG, sb.toString());
+    }
+
+    public static void logScreenParams(@NonNull final Context context) {
+        final Resources resources = context.getResources();
+        final Configuration configuration = resources.getConfiguration();
+        final DisplayMetrics metrics = resources.getDisplayMetrics();
+
+        final String sb =
+                "logScreenParams|\n\n"
+                + "configuration:\n"
+                + "  screenWidthDp=" + configuration.screenWidthDp + '\n'
+                + "  screenHeightDp=" + configuration.screenHeightDp + '\n'
+                + "  orientation=" + (configuration.orientation == 2 ? "LANDSCAPE" : "PORTRAIT")
+                + '\n'
+                + "  densityDpi=" + configuration.densityDpi + '\n'
+                + "metrics:\n"
+                + "  widthPixels=" + metrics.widthPixels + '\n'
+                + "  heightPixels=" + metrics.heightPixels + '\n'
+                + "  density=" + metrics.density + '\n';
+
+        Logger.warn(TAG, sb);
     }
 }
