@@ -109,7 +109,7 @@ public abstract class BooklistStyle
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
-    protected long mId;
+    long mId;
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
