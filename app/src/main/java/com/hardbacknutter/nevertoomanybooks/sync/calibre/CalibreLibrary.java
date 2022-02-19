@@ -122,6 +122,11 @@ public class CalibreLibrary
         mLastSyncDate = rowData.getString(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY);
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     private CalibreLibrary(@NonNull final Parcel in) {
         super(in);
 
