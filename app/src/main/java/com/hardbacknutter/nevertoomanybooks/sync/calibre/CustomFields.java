@@ -109,6 +109,11 @@ public final class CustomFields {
             this.type = type;
         }
 
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
         Field(@NonNull final Parcel in) {
             //noinspection ConstantConditions
             calibreKey = in.readString();
