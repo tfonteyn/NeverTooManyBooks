@@ -66,8 +66,8 @@ public class PreferredStylesViewModel
             mStyles = ServiceLocator.getInstance().getStyles();
             mList = mStyles.getStyles(context, true);
 
-            final String uuid = args.getString(ListStyle.BKEY_STYLE_UUID);
-            Objects.requireNonNull(uuid, "uuid");
+            final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
+                                                       ListStyle.BKEY_UUID);
             mSelectedPosition = findSelectedPosition(uuid);
         }
     }
