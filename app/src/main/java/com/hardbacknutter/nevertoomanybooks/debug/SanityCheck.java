@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Quick note: this class came into being as a solution to the missing "assert" functionality
@@ -42,14 +41,6 @@ public final class SanityCheck {
                                       @Nullable final String message) {
         if (value == 0) {
             throw new MissingValueException(message);
-        }
-        return value;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public static long requirePositiveValue(final long value) {
-        if (value < 1) {
-            throw new MissingValueException();
         }
         return value;
     }
@@ -89,26 +80,10 @@ public final class SanityCheck {
         return value;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public static <T extends Map<?, ?>> T requireValue(@Nullable final T value,
-                                                       @Nullable final String message) {
-        if (value == null) {
-            throw new NullPointerException(message);
-        }
-        if (value.isEmpty()) {
-            throw new MissingValueException(message);
-        }
-        return value;
-    }
-
     public static class MissingValueException
             extends NullPointerException {
 
         private static final long serialVersionUID = 4418513924924222373L;
-
-        public MissingValueException() {
-        }
 
         public MissingValueException(@Nullable final String message) {
             super(message);
