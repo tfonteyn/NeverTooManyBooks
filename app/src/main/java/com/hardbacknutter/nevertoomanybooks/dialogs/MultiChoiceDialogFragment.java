@@ -184,7 +184,8 @@ public class MultiChoiceDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             onResult(result.getInt(FIELD_ID),
-                     Objects.requireNonNull(result.getParcelableArrayList(SELECTED_ITEMS)));
+                     Objects.requireNonNull(result.getParcelableArrayList(SELECTED_ITEMS),
+                                            SELECTED_ITEMS));
         }
 
         /**
