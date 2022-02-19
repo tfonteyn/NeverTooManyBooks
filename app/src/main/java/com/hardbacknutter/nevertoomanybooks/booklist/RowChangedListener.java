@@ -66,7 +66,7 @@ public interface RowChangedListener
     @Override
     default void onFragmentResult(@NonNull final String requestKey,
                                   @NonNull final Bundle result) {
-        onChange(Objects.requireNonNull(result.getString(KEY)),
+        onChange(Objects.requireNonNull(result.getString(KEY), KEY),
                  result.getLong(ITEM_ID));
     }
 
