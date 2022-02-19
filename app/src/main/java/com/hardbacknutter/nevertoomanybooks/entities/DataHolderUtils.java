@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -70,6 +71,11 @@ public final class DataHolderUtils {
         return null;
     }
 
+    @NonNull
+    public static Book requireBook(@NonNull final DataHolder rowData) {
+        return Objects.requireNonNull(getBook(rowData));
+    }
+
     /**
      * Extract the Author from the given Booklist row data.
      *
@@ -101,6 +107,11 @@ public final class DataHolderUtils {
         }
 
         return null;
+    }
+
+    @NonNull
+    public static Author requireAuthor(@NonNull final DataHolder rowData) {
+        return Objects.requireNonNull(getAuthor(rowData));
     }
 
     /**
@@ -136,6 +147,11 @@ public final class DataHolderUtils {
         return null;
     }
 
+    @NonNull
+    public static Series requireSeries(@NonNull final DataHolder rowData) {
+        return Objects.requireNonNull(getSeries(rowData));
+    }
+
     /**
      * Extract the Publisher from the given Booklist row data.
      *
@@ -169,6 +185,11 @@ public final class DataHolderUtils {
         return null;
     }
 
+    @NonNull
+    public static Publisher requirePublisher(@NonNull final DataHolder rowData) {
+        return Objects.requireNonNull(getPublisher(rowData));
+    }
+
     /**
      * Extract the Bookshelf from the given Booklist row data.
      *
@@ -200,5 +221,10 @@ public final class DataHolderUtils {
         }
 
         return null;
+    }
+
+    @NonNull
+    public static Bookshelf requireBookshelf(@NonNull final DataHolder rowData) {
+        return Objects.requireNonNull(getBookshelf(rowData));
     }
 }
