@@ -59,7 +59,7 @@ public abstract class SpinnerInteractionListener
      *
      * @param id selected
      */
-    public abstract void onItemSelected(final long id);
+    protected abstract void onItemSelected(final long id);
 
     /** internal listener - use {@link #onItemSelected(long)} instead. */
     @Override
