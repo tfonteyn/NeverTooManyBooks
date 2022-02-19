@@ -19,9 +19,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- FIXME: frustration alert: the width is hardcoded to 200dp because there just seems to be no way
+<!-- FIXME: frustration alert: the width is hardcoded because there just seems to be no way
             of getting the width adjust to the maximum width of the other items in the RecyclerView
-            where this view is used. It always seems to maximize the width of the Dialog.
+            where this view is used.
+            When using android:gravity="fill_horizontal",
+            It always maximizes the width of the Dialog.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -33,8 +35,9 @@
     tools:viewBindingIgnore="true"
     >
 
+    <!-- FIXME: make width dependent on 'sw' value -->
     <View
-        android:layout_width="200dp"
+        android:layout_width="320dp"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider"
         />
