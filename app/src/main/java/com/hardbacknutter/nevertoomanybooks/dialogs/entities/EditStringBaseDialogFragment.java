@@ -47,7 +47,7 @@ public abstract class EditStringBaseDialogFragment
     private static final String TAG = "EditStringBaseDialog";
     /** Argument. */
     static final String BKEY_TEXT = TAG + ":text";
-    protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     @StringRes
     private final int mDialogTitleId;
