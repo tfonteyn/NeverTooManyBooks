@@ -120,11 +120,11 @@ class IsfdbPublicationListHandler
     private static final String XML_ID_VALUE = "IDvalue";
 
     /** accumulate all Authors for this book. */
-    protected final ArrayList<Author> mAuthors = new ArrayList<>();
+    private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
-    protected final ArrayList<Series> mSeries = new ArrayList<>();
+    private final ArrayList<Series> mSeries = new ArrayList<>();
     /** accumulate all Publishers for this book. */
-    protected final ArrayList<Publisher> mPublishers = new ArrayList<>();
+    private final ArrayList<Publisher> mPublishers = new ArrayList<>();
     private final IsfdbSearchEngine mSearchEngine;
     private final boolean[] mFetchCovers;
     @NonNull
