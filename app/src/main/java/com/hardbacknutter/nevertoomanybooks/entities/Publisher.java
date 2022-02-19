@@ -166,8 +166,7 @@ public class Publisher
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        return reorderTitleForDisplaying(context, getLocale(context, userLocale));
+        return mName;
     }
 
     /**
