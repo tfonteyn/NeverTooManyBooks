@@ -182,8 +182,8 @@ public final class NetworkUtils {
         }
 
         @NonNull
-        public InetAddress lookup(@NonNull final String host,
-                                  final long timeoutMs)
+        InetAddress lookup(@NonNull final String host,
+                           @SuppressWarnings("SameParameterValue") final long timeoutMs)
                 throws IOException,
                        SocketTimeoutException,
                        UnknownHostException {
