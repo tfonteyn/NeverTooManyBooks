@@ -27,6 +27,9 @@ import androidx.annotation.NonNull;
 /**
  * Value class to report back what was read/imported.
  * Used by both backup and sync packages.
+ * <p>
+ * Backup import classes extend this class.
+ * Sync import uses this class directly.
  */
 public class ReaderResults
         implements Parcelable {
