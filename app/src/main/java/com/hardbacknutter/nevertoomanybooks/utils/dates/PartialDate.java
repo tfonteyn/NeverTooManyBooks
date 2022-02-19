@@ -120,8 +120,10 @@ public class PartialDate
         mYearSet = in.readByte() != 0;
         mMonthSet = in.readByte() != 0;
         mDaySet = in.readByte() != 0;
-        //noinspection ConstantConditions
-        mLocalDate = (LocalDate) in.readSerializable();
+        final int year = in.readInt();
+        final int month = in.readInt();
+        final int dayOfMonth = in.readInt();
+        mLocalDate = LocalDate.of(year, month, dayOfMonth);
     }
 
     @Override
@@ -130,7 +132,10 @@ public class PartialDate
         dest.writeByte((byte) (mYearSet ? 1 : 0));
         dest.writeByte((byte) (mMonthSet ? 1 : 0));
         dest.writeByte((byte) (mDaySet ? 1 : 0));
-        dest.writeSerializable(mLocalDate);
+
+        dest.writeInt(mLocalDate.getYear());
+        dest.writeInt(mLocalDate.getMonthValue());
+        dest.writeInt(mLocalDate.getDayOfMonth());
     }
 
     @Override
