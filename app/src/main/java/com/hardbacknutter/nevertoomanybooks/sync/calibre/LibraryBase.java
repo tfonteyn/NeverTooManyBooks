@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
@@ -70,6 +71,11 @@ abstract class LibraryBase
         mMappedBookshelfId = rowData.getLong(DBKey.FK_BOOKSHELF);
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     LibraryBase(@NonNull final Parcel in) {
         mId = in.readLong();
         //noinspection ConstantConditions
