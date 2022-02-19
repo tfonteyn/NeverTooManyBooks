@@ -155,7 +155,7 @@ public class BooklistAdapter
                               .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
-        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying();
+        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -445,9 +445,6 @@ public class BooklistAdapter
             case BooklistGroup.PUBLISHER: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
-
-                } else if (mReorderTitleForDisplaying) {
-                    return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
                     return text;
                 }
@@ -998,21 +995,6 @@ public class BooklistAdapter
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
                 parentLayout.addView(mDbgRowIdView);
-
-//                final ConstraintLayout parentLayout = itemView.findViewById(R.id.row);
-//                parentLayout.addView(mDbgRowIdView, 0);
-//
-//                final ConstraintSet set = new ConstraintSet();
-//                set.clone(parentLayout);
-//                set.connect(mDbgRowIdView.getId(), ConstraintSet.TOP,
-//                            R.id.icon_sidebar, ConstraintSet.BOTTOM);
-//                set.connect(mDbgRowIdView.getId(), ConstraintSet.BOTTOM,
-//                            ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
-//                set.connect(mDbgRowIdView.getId(), ConstraintSet.END,
-//                            ConstraintSet.PARENT_ID, ConstraintSet.END);
-//                set.setVerticalBias(mDbgRowIdView.getId(), 1.0f);
-//
-//                set.applyTo(parentLayout);
             }
         }
 
