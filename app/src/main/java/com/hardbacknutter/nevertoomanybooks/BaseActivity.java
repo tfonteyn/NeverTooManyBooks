@@ -209,7 +209,7 @@ public abstract class BaseActivity
      * @return {@code true} if a recreate was triggered.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean recreateIfNeeded() {
+    protected boolean recreateIfNeeded() {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (sActivityRecreateStatus == Recreating.Required
