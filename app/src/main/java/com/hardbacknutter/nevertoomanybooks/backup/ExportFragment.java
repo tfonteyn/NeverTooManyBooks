@@ -74,7 +74,7 @@ public class ExportFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "ExportFragment";
+    private static final String TAG = "ExportFragment";
 
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
