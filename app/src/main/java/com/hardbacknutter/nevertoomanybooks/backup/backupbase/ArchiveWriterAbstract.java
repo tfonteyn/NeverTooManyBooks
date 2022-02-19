@@ -247,7 +247,7 @@ public abstract class ArchiveWriterAbstract
      * Prepare the Books and Covers.
      * <p>
      * For each book which will be exported, the {@link RecordWriter} implementation should call
-     * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover(String)} as needed.
+     * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover} as needed.
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
