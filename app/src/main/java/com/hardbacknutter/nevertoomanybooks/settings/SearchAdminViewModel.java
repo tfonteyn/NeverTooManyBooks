@@ -42,7 +42,11 @@ public class SearchAdminViewModel
 
     /** Log tag. */
     private static final String TAG = "SearchAdminViewModel";
-    /** Single-list/tab mode parameter. */
+    /**
+     * Single-list/tab mode parameter.
+     * <p>
+     * Type: {@code java.util.ArrayList<? extends android.os.Parcelable>)}
+     */
     public static final String BKEY_LIST = TAG + ":list";
 
     /** Ordered list. */
