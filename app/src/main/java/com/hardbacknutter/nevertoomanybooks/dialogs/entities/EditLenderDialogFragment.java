@@ -68,7 +68,7 @@ public class EditLenderDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
-    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** savedInstanceState key for the newly entered loanee name. */
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBKey.KEY_LOANEE;
     /** FragmentResultListener request key to use for our response. */
@@ -306,8 +306,8 @@ public class EditLenderDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKey.FK_BOOK)),
-                     Objects.requireNonNull(result.getString(DBKey.KEY_LOANEE)));
+            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKey.FK_BOOK), DBKey.FK_BOOK),
+                     Objects.requireNonNull(result.getString(DBKey.KEY_LOANEE), DBKey.KEY_LOANEE));
         }
 
         /**
