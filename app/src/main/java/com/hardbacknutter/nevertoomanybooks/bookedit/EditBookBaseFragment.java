@@ -100,7 +100,8 @@ public abstract class EditBookBaseFragment
     private DateParser mDateParser;
 
     @NonNull
-    final MenuHandlersMenuProvider mMenuHandlersMenuProvider = new MenuHandlersMenuProvider();
+    private final MenuHandlersMenuProvider mMenuHandlersMenuProvider =
+            new MenuHandlersMenuProvider();
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -476,8 +477,8 @@ public abstract class EditBookBaseFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL)),
-                     Objects.requireNonNull(result.getParcelable(MODIFIED)));
+            onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL), ORIGINAL),
+                     Objects.requireNonNull(result.getParcelable(MODIFIED), MODIFIED));
         }
 
         /**
