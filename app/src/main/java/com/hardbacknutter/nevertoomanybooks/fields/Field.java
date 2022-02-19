@@ -374,7 +374,7 @@ public class Field<T, V extends View> {
 
     @NonNull
     public V requireView() {
-        return Objects.requireNonNull(mFieldViewAccessor.getView());
+        return mFieldViewAccessor.requireView();
     }
 
     public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
@@ -397,7 +397,7 @@ public class Field<T, V extends View> {
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
 
-        final View view = Objects.requireNonNull(mFieldViewAccessor.getView());
+        final View view = mFieldViewAccessor.requireView();
 
         if ((view instanceof ImageView)
             || (view.getVisibility() == View.GONE && keepHiddenFieldsHidden)) {
@@ -428,7 +428,7 @@ public class Field<T, V extends View> {
      */
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
-        final View view = Objects.requireNonNull(mFieldViewAccessor.getView());
+        final View view = mFieldViewAccessor.requireView();
         view.setVisibility(visibility);
         setRelatedFieldsVisibility(parent, visibility);
     }
