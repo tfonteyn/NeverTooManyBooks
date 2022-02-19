@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -85,6 +86,18 @@ public interface FieldViewAccessor<T, V extends View> {
      */
     @Nullable
     V getView();
+
+    /**
+     * Get the previously set view.
+     *
+     * @return view
+     *
+     * @throws NullPointerException if the View is not set
+     */
+    @NonNull
+    default V requireView() {
+        return Objects.requireNonNull(getView());
+    }
 
     /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
