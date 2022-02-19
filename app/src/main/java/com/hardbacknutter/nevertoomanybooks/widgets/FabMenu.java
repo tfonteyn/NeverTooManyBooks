@@ -140,7 +140,7 @@ public class FabMenu {
 
         final Resources res = mFab.getResources();
 
-        final float baseX = res.getDimension(R.dimen.fab_menu_translationX);
+        final TypedArray baseX = res.obtainTypedArray(R.array.fab_menu_translationX_all);
         final TypedArray baseY = res.obtainTypedArray(R.array.fab_menu_translationY_all);
 
         for (int i = 0; i < mFabMenuItems.length; i++) {
@@ -149,7 +149,7 @@ public class FabMenu {
             if (fab != null && fab.isEnabled()) {
                 if (show) {
                     fab.show();
-                    fab.animate().translationX(baseX);
+                    fab.animate().translationX(baseX.getDimensionPixelSize(i, 0));
                     fab.animate().translationY(baseY.getDimensionPixelSize(i, 0));
                 } else {
                     fab.animate().translationX(0);
@@ -158,6 +158,7 @@ public class FabMenu {
                 }
             }
         }
+        baseX.recycle();
         baseY.recycle();
     }
 }

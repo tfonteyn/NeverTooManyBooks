@@ -78,13 +78,33 @@
 
     <!-- Spacing around the FAB. -->
     <dimen name="fab_margin">16dp</dimen>
-    <!-- offset to the left/top, as compared to the base FAB button -->
-    <dimen name="fab_menu_translationX">-60dp</dimen>
-    <dimen name="fab_menu_translationY_0">-50dp</dimen>
-    <dimen name="fab_menu_translationY_1">-115dp</dimen>
-    <dimen name="fab_menu_translationY_2">-180dp</dimen>
-    <dimen name="fab_menu_translationY_3">-245dp</dimen>
-    <dimen name="fab_menu_translationY_4">-310dp</dimen>
+
+    <!-- in portrait, the start of the fab-menu is shown above the fab button,
+         with a small offset to the left -->
+    <dimen name="fab_menu_translationX">-30dp</dimen>
+
+    <dimen name="fab_menu_translationX_0">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_1">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_2">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_3">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_4">@dimen/fab_menu_translationX</dimen>
+
+    <dimen name="fab_menu_translationY_0">-10dp</dimen>
+    <!-- add "-65" to place each button above the previous one -->
+    <dimen name="fab_menu_translationY_1">-75dp</dimen>
+    <dimen name="fab_menu_translationY_2">-140dp</dimen>
+    <dimen name="fab_menu_translationY_3">-205dp</dimen>
+    <dimen name="fab_menu_translationY_4">-270dp</dimen>
+
+    <!-- The above separate definitions allow us to set them as "tools:" attributes
+         but it's these arrays which are accessed from code. -->
+    <array name="fab_menu_translationX_all">
+        <item>@dimen/fab_menu_translationX_0</item>
+        <item>@dimen/fab_menu_translationX_1</item>
+        <item>@dimen/fab_menu_translationX_2</item>
+        <item>@dimen/fab_menu_translationX_3</item>
+        <item>@dimen/fab_menu_translationX_4</item>
+    </array>
 
     <array name="fab_menu_translationY_all">
         <item>@dimen/fab_menu_translationY_0</item>
