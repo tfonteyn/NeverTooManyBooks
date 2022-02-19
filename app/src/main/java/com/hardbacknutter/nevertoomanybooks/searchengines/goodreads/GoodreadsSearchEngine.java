@@ -41,9 +41,9 @@ public class GoodreadsSearchEngine
         implements SearchEngine.ViewBookByExternalId {
 
     /** Preferences prefix. */
-    public static final String PREF_KEY = "goodreads";
+    private static final String PREF_KEY = "goodreads";
 
-    public static final String BASE_URL = "https://www.goodreads.com";
+    private static final String BASE_URL = "https://www.goodreads.com";
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
