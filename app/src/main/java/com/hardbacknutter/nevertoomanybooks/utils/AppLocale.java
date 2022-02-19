@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
  * Manage the custom Locale our app can run in, independently from the system Locale.
  * <p>
  * How to use: see {@link BaseActivity} #attachBaseContext(Context)
- * and {@link BaseActivity#recreateIfNeeded()}
+ * and {@link BaseActivity}#recreateIfNeeded()
  */
 public interface AppLocale {
 
