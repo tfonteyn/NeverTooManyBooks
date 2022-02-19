@@ -324,7 +324,7 @@ public class StartupViewModel
                 PK_REBUILD_TITLE_OB,
                 PK_RUN_MAINTENANCE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface RebuildFlag {
+    private @interface RebuildFlag {
 
     }
 }
