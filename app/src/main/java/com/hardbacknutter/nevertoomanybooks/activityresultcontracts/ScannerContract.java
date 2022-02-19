@@ -85,12 +85,12 @@ public class ScannerContract
         // Beep when a barcode was recognised
         final boolean beep = global.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
-        final ScanOptions scanOptions = new ScanOptions();
-        scanOptions.setCameraId(CameraDetection.getPreferredCameraId(context, global));
-        scanOptions.setOrientationLocked(false);
-        scanOptions.setPrompt(context.getString(R.string.zxing_msg_default_status));
-        scanOptions.setBeepEnabled(beep);
-        return scanOptions.createScanIntent(context);
+        return new ScanOptions()
+                .setCameraId(CameraDetection.getPreferredCameraId(context, global))
+                .setOrientationLocked(false)
+                .setPrompt(context.getString(R.string.zxing_msg_default_status))
+                .setBeepEnabled(beep)
+                .createScanIntent(context);
     }
 
     @Nullable
@@ -107,5 +107,4 @@ public class ScannerContract
         // parse and return the barcode
         return ScanIntentResult.parseActivityResult(resultCode, intent).getContents();
     }
-
 }
