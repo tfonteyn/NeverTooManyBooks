@@ -267,7 +267,7 @@ public class Filters {
                 PK_FILTER_EDITION_BITMASK,
                 PK_FILTER_BOOKSHELVES})
     @Retention(RetentionPolicy.SOURCE)
-    @interface Key {
+    private @interface Key {
 
     }
 }
