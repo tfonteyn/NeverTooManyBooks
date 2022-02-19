@@ -238,7 +238,7 @@ public class StartupActivity
         }
     }
 
-    public void initDb() {
+    private void initDb() {
         try {
             // Create/Upgrade/Open the main database as needed.
             ServiceLocator.getInstance().initialiseDb();
