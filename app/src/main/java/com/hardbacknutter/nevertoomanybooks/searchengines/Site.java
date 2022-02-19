@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -93,9 +94,9 @@ public final class Site
      * @param engineId the search engine id
      * @param enabled  flag
      */
-    Site(@NonNull final Type type,
-         @SearchSites.EngineId final int engineId,
-         final boolean enabled) {
+    private Site(@NonNull final Type type,
+                 @SearchSites.EngineId final int engineId,
+                 final boolean enabled) {
 
         this.engineId = engineId;
         mType = type;
@@ -107,7 +108,7 @@ public final class Site
      *
      * @param from object to copy
      */
-    Site(@NonNull final Site from) {
+    private Site(@NonNull final Site from) {
         engineId = from.engineId;
         mType = from.mType;
 
@@ -286,11 +287,11 @@ public final class Site
                + '.';
     }
 
-    void loadFromPrefs(@NonNull final SharedPreferences global) {
+    private void loadFromPrefs(@NonNull final SharedPreferences global) {
         mEnabled = global.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
-    void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
+    private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
@@ -347,13 +348,11 @@ public final class Site
 
         /** Log tag. */
         private static final String TAG = "Site.Type";
-
+        /** Internal name (for prefs). */
+        final String mTypeName;
         /** User displayable name. */
         @StringRes
         private final int mLabelId;
-        /** Internal name (for prefs). */
-        final String mTypeName;
-
         private final Collection<Site> mList = new ArrayList<>();
 
         /**
@@ -400,15 +399,14 @@ public final class Site
                                          @NonNull final String order) {
 
             final List<Site> reorderedList = new ArrayList<>();
-            for (final String idStr : order.split(",")) {
-                final int id = Integer.parseInt(idStr);
-                for (final Site site : sites) {
-                    if (site.engineId == id) {
-                        reorderedList.add(site);
-                        break;
-                    }
-                }
-            }
+
+            Arrays.stream(order.split(","))
+                  .map(Integer::parseInt)
+                  .forEach(id -> sites.stream()
+                                      .filter(site -> site.engineId == id)
+                                      .findFirst()
+                                      .ifPresent(reorderedList::add));
+
             return reorderedList;
         }
 
