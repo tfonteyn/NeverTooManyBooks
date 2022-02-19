@@ -39,19 +39,19 @@ public class NetworkException
 
     private static final long serialVersionUID = -7713421228493196516L;
 
-    public NetworkException() {
+    NetworkException() {
     }
 
-    public NetworkException(@NonNull final String message) {
+    NetworkException(@NonNull final String message) {
         super(message);
     }
 
-    public NetworkException(@NonNull final String message,
-                            @Nullable final Throwable cause) {
+    NetworkException(@NonNull final String message,
+                     @Nullable final Throwable cause) {
         super(message, cause);
     }
 
-    public NetworkException(@NonNull final Throwable cause) {
+    NetworkException(@NonNull final Throwable cause) {
         super(cause);
     }
 
