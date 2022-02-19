@@ -158,7 +158,7 @@ public abstract class BookFields {
 //                DetailScreenBookFields.PK_COVER[0],
 //                DetailScreenBookFields.PK_COVER[1]
     })
-    @interface Key {
+    private @interface Key {
 
     }
 }
