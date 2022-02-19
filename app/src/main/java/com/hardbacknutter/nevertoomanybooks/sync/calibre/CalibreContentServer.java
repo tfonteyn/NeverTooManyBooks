@@ -1069,16 +1069,15 @@ public class CalibreContentServer {
         final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
-        final Optional<CalibreLibrary> calibreLibrary =
+        final CalibreLibrary calibreLibrary =
                 mLibraries.stream()
                           .filter(library -> library.getId() == libraryId)
-                          .findFirst();
-        if (!calibreLibrary.isPresent()) {
-            throw new FileNotFoundException("library not found: " + libraryId);
-        }
+                          .findFirst()
+                          .orElseThrow(() -> new FileNotFoundException(
+                                  "library not found: " + libraryId));
 
         final String url = mServerUri + "/get/" + format + "/" + id + "/"
-                           + calibreLibrary.get().getLibraryStringId();
+                           + calibreLibrary.getLibraryStringId();
 
         // and where to write the file
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
