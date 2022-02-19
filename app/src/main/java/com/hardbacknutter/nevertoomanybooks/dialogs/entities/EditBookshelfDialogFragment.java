@@ -240,8 +240,8 @@ public class EditBookshelfDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(
-                    result.getLong(DBKey.FK_BOOKSHELF)));
+            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKey.FK_BOOKSHELF),
+                                                      DBKey.FK_BOOKSHELF));
         }
 
         /**
