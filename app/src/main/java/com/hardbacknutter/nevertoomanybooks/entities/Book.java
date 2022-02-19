@@ -154,8 +154,9 @@ public class Book
 
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
-     * <p>
-     * <br>type: {@code Serializable}
+     *
+     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#wrap(ArrayList)
+     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#unwrap(Bundle, String)
      */
     public static final String BKEY_BOOK_ID_LIST = TAG + ":id_list";
 
@@ -988,9 +989,9 @@ public class Book
      */
     public void ensureLanguage(@NonNull final Context context) {
         if (getString(DBKey.KEY_LANGUAGE).isEmpty()) {
-            putString(DBKey.KEY_LANGUAGE, context.getResources().getConfiguration()
-                                                 .getLocales().get(0)
-                                                 .getISO3Language());
+            putString(DBKey.KEY_LANGUAGE,
+                      context.getResources().getConfiguration().getLocales().get(0)
+                             .getISO3Language());
         }
     }
 
@@ -1027,8 +1028,7 @@ public class Book
         // No authors ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
         if (authors.isEmpty()) {
-            final String searchText = getString(
-                    SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            final String searchText = getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
                 authors.add(Author.from(searchText));
                 remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
