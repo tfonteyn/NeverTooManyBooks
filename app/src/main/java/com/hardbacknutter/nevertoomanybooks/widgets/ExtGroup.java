@@ -28,6 +28,7 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.core.widgets.ConstraintWidget;
 import androidx.constraintlayout.widget.ConstraintHelper;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -36,13 +37,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * Replacement for {@link androidx.constraintlayout.widget.Group}.
  * <p>
- * The original only provides support for visibility and is broken in different ways
- * depending on the version.
+ * The original only provides support for visibility.
+ * <a href="https://github.com/androidx/constraintlayout/blob/main/constraintlayout/constraintlayout/src/main/java/androidx/constraintlayout/widget/Group.java">Group.java</a>
  * <p>
- * This replacement is based/tested on 'androidx.constraintlayout:constraintlayout:2.0.0-beta5'
+ * This replacement is based/tested on
+ * 'androidx.constraintlayout:constraintlayout:2.1.3'
+ * 'androidx.constraintlayout:constraintlayout-core:1.0.3'
  *
  * <ul>It allow and propagates:
- * <li>visibility (working)</li>
+ * <li>visibility</li>
  * <li>setting tags</li>
  * <li>setting OnClickListener/OnLongClickListener</li>
  * </ul>
@@ -64,9 +67,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ExtGroup
         extends ConstraintHelper {
 
-    public static final int APPLY_VISIBILITY = 0x1;
-    public static final int APPLY_ON_CLICK = 0x2;
-    public static final int APPLY_TAGS = 0x4;
+    private static final int APPLY_VISIBILITY = 0x1;
+    private static final int APPLY_ON_CLICK = 0x2;
+    private static final int APPLY_TAGS = 0x4;
 
     @Nullable
     private OnClickListener mOnClickListener;
@@ -79,10 +82,8 @@ public class ExtGroup
     /** Initialised in {@link #init(AttributeSet)}. */
     private int mApplyFlags;
 
-    public ExtGroup(@NonNull final Context context,
-                    @Nullable final AttributeSet attrs,
-                    final int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    public ExtGroup(@NonNull final Context context) {
+        super(context);
     }
 
     public ExtGroup(@NonNull final Context context,
@@ -90,15 +91,16 @@ public class ExtGroup
         super(context, attrs);
     }
 
-    public ExtGroup(@NonNull final Context context) {
-        super(context);
+    public ExtGroup(@NonNull final Context context,
+                    @Nullable final AttributeSet attrs,
+                    final int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     // reminder: this method is called from the super constructor.
     // and this is BEFORE this class-init phase.
     protected void init(@Nullable final AttributeSet attrs) {
         super.init(attrs);
-        super.setVisibility(View.GONE);
         mUseViewMeasure = false;
 
         if (attrs != null) {
@@ -114,12 +116,57 @@ public class ExtGroup
         }
     }
 
-    public void updatePostInvalidate(@NonNull final ConstraintLayout container) {
-        applyLayoutFeatures(container);
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        applyLayoutFeatures();
     }
 
-    public void updatePreLayout(@NonNull final ConstraintLayout container) {
-        super.updatePreLayout(container);
+    @Override
+    public void setVisibility(final int visibility) {
+        super.setVisibility(visibility);
+        applyLayoutFeatures();
+    }
+
+    @Override
+    public void setElevation(final float elevation) {
+        super.setElevation(elevation);
+        applyLayoutFeatures();
+    }
+
+    @Override
+    public void setTag(@Nullable final Object tag) {
+        mTag = tag;
+        super.setTag(tag);
+        applyLayoutFeatures();
+    }
+
+    @Override
+    public void setTag(@IdRes final int key,
+                       @Nullable final Object tag) {
+        if (mKeyedTags == null) {
+            mKeyedTags = new SparseArray<>(2);
+        }
+
+        mKeyedTags.put(key, tag);
+        super.setTag(key, tag);
+        applyLayoutFeatures();
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable final OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+        applyLayoutFeatures();
+    }
+
+    @Override
+    public void setOnLongClickListener(@Nullable final OnLongClickListener onLongClickListener) {
+        mOnLongClickListener = onLongClickListener;
+        applyLayoutFeatures();
+    }
+
+    @Override
+    protected void applyLayoutFeaturesInConstraintSet(@NonNull final ConstraintLayout container) {
         applyLayoutFeatures(container);
     }
 
@@ -128,32 +175,12 @@ public class ExtGroup
      * Fixes the visibility issue + adds the new features.
      */
     protected void applyLayoutFeatures(@NonNull final ConstraintLayout container) {
-        // original code in 2.0.0-beta5
-        //         int visibility = this.getVisibility();
-        //        float elevation = 0.0F;
-        //        if (VERSION.SDK_INT >= 21) {
-        //            elevation = this.getElevation();
-        //        }
-        //
-        //        for(int i = 0; i < this.mCount; ++i) {
-        //            int id = this.mIds[i];
-        //            View view = container.getViewById(id);
-        //            if (view != null) {
-        //                if (visibility != 0) {
-        //                    view.setVisibility(visibility);
-        //                }
-        //
-        //                if (elevation > 0.0F && VERSION.SDK_INT >= 21) {
-        //                    view.setTranslationZ(view.getTranslationZ() + elevation);
-        //                }
-        //            }
-        //        }
 
         final int visibility = this.getVisibility();
         final float elevation = this.getElevation();
 
-        for (int i = 0; i < this.mCount; ++i) {
-            final int id = this.mIds[i];
+        for (int i = 0; i < mCount; ++i) {
+            final int id = mIds[i];
             final View view = container.getViewById(id);
             if (view != null) {
 
@@ -188,30 +215,12 @@ public class ExtGroup
     }
 
     @Override
-    public void setTag(@Nullable final Object tag) {
-        mTag = tag;
-        super.setTag(tag);
-    }
-
-    @Override
-    public void setTag(@IdRes final int key,
-                       @Nullable final Object tag) {
-        if (mKeyedTags == null) {
-            mKeyedTags = new SparseArray<>(2);
-        }
-
-        mKeyedTags.put(key, tag);
-        super.setTag(key, tag);
-    }
-
-    @Override
-    public void setOnClickListener(@Nullable final OnClickListener onClickListener) {
-        mOnClickListener = onClickListener;
-    }
-
-    @Override
-    public void setOnLongClickListener(@Nullable final OnLongClickListener onLongClickListener) {
-        mOnLongClickListener = onLongClickListener;
+    public void updatePostLayout(@NonNull final ConstraintLayout container) {
+        final ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) getLayoutParams();
+        final ConstraintWidget constraintWidget = layoutParams.getConstraintWidget();
+        constraintWidget.setWidth(0);
+        constraintWidget.setHeight(0);
     }
 
     @Override
@@ -220,6 +229,8 @@ public class ExtGroup
         return "ExtGroup{"
                + "id=" + this.getId()
                + ", mApplyFlags=0b" + Integer.toBinaryString(mApplyFlags)
+               + ", getVisibility()=" + getVisibility()
+               + ", getElevation()=" + getElevation()
                + ", mTag=" + mTag
                + ", mKeyedTags=" + mKeyedTags
                + ", mOnClickListener=" + mOnClickListener
