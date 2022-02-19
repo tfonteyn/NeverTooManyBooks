@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -36,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 /**
  * Encapsulates getting the title and whether to reorder it.
  */
-@FunctionalInterface
+@SuppressWarnings("InterfaceMayBeAnnotatedFunctional")
 public interface ItemWithTitle {
 
     /**
@@ -46,6 +47,8 @@ public interface ItemWithTitle {
     Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
 
     /**
+     * Unconditionally reformat the given (title) string.
+     * <p>
      * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
      * This method is case sensitive on purpose.
      *
@@ -79,30 +82,30 @@ public interface ItemWithTitle {
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
 
         for (final Locale locale : locales) {
-            if (locale == null) {
-                continue;
-            }
-            // Creating the pattern is slow, so we cache it for every Locale.
-            String words = LOCALE_PREFIX_MAP.get(locale);
-            if (words == null) {
-                // the resources bundle in the language that the book (item) is written in.
-                final Resources localeResources = appLocale.getLocalizedResources(context, locale);
-                words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
-                LOCALE_PREFIX_MAP.put(locale, words);
-            }
-
-            // case sensitive, see notes in
-            // src/main/res/values/string.xml/pv_reformat_titles_prefixes
-            if (words.contains(titleWords[0])) {
-                final StringBuilder newTitle = new StringBuilder();
-                for (int i = 1; i < titleWords.length; i++) {
-                    if (i != 1) {
-                        newTitle.append(' ');
-                    }
-                    newTitle.append(titleWords[i]);
+            if (locale != null) {
+                // Creating the pattern is slow, so we cache it for every Locale.
+                String words = LOCALE_PREFIX_MAP.get(locale);
+                if (words == null) {
+                    // the resources bundle in the language that the book (item) is written in.
+                    final Resources localeResources = appLocale.getLocalizedResources(context,
+                                                                                      locale);
+                    words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+                    LOCALE_PREFIX_MAP.put(locale, words);
                 }
-                newTitle.append(", ").append(titleWords[0]);
-                return newTitle.toString();
+
+                // case sensitive, see notes in
+                // src/main/res/values/string.xml/pv_reformat_titles_prefixes
+                if (words.contains(titleWords[0])) {
+                    final StringBuilder newTitle = new StringBuilder();
+                    for (int i = 1; i < titleWords.length; i++) {
+                        if (i != 1) {
+                            newTitle.append(' ');
+                        }
+                        newTitle.append(titleWords[i]);
+                    }
+                    newTitle.append(", ").append(titleWords[0]);
+                    return newTitle.toString();
+                }
             }
         }
         return title;
@@ -126,9 +129,9 @@ public interface ItemWithTitle {
      *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    static boolean isReorderTitleForDisplaying() {
-        return ServiceLocator.getGlobalPreferences()
-                             .getBoolean(Prefs.pk_show_title_reordered, false);
+    static boolean isReorderTitleForDisplaying(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_show_title_reordered, false);
     }
 
     /**
@@ -136,9 +139,9 @@ public interface ItemWithTitle {
      *
      * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
      */
-    static boolean isReorderTitleForSorting() {
-        return ServiceLocator.getGlobalPreferences()
-                             .getBoolean(Prefs.pk_sort_title_reordered, true);
+    static boolean isReorderTitleForSorting(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_sort_title_reordered, true);
     }
 
     /**
@@ -150,7 +153,7 @@ public interface ItemWithTitle {
     String getTitle();
 
     /**
-     * Reformat titles for <strong>displaying</strong>.
+     * Conditionally reformat titles for <strong>displaying</strong>.
      *
      * @param context     Current context
      * @param titleLocale Locale to use
@@ -160,7 +163,7 @@ public interface ItemWithTitle {
     default String reorderTitleForDisplaying(@NonNull final Context context,
                                              @NonNull final Locale titleLocale) {
 
-        if (isReorderTitleForDisplaying()) {
+        if (isReorderTitleForDisplaying(context)) {
             return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();
@@ -168,7 +171,7 @@ public interface ItemWithTitle {
     }
 
     /**
-     * Reformat titles for <strong>use as the OrderBy column</strong>.
+     * Conditionally reformat titles for <strong>use as the OrderBy column</strong>.
      *
      * @param context     Current context
      * @param titleLocale Locale to use
@@ -178,7 +181,7 @@ public interface ItemWithTitle {
     default String reorderTitleForSorting(@NonNull final Context context,
                                           @NonNull final Locale titleLocale) {
 
-        if (isReorderTitleForSorting()) {
+        if (isReorderTitleForSorting(context)) {
             return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();
