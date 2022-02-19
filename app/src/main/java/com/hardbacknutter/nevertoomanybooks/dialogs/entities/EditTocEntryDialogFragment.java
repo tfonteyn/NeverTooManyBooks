@@ -262,7 +262,7 @@ public class EditTocEntryDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY)),
+            onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY),
                      result.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS));
         }
 
