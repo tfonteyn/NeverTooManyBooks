@@ -37,8 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 public class AboutFragment
         extends BaseFragment {
 
-    public static final String TAG = "AboutFragment";
-
     /** View Binding. */
     private FragmentAboutBinding mVb;
 
