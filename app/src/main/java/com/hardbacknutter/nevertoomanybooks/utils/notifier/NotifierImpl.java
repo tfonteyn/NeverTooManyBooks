@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.notifier;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -31,10 +31,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import com.hardbacknutter.nevertoomanybooks.R;
+import java.util.stream.Collectors;
 
 /** Isolates the mechanism to send notifications to allow test mocking. */
 public final class NotifierImpl
@@ -44,13 +43,13 @@ public final class NotifierImpl
 
     @Override
     public void send(@NonNull final Context context,
-                     @Notifier.NotificationId final int id,
-                     @Notifier.Channel final String channel,
+                     @NonNull final Channel channel,
                      @NonNull final Intent intent,
+                     @NonNull final CharSequence message,
+                     @StringRes final int dialogTitleResId,
+                     final int notificationId,
                      final int requestCode,
-                     final boolean withParentStack,
-                     @StringRes final int titleId,
-                     @NonNull final CharSequence message) {
+                     final boolean withParentStack) {
 
         final PendingIntent pendingIntent;
         if (withParentStack) {
@@ -71,36 +70,6 @@ public final class NotifierImpl
                                                       PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
-        final NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, channel);
-
-        switch (channel) {
-            case Notifier.CHANNEL_ERROR:
-                builder.setPriority(NotificationCompat.PRIORITY_HIGH)
-                       .setSmallIcon(R.drawable.ic_baseline_error_24);
-                break;
-
-            case Notifier.CHANNEL_WARNING:
-                builder.setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                       .setSmallIcon(R.drawable.ic_baseline_warning_24);
-                break;
-
-            case Notifier.CHANNEL_INFO:
-                builder.setPriority(NotificationCompat.PRIORITY_LOW)
-                       .setSmallIcon(R.drawable.ic_baseline_info_24);
-                break;
-
-            default:
-                throw new IllegalArgumentException("channel=" + channel);
-        }
-
-        final Notification notification = builder
-                .setContentTitle(context.getString(titleId))
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -109,24 +78,26 @@ public final class NotifierImpl
             mChannelsCreated = true;
         }
 
-        notificationManager.notify(id, notification);
+        final Notification notification = new NotificationCompat.Builder(context, channel.id)
+                .setPriority(channel.priority)
+                .setSmallIcon(channel.drawableId)
+                .setContentTitle(context.getString(dialogTitleResId))
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        notificationManager.notify(notificationId, notification);
     }
 
     private void createChannels(@NonNull final Context context,
                                 @NonNull final NotificationManager notificationManager) {
-        final List<NotificationChannel> channels = new ArrayList<>();
-        channels.add(new NotificationChannel(
-                Notifier.CHANNEL_ERROR,
-                context.getString(R.string.notification_channel_error),
-                NotificationManager.IMPORTANCE_HIGH));
-        channels.add(new NotificationChannel(
-                Notifier.CHANNEL_WARNING,
-                context.getString(R.string.notification_channel_warn),
-                NotificationManager.IMPORTANCE_DEFAULT));
-        channels.add(new NotificationChannel(
-                Notifier.CHANNEL_INFO,
-                context.getString(R.string.notification_channel_info),
-                NotificationManager.IMPORTANCE_LOW));
+
+        final List<NotificationChannel> channels =
+                Arrays.stream(Channel.values())
+                      .map(channel -> new NotificationChannel(
+                              channel.id, context.getString(channel.stringId), channel.importance))
+                      .collect(Collectors.toList());
 
         notificationManager.createNotificationChannels(channels);
     }
@@ -136,11 +107,9 @@ public final class NotifierImpl
         //  When the locale changes, update the NotificationManager channel names.
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.getNotificationChannel(Notifier.CHANNEL_ERROR)
-                           .setName(context.getString(R.string.notification_channel_error));
-        notificationManager.getNotificationChannel(Notifier.CHANNEL_WARNING)
-                           .setName(context.getString(R.string.notification_channel_warn));
-        notificationManager.getNotificationChannel(Notifier.CHANNEL_INFO)
-                           .setName(context.getString(R.string.notification_channel_info));
+
+        Arrays.stream(Channel.values())
+              .forEach(channel -> notificationManager.getNotificationChannel(channel.id)
+                                                     .setName(context.getString(channel.stringId)));
     }
 }
