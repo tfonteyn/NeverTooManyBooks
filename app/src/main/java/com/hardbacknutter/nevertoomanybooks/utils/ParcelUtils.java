@@ -19,13 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * {@link #readParcelableList(Parcel, List, ClassLoader)}
@@ -92,5 +95,66 @@ public final class ParcelUtils {
             list.remove(N);
         }
         return list;
+    }
+
+    @NonNull
+    public static Parcelable wrap(@NonNull final ArrayList<Long> list) {
+        return new ParcelableArrayListLong(list);
+    }
+
+    @NonNull
+    public static ArrayList<Long> unwrap(@NonNull final Bundle args,
+                                         @NonNull final String key) {
+        return ((ParcelableArrayListLong)
+                        Objects.requireNonNull(args.getParcelable(key), key)).unwrap();
+    }
+
+    public static final class ParcelableArrayListLong
+            implements Parcelable {
+
+        public static final Creator<ParcelableArrayListLong> CREATOR = new Creator<>() {
+            @Override
+            public ParcelableArrayListLong createFromParcel(@NonNull final Parcel in) {
+                return new ParcelableArrayListLong(in);
+            }
+
+            @Override
+            public ParcelableArrayListLong[] newArray(final int size) {
+                return new ParcelableArrayListLong[size];
+            }
+        };
+
+        @NonNull
+        private final ArrayList<Long> list;
+
+        private ParcelableArrayListLong(@NonNull final ArrayList<Long> list) {
+            this.list = list;
+        }
+
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private ParcelableArrayListLong(@NonNull final Parcel in) {
+            list = new ArrayList<>();
+            in.readList(list, getClass().getClassLoader());
+        }
+
+        @NonNull
+        private ArrayList<Long> unwrap() {
+            return list;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeList(list);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
     }
 }
