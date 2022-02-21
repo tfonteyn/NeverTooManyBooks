@@ -238,8 +238,8 @@ public final class WrappedMaterialDatePicker<S>
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getIntArray(FIELD_ID)),
-                     Objects.requireNonNull(result.getLongArray(SELECTIONS)));
+            onResult(Objects.requireNonNull(result.getIntArray(FIELD_ID), FIELD_ID),
+                     Objects.requireNonNull(result.getLongArray(SELECTIONS), SELECTIONS));
         }
 
         /**
