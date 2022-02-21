@@ -246,7 +246,7 @@ public class TriStateMultiSelectListPreference
 
             if (savedInstanceState == null) {
                 final MultiSelectListPreference preference =
-                        (TriStateMultiSelectListPreference) getPreference();
+                        (MultiSelectListPreference) getPreference();
 
                 if (preference.getEntries() == null || preference.getEntryValues() == null) {
                     throw new IllegalStateException(
