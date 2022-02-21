@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -251,14 +252,13 @@ public class FullDateParser
                             @SuppressWarnings("SameParameterValue")
                             @NonNull final String[] patterns,
                             @NonNull final Locale[] locales) {
-        boolean hasEnglish = false;
-        for (final Locale locale : locales) {
-            if (Locale.ENGLISH.getISO3Language().equals(locale.getISO3Language())) {
-                hasEnglish = true;
-                break;
-            }
-        }
-        if (!hasEnglish) {
+
+        final String english = Locale.ENGLISH.getISO3Language();
+
+        final boolean add = Arrays.stream(locales)
+                                  .map(Locale::getISO3Language)
+                                  .noneMatch(english::equals);
+        if (add) {
             addPatterns(group, patterns, Locale.ENGLISH);
         }
     }
