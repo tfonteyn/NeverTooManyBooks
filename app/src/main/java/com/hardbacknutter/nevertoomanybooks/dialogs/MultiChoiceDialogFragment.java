@@ -78,17 +78,15 @@ public class MultiChoiceDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
-        mAllItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_ALL),
-                                           "mAllItems");
+        mAllItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_ALL), BKEY_ALL);
 
         args = savedInstanceState != null ? savedInstanceState : args;
         mSelectedItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_SELECTED),
-                                                "mSelectedItems");
+                                                BKEY_SELECTED);
     }
 
     @NonNull
