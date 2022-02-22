@@ -38,7 +38,7 @@ public enum RebuildBooklist
     Preferred(3);
 
     /** {@link Parcelable}. */
-    public static final Parcelable.Creator<RebuildBooklist> CREATOR = new Parcelable.Creator<>() {
+    public static final Creator<RebuildBooklist> CREATOR = new Creator<>() {
         @Override
         @NonNull
         public RebuildBooklist createFromParcel(@NonNull final Parcel in) {
