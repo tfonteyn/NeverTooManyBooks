@@ -128,12 +128,13 @@ public class ZipArchiveWriterTest
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }
+        // booksProcessed is updated for each imported book record
         assertEquals(exportCount, importResults.booksProcessed);
 
+        // ImportHelper.Updates.OnlyNewer ... so we don't actually import anything
         assertEquals(0, importResults.booksCreated);
-        assertEquals(exportCount, importResults.booksUpdated);
+        assertEquals(0, importResults.booksUpdated);
         assertEquals(0, importResults.booksSkipped);
         assertEquals(0, importResults.booksFailed);
-
     }
 }
