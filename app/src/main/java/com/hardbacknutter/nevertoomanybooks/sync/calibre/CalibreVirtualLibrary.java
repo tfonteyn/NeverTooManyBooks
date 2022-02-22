@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.sync.calibre;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
@@ -90,7 +91,12 @@ public class CalibreVirtualLibrary
         mExpr = rowData.getString(DBKey.KEY_CALIBRE_VIRT_LIB_EXPR);
     }
 
-    CalibreVirtualLibrary(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private CalibreVirtualLibrary(@NonNull final Parcel in) {
         super(in);
 
         mLibraryId = in.readInt();
