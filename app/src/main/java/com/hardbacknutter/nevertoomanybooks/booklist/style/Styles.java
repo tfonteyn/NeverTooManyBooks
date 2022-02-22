@@ -324,6 +324,9 @@ public class Styles {
     public boolean update(@NonNull final ListStyle style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+            // Reminder: do NOT use requirePositiveValue here!
+            // It's perfectly find to update builtin styles here;
+            // ONLY new styles must be rejected
             SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
         }
 
@@ -353,7 +356,8 @@ public class Styles {
                           @NonNull final ListStyle style) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-            SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
+            SanityCheck.requirePositiveValue(style.getId(),
+                                             "A new or builtin Style cannot be deleted");
         }
 
         if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
