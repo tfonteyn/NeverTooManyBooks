@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -130,6 +131,13 @@ public abstract class ArchiveWriterAbstract
 
         final Set<RecordType> exportEntities = mHelper.getRecordTypes();
 
+        // If we're doing books, then we MUST first do Bookshelves
+        // (and optionally Calibre libraries)
+        if (exportEntities.contains(RecordType.Books)) {
+            exportEntities.add(RecordType.Bookshelves);
+            exportEntities.add(RecordType.CalibreLibraries);
+        }
+
         final boolean writeCovers = this instanceof SupportsCovers
                                     && exportEntities.contains(RecordType.Cover);
 
@@ -156,8 +164,7 @@ public abstract class ArchiveWriterAbstract
 
             // Prepare data/files we need information of BEFORE we can write the archive header
             final File tmpBooksFile;
-            if (!progressListener.isCancelled()
-                && exportEntities.contains(RecordType.Books)) {
+            if (!progressListener.isCancelled() && exportEntities.contains(RecordType.Books)) {
                 tmpBooksFile = prepareBooks(context, dateSince, progressListener);
             } else {
                 tmpBooksFile = null;
@@ -172,41 +179,18 @@ public abstract class ArchiveWriterAbstract
             // Start with the archive header
             writeMetaData(context, mResults);
 
+            // The order we're writing is important:
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
-            if (!progressListener.isCancelled()
-                && exportEntities.contains(RecordType.Styles)) {
-                writeRecord(context, RecordType.Styles,
-                            getEncoding(RecordType.Styles),
-                            progressListener);
-            }
-
-            if (!progressListener.isCancelled()
-                && exportEntities.contains(RecordType.Preferences)) {
-                writeRecord(context, RecordType.Preferences,
-                            getEncoding(RecordType.Preferences),
-                            progressListener);
-            }
-
-            if (!progressListener.isCancelled()
-                && exportEntities.contains(RecordType.Certificates)) {
-                writeRecord(context, RecordType.Certificates,
-                            getEncoding(RecordType.Certificates),
-                            progressListener);
-            }
-
-            // If we're doing books, then we MUST first do Bookshelves
-            // (and optional Calibre libraries)
-            if (!progressListener.isCancelled()
-                && exportEntities.contains(RecordType.Books)) {
-
-                writeRecord(context, RecordType.Bookshelves,
-                            getEncoding(RecordType.Bookshelves),
-                            progressListener);
-
-                writeRecord(context, RecordType.CalibreLibraries,
-                            getEncoding(RecordType.CalibreLibraries),
-                            progressListener);
+            final List<RecordType> typeList = List.of(RecordType.Styles,
+                                                      RecordType.Preferences,
+                                                      RecordType.Certificates,
+                                                      RecordType.Bookshelves,
+                                                      RecordType.CalibreLibraries);
+            for (final RecordType type : typeList) {
+                if (!progressListener.isCancelled() && exportEntities.contains(type)) {
+                    writeRecord(context, type, progressListener);
+                }
             }
 
             // Add the previously generated books file.
@@ -324,7 +308,6 @@ public abstract class ArchiveWriterAbstract
      *
      * @param context          Current context
      * @param recordType       of record
-     * @param encoding         for the record
      * @param progressListener Listener to receive progress information.
      *
      * @throws ExportException on a decoding/parsing of data issue
@@ -332,17 +315,25 @@ public abstract class ArchiveWriterAbstract
      */
     private void writeRecord(@NonNull final Context context,
                              @NonNull final RecordType recordType,
-                             @NonNull final RecordEncoding encoding,
                              @NonNull final ProgressListener progressListener)
             throws ExportException, IOException {
+
+        final RecordEncoding encoding = getEncoding(recordType);
+
+        final ExportResults results;
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(null)) {
-            mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType), progressListener));
+            results = recordWriter.write(context, bw, EnumSet.of(recordType), progressListener);
         }
-        putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
+
+        // Only copy the result/output if we actually wrote something
+        if (results.has(recordType)) {
+            putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
+            mResults.add(results);
+        }
     }
 
     /**
