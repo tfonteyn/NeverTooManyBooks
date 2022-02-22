@@ -39,15 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public interface SyncReader
         extends Closeable {
 
-    String ERROR_INVALID_INPUT = "File/type is not supported";
-    String ERROR_INVALID_HEADER = "Header is invalid / not found";
-    String ERROR_NO_READER_AVAILABLE = "No reader available";
-
-    /**
-     * {@link ReaderResults} after an import.
-     */
-    String BKEY_RESULTS = "SyncReader:results";
-
     /**
      * Checks if the current archive looks valid.
      * Does not need to be exhaustive. The default implementation does nothing.
