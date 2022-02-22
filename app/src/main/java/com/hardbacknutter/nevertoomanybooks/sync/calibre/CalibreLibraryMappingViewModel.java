@@ -54,20 +54,20 @@ public class CalibreLibraryMappingViewModel
 
 
     public void setMetaData(@Nullable final SyncReaderMetaData metaData) {
-        super.setMetaData(metaData);
-
         Objects.requireNonNull(metaData);
+
+        super.setMetaData(metaData);
 
         // at this moment, all server libs have been synced with our database
         // and are mapped to a valid bookshelf
 
         mLibraries.clear();
-        final Bundle bundle = metaData.getBundle();
+        final Bundle data = metaData.getData();
         mLibraries.addAll(Objects.requireNonNull(
-                bundle.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
-                "mLibraries"));
+                data.getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST),
+                CalibreContentServer.BKEY_LIBRARY_LIST));
 
-        mExtInstalled = bundle.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
+        mExtInstalled = data.getBoolean(CalibreContentServer.BKEY_EXT_INSTALLED);
     }
 
     boolean isExtInstalled() {
