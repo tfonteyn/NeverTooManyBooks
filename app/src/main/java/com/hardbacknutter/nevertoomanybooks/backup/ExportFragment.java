@@ -461,7 +461,16 @@ public class ExportFragment
                                 getString(R.string.lbl_covers),
                                 String.valueOf(result.getCoverCount())));
         }
-
+        if (result.bookshelves > 0) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_bookshelves),
+                                String.valueOf(result.bookshelves)));
+        }
+//        if (result.calibreLibraries > 0) {
+//            items.add(getString(R.string.name_colon_value,
+//                                getString(R.string.lbl_library),
+//                                String.valueOf(result.calibreLibraries)));
+//        }
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),

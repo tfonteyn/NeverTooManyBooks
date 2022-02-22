@@ -206,6 +206,7 @@ public class JsonRecordWriter
                     jsonData.put(RecordType.Bookshelves.getName(),
                                  getBookshelfCoder(context).encode(bookshelves));
                 }
+                results.bookshelves = bookshelves.size();
             }
 
             if (entries.contains(RecordType.CalibreLibraries)
@@ -219,6 +220,7 @@ public class JsonRecordWriter
                     jsonData.put(RecordType.CalibreLibraries.getName(),
                                  getCalibreLibraryCoder(context).encode(libraries));
                 }
+                results.calibreLibraries = libraries.size();
             }
 
             if (entries.contains(RecordType.Books)
@@ -243,9 +245,9 @@ public class JsonRecordWriter
 
                         if (collectCoverFilenames) {
                             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                                final File cover = book.getPersistedCoverFile(cIdx);
-                                if (cover != null && cover.exists()) {
-                                    results.addCover(cover.getName());
+                                final File coverFile = book.getPersistedCoverFile(cIdx);
+                                if (coverFile != null && coverFile.exists()) {
+                                    results.addCover(coverFile);
                                 }
                             }
                         }

@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
 
 /**
  * Value class to report back what was exported.
@@ -38,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
  * Used by {@link RecordWriter} and accumulated in {@link ArchiveWriter}.
  */
 public class ExportResults
-        implements Parcelable {
+        extends WriterResults {
 
     /** {@link Parcelable}. */
     public static final Creator<ExportResults> CREATOR = new Creator<>() {
@@ -59,6 +61,10 @@ public class ExportResults
     private final List<String> mCoversExported = new ArrayList<>();
     /** #styles we exported. */
     public int styles;
+    /** #bookshelves we exported. */
+    public int bookshelves;
+    /** #calibreLibraries we exported. */
+    public int calibreLibraries;
     /** #preferences we exported. */
     public int preferences;
     /** #certificates we exported. */
@@ -78,10 +84,39 @@ public class ExportResults
         in.readList(mBooksExported, getClass().getClassLoader());
         in.readStringList(mCoversExported);
 
+        bookshelves = in.readInt();
+        calibreLibraries = in.readInt();
         styles = in.readInt();
         preferences = in.readInt();
         certificates = in.readInt();
         database = in.readByte() != 0;
+    }
+
+    public boolean has(@NonNull final RecordType recordType) {
+        switch (recordType) {
+            case Styles:
+                return styles > 0;
+            case Preferences:
+                return preferences > 0;
+            case Certificates:
+                return certificates > 0;
+            case Bookshelves:
+                return bookshelves > 0;
+            case CalibreLibraries:
+                return calibreLibraries > 0;
+            case Books:
+                return getBookCount() > 0;
+            case Cover:
+                return getCoverCount() > 0;
+
+            case Database:
+                return database;
+
+            case MetaData:
+            case AutoDetect:
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -93,15 +128,19 @@ public class ExportResults
         mBooksExported.addAll(results.mBooksExported);
         mCoversExported.addAll(results.mCoversExported);
 
+        bookshelves += results.bookshelves;
+        calibreLibraries += results.calibreLibraries;
         styles += results.styles;
         preferences += results.preferences;
         certificates += results.certificates;
     }
 
+    @Override
     public void addBook(@IntRange(from = 1) final long bookId) {
         mBooksExported.add(bookId);
     }
 
+    @Override
     public int getBookCount() {
         return mBooksExported.size();
     }
@@ -112,16 +151,18 @@ public class ExportResults
         return mBooksExported;
     }
 
+    @Override
     public void addCover(@NonNull final String path) {
         mCoversExported.add(path);
     }
 
+    @Override
     public int getCoverCount() {
         return mCoversExported.size();
     }
 
     /**
-     * Return the full list of cover filenames as collected with {@link #addCover(String)}.
+     * Return the full list of cover filenames as collected with {@link #addCover}.
      * <p>
      * This is used/needed for the two-step backup process, where step one exports books,
      * and collects cover filenames, and than (calling this method) in a second step exports
@@ -140,6 +181,8 @@ public class ExportResults
         dest.writeList(mBooksExported);
         dest.writeStringList(mCoversExported);
 
+        dest.writeInt(bookshelves);
+        dest.writeInt(calibreLibraries);
         dest.writeInt(styles);
         dest.writeInt(preferences);
         dest.writeInt(certificates);
@@ -154,9 +197,11 @@ public class ExportResults
     @Override
     @NonNull
     public String toString() {
-        return "Results{"
+        return "ExportResults{"
                + "mBooksExported=" + mBooksExported
                + ", mCoversExported=" + mCoversExported
+               + ", bookshelves=" + bookshelves
+               + ", calibreLibraries=" + calibreLibraries
                + ", styles=" + styles
                + ", preferences=" + preferences
                + ", certificates=" + certificates

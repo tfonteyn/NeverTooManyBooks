@@ -80,9 +80,6 @@ public class XmlRecordWriter
      */
     private static final int VERSION = 2;
 
-    /** Log tag. */
-    private static final String TAG = "XmlRecordWriter";
-
     /** individual format versions of table based data. */
     private static final int VERSION_BOOKSHELVES = 1;
     private static final int VERSION_AUTHORS = 1;
@@ -601,9 +598,9 @@ public class XmlRecordWriter
 
                 if (collectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = book.getPersistedCoverFile(cIdx);
-                        if (cover != null && cover.exists()) {
-                            results.addCover(cover.getName());
+                        final File coverFile = book.getPersistedCoverFile(cIdx);
+                        if (coverFile != null && coverFile.exists()) {
+                            results.addCover(coverFile);
                         }
                     }
                 }

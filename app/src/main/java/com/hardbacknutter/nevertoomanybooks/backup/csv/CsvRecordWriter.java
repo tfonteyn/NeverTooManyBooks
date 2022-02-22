@@ -61,9 +61,6 @@ public class CsvRecordWriter
      */
     private static final int VERSION = 1;
 
-    /** Log tag. */
-    private static final String TAG = "CsvRecordWriter";
-
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -113,9 +110,9 @@ public class CsvRecordWriter
 
                     if (collectCoverFilenames) {
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            final File cover = book.getPersistedCoverFile(cIdx);
-                            if (cover != null && cover.exists()) {
-                                results.addCover(cover.getName());
+                            final File coverFile = book.getPersistedCoverFile(cIdx);
+                            if (coverFile != null && coverFile.exists()) {
+                                results.addCover(coverFile);
                             }
                         }
                     }

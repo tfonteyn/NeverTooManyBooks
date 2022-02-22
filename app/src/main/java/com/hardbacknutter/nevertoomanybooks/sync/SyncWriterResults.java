@@ -24,12 +24,13 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
+
 /**
  * Value class to report back what was witten.
- * (this class is overkill, but we want to keep the same usage-structure as in the reader)
  */
 public class SyncWriterResults
-        implements Parcelable {
+        extends WriterResults {
 
     /** {@link Parcelable}. */
     public static final Creator<SyncWriterResults> CREATOR = new Creator<>() {
@@ -44,9 +45,8 @@ public class SyncWriterResults
         }
     };
 
-    public int booksWritten;
-    public int coversWritten;
-
+    private int mBookCount;
+    private int mCoverCount;
 
     public SyncWriterResults() {
     }
@@ -56,16 +56,36 @@ public class SyncWriterResults
      *
      * @param in Parcel to construct the object from
      */
-    SyncWriterResults(@NonNull final Parcel in) {
-        booksWritten = in.readInt();
-        coversWritten = in.readInt();
+    private SyncWriterResults(@NonNull final Parcel in) {
+        mBookCount = in.readInt();
+        mCoverCount = in.readInt();
+    }
+
+    @Override
+    public void addBook(final long bookId) {
+        mBookCount++;
+    }
+
+    @Override
+    public int getBookCount() {
+        return mBookCount;
+    }
+
+    @Override
+    public void addCover(@NonNull final String path) {
+        mCoverCount++;
+    }
+
+    @Override
+    public int getCoverCount() {
+        return mCoverCount;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(booksWritten);
-        dest.writeInt(coversWritten);
+        dest.writeInt(mBookCount);
+        dest.writeInt(mCoverCount);
     }
 
     @Override
@@ -76,9 +96,9 @@ public class SyncWriterResults
     @Override
     @NonNull
     public String toString() {
-        return "Results{"
-               + "booksWritten=" + booksWritten
-               + ", coversWritten=" + coversWritten
+        return "SyncWriterResults{"
+               + "mBookCount=" + mBookCount
+               + ", mCoverCount=" + mCoverCount
                + '}';
     }
 }
