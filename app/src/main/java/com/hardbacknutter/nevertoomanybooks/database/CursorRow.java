@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
@@ -47,8 +46,6 @@ public class CursorRow
     /** the mapped cursor. */
     private final Cursor mCursor;
 
-    protected final ISODateParser mDateParser;
-
     /**
      * Constructor.
      *
@@ -56,7 +53,6 @@ public class CursorRow
      */
     public CursorRow(@NonNull final Cursor cursor) {
         mCursor = cursor;
-        mDateParser = new ISODateParser();
     }
 
     @Override
