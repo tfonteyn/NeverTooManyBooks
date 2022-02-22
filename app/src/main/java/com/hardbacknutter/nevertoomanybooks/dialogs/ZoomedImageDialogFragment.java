@@ -45,7 +45,7 @@ public class ZoomedImageDialogFragment
         extends DialogFragment {
 
     /** Log tag. */
-    public static final String TAG = "ZoomedImageDialogFrag";
+    private static final String TAG = "ZoomedImageDialogFrag";
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
 
     /** File to display. */
