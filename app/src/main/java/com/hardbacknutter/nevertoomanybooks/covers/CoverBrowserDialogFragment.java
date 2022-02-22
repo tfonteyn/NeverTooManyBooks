@@ -113,8 +113,7 @@ public class CoverBrowserDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
 
         mVm = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
         mVm.init(args);
@@ -132,7 +131,7 @@ public class CoverBrowserDialogFragment
         mVb = DialogCoverBrowserBinding.bind(view);
 
         final String bookTitle = Objects.requireNonNull(
-                requireArguments().getString(DBKey.KEY_TITLE));
+                requireArguments().getString(DBKey.KEY_TITLE), DBKey.KEY_TITLE);
         mVb.toolbar.setSubtitle(bookTitle);
 
         // LayoutManager is set in the layout xml
@@ -363,21 +362,21 @@ public class CoverBrowserDialogFragment
                            @NonNull final String isbn,
                            @IntRange(from = 0, to = 1) final int cIdx) {
 
-            final Bundle args = new Bundle(3);
+            final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
             args.putString(DBKey.KEY_TITLE, bookTitle);
             args.putString(DBKey.KEY_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 
-            final DialogFragment frag = new CoverBrowserDialogFragment();
-            frag.setArguments(args);
-            frag.show(mFragmentManager, TAG);
+            final DialogFragment fragment = new CoverBrowserDialogFragment();
+            fragment.setArguments(args);
+            fragment.show(mFragmentManager, TAG);
         }
 
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(COVER_FILE_SPEC)));
+            onResult(Objects.requireNonNull(result.getString(COVER_FILE_SPEC), COVER_FILE_SPEC));
         }
 
         /**
