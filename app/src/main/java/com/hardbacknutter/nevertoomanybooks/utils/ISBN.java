@@ -831,7 +831,7 @@ public class ISBN {
         Loose(1),
         Strict(2);
 
-        public final int value;
+        final int value;
 
         Validity(final int prefValue) {
 
