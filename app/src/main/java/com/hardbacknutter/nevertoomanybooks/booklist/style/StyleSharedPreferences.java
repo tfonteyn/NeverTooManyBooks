@@ -79,17 +79,18 @@ public class StyleSharedPreferences
 
         mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (!uuid.isEmpty()) {
+        if (uuid.isEmpty()) {
+            // Doing this here is much easier then doing it each time access is needed.
+            // The downside is that when the global settings are accessed,
+            // and the desired setting is not preset, a *second* and useless read is done.
+            mStylePrefs = mGlobalPrefs;
+
+        } else {
             mStylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
             if (isPersistent && !mStylePrefs.contains(PK_STYLE_UUID)) {
                 // Storing the uuid is not actually needed but handy to have for debug
                 mStylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
             }
-        } else {
-            // Doing this here is much easier then doing it each time access is needed.
-            // The downside is that when the global settings are accessed,
-            // and the desired setting is not preset, a *second* and useless read is done.
-            mStylePrefs = mGlobalPrefs;
         }
 
         // remove obsolete entries; no attempt is made to preserve the setting
