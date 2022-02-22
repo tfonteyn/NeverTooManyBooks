@@ -18,12 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
 /*
 Copyright (c) 2006 JSON.org
 
@@ -47,6 +41,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
+
+import androidx.annotation.Nullable;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * JSONWriter provides a quick and convenient way of producing JSON text.
@@ -160,7 +161,7 @@ public class JSONWriter {
             if (object != null) {
                 return object;
             }
-            throw new JSONException("Bad value from toJSONString: " + object);
+            throw new JSONException("Bad value from toJSONString: null");
         }
         if (value instanceof Number) {
             // not all Numbers may match actual JSON Numbers. i.e. Fractions or Complex
@@ -203,7 +204,7 @@ public class JSONWriter {
      *
      * @throws JSONException If the value is out of sequence.
      */
-    private JSONWriter append(final String string)
+    private JSONWriter append(final CharSequence string)
             throws JSONException {
         if (string == null) {
             throw new JSONException("Null pointer");
@@ -237,9 +238,8 @@ public class JSONWriter {
      * @return this
      *
      * @throws JSONException If the nesting is too deep, or if the object is
-     *                       started in the wrong place (for example as a key
-     *                       or after the end of the
-     *                       outermost array or object).
+     *                       started in the wrong place (for example as a key or after
+     *                       the end of the outermost array or object).
      */
     public JSONWriter array()
             throws JSONException {
@@ -359,9 +359,8 @@ public class JSONWriter {
      * @return this
      *
      * @throws JSONException If the nesting is too deep, or if the object is
-     *                       started in the wrong place (for example as a key
-     *                       or after the end of the
-     *                       outermost array or object).
+     *                       started in the wrong place (for example as a key or
+     *                       after the end of the outermost array or object).
      */
     public JSONWriter object()
             throws JSONException {
@@ -397,9 +396,7 @@ public class JSONWriter {
         this.top -= 1;
         this.mode = this.top == 0
                     ? 'd'
-                    : this.stack[this.top - 1] == null
-                      ? 'a'
-                      : 'k';
+                    : this.stack[this.top - 1] == null ? 'a' : 'k';
     }
 
     /**
@@ -409,7 +406,7 @@ public class JSONWriter {
      *
      * @throws JSONException If nesting is too deep.
      */
-    private void push(final JSONObject jo)
+    private void push(@Nullable final JSONObject jo)
             throws JSONException {
         if (this.top >= maxdepth) {
             throw new JSONException("Nesting too deep.");

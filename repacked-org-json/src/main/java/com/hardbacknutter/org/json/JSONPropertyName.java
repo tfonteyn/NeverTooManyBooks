@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2018 JSON.org
 
@@ -43,6 +41,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -51,14 +50,14 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * Use this annotation on a getter method to override the Bean name
+ * parser for Bean -&gt; JSONObject mapping. A value set to empty string {@code ""}
+ * will have the Bean parser fall back to the default field name processing.
+ */
 @Documented
 @Retention(RUNTIME)
 @Target(METHOD)
-/**
- * Use this annotation on a getter method to override the Bean name
- * parser for Bean -&gt; JSONObject mapping. A value set to empty string <code>""</code>
- * will have the Bean parser fall back to the default field name processing.
- */
 public @interface JSONPropertyName {
 
     /**

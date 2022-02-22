@@ -54,7 +54,10 @@ SOFTWARE.
  * @author JSON.org
  * @version 2015-12-09
  */
-public class Cookie {
+public final class Cookie {
+
+    private Cookie() {
+    }
 
     /**
      * Produce a copy of a string in which the characters '+', '%', '=', ';'
@@ -135,7 +138,7 @@ public class Cookie {
         // parse the remaining cookie attributes
         while (x.more()) {
             name = unescape(x.nextTo("=;")).trim().toLowerCase(Locale.ROOT);
-            // don't allow a cookies attributes to overwrite it's name or value.
+            // don't allow a cookies attributes to overwrite its name or value.
             if ("name".equalsIgnoreCase(name)) {
                 throw new JSONException("Illegal attribute name: 'name'");
             }
@@ -164,7 +167,8 @@ public class Cookie {
      * If the JSONObject contains other members, they will be appended to the cookie
      * specification string. User-Agents are instructed to ignore unknown attributes,
      * so ensure your JSONObject is using only known attributes.
-     * See also: <a href="https://tools.ietf.org/html/rfc6265">https://tools.ietf.org/html/rfc6265</a>
+     * See also: <a href="https://tools.ietf.org/html/rfc6265">
+     * https://tools.ietf.org/html/rfc6265</a>
      *
      * @param jo A JSONObject
      *
@@ -202,22 +206,19 @@ public class Cookie {
         sb.append(escape((String) value));
 
         for (final String key : jo.keySet()) {
-            if ("name".equalsIgnoreCase(key)
-                || "value".equalsIgnoreCase(key)) {
-                // already processed above
-                continue;
-            }
-            value = jo.opt(key);
-            if (value instanceof Boolean) {
-                if (Boolean.TRUE.equals(value)) {
-                    sb.append(';').append(escape(key));
+            if (!"name".equalsIgnoreCase(key) && !"value".equalsIgnoreCase(key)) {
+                value = jo.opt(key);
+                if (value instanceof Boolean) {
+                    if (Boolean.TRUE.equals(value)) {
+                        sb.append(';').append(escape(key));
+                    }
+                    // don't emit false values
+                } else {
+                    sb.append(';')
+                      .append(escape(key))
+                      .append('=')
+                      .append(escape(value.toString()));
                 }
-                // don't emit false values
-            } else {
-                sb.append(';')
-                  .append(escape(key))
-                  .append('=')
-                  .append(escape(value.toString()));
             }
         }
 
@@ -225,8 +226,7 @@ public class Cookie {
     }
 
     /**
-     * Convert {@code %}<i>hh</i> sequences to single characters, and
-     * convert plus to space.
+     * Convert {@code %}<i>hh</i> sequences to single characters, and convert plus to space.
      *
      * @param string A string that may contain
      *               {@code +}&nbsp;<small>(plus)</small> and
@@ -234,7 +234,7 @@ public class Cookie {
      *
      * @return The unescaped string.
      */
-    public static String unescape(final String string) {
+    public static String unescape(final CharSequence string) {
         final int length = string.length();
         final StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {

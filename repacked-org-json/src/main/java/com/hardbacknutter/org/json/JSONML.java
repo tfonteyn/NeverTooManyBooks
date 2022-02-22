@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2008 JSON.org
 
@@ -43,6 +41,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
+
+import androidx.annotation.Nullable;
 
 /**
  * This provides static methods to convert an XML text into a JSONArray or
@@ -52,7 +53,10 @@ SOFTWARE.
  * @author JSON.org
  * @version 2016-01-30
  */
-public class JSONML {
+public final class JSONML {
+
+    private JSONML() {
+    }
 
     /**
      * Parse XML values and store them in a JSONArray.
@@ -70,7 +74,7 @@ public class JSONML {
     private static Object parse(
             final XMLTokener x,
             final boolean arrayForm,
-            final JSONArray ja,
+            @Nullable final JSONArray ja,
             final boolean keepStrings
                                )
             throws JSONException {
@@ -188,8 +192,8 @@ public class JSONML {
 // attribute = value
 
                         attribute = (String) token;
-                        if (!arrayForm && ("tagName".equals(attribute) || "childNode"
-                                .equals(attribute))) {
+                        if (!arrayForm && ("tagName".equals(attribute) || "childNode".equals(
+                                attribute))) {
                             throw x.syntaxError("Reserved attribute.");
                         }
                         token = x.nextToken();
@@ -198,8 +202,9 @@ public class JSONML {
                             if (!(token instanceof String)) {
                                 throw x.syntaxError("Missing value");
                             }
-                            newjo.accumulate(attribute, keepStrings ? token : XML
-                                    .stringToValue((String) token));
+                            newjo.accumulate(attribute,
+                                             keepStrings ? ((String) token) : XML.stringToValue(
+                                                     (String) token));
                             token = null;
                         } else {
                             newjo.accumulate(attribute, "");
@@ -246,10 +251,12 @@ public class JSONML {
                 }
             } else {
                 if (ja != null) {
-                    ja.put(token instanceof String
-                           ? keepStrings ? XML.unescape((String) token) : XML
-                            .stringToValue((String) token)
-                           : token);
+                    if (token instanceof String) {
+                        ja.put(keepStrings ? XML.unescape((String) token)
+                                           : XML.stringToValue((String) token));
+                    } else {
+                        ja.put(token);
+                    }
                 }
             }
         }
@@ -515,7 +522,7 @@ public class JSONML {
                     } else if (object instanceof JSONArray) {
                         sb.append(toString((JSONArray) object));
                     } else {
-                        sb.append(object.toString());
+                        sb.append(object);
                     }
                 }
             } while (i < length);
@@ -597,7 +604,7 @@ public class JSONML {
                     } else if (object instanceof JSONArray) {
                         sb.append(toString((JSONArray) object));
                     } else {
-                        sb.append(object.toString());
+                        sb.append(object);
                     }
                 }
             }

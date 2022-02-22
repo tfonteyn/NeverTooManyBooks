@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.org.json;
 
 /*
  Copyright (c) 2002 JSON.org
@@ -42,6 +41,9 @@ package com.hardbacknutter.org.json;
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
  */
+package com.hardbacknutter.org.json;
+
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -54,7 +56,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
@@ -106,6 +107,7 @@ public class JSONArray
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
+    @SuppressWarnings("FieldNotUsedInToString")
     private final ArrayList<Object> myArrayList;
 
     /**
@@ -271,7 +273,7 @@ public class JSONArray
     private static JSONException wrongValueFormatException(
             final int idx,
             final String valueType,
-            final Throwable cause) {
+            @Nullable final Throwable cause) {
         return new JSONException(
                 "JSONArray[" + idx + "] is not a " + valueType + "."
                 , cause);
@@ -290,7 +292,7 @@ public class JSONArray
             final int idx,
             final String valueType,
             final Object value,
-            final Throwable cause) {
+            @Nullable final Throwable cause) {
         return new JSONException(
                 "JSONArray[" + idx + "] is not a " + valueType + " (" + value + ")."
                 , cause);
@@ -382,7 +384,7 @@ public class JSONArray
             throws JSONException {
         final Object object = this.get(index);
         if (object instanceof Number) {
-            return (Float) object;
+            return ((Number) object).floatValue();
         }
         try {
             return Float.parseFloat(object.toString());
@@ -442,7 +444,7 @@ public class JSONArray
 
     /**
      * Get the BigDecimal value associated with an index. If the value is float
-     * or double, the the {@link BigDecimal#BigDecimal(double)} constructor
+     * or double, the {@link BigDecimal#BigDecimal(double)} constructor
      * will be used. See notes on the constructor for conversion issues that
      * may arise.
      *
@@ -647,6 +649,7 @@ public class JSONArray
      *
      * @return An object value, or null if there is no object at that index.
      */
+    @Nullable
     public Object opt(final int index) {
         return (index < 0 || index >= this.length()) ? null : this.myArrayList
                 .get(index);
@@ -789,6 +792,7 @@ public class JSONArray
      *
      * @return The enum value at the index location or null if not found
      */
+    @Nullable
     public <E extends Enum<E>> E optEnum(final Class<E> clazz,
                                          final int index) {
         return this.optEnum(clazz, index, null);
@@ -805,9 +809,10 @@ public class JSONArray
      * @return The enum value at the index location or defaultValue if
      * the value is not found or cannot be assigned to clazz
      */
+    @Nullable
     public <E extends Enum<E>> E optEnum(final Class<E> clazz,
                                          final int index,
-                                         final E defaultValue) {
+                                         @Nullable final E defaultValue) {
         try {
             final Object val = this.opt(index);
             if (JSONObject.NULL.equals(val)) {
@@ -835,6 +840,7 @@ public class JSONArray
      *
      * @return The value.
      */
+    @Nullable
     public BigInteger optBigInteger(final int index,
                                     final BigInteger defaultValue) {
         final Object val = this.opt(index);
@@ -845,7 +851,7 @@ public class JSONArray
      * Get the optional BigDecimal value associated with an index. The
      * defaultValue is returned if there is no value for the index, or if the
      * value is not a number and cannot be converted to a number. If the value
-     * is float or double, the the {@link BigDecimal#BigDecimal(double)}
+     * is float or double, the {@link BigDecimal#BigDecimal(double)}
      * constructor will be used. See notes on the constructor for conversion
      * issues that may arise.
      *
@@ -854,6 +860,7 @@ public class JSONArray
      *
      * @return The value.
      */
+    @Nullable
     public BigDecimal optBigDecimal(final int index,
                                     final BigDecimal defaultValue) {
         final Object val = this.opt(index);
@@ -868,6 +875,7 @@ public class JSONArray
      * @return A JSONArray value, or null if the index has no value, or if the
      * value is not a JSONArray.
      */
+    @Nullable
     public JSONArray optJSONArray(final int index) {
         final Object o = this.opt(index);
         return o instanceof JSONArray ? (JSONArray) o : null;
@@ -882,6 +890,7 @@ public class JSONArray
      *
      * @return A JSONObject value.
      */
+    @Nullable
     public JSONObject optJSONObject(final int index) {
         final Object o = this.opt(index);
         return o instanceof JSONObject ? (JSONObject) o : null;
@@ -929,6 +938,7 @@ public class JSONArray
      *
      * @return An object which is the value.
      */
+    @Nullable
     public Number optNumber(final int index) {
         return this.optNumber(index, null);
     }
@@ -944,8 +954,9 @@ public class JSONArray
      *
      * @return An object which is the value.
      */
+    @Nullable
     public Number optNumber(final int index,
-                            final Number defaultValue) {
+                            @Nullable final Number defaultValue) {
         final Object val = this.opt(index);
         if (JSONObject.NULL.equals(val)) {
             return defaultValue;
@@ -989,8 +1000,7 @@ public class JSONArray
     public String optString(final int index,
                             final String defaultValue) {
         final Object object = this.opt(index);
-        return JSONObject.NULL.equals(object) ? defaultValue : object
-                .toString();
+        return JSONObject.NULL.equals(object) ? defaultValue : object.toString();
     }
 
     /**
@@ -1094,7 +1104,7 @@ public class JSONArray
      *
      * @throws JSONException If the value is non-finite number.
      */
-    public JSONArray put(final Object value) {
+    public JSONArray put(@Nullable final Object value) {
         JSONObject.testValidity(value);
         this.myArrayList.add(value);
         return this;
@@ -1216,7 +1226,7 @@ public class JSONArray
      *
      * @return this.
      *
-     * @throws JSONException        If the index is negative or if the the value is an invalid
+     * @throws JSONException        If the index is negative or if the value is an invalid
      *                              number.
      * @throws NullPointerException If a key in the map is {@code null}
      */
@@ -1239,7 +1249,7 @@ public class JSONArray
      *
      * @return this.
      *
-     * @throws JSONException If the index is negative or if the the value is an invalid
+     * @throws JSONException If the index is negative or if the value is an invalid
      *                       number.
      */
     public JSONArray put(final int index,
@@ -1313,8 +1323,8 @@ public class JSONArray
      *
      * @return this.
      *
-     * @throws JSONException        If not an array, JSONArray, Iterable or if an value is
-     *                              non-finite number.
+     * @throws JSONException        If not an array, JSONArray, Iterable
+     *                              or if an value is non-finite number.
      * @throws NullPointerException Thrown if the array parameter is null.
      */
     public JSONArray putAll(final Object array)
@@ -1381,6 +1391,7 @@ public class JSONArray
      *
      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
      */
+    @Nullable
     public Object optQuery(final String jsonPointer) {
         return optQuery(new JSONPointer(jsonPointer));
     }
@@ -1395,6 +1406,7 @@ public class JSONArray
      *
      * @throws IllegalArgumentException if {@code jsonPointer} has invalid syntax
      */
+    @Nullable
     public Object optQuery(final JSONPointer jsonPointer) {
         try {
             return jsonPointer.queryFrom(this);
@@ -1411,6 +1423,7 @@ public class JSONArray
      * @return The value that was associated with the index, or null if there
      * was no value.
      */
+    @Nullable
     public Object remove(final int index) {
         return index >= 0 && index < this.length()
                ? this.myArrayList.remove(index)
@@ -1451,7 +1464,9 @@ public class JSONArray
                     return false;
                 }
             } else if (valueThis instanceof Number && valueOther instanceof Number) {
-                return JSONObject.isNumberSimilar((Number) valueThis, (Number) valueOther);
+                if (!JSONObject.isNumberSimilar((Number) valueThis, (Number) valueOther)) {
+                    return false;
+                }
             } else if (!valueThis.equals(valueOther)) {
                 return false;
             }
@@ -1471,6 +1486,7 @@ public class JSONArray
      *
      * @throws JSONException If any of the names are null.
      */
+    @Nullable
     public JSONObject toJSONObject(final JSONArray names)
             throws JSONException {
         if (names == null || names.isEmpty() || this.isEmpty()) {

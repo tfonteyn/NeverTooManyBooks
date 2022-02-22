@@ -18,15 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-
 /*
 Copyright (c) 2002 JSON.org
 
@@ -50,6 +41,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+package com.hardbacknutter.org.json;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * A JSONTokener takes a source string and extracts characters and tokens from
@@ -86,9 +85,7 @@ public class JSONTokener {
      * @param reader A reader.
      */
     public JSONTokener(final Reader reader) {
-        this.reader = reader.markSupported()
-                      ? reader
-                      : new BufferedReader(reader);
+        this.reader = reader.markSupported() ? reader : new BufferedReader(reader);
         this.eof = false;
         this.usePrevious = false;
         this.previous = 0;
@@ -565,7 +562,7 @@ public class JSONTokener {
      * @return A JSONException object, suitable for throwing
      */
     public JSONException syntaxError(final String message) {
-        return new JSONException(message + this.toString());
+        return new JSONException(message + this);
     }
 
     /**
@@ -578,7 +575,7 @@ public class JSONTokener {
      */
     public JSONException syntaxError(final String message,
                                      final Throwable causedBy) {
-        return new JSONException(message + this.toString(), causedBy);
+        return new JSONException(message + this, causedBy);
     }
 
     /**

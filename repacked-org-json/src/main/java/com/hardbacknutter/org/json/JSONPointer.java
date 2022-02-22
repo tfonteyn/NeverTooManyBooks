@@ -17,16 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.org.json;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static java.lang.String.format;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -51,6 +41,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static java.lang.String.format;
 
 /**
  * A JSON Pointer is a simple query language defined for JSON documents by
@@ -149,15 +149,14 @@ public class JSONPointer {
      * }</pre>
      *
      * @return a builder instance which can be used to construct a {@code JSONPointer}
-     * instance by chained
-     * {@link Builder#append(String)} calls.
+     * instance by chained {@link Builder#append(String)} calls.
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * https://tools.ietf.org/html/rfc6901#section-3
+     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
     private static String unescape(final String token) {
         return token.replace("~1", "/").replace("~0", "~");
@@ -202,8 +201,8 @@ public class JSONPointer {
      * @param token the JSONPointer segment value to be escaped
      *
      * @return the escaped value for the token
-     * <p>
-     * https://tools.ietf.org/html/rfc6901#section-3
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc6901#section-3">rfc6901 section 3</a>
      */
     private static String escape(final String token) {
         return token.replace("~", "~0")

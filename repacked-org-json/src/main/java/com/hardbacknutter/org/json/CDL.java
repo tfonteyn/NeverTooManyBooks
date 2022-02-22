@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.org.json;
 
 /*
 Copyright (c) 2002 JSON.org
@@ -42,6 +41,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+package com.hardbacknutter.org.json;
 
 /**
  * This provides static methods to convert comma delimited text into a
@@ -63,7 +63,10 @@ SOFTWARE.
  * @author JSON.org
  * @version 2016-05-01
  */
-public class CDL {
+public final class CDL {
+
+    private CDL() {
+    }
 
     /**
      * Get the next value. The value can be wrapped in quotes. The value can
@@ -190,8 +193,7 @@ public class CDL {
             if (object != null) {
                 final String string = object.toString();
                 if (!string.isEmpty() && (string.indexOf(',') >= 0 ||
-                                          string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0
-                                          ||
+                                          string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0 ||
                                           string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
                     sb.append('"');
                     final int length = string.length();

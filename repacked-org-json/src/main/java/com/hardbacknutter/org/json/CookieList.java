@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2002 JSON.org
 
@@ -43,6 +41,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
+package com.hardbacknutter.org.json;
 
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
@@ -50,7 +49,10 @@ SOFTWARE.
  * @author JSON.org
  * @version 2015-12-09
  */
-public class CookieList {
+public final class CookieList {
+
+    private CookieList() {
+    }
 
     /**
      * Convert a cookie list into a JSONObject. A cookie list is a sequence

@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2006 JSON.org
 
@@ -43,6 +41,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
 
 import java.io.StringWriter;
 
@@ -70,7 +69,7 @@ import java.io.StringWriter;
  * <p>
  * The first method called must be {@code array} or {@code object}.
  * There are no methods for adding commas or colons. JSONStringer adds them for
- * you. Objects and arrays can be nested up to 20 levels deep.
+ * you. Objects and arrays can be nested up to 200 levels deep.
  * <p>
  * This can sometimes be easier than using a JSONObject to build a string.
  *

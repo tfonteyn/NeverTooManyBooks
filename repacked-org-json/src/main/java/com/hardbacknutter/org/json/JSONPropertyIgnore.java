@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2018 JSON.org
 
@@ -43,6 +41,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -51,15 +50,15 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Documented
-@Retention(RUNTIME)
-@Target(METHOD)
 /**
  * Use this annotation on a getter method to override the Bean name
  * parser for Bean -&gt; JSONObject mapping. If this annotation is
  * present at any level in the class hierarchy, then the method will
  * not be serialized from the bean into the JSONObject.
  */
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
 public @interface JSONPropertyIgnore {
 
 }

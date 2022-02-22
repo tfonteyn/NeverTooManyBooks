@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2002 JSON.org
 
@@ -43,6 +41,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
+
+import androidx.annotation.Nullable;
 
 import java.io.Reader;
 
@@ -158,6 +159,7 @@ public class XMLTokener
      *
      * @throws JSONException if a called function has an error
      */
+    @Nullable
     public Object nextContent()
             throws JSONException {
         char c;
@@ -386,10 +388,10 @@ public class XMLTokener
      *
      * @param to A string to skip past.
      */
-    // The Android implementation of JSONTokener has a public method of public void skipPast(String to)
-    // even though ours does not have that method, to have API compatibility, our method in the subclass
-    // should match.
-    public void skipPast(final String to) {
+    // The Android implementation of JSONTokener has a public method of public void
+    // skipPast(String to) even though ours does not have that method, to have API
+    // compatibility, our method in the subclass should match.
+    public void skipPast(final CharSequence to) {
         boolean b;
         char c;
         int i;
@@ -418,7 +420,6 @@ public class XMLTokener
             b = true;
 
             /* Compare the circle buffer with the to string. */
-
             for (i = 0; i < length; i += 1) {
                 if (circle[j] != to.charAt(i)) {
                     b = false;

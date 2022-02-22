@@ -18,8 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.hardbacknutter.org.json;
-
 /*
 Copyright (c) 2015 JSON.org
 
@@ -43,13 +41,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+package com.hardbacknutter.org.json;
+
+import androidx.annotation.Nullable;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
-
 
 /**
  * This provides static methods to convert an XML text into a JSONObject, and to
@@ -58,8 +58,7 @@ import java.util.Iterator;
  * @author JSON.org
  * @version 2016-08-10
  */
-@SuppressWarnings("boxing")
-public class XML {
+public final class XML {
 
     /** The Character '&amp;'. */
     public static final Character AMP = '&';
@@ -95,13 +94,13 @@ public class XML {
 
     public static final String TYPE_ATTR = "xsi:type";
 
+    private XML() {
+    }
+
     /**
      * Creates an iterator for navigating Code Points in a string instead of
      * characters. Once Java7 support is dropped, this can be replaced with
-     * {@code
-     * string.codePoints()
-     * }
-     * which is available in Java8 and above.
+     * {@code string.codePoints()} which is available in Java8 and above.
      *
      * @see <a href=
      * "http://stackoverflow.com/a/21791059/6030888">http://stackoverflow.com/a/21791059/6030888</a>
@@ -248,7 +247,7 @@ public class XML {
      *
      * @throws JSONException Thrown if the string contains whitespace or is empty.
      */
-    public static void noSpace(final String string)
+    public static void noSpace(final CharSequence string)
             throws JSONException {
         int i;
         final int length = string.length();
@@ -276,14 +275,14 @@ public class XML {
      */
     private static boolean parse(final XMLTokener x,
                                  final JSONObject context,
-                                 final String name,
+                                 @Nullable final String name,
                                  final XMLParserConfiguration config)
             throws JSONException {
         final char c;
-        int i;
-        JSONObject jsonObject;
-        String string;
+        final JSONObject jsonObject;
         final String tagName;
+        int i;
+        String string;
         Object token;
         XMLXsiTypeConverter<?> xmlXsiTypeConverter;
 
@@ -391,7 +390,7 @@ public class XML {
                         } else if (!nilAttributeFound) {
                             jsonObject.accumulate(string,
                                                   config.isKeepStrings()
-                                                  ? token
+                                                  ? ((String) token)
                                                   : stringToValue((String) token));
                         }
                         token = null;
@@ -404,12 +403,23 @@ public class XML {
                     if (x.nextToken() != GT) {
                         throw x.syntaxError("Misshaped tag");
                     }
-                    if (nilAttributeFound) {
-                        context.accumulate(tagName, JSONObject.NULL);
-                    } else if (!jsonObject.isEmpty()) {
-                        context.accumulate(tagName, jsonObject);
+                    if (config.getForceList().contains(tagName)) {
+                        // Force the value to be an array
+                        if (nilAttributeFound) {
+                            context.append(tagName, JSONObject.NULL);
+                        } else if (!jsonObject.isEmpty()) {
+                            context.append(tagName, jsonObject);
+                        } else {
+                            context.put(tagName, new JSONArray());
+                        }
                     } else {
-                        context.accumulate(tagName, "");
+                        if (nilAttributeFound) {
+                            context.accumulate(tagName, JSONObject.NULL);
+                        } else if (!jsonObject.isEmpty()) {
+                            context.accumulate(tagName, jsonObject);
+                        } else {
+                            context.accumulate(tagName, "");
+                        }
                     }
                     return false;
 
@@ -431,23 +441,39 @@ public class XML {
                                                                         xmlXsiTypeConverter));
                                 } else {
                                     jsonObject.accumulate(config.getcDataTagName(),
-                                                          config.isKeepStrings() ? string : stringToValue(
-                                                                  string));
+                                                          config.isKeepStrings()
+                                                          ? string : stringToValue(string));
                                 }
                             }
 
                         } else if (token == LT) {
                             // Nested element
                             if (parse(x, jsonObject, tagName, config)) {
-                                if (jsonObject.isEmpty()) {
-                                    context.accumulate(tagName, "");
-                                } else if (jsonObject.length() == 1
-                                           && jsonObject.opt(config.getcDataTagName()) != null) {
-                                    context.accumulate(tagName,
+                                if (config.getForceList().contains(tagName)) {
+                                    // Force the value to be an array
+                                    if (jsonObject.isEmpty()) {
+                                        context.put(tagName, new JSONArray());
+                                    } else if (jsonObject.length() == 1
+                                               && jsonObject.opt(config.getcDataTagName())
+                                                  != null) {
+                                        context.append(tagName,
                                                        jsonObject.opt(config.getcDataTagName()));
+                                    } else {
+                                        context.append(tagName, jsonObject);
+                                    }
                                 } else {
-                                    context.accumulate(tagName, jsonObject);
+                                    if (jsonObject.isEmpty()) {
+                                        context.accumulate(tagName, "");
+                                    } else if (jsonObject.length() == 1
+                                               && jsonObject.opt(config.getcDataTagName())
+                                                  != null) {
+                                        context.accumulate(tagName, jsonObject.opt(
+                                                config.getcDataTagName()));
+                                    } else {
+                                        context.accumulate(tagName, jsonObject);
+                                    }
                                 }
+
                                 return false;
                             }
                         }
@@ -565,7 +591,7 @@ public class XML {
             // This will narrow any values to the smallest reasonable Object representation
             // (Integer, Long, or BigInteger)
 
-            // BigInteger down conversion: We use a similar bitLenth compare as
+            // BigInteger down conversion: We use a similar bitLength compare as
             // BigInteger#intValueExact uses. Increases GC, but objects hold
             // only what they need. i.e. Less runtime overhead if the value is
             // long lived.
@@ -801,8 +827,8 @@ public class XML {
      *
      * @throws JSONException Thrown if there is an error parsing the string
      */
-    public static String toString(final Object object,
-                                  final String tagName,
+    public static String toString(@Nullable final Object object,
+                                  @Nullable final String tagName,
                                   final XMLParserConfiguration config)
             throws JSONException {
         final StringBuilder sb = new StringBuilder();
@@ -819,7 +845,7 @@ public class XML {
                 sb.append('>');
             }
 
-            // Loop thru the keys.
+            // Loop through the keys.
             // don't use the new entrySet accessor to maintain Android Support
             jo = (JSONObject) object;
             for (final String key : jo.keySet()) {
@@ -886,7 +912,6 @@ public class XML {
                 sb.append('>');
             }
             return sb.toString();
-
         }
 
         if (object != null && (object instanceof JSONArray || object.getClass().isArray())) {
@@ -908,11 +933,11 @@ public class XML {
         }
 
         string = (object == null) ? "null" : escape(object.toString());
-        return (tagName == null) ? "\"" + string + "\""
-                                 : (string.isEmpty()) ? "<" + tagName + "/>" : "<" + tagName
-                                                                               + ">" + string
-                                                                               + "</" + tagName
-                                                                               + ">";
-
+        if (tagName == null) {
+            return "\"" + string + "\"";
+        } else {
+            return (string.isEmpty()) ? "<" + tagName + "/>"
+                                      : "<" + tagName + ">" + string + "</" + tagName + ">";
+        }
     }
 }
