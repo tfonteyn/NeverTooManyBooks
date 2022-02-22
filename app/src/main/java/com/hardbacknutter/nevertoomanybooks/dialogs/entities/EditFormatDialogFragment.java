@@ -23,7 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class EditFormatDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "EditFormatDialogFrag";
+    private static final String TAG = "EditFormatDialogFrag";
 
     /**
      * No-arg constructor for OS use.
@@ -51,18 +51,18 @@ public class EditFormatDialogFragment
     /**
      * Launch the dialog.
      *
+     * @param fm   The FragmentManager this fragment will be added to.
      * @param text to edit.
      */
-    public static void launch(@NonNull final FragmentActivity activity,
+    public static void launch(@NonNull final FragmentManager fm,
                               @NonNull final String text) {
-
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, text);
 
         final DialogFragment frag = new EditFormatDialogFragment();
         frag.setArguments(args);
-        frag.show(activity.getSupportFragmentManager(), TAG);
+        frag.show(fm, TAG);
     }
 
     @NonNull

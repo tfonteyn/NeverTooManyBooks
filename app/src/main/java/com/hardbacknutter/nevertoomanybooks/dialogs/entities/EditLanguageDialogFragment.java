@@ -19,11 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +45,7 @@ public class EditLanguageDialogFragment
         extends EditStringBaseDialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "EditLanguageDialogFrag";
+    private static final String TAG = "EditLanguageDialogFrag";
 
     /**
      * No-arg constructor for OS use.
@@ -56,16 +57,18 @@ public class EditLanguageDialogFragment
     /**
      * Launch the dialog.
      *
+     * @param fm   The FragmentManager this fragment will be added to.
      * @param text to edit.
      */
-    public static void launch(@NonNull final FragmentActivity activity,
+    public static void launch(@NonNull final FragmentManager fm,
+                              @NonNull final Context context,
                               @NonNull final String text) {
         final String editLang;
         if (text.length() > 3) {
             editLang = text;
         } else {
             final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                .getLocale(activity, text);
+                                                .getLocale(context, text);
             if (locale == null) {
                 editLang = text;
             } else {
@@ -79,7 +82,7 @@ public class EditLanguageDialogFragment
 
         final DialogFragment frag = new EditLanguageDialogFragment();
         frag.setArguments(args);
-        frag.show(activity.getSupportFragmentManager(), TAG);
+        frag.show(fm, TAG);
     }
 
     @NonNull

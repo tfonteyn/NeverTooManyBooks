@@ -27,7 +27,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -54,7 +54,7 @@ public class EditPublisherDialogFragment
         extends FFBaseDialogFragment {
 
     /** Fragment/Log tag. */
-    public static final String TAG = "EditPublisherDialogFrag";
+    private static final String TAG = "EditPublisherDialogFrag";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
@@ -79,9 +79,10 @@ public class EditPublisherDialogFragment
     /**
      * Launch the dialog.
      *
+     * @param fm        The FragmentManager this fragment will be added to.
      * @param publisher to edit.
      */
-    public static void launch(@NonNull final FragmentActivity activity,
+    public static void launch(@NonNull final FragmentManager fm,
                               @NonNull final Publisher publisher) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, RowChangedListener.REQUEST_KEY);
@@ -89,7 +90,7 @@ public class EditPublisherDialogFragment
 
         final DialogFragment frag = new EditPublisherDialogFragment();
         frag.setArguments(args);
-        frag.show(activity.getSupportFragmentManager(), TAG);
+        frag.show(fm, TAG);
     }
 
     @Override
