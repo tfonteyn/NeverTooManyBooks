@@ -175,7 +175,9 @@ class IsfdbBookHandlerTest
         final ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertEquals(2, series.size());
+        // Pub. Series
         assertEquals("The Discworld Collector's Library", series.get(0).getTitle());
+        // Series + nr from TOC
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
