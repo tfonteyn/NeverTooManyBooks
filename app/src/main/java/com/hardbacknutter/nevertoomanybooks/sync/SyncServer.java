@@ -69,6 +69,8 @@ public enum SyncServer
             return new SyncServer[size];
         }
     };
+
+    public static final String ERROR_NO_READER_AVAILABLE = "No reader available";
     /* Log tag. */
     private static final String TAG = "SyncServer";
     /** The (optional) preset encoding to pass to export/import. */
@@ -200,7 +202,7 @@ public enum SyncServer
                 break;
 
             default:
-                throw new IllegalStateException(SyncReader.ERROR_NO_READER_AVAILABLE);
+                throw new IllegalStateException(ERROR_NO_READER_AVAILABLE);
         }
 
         reader.validate(context);
