@@ -242,7 +242,8 @@ public class JsonRecordReader
                     }
                 }
             } catch (@NonNull final JSONException e) {
-                throw new ImportException(context.getString(R.string.error_import_failed), e);
+                throw new ImportException(context.getString(R.string.error_import_failed_for_record,
+                                                            recordType.getName()), e);
 
             } catch (@NonNull final UncheckedIOException e) {
                 //noinspection ConstantConditions
@@ -399,8 +400,7 @@ public class JsonRecordReader
             }
             try {
                 final Book book = mBookCoder.decode(books.getJSONObject(i));
-                Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID),
-                                       "KEY_BOOK_UUID");
+                Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID), DBKey.KEY_BOOK_UUID);
 
                 final long importNumericId = book.getLong(DBKey.PK_ID);
                 book.remove(DBKey.PK_ID);
