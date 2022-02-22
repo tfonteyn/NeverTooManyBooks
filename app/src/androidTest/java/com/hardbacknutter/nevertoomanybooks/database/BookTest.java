@@ -127,7 +127,7 @@ public class BookTest {
 
         // empty the temp dir
         //noinspection ResultOfMethodCallIgnored
-        FileUtils.collectFiles(tempDir, mJpgFilter).forEach(File::delete);
+        FileUtils.collectFiles(tempDir, mJpgFilter, Integer.MAX_VALUE).forEach(File::delete);
 
 
         mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
@@ -154,11 +154,11 @@ public class BookTest {
 
 
 
-        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter);
+        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter, 10);
         assertTrue(NEED_TWO_FILE, files.size() > 1);
 
-        prepareCover(coverDir, files, 0);
-        prepareCover(coverDir, files, 1);
+        prepareTempCover(context, files, 0);
+        prepareTempCover(context, files, 1);
 
         assertTrue(mBookshelf[0].getId() > 0);
         assertTrue(mAuthor[0].getId() > 0);
@@ -173,16 +173,16 @@ public class BookTest {
      *
      * @throws IOException on failure
      */
-    private void prepareCover(@NonNull final File coverDir,
-                              @NonNull final List<File> files,
-                              final int cIdx)
-            throws IOException {
+    private void prepareTempCover(@NonNull final Context context,
+                                  @NonNull final List<File> files,
+                                  final int cIdx)
+            throws IOException, CoverStorageException {
 
         mOriginalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
         final File srcFile = new File(mOriginalImageFileName[cIdx]);
         mOriginalImageSize[cIdx] = srcFile.length();
 
-        FileUtils.copy(srcFile, new File(coverDir, Constants.COVER[cIdx]));
+        FileUtils.copy(srcFile, new File(CoverDir.getTemp(context), Constants.COVER[cIdx]));
     }
 
     /**
@@ -315,8 +315,8 @@ public class BookTest {
         /*
          * Add the second cover of the read-only book
          */
-        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter);
-        prepareCover(coverDir, files, 1);
+        final List<File> files = FileUtils.collectFiles(coverDir, mJpgFilter, 10);
+        prepareTempCover(context, files, 1);
 
         book.setCover(1, new File(tempDir, Constants.COVER[1]));
 
@@ -421,7 +421,8 @@ public class BookTest {
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
-        final List<File> tempFiles = FileUtils.collectFiles(CoverDir.getTemp(context), mJpgFilter);
+        final List<File> tempFiles =
+                FileUtils.collectFiles(CoverDir.getTemp(context), mJpgFilter, 10);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, tempFiles.size());
         assertEquals(COVER[1], tempFiles.get(0).getName());

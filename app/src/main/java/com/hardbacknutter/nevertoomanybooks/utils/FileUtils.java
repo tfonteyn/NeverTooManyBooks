@@ -387,27 +387,33 @@ public final class FileUtils {
     /**
      * Recursively collect applicable files for the given directory.
      *
-     * @param root   directory to collect from
-     * @param filter (optional) to apply; {@code null} for all files.
+     * @param root     directory to collect from
+     * @param filter   (optional) to apply; {@code null} for all files.
+     * @param maxFiles the maximum amount of files to collect
      *
      * @return list of files
      */
     @NonNull
     public static List<File> collectFiles(@NonNull final File root,
-                                          @Nullable final FileFilter filter) {
-        final List<File> files = new ArrayList<>();
+                                          @Nullable final FileFilter filter,
+                                          final int maxFiles) {
+        final List<File> list = new ArrayList<>();
         // sanity check
         if (root.isDirectory()) {
-            //noinspection ConstantConditions
-            for (final File file : root.listFiles(filter)) {
-                if (file.isFile()) {
-                    files.add(file);
-                } else if (file.isDirectory()) {
-                    files.addAll(collectFiles(file, filter));
+            final File[] files = root.listFiles(filter);
+            if (files != null && files.length > 0) {
+                int i = 0;
+                while (i < files.length && list.size() < maxFiles) {
+                    if (files[i].isFile()) {
+                        list.add(files[i]);
+                    } else if (files[i].isDirectory()) {
+                        list.addAll(collectFiles(files[i], filter, maxFiles));
+                    }
+                    i++;
                 }
             }
         }
-        return files;
+        return list;
     }
 
     /**

@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 @SmallTest
 public class LoggerTest {
 
+    private static final int MAX_FILES = 50;
     private int msgNr;
 
     @Test
@@ -55,7 +56,7 @@ public class LoggerTest {
 
         List<File> files;
 
-        files = FileUtils.collectFiles(logDir, null);
+        files = FileUtils.collectFiles(logDir, null, MAX_FILES);
         assertTrue(files.isEmpty());
 
         for (int i = 0; i < 6; i++) {
@@ -66,7 +67,7 @@ public class LoggerTest {
             Logger.cycleLogs();
         }
 
-        files = FileUtils.collectFiles(logDir, null);
+        files = FileUtils.collectFiles(logDir, null, MAX_FILES);
         // 4 files: .bak, .bak.1, .bak.2, .bak.3
         assertEquals(4, files.size());
         Logger.warn("final", files.toString());

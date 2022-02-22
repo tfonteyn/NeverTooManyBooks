@@ -119,8 +119,9 @@ public final class DebugReport {
             FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
             files.add(dbFile);
 
-            files.addAll(FileUtils.collectFiles(ServiceLocator.getUpgradesDir(), null));
-            files.addAll(FileUtils.collectFiles(ServiceLocator.getLogDir(), null));
+            // arbitrarily collect 5 and 10 files max.
+            files.addAll(FileUtils.collectFiles(ServiceLocator.getUpgradesDir(), null, 5));
+            files.addAll(FileUtils.collectFiles(ServiceLocator.getLogDir(), null, 10));
 
             // Build the attachment list
             final ArrayList<Uri> uriList = files
