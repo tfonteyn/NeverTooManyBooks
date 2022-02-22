@@ -114,6 +114,9 @@ public class UserCollection {
      */
     private static final String mFlags = "0000";
 
+    /** A "collectionContent" section consists of up to 25 book rows. */
+    private static final int COLLECTION_CONTENT_ROWS = 25;
+
     /** Responsible for loading and parsing the web page. */
     @NonNull
     private final JsoupLoader mJsoupLoader;
@@ -152,7 +155,7 @@ public class UserCollection {
     }
 
     /**
-     * Fetch a single page, with up to 25 books. Use {@link #hasMore()} to loop.
+     * Fetch a single page. Use {@link #hasMore()} to loop.
      *
      * @param context          Current context
      * @param progressListener Progress and cancellation interface
@@ -207,8 +210,8 @@ public class UserCollection {
         if (last != null) {
             try {
                 mMaxPages = Integer.parseInt(last.text());
-                // If the last page has less then 25 books, this is to high... oh well...
-                progressListener.setMaxPos(mMaxPages * 25);
+                // If the last page has less books, this is to high... oh well...
+                progressListener.setMaxPos(mMaxPages * COLLECTION_CONTENT_ROWS);
                 progressListener.setIndeterminate(false);
                 progressListener.publishProgress(0, null);
                 return;
@@ -223,7 +226,7 @@ public class UserCollection {
     }
 
     /**
-     * Parse a "collectionContent" section consisting of up to 25 book rows.
+     * Parse a "collectionContent".
      *
      * @param root of the section to parse
      *
