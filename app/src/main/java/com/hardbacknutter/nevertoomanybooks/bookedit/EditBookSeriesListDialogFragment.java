@@ -393,9 +393,9 @@ public class EditBookSeriesListDialogFragment
             mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 "BKEY_REQUEST_KEY");
+                                                 BKEY_REQUEST_KEY);
             mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
-                                             "KEY_FK_SERIES");
+                                             DBKey.FK_SERIES);
 
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
