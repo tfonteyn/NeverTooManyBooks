@@ -53,7 +53,8 @@ public class SyncWriterViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mSyncServer == null) {
-            mSyncServer = Objects.requireNonNull(args.getParcelable(SyncServer.BKEY_SITE));
+            mSyncServer = Objects.requireNonNull(args.getParcelable(SyncServer.BKEY_SITE),
+                                                 SyncServer.BKEY_SITE);
         }
     }
 
