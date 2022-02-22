@@ -45,7 +45,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
-import java.util.Objects;
 import java.util.Optional;
 
 import javax.net.ssl.SSLException;
@@ -234,8 +233,7 @@ public class CalibreHandler {
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @NonNull final MenuItem menuItem,
                                       @NonNull final DataHolder rowData) {
-        return onMenuItemSelected(context, menuItem,
-                                  Objects.requireNonNull(DataHolderUtils.getBook(rowData)));
+        return onMenuItemSelected(context, menuItem, DataHolderUtils.requireBook(rowData));
     }
 
     /**
