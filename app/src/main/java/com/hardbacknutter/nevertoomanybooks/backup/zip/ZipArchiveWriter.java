@@ -85,6 +85,8 @@ public class ZipArchiveWriter
                 return RecordEncoding.Json;
             case Cover:
                 return RecordEncoding.Cover;
+
+            case Database:
             default:
                 throw new IllegalArgumentException(recordType.toString());
         }
