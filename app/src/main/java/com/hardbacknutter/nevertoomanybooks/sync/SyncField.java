@@ -82,6 +82,11 @@ public final class SyncField
         mSyncAction = action;
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     private SyncField(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         key = in.readString();
