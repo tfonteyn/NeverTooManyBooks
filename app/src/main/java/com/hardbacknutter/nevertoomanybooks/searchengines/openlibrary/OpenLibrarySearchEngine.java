@@ -520,9 +520,11 @@ public class OpenLibrarySearchEngine
         if (a != null && !a.isEmpty()) {
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
-                final String name = element.optString("name");
-                if (!name.isEmpty()) {
-                    authors.add(Author.from(name));
+                if (element != null) {
+                    final String name = element.optString("name");
+                    if (!name.isEmpty()) {
+                        authors.add(Author.from(name));
+                    }
                 }
             }
         }
@@ -580,9 +582,11 @@ public class OpenLibrarySearchEngine
             final ArrayList<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
-                final String title = element.optString("title");
-                if (!title.isEmpty()) {
-                    toc.add(new TocEntry(authors.get(0), title));
+                if (element != null) {
+                    final String title = element.optString("title");
+                    if (!title.isEmpty()) {
+                        toc.add(new TocEntry(authors.get(0), title));
+                    }
                 }
             }
 
@@ -612,9 +616,11 @@ public class OpenLibrarySearchEngine
         final ArrayList<Publisher> publishers = new ArrayList<>();
         for (int ai = 0; ai < a.length(); ai++) {
             element = a.optJSONObject(ai);
-            final String name = element.optString("name");
-            if (!name.isEmpty()) {
-                publishers.add(Publisher.from(name));
+            if (element != null) {
+                final String name = element.optString("name");
+                if (!name.isEmpty()) {
+                    publishers.add(Publisher.from(name));
+                }
             }
         }
         if (!publishers.isEmpty()) {
