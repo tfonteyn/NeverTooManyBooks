@@ -40,17 +40,13 @@ public interface MaintenanceDao {
     void purge();
 
     /**
-     * Repopulate all OrderBy TITLE columns.
+     * Repopulate all OrderBy columns.
      * Cleans up whitespace and non-ascii characters.
-     * Optional reordering.
-     *
-     * <p>
-     * Book:     KEY_TITLE  ==> KEY_TITLE_OB
-     * TOCEntry: KEY_TITLE  ==> KEY_TITLE_OB
-     * Series:   KEY_SERIES_TITLE => KEY_SERIES_TITLE_OB
+     * Optional reordering or restoring
      *
      * @param context Current context
-     * @param reorder flag whether to reorder or not
+     * @param reorder flag {@code true} to store a reorder string,
+     *                or {@code false} to restore the original string
      */
     void rebuildOrderByTitleColumns(@NonNull Context context,
                                     boolean reorder);
