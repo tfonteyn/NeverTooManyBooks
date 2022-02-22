@@ -249,8 +249,14 @@ public class JsonRecordReader
                 //noinspection ConstantConditions
                 throw e.getCause();
 
-            } catch (@NonNull final OutOfMemoryError e) {
+            } catch (@NonNull final Error e) {
                 // wrap it. Note this is not foolproof... the app might still crash!
+
+                // StackOverflowError
+                // 2022-02-22 Never seen in live, but occasionally seen during a junit test
+                // while running with a debugger attached.
+
+                // OutOfMemoryError
                 // 2021-03-01: now using an updated/repacked org.json, version 20201115
                 // which uses the Reader directly. Theoretically this should now be fixed.
                 throw new IOException(e);
