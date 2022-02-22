@@ -203,17 +203,17 @@ public final class ImportHelper {
      */
     @NonNull
     @WorkerThread
-    public ArchiveReader createReader(@NonNull final Context context)
-            throws InvalidArchiveException,
-                   ImportException,
-                   IOException,
-                   CoverStorageException {
-        if (BuildConfig.DEBUG /* always */) {
-            if (mRecordTypes.isEmpty()) {
-                throw new IllegalStateException("mImportEntries is empty");
-            }
+    public ImportResults read(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
+            throws ImportException, InvalidArchiveException,
+                   IOException, StorageException,
+                   CredentialsException {
+
+        SanityCheck.requireValue(mRecordTypes, "mRecordTypes");
+
+        try (ArchiveReader reader = mEncoding.createReader(context, this)) {
+            return reader.read(context, progressListener);
         }
-        return mEncoding.createReader(context, this);
     }
 
     public void setRecordType(@NonNull final RecordType recordType,

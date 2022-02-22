@@ -306,6 +306,8 @@ public abstract class ArchiveWriterAbstract
      *     <li>{@link RecordType#Bookshelves}</li>
      *     <li>{@link RecordType#CalibreLibraries}</li>
      * </ul>
+     * <p>
+     * When writing, the 'compress' flag is set to {@code true}.
      *
      * @param context          Current context
      * @param recordType       of record
