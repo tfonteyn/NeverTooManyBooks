@@ -106,7 +106,13 @@ public enum RecordType {
     /**
      * Container element, which in turn can contain other records.
      */
-    AutoDetect("data");
+    AutoDetect("data"),
+
+    /**
+     * The full database file.
+     * ONLY ONE PER ARCHIVE.
+     */
+    Database("database");
 
     /** Log tag. */
     private static final String TAG = "RecordType";
@@ -116,6 +122,7 @@ public enum RecordType {
     private final String mName;
 
     /** Used to detect the archive entry name when <strong>READING</strong>. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final String mPrefix;
 
@@ -156,5 +163,13 @@ public enum RecordType {
     @NonNull
     public String getName() {
         return mName;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "RecordType{"
+               + "mName='" + mName + '\''
+               + '}';
     }
 }
