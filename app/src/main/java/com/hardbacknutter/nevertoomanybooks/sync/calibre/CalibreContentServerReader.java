@@ -252,17 +252,16 @@ public class CalibreContentServerReader
             throw new ImportException(e);
         }
 
-        final Bundle bundle = new Bundle();
-
+        final Bundle args = new Bundle();
         // the requested (or default) library
-        bundle.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
+        args.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
         // and the full list
-        bundle.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
-                                      mServer.getLibraries());
-        bundle.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
-                          mServer.isCalibreExtensionInstalled());
+        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
+                                    mServer.getLibraries());
+        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
+                        mServer.isCalibreExtensionInstalled());
 
-        return new SyncReaderMetaData(bundle);
+        return new SyncReaderMetaData(args);
     }
 
     @NonNull
