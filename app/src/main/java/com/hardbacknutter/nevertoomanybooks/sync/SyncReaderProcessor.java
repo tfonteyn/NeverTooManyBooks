@@ -77,11 +77,16 @@ public final class SyncReaderProcessor
     @NonNull
     private final Map<String, SyncField> mFields;
 
-    SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
+    private SyncReaderProcessor(@NonNull final Map<String, SyncField> fields) {
         mFields = fields;
     }
 
-    SyncReaderProcessor(@NonNull final Parcel in) {
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
+    private SyncReaderProcessor(@NonNull final Parcel in) {
         final List<SyncField> list = new ArrayList<>();
         ParcelUtils.readParcelableList(in, list, SyncField.class.getClassLoader());
 
@@ -191,7 +196,7 @@ public final class SyncReaderProcessor
      *                     Must be passed separately, as 'book' can be all-new data.
      * @param book         the local book
      * @param fieldsWanted The (subset) of fields relevant to the current book.
-     * @param incoming     the data to merge with the book
+     * @param bookData     the data to merge with the book
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
      * The book id will always be set.
@@ -202,18 +207,18 @@ public final class SyncReaderProcessor
                         final long bookId,
                         @NonNull final Book book,
                         @NonNull final Map<String, SyncField> fieldsWanted,
-                        @NonNull final Bundle incoming) {
+                        @NonNull final Bundle bookData) {
 
         // Filter the data to remove keys we don't care about
         final Collection<String> toRemove = new ArrayList<>();
-        for (final String key : incoming.keySet()) {
+        for (final String key : bookData.keySet()) {
             final SyncField field = fieldsWanted.get(key);
             if (field == null || field.getAction() == SyncAction.Skip) {
                 toRemove.add(key);
             }
         }
         for (final String key : toRemove) {
-            incoming.remove(key);
+            bookData.remove(key);
         }
 
         final Locale bookLocale = book.getLocale(context);
@@ -222,24 +227,24 @@ public final class SyncReaderProcessor
         fieldsWanted
                 .values()
                 .stream()
-                .filter(field -> incoming.containsKey(field.key))
+                .filter(field -> bookData.containsKey(field.key))
                 .forEach(field -> {
                     // Handle thumbnail specially
                     if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[0])) {
-                        processCover(book, incoming, 0);
+                        processCover(book, bookData, 0);
                     } else if (field.key.equals(Book.BKEY_TMP_FILE_SPEC[1])) {
-                        processCover(book, incoming, 1);
+                        processCover(book, bookData, 1);
                     } else {
                         switch (field.getAction()) {
                             case CopyIfBlank:
                                 // remove unneeded fields from the new data
                                 if (hasField(book, field.key)) {
-                                    incoming.remove(field.key);
+                                    bookData.remove(field.key);
                                 }
                                 break;
 
                             case Append:
-                                processList(context, book, bookLocale, incoming, field.key);
+                                processList(context, book, bookLocale, bookData, field.key);
                                 break;
 
                             case Overwrite:
@@ -250,20 +255,20 @@ public final class SyncReaderProcessor
                 });
 
         // Commit the new data
-        if (!incoming.isEmpty()) {
+        if (!bookData.isEmpty()) {
             // Get the language, if there was one requested for updating.
-            String bookLang = incoming.getString(DBKey.KEY_LANGUAGE);
+            String bookLang = bookData.getString(DBKey.KEY_LANGUAGE);
             if (bookLang == null || bookLang.isEmpty()) {
                 // Otherwise add the original one.
                 bookLang = book.getString(DBKey.KEY_LANGUAGE);
                 if (!bookLang.isEmpty()) {
-                    incoming.putString(DBKey.KEY_LANGUAGE, bookLang);
+                    bookData.putString(DBKey.KEY_LANGUAGE, bookLang);
                 }
             }
 
             //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
             // we want to commit to the existing book.
-            final Book delta = Book.from(incoming);
+            final Book delta = Book.from(bookData);
             delta.putLong(DBKey.PK_ID, bookId);
             return delta;
         }
@@ -308,10 +313,10 @@ public final class SyncReaderProcessor
     }
 
     private void processCover(@NonNull final Book book,
-                              @NonNull final Bundle incoming,
+                              @NonNull final Bundle bookData,
                               @IntRange(from = 0, to = 1) final int cIdx) {
 
-        final String fileSpec = incoming.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
         if (fileSpec != null) {
             try {
                 book.persistCover(new File(fileSpec), cIdx);
@@ -324,7 +329,7 @@ public final class SyncReaderProcessor
                                      + "|cIdx=" + cIdx);
             }
         }
-        incoming.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
+        bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
     }
 
     /**
@@ -332,17 +337,17 @@ public final class SyncReaderProcessor
      *
      * @param context    Current context
      * @param bookLocale to use
-     * @param incoming   Bundle to update
+     * @param bookData   Bundle to update
      * @param key        into the incoming data
      */
     private void processList(@NonNull final Context context,
                              @NonNull final Book book,
                              @NonNull final Locale bookLocale,
-                             @NonNull final Bundle incoming,
+                             @NonNull final Bundle bookData,
                              @NonNull final String key) {
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
-                final ArrayList<Author> list = incoming.getParcelableArrayList(key);
+                final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
                     Author.pruneList(list, context, false, bookLocale);
@@ -350,7 +355,7 @@ public final class SyncReaderProcessor
                 break;
             }
             case Book.BKEY_SERIES_LIST: {
-                final ArrayList<Series> list = incoming.getParcelableArrayList(key);
+                final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
                     Series.pruneList(list, context, false, bookLocale);
@@ -358,7 +363,7 @@ public final class SyncReaderProcessor
                 break;
             }
             case Book.BKEY_PUBLISHER_LIST: {
-                final ArrayList<Publisher> list = incoming.getParcelableArrayList(key);
+                final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
                     Publisher.pruneList(list, context, false, bookLocale);
@@ -366,7 +371,7 @@ public final class SyncReaderProcessor
                 break;
             }
             case Book.BKEY_TOC_LIST: {
-                final ArrayList<TocEntry> list = incoming.getParcelableArrayList(key);
+                final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
                     TocEntry.pruneList(list, context, false, bookLocale);
@@ -374,7 +379,7 @@ public final class SyncReaderProcessor
                 break;
             }
             case Book.BKEY_BOOKSHELF_LIST: {
-                final ArrayList<Bookshelf> list = incoming.getParcelableArrayList(key);
+                final ArrayList<Bookshelf> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
                     Bookshelf.pruneList(list);
