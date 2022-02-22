@@ -30,7 +30,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
@@ -105,6 +105,14 @@ public class JsonArchiveWriter
 
             final ExportResults results;
 
+            final Set<RecordType> exportEntities = mHelper.getRecordTypes();
+            // If we're doing books, then we MUST do Bookshelves
+            // (and optional Calibre libraries)
+            if (exportEntities.contains(RecordType.Books)) {
+                exportEntities.add(RecordType.Bookshelves);
+                exportEntities.add(RecordType.CalibreLibraries);
+            }
+
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
@@ -119,13 +127,7 @@ public class JsonArchiveWriter
                 bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
 
                 // 3. the actual data inside the container
-                recordWriter.write(context, bw, EnumSet.of(RecordType.Bookshelves),
-                                   progressListener);
-                recordWriter.write(context, bw, EnumSet.of(RecordType.CalibreLibraries),
-                                   progressListener);
-
-                results = recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
-                                             progressListener);
+                results = recordWriter.write(context, bw, exportEntities, progressListener);
 
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
