@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
@@ -59,6 +58,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
+ * <p>
+ * There is a <strong>strict order</strong> of the entries:
+ * <ol>
+ *     <li>{@link RecordType#MetaData}</li>
+ *     <li>{@link RecordType#Styles}</li
+ *     <li>{@link RecordType#Preferences}</li>
+ *     <li>{@link RecordType#Certificates}</li>
+ *     <li>{@link RecordType#Bookshelves}</li>
+ *     <li>{@link RecordType#CalibreLibraries}</li>
+ *     <li>{@link RecordType#Books}</li>
+ *     <li>{@link RecordType#Cover}</li>
+ * </ol>
  * <p>
  * The {@link #write(Context, ProgressListener)} method executes the interface method flow.
  * <p>
@@ -131,22 +142,13 @@ public abstract class ArchiveWriterAbstract
 
         final Set<RecordType> exportEntities = mHelper.getRecordTypes();
 
-        // If we're doing books, then we MUST first do Bookshelves
-        // (and optionally Calibre libraries)
+        // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
         if (exportEntities.contains(RecordType.Books)) {
             exportEntities.add(RecordType.Bookshelves);
             exportEntities.add(RecordType.CalibreLibraries);
         }
 
-        final boolean writeCovers = this instanceof SupportsCovers
-                                    && exportEntities.contains(RecordType.Cover);
-
-        final LocalDateTime dateSince;
-        if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullBackupDate();
-        } else {
-            dateSince = null;
-        }
+        final LocalDateTime dateSince = mHelper.getLastDone();
 
         try {
             int steps = ServiceLocator.getInstance().getBookDao().countBooksForExport(dateSince);
@@ -155,6 +157,8 @@ public abstract class ArchiveWriterAbstract
                 return mResults;
             }
 
+            final boolean writeCovers = this instanceof SupportsCovers
+                                        && exportEntities.contains(RecordType.Cover);
             if (writeCovers) {
                 // assume 1 book == 1 cover
                 steps = 2 * steps;
@@ -189,13 +193,12 @@ public abstract class ArchiveWriterAbstract
                                                       RecordType.CalibreLibraries);
             for (final RecordType type : typeList) {
                 if (!progressListener.isCancelled() && exportEntities.contains(type)) {
-                    writeRecord(context, type, progressListener);
+                    mResults.add(writeRecord(context, type, progressListener));
                 }
             }
 
             // Add the previously generated books file.
-            if (!progressListener.isCancelled()
-                && tmpBooksFile != null) {
+            if (!progressListener.isCancelled() && tmpBooksFile != null) {
                 try {
                     putFile(RecordType.Books.getName() + getEncoding(RecordType.Books).getFileExt(),
                             tmpBooksFile, true);
@@ -206,7 +209,7 @@ public abstract class ArchiveWriterAbstract
             }
 
             // Always do the covers as the last step
-            if (!progressListener.isCancelled() && writeCovers && mResults.getCoverCount() > 0) {
+            if (!progressListener.isCancelled() && writeCovers && mResults.has(RecordType.Cover)) {
                 ((SupportsCovers) this).writeCovers(context, progressListener);
             }
 
@@ -220,9 +223,7 @@ public abstract class ArchiveWriterAbstract
         }
 
         // If the backup was a full backup remember that.
-        if (!mHelper.isIncremental()) {
-            Backup.setLastFullBackupDate();
-        }
+        mHelper.setLastDone();
 
         return mResults;
     }
@@ -310,12 +311,15 @@ public abstract class ArchiveWriterAbstract
      * @param recordType       of record
      * @param progressListener Listener to receive progress information.
      *
+     * @return a new {@link ExportResults} object
+     *
      * @throws ExportException on a decoding/parsing of data issue
      * @throws IOException     on failure
      */
-    private void writeRecord(@NonNull final Context context,
-                             @NonNull final RecordType recordType,
-                             @NonNull final ProgressListener progressListener)
+    @NonNull
+    private ExportResults writeRecord(@NonNull final Context context,
+                                      @NonNull final RecordType recordType,
+                                      @NonNull final ProgressListener progressListener)
             throws ExportException, IOException {
 
         final RecordEncoding encoding = getEncoding(recordType);
@@ -332,8 +336,9 @@ public abstract class ArchiveWriterAbstract
         // Only copy the result/output if we actually wrote something
         if (results.has(recordType)) {
             putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
-            mResults.add(results);
         }
+
+        return results;
     }
 
     /**

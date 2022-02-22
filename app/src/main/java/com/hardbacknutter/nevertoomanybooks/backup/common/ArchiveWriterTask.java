@@ -22,11 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.backup.common;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
@@ -46,7 +45,6 @@ public class ArchiveWriterTask
     private static final String TAG = "ArchiveWriterTask";
 
     /** export configuration. */
-    @Nullable
     private ExportHelper mHelper;
 
     public ArchiveWriterTask() {
@@ -58,6 +56,7 @@ public class ArchiveWriterTask
      *
      * @param exportHelper with uri/options
      */
+    @UiThread
     public void start(@NonNull final ExportHelper exportHelper) {
         mHelper = exportHelper;
         execute();
@@ -68,28 +67,6 @@ public class ArchiveWriterTask
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
             throws ExportException, IOException, StorageException {
-
-        ExportResults results = null;
-        //noinspection ConstantConditions
-        try (ArchiveWriter writer = mHelper.createWriter(context)) {
-            results = writer.write(context, this);
-
-        } catch (@NonNull final IOException e) {
-            // The zip archiver (maybe others as well?) can throw an IOException
-            // when the user cancels, so only throw when this is not the case
-            if (!isCancelled()) {
-                // it's a real exception, cleanup and let the caller handle it.
-                mHelper.onError(context);
-                throw e;
-            }
-        }
-
-        if (isCancelled()) {
-            mHelper.onError(context);
-            return new ExportResults();
-        } else {
-            mHelper.onSuccess(context);
-            return Objects.requireNonNull(results, "exportResults");
-        }
+        return mHelper.write(context, this);
     }
 }

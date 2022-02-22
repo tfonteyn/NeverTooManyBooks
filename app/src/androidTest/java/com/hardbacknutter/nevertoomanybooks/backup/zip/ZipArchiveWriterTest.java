@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.zip;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.test.filters.MediumTest;
 
 import java.io.File;
@@ -41,8 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -85,6 +84,8 @@ public class ZipArchiveWriterTest
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
+        final Uri uri = Uri.fromFile(file);
+
         final ExportResults exportResults;
 
         // Full backup except covers.
@@ -95,13 +96,9 @@ public class ZipArchiveWriterTest
                 RecordType.Certificates,
                 RecordType.Styles);
         exportHelper.setEncoding(ArchiveEncoding.Zip);
-        exportHelper.setUri(Uri.fromFile(file));
+        exportHelper.setUri(uri);
 
-        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
-        }
-        // assume success; a failure would have thrown an exception
-        exportHelper.onSuccess(context);
+        exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
@@ -111,25 +108,33 @@ public class ZipArchiveWriterTest
 
         final long exportCount = exportResults.getBookCount();
 
-        final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        importHelper.setRecordType(RecordType.Books, true);
+        read(uri, exportCount);
+    }
 
+    private void read(@NonNull final Uri uri,
+                      final long expectedNrOfBooks)
+            throws InvalidArchiveException, ImportException, IOException,
+                   StorageException, CredentialsException {
+
+        final Context context = ServiceLocator.getLocalizedAppContext();
+
+        final ImportHelper importHelper = ImportHelper.newInstance(context, uri);
         // The default, fail if the default was changed without changing this test!
         assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
 
-        final ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createReader(context)) {
+        importHelper.setRecordType(RecordType.Books, true);
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNotNull(archiveMetaData);
+        final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
+        assertNotNull(archiveMetaData);
+        assertEquals(mBookInDb, archiveMetaData.getBookCount());
+        assertEquals(0, archiveMetaData.getCoverCount());
 
-            assertEquals(mBookInDb, archiveMetaData.getBookCount());
-            assertEquals(0, archiveMetaData.getCoverCount());
+        final ImportResults importResults = importHelper.read(context, new TestProgressListener(
+                TAG + ":header"));
+        assertNotNull(importResults);
 
-            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
-        }
         // booksProcessed is updated for each imported book record
-        assertEquals(exportCount, importResults.booksProcessed);
+        assertEquals(expectedNrOfBooks, importResults.booksProcessed);
 
         // ImportHelper.Updates.OnlyNewer ... so we don't actually import anything
         assertEquals(0, importResults.booksCreated);

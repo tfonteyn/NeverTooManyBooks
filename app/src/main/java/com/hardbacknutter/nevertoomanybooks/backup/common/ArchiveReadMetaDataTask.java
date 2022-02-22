@@ -68,9 +68,6 @@ public class ArchiveReadMetaDataTask
     protected ArchiveMetaData doWork(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException,
                    StorageException {
-
-        try (ArchiveReader reader = mHelper.createReader(context)) {
-            return reader.readMetaData(context);
-        }
+        return mHelper.readMetaData(context);
     }
 }

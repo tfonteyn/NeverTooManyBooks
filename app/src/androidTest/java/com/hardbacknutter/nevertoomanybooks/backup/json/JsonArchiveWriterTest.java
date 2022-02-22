@@ -42,8 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -56,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @MediumTest
@@ -98,11 +97,7 @@ public class JsonArchiveWriterTest
         exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
-        }
-        // assume success; a failure would have thrown an exception
-        exportHelper.onSuccess(context);
+        exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(0, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
@@ -111,16 +106,17 @@ public class JsonArchiveWriterTest
         assertFalse(exportResults.database);
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        final ImportResults importResults;
+        // The default, fail if the default was changed without changing this test!
+        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
 
         importHelper.setRecordType(RecordType.Styles, true);
-        try (ArchiveReader reader = importHelper.createReader(context)) {
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNull(archiveMetaData);
+        final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
+        assertNull(archiveMetaData);
 
-            importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
-        }
+        final ImportResults importResults = importHelper
+                .read(context, new TestProgressListener(TAG + ":import"));
+        assertNotNull(importResults);
         assertEquals(exportResults.styles, importResults.styles);
     }
 
@@ -141,26 +137,22 @@ public class JsonArchiveWriterTest
         final ExportHelper exportHelper = new ExportHelper(
                 RecordType.MetaData,
                 RecordType.Books
-//                ,
-//                // write out styles/prefs just to have them in the output file.
-//                // No further tests with them in this method.
-//                RecordType.Preferences,
-//                RecordType.Styles
+                ,
+                // write out styles/prefs just to have them in the output file.
+                // No further tests with them in this method.
+                RecordType.Preferences,
+                RecordType.Styles
         );
 
         exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
-        }
-        // assume success; a failure would have thrown an exception
-        exportHelper.onSuccess(context);
+        exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
-//        assertEquals(1, exportResults.preferences);
-//        assertEquals(mNrOfStyles, exportResults.styles);
+        assertEquals(1, exportResults.preferences);
+        assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         // Now modify/delete some books. We have at least 10 books to play with
@@ -178,17 +170,18 @@ public class JsonArchiveWriterTest
         bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
+        // The default, fail if the default was changed without changing this test!
+        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
+
         importHelper.setRecordType(RecordType.Books, true);
         importHelper.setUpdateOption(ImportHelper.Updates.Skip);
 
-        ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createReader(context)) {
+        ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
+        assertNull(archiveMetaData);
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNull(archiveMetaData);
-
-            importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
-        }
+        ImportResults importResults = importHelper
+                .read(context, new TestProgressListener(TAG + ":import"));
+        assertNotNull(importResults);
         assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
         // we re-created the deleted book
@@ -202,13 +195,11 @@ public class JsonArchiveWriterTest
         importHelper.setRecordType(RecordType.Books, true);
         importHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
 
-        try (ArchiveReader reader = importHelper.createReader(context)) {
+        archiveMetaData = importHelper.readMetaData(context);
+        assertNull(archiveMetaData);
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNull(archiveMetaData);
-
-            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
-        }
+        importResults = importHelper.read(context, new TestProgressListener(TAG + ":header"));
+        assertNotNull(importResults);
         assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
 

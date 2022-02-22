@@ -36,9 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
@@ -78,12 +76,7 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws ExportException, IOException {
 
-        final LocalDateTime dateSince;
-        if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullExportDate(ArchiveEncoding.Csv);
-        } else {
-            dateSince = null;
-        }
+        final LocalDateTime dateSince = mHelper.getLastDone();
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(dateSince);
@@ -103,9 +96,8 @@ public class CsvArchiveWriter
             }
 
             // If the backup was a full backup remember that.
-            if (!mHelper.isIncremental()) {
-                Backup.setLastFullExportDate(ArchiveEncoding.Csv);
-            }
+            mHelper.setLastDone();
+
             return results;
         } else {
             return new ExportResults();

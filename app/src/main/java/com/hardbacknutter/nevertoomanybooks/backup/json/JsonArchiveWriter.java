@@ -36,10 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
@@ -52,8 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  *          <ul>
  *              <li>{@link RecordType#AutoDetect}, which contains:
  *                  <ul>
- *                      <li>{@link RecordType#Books}</li>
- *                      <li>future expansion</li>
+ *                      <li>list of {@link RecordType}</li>
  *                  </ul>
  *              </li>
  *              <li>{@link RecordType#MetaData}</li>
@@ -90,12 +87,7 @@ public class JsonArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws ExportException, IOException {
 
-        final LocalDateTime dateSince;
-        if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullExportDate(ArchiveEncoding.Json);
-        } else {
-            dateSince = null;
-        }
+        final LocalDateTime dateSince = mHelper.getLastDone();
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(dateSince);
@@ -106,8 +98,7 @@ public class JsonArchiveWriter
             final ExportResults results;
 
             final Set<RecordType> exportEntities = mHelper.getRecordTypes();
-            // If we're doing books, then we MUST do Bookshelves
-            // (and optional Calibre libraries)
+            // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
             if (exportEntities.contains(RecordType.Books)) {
                 exportEntities.add(RecordType.Bookshelves);
                 exportEntities.add(RecordType.CalibreLibraries);
@@ -123,6 +114,7 @@ public class JsonArchiveWriter
                 bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
                 // add the archive version at the top to facilitate parsing
                 bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + getVersion());
+
                 // 2. container object
                 bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
 
@@ -133,14 +125,14 @@ public class JsonArchiveWriter
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
                 recordWriter.writeMetaData(bw, ArchiveMetaData
                         .create(context, getVersion(), results));
+
                 // 5. close the envelope
                 bw.write("}}");
             }
 
             // If the backup was a full backup remember that.
-            if (!mHelper.isIncremental()) {
-                Backup.setLastFullExportDate(ArchiveEncoding.Json);
-            }
+            mHelper.setLastDone();
+
             return results;
         } else {
             return new ExportResults();

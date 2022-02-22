@@ -34,13 +34,16 @@ import java.util.Set;
 
 import javax.net.ssl.SSLException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public final class ImportHelper {
 
@@ -169,11 +172,29 @@ public final class ImportHelper {
     }
 
     /**
-     * Create an {@link ArchiveReader} based on the type.
+     * Perform a read of the meta data.
      *
      * @param context Current context
      *
-     * @return a new reader
+     * @throws InvalidArchiveException on failure to produce a supported reader
+     * @throws ImportException         on a decoding/parsing of data issue
+     * @throws IOException             on other failures
+     * @throws SSLException            on secure connection failures
+     */
+    @Nullable
+    public ArchiveMetaData readMetaData(@NonNull final Context context)
+            throws InvalidArchiveException, ImportException, IOException,
+                   StorageException {
+
+        try (ArchiveReader reader = mEncoding.createReader(context, this)) {
+            return reader.readMetaData(context);
+        }
+    }
+
+    /**
+     * Perform a full read.
+     *
+     * @param context Current context
      *
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws ImportException         on a decoding/parsing of data issue

@@ -20,11 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,22 +35,35 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Writes to a temporary file in the internal cache first.
  */
 public class ExportHelper {
 
+    /** Number of app startup's between offers to backup. */
+    public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
+    /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
+    public static final String PK_BACKUP_COUNTDOWN = "startup.backupCountdown";
+    /** Last full backup/export date. */
+    private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** Log tag. */
     private static final String TAG = "ExportHelper";
 
@@ -110,7 +125,7 @@ public class ExportHelper {
 
     @NonNull
     public Uri getUri() {
-        return Objects.requireNonNull(mUri, "mFileUri");
+        return Objects.requireNonNull(mUri, "mUri");
     }
 
     public void setUri(@NonNull final Uri uri) {
@@ -140,30 +155,93 @@ public class ExportHelper {
         mIncremental = incremental;
     }
 
-
     /**
-     * Create an {@link ArchiveWriter} based on the type.
+     * Get the last time we made a full export in the currently set encoding.
      *
-     * @param context Current context
-     *
-     * @return a new writer
+     * @return LocalDateTime(ZoneOffset.UTC), or {@code null} if not set
      */
-    @NonNull
-    public ArchiveWriter createWriter(@NonNull final Context context)
-            throws FileNotFoundException {
-        if (BuildConfig.DEBUG /* always */) {
-            Objects.requireNonNull(mUri, "uri");
-            if (mRecordTypes.isEmpty()) {
-                throw new IllegalStateException("mExportEntries.isEmpty()");
+    @Nullable
+    public LocalDateTime getLastDone() {
+        if (mIncremental) {
+            final String key;
+            if (mEncoding == ArchiveEncoding.Zip) {
+                // backwards compatibility
+                key = PREF_LAST_FULL_BACKUP_DATE;
+            } else {
+                key = PREF_LAST_FULL_BACKUP_DATE + mEncoding.getFileExt();
+            }
+
+            final String lastDone = ServiceLocator.getGlobalPreferences().getString(key, null);
+            if (lastDone != null && !lastDone.isEmpty()) {
+                return new ISODateParser().parse(lastDone);
             }
         }
-        return mEncoding.createWriter(context, this);
+        return null;
     }
 
     /**
+     * Store the LocalDateTime(ZoneOffset.UTC) of the last full backup/export
+     * in the given encoding.
+     */
+    public void setLastDone() {
+        if (!mIncremental) {
+            final String date = LocalDateTime.now(ZoneOffset.UTC)
+                                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            final SharedPreferences.Editor editor = ServiceLocator.getGlobalPreferences()
+                                                                  .edit();
+            if (mEncoding == ArchiveEncoding.Zip) {
+                // backwards compatibility
+                editor.putString(PREF_LAST_FULL_BACKUP_DATE, date)
+                      // reset the startup prompt-counter.
+                      .putInt(PK_BACKUP_COUNTDOWN, BACKUP_COUNTDOWN_DEFAULT);
+            } else {
+                editor.putString(PREF_LAST_FULL_BACKUP_DATE + mEncoding.getFileExt(), date);
+            }
+            editor.apply();
+        }
+    }
+
+    @NonNull
+    @WorkerThread
+    public ExportResults write(@NonNull final Context context,
+                               @NonNull final ProgressListener progressListener)
+            throws ExportException, IOException, StorageException {
+
+        Objects.requireNonNull(mUri, "mUri");
+        SanityCheck.requireValue(mRecordTypes, "mExportEntries");
+
+        final ExportResults results = new ExportResults();
+
+        try (ArchiveWriter writer = mEncoding.createWriter(context, this)) {
+            results.add(writer.write(context, progressListener));
+        } catch (@NonNull final IOException e) {
+            // The zip archiver (maybe others as well?) can throw an IOException
+            // when the user cancels, so only throw when this is not the case
+            if (!progressListener.isCancelled()) {
+                FileUtils.delete(getTempFile(context));
+                throw e;
+            }
+        }
+
+        if (!progressListener.isCancelled()) {
+            // The output file is now properly closed, export it to the user Uri
+            final File tmpOutput = getTempFile(context);
+            try (InputStream is = new FileInputStream(tmpOutput);
+                 OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
+                if (os != null) {
+                    FileUtils.copy(is, os);
+                }
+            }
+        }
+
+        FileUtils.delete(getTempFile(context));
+        return results;
+    }
+
+
+    /**
      * Create/get the OutputStream to write to.
-     * When writing is done (success <strong>and</strong> failure),
-     * {@link #onSuccess} / {@link #onError} must be called as needed.
      *
      * @param context Current context
      *
@@ -175,41 +253,6 @@ public class ExportHelper {
     public FileOutputStream createOutputStream(@NonNull final Context context)
             throws FileNotFoundException {
         return new FileOutputStream(getTempFile(context));
-    }
-
-    /**
-     * Should be called after a successful write.
-     *
-     * @param context Current context
-     *
-     * @throws IOException on failure to write to the destination Uri
-     */
-    public void onSuccess(@NonNull final Context context)
-            throws IOException {
-        Objects.requireNonNull(mUri, "uri");
-
-        // The output file is now properly closed, export it to the user Uri
-        final File tmpOutput = getTempFile(context);
-
-        try (InputStream is = new FileInputStream(tmpOutput);
-             OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
-            if (os != null) {
-                FileUtils.copy(is, os);
-            }
-        }
-
-        // cleanup
-        FileUtils.delete(tmpOutput);
-    }
-
-    /**
-     * Should be called after a failed write.
-     *
-     * @param context Current context
-     */
-    public void onError(@NonNull final Context context) {
-        // cleanup
-        FileUtils.delete(getTempFile(context));
     }
 
     private File getTempFile(@NonNull final Context context) {

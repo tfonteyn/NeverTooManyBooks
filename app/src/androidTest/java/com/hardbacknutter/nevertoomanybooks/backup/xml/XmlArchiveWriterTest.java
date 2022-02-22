@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -81,11 +80,7 @@ public class XmlArchiveWriterTest
         exportHelper.setEncoding(ArchiveEncoding.Xml);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
-        }
-        // assume success; a failure would have thrown an exception
-        exportHelper.onSuccess(context);
+        exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());

@@ -48,8 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -62,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @MediumTest
@@ -99,11 +98,7 @@ public class CsvArchiveWriterTest
         exportHelper.setEncoding(ArchiveEncoding.Csv);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.createWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
-        }
-        // assume success; a failure would have thrown an exception
-        exportHelper.onSuccess(context);
+        exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
 
         assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
@@ -140,18 +135,18 @@ public class CsvArchiveWriterTest
         bookDao.update(context, book, 0);
 
         final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
-        importHelper.setRecordType(RecordType.Books, true);
+        // The default, fail if the default was changed without changing this test!
+        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
 
+        importHelper.setRecordType(RecordType.Books, true);
         importHelper.setUpdateOption(ImportHelper.Updates.Skip);
 
-        ImportResults importResults;
-        try (ArchiveReader reader = importHelper.createReader(context)) {
+        ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
+        assertNull(archiveMetaData);
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNull(archiveMetaData);
-
-            importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
-        }
+        ImportResults importResults = importHelper
+                .read(context, new TestProgressListener(TAG + ":import"));
+        assertNotNull(importResults);
         assertEquals(exportCount, importResults.booksProcessed);
 
         // we re-created the deleted book
@@ -164,13 +159,12 @@ public class CsvArchiveWriterTest
 
         importHelper.setRecordType(RecordType.Books, true);
         importHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
-        try (ArchiveReader reader = importHelper.createReader(context)) {
 
-            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
-            assertNull(archiveMetaData);
+        archiveMetaData = importHelper.readMetaData(context);
+        assertNull(archiveMetaData);
 
-            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
-        }
+        importResults = importHelper.read(context, new TestProgressListener(TAG + ":header"));
+        assertNotNull(importResults);
         assertEquals(exportCount, importResults.booksProcessed);
 
 

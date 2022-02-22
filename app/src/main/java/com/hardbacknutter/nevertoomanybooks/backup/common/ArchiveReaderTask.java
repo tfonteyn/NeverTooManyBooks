@@ -70,9 +70,6 @@ public class ArchiveReaderTask
             throws InvalidArchiveException, ImportException,
                    IOException, StorageException,
                    CredentialsException {
-
-        try (ArchiveReader reader = mHelper.createReader(context)) {
-            return reader.read(context, this);
-        }
+        return mHelper.read(context, this);
     }
 }
