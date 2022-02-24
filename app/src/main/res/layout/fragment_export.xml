@@ -130,8 +130,10 @@
     <TextView
         android:id="@+id/archive_format_info"
         style="@style/Text.Body.Small"
+        android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_format_xml_info"
