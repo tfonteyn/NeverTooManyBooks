@@ -154,9 +154,8 @@ public class CoverBrowserDialogFragment
         mVm.onSearchEditionsTaskCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
         // the task throws no exceptions; but paranoia... dismiss silently is fine
         mVm.onSearchEditionsTaskFailure().observe(getViewLifecycleOwner(), message -> dismiss());
-        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), message -> {
-            message.getData().ifPresent(data -> showGallery(data.getResult()));
-        });
+        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), message
+                -> message.getData().ifPresent(data -> showGallery(data.getResult())));
 
         mVm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
         mPreviewLoader = new ImageViewLoader(mVm.getPreviewDisplayExecutor(),
