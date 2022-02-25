@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -167,13 +168,15 @@ public class ExportHelper
         }
     }
 
-    @NonNull
     @WorkerThread
+    @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws ExportException,
                    IOException,
-                   StorageException {
+                   StorageException,
+                   CertificateException {
 
         Objects.requireNonNull(mUri, "mUri");
 

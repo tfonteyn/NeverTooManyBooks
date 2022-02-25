@@ -19,11 +19,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.common;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
+
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+
+import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class ExporterBase<RESULTS> {
 
@@ -74,6 +83,15 @@ public abstract class ExporterBase<RESULTS> {
     public void setIncremental(final boolean incremental) {
         mIncremental = incremental;
     }
+
+    @NonNull
+    @WorkerThread
+    public abstract RESULTS write(@NonNull Context context,
+                                  @NonNull ProgressListener progressListener)
+            throws ExportException,
+                   IOException,
+                   StorageException,
+                   CertificateException;
 
     @Override
     @NonNull

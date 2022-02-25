@@ -84,12 +84,12 @@ public class SyncWriterHelper
 
     @NonNull
     @WorkerThread
-    protected SyncWriterResults write(@NonNull final Context context,
-                                      @NonNull final ProgressListener progressListener)
+    public SyncWriterResults write(@NonNull final Context context,
+                                   @NonNull final ProgressListener progressListener)
             throws ExportException,
                    IOException,
-                   CertificateException,
-                   StorageException {
+                   StorageException,
+                   CertificateException {
 
         Objects.requireNonNull(mSyncServer, "mSyncServer");
 

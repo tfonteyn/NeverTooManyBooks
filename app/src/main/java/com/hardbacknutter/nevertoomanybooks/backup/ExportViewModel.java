@@ -31,7 +31,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriterTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
@@ -54,7 +54,7 @@ public class ExportViewModel
     @NonNull
     private final ExportHelper mHelper = new ExportHelper();
     @NonNull
-    private final ArchiveWriterTask mWriterTask = new ArchiveWriterTask();
+    private final DataWriterTask<ExportResults> mWriterTask = new DataWriterTask<>();
 
     /** UI helper. */
     private boolean mQuickOptionsAlreadyShown;

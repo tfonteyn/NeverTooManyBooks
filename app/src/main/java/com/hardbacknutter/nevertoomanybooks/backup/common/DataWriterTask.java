@@ -17,11 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.sync;
+package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -32,37 +33,36 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-public class SyncWriterTask
-        extends MTask<SyncWriterResults> {
+public class DataWriterTask<RESULTS>
+        extends MTask<RESULTS> {
 
-    /** Log tag. */
-    private static final String TAG = "SyncWriterTask";
+    private static final String TAG = "DataWriterTask";
 
-    /** export configuration. */
-    private SyncWriterHelper mHelper;
+    private ExporterBase<RESULTS> mHelper;
 
-    public SyncWriterTask() {
+    public DataWriterTask() {
         super(R.id.TASK_ID_EXPORT, TAG);
     }
 
     /**
      * Start the task.
      *
-     * @param syncWriterHelper configuration
+     * @param exportHelper configuration
      */
-    public void start(@NonNull final SyncWriterHelper syncWriterHelper) {
-        mHelper = syncWriterHelper;
+    @UiThread
+    public void start(@NonNull final ExporterBase<RESULTS> exportHelper) {
+        mHelper = exportHelper;
         execute();
     }
 
-    @NonNull
     @Override
     @WorkerThread
-    protected SyncWriterResults doWork(@NonNull final Context context)
+    @NonNull
+    protected RESULTS doWork(@NonNull final Context context)
             throws ExportException,
                    IOException,
-                   CertificateException,
-                   StorageException {
+                   StorageException,
+                   CertificateException {
 
         return mHelper.write(context, this);
     }

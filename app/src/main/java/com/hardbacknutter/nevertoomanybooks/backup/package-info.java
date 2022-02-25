@@ -25,7 +25,7 @@
  * of the given archive.
  * <p>
  * The ExportHelper is passed to:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriterTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask}
  * The task gets an writer from the ExportHelper, and delegates the job to it:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter}
  * <p>

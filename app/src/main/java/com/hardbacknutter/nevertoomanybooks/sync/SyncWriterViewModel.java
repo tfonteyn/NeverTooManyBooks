@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
@@ -37,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public class SyncWriterViewModel
         extends ViewModel {
 
-    private final SyncWriterTask mWriterTask = new SyncWriterTask();
+    private final DataWriterTask<SyncWriterResults> mWriterTask = new DataWriterTask<>();
     private SyncWriterHelper mHelper;
 
     /** UI helper. */

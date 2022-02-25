@@ -26,6 +26,7 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, ExportException, StorageException {
+            throws IOException, ExportException, StorageException, CertificateException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");
