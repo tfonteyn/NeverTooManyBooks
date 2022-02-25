@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,18 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <plurals name="displaying_n_books">
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="displaying_n_books" tools:ignore="MissingQuantity">
         <item quantity="one">Affichage de %1$d livre</item>
         <item quantity="other">Affichage de %1$d livres</item>
     </plurals>
 
-    <plurals name="n_books_found">
+    <plurals name="n_books_found" tools:ignore="MissingQuantity">
         <item quantity="one">%1$d livre trouvé</item>
         <item quantity="other">%1$d livres trouvés</item>
     </plurals>
 
-    <plurals name="n_stars">
+    <plurals name="n_stars" tools:ignore="MissingQuantity">
         <item quantity="one">%1$s étoile</item>
         <item quantity="other">%1$s étoiles</item>
     </plurals>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -19,20 +19,20 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <plurals name="displaying_n_books">
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <plurals name="displaying_n_books" tools:ignore="MissingQuantity">
         <item quantity="one">Zobrazuji %1$d knihu</item>
         <item quantity="few">Zobrazuji %1$d knihy</item>
         <item quantity="other">Zobrazeno %1$d knih</item>
     </plurals>
 
-    <plurals name="n_books_found">
+    <plurals name="n_books_found" tools:ignore="MissingQuantity">
         <item quantity="one">Nalezena %1$d kniha</item>
         <item quantity="few">Nalezeno %1$d knih</item>
         <item quantity="other">Nalezeno %1$d knih</item>
     </plurals>
 
-    <plurals name="n_stars">
+    <plurals name="n_stars" tools:ignore="MissingQuantity">
         <item quantity="one">%1$s hvězda</item>
         <item quantity="few">%1$s hvězdičky</item>
         <item quantity="other">%1$s hvězd</item>

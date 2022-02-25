@@ -258,8 +258,7 @@
 
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_contact">Contact:</string>
-    <!-- URL on the 'about' screen -->
-    <string name="lbl_sourcecode_url">github</string>
+
 
     <!-- Shown in the heading of booklist. -->
     <string name="txt_displaying_n_books_in_m_entries">Displaying %1$d books, in %2$d entries</string>
