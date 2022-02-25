@@ -118,7 +118,7 @@ public class JsonRecordWriter
                               @NonNull final ArchiveMetaData metaData)
             throws ExportException, IOException {
         try {
-            writer.write(new BundleCoder().encode(metaData.getBundle()).toString());
+            writer.write(new BundleCoder().encode(metaData.getData()).toString());
         } catch (@NonNull final JSONException e) {
             throw new ExportException(e);
         }

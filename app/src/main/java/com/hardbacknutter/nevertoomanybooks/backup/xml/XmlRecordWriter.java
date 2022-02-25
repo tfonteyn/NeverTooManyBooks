@@ -115,7 +115,7 @@ public class XmlRecordWriter
                               @NonNull final ArchiveMetaData metaData)
             throws IOException {
 
-        final Bundle bundle = metaData.getBundle();
+        final Bundle bundle = metaData.getData();
         final StringBuilder sb = new StringBuilder();
         sb.append("<").append(RecordType.MetaData.getName()).append(">\n");
         for (final String name : bundle.keySet()) {

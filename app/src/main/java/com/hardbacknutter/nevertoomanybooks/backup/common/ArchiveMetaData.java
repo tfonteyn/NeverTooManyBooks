@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 /**
  * Class to encapsulate the INFO block from an archive.
  */
-public class ArchiveMetaData {
+public class ArchiveMetaData
+        extends BasicMetaData {
 
     /** Version of archiver used to write this archive. */
     public static final String INFO_ARCHIVER_VERSION = "ArchVersion";
@@ -54,14 +55,7 @@ public class ArchiveMetaData {
     /** Stores the database version. */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
-    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
-    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
-
     private static final String ERROR_MISSING_VERSION_INFORMATION = "Missing version information";
-
-    /** Bundle retrieved from the archive for this instance. */
-    @NonNull
-    private final Bundle mInfo;
 
     /**
      * Constructor used while reading from an Archive.
@@ -69,8 +63,8 @@ public class ArchiveMetaData {
      * The bundle is passed in to allow an Archive reader to construct it
      * at runtime + to allow testing.
      */
-    public ArchiveMetaData(@NonNull final Bundle from) {
-        mInfo = from;
+    public ArchiveMetaData(@NonNull final Bundle args) {
+        super(args);
     }
 
     /**
@@ -78,44 +72,37 @@ public class ArchiveMetaData {
      *
      * @param context Current context
      * @param version of the archive structure
-     * @param data    to add to the header bundle
+     * @param result  to add to the header bundle
      */
     @NonNull
     public static ArchiveMetaData create(@NonNull final Context context,
                                          final int version,
-                                         @NonNull final ExportResults data) {
+                                         @NonNull final ExportResults result) {
 
         final ArchiveMetaData metaData = new ArchiveMetaData(new Bundle());
+
+        final Bundle data = metaData.getData();
+
         // Pure info/debug information
-        metaData.mInfo.putInt(INFO_ARCHIVER_VERSION, version);
-        metaData.mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
+        data.putInt(INFO_ARCHIVER_VERSION, version);
+        data.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
 
         final PackageInfoWrapper info = PackageInfoWrapper.create(context);
-        metaData.mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
-        metaData.mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());
-        metaData.mInfo.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
-        metaData.mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
+        data.putString(INFO_APP_PACKAGE, info.getPackageName());
+        data.putString(INFO_APP_VERSION_NAME, info.getVersionName());
+        data.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
+        data.putInt(INFO_SDK, Build.VERSION.SDK_INT);
 
         // the actual data the user will care about
-        metaData.mInfo.putString(INFO_CREATED_DATE, LocalDateTime.now().format(
+        data.putString(INFO_CREATED_DATE, LocalDateTime.now().format(
                 DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        if (data.getBookCount() > 0) {
-            metaData.mInfo.putInt(INFO_NUMBER_OF_BOOKS, data.getBookCount());
+        if (result.getBookCount() > 0) {
+            data.putInt(INFO_NUMBER_OF_BOOKS, result.getBookCount());
         }
-        if (data.getCoverCount() > 0) {
-            metaData.mInfo.putInt(INFO_NUMBER_OF_COVERS, data.getCoverCount());
+        if (result.getCoverCount() > 0) {
+            data.putInt(INFO_NUMBER_OF_COVERS, result.getCoverCount());
         }
         return metaData;
-    }
-
-    /**
-     * Get the raw bundle for reading/writing.
-     *
-     * @return the bundle with all settings.
-     */
-    @NonNull
-    public Bundle getBundle() {
-        return mInfo;
     }
 
     /**
@@ -124,7 +111,7 @@ public class ArchiveMetaData {
      * @return archive version, or {@code 0} if not known.
      */
     public int getArchiveVersion() {
-        return mInfo.getInt(INFO_ARCHIVER_VERSION, 0);
+        return getData().getInt(INFO_ARCHIVER_VERSION, 0);
     }
 
     /**
@@ -133,7 +120,7 @@ public class ArchiveMetaData {
      * @return version, or {@code 0} if not known.
      */
     public int getDatabaseVersionCode() {
-        return mInfo.getInt(INFO_DATABASE_VERSION, 0);
+        return getData().getInt(INFO_DATABASE_VERSION, 0);
     }
 
     /**
@@ -143,7 +130,7 @@ public class ArchiveMetaData {
      */
     public long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
-        final Object version = mInfo.get(INFO_APP_VERSION_CODE);
+        final Object version = getData().get(INFO_APP_VERSION_CODE);
         if (version == null) {
             return 0;
         } else {
@@ -162,48 +149,13 @@ public class ArchiveMetaData {
      */
     @NonNull
     public Optional<LocalDateTime> getCreatedLocalDate() {
-        final LocalDateTime date = new ISODateParser().parse(mInfo.getString(INFO_CREATED_DATE));
+        final LocalDateTime date = new ISODateParser()
+                .parse(getData().getString(INFO_CREATED_DATE));
         if (date != null) {
             return Optional.of(date);
         } else {
             return Optional.empty();
         }
-    }
-
-    public void setBookCount(final int count) {
-        mInfo.putInt(INFO_NUMBER_OF_BOOKS, count);
-    }
-
-    /**
-     * Get the number of books.
-     *
-     * @return the number of books if known
-     */
-    @NonNull
-    public Optional<Integer> getBookCount() {
-        if (mInfo.containsKey(INFO_NUMBER_OF_BOOKS)) {
-            final int count = mInfo.getInt(INFO_NUMBER_OF_BOOKS);
-            if (count > 0) {
-                return Optional.of(count);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Get the number of covers.
-     *
-     * @return the number of covers if known
-     */
-    @NonNull
-    public Optional<Integer> getCoverCount() {
-        if (mInfo.containsKey(INFO_NUMBER_OF_BOOKS)) {
-            final int count = mInfo.getInt(INFO_NUMBER_OF_BOOKS);
-            if (count > 0) {
-                return Optional.of(count);
-            }
-        }
-        return Optional.empty();
     }
 
     /**
@@ -215,16 +167,8 @@ public class ArchiveMetaData {
     public void validate()
             throws InvalidArchiveException {
         // extremely simple check: the archiver version field must be present
-        if (!mInfo.containsKey(INFO_ARCHIVER_VERSION)) {
+        if (!getData().containsKey(INFO_ARCHIVER_VERSION)) {
             throw new InvalidArchiveException(ERROR_MISSING_VERSION_INFORMATION);
         }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "ArchiveMetaData{"
-               + "mInfo=" + mInfo
-               + '}';
     }
 }
