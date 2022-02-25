@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <strong>LIMITATIONS:</strong> see {@link BookCoder}.
  */
 public class CsvArchiveWriter
-        implements ArchiveWriter {
+        implements DataWriter<ExportResults> {
 
     protected static final int VERSION = 1;
 
@@ -63,11 +63,6 @@ public class CsvArchiveWriter
      */
     public CsvArchiveWriter(@NonNull final ExportHelper helper) {
         mHelper = helper;
-    }
-
-    @Override
-    public int getVersion() {
-        return VERSION;
     }
 
     @NonNull

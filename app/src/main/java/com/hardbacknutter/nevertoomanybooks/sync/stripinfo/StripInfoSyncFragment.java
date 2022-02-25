@@ -32,8 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -52,8 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 @Keep
 public class StripInfoSyncFragment
         extends BaseFragment {
-
-    public static final String TAG = "StripInfoSyncFragment";
 
     @NonNull
     private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
@@ -81,34 +77,16 @@ public class StripInfoSyncFragment
 
         mVb.btnImport.setOnClickListener(v -> {
             if (StripInfoAuth.isUsernameSet()) {
-                final Bundle args = new Bundle();
-                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.StripInfo);
-
-                final Fragment fragment = new SyncReaderFragment();
-                fragment.setArguments(args);
-                final FragmentManager fm = getParentFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(SyncReaderFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, SyncReaderFragment.TAG)
-                  .commit();
+                replaceFragment(SyncReaderFragment.create(SyncServer.StripInfo),
+                                SyncReaderFragment.TAG);
             } else {
                 openSettings();
             }
         });
         mVb.btnExport.setOnClickListener(v -> {
             if (StripInfoAuth.isUsernameSet()) {
-                final Bundle args = new Bundle();
-                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.StripInfo);
-
-                final Fragment fragment = new SyncWriterFragment();
-                fragment.setArguments(args);
-                final FragmentManager fm = getParentFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(SyncWriterFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, SyncWriterFragment.TAG)
-                  .commit();
+                replaceFragment(SyncWriterFragment.create(SyncServer.StripInfo),
+                                SyncWriterFragment.TAG);
             } else {
                 openSettings();
             }
@@ -116,13 +94,7 @@ public class StripInfoSyncFragment
     }
 
     private void openSettings() {
-        final Fragment fragment = new StripInfoBePreferencesFragment();
-        final FragmentManager fm = getParentFragmentManager();
-        fm.beginTransaction()
-          .setReorderingAllowed(true)
-          .addToBackStack(StripInfoBePreferencesFragment.TAG)
-          .replace(R.id.main_fragment, fragment, StripInfoBePreferencesFragment.TAG)
-          .commit();
+        replaceFragment(new StripInfoBePreferencesFragment(), StripInfoBePreferencesFragment.TAG);
     }
 
     private class ToolbarMenuProvider
@@ -131,7 +103,7 @@ public class StripInfoSyncFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menu.add(R.id.MENU_GROUP_STRIPINFO, R.id.MENU_STRIP_INFO_SETTING, 0,
+            menu.add(Menu.NONE, R.id.MENU_STRIP_INFO_SETTING, 0,
                      R.string.lbl_settings)
                 .setIcon(R.drawable.ic_baseline_settings_24);
         }

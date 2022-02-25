@@ -33,27 +33,27 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriter;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.org.json.JSONException;
 
 public class StripInfoWriter
-        implements SyncWriter {
+        implements DataWriter<SyncWriterResults> {
 
     /** Log tag. */
     private static final String TAG = "StripInfoWriter";
 
     /** Export configuration. */
     @NonNull
-    private final SyncWriterConfig mConfig;
+    private final SyncWriterHelper mConfig;
 
     private final boolean mDeleteLocalBook;
 
@@ -67,7 +67,7 @@ public class StripInfoWriter
      *
      * @param config export configuration
      */
-    public StripInfoWriter(@NonNull final SyncWriterConfig config) {
+    public StripInfoWriter(@NonNull final SyncWriterHelper config) {
         mConfig = config;
         mDeleteLocalBook = mConfig.isDeleteLocalBooks();
     }
@@ -108,7 +108,7 @@ public class StripInfoWriter
                 final Book book = Book.from(cursor);
                 try {
                     mCollectionForm.send(book);
-                    mResults.booksWritten++;
+                    mResults.addBook(book.getId());
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.

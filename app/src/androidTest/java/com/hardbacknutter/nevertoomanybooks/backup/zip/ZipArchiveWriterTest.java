@@ -27,6 +27,7 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -78,7 +80,7 @@ public class ZipArchiveWriterTest
     public void write()
             throws ImportException, ExportException,
                    InvalidArchiveException,
-                   IOException, StorageException, CredentialsException {
+                   IOException, StorageException, CredentialsException, CertificateException {
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
@@ -114,20 +116,20 @@ public class ZipArchiveWriterTest
     private void read(@NonNull final Uri uri,
                       final long expectedNrOfBooks)
             throws InvalidArchiveException, ImportException, IOException,
-                   StorageException, CredentialsException {
+                   StorageException, CredentialsException, CertificateException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
 
-        final ImportHelper importHelper = ImportHelper.newInstance(context, uri);
+        final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!
-        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
+        assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 
-        importHelper.setRecordType(RecordType.Books, true);
+        importHelper.addRecordType(RecordType.Books);
 
-        final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
+        final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context).orElse(null);
         assertNotNull(archiveMetaData);
-        assertEquals(mBookInDb, archiveMetaData.getBookCount());
-        assertEquals(0, archiveMetaData.getCoverCount());
+        assertEquals(mBookInDb, (long) archiveMetaData.getBookCount().orElse(-1));
+        assertEquals(0, (long) archiveMetaData.getCoverCount().orElse(-1));
 
         final ImportResults importResults = importHelper.read(context, new TestProgressListener(
                 TAG + ":header"));

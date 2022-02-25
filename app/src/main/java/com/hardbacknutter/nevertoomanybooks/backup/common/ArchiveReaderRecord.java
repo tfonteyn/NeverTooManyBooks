@@ -29,7 +29,7 @@ import java.util.Optional;
  * Interface provided by every record read from an archive file.
  * This class effectively should wrap an archive record in a encoding-agnostic record.
  * <p>
- * Note we're also forcing the encapsulation of the {@link ArchiveReader} input stream.
+ * Note we're also forcing the encapsulation of the {@link DataReader} input stream.
  */
 public interface ArchiveReaderRecord {
 

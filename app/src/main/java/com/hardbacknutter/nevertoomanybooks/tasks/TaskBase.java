@@ -124,12 +124,10 @@ abstract class TaskBase<Result>
             final Context context = ServiceLocator.getLocalizedAppContext();
             try {
                 final Result result = doWork(context);
-                final TaskResult<Result> message =
-                        new TaskResult<>(getTaskId(), result);
                 if (isCancelled()) {
-                    setCancelled(message);
+                    setCancelled(result);
                 } else {
-                    setFinished(message);
+                    setFinished(result);
                 }
             } catch (@NonNull final Exception e) {
                 Logger.error(mTaskName, e);
@@ -154,10 +152,19 @@ abstract class TaskBase<Result>
     protected abstract Result doWork(@NonNull Context context)
             throws Exception;
 
-    protected abstract void setFinished(@NonNull TaskResult<Result> message);
+    /**
+     * Called when the task successfully finishes.
+     */
+    protected abstract void setFinished(@Nullable Result result);
 
-    protected abstract void setCancelled(@NonNull TaskResult<Result> message);
+    /**
+     * Called when the task was cancelled.
+     */
+    protected abstract void setCancelled(@Nullable Result result);
 
+    /**
+     * Called when the task fails with an Exception.
+     */
     protected abstract void setFailure(@NonNull Exception e);
 
     @AnyThread

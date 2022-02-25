@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 
@@ -78,31 +77,37 @@ public class CoverRecordReader
 
                     if (exists) {
                         // Are we allowed to overwrite at all ?
-                        if (helper.getUpdateOption() == ImportHelper.Updates.Skip) {
-                            results.coversSkipped++;
-                            return results;
-                        }
-
-                        // If we should only import newer data,
-                        // check which is newer, the local file, or the imported file.
-                        if (helper.getUpdateOption() == ImportHelper.Updates.OnlyNewer) {
-                            // shift 16 bits to get to +- 1 minute precision.
-                            // Using pure milliseconds will create far to many false positives
-                            final long importFileDate =
-                                    record.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;
-                            final long existingFileDate =
-                                    dstFile.lastModified() >> FILE_LM_PRECISION;
-                            if (existingFileDate > importFileDate) {
+                        switch (helper.getUpdateOption()) {
+                            case Skip: {
                                 results.coversSkipped++;
                                 return results;
                             }
+                            case OnlyNewer: {
+                                // Shift 16 bits to get to +- 1 minute precision.
+                                // Using milliseconds creates far to many false positives
+                                final long importFileDate =
+                                        record.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;
+                                final long existingFileDate =
+                                        dstFile.lastModified() >> FILE_LM_PRECISION;
+
+                                if (existingFileDate > importFileDate) {
+                                    results.coversSkipped++;
+                                    return results;
+                                }
+                                break;
+                            }
+
+                            // covered below
+                            case Overwrite:
+                            default:
+                                break;
                         }
                     }
 
                     // Don't close this stream; Also; this comes from a zip/tar archive
                     // which will give us a buffered stream; do not buffer twice.
                     final InputStream is = record.getInputStream();
-                    dstFile = FileUtils.copy(is, dstFile);
+                    dstFile = ImageUtils.copy(is, dstFile);
 
                     if (ImageUtils.isAcceptableSize(dstFile)) {
                         //noinspection ResultOfMethodCallIgnored

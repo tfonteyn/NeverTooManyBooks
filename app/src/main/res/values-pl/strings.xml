@@ -95,6 +95,7 @@
     <string name="error_unknown_long">Wystąpił nieoczekiwany błąd. Jeśli problem nie ustąpi, skontaktuj się z pomocą, korzystając z opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
+    <string name="error_import_failed_for_record">Import nie powiódł się (%1$s).</string>
     <string name="error_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
     <string name="error_network_please_connect">Połącz się z internetem.</string>
     <string name="httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
@@ -143,7 +144,7 @@
     <string name="txt_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Dotknij większego obrazu, aby go wybrać.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Dotknij miniatury, aby wyświetlić większy obraz.</string>
-    <string name="isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
+    <string name="isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(ISFDB)</string>
     <string name="isfdb_warning_limited_to">(obsługiwane tylko przez stronę internetową ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Kontakt:</string>
@@ -156,7 +157,7 @@
     <string name="lbl_archive_type_csv">Książki (.csv)</string>
     <string name="lbl_archive_type_csv_info">Eksport książek do pliku CSV</string>
     <string name="lbl_archive_type_backup_zip">Kopia zapasowa (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Kopia zapasowa (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Kopia zapasowa (.tar)</string>
     <string name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
     <string name="lbl_archive_type_xml">Eksport XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML.</string>

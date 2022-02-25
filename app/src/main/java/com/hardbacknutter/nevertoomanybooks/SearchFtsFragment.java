@@ -20,6 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -49,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtTextWatcher;
  * number of hits more or less in real time. The user can choose to see a full list at any time.
  * ENHANCE: SHOW the list, just like the system search does?
  * <p>
- * The form allows entering free text, author, title, series.
+ * The form allows entering free text, author, title, series,...
  * <p>
  * The search gets the ID's of matching books, and returns this list when the 'show' button
  * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
@@ -90,6 +92,7 @@ public class SearchFtsFragment
     /** User entered search text. */
     @Nullable
     private String mKeywordsSearchText;
+
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -146,7 +149,6 @@ public class SearchFtsFragment
         if (mSeriesTitleSearchText != null) {
             mVb.seriesTitle.setText(mSeriesTitleSearchText);
         }
-
         if (mAuthorSearchText != null) {
             mVb.author.setText(mAuthorSearchText);
         }
@@ -171,15 +173,18 @@ public class SearchFtsFragment
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
         // When the show results buttons is tapped, return and show the resulting booklist.
-        //noinspection ConstantConditions
-        mVb.btnSearch.setOnClickListener(
-                v -> SearchFtsContract.setResultAndFinish(getActivity(),
-                                                          mBookIdList,
-                                                          mTitleSearchText,
-                                                          mSeriesTitleSearchText,
-                                                          mAuthorSearchText,
-                                                          mPublisherNameSearchText,
-                                                          mKeywordsSearchText));
+        mVb.btnSearch.setOnClickListener(v -> {
+            final Intent resultIntent = SearchFtsContract
+                    .createResultIntent(mBookIdList,
+                                        mTitleSearchText,
+                                        mSeriesTitleSearchText,
+                                        mAuthorSearchText,
+                                        mPublisherNameSearchText,
+                                        mKeywordsSearchText);
+            //noinspection ConstantConditions
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+            getActivity().finish();
+        });
 
         // Timer will be started in OnResume().
     }

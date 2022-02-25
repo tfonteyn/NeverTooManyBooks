@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -66,7 +67,7 @@ public class SearchBookByTextFragment
 
     @NonNull
     @Override
-    public ResultIntentOwner getResultIntentOwner() {
+    protected ResultIntentOwner getResultOwner() {
         return mVm;
     }
 
@@ -252,7 +253,7 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onBookEditingDone(@Nullable final Bundle data) {
+    void onBookEditingDone(@Nullable final EditBookOutput data) {
         super.onBookEditingDone(data);
 
         // refresh, we could have modified/created Authors/Publishers while editing

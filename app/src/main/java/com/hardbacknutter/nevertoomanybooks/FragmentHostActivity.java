@@ -43,13 +43,19 @@ public class FragmentHostActivity
         extends BaseActivity {
 
     private static final String TAG = "FragmentHostActivity";
-    public static final String BKEY_ACTIVITY = TAG + ":a";
-    public static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
+    protected static final String BKEY_ACTIVITY = TAG + ":a";
+    protected static final String BKEY_FRAGMENT_CLASS = TAG + ":f";
 
     public static Intent createIntent(@NonNull final Context context,
                                       @NonNull final Class<? extends Fragment> fragmentClass) {
+        return createIntent(context, R.layout.activity_main, fragmentClass);
+    }
+
+    public static Intent createIntent(@NonNull final Context context,
+                                      @LayoutRes final int activityLayoutId,
+                                      @NonNull final Class<? extends Fragment> fragmentClass) {
         return new Intent(context, FragmentHostActivity.class)
-                .putExtra(BKEY_ACTIVITY, R.layout.activity_main)
+                .putExtra(BKEY_ACTIVITY, activityLayoutId)
                 .putExtra(BKEY_FRAGMENT_CLASS, fragmentClass.getName());
     }
 

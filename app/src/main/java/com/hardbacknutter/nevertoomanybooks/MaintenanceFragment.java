@@ -29,8 +29,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -209,19 +207,9 @@ public class MaintenanceFragment
         //noinspection ConstantConditions
         mVb.btnDebugDumpPrefs.setOnClickListener(v -> DebugReport.logPreferences(getContext()));
 
-        mVb.btnDebugSqShell.setOnClickListener(v -> {
-            final Bundle args = new Bundle();
-            args.putBoolean(SqliteShellFragment.BKEY_ALLOW_UPDATES, mDebugSqLiteAllowsUpdates);
-            final Fragment fragment = new SqliteShellFragment();
-            fragment.setArguments(args);
-
-            final FragmentManager fm = getParentFragmentManager();
-            fm.beginTransaction()
-              .setReorderingAllowed(true)
-              .addToBackStack(SqliteShellFragment.TAG)
-              .replace(R.id.main_fragment, fragment, SqliteShellFragment.TAG)
-              .commit();
-        });
+        mVb.btnDebugSqShell.setOnClickListener(v -> replaceFragment(
+                SqliteShellFragment.create(mDebugSqLiteAllowsUpdates),
+                SqliteShellFragment.TAG));
     }
 
     /**

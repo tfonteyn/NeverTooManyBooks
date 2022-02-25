@@ -59,15 +59,6 @@ public class UriInfo {
         mUri = uri;
     }
 
-    public UriInfo(@NonNull final Uri uri,
-                   @NonNull final String displayName,
-                   final int size) {
-        mUri = uri;
-        mDisplayName = displayName;
-        mSize = size;
-        mResolved = true;
-    }
-
     @NonNull
     public Uri getUri() {
         return mUri;
@@ -136,5 +127,16 @@ public class UriInfo {
         }
 
         throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + mUri);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "UriInfo{"
+               + "mUri=" + mUri
+               + ", mDisplayName='" + mDisplayName + '\''
+               + ", mSize=" + mSize
+               + ", mResolved=" + mResolved
+               + '}';
     }
 }

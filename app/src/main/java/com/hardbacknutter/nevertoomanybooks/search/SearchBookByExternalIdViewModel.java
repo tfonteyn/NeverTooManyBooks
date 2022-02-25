@@ -20,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -33,10 +33,10 @@ public class SearchBookByExternalIdViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultIntent = new Intent();
+    private final Bundle mResultData = new Bundle();
 
     @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
+    public Bundle getResultData() {
+        return mResultData;
     }
 }

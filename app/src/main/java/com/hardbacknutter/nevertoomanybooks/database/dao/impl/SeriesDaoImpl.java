@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -170,18 +171,12 @@ public class SeriesDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final Locale seriesLocale;
-        if (lookupLocale) {
-            seriesLocale = series.getLocale(context, bookLocale);
-        } else {
-            seriesLocale = bookLocale;
-        }
-
-        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final ReorderTitle.OrderByData obd = series
+                .createOrderByData(context, lookupLocale, bookLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, SqlEncode.orderByColumn(series.getTitle(), seriesLocale));
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, seriesLocale));
+            stmt.bindString(1, SqlEncode.orderByColumn(series.getTitle(), obd.locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -318,13 +313,11 @@ public class SeriesDaoImpl
                        @NonNull final Series series,
                        @NonNull final Locale bookLocale) {
 
-        final Locale seriesLocale = series.getLocale(context, bookLocale);
-
-        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final ReorderTitle.OrderByData obd = series.createOrderByData(context, true, bookLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, series.getTitle());
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, seriesLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             stmt.bindBoolean(3, series.isComplete());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
@@ -339,12 +332,11 @@ public class SeriesDaoImpl
                           @NonNull final Series series,
                           @NonNull final Locale bookLocale) {
 
-        final Locale seriesLocale = series.getLocale(context, bookLocale);
-        final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
+        final ReorderTitle.OrderByData obd = series.createOrderByData(context, true, bookLocale);
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.KEY_SERIES_TITLE, series.getTitle());
-        cv.put(DBKey.KEY_SERIES_TITLE_OB, SqlEncode.orderByColumn(obTitle, seriesLocale));
+        cv.put(DBKey.KEY_SERIES_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         cv.put(DBKey.BOOL_SERIES_IS_COMPLETE, series.isComplete());
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",

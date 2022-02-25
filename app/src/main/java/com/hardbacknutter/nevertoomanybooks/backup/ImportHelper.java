@@ -23,62 +23,33 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Set;
-
-import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ImporterBase;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
-public final class ImportHelper {
+public final class ImportHelper
+        extends ImporterBase<ArchiveMetaData, ImportResults> {
 
-    /** <strong>What</strong> is going to be imported. */
-    @NonNull
-    private final Set<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
     /** <strong>Where</strong> we read from. */
     @NonNull
     private final Uri mUri;
-    /** <strong>How</strong> to read from the Uri. */
+    /** <strong>How</strong> we read from the uri. */
     @NonNull
     private final ArchiveEncoding mEncoding;
 
-
-    /**
-     * New Books/Covers are always imported
-     * (if {@link RecordType#Books} is set obviously).
-     */
-    private Updates mUpdateOption = Updates.Skip;
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private UriInfo mUriInfo;
-
-    /**
-     * Private constructor. Use the factory method instead.
-     *
-     * @param uri      to read from
-     * @param encoding which the uri uses
-     */
-    private ImportHelper(@NonNull final Uri uri,
-                         @NonNull final ArchiveEncoding encoding) {
-        mUri = uri;
-        mEncoding = encoding;
-        initWithDefault(encoding);
-    }
+    @NonNull
+    private final UriInfo mUriInfo;
 
     /**
      * Constructor. The encoding will be determined from the Uri.
@@ -89,57 +60,62 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static ImportHelper newInstance(@NonNull final Context context,
-                                           @NonNull final Uri uri)
+    public ImportHelper(@NonNull final Context context,
+                        @NonNull final Uri uri)
             throws FileNotFoundException, InvalidArchiveException {
+        super(EnumSet.of(RecordType.MetaData));
 
-        final ArchiveEncoding encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
+        mUri = uri;
+        mUriInfo = new UriInfo(mUri);
+        mEncoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new InvalidArchiveException(uri.toString()));
 
-        return new ImportHelper(uri, encoding);
-    }
-
-    private void initWithDefault(@NonNull final ArchiveEncoding encoding) {
-        mRecordTypes.clear();
-        mRecordTypes.add(RecordType.MetaData);
-
-        switch (encoding) {
+        switch (mEncoding) {
             case Csv:
-                mRecordTypes.add(RecordType.Books);
-                mUpdateOption = Updates.OnlyNewer;
+                addRecordType(RecordType.Books);
+                setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
             case Zip:
             case Tar:
-                mRecordTypes.add(RecordType.Styles);
-                mRecordTypes.add(RecordType.Preferences);
-                mRecordTypes.add(RecordType.Certificates);
-                mRecordTypes.add(RecordType.Books);
-                mRecordTypes.add(RecordType.Cover);
-                mUpdateOption = Updates.OnlyNewer;
+                addRecordType(RecordType.Styles,
+                              RecordType.Preferences,
+                              RecordType.Certificates,
+                              RecordType.Books,
+                              RecordType.Cover);
+                setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
             case SqLiteDb:
-                mRecordTypes.add(RecordType.Books);
-                mUpdateOption = Updates.Skip;
+                addRecordType(RecordType.Books);
+                setUpdateOption(DataReader.Updates.Skip);
                 break;
 
             case Json:
-                mRecordTypes.add(RecordType.Styles);
-                mRecordTypes.add(RecordType.Preferences);
-                mRecordTypes.add(RecordType.Certificates);
-                mRecordTypes.add(RecordType.Books);
-                mUpdateOption = Updates.OnlyNewer;
+                addRecordType(RecordType.Styles,
+                              RecordType.Preferences,
+                              RecordType.Certificates,
+                              RecordType.Books);
+                setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
             case Xml:
+                // not supported
             default:
                 break;
         }
     }
 
     /**
-     * Get the Uri for the user location to read from.
+     * Get the location to read from.
+     */
+    @NonNull
+    public ArchiveEncoding getEncoding() {
+        return mEncoding;
+    }
+
+    /**
+     * Get the {@link Uri} to read from.
      *
      * @return Uri
      */
@@ -155,111 +131,24 @@ public final class ImportHelper {
      */
     @NonNull
     public UriInfo getUriInfo() {
-        if (mUriInfo == null) {
-            mUriInfo = new UriInfo(mUri);
-        }
         return mUriInfo;
     }
 
-    /**
-     * Get the encoding of the source.
-     *
-     * @return encoding
-     */
     @NonNull
-    ArchiveEncoding getEncoding() {
-        return mEncoding;
-    }
-
-    /**
-     * Perform a read of the meta data.
-     *
-     * @param context Current context
-     *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws ImportException         on a decoding/parsing of data issue
-     * @throws IOException             on other failures
-     * @throws SSLException            on secure connection failures
-     */
-    @Nullable
-    public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException,
-                   StorageException {
-
-        try (ArchiveReader reader = mEncoding.createReader(context, this)) {
-            return reader.readMetaData(context);
-        }
-    }
-
-    /**
-     * Perform a full read.
-     *
-     * @param context Current context
-     *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws ImportException         on a decoding/parsing of data issue
-     * @throws IOException             on other failures
-     * @throws SSLException            on secure connection failures
-     */
-    @NonNull
-    @WorkerThread
-    public ImportResults read(@NonNull final Context context,
-                              @NonNull final ProgressListener progressListener)
-            throws ImportException, InvalidArchiveException,
-                   IOException, StorageException,
-                   CredentialsException {
-
-        SanityCheck.requireValue(mRecordTypes, "mRecordTypes");
-
-        try (ArchiveReader reader = mEncoding.createReader(context, this)) {
-            return reader.read(context, progressListener);
-        }
-    }
-
-    public void setRecordType(@NonNull final RecordType recordType,
-                              final boolean isSet) {
-        if (isSet) {
-            mRecordTypes.add(recordType);
-        } else {
-            mRecordTypes.remove(recordType);
-        }
-    }
-
-    @NonNull
-    public Set<RecordType> getRecordTypes() {
-        // Return a copy!
-        return EnumSet.copyOf(mRecordTypes);
-    }
-
-    @NonNull
-    public Updates getUpdateOption() {
-        return mUpdateOption;
-    }
-
-    public void setUpdateOption(@NonNull final Updates updateOption) {
-        mUpdateOption = updateOption;
+    protected DataReader<ArchiveMetaData, ImportResults> createReader(
+            @NonNull final Context context)
+            throws InvalidArchiveException, IOException, CoverStorageException, ImportException {
+        return mEncoding.createReader(context, this);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "ImportHelper{"
-               + "mUri=" + mUri
+               + super.toString()
+               + ", mUri=" + mUri
                + ", mEncoding=" + mEncoding
-               + ", mRecordTypes=" + mRecordTypes
-               + ", mUpdateOption=" + mUpdateOption
+               + ", mUriInfo=" + mUriInfo
                + '}';
-    }
-
-    /**
-     * Existing Books/Covers handling.
-     */
-    public enum Updates {
-        /** skip updates entirely. Current data is untouched. */
-        Skip,
-        /** Overwrite current data with incoming data. */
-        Overwrite,
-        /** check the "update_date" field and only import newer data. */
-        OnlyNewer
     }
 }

@@ -225,20 +225,20 @@ class BooklistBuilder {
      * <p>
      * An empty filter will silently be rejected.
      *
-     * @param author        Author related keywords to find
-     * @param title         Title related keywords to find
-     * @param seriesTitle   Series title related keywords to find
-     * @param publisherName Publisher name related keywords to find
-     * @param keywords      Keywords to find anywhere in book; this includes all above fields
+     * @param bookTitle   Book title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param author      Author related keywords to find
+     * @param publisher   Publisher related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes all above fields
      */
-    void addFilterOnKeywords(@Nullable final String author,
-                             @Nullable final String title,
+    void addFilterOnKeywords(@Nullable final String bookTitle,
                              @Nullable final String seriesTitle,
-                             @Nullable final String publisherName,
+                             @Nullable final String author,
+                             @Nullable final String publisher,
                              @Nullable final String keywords) {
 
-        final String query = FtsDao.createMatchString(author, title, seriesTitle,
-                                                      publisherName, keywords);
+        final String query = FtsDao.createMatchString(bookTitle, seriesTitle,
+                                                      author, publisher, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(DBKey.PK_ID) + " IN ("

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -37,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class EditBookByIdContract
-        extends ActivityResultContract<Long, Bundle> {
+        extends ActivityResultContract<Long, EditBookOutput> {
 
     private static final String TAG = "EditBookByIdContract";
 
@@ -45,18 +44,15 @@ public class EditBookByIdContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Long bookId) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
-                          R.layout.activity_edit_book)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
-                          EditBookFragment.class.getName())
+        return FragmentHostActivity
+                .createIntent(context, R.layout.activity_edit_book, EditBookFragment.class)
                 .putExtra(DBKey.FK_BOOK, (long) bookId);
     }
 
     @Override
     @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    public EditBookOutput parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -64,6 +60,7 @@ public class EditBookByIdContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getExtras();
+
+        return intent.getParcelableExtra(EditBookOutput.BKEY);
     }
 }

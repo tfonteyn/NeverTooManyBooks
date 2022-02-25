@@ -78,9 +78,9 @@ public class StylePickerDialogFragment
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
-        mCurrentStyleUuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID),
-                                                   "BKEY_STYLE_UUID");
+                                             BKEY_REQUEST_KEY);
+        mCurrentStyleUuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
+                                                   ListStyle.BKEY_UUID);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 
@@ -112,7 +112,7 @@ public class StylePickerDialogFragment
             onEditStyle();
             return true;
 
-        } else if (itemId == R.id.MENU_LEVEL_TOGGLE) {
+        } else if (itemId == R.id.MENU_STYLE_LIST_TOGGLE) {
             mShowAllStyles = !mShowAllStyles;
             if (mShowAllStyles) {
                 item.setTitle(R.string.btn_less_ellipsis);
@@ -220,7 +220,7 @@ public class StylePickerDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(ListStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
+            args.putString(ListStyle.BKEY_UUID, currentStyle.getUuid());
             args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
 
             final DialogFragment frag = new StylePickerDialogFragment();
@@ -231,7 +231,8 @@ public class StylePickerDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(DBKey.FK_STYLE)));
+            onResult(Objects.requireNonNull(result.getString(DBKey.FK_STYLE),
+                                            DBKey.FK_STYLE));
         }
 
         /**

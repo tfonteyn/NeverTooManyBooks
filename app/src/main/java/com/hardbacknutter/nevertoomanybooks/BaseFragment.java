@@ -24,6 +24,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -66,5 +67,13 @@ public abstract class BaseFragment
         return mFab;
     }
 
-
+    protected void replaceFragment(@NonNull final Fragment fragment,
+                                   @NonNull final String tag) {
+        final FragmentManager fm = getParentFragmentManager();
+        fm.beginTransaction()
+          .setReorderingAllowed(true)
+          .addToBackStack(tag)
+          .replace(R.id.main_fragment, fragment, tag)
+          .commit();
+    }
 }

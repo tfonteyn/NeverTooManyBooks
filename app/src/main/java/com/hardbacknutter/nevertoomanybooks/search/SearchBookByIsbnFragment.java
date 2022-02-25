@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
@@ -65,7 +66,7 @@ public class SearchBookByIsbnFragment
         extends SearchBookBaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "BookSearchByIsbnFrag";
+    private static final String TAG = "BookSearchByIsbnFrag";
     private static final String BKEY_STARTED = TAG + ":started";
     /** See remarks in {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}. */
     private static final String MIME_TYPES = "*/*";
@@ -102,7 +103,7 @@ public class SearchBookByIsbnFragment
 
     @NonNull
     @Override
-    public ResultIntentOwner getResultIntentOwner() {
+    protected ResultIntentOwner getResultOwner() {
         return mVm;
     }
 
@@ -365,7 +366,7 @@ public class SearchBookByIsbnFragment
     }
 
     @Override
-    void onBookEditingDone(@Nullable final Bundle data) {
+    void onBookEditingDone(@Nullable final EditBookOutput data) {
         super.onBookEditingDone(data);
         if (mVm.getScannerMode() == SearchBookByIsbnViewModel.ScanMode.Single) {
             // scan another book until the user cancels
@@ -449,7 +450,7 @@ public class SearchBookByIsbnFragment
 
         mVm.getScanQueue().forEach(code -> {
             //noinspection ConstantConditions
-            final Chip chip = new Chip(getContext(), null, R.attr.appChipQueueStyle);
+            final Chip chip = new Chip(getContext(), null, R.attr.appChipInputStyle);
             // RTL-friendly Chip Layout
             chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
             chip.setOnClickListener(v -> {

@@ -96,6 +96,7 @@
     <string name="error_unknown_long">Si è verificato un errore imprevisto. Se il problema persiste, contatta l\'assistenza utilizzando l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="error_import_failed">Importazione fallita.</string>
+    <string name="error_import_failed_for_record">Importazione fallita (%1$s).</string>
     <string name="error_file_not_recognized">Il file selezionato non è riconosciuto.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
     <string name="httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
@@ -144,7 +145,7 @@
     <string name="txt_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tocca l\'immagine più grande per selezionarla.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un\'immagine più grande.</string>
-    <string name="isfdb_menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
+    <string name="isfdb_menu_populate_toc">Inserisci titoli automaticamente (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Contatti:</string>
@@ -157,7 +158,7 @@
     <string name="lbl_archive_type_csv">Libri (.csv)</string>
     <string name="lbl_archive_type_csv_info">Esportazione dei libri in un file CSV</string>
     <string name="lbl_archive_type_backup_zip">Copia di backup (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Copia di backup (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Copia di backup (.tar)</string>
     <string name="lbl_archive_type_backup_info">Archivio completo di backup / ripristino</string>
     <string name="lbl_archive_type_xml">Esportazione XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Tutti i dati in formato XML.</string>

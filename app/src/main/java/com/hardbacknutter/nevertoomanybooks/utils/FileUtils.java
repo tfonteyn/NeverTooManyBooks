@@ -43,11 +43,9 @@ import java.util.zip.CRC32;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 /**
  * Class to wrap common storage related functions.
@@ -80,40 +78,6 @@ public final class FileUtils {
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
 
     private FileUtils() {
-    }
-
-    /**
-     * Given a InputStream, write it to a file.
-     * We first write to a temporary file, so an existing 'out' file is not destroyed
-     * if the stream somehow fails.
-     *
-     * @param is       InputStream to read
-     * @param destFile File to write to
-     *
-     * @return File written to (the one passed in)
-     *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws FileNotFoundException if the input stream was {@code null}
-     * @throws IOException           on failure
-     */
-    @NonNull
-    public static File copy(@Nullable final InputStream is,
-                            @NonNull final File destFile)
-            throws CoverStorageException, FileNotFoundException, IOException {
-        if (is == null) {
-            throw new FileNotFoundException("InputStream was NULL");
-        }
-
-        final File tmpFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
-                                      System.nanoTime() + ".jpg");
-        try (OutputStream os = new FileOutputStream(tmpFile)) {
-            copy(is, os);
-            // rename to real output file
-            rename(tmpFile, destFile);
-            return destFile;
-        } finally {
-            delete(tmpFile);
-        }
     }
 
     /**

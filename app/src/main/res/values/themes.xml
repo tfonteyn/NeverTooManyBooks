@@ -26,11 +26,21 @@ https://developer.android.com/reference/android/R.styleable.html#Theme
 Material styles etc.
 https://medium.com/androiddevelopers/migrating-to-material-components-for-android-ec6757795351
 
+https://m3.material.io/libraries/mdc-android/color-theming
+
 Full color list:
 https://material.io/design/material-theming/implementing-your-theme.html#color
 
 -->
 <resources>
+    <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorPrimary">@color/blue_grey_300</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_300</item>
+        <item name="colorOnSecondary">@color/white</item>
+    </style>
+
     <!-- Top level Theme for full screen usage. -->
     <style name="Theme.App.FullScreen" parent="Theme.App">
         <item name="android:windowFullscreen">true</item>
@@ -40,21 +50,21 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App" parent="Base.Theme.App">
-        <!-- ======================================= -->
-        <!-- Material color attributes (light theme) -->
-        <!-- https://m3.material.io/libraries/mdc-android/color-theming -->
-        <!-- ======================================= -->
-        <item name="colorPrimary">@color/day_primary</item>
-        <item name="colorOnPrimary">@color/day_on_primary</item>
+        <!-- Material color attributes -->
+        <item name="colorPrimary">@color/blue_grey_300</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_300</item>
+        <item name="colorOnSecondary">@color/white</item>
 
-        <!--  <item name="colorSecondary">@color/day_secondary</item>-->
-        <!--  <item name="colorOnSecondary">@color/day_on_secondary</item>-->
+        <item name="android:colorBackground">@color/grey_25</item>
 
-        <!-- ======================================= -->
-        <!-- Application specific (light theme) -->
-        <!-- ======================================= -->
-        <item name="appPreferenceAlertColor">@color/red_400</item>
+        <!-- Application specific -->
+        <item name="appToolbarBackground">@color/blue_grey_200</item>
+        <item name="appBobListHeaderBackground">@color/blue_grey_100</item>
         <item name="appBobCardBackgroundColor">@color/grey_50</item>
+        <item name="appProgressCircleBackgroundColor">@color/grey_50</item>
+
+        <item name="appPreferenceAlertColor">@color/deep_orange_900</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
@@ -62,47 +72,24 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
     </style>
 
-    <!-- Base theme used by both Day and Night themes. -->
+
+    <!-- Base theme - used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
-        <!--  <item name="android:statusBarColor">?attr/colorPrimary</item>-->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
 
-        <item name="appChipDisplayStyle">@style/Chip.Display</item>
-        <item name="appChipFilterStyle">@style/Chip.Filter</item>
-        <item name="appChipQueueStyle">@style/Chip.Queue</item>
-
+        <item name="chipGroupStyle">@style/App.ChipGroup</item>
+        <item name="tabStyle">@style/App.TabBar</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextViewStyle</item>
-
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
+        <item name="circularProgressIndicatorStyle">@style/App.Progress.Circle</item>
+
+        <!-- Chip styles as attributes makes it easy to add chips from code -->
+        <item name="appChipDisplayStyle">@style/Chip.Display</item>
+        <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
+        <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
     </style>
 
-
-    <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <item name="colorPrimary">@color/day_primary</item>
-        <item name="colorOnPrimary">@color/day_on_primary</item>
-
-        <!--  <item name="colorSecondary">@color/day_secondary</item>-->
-        <!--  <item name="colorOnSecondary">@color/day_on_secondary</item>-->
-    </style>
-
-    <!-- Base theme used by both Day and Night themes. -->
-    <style name="Base.Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
-        <!--  <item name="android:statusBarColor">?attr/colorPrimary</item>-->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-    </style>
-
-
-    <!-- custom ThemeOverlay. -->
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="colorPrimary">@color/day_primary</item>
-        <item name="colorOnPrimary">@color/day_on_primary</item>
-
-        <!--  <item name="colorSecondary">@color/day_secondary</item>-->
-        <!--  <item name="colorOnSecondary">@color/day_on_secondary</item>-->
-    </style>
-
-    <!-- custom ThemeOverlay. -->
+    <!-- ThemeOverlay - used by both Day and Night themes. -->
     <style name="ThemeOverlay.App.MaterialCalendar" parent="ThemeOverlay.Material3.MaterialCalendar.Fullscreen">
         <item name="materialCalendarHeaderLayout">@style/App.MaterialCalendar.HeaderLayout</item>
         <item name="materialCalendarHeaderConfirmButton">@style/App.MaterialCalendar.HeaderConfirmButton</item>

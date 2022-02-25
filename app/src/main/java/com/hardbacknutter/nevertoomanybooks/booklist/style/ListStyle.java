@@ -74,7 +74,7 @@ public interface ListStyle {
      * <p>
      * <br>type: {@code String}
      */
-    String BKEY_STYLE_UUID = "ListStyle:uuid";
+    String BKEY_UUID = "ListStyle:uuid";
 
     @NonNull
     StylePersistenceLayer getPersistenceLayer();

@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -155,7 +155,7 @@ public class BooklistAdapter
                               .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
-        mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
+        mReorderTitleForDisplaying = ReorderTitle.forDisplay(context);
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -422,8 +422,6 @@ public class BooklistAdapter
                           @Nullable final String text,
                           @Nullable final Locale locale) {
 
-        final Locale tmpLocale = Objects.requireNonNullElse(locale, mUserLocale);
-
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
@@ -437,7 +435,7 @@ public class BooklistAdapter
                     return context.getString(R.string.bob_empty_series);
 
                 } else if (mReorderTitleForDisplaying) {
-                    return ItemWithTitle.reorder(context, text, tmpLocale);
+                    return ReorderTitle.reorder(context, text, locale);
                 } else {
                     return text;
                 }
@@ -445,6 +443,9 @@ public class BooklistAdapter
             case BooklistGroup.PUBLISHER: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.bob_empty_publisher);
+
+                } else if (mReorderTitleForDisplaying) {
+                    return ReorderTitle.reorder(context, text, locale);
                 } else {
                     return text;
                 }
@@ -534,7 +535,9 @@ public class BooklistAdapter
                         final int m = Integer.parseInt(text);
                         // If valid, get the short name
                         if (m > 0 && m <= 12) {
-                            return Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, tmpLocale);
+                            return Month.of(m).getDisplayName(
+                                    TextStyle.FULL_STANDALONE,
+                                    Objects.requireNonNullElse(locale, mUserLocale));
                         }
                     } catch (@NonNull final NumberFormatException e) {
                         if (BuildConfig.DEBUG /* always */) {
@@ -1023,16 +1026,9 @@ public class BooklistAdapter
 
             final String title;
             if (mReorderTitle) {
-                final String bookLanguage = rowData.getString(DBKey.KEY_LANGUAGE);
-                if (bookLanguage.isEmpty()) {
-                    title = ItemWithTitle.reorder(itemView.getContext(),
-                                                  rowData.getString(DBKey.KEY_TITLE),
-                                                  mAdapter.getUserLocale());
-                } else {
-                    title = ItemWithTitle.reorder(itemView.getContext(),
-                                                  rowData.getString(DBKey.KEY_TITLE),
-                                                  bookLanguage);
-                }
+                title = ReorderTitle.reorder(itemView.getContext(),
+                                             rowData.getString(DBKey.KEY_TITLE),
+                                             rowData.getString(DBKey.KEY_LANGUAGE));
             } else {
                 title = rowData.getString(DBKey.KEY_TITLE);
             }

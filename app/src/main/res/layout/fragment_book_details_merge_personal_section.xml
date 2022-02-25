@@ -37,25 +37,26 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/bookshelves"
-        style="@style/ChipGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
         app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
         >
-        <!--             chips will be added here dynamically -->
-        <!--            <com.google.android.material.chip.Chip-->
-        <!--                style="?attr/appChipDisplayStyle"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="@string/lbl_books"-->
-        <!--                />-->
+        <!-- chips will be added here dynamically -->
+        <!--        <com.google.android.material.chip.Chip-->
+        <!--            style="?attr/appChipDisplayStyle"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/lbl_books"-->
+        <!--            />-->
 
-        <!--            <com.google.android.material.chip.Chip-->
-        <!--                style="?attr/appChipDisplayStyle"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="@string/lbl_all_bookshelves"-->
-        <!--                />-->
+        <!--        <com.google.android.material.chip.Chip-->
+        <!--            style="?attr/appChipDisplayStyle"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/lbl_all_bookshelves"-->
+        <!--            />-->
     </com.google.android.material.chip.ChipGroup>
 
     <TextView

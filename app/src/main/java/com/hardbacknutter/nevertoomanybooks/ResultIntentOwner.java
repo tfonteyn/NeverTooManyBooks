@@ -20,18 +20,27 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 
 @FunctionalInterface
 public interface ResultIntentOwner {
 
     /**
-     * Get the data intent to pass to {@link Activity#setResult}.
+     * Get the result data to pass to {@link Activity#setResult}.
      *
-     * @return intent
+     * @return data
      */
     @NonNull
-    Intent getResultIntent();
+    Bundle getResultData();
+
+    default void onBookEditingDone(@Nullable final EditBookOutput data) {
+        if (data != null) {
+            getResultData().putParcelable(EditBookOutput.BKEY, data);
+        }
+    }
 }

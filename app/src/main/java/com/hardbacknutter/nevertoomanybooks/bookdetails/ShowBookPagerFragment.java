@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -36,10 +35,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 public class ShowBookPagerFragment
@@ -52,60 +49,38 @@ public class ShowBookPagerFragment
 
     @SuppressWarnings("FieldCanBeLocal")
     private ShowBookPagerAdapter mPagerAdapter;
+
+    private ShowBookDetailsActivityViewModel mAVm;
+    /** Contains ONLY the data relevant to the pager. */
     private ShowBookPagerViewModel mVm;
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    // always set the *current* book, so BoB can reposition more accurately.
                     final long bookId = mVm.getBookIdAtPosition(mViewPager.getCurrentItem());
-                    final Intent resultIntent = new Intent();
-                    resultIntent.putExtra(DBKey.FK_BOOK, bookId);
+                    final Intent resultIntent = EditBookOutput
+                            .createResultIntent(bookId, mAVm.isModified());
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
 
-    /**
-     * @param context Current context
-     * @param bookId  initial book to show
-     *
-     * @return Intent
-     */
-    public static Intent createIntent(@NonNull final Context context,
-                                      final long bookId) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
-                          R.layout.activity_book_details)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
-                          ShowBookPagerFragment.class.getName())
-                .putExtra(DBKey.FK_BOOK, bookId);
-    }
-
-    public static Intent createIntent(@NonNull final Context context,
-                                      final long bookId,
-                                      @Nullable final String navTableName,
-                                      final long listTableRowId,
-                                      @Nullable final String styleUuid) {
-        return createIntent(context, bookId)
-                // the current list table, so the user can swipe
-                // to the next/previous book
-                .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME, navTableName)
-                // The row id in the list table of the given book.
-                // Keep in mind a book can occur multiple times,
-                // so we need to pass the specific one.
-                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID, listTableRowId)
-                // some style elements are applicable for the details screen
-                .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Bundle args = requireArguments();
+
+        //noinspection ConstantConditions
+        mAVm = new ViewModelProvider(getActivity()).get(ShowBookDetailsActivityViewModel.class);
+        mAVm.init(getActivity(), args);
+
         mVm = new ViewModelProvider(this).get(ShowBookPagerViewModel.class);
-        mVm.init(requireArguments());
+        mVm.init(args);
     }
 
     @Override
@@ -149,12 +124,8 @@ public class ShowBookPagerFragment
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            final ShowBookDetailsFragment fragment = new ShowBookDetailsFragment();
-            final Bundle args = new Bundle();
-            args.putLong(DBKey.FK_BOOK, mVm.getBookIdAtPosition(position));
-            args.putString(ListStyle.BKEY_STYLE_UUID, mVm.getStyleUuid());
-            fragment.setArguments(args);
-            return fragment;
+            return ShowBookDetailsFragment.create(mVm.getBookIdAtPosition(position),
+                                                  mAVm.getStyle().getUuid(), false);
         }
 
         @Override

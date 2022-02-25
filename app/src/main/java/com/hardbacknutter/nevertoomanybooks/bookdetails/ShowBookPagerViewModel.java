@@ -31,7 +31,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
@@ -48,10 +47,6 @@ public class ShowBookPagerViewModel
     /** <strong>Optionally</strong> passed. */
     @Nullable
     private BooklistNavigatorDao mNavHelper;
-
-    /** <strong>Optionally</strong> passed. */
-    @Nullable
-    private String mStyleUuid;
 
     /**
      * The <strong>initial</strong> pager position being displayed.
@@ -81,9 +76,6 @@ public class ShowBookPagerViewModel
             mInitialBookId = args.getLong(DBKey.FK_BOOK, 0);
             SanityCheck.requirePositiveValue(mInitialBookId, DBKey.FK_BOOK);
 
-            // optional
-            mStyleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
-
             // the list is optional
             // If present, the user can swipe to the next/previous book in the list.
             final String navTableName = args.getString(BKEY_NAV_TABLE_NAME);
@@ -96,11 +88,6 @@ public class ShowBookPagerViewModel
                 mInitialPagerPosition = 0;
             }
         }
-    }
-
-    @Nullable
-    public String getStyleUuid() {
-        return mStyleUuid;
     }
 
     /**

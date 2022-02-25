@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class SearchBookUpdatesViewModel
@@ -62,7 +63,7 @@ public class SearchBookUpdatesViewModel
 
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
-    private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+    static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
 
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
@@ -146,8 +147,7 @@ public class SearchBookUpdatesViewModel
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
             if (args != null) {
-                //noinspection unchecked
-                mBookIdList = (ArrayList<Long>) args.getSerializable(Book.BKEY_BOOK_ID_LIST);
+                mBookIdList = ParcelUtils.unwrap(args, Book.BKEY_BOOK_ID_LIST);
             }
 
             mSyncProcessorBuilder = createSyncProcessorBuilder();
@@ -434,8 +434,7 @@ public class SearchBookUpdatesViewModel
         //update the counter, another one done.
         final TaskProgress taskProgress = new TaskProgress(
                 R.id.TASK_ID_UPDATE_FIELDS, null,
-                mCurrentProgressCounter, mCurrentCursorCount, null
-        );
+                mCurrentProgressCounter, mCurrentCursorCount, null);
         mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(taskProgress));
 
         // On to the next book in the list.
@@ -485,14 +484,12 @@ public class SearchBookUpdatesViewModel
         if (e != null) {
             Logger.error(TAG, e);
             final LiveDataEvent<TaskResult<Exception>> message =
-                    new LiveDataEvent<>(
-                            new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
+                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, e));
             mListFailed.setValue(message);
 
         } else {
             final LiveDataEvent<TaskResult<Bundle>> message =
-                    new LiveDataEvent<>(
-                            new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
+                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
             if (mIsCancelled) {
                 mSearchCoordinatorCancelled.setValue(message);
             } else {

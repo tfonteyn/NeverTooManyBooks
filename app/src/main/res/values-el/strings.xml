@@ -96,6 +96,7 @@
     <string name="error_unknown_long">Προέκυψε ένα μη αναμενόμενο σφάλμα. Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη χρησιμοποιώντας την επιλογή «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_import_csv_missing_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
+    <string name="error_import_failed_for_record">Αποτυχία Εισαγωγής (%1$s).</string>
     <string name="error_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
     <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
     <string name="httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
@@ -144,7 +145,7 @@
     <string name="txt_share_book_im_reading">Διαβάζω «%1$s» %2$s από %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Πατήστε στη μεγαλύτερη εικόνα για να την επιλέξετε.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Κάντε κλικ στη μικρογραφία για να δείτε μια μεγαλύτερη εικόνα.</string>
-    <string name="isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
+    <string name="isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Επαφές:</string>
@@ -157,7 +158,7 @@
     <string name="lbl_archive_type_csv">βιβλία (.csv)</string>
     <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>
     <string name="lbl_archive_type_backup_zip">Αντίγραφο ασφαλείας (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Αντίγραφο ασφαλείας (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Αντίγραφο ασφαλείας (.tar)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_xml">Εξαγωγή XML (.xml)</string>
     <string name="lbl_archive_type_json">Εξαγωγή JSON (.json)</string>

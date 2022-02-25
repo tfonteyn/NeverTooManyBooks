@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
@@ -97,7 +97,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * </ul>
  */
 public abstract class ArchiveReaderAbstract
-        implements ArchiveReader {
+        implements DataReader<ArchiveMetaData, ImportResults> {
+
+    private static final String ERROR_INVALID_HEADER = "Header is invalid / not found";
 
     /** Import configuration. */
     @NonNull
@@ -135,11 +137,13 @@ public abstract class ArchiveReaderAbstract
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
+    @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException {
         if (mMetaData == null) {
-            mMetaData = readMetaData(context);
+            // reading it will either assign a value to mMetaData, or throw exceptions
+            readMetaData(context);
         }
 
         // the info block will/can do more checks.
@@ -156,16 +160,12 @@ public abstract class ArchiveReaderAbstract
         return new BufferedInputStream(is, RecordReader.BUFFER_SIZE);
     }
 
-    /**
-     * An archive based on this class <strong>must</strong> have an info block.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
     @Override
     @WorkerThread
-    public ArchiveMetaData readMetaData(@NonNull final Context context)
+    @NonNull
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws InvalidArchiveException, ImportException, IOException {
+
         if (mMetaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
@@ -176,18 +176,20 @@ public abstract class ArchiveReaderAbstract
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
                         .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
-                    mMetaData = recordReader.readMetaData(record);
+                    mMetaData = recordReader.readMetaData(record).orElse(null);
                 }
             }
 
             // We MUST reset the stream here, so the caller gets a pristine stream.
             closeInputStream();
+
+            // An archive based on this class <strong>must</strong> have an info block.
+            if (mMetaData == null) {
+                throw new InvalidArchiveException(ERROR_INVALID_HEADER);
+            }
         }
 
-        if (mMetaData == null) {
-            throw new InvalidArchiveException(ERROR_INVALID_HEADER);
-        }
-        return mMetaData;
+        return Optional.of(mMetaData);
     }
 
     /**
@@ -217,9 +219,8 @@ public abstract class ArchiveReaderAbstract
                    IOException, StorageException {
 
         // Sanity check: the archive info should have been read during the validate phase
-        Objects.requireNonNull(mMetaData, "info");
-
-
+        // This is also a check that the validate method has been called.
+        Objects.requireNonNull(mMetaData, "mMetaData");
 
         final int archiveVersion = mMetaData.getArchiveVersion();
         switch (archiveVersion) {
@@ -227,7 +228,7 @@ public abstract class ArchiveReaderAbstract
             case 3:
             case 2:
                 // The reader is flexible enough to detect the different versions for now.
-                readV2(context, progressListener);
+                readV2(context, mMetaData, progressListener);
                 break;
 
             case 1:
@@ -241,6 +242,7 @@ public abstract class ArchiveReaderAbstract
     }
 
     private void readV2(@NonNull final Context context,
+                        @NonNull final ArchiveMetaData metaData,
                         @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException,
                    IOException, StorageException {
@@ -261,12 +263,11 @@ public abstract class ArchiveReaderAbstract
                 importEntries.add((RecordType.CalibreLibraries));
             }
 
-
-            //noinspection ConstantConditions
-            int estimatedSteps = 1 + mMetaData.getBookCount();
+            int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
             if (readCovers) {
-                if (mMetaData.hasCoverCount()) {
-                    estimatedSteps += mMetaData.getCoverCount();
+                final Optional<Integer> coverCount = metaData.getCoverCount();
+                if (coverCount.isPresent()) {
+                    estimatedSteps += coverCount.get();
                 } else {
                     // We don't have a count, so assume each book has 1 cover.
                     estimatedSteps *= 2;

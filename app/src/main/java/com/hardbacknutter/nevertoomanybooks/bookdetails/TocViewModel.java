@@ -33,48 +33,61 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class TocViewModel
         extends ViewModel {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private long mBookId;
+    /** The list of TOC entries we're displaying. */
+    @NonNull
+    private final List<AuthorWork> mList = new ArrayList<>();
+
     @Nullable
     private String mBookTitle;
-    @Nullable
-    private ArrayList<TocEntry> tocList;
 
     @Nullable
     private String authors;
 
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        mBookId = args.getLong(DBKey.FK_BOOK, 0);
-        mBookTitle = args.getString(DBKey.KEY_TITLE);
-        tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
-        final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-        if (authorList != null) {
-            authors = Author.getCondensedNames(context, authorList);
-            if (BuildConfig.DEBUG /* always */) {
-                authors = "[" + mBookId + "] " + authors;
+        if (mList.isEmpty()) {
+            final ArrayList<TocEntry> tocList = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
+            Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
+            mList.addAll(tocList);
+
+            // optional, display purpose only
+            mBookTitle = args.getString(DBKey.KEY_TITLE);
+            // optional, display purpose only
+            final List<Author> authorList = args.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            if (authorList != null) {
+                authors = Author.getCondensedNames(context, authorList);
+                if (BuildConfig.DEBUG /* always */) {
+                    final long bookId = args.getLong(DBKey.FK_BOOK, 0);
+                    authors = "[" + bookId + "] " + authors;
+                }
             }
         }
     }
 
-    @Nullable
-    public String getBookTitle() {
-        return mBookTitle;
+    public void reload(@NonNull final List<TocEntry> tocList) {
+        mList.clear();
+        mList.addAll(tocList);
     }
 
     @NonNull
-    public ArrayList<TocEntry> getTocList() {
-        return Objects.requireNonNull(tocList, Book.BKEY_TOC_LIST);
+    public List<AuthorWork> getList() {
+        return mList;
     }
 
     @Nullable
     public String getAuthors() {
         return authors;
+    }
+
+    @Nullable
+    public String getBookTitle() {
+        return mBookTitle;
     }
 }

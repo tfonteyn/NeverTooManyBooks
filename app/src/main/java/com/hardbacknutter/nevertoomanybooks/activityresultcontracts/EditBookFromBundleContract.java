@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 public class EditBookFromBundleContract
-        extends ActivityResultContract<Bundle, Bundle> {
+        extends ActivityResultContract<Bundle, EditBookOutput> {
 
     private static final String TAG = "EditBookFromBundle";
 
@@ -45,18 +45,15 @@ public class EditBookFromBundleContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Bundle bookData) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
-                          R.layout.activity_edit_book)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
-                          EditBookFragment.class.getName())
+        return FragmentHostActivity
+                .createIntent(context, R.layout.activity_edit_book, EditBookFragment.class)
                 .putExtra(Book.BKEY_DATA_BUNDLE, bookData);
     }
 
     @Override
     @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    public EditBookOutput parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -64,6 +61,7 @@ public class EditBookFromBundleContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getExtras();
+
+        return intent.getParcelableExtra(EditBookOutput.BKEY);
     }
 }

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IntRange;
@@ -31,11 +30,16 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
+import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerViewModel;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-public class ShowBookContract
-        extends ActivityResultContract<ShowBookContract.Input, Bundle> {
+public class ShowBookPagerContract
+        extends ActivityResultContract<ShowBookPagerContract.Input, EditBookOutput> {
 
     private static final String TAG = "ShowBookContract";
 
@@ -43,15 +47,26 @@ public class ShowBookContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        return ShowBookPagerFragment.createIntent(context, input.bookId,
-                                                  input.navTableName, input.listTableRowId,
-                                                  input.styleUuid);
+        return FragmentHostActivity
+                .createIntent(context, R.layout.activity_book_details, ShowBookPagerFragment.class)
+                .putExtra(DBKey.FK_BOOK, input.bookId)
+                // the current list table, so the user can swipe
+                // to the next/previous book
+                .putExtra(ShowBookPagerViewModel.BKEY_NAV_TABLE_NAME,
+                          input.navTableName)
+                // The row id in the list table of the given book.
+                // Keep in mind a book can occur multiple times,
+                // so we need to pass the specific one.
+                .putExtra(ShowBookPagerViewModel.BKEY_LIST_TABLE_ROW_ID,
+                          input.listTableRowId)
+                // some style elements are applicable for the details screen
+                .putExtra(ListStyle.BKEY_UUID, input.styleUuid);
     }
 
     @Override
     @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    public EditBookOutput parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -59,7 +74,8 @@ public class ShowBookContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getExtras();
+
+        return intent.getParcelableExtra(EditBookOutput.BKEY);
     }
 
     public static class Input {
@@ -68,13 +84,14 @@ public class ShowBookContract
         final long bookId;
         @NonNull
         final String styleUuid;
-        @NonNull
+        @Nullable
         final String navTableName;
+        /** Ignore if navTableName is null. */
         final long listTableRowId;
 
         public Input(@IntRange(from = 1) final long bookId,
                      @NonNull final String styleUuid,
-                     @NonNull final String navTableName,
+                     @Nullable final String navTableName,
                      final long listTableRowId) {
             this.bookId = bookId;
             this.styleUuid = styleUuid;

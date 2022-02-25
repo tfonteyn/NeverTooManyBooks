@@ -97,6 +97,7 @@
     <string name="error_unknown_long">Ocurrió un error inesperado. Si el problema persiste, comuníquese con el servicio de asistencia mediante la opción «%1$s» en la parte inferior de la página de configuración.</string>
     <string name="error_import_csv_missing_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
     <string name="error_import_failed">La importación falló.</string>
+    <string name="error_import_failed_for_record">La importación falló (%1$s).</string>
     <string name="error_file_not_recognized">El archivo seleccionado no se reconoce.</string>
     <string name="error_network_please_connect">Debes conectarte a Internet.</string>
     <string name="httpErrorIO">No se ha podido establecer comunicación con el servidor. Inténtalo de nuevo más tarde.</string>
@@ -145,7 +146,7 @@
     <string name="txt_share_book_im_reading">Estoy leyendo «%1$s» %2$s por %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Toque la imagen más grande para seleccionarla.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Toque una miniatura para mostrar una imagen más grande.</string>
-    <string name="isfdb_menu_populate_toc">Actualización automática de títulos (EXPERIMENTAL)</string>
+    <string name="isfdb_menu_populate_toc">Actualización automática de títulos (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(Solo soportado por el sitio web de la ISFDB.)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Contacto:</string>
@@ -158,7 +159,7 @@
     <string name="lbl_archive_type_csv">Los libros (.csv)</string>
     <string name="lbl_archive_type_csv_info">Exportación de los libros a fichero CSV</string>
     <string name="lbl_archive_type_backup_zip">Copia de respaldo (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Copia de respaldo (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Copia de respaldo (.tar)</string>
     <string name="lbl_archive_type_backup_info">Copia de seguridad completa / Restaurar archivo</string>
     <string name="lbl_archive_type_xml">Exportación XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Todos los datos en formato XML.</string>

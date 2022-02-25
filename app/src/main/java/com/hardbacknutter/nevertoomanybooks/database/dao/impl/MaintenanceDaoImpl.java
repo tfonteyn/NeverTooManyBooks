@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -183,18 +183,18 @@ public class MaintenanceDaoImpl
     /**
      * Process a <strong>single row</strong> from the cursor.
      *
-     * @param context     Current context
-     * @param titleLocale to use for this title
-     * @param reorder     flag whether to reorder or not
-     * @param cursor      positioned on the row to handle
-     * @param table       to update
-     * @param domainName  to update
+     * @param context    Current context
+     * @param locale     to use for optionally to reorder this title
+     * @param reorder    flag whether to reorder or not
+     * @param cursor     positioned on the row to handle
+     * @param table      to update
+     * @param domainName to update
      *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean rebuildOrderByTitleColumns(@NonNull final Context context,
-                                               @NonNull final Locale titleLocale,
+                                               @NonNull final Locale locale,
                                                final boolean reorder,
                                                @NonNull final Cursor cursor,
                                                @NonNull final TableDefinition table,
@@ -212,15 +212,16 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = ItemWithTitle.reorder(context, title, titleLocale);
+            rebuildObTitle = ReorderTitle.reorder(context, title, locale);
         } else {
-            rebuildObTitle = currentObTitle;
+            // Use the actual/original title
+            rebuildObTitle = title;
         }
 
         // only update the database if actually needed.
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
-            cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, titleLocale));
+            cv.put(domainName, SqlEncode.orderByColumn(rebuildObTitle, locale));
             return 0 < mDb.update(table.getName(), cv, DBKey.PK_ID + "=?",
                                   new String[]{String.valueOf(id)});
         }

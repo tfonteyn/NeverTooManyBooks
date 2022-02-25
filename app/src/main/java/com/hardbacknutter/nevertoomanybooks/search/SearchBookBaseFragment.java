@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -59,6 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
+    @NonNull
+    final MenuProvider mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
     private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);
     /** Set the hosting Activity result, and close it. */
@@ -66,13 +70,16 @@ public abstract class SearchBookBaseFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final Bundle output = getResultOwner().getResultData();
+                    final Intent resultIntent = new Intent().putExtras(output);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            getResultIntentOwner().getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };
+
     SearchCoordinator mCoordinator;
+
     private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
@@ -81,21 +88,15 @@ public abstract class SearchBookBaseFragment
                                               mCoordinator.setSiteList(sites);
                                           }
                                       });
-
-    @NonNull
-    final MenuProvider mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
-
     @Nullable
     private ProgressDelegate mProgressDelegate;
 
     @NonNull
-    public abstract ResultIntentOwner getResultIntentOwner();
+    protected abstract ResultIntentOwner getResultOwner();
 
     @CallSuper
-    void onBookEditingDone(@Nullable final Bundle data) {
-        if (data != null) {
-            getResultIntentOwner().getResultIntent().putExtras(data);
-        }
+    void onBookEditingDone(@Nullable final EditBookOutput data) {
+        getResultOwner().onBookEditingDone(data);
     }
 
     @Override
@@ -134,9 +135,7 @@ public abstract class SearchBookBaseFragment
 
     private void onSearchFinished(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         closeProgressDialog();
-        if (message.isNewEvent()) {
-            final Bundle result = message.getData().requireResult();
-
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
             if (searchErrors != null) {
                 //noinspection ConstantConditions
@@ -156,7 +155,7 @@ public abstract class SearchBookBaseFragment
                 Snackbar.make(getView(), R.string.warning_no_matching_book_found,
                               Snackbar.LENGTH_LONG).show();
             }
-        }
+        });
     }
 
     @CallSuper
@@ -166,17 +165,17 @@ public abstract class SearchBookBaseFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mCoordinator.cancelTask(message.getData().taskId))
+                        .setOnCancelListener(v -> mCoordinator.cancelTask(data.taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message.getData());
-        }
+            mProgressDelegate.onProgress(data);
+        });
     }
 
     private void closeProgressDialog() {

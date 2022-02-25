@@ -22,14 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.tasks;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import java.util.Optional;
+
 /**
  * Prevent acting twice on a delivered {@link LiveData} event.
  * <p>
- * See <a href="https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150">
- * this Medium post</a>
- * <p>
- * Modified from the article: the client must call {@link #isNewEvent()},
- * so we can pass {@code null} as valid data.
+ * See <a href="https://medium.com/androiddevelopers/ac2622673150">this Medium post</a>
  */
 public class LiveDataEvent<T> {
 
@@ -42,25 +40,21 @@ public class LiveDataEvent<T> {
     }
 
     /**
-     * Check if the data needs handling, or can be ignored.
-     *
-     * @return {@code true} if this is a new event that needs handling.
-     * {@code false} if the client can choose not to handle it.
-     */
-    public boolean isNewEvent() {
-        final boolean isNew = !mHasBeenHandled;
-        mHasBeenHandled = true;
-        return isNew;
-    }
-
-    /**
      * Get the payload.
+     * <p>
+     * This method will return a {@code Optional.of(data)} the first time it's called.
+     * Any subsequent calls will return an {@code Optional.empty()}.
      *
-     * @return data
+     * @return data as an Optional
      */
     @NonNull
-    public T getData() {
-        return mData;
+    public Optional<T> getData() {
+        if (mHasBeenHandled) {
+            return Optional.empty();
+        } else {
+            mHasBeenHandled = true;
+            return Optional.of(mData);
+        }
     }
 
     @Override

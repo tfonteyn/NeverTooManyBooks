@@ -86,7 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  */
 public class Book
         extends DataManager
-        implements ItemWithTitle, AuthorWork {
+        implements AuthorWork, ReorderTitle {
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -106,6 +106,7 @@ public class Book
      * <item>@string/lbl_condition_fine</item>
      * </string-array>
      */
+    @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
     public static final int CONDITION_AS_NEW = 5;
 
     /**
@@ -453,9 +454,12 @@ public class Book
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return reorderTitleForDisplaying(context, getLocale(context));
+        if (ReorderTitle.forDisplay(context)) {
+            return reorder(context, getLocale(context));
+        } else {
+            return getTitle();
+        }
     }
-
 
     /**
      * Convenience method.
@@ -470,6 +474,21 @@ public class Book
     public Locale getLocale(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         return getAndUpdateLocale(context, userLocale, false);
+    }
+
+    /**
+     * Get the Book's Locale (based on its language).
+     *
+     * @param context Current context
+     * @param unused  a Book will <strong>always</strong> use the user-locale as fallback.
+     *
+     * @return the Locale, or the users preferred Locale if no language was set.
+     */
+    @Override
+    @NonNull
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final Locale unused) {
+        return getLocale(context);
     }
 
     /**
@@ -1141,12 +1160,12 @@ public class Book
 
         // The share intent is limited to a single *type* of data.
         // We cannot send the cover AND the text; for now we send the text only.
-//        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
-//        // prepare the front-cover to post
-//        File coverFile = CoverDir.getCoverFile(context, uuid, 0);
-//        if (coverFile.exists()) {
-//            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
-//        }
+        //   String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        //   // prepare the front-cover to post
+        //   File coverFile = CoverDir.getCoverFile(context, uuid, 0);
+        //   if (coverFile.exists()) {
+        //       Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
+        //   }
 
         final String text = context.getString(R.string.txt_share_book_im_reading,
                                               title, seriesStr, authorStr, ratingStr);

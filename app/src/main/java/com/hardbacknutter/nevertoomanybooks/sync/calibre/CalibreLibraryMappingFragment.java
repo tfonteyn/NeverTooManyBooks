@@ -28,6 +28,7 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -45,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
@@ -64,6 +67,15 @@ public class CalibreLibraryMappingFragment
     private List<Bookshelf> mBookshelfList;
     private ExtArrayAdapter<CalibreLibrary> mLibraryArrayAdapter;
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
+
+    @NonNull
+    public static Fragment create() {
+        final Fragment fragment = new CalibreLibraryMappingFragment();
+        final Bundle args = new Bundle(1);
+        args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -130,17 +142,17 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void onMetaDataRead(
-            @NonNull final LiveDataEvent<TaskResult<SyncReaderMetaData>> message) {
-        if (message.isNewEvent()) {
-            mVm.setMetaData(message.getData().requireResult());
+    private void onMetaDataRead(@NonNull final
+                                LiveDataEvent<TaskResult<Optional<SyncReaderMetaData>>> message) {
+        message.getData().flatMap(TaskResult::requireResult).ifPresent(result -> {
+            mVm.extractLibraryData(result);
             mLibraryArrayAdapter.notifyDataSetChanged();
 
             onLibrarySelected(0);
             mVb.getRoot().setVisibility(View.VISIBLE);
 
             mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
-        }
+        });
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,
@@ -182,12 +194,13 @@ public class CalibreLibraryMappingFragment
     }
 
     private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
+            final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_network_site_access_failed,
                                                       CalibreContentServer.getHostUrl()));
+
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.lbl_calibre_content_server)
@@ -199,7 +212,7 @@ public class CalibreLibraryMappingFragment
                     })
                     .create()
                     .show();
-        }
+        });
     }
 
     private static class Holder

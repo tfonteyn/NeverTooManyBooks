@@ -74,18 +74,18 @@ public abstract class ConnectionValidationBasePreferenceFragment
     }
 
     protected void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> cancelTask(message.getData().taskId))
+                        .setOnCancelListener(v -> cancelTask(data.taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message.getData());
-        }
+            mProgressDelegate.onProgress(data);
+        });
     }
 
     protected void closeProgressDialog() {
@@ -99,8 +99,8 @@ public abstract class ConnectionValidationBasePreferenceFragment
     protected void onSuccess(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            final Boolean result = message.getData().getResult();
+        message.getData().ifPresent(data -> {
+            final Boolean result = data.getResult();
             if (result != null) {
                 if (result) {
                     //noinspection ConstantConditions
@@ -114,16 +114,16 @@ public abstract class ConnectionValidationBasePreferenceFragment
                     Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
                 }
             }
-        }
+        });
     }
 
     protected void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
+            final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_unknown));
 
             new MaterialAlertDialogBuilder(context)
@@ -133,6 +133,6 @@ public abstract class ConnectionValidationBasePreferenceFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
-        }
+        });
     }
 }

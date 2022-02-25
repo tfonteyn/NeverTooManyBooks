@@ -32,8 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,8 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 @Keep
 public class CalibreSyncFragment
         extends BaseFragment {
-
-    public static final String TAG = "CalibreSyncFragment";
 
     @NonNull
     private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
@@ -86,63 +82,30 @@ public class CalibreSyncFragment
             if (url.isEmpty()) {
                 openSettings();
             } else {
-                final Bundle args = new Bundle();
-                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
-
-                final Fragment fragment = new CalibreLibraryMappingFragment();
-                fragment.setArguments(args);
-                final FragmentManager fm = getParentFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(CalibreLibraryMappingFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, CalibreLibraryMappingFragment.TAG)
-                  .commit();
+                replaceFragment(CalibreLibraryMappingFragment.create(),
+                                CalibreLibraryMappingFragment.TAG);
             }
         });
         mVb.btnImport.setOnClickListener(v -> {
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                final Bundle args = new Bundle();
-                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
-
-                final Fragment fragment = new SyncReaderFragment();
-                fragment.setArguments(args);
-                final FragmentManager fm = getParentFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(SyncReaderFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, SyncReaderFragment.TAG)
-                  .commit();
+                replaceFragment(SyncReaderFragment.create(SyncServer.CalibreCS),
+                                SyncReaderFragment.TAG);
             }
         });
         mVb.btnExport.setOnClickListener(v -> {
             if (CalibreContentServer.getHostUrl().isEmpty()) {
                 openSettings();
             } else {
-                final Bundle args = new Bundle();
-                args.putParcelable(SyncServer.BKEY_SITE, SyncServer.CalibreCS);
-
-                final Fragment fragment = new SyncWriterFragment();
-                fragment.setArguments(args);
-                final FragmentManager fm = getParentFragmentManager();
-                fm.beginTransaction()
-                  .setReorderingAllowed(true)
-                  .addToBackStack(SyncWriterFragment.TAG)
-                  .replace(R.id.main_fragment, fragment, SyncWriterFragment.TAG)
-                  .commit();
+                replaceFragment(SyncWriterFragment.create(SyncServer.CalibreCS),
+                                SyncWriterFragment.TAG);
             }
         });
     }
 
     private void openSettings() {
-        final Fragment fragment = new CalibrePreferencesFragment();
-        final FragmentManager fm = getParentFragmentManager();
-        fm.beginTransaction()
-          .setReorderingAllowed(true)
-          .addToBackStack(CalibrePreferencesFragment.TAG)
-          .replace(R.id.main_fragment, fragment, CalibrePreferencesFragment.TAG)
-          .commit();
+        replaceFragment(new CalibrePreferencesFragment(), CalibrePreferencesFragment.TAG);
     }
 
     private class ToolbarMenuProvider
@@ -151,7 +114,7 @@ public class CalibreSyncFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menu.add(R.id.MENU_GROUP_CALIBRE, R.id.MENU_CALIBRE_SETTINGS, 0, R.string.lbl_settings)
+            menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTINGS, 0, R.string.lbl_settings)
                 .setIcon(R.drawable.ic_baseline_settings_24);
         }
 

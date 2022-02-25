@@ -37,8 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
@@ -49,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <strong>WARNING - EXPERIMENTAL:</strong> format can/will change, splitting of authors etc...
  */
 public class JsonArchiveReader
-        implements ArchiveReader {
+        implements DataReader<ArchiveMetaData, ImportResults> {
 
     /** Import configuration. */
     @NonNull

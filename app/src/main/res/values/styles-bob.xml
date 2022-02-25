@@ -22,6 +22,14 @@
 <!-- BooksOnBookshelf. -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- the header above the list itself; where style/filter/nr-of-books/... is displayed -->
+    <style name="BoB.Header.Container" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/appBobListHeaderBackground</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
     <!-- A single header field on the book-list header row. -->
     <style name="BoB.Header" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_height">wrap_content</item>

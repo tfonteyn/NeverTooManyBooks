@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -58,7 +59,7 @@ public class CalibreDaoImpl
     }
 
     @Override
-    public void updateOrInsert(@NonNull final Book book)
+    public boolean updateOrInsert(@NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -69,11 +70,11 @@ public class CalibreDaoImpl
 
         // Just delete all current data and insert from scratch.
         delete(book);
-        insert(book);
+        return insert(book);
     }
 
     @Override
-    public void insert(@NonNull final Book book)
+    public boolean insert(@NonNull final Book book)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -102,15 +103,19 @@ public class CalibreDaoImpl
                 // This can happen if the import data contained old (pre) v2.5.1
                 // encoded library data.
                 // Log and bail out but do NOT throw an error!
-                Logger.warn(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
-                return;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+                    Logger.warn(TAG, "CalibreLibrary invalid(1) for book=" + book.getId());
+                }
+                return false;
             }
         } else {
             // This can happen if the import data contained old (pre) v2.5.1
             // encoded library data.
             // Log and bail out but do NOT throw an error!
-            Logger.warn(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
-            return;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
+                Logger.warn(TAG, "CalibreLibrary invalid(2) for book=" + book.getId());
+            }
+            return false;
         }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
@@ -124,6 +129,8 @@ public class CalibreDaoImpl
                 throw new DaoWriteException("Calibre data insert failed");
             }
         }
+
+        return true;
     }
 
     @Override

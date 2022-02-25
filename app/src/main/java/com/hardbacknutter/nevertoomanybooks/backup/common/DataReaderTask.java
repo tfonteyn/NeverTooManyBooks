@@ -22,52 +22,51 @@ package com.hardbacknutter.nevertoomanybooks.backup.common;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Input: {@link ImportHelper}.
- * Output: {@link ArchiveMetaData}.
- */
-public class ArchiveReadMetaDataTask
-        extends MTask<ArchiveMetaData> {
+public class DataReaderTask<METADATA, RESULTS>
+        extends MTask<RESULTS> {
 
-    /** Log tag. */
-    private static final String TAG = "ArchiveReadMetaDataTask";
+    private static final String TAG = "DataReaderTask";
 
-    /** import configuration. */
-    private ImportHelper mHelper;
+    private ImporterBase<METADATA, RESULTS> mHelper;
 
-    public ArchiveReadMetaDataTask() {
-        super(R.id.TASK_ID_READ_META_DATA, TAG);
+    public DataReaderTask() {
+        super(R.id.TASK_ID_IMPORT, TAG);
     }
 
     /**
      * Start the task.
      *
-     * @param helper import configuration
+     * @param helper configuration
      */
     @UiThread
-    public void start(@NonNull final ImportHelper helper) {
+    public void start(@NonNull final ImporterBase<METADATA, RESULTS> helper) {
         mHelper = helper;
         execute();
     }
 
-    @Nullable
+    @NonNull
     @Override
     @WorkerThread
-    protected ArchiveMetaData doWork(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException,
-                   StorageException {
-        return mHelper.readMetaData(context);
+    protected RESULTS doWork(@NonNull final Context context)
+            throws InvalidArchiveException,
+                   ImportException,
+                   IOException,
+                   StorageException,
+                   CredentialsException,
+                   CertificateException {
+
+        return mHelper.read(context, this);
     }
 }

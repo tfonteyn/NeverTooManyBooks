@@ -121,9 +121,9 @@ public interface FtsDao {
     /**
      * Create a string suited to be used with MATCH.
      *
-     * @param author        Author related keywords to find
-     * @param title         Title related keywords to find
+     * @param bookTitle     Title related keywords to find
      * @param seriesTitle   Series title related keywords to find
+     * @param author        Author related keywords to find
      * @param publisherName Publisher name related keywords to find
      * @param keywords      Keywords to find anywhere in book;
      *                      this includes titles and authors
@@ -132,15 +132,15 @@ public interface FtsDao {
      * or {@code ""} if all input was empty
      */
     @NonNull
-    static String createMatchString(@Nullable final String author,
-                                    @Nullable final String title,
+    static String createMatchString(@Nullable final String bookTitle,
                                     @Nullable final String seriesTitle,
+                                    @Nullable final String author,
                                     @Nullable final String publisherName,
                                     @Nullable final String keywords) {
 
         return (prepareSearchText(keywords, null)
                 + prepareSearchText(author, DBKey.FTS_AUTHOR_NAME)
-                + prepareSearchText(title, DBKey.KEY_TITLE)
+                + prepareSearchText(bookTitle, DBKey.KEY_TITLE)
                 + prepareSearchText(seriesTitle, DBKey.KEY_SERIES_TITLE)
                 + prepareSearchText(publisherName, DBKey.KEY_PUBLISHER_NAME)
         ).trim();

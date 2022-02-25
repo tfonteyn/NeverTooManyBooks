@@ -24,10 +24,10 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -74,7 +74,7 @@ public class ArchiveMetaData {
     }
 
     /**
-     * Constructor used while writing to an Archive.
+     * Constructor used while <strong>writing</strong> to an Archive.
      *
      * @param context Current context
      * @param version of the archive structure
@@ -109,7 +109,7 @@ public class ArchiveMetaData {
     }
 
     /**
-     * Get the raw bundle, this is used for reading out the info block to the backup archive.
+     * Get the raw bundle for reading/writing.
      *
      * @return the bundle with all settings.
      */
@@ -119,28 +119,18 @@ public class ArchiveMetaData {
     }
 
     /**
-     * Get the date from the creation-date field.
-     *
-     * @return LocalDateTime(user local at time of creation), or {@code null} if none or invalid
-     */
-    @Nullable
-    public LocalDateTime getCreatedLocalDate() {
-        return new ISODateParser().parse(mInfo.getString(INFO_CREATED_DATE));
-    }
-
-    /**
      * Get the version of the Archiver that wrote this archive.
      *
-     * @return archive version
+     * @return archive version, or {@code 0} if not known.
      */
     public int getArchiveVersion() {
-        return mInfo.getInt(INFO_ARCHIVER_VERSION);
+        return mInfo.getInt(INFO_ARCHIVER_VERSION, 0);
     }
 
     /**
      * Get the version of the <strong>database</strong> this archive was generated from.
      *
-     * @return version
+     * @return version, or {@code 0} if not known.
      */
     public int getDatabaseVersionCode() {
         return mInfo.getInt(INFO_DATABASE_VERSION, 0);
@@ -149,7 +139,7 @@ public class ArchiveMetaData {
     /**
      * Get the version of the <strong>application</strong> this archive was generated from.
      *
-     * @return version
+     * @return version, or {@code 0} if not known.
      */
     public long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
@@ -166,19 +156,18 @@ public class ArchiveMetaData {
     }
 
     /**
-     * Check if the archive has a known number of books.
-     * Will return {@code false} if there is no number (or if the number is 0).
-     * This does not mean there might not be any books though.
+     * Get the date from the creation-date field.
      *
-     * @return {@code true} if the number of books is <strong>known</strong>
+     * @return Optional LocalDateTime(user local at time of creation)
      */
-    public boolean hasBookCount() {
-        return mInfo.containsKey(INFO_NUMBER_OF_BOOKS)
-               && mInfo.getInt(INFO_NUMBER_OF_BOOKS) > 0;
-    }
-
-    public int getBookCount() {
-        return mInfo.getInt(INFO_NUMBER_OF_BOOKS);
+    @NonNull
+    public Optional<LocalDateTime> getCreatedLocalDate() {
+        final LocalDateTime date = new ISODateParser().parse(mInfo.getString(INFO_CREATED_DATE));
+        if (date != null) {
+            return Optional.of(date);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void setBookCount(final int count) {
@@ -186,19 +175,35 @@ public class ArchiveMetaData {
     }
 
     /**
-     * Check if the archive has a known number of covers.
-     * Will return {@code false} if there is no number (or if the number is 0).
-     * This does not mean there might not be any covers though.
+     * Get the number of books.
      *
-     * @return {@code true} if the number of books is <strong>known</strong>
+     * @return the number of books if known
      */
-    public boolean hasCoverCount() {
-        return mInfo.containsKey(INFO_NUMBER_OF_COVERS)
-               && mInfo.getInt(INFO_NUMBER_OF_COVERS) > 0;
+    @NonNull
+    public Optional<Integer> getBookCount() {
+        if (mInfo.containsKey(INFO_NUMBER_OF_BOOKS)) {
+            final int count = mInfo.getInt(INFO_NUMBER_OF_BOOKS);
+            if (count > 0) {
+                return Optional.of(count);
+            }
+        }
+        return Optional.empty();
     }
 
-    public int getCoverCount() {
-        return mInfo.getInt(INFO_NUMBER_OF_COVERS);
+    /**
+     * Get the number of covers.
+     *
+     * @return the number of covers if known
+     */
+    @NonNull
+    public Optional<Integer> getCoverCount() {
+        if (mInfo.containsKey(INFO_NUMBER_OF_BOOKS)) {
+            final int count = mInfo.getInt(INFO_NUMBER_OF_BOOKS);
+            if (count > 0) {
+                return Optional.of(count);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

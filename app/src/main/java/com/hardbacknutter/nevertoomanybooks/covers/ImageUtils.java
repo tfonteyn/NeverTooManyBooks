@@ -23,14 +23,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public final class ImageUtils {
 
@@ -140,6 +147,30 @@ public final class ImageUtils {
     }
 
     /**
+     * Write out to the destination file
+     *
+     * @param bitmap to write
+     *
+     * @return (potentially) compressed bitmap; or {@code null} on any non-fatal error.
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    @Nullable
+    static Bitmap writeFile(@NonNull final Bitmap bitmap,
+                            @NonNull final File destFile)
+            throws IOException {
+
+        try (OutputStream os = new FileOutputStream(destFile.getAbsoluteFile())) {
+            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)) {
+                return bitmap;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Check if caching is enabled.
      *
      * @return {@code true} if resized images are cached in a database.
@@ -155,5 +186,39 @@ public final class ImageUtils {
                       .edit()
                       .putBoolean(Prefs.pk_image_cache_resized, enable)
                       .apply();
+    }
+
+    /**
+     * Given a InputStream with an image, write it to a file in the covers directory.
+     * We first write to a temporary file, so an existing 'out' file is not destroyed
+     * if the stream somehow fails.
+     *
+     * @param is       InputStream to read
+     * @param destFile File to write to
+     *
+     * @return File written to (the one passed in)
+     *
+     * @throws CoverStorageException The covers directory is not available
+     * @throws FileNotFoundException if the input stream was {@code null}
+     * @throws IOException           on failure
+     */
+    @NonNull
+    public static File copy(@Nullable final InputStream is,
+                            @NonNull final File destFile)
+            throws CoverStorageException, FileNotFoundException, IOException {
+        if (is == null) {
+            throw new FileNotFoundException("InputStream was NULL");
+        }
+
+        final File tmpFile = new File(CoverDir.getTemp(ServiceLocator.getAppContext()),
+                                      System.nanoTime() + ".jpg");
+        try (OutputStream os = new FileOutputStream(tmpFile)) {
+            FileUtils.copy(is, os);
+            // rename to real output file
+            FileUtils.rename(tmpFile, destFile);
+            return destFile;
+        } finally {
+            FileUtils.delete(tmpFile);
+        }
     }
 }

@@ -24,12 +24,12 @@ import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public interface TocEntryDao {
@@ -90,10 +90,10 @@ public interface TocEntryDao {
      *
      * @param id TOC id
      *
-     * @return list of id/titles of books.
+     * @return list of id/titles/language of books.
      */
     @NonNull
-    List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) long id);
+    List<BookLight> getBookTitles(@IntRange(from = 1) long id);
 
     /**
      * Get the list of TocEntry for this book.

@@ -198,7 +198,7 @@ public class ImageDownloader {
                         con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
                     }
 
-                    savedFile = FileUtils.copy(con.getInputStream(), destination);
+                    savedFile = ImageUtils.copy(con.getInputStream(), destination);
                 }
             }
         } catch (@NonNull final IOException e) {

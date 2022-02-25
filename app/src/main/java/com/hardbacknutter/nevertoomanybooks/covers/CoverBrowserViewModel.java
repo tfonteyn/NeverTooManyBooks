@@ -53,6 +53,7 @@ public class CoverBrowserViewModel
 
     /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
+    /** int 0..1 */
     static final String BKEY_FILE_INDEX = TAG + ":cIdx";
 
     /** Progressbar for the gallery. */
@@ -92,38 +93,37 @@ public class CoverBrowserViewModel
     /** FetchImageTask listener. */
     private final TaskListener<ImageFileInfo> mTaskListener = new TaskListener<>() {
         @Override
-        public void onFinished(@NonNull final TaskResult<ImageFileInfo> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-            final ImageFileInfo result = message.getResult();
-            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
+        public void onFinished(final int taskId,
+                               @Nullable final ImageFileInfo result) {
+            if (taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(result);
             } else {
-                removeTask(message.getTaskId());
+                removeTask(taskId);
                 mGalleryImage.setValue(result);
             }
         }
 
         @Override
-        public void onCancelled(@NonNull final TaskResult<ImageFileInfo> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
+        public void onCancelled(final int taskId,
+                                @Nullable final ImageFileInfo result) {
+            if (taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);
             } else {
-                removeTask(message.getTaskId());
+                removeTask(taskId);
                 mGalleryImage.setValue(null);
             }
         }
 
         @Override
-        public void onFailure(@NonNull final TaskResult<Exception> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-            if (message.getTaskId() == R.id.TASK_ID_PREVIEW_IMAGE) {
+        public void onFailure(final int taskId,
+                              @Nullable final Exception exception) {
+            if (taskId == R.id.TASK_ID_PREVIEW_IMAGE) {
                 mSelectedImageTask = null;
                 mSelectedImage.setValue(null);
             } else {
-                removeTask(message.getTaskId());
+                removeTask(taskId);
                 mGalleryImage.setValue(null);
             }
         }
@@ -160,8 +160,7 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKey.KEY_ISBN),
-                                                 "KEY_ISBN");
+            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKey.KEY_ISBN), DBKey.KEY_ISBN);
             mCIdx = args.getInt(BKEY_FILE_INDEX);
 
             // optional
@@ -204,16 +203,12 @@ public class CoverBrowserViewModel
      */
     private void removeTask(final int taskId) {
         synchronized (mGalleryTasks) {
-            String isbn = null;
-            for (final Map.Entry<String, FetchImageTask> entry : mGalleryTasks.entrySet()) {
-                if (entry.getValue().getTaskId() == taskId) {
-                    isbn = entry.getKey();
-                    break;
-                }
-            }
-            if (isbn != null) {
-                mGalleryTasks.remove(isbn);
-            }
+
+            mGalleryTasks.entrySet()
+                         .stream()
+                         .filter(entry -> entry.getValue().getTaskId() == taskId)
+                         .findFirst()
+                         .ifPresent(entry -> mGalleryTasks.remove(entry.getKey()));
 
             if (mGalleryTasks.isEmpty()) {
                 mShowGalleryProgress.setValue(false);

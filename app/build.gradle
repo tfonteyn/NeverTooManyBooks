@@ -101,7 +101,7 @@ android {
     defaultConfig {
         applicationId "com.hardbacknutter.nevertoomanybooks"
         versionCode 13
-        versionName = "2.9.7"
+        versionName = "2.9.8"
 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.sdkVersion
@@ -239,9 +239,9 @@ android {
     }
 }
 
-// AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
-    // We're using an updated/repacked org.json, version 20210307
+    // We're using an updated/repacked org.json, version 20211205
+    // https://github.com/stleary/JSON-java
     implementation project(path: ":repacked-org-json")
     implementation project(path: ":fastscroller")
 
@@ -252,11 +252,12 @@ dependencies {
     implementation("androidx.annotation:annotation:${androidx_annotation_version}")
     implementation("androidx.appcompat:appcompat:${androidx_appcompat_version}")
     implementation("androidx.cardview:cardview:${androidx_cardview_version}")
+    // core is only needed for custom constraint helpers
+    implementation("androidx.constraintlayout:constraintlayout-core:${androidx_constraintlayout_core_version}")
     implementation("androidx.constraintlayout:constraintlayout:${androidx_constraintlayout_version}")
     implementation("androidx.coordinatorlayout:coordinatorlayout:${androidx_coordinatorlayout_version}")
     implementation("androidx.core:core:${androidx_core_version}")
     implementation("androidx.customview:customview:${androidx_customview_version}")
-    implementation("androidx.databinding:viewbinding:${androidx_databinding_version}")
     implementation("androidx.documentfile:documentfile:${androidx_documentfile_version}")
     implementation("androidx.drawerlayout:drawerlayout:${androidx_drawerlayout_version}")
     implementation("androidx.exifinterface:exifinterface:${androidx_exifinterface_version}")

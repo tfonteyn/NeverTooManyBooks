@@ -68,43 +68,18 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Chips for view and edit mode -->
+    <!-- TODO: using a chip purely for displaying is not in the material guidelines...
+         Read-Only style for Book-view screen.
+         Used to list the bookshelves and the editions
+         -->
     <!-- *************************************************************************************** -->
-    <style name="ChipGroup" parent="Widget.Material3.ChipGroup">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <!-- without some extra margin, the chips are glued to the label above the group. -->
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="chipSpacingVertical">4dp</item>
-    </style>
-
-    <!-- Read-Write style for Book-edit screen. -->
-    <style name="Chip.Filter" parent="Widget.Material3.Chip.Filter">
-    </style>
-
-    <!-- Read-Only style for Book-view screen.
-         Defaults:
-        <item name="chipCornerRadius">24dp</item>
-        <item name="chipMinHeight">48dp</item>
-        <item name="android:textSize">14p</item>
-        <item name="ensureMinTouchTargetSize">true</item>
-        -->
-    <style name="Chip.Display" parent="Base.Widget.Material3.Chip">
-        <item name="closeIconVisible">false</item>
-        <item name="android:checkable">false</item>
+    <style name="Chip.Display" parent="Widget.Material3.Chip.Suggestion.Elevated">
         <item name="android:clickable">false</item>
-
-        <item name="chipCornerRadius">12dp</item>
-        <item name="chipMinHeight">24dp</item>
         <item name="android:textSize">12sp</item>
+        <item name="chipMinHeight">24dp</item>
         <item name="ensureMinTouchTargetSize">false</item>
-    </style>
-
-    <!-- Queue type view: the user can tap the chip for actioning, or tap the close icon to remove it -->
-    <style name="Chip.Queue" parent="Base.Widget.Material3.Chip">
-        <item name="closeIconVisible">true</item>
-        <item name="android:checkable">false</item>
-        <item name="android:clickable">true</item>
+        <item name="chipCornerRadius">2dp</item>
+        <item name="chipBackgroundColor">?android:attr/colorBackground</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -121,10 +96,13 @@
     <style name="FABMenu" parent="Widget.Material3.ExtendedFloatingActionButton.Primary">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|end</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
         <item name="android:visibility">invisible</item>
         <item name="iconGravity">end</item>
+        <item name="layout_anchorGravity">top|end</item>
+        <!-- the anchorGravity is set to the 'end', hence the layout gravity must be 'start'
+        to get everything aligned on the right (end) side. -->
+        <item name="android:layout_gravity">start</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -135,22 +113,16 @@
     <style name="Toolbar.Activity" parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/appToolbarBackground</item>
         <item name="layout_scrollFlags">scroll|enterAlways</item>
-        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar">
+    <style name="Toolbar.Dialog" parent="Widget.Material3.Toolbar.Surface">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/appToolbarBackground</item>
         <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
-        <item name="android:background">?attr/colorPrimary</item>
-    </style>
-
-    <style name="TabBar" parent="Widget.Material3.TabLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="tabMode">scrollable</item>
     </style>
 
     <style name="NavigationView" parent="Widget.Material3.NavigationView">
@@ -164,7 +136,7 @@
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->
 
-    <!-- FrameLayout for a DialogFragment - FLOATING and FULLSCREEN dialog
+    <!-- FrameLayout for a DialogFragment - FLOATING or FULLSCREEN depending on screen size
          FrameLayout
          ConstraintLayout
 
@@ -177,7 +149,7 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- FrameLayout for a DialogFragment - FULLSCREEN dialog ONLY
+    <!-- FrameLayout for a DialogFragment - always FULLSCREEN
          NestedScrollView
     -->
     <style name="Dialog.Fullscreen" parent="">
@@ -248,19 +220,21 @@
         <item name="android:insetRight">4dp</item>
     </style>
 
+    <!-- Opens more details etc... from within a screen. e.g. the "show toc" button. -->
     <style name="Button.Action.Open" parent="Widget.Material3.Button.TonalButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <!-- A button which will take the user to some external website. -->
-    <style name="Button.Url" parent="Widget.Material3.Button.ElevatedButton">
+    <!-- A button which will take the user to an external website. -->
+    <style name="Button.Url" parent="Widget.Material3.Button.TextButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textColor">?android:attr/textColorLink</item>
         <item name="android:textAllCaps">false</item>
         <item name="icon">@drawable/ic_baseline_link_24</item>
+        <item name="iconGravity">textEnd</item>
     </style>
 
     <!-- ImageButton -->
@@ -298,22 +272,15 @@
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
-    <!-- *************************************************************************************** -->
+    <style name="About.DebugVersion" parent="Field.Generic.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- actionBarSize is a bit of a hack... but positioning
+             the fragment in the FragmentContainerView constrained to
+             the visible screen is elusive. -->
+        <item name="android:layout_marginBottom">?attr/actionBarSize</item>
+        <item name="android:textStyle">italic</item>
 
-    <!-- Snackbar: override the default to allow 2 lines of text. -->
-    <style name="App.SnackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
-        <item name="android:maxLines">2</item>
-    </style>
-
-    <!-- *************************************************************************************** -->
-    <!-- We want the full screen calendar widget to use the same header style as all our edit-screens. -->
-    <style name="App.MaterialCalendar.HeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
-        <item name="android:background">?attr/colorPrimary</item>
-    </style>
-
-    <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -335,18 +302,49 @@
         <item name="android:minWidth">@dimen/screen_min_width</item>
     </style>
 
-    <style name="Progress.Circle" parent="Widget.Material3.CircularProgressIndicator">
+    <!-- *************************************************************************************** -->
+
+    <!-- Global theme attribute "chipGroupStyle" -->
+    <style name="App.ChipGroup" parent="Widget.Material3.ChipGroup">
+        <!-- There is a label above the group. -->
+        <item name="android:layout_marginTop">4dp</item>
+        <!-- the default is 8dp. -->
+        <item name="chipSpacingVertical">4dp</item>
+    </style>
+
+    <!-- Global theme attribute "tabStyle" -->
+    <style name="App.TabBar" parent="Widget.Material3.TabLayout">
+        <item name="tabMode">scrollable</item>
+        <item name="tabTextColor">@color/tab_text_color</item>
+    </style>
+
+    <!-- Global theme attribute "circularProgressIndicatorStyle" -->
+    <style name="App.Progress.Circle" parent="Widget.Material3.CircularProgressIndicator">
         <item name="android:clickable">true</item>
         <item name="android:alpha">0.8</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:elevation">@dimen/progress_z</item>
-        <item name="android:background">@color/grey_100</item>
         <item name="android:indeterminate">true</item>
-        <!-- <item name="indicatorColor">?attr/colorPrimaryDark</item>-->
         <item name="indicatorSize">96dp</item>
-        <!-- <item name="trackColor">?attr/colorSecondary</item>-->
+        <item name="android:background">?attr/appProgressCircleBackgroundColor</item>
     </style>
+
+    <!--  Global theme attribute "snackbarTextViewStyle" -->
+    <style name="App.SnackbarTextViewStyle" parent="Widget.Material3.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <!-- Global theme attribute "materialCalendarHeaderLayout"
+    We want the full screen calendar widget to use the same header style as all our edit-screens. -->
+    <style name="App.MaterialCalendar.HeaderLayout" parent="Widget.Material3.MaterialCalendar.HeaderLayout">
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Global theme attribute "materialCalendarHeaderConfirmButton" -->
+    <style name="App.MaterialCalendar.HeaderConfirmButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:backgroundTint">?attr/colorButtonNormal</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 
 </resources>

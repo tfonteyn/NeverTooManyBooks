@@ -23,24 +23,33 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.io.File;
+
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 public class CoverHandlerViewModel
         extends ViewModel {
 
+    private final TransFormTask mTransFormTask = new TransFormTask();
     /** Used to display a tip dialog when the user rotates a camera image. */
     private boolean mShowTipAboutRotating = true;
 
-    private final TransFormTask mTransFormTask = new TransFormTask();
-
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>> onFinished() {
+    public LiveData<LiveDataEvent<TaskResult<TransFormTask.TransformedData>>>
+    onFinished() {
         return mTransFormTask.onFinished();
     }
 
-    public void execute(@NonNull final TransFormTask.Transformation transformation) {
-        mTransFormTask.transform(transformation);
+    public void execute(@NonNull final Transformation transformation,
+                        @NonNull final File destFile) {
+        mTransFormTask.transform(transformation, destFile, CoverHandler.NextAction.Done);
+    }
+
+    public void execute(@NonNull final Transformation transformation,
+                        @NonNull final File destFile,
+                        @NonNull final CoverHandler.NextAction action) {
+        mTransFormTask.transform(transformation, destFile, action);
     }
 
     public boolean isShowTipAboutRotating() {

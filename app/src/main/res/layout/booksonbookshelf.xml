@@ -31,6 +31,7 @@
     >
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -83,7 +84,8 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_circle"
-            style="@style/Progress.Circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
             tools:visibility="visible"
@@ -94,7 +96,8 @@
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_external_id"
             app:icon="@drawable/ic_baseline_find_in_page_24"
-            tools:translationX="@dimen/fab_menu_translationX"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_4"
             tools:translationY="@dimen/fab_menu_translationY_4"
             tools:visibility="visible"
             />
@@ -104,7 +107,8 @@
             style="@style/FABMenu"
             android:text="@string/fab_add_book_manually"
             app:icon="@drawable/ic_baseline_keyboard_24"
-            tools:translationX="@dimen/fab_menu_translationX"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_3"
             tools:translationY="@dimen/fab_menu_translationY_3"
             tools:visibility="visible"
             />
@@ -114,7 +118,8 @@
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_internet_search"
             app:icon="@drawable/ic_baseline_search_24"
-            tools:translationX="@dimen/fab_menu_translationX"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_2"
             tools:translationY="@dimen/fab_menu_translationY_2"
             tools:visibility="visible"
             />
@@ -124,18 +129,23 @@
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_isbn"
             app:icon="@drawable/ic_baseline_apps_24"
-            tools:translationX="@dimen/fab_menu_translationX"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_1"
             tools:translationY="@dimen/fab_menu_translationY_1"
             tools:visibility="visible"
             />
 
-        <!-- reminder: this is an MaterialButton, and NOT an ImageButton -->
+        <!-- reminder: this is an MaterialButton, and NOT an ImageButton
+            Note the location on screen is NOT set, i.e. it's (0,0) relative to the 'fab' button itself.
+            We'll animate them to their proper (translationX,translationY) in code.
+        -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab0_scan_barcode"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_barcode_scan"
             app:icon="@drawable/ic_baseline_photo_camera_24"
-            tools:translationX="@dimen/fab_menu_translationX"
+            app:layout_anchor="@id/fab"
+            tools:translationX="@dimen/fab_menu_translationX_0"
             tools:translationY="@dimen/fab_menu_translationY_0"
             tools:visibility="visible"
             />
@@ -144,6 +154,8 @@
             android:id="@+id/fab"
             style="@style/FAB"
             android:src="@drawable/ic_baseline_add_24"
+            app:layout_anchor="@id/list"
+            app:layout_anchorGravity="bottom|end"
             />
 
         <include

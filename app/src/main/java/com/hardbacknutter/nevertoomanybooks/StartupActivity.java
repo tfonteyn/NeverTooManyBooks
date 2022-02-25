@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -72,10 +72,6 @@ public class StartupActivity
     private ActivityStartupBinding mVb;
 
     private int mVolumeChangedOptionChosen;
-
-    /** Make a backup; when done, move to the next startup stage. */
-    private final ActivityResultLauncher<Void> mExportLauncher =
-            registerForActivityResult(new ExportContract(), success -> nextStage());
 
     /**
      * Kludge to allow the database open-helper to get a reference to the currently running
@@ -121,10 +117,12 @@ public class StartupActivity
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
         mVb.version.setText(info.getVersionName());
 
-        mVm.onProgress().observe(this, message -> onProgress(message.getData().text));
+        mVm.onProgress().observe(this, this::onProgress);
         // when all tasks are done, move on to next startup-stage
         mVm.onFinished().observe(this, aVoid -> nextStage());
-        mVm.onFailure().observe(this, this::onFailure);
+        // Not called for now, see {@link StartupViewModel} #mTaskListener.
+        mVm.onFailure().observe(this, message -> message.getData().ifPresent(
+                data -> onFailure(data.getResult())));
 
         //URGENT: there is a recurring issue where style prefs are written to the global prefs
         // when not intended. Instead of fixing that, we'll migrate styles to the db table.
@@ -171,7 +169,6 @@ public class StartupActivity
                 throw new IllegalArgumentException(String.valueOf(mVm.getStartupStage()));
         }
     }
-
     private void initStorage() {
         final int storedVolumeIndex = CoverDir.getVolume(this);
         final int actualVolumeIndex;
@@ -179,7 +176,7 @@ public class StartupActivity
             actualVolumeIndex = CoverDir.initVolume(this, storedVolumeIndex);
 
         } catch (@NonNull final CoverStorageException e) {
-            onExternalStorageException(e);
+            onFailure(e);
             return;
         }
 
@@ -238,18 +235,31 @@ public class StartupActivity
         }
     }
 
+    /** Make a backup; when done, move to the next startup stage. */
+    private final ActivityResultLauncher<Void> mExportLauncher =
+            registerForActivityResult(new ExportContract(), success -> nextStage());
+
     private void initDb() {
         try {
             // Create/Upgrade/Open the main database as needed.
             ServiceLocator.getInstance().initialiseDb();
 
         } catch (@NonNull final Exception e) {
-            onGenericException(e);
+            onFailure(e);
             return;
         }
 
         // kick of next startup stage
         nextStage();
+    }
+
+    /**
+     * Show progress.
+     *
+     * @param message to display
+     */
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+        message.getData().ifPresent(data -> mVb.progressMessage.setText(data.text));
     }
 
     /**
@@ -295,6 +305,36 @@ public class StartupActivity
         finish();
     }
 
+    private void onFailure(@Nullable final Exception e) {
+        Logger.error(TAG, e, "");
+
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        final String msg;
+
+        if (e instanceof CoverStorageException) {
+            msg = getString(R.string.error_storage_not_accessible);
+        } else {
+            msg = ExMsg.map(this, e)
+                       .orElse(getString(R.string.error_unknown_long,
+                                         getString(R.string.pt_maintenance)));
+            builder.setPositiveButton(android.R.string.ok, (d, w) -> {
+                // We'll TRY to start the maintenance fragment
+                // which gives access to debug options
+                final Intent intent = FragmentHostActivity
+                        .createIntent(this, MaintenanceFragment.class);
+                startActivity(intent);
+                finish();
+            });
+        }
+
+        builder.setIcon(R.drawable.ic_baseline_error_24)
+               .setTitle(R.string.app_name)
+               .setMessage(msg)
+               .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
+               .setOnDismissListener(d -> finishAndRemoveTask())
+               .create()
+               .show();
+    }
 
     /**
      * Show progress.
@@ -305,55 +345,4 @@ public class StartupActivity
         mVb.progressMessage.setText(message);
     }
 
-    // Not called for now, see {@link StartupViewModel} #mTaskListener.
-    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
-        if (message.isNewEvent()) {
-            @Nullable
-            final Exception e = message.getData().getResult();
-
-            if (e instanceof CoverStorageException) {
-                onExternalStorageException((CoverStorageException) e);
-            } else {
-                onGenericException(e);
-            }
-        }
-    }
-
-    private void onGenericException(@Nullable final Exception e) {
-        Logger.error(TAG, e, "");
-
-        final CharSequence msg = ExMsg.map(this, e)
-                                      .orElse(getString(R.string.error_unknown_long,
-                                                        getString(R.string.pt_maintenance)));
-
-        new MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setTitle(R.string.app_name)
-                .setMessage(msg)
-                .setOnDismissListener(d -> finishAndRemoveTask())
-                .setNegativeButton(android.R.string.cancel, (d, w) -> finishAndRemoveTask())
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    // We'll TRY to start the maintenance fragment
-                    // which gives access to debug options
-                    final Intent intent = FragmentHostActivity
-                            .createIntent(this, MaintenanceFragment.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .create()
-                .show();
-    }
-
-    private void onExternalStorageException(@NonNull final CoverStorageException e) {
-        Logger.error(TAG, e, "");
-
-        new MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.ic_baseline_error_24)
-                .setTitle(R.string.app_name)
-                .setMessage(R.string.error_storage_not_accessible)
-                .setOnDismissListener(d -> finishAndRemoveTask())
-                .setPositiveButton(android.R.string.ok, (d, w) -> finishAndRemoveTask())
-                .create()
-                .show();
-    }
 }

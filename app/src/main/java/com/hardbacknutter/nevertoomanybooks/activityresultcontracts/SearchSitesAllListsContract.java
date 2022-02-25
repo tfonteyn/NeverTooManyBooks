@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
@@ -41,7 +43,8 @@ public class SearchSitesAllListsContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
-        return SearchAdminFragment.createIntent(context);
+        return FragmentHostActivity
+                .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class);
     }
 
     @NonNull

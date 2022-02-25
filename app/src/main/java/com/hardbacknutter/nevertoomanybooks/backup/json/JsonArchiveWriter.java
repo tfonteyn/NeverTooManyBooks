@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * </ul>
  */
 public class JsonArchiveWriter
-        implements ArchiveWriter {
+        implements DataWriter<ExportResults> {
 
     private static final int VERSION = 1;
 
@@ -74,11 +74,6 @@ public class JsonArchiveWriter
      */
     public JsonArchiveWriter(@NonNull final ExportHelper helper) {
         mHelper = helper;
-    }
-
-    @Override
-    public int getVersion() {
-        return VERSION;
     }
 
     @NonNull
@@ -113,7 +108,7 @@ public class JsonArchiveWriter
                 // 1. archive envelope
                 bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
                 // add the archive version at the top to facilitate parsing
-                bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + getVersion());
+                bw.write("\"" + ArchiveMetaData.INFO_ARCHIVER_VERSION + "\":" + VERSION);
 
                 // 2. container object
                 bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
@@ -123,8 +118,7 @@ public class JsonArchiveWriter
 
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
-                recordWriter.writeMetaData(bw, ArchiveMetaData
-                        .create(context, getVersion(), results));
+                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
 
                 // 5. close the envelope
                 bw.write("}}");

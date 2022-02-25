@@ -20,7 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -126,13 +128,15 @@ public class PreferredStylesFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            createMenu(menu, menuInflater);
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.editing_styles, menu);
             prepareMenu(menu, mVm.getSelectedPosition());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return processMenuSelection(menuItem, mVm.getSelectedPosition());
+            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
+                                                                   mVm.getSelectedPosition());
         }
     };
 
@@ -141,10 +145,14 @@ public class PreferredStylesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final ListStyle selectedStyle = mVm.getSelectedStyle();
+                    final String uuid = selectedStyle != null ? selectedStyle.getUuid() : null;
+                    final Intent resultIntent = PreferredStylesContract
+                            .createResultIntent(uuid, mVm.isDirty());
+
                     //noinspection ConstantConditions
-                    PreferredStylesContract.setResultAndFinish(getActivity(),
-                                                               mVm.getSelectedStyle(),
-                                                               mVm.isDirty());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
                 }
             };
     /** Drag and drop support for the list view. */
@@ -212,24 +220,12 @@ public class PreferredStylesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menu         the menu to inflate the new menu items into
-     * @param menuInflater the inflater to be used to inflate the updated menu
-     */
-    private void createMenu(@NonNull final Menu menu,
-                            @NonNull final MenuInflater menuInflater) {
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        menuInflater.inflate(R.menu.editing_styles, menu);
-    }
-
-    /**
-     * Called for toolbar and list adapter context menu.
-     *
      * @param menu o prepare
      */
     private void prepareMenu(@NonNull final Menu menu,
                              final int position) {
-        final ListStyle style = position != RecyclerView.NO_POSITION
-                                ? mVm.getStyle(position) : null;
+        final ListStyle style = position == RecyclerView.NO_POSITION
+                                ? null : mVm.getStyle(position);
 
         // only user styles can be edited/deleted
         final boolean isUserStyle = style instanceof UserStyle;
@@ -249,8 +245,8 @@ public class PreferredStylesFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean processMenuSelection(@NonNull final MenuItem menuItem,
-                                         final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
         final int itemId = menuItem.getItemId();
 
         final ListStyle style = mVm.getStyle(position);
@@ -337,13 +333,13 @@ public class PreferredStylesFragment
 
             // long-click -> context menu
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                final Context context = getContext();
-                final Menu menu = ExtPopupMenu.createMenu(context);
-                //noinspection ConstantConditions
-                createMenu(menu, getActivity().getMenuInflater());
-                prepareMenu(menu, holder.getBindingAdapterPosition());
-                new ExtPopupMenu(context, menu, PreferredStylesFragment.this::processMenuSelection)
-                        .showAsDropDown(v, holder.getBindingAdapterPosition());
+                final ExtPopupMenu popupMenu = new ExtPopupMenu(getContext())
+                        .inflate(R.menu.editing_styles)
+                        .setGroupDividerEnabled();
+                prepareMenu(popupMenu.getMenu(), holder.getBindingAdapterPosition());
+
+                popupMenu.showAsDropDown(v, menuItem ->
+                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });
 

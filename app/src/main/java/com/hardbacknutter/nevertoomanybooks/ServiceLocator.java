@@ -80,8 +80,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
-import com.hardbacknutter.nevertoomanybooks.utils.NotifierImpl;
+import com.hardbacknutter.nevertoomanybooks.utils.notifier.Notifier;
+import com.hardbacknutter.nevertoomanybooks.utils.notifier.NotifierImpl;
 
 public final class ServiceLocator {
 

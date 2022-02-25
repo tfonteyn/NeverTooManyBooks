@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDoneException;
+import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
@@ -160,7 +163,7 @@ public class JsonRecordReader
 
     @Override
     @NonNull
-    public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
             throws ImportException, IOException {
         try {
             // Don't close this stream
@@ -169,7 +172,12 @@ public class JsonRecordReader
             final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
             // read the entire record into a single String
             final String content = reader.lines().collect(Collectors.joining());
-            return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(content)));
+            final Bundle data = new BundleCoder().decode(new JSONObject(content));
+            if (data.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(new ArchiveMetaData(data));
+            }
 
         } catch (@NonNull final JSONException e) {
             throw new ImportException(e);
@@ -323,7 +331,7 @@ public class JsonRecordReader
                         bookshelfDao.fixId(bookshelf);
                         if (bookshelf.getId() > 0) {
                             // The shelf already exists
-                            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+                            final DataReader.Updates updateOption = helper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
                                     bookshelfDao.update(context, bookshelf);
@@ -355,7 +363,7 @@ public class JsonRecordReader
                         libraryDao.fixId(library);
                         if (library.getId() > 0) {
                             // The library already exists
-                            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+                            final DataReader.Updates updateOption = helper.getUpdateOption();
                             switch (updateOption) {
                                 case Overwrite: {
                                     libraryDao.update(library);

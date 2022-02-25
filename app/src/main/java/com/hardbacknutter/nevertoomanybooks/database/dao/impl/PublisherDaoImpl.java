@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -159,18 +160,12 @@ public class PublisherDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final Locale publisherLocale;
-        if (lookupLocale) {
-            publisherLocale = publisher.getLocale(context, bookLocale);
-        } else {
-            publisherLocale = bookLocale;
-        }
-
-        final String obName = publisher.reorderTitleForSorting(context, publisherLocale);
+        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, lookupLocale,
+                                                                         bookLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindString(1, SqlEncode.orderByColumn(publisher.getName(), publisherLocale));
-            stmt.bindString(2, SqlEncode.orderByColumn(obName, publisherLocale));
+            stmt.bindString(1, SqlEncode.orderByColumn(publisher.getName(), obd.locale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -288,13 +283,11 @@ public class PublisherDaoImpl
                        @NonNull final Publisher publisher,
                        @NonNull final Locale bookLocale) {
 
-        final Locale publisherLocale = publisher.getLocale(context, bookLocale);
-
-        final String obTitle = publisher.reorderTitleForSorting(context, publisherLocale);
+        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, true, bookLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, publisher.getName());
-            stmt.bindString(2, SqlEncode.orderByColumn(obTitle, publisherLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(obd.title, obd.locale));
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 publisher.setId(iId);
@@ -308,13 +301,11 @@ public class PublisherDaoImpl
                           @NonNull final Publisher publisher,
                           @NonNull final Locale bookLocale) {
 
-        final Locale publisherLocale = publisher.getLocale(context, bookLocale);
-
-        final String obTitle = publisher.reorderTitleForSorting(context, publisherLocale);
+        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, true, bookLocale);
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.KEY_PUBLISHER_NAME, publisher.getName());
-        cv.put(DBKey.KEY_PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obTitle, publisherLocale));
+        cv.put(DBKey.KEY_PUBLISHER_NAME_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
 
         return 0 < mDb.update(TBL_PUBLISHERS.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(publisher.getId())});

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
@@ -64,15 +65,10 @@ public abstract class MTask<Result>
         return mFinishedObservable;
     }
 
-    /**
-     * Called when the task successfully finishes.
-     *
-     * @param message with results
-     */
     @Override
     @WorkerThread
-    protected void setFinished(@NonNull final TaskResult<Result> message) {
-        mFinishedObservable.postValue(new LiveDataEvent<>(message));
+    protected void setFinished(@Nullable final Result result) {
+        mFinishedObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
     /**
@@ -86,15 +82,11 @@ public abstract class MTask<Result>
         return mCancelObservable;
     }
 
-    /**
-     * Called when the task was cancelled.
-     *
-     * @param message with (partial) results.
-     */
+
     @Override
     @WorkerThread
-    protected void setCancelled(@NonNull final TaskResult<Result> message) {
-        mCancelObservable.postValue(new LiveDataEvent<>(message));
+    protected void setCancelled(@Nullable final Result result) {
+        mCancelObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
     /**
@@ -107,9 +99,6 @@ public abstract class MTask<Result>
         return mFailureObservable;
     }
 
-    /**
-     * Called when the task fails with an Exception.
-     */
     @Override
     @WorkerThread
     protected void setFailure(@NonNull final Exception e) {
@@ -122,13 +111,10 @@ public abstract class MTask<Result>
      * @return a {@link TaskProgress} with the progress counter, a text message, ...
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskProgress>> onProgressUpdate() {
+    public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mProgressObservable;
     }
 
-    /**
-     * Can be called from the task implementation to report progress.
-     */
     @Override
     @WorkerThread
     public void publishProgress(@NonNull final TaskProgress message) {

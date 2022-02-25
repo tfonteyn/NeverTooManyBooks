@@ -53,10 +53,8 @@ public class CalibreLibraryMappingViewModel
     }
 
 
-    public void setMetaData(@Nullable final SyncReaderMetaData metaData) {
+    public void extractLibraryData(@Nullable final SyncReaderMetaData metaData) {
         Objects.requireNonNull(metaData);
-
-        super.setMetaData(metaData);
 
         // at this moment, all server libs have been synced with our database
         // and are mapped to a valid bookshelf

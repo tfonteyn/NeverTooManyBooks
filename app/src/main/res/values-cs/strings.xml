@@ -95,6 +95,7 @@
     <string name="error_unknown_long">Vyskytla se neočekávaná chyba. Pokud problém přetrvává, kontaktujte podporu pomocí možnosti „%1$s“ ve spodní části stránky nastavení.</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="error_import_failed">Import se nezdařil.</string>
+    <string name="error_import_failed_for_record">Import se nezdařil (%1$s).</string>
     <string name="error_file_not_recognized">Vybraný soubor není rozpoznán.</string>
     <string name="error_network_please_connect">Připojte se prosím k internetu.</string>
     <string name="httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
@@ -143,7 +144,7 @@
     <string name="txt_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled</string>
-    <string name="isfdb_menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
+    <string name="isfdb_menu_populate_toc">Automaticky naplnit tituly (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Kontakt:</string>
@@ -156,7 +157,7 @@
     <string name="lbl_archive_type_csv">Knihy (.csv)</string>
     <string name="lbl_archive_type_csv_info">Export knih do souboru CSV</string>
     <string name="lbl_archive_type_backup_zip">Záložní kopie (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Záložní kopie (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Záložní kopie (.tar)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_xml">Export XML (.xml)</string>
     <string name="lbl_archive_type_json">Export JSON (.json)</string>

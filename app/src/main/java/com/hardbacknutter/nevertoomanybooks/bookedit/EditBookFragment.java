@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookBinding;
@@ -69,18 +71,15 @@ public class EditBookFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "EditBookActivity";
-
+    private static final String TAG = "EditBookActivity";
+    @NonNull
+    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     /** Host for the tabbed fragments. */
     private TabAdapter mTabAdapter;
     /** View model. Must be in the Activity scope. */
     private EditBookViewModel mVm;
     /** View Binding. */
     private FragmentEditBookBinding mVb;
-
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
-
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -278,8 +277,10 @@ public class EditBookFragment
 
     /** Single point of exit for this Activity. */
     public void setResultsAndFinish() {
+        final Intent resultIntent = EditBookOutput
+                .createResultIntent(mVm.getBook().getId(), mVm.isChanged());
         //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+        getActivity().setResult(Activity.RESULT_OK, resultIntent);
         getActivity().finish();
     }
 

@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -57,10 +59,11 @@ public class EditBookshelvesFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "EditBookshelvesFragment";
+    private static final String TAG = "EditBookshelvesFragment";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
+    private EditBookshelvesViewModel mVm;
 
     /** React to changes in the adapter. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -70,19 +73,23 @@ public class EditBookshelvesFragment
                     prepareMenu(getToolbar().getMenu(), mVm.getSelectedPosition());
                 }
             };
-    private EditBookshelvesViewModel mVm;
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final Intent resultIntent = EditBookshelvesContract
+                            .createResultIntent(mVm.getSelectedBookshelf());
                     //noinspection ConstantConditions
-                    EditBookshelvesContract.setResultAndFinish(getActivity(),
-                                                               mVm.getSelectedBookshelf());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
                 }
             };
+
     /** The adapter for the list. */
     private BookshelfAdapter mListAdapter;
+
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
@@ -101,13 +108,15 @@ public class EditBookshelvesFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            createMenu(menu, menuInflater);
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.editing_bookshelves, menu);
             prepareMenu(menu, mVm.getSelectedPosition());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return processMenuSelection(menuItem, mVm.getSelectedPosition());
+            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
+                                                                   mVm.getSelectedPosition());
         }
     };
 
@@ -163,18 +172,6 @@ public class EditBookshelvesFragment
     /**
      * Called for toolbar and list adapter context menu.
      *
-     * @param menu         the menu to inflate the new menu items into
-     * @param menuInflater the inflater to be used to inflate the updated menu
-     */
-    private void createMenu(@NonNull final Menu menu,
-                            @NonNull final MenuInflater menuInflater) {
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        menuInflater.inflate(R.menu.editing_bookshelves, menu);
-    }
-
-    /**
-     * Called for toolbar and list adapter context menu.
-     *
      * @param menu o prepare
      */
     private void prepareMenu(@NonNull final Menu menu,
@@ -191,8 +188,8 @@ public class EditBookshelvesFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean processMenuSelection(@NonNull final MenuItem menuItem,
-                                         final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
         final int itemId = menuItem.getItemId();
 
         final Bookshelf bookshelf = mVm.getBookshelf(position);
@@ -277,14 +274,12 @@ public class EditBookshelvesFragment
 
             // long-click -> context menu
             holder.vb.name.setOnLongClickListener(v -> {
-                final Context context = getContext();
                 //noinspection ConstantConditions
-                final Menu menu = ExtPopupMenu.createMenu(context);
-                //noinspection ConstantConditions
-                createMenu(menu, getActivity().getMenuInflater());
-                prepareMenu(menu, holder.getBindingAdapterPosition());
-                new ExtPopupMenu(context, menu, EditBookshelvesFragment.this::processMenuSelection)
-                        .showAsDropDown(v, holder.getBindingAdapterPosition());
+                final ExtPopupMenu popupMenu = new ExtPopupMenu(getContext())
+                        .inflate(R.menu.editing_bookshelves);
+                prepareMenu(popupMenu.getMenu(), holder.getBindingAdapterPosition());
+                popupMenu.showAsDropDown(v, menuItem ->
+                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });
 

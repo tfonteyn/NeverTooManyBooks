@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
@@ -42,12 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 
 public class StyleViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
+    private String mTemplateUuid;
+
+    private boolean mIsModified;
 
     /** The style we're editing. */
     private UserStyle mStyle;
@@ -66,16 +63,20 @@ public class StyleViewModel
               @NonNull final Bundle args) {
         if (mStyle == null) {
 
-            final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));
+            final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_UUID),
+                                                       ListStyle.BKEY_UUID);
 
             if (uuid.isEmpty()) {
+                //TODO: handling global style settings is work-in-progress
+                // and not guaranteed to work.
+
                 // we're doing the global preferences, create a placeholder style
                 // with an empty uuid and let it use the standard SharedPreferences
                 mStyle = UserStyle.createGlobal(context);
 
             } else {
                 // ALWAYS pass the original style uuid back.
-                mResultIntent.putExtra(EditStyleContract.BKEY_TEMPLATE_UUID, uuid);
+                mTemplateUuid = uuid;
 
                 final ListStyle style = ServiceLocator.getInstance().getStyles()
                                                       .getStyle(context, uuid);
@@ -94,11 +95,6 @@ public class StyleViewModel
                 if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
                     mStyle.setPreferred(true);
                 }
-
-                // always pass a non-global style uuid back; whether existing or new.
-                // so even if the user makes no changes, we still send it back!
-                mResultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, mStyle.getUuid());
-
             }
         }
     }
@@ -109,18 +105,25 @@ public class StyleViewModel
     }
 
     void setModified() {
-        mResultIntent.putExtra(EditStyleContract.BKEY_STYLE_MODIFIED, true);
+        mIsModified = true;
+    }
+
+    @NonNull
+    public String getTemplateUuid() {
+        return Objects.requireNonNull(mTemplateUuid, "mTemplateUuid");
+    }
+
+    public boolean isModified() {
+        return mIsModified;
     }
 
     /**
-     * {@link EditStyleContract#BKEY_TEMPLATE_UUID}: String
-     * {@link ListStyle#BKEY_STYLE_UUID}: String
-     * {@link EditStyleContract#BKEY_STYLE_MODIFIED}: boolean
+     * Normally called when leaving the fragment. Save any updates needed.
      */
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        return mResultIntent;
+    void updateOrInsertStyle() {
+        if (mIsModified) {
+            ServiceLocator.getInstance().getStyles().updateOrInsert(mStyle);
+        }
     }
 
     @NonNull
@@ -161,15 +164,6 @@ public class StyleViewModel
                          .filter(WrappedGroup::isPresent)
                          .map(WrappedGroup::getGroup)
                          .forEach(styleGroups::add);
-    }
-
-    /**
-     * Called when leaving the fragment. Save any updates needed.
-     */
-    void updateOrInsertStyle() {
-        if (mResultIntent.getBooleanExtra(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
-            ServiceLocator.getInstance().getStyles().updateOrInsert(mStyle);
-        }
     }
 
     /**

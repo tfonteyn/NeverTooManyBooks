@@ -37,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.net.ssl.SSLException;
 
@@ -45,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -58,8 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
@@ -103,7 +104,7 @@ import com.hardbacknutter.org.json.JSONObject;
  * For now overwrite/skip is a bit ad-hoc.
  */
 public class CalibreContentServerReader
-        implements SyncReader {
+        implements DataReader<SyncReaderMetaData, ReaderResults> {
 
     public static final String SYNC_PROCESSOR_PREFIX =
             CalibreContentServer.PREF_KEY + ".fields.update.";
@@ -120,10 +121,10 @@ public class CalibreContentServerReader
     private static final String VALUE_IS_NULL = "null";
 
     @NonNull
-    private final SyncReaderConfig.Updates mUpdateOption;
+    private final Updates mUpdateOption;
     /**
-     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip)
-     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
+     * If we want new-books-only {@link Updates#Skip)
+     * or new-books-and-updates {@link Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
     @Nullable
@@ -157,22 +158,22 @@ public class CalibreContentServerReader
      * Constructor.
      *
      * @param context Current context
-     * @param config  import configuration
+     * @param helper  import configuration
      *
      * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
-                                      @NonNull final SyncReaderConfig config)
+                                      @NonNull final SyncReaderHelper helper)
             throws CertificateException, SSLException {
 
-        mUpdateOption = config.getUpdateOption();
-        mSyncDate = config.getSyncDate();
+        mUpdateOption = helper.getUpdateOption();
+        mSyncDate = helper.getSyncDate();
 
         //ENHANCE: add support for SyncProcessor
 
-        mDoCovers = config.getImportEntries().contains(RecordType.Cover);
-        mLibrary = config.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+        mDoCovers = helper.getRecordTypes().contains(RecordType.Cover);
+        mLibrary = helper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
 
         mServer = new CalibreContentServer(context);
         mBookDao = ServiceLocator.getInstance().getBookDao();
@@ -240,10 +241,10 @@ public class CalibreContentServerReader
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
     @WorkerThread
-    public SyncReaderMetaData readMetaData(@NonNull final Context context)
+    public Optional<SyncReaderMetaData> readMetaData(@NonNull final Context context)
             throws ImportException, IOException {
 
         try {
@@ -261,7 +262,7 @@ public class CalibreContentServerReader
         args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
                         mServer.isCalibreExtensionInstalled());
 
-        return new SyncReaderMetaData(args);
+        return Optional.of(new SyncReaderMetaData(args));
     }
 
     @NonNull
@@ -297,8 +298,8 @@ public class CalibreContentServerReader
             // If we want new-books-only (Updates.Skip)
             // or new-books-and-updates (Updates.OnlyNewer),
             // we limit the fetch to the sync-date. This speeds up the process.
-            if (mUpdateOption == SyncReaderConfig.Updates.Skip
-                || mUpdateOption == SyncReaderConfig.Updates.OnlyNewer) {
+            if (mUpdateOption == DataReader.Updates.Skip
+                || mUpdateOption == DataReader.Updates.OnlyNewer) {
 
                 // last_modified:">2021-01-15", so we do a "minusDays(1)" first
                 // Due to rounding, we might get some books we don't need, but that's ok.

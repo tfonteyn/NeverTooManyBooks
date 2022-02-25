@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -100,9 +102,11 @@ public class SettingsFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final Intent resultIntent = SettingsContract.createResultIntent(
+                            mVm.getRequiresActivityRecreation());
                     //noinspection ConstantConditions
-                    SettingsContract.setResultAndFinish(getActivity(),
-                                                        mVm.getRequiresActivityRecreation());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
                 }
             };
     @Nullable
@@ -365,18 +369,18 @@ public class SettingsFragment
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.lbl_moving_data)
                         .setPreventSleep(true)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message.getData());
-        }
+            mProgressDelegate.onProgress(data);
+        });
     }
 
     private void closeProgressDialog() {
@@ -390,12 +394,12 @@ public class SettingsFragment
     private void onMoveFinished(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            if (setStorageVolume(message.getData().requireResult())) {
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
+            if (setStorageVolume(result)) {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.action_done, Snackbar.LENGTH_LONG).show();
             }
-        }
+        });
     }
 
     private boolean setStorageVolume(final int volume) {
@@ -415,13 +419,12 @@ public class SettingsFragment
     private void onMoveFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
+            final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_unknown_long,
                                                       getString(R.string.pt_maintenance)));
-
             new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.lbl_moving_data)
@@ -429,18 +432,18 @@ public class SettingsFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
-        }
+        });
     }
 
     private void onMoveCancelled(@NonNull final LiveDataEvent<TaskResult<Integer>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             // FIXME: need better msg + tell user to clean up the destination
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
             //noinspection ConstantConditions
             getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
-        }
+        });
     }
 }

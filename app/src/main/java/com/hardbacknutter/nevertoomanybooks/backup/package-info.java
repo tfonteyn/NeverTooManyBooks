@@ -26,10 +26,10 @@
  * <p>
  * The ExportHelper is passed to:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriterTask}
- * The task gets an ArchiveWriter from the ExportHelper, and delegates the job to it:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter}
+ * The task gets an writer from the ExportHelper, and delegates the job to it:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter}
  * <p>
- * The ArchiveWriter gets the desired list of entries it needs to write from the helper.
+ * The writer gets the desired list of entries it needs to write from the helper.
  * {@link com.hardbacknutter.nevertoomanybooks.backup.common.RecordType}
  * Writing starts with the header in a fixed format suitable for the archive type
  * Next it loops over the entries, and for each entry
@@ -37,7 +37,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter}
  * The output from the RecordWriter is then streamed into the actual archive.
  * <p>
- * When done, the ArchiveWriter copies the archive file to to a {@link android.net.Uri}
+ * When done, the writer copies the archive file to to a {@link android.net.Uri}
  * and reports back to the task... back to the user UI with:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportResults}.
  * <p>
@@ -50,9 +50,9 @@
  * of the given archive.
  * <p>
  * The helper is passed to:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataReaderTask}
  * The task gets a reader from the helper, and delegates the job to it:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataReader}
  * <p>
  * The reader parses the archive for one or more
  * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord}
@@ -64,7 +64,7 @@
  * and finally passes the result back to the task... back to the user UI.
  * <p>
  * In short:
- * Uri -> Helper -> ArchiveEncoding -> ArchiveReader
+ * Uri -> Helper -> ArchiveEncoding -> Reader
  * -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  * <p>
  * <p>

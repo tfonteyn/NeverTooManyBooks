@@ -214,7 +214,7 @@ public class FtsDaoImpl
 
         final List<Long> result = new ArrayList<>();
 
-        final String query = FtsDao.createMatchString(author, title, seriesTitle,
+        final String query = FtsDao.createMatchString(title, seriesTitle, author,
                                                       publisherName, keywords);
         // do we have anything to search for?
         if (query.isEmpty()) {

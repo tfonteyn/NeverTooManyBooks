@@ -48,10 +48,13 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -73,7 +76,7 @@ public class SearchBookUpdatesFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "SearchBookUpdatesFragment";
+    private static final String TAG = "SearchBookUpdatesFragment";
 
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
@@ -120,18 +123,16 @@ public class SearchBookUpdatesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-
         final Bundle args = getArguments();
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
             toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
             toolbar.setTitle(R.string.lbl_select_fields);
         }
-
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
             toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
@@ -139,10 +140,10 @@ public class SearchBookUpdatesFragment
 
         // Progress from individual searches AND overall progress
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+
         // An individual book search finished.
-        //noinspection ConstantConditions
-        mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
-                mVm.processOne(getContext(), message.getData().getResult()));
+        mVm.onSearchFinished().observe(getViewLifecycleOwner(), this::onOneDone);
+
         // User cancelled the update
         mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
@@ -245,32 +246,42 @@ public class SearchBookUpdatesFragment
         }
     }
 
+    private void onOneDone(final LiveDataEvent<TaskResult<Bundle>> message) {
+        //noinspection ConstantConditions
+        message.getData().ifPresent(data -> mVm.processOne(getContext(), data.getResult()));
+    }
+
     private void onAllDone(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
         closeProgressDialog();
-        if (message.isNewEvent()) {
-            final Bundle result = message.getData().getResult();
+        message.getData().ifPresent(data -> {
+            final Bundle result = data.getResult();
+
             if (result != null) {
-                // The result will contain:
-                // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
-                // UniqueId.BKEY_BOOK_MODIFIED, boolean
-                // DBDefinitions.KEY_PK_ID, long (can be absent)
-                final Intent resultIntent = new Intent().putExtras(result);
+                final long lastBookId =
+                        result.getLong(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, 0);
+
+                final Intent resultIntent = EditBookOutput
+                        .createResultIntent(
+                                result.getLong(DBKey.FK_BOOK, 0),
+                                result.getBoolean(Entity.BKEY_DATA_MODIFIED, false))
+                        .putExtra(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, lastBookId);
+
                 //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, resultIntent);
             }
 
             //noinspection ConstantConditions
             getActivity().finish();
-        }
+        });
     }
 
     private void onAbort(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
+            final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_unknown_long,
                                                       getString(R.string.lbl_send_debug)));
 
@@ -284,22 +295,22 @@ public class SearchBookUpdatesFragment
                     })
                     .create()
                     .show();
-        }
+        });
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message.getData());
-        }
+            mProgressDelegate.onProgress(data);
+        });
     }
 
     private void closeProgressDialog() {
@@ -307,41 +318,6 @@ public class SearchBookUpdatesFragment
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
             mProgressDelegate = null;
-        }
-    }
-
-    private class ToolbarMenuProvider
-            implements MenuProvider {
-
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            final Resources r = getResources();
-            menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
-                     r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
-                     R.string.lbl_websites)
-                .setIcon(R.drawable.ic_baseline_find_in_page_24)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-                .setIcon(R.drawable.ic_baseline_undo_24);
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            final int itemId = menuItem.getItemId();
-
-            if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-                mEditSitesLauncher.launch(mVm.getSiteList());
-                return true;
-
-            } else if (itemId == R.id.MENU_RESET) {
-                mVm.resetPreferences();
-                initAdapter();
-                return true;
-            }
-
-            return false;
         }
     }
 
@@ -410,6 +386,41 @@ public class SearchBookUpdatesFragment
         @Override
         public int getItemCount() {
             return mSyncFields.length;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            final Resources r = getResources();
+            menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
+                     r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
+                     R.string.lbl_websites)
+                .setIcon(R.drawable.ic_baseline_find_in_page_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+            menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
+                .setIcon(R.drawable.ic_baseline_undo_24);
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            final int itemId = menuItem.getItemId();
+
+            if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
+                mEditSitesLauncher.launch(mVm.getSiteList());
+                return true;
+
+            } else if (itemId == R.id.MENU_RESET) {
+                mVm.resetPreferences();
+                initAdapter();
+                return true;
+            }
+
+            return false;
         }
     }
 }

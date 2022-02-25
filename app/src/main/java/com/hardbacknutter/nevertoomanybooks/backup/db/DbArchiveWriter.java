@@ -30,7 +30,7 @@ import java.nio.channels.FileChannel;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * Note on testing: this class is purposely hardcoded to use the actual database file.
  */
 public class DbArchiveWriter
-        implements ArchiveWriter {
+        implements DataWriter<ExportResults> {
 
     /** 1 mb buffer. */
     private static final int BUFFER_SIZE = 1_024_000;
@@ -56,11 +56,6 @@ public class DbArchiveWriter
      */
     public DbArchiveWriter(@NonNull final ExportHelper helper) {
         mHelper = helper;
-    }
-
-    @Override
-    public int getVersion() {
-        return DBHelper.DATABASE_VERSION;
     }
 
     @NonNull

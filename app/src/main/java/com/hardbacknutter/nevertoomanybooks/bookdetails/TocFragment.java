@@ -33,11 +33,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,10 +48,13 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class TocFragment
@@ -63,8 +68,44 @@ public class TocFragment
     private TocViewModel mVm;
 
     /** The Adapter. */
-    @SuppressWarnings("FieldCanBeLocal")
     private TocAdapter mAdapter;
+
+    /**
+     * In embedded mode, we just need/display the list itself.
+     *
+     * @param toc list
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static Fragment createEmbedded(@NonNull final ArrayList<TocEntry> toc) {
+        final Fragment fragment = new TocFragment();
+        final Bundle args = new Bundle(1);
+        args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * In full screen mode, we display the authors and book title as the Toolbar title/subtitle
+     *
+     * @param toc  list
+     * @param book for Toolbar info display
+     *
+     * @return new instance
+     */
+    @NonNull
+    public static Fragment create(@NonNull final ArrayList<TocEntry> toc,
+                                  @NonNull final Book book) {
+        final Fragment fragment = new TocFragment();
+        final Bundle args = new Bundle(4);
+        args.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
+        args.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, book.getAuthors());
+        args.putString(DBKey.KEY_TITLE, book.getTitle());
+        args.putLong(DBKey.FK_BOOK, book.getId());
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -101,10 +142,7 @@ public class TocFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mVb.toc, overlayType);
 
-        mAdapter = new TocAdapter(context, mVm.getTocList()
-                                              .stream()
-                                              .map(t -> (AuthorWork) t)
-                                              .collect(Collectors.toList()));
+        mAdapter = new TocAdapter(context, mVm.getList());
         mVb.toc.setAdapter(mAdapter);
         mVb.toc.setHasFixedSize(true);
 
@@ -117,6 +155,12 @@ public class TocFragment
         if (bookTitle != null) {
             toolbar.setSubtitle(bookTitle);
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void reload(@NonNull final List<TocEntry> tocList) {
+        mVm.reload(tocList);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -186,7 +230,7 @@ public class TocFragment
                         .get(holder.getBindingAdapterPosition())
                         .getBookTitles(v.getContext())
                         .stream()
-                        .map(bt -> v.getContext().getString(R.string.list_element, bt.second))
+                        .map(bt -> v.getContext().getString(R.string.list_element, bt.getTitle()))
                         .collect(Collectors.joining("\n"));
                 StandardDialogs.infoPopup(
                         holder.vb.btnType,

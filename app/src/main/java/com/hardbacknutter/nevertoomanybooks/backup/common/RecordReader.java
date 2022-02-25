@@ -22,10 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.backup.common;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -48,15 +48,15 @@ public interface RecordReader
      *
      * @param record to read data from
      *
-     * @return the archive info
+     * @return Optional with the archive info
      *
      * @throws ImportException on a decoding/parsing of data issue
      * @throws IOException     on failure
      */
-    @Nullable
-    default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+    @NonNull
+    default Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
             throws IOException, ImportException {
-        return null;
+        return Optional.empty();
     }
 
     /**

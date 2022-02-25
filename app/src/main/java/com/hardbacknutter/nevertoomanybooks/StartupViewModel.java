@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.UiThread;
 import androidx.lifecycle.LiveData;
@@ -38,7 +39,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.Backup;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -96,22 +97,22 @@ public class StartupViewModel
          * Called when any startup task completes. If no more tasks, let the activity know.
          */
         @Override
-        public void onFinished(@NonNull final TaskResult<Boolean> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-            cleanup(message.getTaskId());
+        public void onFinished(final int taskId,
+                               @Nullable final Boolean result) {
+            cleanup(taskId);
         }
 
         @Override
-        public void onCancelled(@NonNull final TaskResult<Boolean> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-            cleanup(message.getTaskId());
+        public void onCancelled(final int taskId,
+                                @Nullable final Boolean result) {
+            cleanup(taskId);
         }
 
         @Override
-        public void onFailure(@NonNull final TaskResult<Exception> message) {
-            //TaskListener, don't check if (message.isNewEvent())
+        public void onFailure(final int taskId,
+                              @Nullable final Exception exception) {
             // We don't care about the status; just finish
-            cleanup(message.getTaskId());
+            cleanup(taskId);
         }
 
         private void cleanup(final int taskId) {
@@ -189,14 +190,15 @@ public class StartupViewModel
             final int maintenanceCountdown = global
                     .getInt(PK_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
             final int backupCountdown = global
-                    .getInt(Backup.PK_BACKUP_COUNTDOWN, Backup.BACKUP_COUNTDOWN_DEFAULT);
+                    .getInt(ExportHelper.PK_BACKUP_COUNTDOWN,
+                            ExportHelper.BACKUP_COUNTDOWN_DEFAULT);
 
             global.edit()
                   .putInt(PK_MAINTENANCE_COUNTDOWN,
                           maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
                                                     : maintenanceCountdown - 1)
-                  .putInt(Backup.PK_BACKUP_COUNTDOWN,
-                          backupCountdown == 0 ? Backup.BACKUP_COUNTDOWN_DEFAULT
+                  .putInt(ExportHelper.PK_BACKUP_COUNTDOWN,
+                          backupCountdown == 0 ? ExportHelper.BACKUP_COUNTDOWN_DEFAULT
                                                : backupCountdown - 1)
 
                   // The number of times the app was opened.

@@ -22,25 +22,22 @@ package com.hardbacknutter.nevertoomanybooks.backup.common;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 @FunctionalInterface
-public interface ArchiveReader
+public interface DataReader<METADATA, RESULTS>
         extends Closeable {
 
-    String ERROR_INVALID_INPUT = "File/type is not supported";
-    String ERROR_INVALID_HEADER = "Header is invalid / not found";
     String ERROR_NO_READER_AVAILABLE = "No reader available";
 
     /**
@@ -61,24 +58,23 @@ public interface ArchiveReader
     }
 
     /**
-     * Get the {@link ArchiveMetaData} object read from the backup.
-     * The default implementation returns {@code null}.
+     * Get the {@link METADATA} object read from the backup.
      *
      * @param context Current context
      *
-     * @return info object
+     * @return Optional with {@link METADATA}
      *
      * @throws InvalidArchiveException on failure to recognise a supported archive
      * @throws IOException             on other failures
      */
-    @Nullable
+    @NonNull
     @WorkerThread
-    default ArchiveMetaData readMetaData(@NonNull final Context context)
+    default Optional<METADATA> readMetaData(@NonNull final Context context)
             throws InvalidArchiveException,
                    IOException,
                    ImportException,
                    StorageException {
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -97,8 +93,8 @@ public interface ArchiveReader
      */
     @NonNull
     @WorkerThread
-    ImportResults read(@NonNull Context context,
-                       @NonNull ProgressListener progressListener)
+    RESULTS read(@NonNull Context context,
+                 @NonNull ProgressListener progressListener)
             throws InvalidArchiveException,
                    IOException,
                    ImportException,
@@ -114,5 +110,17 @@ public interface ArchiveReader
     default void close()
             throws IOException {
         // do nothing
+    }
+
+    /**
+     * Existing Books/Covers handling.
+     */
+    enum Updates {
+        /** skip updates entirely. Current data is untouched. */
+        Skip,
+        /** Overwrite current data with incoming data. */
+        Overwrite,
+        /** check the "update_date" field and only import newer data. */
+        OnlyNewer
     }
 }

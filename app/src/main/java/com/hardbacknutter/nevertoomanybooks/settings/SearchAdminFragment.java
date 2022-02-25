@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,7 +42,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdminSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -69,7 +67,8 @@ public class SearchAdminFragment
                             // single-list is NOT persisted, just returned for temporary usage.
                             final Site.Type type = mVm.getTypes().get(0);
                             final Intent resultIntent = new Intent()
-                                    .putExtra(type.getBundleKey(), mVm.getList(type));
+                                    .putParcelableArrayListExtra(type.getBundleKey(),
+                                                                 mVm.getList(type));
                             //noinspection ConstantConditions
                             getActivity().setResult(Activity.RESULT_OK, resultIntent);
 
@@ -85,14 +84,6 @@ public class SearchAdminFragment
                     }
                 }
             };
-
-    public static Intent createIntent(@NonNull final Context context) {
-        return new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_ACTIVITY,
-                          R.layout.activity_admin_search)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_CLASS,
-                          SearchAdminFragment.class.getName());
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -170,13 +161,8 @@ public class SearchAdminFragment
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            final Fragment fragment = new SearchOrderFragment();
-            final Bundle args = new Bundle(1);
-            args.putParcelable(SearchOrderFragment.BKEY_TYPE, mTypes.get(position));
-            fragment.setArguments(args);
-            return fragment;
+            return SearchOrderFragment.create(mTypes.get(position));
         }
-
 
         @StringRes
         int getTabTitle(final int position) {

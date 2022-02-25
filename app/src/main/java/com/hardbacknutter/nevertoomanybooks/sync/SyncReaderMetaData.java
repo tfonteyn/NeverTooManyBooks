@@ -23,6 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+// overkill for now... we could just use a raw Bundle. But let's keep it future-extendable.
 public class SyncReaderMetaData {
 
     private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
@@ -30,26 +31,23 @@ public class SyncReaderMetaData {
 
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
-    private final Bundle mInfo;
+    private final Bundle mData;
 
     /**
-     * Constructor used while reading from an Archive.
-     * <p>
-     * The bundle is passed in to allow an Archive reader to construct it
-     * at runtime + to allow testing.
+     * Constructor.
      */
-    public SyncReaderMetaData(@NonNull final Bundle from) {
-        mInfo = from;
+    public SyncReaderMetaData(@NonNull final Bundle args) {
+        mData = args;
     }
 
     /**
-     * Get the raw bundle, this is used for reading out the info block to the backup archive.
+     * Get all available meta data.
      *
-     * @return the bundle with all settings.
+     * @return the bundle with all data.
      */
     @NonNull
-    public Bundle getBundle() {
-        return mInfo;
+    public Bundle getData() {
+        return mData;
     }
 
     /**
@@ -57,19 +55,19 @@ public class SyncReaderMetaData {
      * Will return {@code false} if there is no number (or if the number is 0).
      * This does not mean there might not be any books though.
      *
-     * @return {@code true} if the number of books is <strong>known</strong>
+     * @return {@code true} if the number is <strong>known</strong>
      */
     public boolean hasBookCount() {
-        return mInfo.containsKey(INFO_NUMBER_OF_BOOKS)
-               && mInfo.getInt(INFO_NUMBER_OF_BOOKS) > 0;
+        return mData.containsKey(INFO_NUMBER_OF_BOOKS)
+               && mData.getInt(INFO_NUMBER_OF_BOOKS) > 0;
     }
 
     public int getBookCount() {
-        return mInfo.getInt(INFO_NUMBER_OF_BOOKS);
+        return mData.getInt(INFO_NUMBER_OF_BOOKS);
     }
 
     public void setBookCount(final int count) {
-        mInfo.putInt(INFO_NUMBER_OF_BOOKS, count);
+        mData.putInt(INFO_NUMBER_OF_BOOKS, count);
     }
 
     /**
@@ -77,22 +75,22 @@ public class SyncReaderMetaData {
      * Will return {@code false} if there is no number (or if the number is 0).
      * This does not mean there might not be any covers though.
      *
-     * @return {@code true} if the number of books is <strong>known</strong>
+     * @return {@code true} if the number is <strong>known</strong>
      */
     public boolean hasCoverCount() {
-        return mInfo.containsKey(INFO_NUMBER_OF_COVERS)
-               && mInfo.getInt(INFO_NUMBER_OF_COVERS) > 0;
+        return mData.containsKey(INFO_NUMBER_OF_COVERS)
+               && mData.getInt(INFO_NUMBER_OF_COVERS) > 0;
     }
 
     public int getCoverCount() {
-        return mInfo.getInt(INFO_NUMBER_OF_COVERS);
+        return mData.getInt(INFO_NUMBER_OF_COVERS);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "SyncReaderMetaData{"
-               + "mInfo=" + mInfo
+               + "mData=" + mData
                + '}';
     }
 }

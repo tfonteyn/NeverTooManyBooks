@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -52,8 +53,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.hardbacknutter.fastscroller.FastScroller;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.bookdetails.ShowBookPagerFragment;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.RebuildBooklist;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowAuthorWorkBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -63,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
@@ -78,7 +80,7 @@ public class AuthorWorksFragment
         extends BaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "AuthorWorksFragment";
+    private static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Show the TOC. Defaults to {@code true}. */
     static final String BKEY_WITH_TOC = TAG + ":tocs";
@@ -87,19 +89,23 @@ public class AuthorWorksFragment
 
     @NonNull
     private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
-
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel mVm;
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> mDisplayBookLauncher =
+            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    final Intent resultIntent = EditBookOutput
+                            .createResultIntent(0, mVm.isDataModified());
                     //noinspection ConstantConditions
-                    AuthorWorksContract.setResultAndFinish(getActivity(), mVm.isDataModified());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                    getActivity().finish();
                 }
             };
-
     /** React to changes in the adapter. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
@@ -114,6 +120,13 @@ public class AuthorWorksFragment
     /** View Binding. */
     private RecyclerView mWorksListView;
     private ExtPopupMenu mContextMenu;
+
+    private void onBookEditFinished(@Nullable final EditBookOutput data) {
+        // ignore the data.bookId
+        if (data != null && data.modified) {
+            mVm.setDataModified();
+        }
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -139,11 +152,10 @@ public class AuthorWorksFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final Toolbar toolbar = getToolbar();
-        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-
         final Context context = getContext();
 
+        final Toolbar toolbar = getToolbar();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         //noinspection ConstantConditions
         toolbar.setTitle(mVm.getScreenTitle(context));
         toolbar.setSubtitle(mVm.getScreenSubtitle(context));
@@ -163,23 +175,21 @@ public class AuthorWorksFragment
         final int overlayType = Prefs.getFastScrollerOverlayType(global);
         FastScroller.attach(mWorksListView, overlayType);
 
-        mListAdapter = new TocAdapter(context, mVm.getWorks());
+        mListAdapter = new TocAdapter(context, mVm.getList());
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mWorksListView.setAdapter(mListAdapter);
 
+        mContextMenu = new ExtPopupMenu(context);
+        final Menu menu = mContextMenu.getMenu();
         final Resources res = getResources();
-        final Menu menu = ExtPopupMenu.createMenu(context);
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
-
-        mContextMenu = new ExtPopupMenu(context, menu, this::onContextItemSelected);
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(context, R.string.tip_authors_works, null);
         }
     }
-
 
     /**
      * Using {@link ExtPopupMenu} for context menus.
@@ -189,11 +199,11 @@ public class AuthorWorksFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
         final int itemId = menuItem.getItemId();
 
-        final AuthorWork work = mVm.getWorks().get(position);
+        final AuthorWork work = mVm.getList().get(position);
 
         if (itemId == R.id.MENU_DELETE) {
             deleteWork(position, work);
@@ -236,23 +246,20 @@ public class AuthorWorksFragment
      * @param position in the list
      */
     private void gotoBook(final int position) {
-        final AuthorWork work = mVm.getWorks().get(position);
+        final AuthorWork work = mVm.getList().get(position);
 
         switch (work.getWorkType()) {
             case AuthorWork.TYPE_TOC: {
                 final TocEntry tocEntry = (TocEntry) work;
                 final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
                 if (bookIdList.size() == 1) {
-                    // open new activity to show the book, 'back' will return to this one.
-                    //noinspection ConstantConditions
-                    final Intent intent = ShowBookPagerFragment
-                            .createIntent(getContext(), bookIdList.get(0));
-                    startActivity(intent);
+                    mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
+                            bookIdList.get(0), mVm.getStyle().getUuid(), null, 0));
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
                     final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
+                            .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
                             // Open the list expanded, as otherwise you end up with
                             // the author as a single line, and no books shown at all,
                             // which can be quite confusing to the user.
@@ -268,11 +275,9 @@ public class AuthorWorksFragment
                 break;
             }
             case AuthorWork.TYPE_BOOK: {
-                // open new activity to show the book, 'back' will return to this one.
-                //noinspection ConstantConditions
-                final Intent intent = ShowBookPagerFragment
-                        .createIntent(getContext(), work.getId());
-                startActivity(intent);
+                mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
+                        work.getId(), mVm.getStyle().getUuid(), null, 0));
+
                 break;
             }
             default:
@@ -364,7 +369,6 @@ public class AuthorWorksFragment
                 mListAdapter.notifyDataSetChanged();
 
                 final Toolbar toolbar = getToolbar();
-
                 //noinspection ConstantConditions
                 toolbar.setTitle(mVm.getScreenTitle(getContext()));
                 toolbar.setSubtitle(mVm.getScreenSubtitle(getContext()));
@@ -403,7 +407,8 @@ public class AuthorWorksFragment
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));
 
             holder.itemView.setOnLongClickListener(v -> {
-                mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
+                mContextMenu.showAsDropDown(v, menuItem ->
+                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });
 

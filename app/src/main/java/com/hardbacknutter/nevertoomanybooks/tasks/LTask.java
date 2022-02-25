@@ -24,6 +24,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -64,9 +65,6 @@ public abstract class LTask<Result>
         mHandler = new Handler(Looper.getMainLooper());
     }
 
-    /**
-     * Can be called from the task implementation to report progress.
-     */
     @Override
     @WorkerThread
     public void publishProgress(@NonNull final TaskProgress message) {
@@ -81,17 +79,12 @@ public abstract class LTask<Result>
         });
     }
 
-    /**
-     * Called when the task successfully finishes.
-     *
-     * @param message with results
-     */
     @Override
     @WorkerThread
-    protected void setFinished(@NonNull final TaskResult<Result> message) {
+    protected void setFinished(@Nullable final Result result) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onFinished(message);
+                mTaskListener.get().onFinished(getTaskId(), result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "onFinished|" + LISTENER_WAS_DEAD);
@@ -100,17 +93,13 @@ public abstract class LTask<Result>
         });
     }
 
-    /**
-     * Called when the task was cancelled.
-     *
-     * @param message with (partial) results.
-     */
+
     @Override
     @WorkerThread
-    protected void setCancelled(@NonNull final TaskResult<Result> message) {
+    protected void setCancelled(@Nullable final Result result) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onCancelled(message);
+                mTaskListener.get().onCancelled(getTaskId(), result);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     // Will be shown on genuine bug,
@@ -122,15 +111,12 @@ public abstract class LTask<Result>
         });
     }
 
-    /**
-     * Called when the task fails with an Exception.
-     */
     @Override
     @WorkerThread
     protected void setFailure(@NonNull final Exception e) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
-                mTaskListener.get().onFailure(new TaskResult<>(getTaskId(), e));
+                mTaskListener.get().onFailure(getTaskId(), e);
             } else {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(getTaskName(), "onFailure|" + LISTENER_WAS_DEAD);

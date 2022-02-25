@@ -29,6 +29,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,13 +72,14 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksC
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookOutput;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookPagerContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.StripInfoSyncContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
@@ -113,14 +115,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolderUtils;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -184,8 +184,9 @@ public class BooksOnBookshelf
             registerForActivityResult(new ExportContract(), success -> {
             });
 
-    @NonNull
-    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> mDisplayBookLauncher =
+            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
 
     /** Bring up the synchronization options. */
     @Nullable
@@ -209,10 +210,21 @@ public class BooksOnBookshelf
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
+    /** Manage the list of (preferred) styles. */
+    private final ActivityResultLauncher<String> mEditStylesLauncher =
+            registerForActivityResult(new PreferredStylesContract(), data -> {
+                if (data != null) {
+                    // we get the UUID for the selected style back.
+                    if (data.uuid != null) {
+                        mVm.onStyleChanged(this, data.uuid);
+                    }
 
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookContract.Input> mDisplayBookLauncher =
-            registerForActivityResult(new ShowBookContract(), this::onBookEditFinished);
+                    // This is independent from the above style having been modified ot not.
+                    if (data.isModified) {
+                        mVm.setForceRebuildInOnResume(true);
+                    }
+                }
+            });
 
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher =
@@ -237,23 +249,7 @@ public class BooksOnBookshelf
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> mAuthorWorksLauncher =
             registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
-
-    /** Manage the list of (preferred) styles. */
-    private final ActivityResultLauncher<String> mEditStylesLauncher =
-            registerForActivityResult(new PreferredStylesContract(), data -> {
-                if (data != null) {
-                    // we get the UUID for the selected style back.
-                    final String uuid = data.getString(ListStyle.BKEY_STYLE_UUID);
-                    if (uuid != null) {
-                        mVm.onStyleChanged(this, uuid);
-                    }
-
-                    // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
-                        mVm.setForceRebuildInOnResume(true);
-                    }
-                }
-            });
+    private ToolbarMenuProvider mToolbarMenuProvider;
 
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
@@ -343,7 +339,6 @@ public class BooksOnBookshelf
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
                     mVm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
-                    mToolbarMenuProvider.onPrepareMenu(mVb.toolbar.getMenu());
                     buildBookList();
                 }
             };
@@ -359,7 +354,6 @@ public class BooksOnBookshelf
                     onBookUpdated(mVm.getBook(bookId), DBKey.KEY_LOANEE);
                 }
             };
-
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
 
@@ -393,9 +387,9 @@ public class BooksOnBookshelf
                         } else {
                             //  On small screens, opens a ViewPager with the book details
                             //  and swipe prev/next functionality.
-                            mDisplayBookLauncher.launch(new ShowBookContract.Input(
+                            mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
                                     bookId,
-                                    mVm.getCurrentStyle(BooksOnBookshelf.this).getUuid(),
+                                    mVm.getStyle(BooksOnBookshelf.this).getUuid(),
                                     mVm.getBookNavigationTableName(),
                                     rowData.getLong(DBKey.PK_ID)));
                         }
@@ -420,6 +414,7 @@ public class BooksOnBookshelf
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
         setContentView(mVb.getRoot());
 
@@ -429,13 +424,6 @@ public class BooksOnBookshelf
         createViewModel();
         createSyncDelegates(global);
         createHandlers(global);
-
-        mFabMenu = new FabMenu(mVb.fab, mVb.fabOverlay,
-                               mVb.fab0ScanBarcode,
-                               mVb.fab1SearchIsbn,
-                               mVb.fab2SearchText,
-                               mVb.fab3AddManually,
-                               mVb.fab4SearchExternalId);
 
         initNavDrawer();
         initToolbar();
@@ -473,6 +461,8 @@ public class BooksOnBookshelf
                 onBackPressed();
             }
         });
+
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         mVb.toolbar.addMenuProvider(mToolbarMenuProvider, this);
     }
 
@@ -521,8 +511,9 @@ public class BooksOnBookshelf
         if (SyncServer.CalibreCS.isEnabled(global)) {
             if (mCalibreSyncLauncher == null) {
                 mCalibreSyncLauncher = registerForActivityResult(
-                        new CalibreSyncContract(), data -> {
-                            if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
+                        new CalibreSyncContract(), result -> {
+                            // If we imported anything at all... rebuild
+                            if (result == CalibreSyncContract.RESULT_READ_DONE) {
                                 mVm.setForceRebuildInOnResume(true);
                             }
                         });
@@ -532,8 +523,9 @@ public class BooksOnBookshelf
         if (SyncServer.StripInfo.isEnabled(global)) {
             if (mStripInfoSyncLauncher == null) {
                 mStripInfoSyncLauncher = registerForActivityResult(
-                        new StripInfoSyncContract(), data -> {
-                            if (data != null && data.containsKey(SyncReader.BKEY_RESULTS)) {
+                        new StripInfoSyncContract(), result -> {
+                            // If we imported anything at all... rebuild
+                            if (result == StripInfoSyncContract.RESULT_READ_DONE) {
                                 mVm.setForceRebuildInOnResume(true);
                             }
                         });
@@ -550,7 +542,7 @@ public class BooksOnBookshelf
         if (mCalibreHandler == null && SyncServer.CalibreCS.isEnabled(global)) {
             try {
                 mCalibreHandler = new CalibreHandler(this, this)
-                        .setProgressDialogView(findViewById(R.id.progress_frame));
+                        .setProgressFrame(findViewById(R.id.progress_frame));
 
                 mCalibreHandler.onViewCreated(this, mVb.getRoot());
             } catch (@NonNull final SSLException | CertificateException ignore) {
@@ -602,7 +594,7 @@ public class BooksOnBookshelf
             // install single and long-click listeners
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
             // hookup the cursor
-            mAdapter.setCursor(this, mVm.getNewListCursor(), mVm.getCurrentStyle(this));
+            mAdapter.setCursor(this, mVm.getNewListCursor(), mVm.getStyle(this));
 
             // Combine the adapters for the list header and the actual list
             final ConcatAdapter concatAdapter = new ConcatAdapter(
@@ -642,6 +634,13 @@ public class BooksOnBookshelf
     }
 
     private void createFabMenu(@NonNull final SharedPreferences global) {
+        mFabMenu = new FabMenu(mVb.fab, mVb.fabOverlay,
+                               mVb.fab0ScanBarcode,
+                               mVb.fab1SearchIsbn,
+                               mVb.fab2SearchText,
+                               mVb.fab3AddManually,
+                               mVb.fab4SearchExternalId);
+
         mFabMenu.attach(mVb.content.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         mFabMenu.getItem(FAB_4_SEARCH_EXTERNAL_ID)
@@ -697,7 +696,7 @@ public class BooksOnBookshelf
             query = null;
         }
         // actioning on the criteria wil happen automatically at list building time.
-        mVm.getSearchCriteria().setKeywords(query);
+        mVm.getSearchCriteria().setFtsKeywords(query);
     }
 
     @Override
@@ -707,22 +706,9 @@ public class BooksOnBookshelf
         if (itemId == R.id.SUBMENU_SYNC) {
             showNavigationSubMenu(R.id.SUBMENU_SYNC, menuItem, R.menu.sync);
             return false;
-
         }
-        // The others below have no submenu, close the drawer.
+
         closeNavigationDrawer();
-
-
-        if (itemId == R.id.SUBMENU_SYNC_CALIBRE && mCalibreSyncLauncher != null) {
-            mCalibreSyncLauncher.launch(null);
-            return false;
-
-        } else if (itemId == R.id.SUBMENU_SYNC_STRIP_INFO && mStripInfoSyncLauncher != null) {
-            mStripInfoSyncLauncher.launch(null);
-            return false;
-        }
-
-
 
         if (itemId == R.id.MENU_ADVANCED_SEARCH) {
             mFtsSearchLauncher.launch(mVm.getSearchCriteria());
@@ -734,7 +720,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_MANAGE_LIST_STYLES) {
-            mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
+            mEditStylesLauncher.launch(mVm.getStyle(this).getUuid());
             return true;
 
         } else if (itemId == R.id.MENU_FILE_IMPORT) {
@@ -745,20 +731,13 @@ public class BooksOnBookshelf
             mExportLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_BOOKSHELVES) {
-            return true;
+        } else if (itemId == R.id.MENU_SYNC_CALIBRE && mCalibreSyncLauncher != null) {
+            mCalibreSyncLauncher.launch(null);
+            return false;
 
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_IMPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_CALIBRE_EXPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_IMPORT) {
-            return true;
-
-        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO_EXPORT) {
-            return true;
+        } else if (itemId == R.id.MENU_SYNC_STRIP_INFO && mStripInfoSyncLauncher != null) {
+            mStripInfoSyncLauncher.launch(null);
+            return false;
         }
 
         return super.onNavigationItemSelected(menuItem);
@@ -853,7 +832,9 @@ public class BooksOnBookshelf
 
         final DataHolder rowData = new CursorRow(cursor);
 
-        final Menu menu = ExtPopupMenu.createMenu(this);
+        final ExtPopupMenu contextMenu = new ExtPopupMenu(this)
+                .setGroupDividerEnabled();
+        final Menu menu = contextMenu.getMenu();
 
         final int rowGroupId = rowData.getInt(DBKey.KEY_BL_NODE_GROUP);
         switch (rowGroupId) {
@@ -880,7 +861,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 if (mCalibreHandler != null) {
-                    final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+                    final Book book = DataHolderUtils.requireBook(rowData);
                     mCalibreHandler.onPrepareMenu(this, menu, book);
                 }
 
@@ -977,20 +958,17 @@ public class BooksOnBookshelf
         }
 
         int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_NEXT_MISSING_COVER);
-        if (menu.size() > 0) {
-            menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
-                .setEnabled(false);
-        }
-        menu.add(Menu.NONE, R.id.MENU_NEXT_MISSING_COVER, menuOrder++,
+
+        // forms its own group
+        menu.add(R.id.MENU_NEXT_MISSING_COVER, R.id.MENU_NEXT_MISSING_COVER, menuOrder++,
                  R.string.lbl_next_book_without_cover)
             .setIcon(R.drawable.ic_baseline_broken_image_24);
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
-                .setEnabled(false);
             //noinspection UnusedAssignment
-            menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder++, R.string.lbl_level_expand)
+            menu.add(R.id.MENU_GROUP_BOB_EXPANSION, R.id.MENU_LEVEL_EXPAND, menuOrder++,
+                     R.string.lbl_level_expand)
                 .setIcon(R.drawable.ic_baseline_unfold_more_24);
         }
 
@@ -998,18 +976,18 @@ public class BooksOnBookshelf
         if (menu.size() > 0) {
             // we have a menu to show, set the title according to the level.
             final int level = rowData.getInt(DBKey.KEY_BL_NODE_LEVEL);
-            final String title = mAdapter.getLevelText(position, level);
+            contextMenu.setTitle(mAdapter.getLevelText(position, level));
 
-            final ExtPopupMenu popupMenu = new ExtPopupMenu(this, menu, this::onContextItemSelected)
-                    .setHeader(title, null);
-
-            // arbitrary...
             if (menu.size() < 5) {
                 // small menu, show it anchored to the row
-                popupMenu.showAsDropDown(v, position);
+                contextMenu.showAsDropDown(v, menuItem -> onMenuItemSelected(menuItem, position));
+
+            } else if (hasEmbeddedDetailsFrame()) {
+                contextMenu.show(v, Gravity.START,
+                                 menuItem -> onMenuItemSelected(menuItem, position));
             } else {
-                // large menu, center on screen
-                popupMenu.showCentered(v, position);
+                contextMenu.show(v, Gravity.CENTER,
+                                 menuItem -> onMenuItemSelected(menuItem, position));
             }
             return true;
         }
@@ -1025,8 +1003,8 @@ public class BooksOnBookshelf
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
         final int itemId = menuItem.getItemId();
 
         // Move the cursor, so we can read the data for this row.
@@ -1059,7 +1037,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            final Book book = DataHolderUtils.requireBook(rowData);
             mDuplicateLauncher.launch(book.duplicate());
             return true;
 
@@ -1097,13 +1075,13 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_SHARE) {
-            final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+            final Book book = DataHolderUtils.requireBook(rowData);
             startActivity(book.getShareIntent(this));
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             if (rowData.getInt(DBKey.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                final Book book = Objects.requireNonNull(DataHolderUtils.getBook(rowData));
+                final Book book = DataHolderUtils.requireBook(rowData);
                 mUpdateBookLauncher.launch(book);
                 return true;
             }
@@ -1124,8 +1102,8 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_SERIES_EDIT) {
-            final Series series = Objects.requireNonNull(DataHolderUtils.getSeries(rowData));
-            EditSeriesDialogFragment.launch(this, series);
+            final Series series = DataHolderUtils.requireSeries(rowData);
+            EditSeriesDialogFragment.launch(getSupportFragmentManager(), series);
             return true;
 
         } else if (itemId == R.id.MENU_SERIES_SET_COMPLETE
@@ -1139,7 +1117,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_SERIES_DELETE) {
-            final Series series = Objects.requireNonNull(DataHolderUtils.getSeries(rowData));
+            final Series series = DataHolderUtils.requireSeries(rowData);
             StandardDialogs.deleteSeries(this, series, () -> {
                 mVm.delete(this, series);
                 onRowChanged(DBKey.FK_SERIES, series.getId());
@@ -1150,12 +1128,13 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_AUTHOR_WORKS) {
             mAuthorWorksLauncher.launch(new AuthorWorksContract.Input(
                     rowData.getLong(DBKey.FK_AUTHOR),
-                    mVm.getCurrentBookshelf().getId()));
+                    mVm.getCurrentBookshelf().getId(),
+                    mVm.getStyle(this).getUuid()));
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
-            final Author author = Objects.requireNonNull(DataHolderUtils.getAuthor(rowData));
-            EditAuthorDialogFragment.launch(this, author);
+            final Author author = DataHolderUtils.requireAuthor(rowData);
+            EditAuthorDialogFragment.launch(getSupportFragmentManager(), author);
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
@@ -1170,14 +1149,12 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_PUBLISHER_EDIT) {
-            final Publisher publisher = Objects.requireNonNull(
-                    DataHolderUtils.getPublisher(rowData));
-            EditPublisherDialogFragment.launch(this, publisher);
+            final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
+            EditPublisherDialogFragment.launch(getSupportFragmentManager(), publisher);
             return true;
 
         } else if (itemId == R.id.MENU_PUBLISHER_DELETE) {
-            final Publisher publisher = Objects.requireNonNull(
-                    DataHolderUtils.getPublisher(rowData));
+            final Publisher publisher = DataHolderUtils.requirePublisher(rowData);
             StandardDialogs.deletePublisher(this, publisher, () -> {
                 mVm.delete(this, publisher);
                 onRowChanged(DBKey.FK_PUBLISHER, publisher.getId());
@@ -1187,14 +1164,12 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
-            final Bookshelf bookshelf = Objects.requireNonNull(
-                    DataHolderUtils.getBookshelf(rowData));
+            final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
             mEditBookshelfLauncher.launch(bookshelf);
             return true;
 
         } else if (itemId == R.id.MENU_BOOKSHELF_DELETE) {
-            final Bookshelf bookshelf = Objects.requireNonNull(
-                    DataHolderUtils.getBookshelf(rowData));
+            final Bookshelf bookshelf = DataHolderUtils.requireBookshelf(rowData);
             StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
                 mVm.delete(bookshelf);
                 onRowChanged(DBKey.FK_BOOKSHELF, bookshelf.getId());
@@ -1203,28 +1178,34 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_FORMAT_EDIT) {
-            EditFormatDialogFragment.launch(this, rowData.getString(DBKey.KEY_FORMAT));
+            EditFormatDialogFragment.launch(getSupportFragmentManager(),
+                                            rowData.getString(DBKey.KEY_FORMAT));
             return true;
 
         } else if (itemId == R.id.MENU_COLOR_EDIT) {
-            EditColorDialogFragment.launch(this, rowData.getString(DBKey.KEY_COLOR));
+            EditColorDialogFragment.launch(getSupportFragmentManager(),
+                                           rowData.getString(DBKey.KEY_COLOR));
             return true;
 
         } else if (itemId == R.id.MENU_GENRE_EDIT) {
-            EditGenreDialogFragment.launch(this, rowData.getString(DBKey.KEY_GENRE));
+            EditGenreDialogFragment.launch(getSupportFragmentManager(),
+                                           rowData.getString(DBKey.KEY_GENRE));
             return true;
 
         } else if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-            EditLanguageDialogFragment.launch(this, rowData.getString(DBKey.KEY_LANGUAGE));
+            EditLanguageDialogFragment.launch(getSupportFragmentManager(),
+                                              this, rowData.getString(DBKey.KEY_LANGUAGE)
+                                             );
             return true;
 
         } else if (itemId == R.id.MENU_LOCATION_EDIT) {
-            EditLocationDialogFragment.launch(this, rowData.getString(DBKey.KEY_LOCATION));
+            EditLocationDialogFragment.launch(getSupportFragmentManager(),
+                                              rowData.getString(DBKey.KEY_LOCATION));
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
             setNodeState(rowData, BooklistNode.NextState.Expand,
-                         mVm.getCurrentStyle(this).getGroups().size());
+                         mVm.getStyle(this).getGroups().size());
             return true;
 
         } else if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
@@ -1236,8 +1217,8 @@ public class BooksOnBookshelf
             return true;
         }
 
-        if (mCalibreHandler != null && mCalibreHandler.onMenuItemSelected(this, menuItem,
-                                                                          rowData)) {
+        if (mCalibreHandler != null
+            && mCalibreHandler.onMenuItemSelected(this, menuItem, rowData)) {
             return true;
         }
 
@@ -1277,26 +1258,26 @@ public class BooksOnBookshelf
     @SuppressWarnings("SameParameterValue")
     private void showNavigationSubMenu(@IdRes final int anchorMenuItemId,
                                        @NonNull final MenuItem menuItem,
-                                       @MenuRes final int menuResId) {
+                                       @MenuRes final int menuRes) {
 
         final View anchor = getNavigationMenuItemView(anchorMenuItemId);
 
-        final Menu menu = ExtPopupMenu.createMenu(this);
-        getMenuInflater().inflate(menuResId, menu);
+        final ExtPopupMenu popupMenu = new ExtPopupMenu(this)
+                .inflate(menuRes);
+        final Menu menu = popupMenu.getMenu();
         if (menuItem.getItemId() == R.id.SUBMENU_SYNC) {
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-            menu.findItem(R.id.SUBMENU_SYNC_CALIBRE)
+            menu.findItem(R.id.MENU_SYNC_CALIBRE)
                 .setVisible(SyncServer.CalibreCS.isEnabled(global)
                             && mCalibreSyncLauncher != null);
 
-            menu.findItem(R.id.SUBMENU_SYNC_STRIP_INFO)
+            menu.findItem(R.id.MENU_SYNC_STRIP_INFO)
                 .setVisible(SyncServer.StripInfo.isEnabled(global)
                             && mStripInfoSyncLauncher != null);
         }
 
-        new ExtPopupMenu(this, menu, (pumItem, pos) -> onNavigationItemSelected(pumItem))
-                .setHeader(menuItem.getTitle(), null)
-                .showAsDropDown(anchor, 0);
+        popupMenu.setTitle(menuItem.getTitle())
+                 .showAsDropDown(anchor, this::onNavigationItemSelected);
     }
 
     /**
@@ -1337,12 +1318,12 @@ public class BooksOnBookshelf
 
         final String title = getString(R.string.menu_update_books);
 
-        final Menu menu = ExtPopupMenu.createMenu(this);
-        getMenuInflater().inflate(R.menu.update_books, menu);
         //noinspection ConstantConditions
-        new ExtPopupMenu(this, menu, this::onContextItemSelected)
-                .setHeader(title, message)
-                .showAsDropDown(anchor, position);
+        new ExtPopupMenu(this)
+                .inflate(R.menu.update_books)
+                .setTitle(title)
+                .setMessage(message)
+                .showAsDropDown(anchor, menuItem -> onMenuItemSelected(menuItem, position));
     }
 
     private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
@@ -1413,6 +1394,18 @@ public class BooksOnBookshelf
         scrollTo(findBestNode(all));
     }
 
+    /**
+     * Receive notifications that a Book was updated.
+     * <p>
+     * For a limited set of keys, we directly update the list table which is very fast.
+     * <p>
+     * Other keys, or full books, will always trigger a list rebuild.
+     *
+     * @param book the book that was changed,
+     *             or {@code null} to indicate multiple books were potentially changed.
+     * @param key  the item that was changed,
+     *             or {@code null} to indicate ALL data was potentially changed.
+     */
     @Override
     public void onBookUpdated(@Nullable final Book book,
                               @Nullable final String key) {
@@ -1438,7 +1431,8 @@ public class BooksOnBookshelf
 
         // Refresh the list data for the given positions only.
         if (positions != null) {
-            // Yes, it's deprecated; but check BooklistCursor were we do the right thing.
+            // Yes, requery() is deprecated;
+            // but check BooklistCursor were we do the right thing.
             //noinspection ConstantConditions,deprecation
             mAdapter.getCursor().requery();
 
@@ -1454,16 +1448,15 @@ public class BooksOnBookshelf
      *
      * @param data returned from the view/edit Activity
      */
-    private void onBookEditFinished(@Nullable final Bundle data) {
+    private void onBookEditFinished(@Nullable final EditBookOutput data) {
         if (data != null) {
-            if (data.getBoolean(Entity.BKEY_DATA_MODIFIED, false)) {
+            if (data.modified) {
                 mVm.setForceRebuildInOnResume(true);
             }
 
             // If we got an id back, make any (potential) rebuild re-position to it.
-            final long bookId = data.getLong(DBKey.FK_BOOK, 0);
-            if (bookId > 0) {
-                mVm.setCurrentCenteredBookId(bookId);
+            if (data.bookId > 0) {
+                mVm.setCurrentCenteredBookId(data.bookId);
             }
         }
     }
@@ -1507,7 +1500,7 @@ public class BooksOnBookshelf
             // Invisible... theoretically this means the page should not re-layout
             mVb.content.list.setVisibility(View.INVISIBLE);
 
-            // If the book details frame is present, wipe it
+            // If the book details frame is present, remove it
             final Fragment fragment = getEmbeddedDetailsFrame();
             if (fragment != null) {
                 getSupportFragmentManager()
@@ -1540,15 +1533,14 @@ public class BooksOnBookshelf
     private void onBuildFinished(
             @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         mVb.progressCircle.hide();
-        if (message.isNewEvent()) {
+
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
             }
-
-            mVm.onBuildFinished(message);
-
-            displayList(message.getData().requireResult().getTargetNodes());
-        }
+            mVm.onBuildFinished(result);
+            displayList(result.getTargetNodes());
+        });
     }
 
     /**
@@ -1559,7 +1551,8 @@ public class BooksOnBookshelf
     private void onBuildCancelled(
             @NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
         mVb.progressCircle.hide();
-        if (message.isNewEvent()) {
+
+        message.getData().ifPresent(data -> {
             mVm.onBuildCancelled();
 
             if (mVm.isListLoaded()) {
@@ -1567,7 +1560,7 @@ public class BooksOnBookshelf
             } else {
                 recoverAfterFailedBuild();
             }
-        }
+        });
     }
 
     /**
@@ -1577,7 +1570,7 @@ public class BooksOnBookshelf
      */
     private void onBuildFailed(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         mVb.progressCircle.hide();
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             mVm.onBuildFailed();
 
             if (mVm.isListLoaded()) {
@@ -1585,7 +1578,7 @@ public class BooksOnBookshelf
             } else {
                 recoverAfterFailedBuild();
             }
-        }
+        });
     }
 
     private void recoverAfterFailedBuild() {
@@ -1594,7 +1587,7 @@ public class BooksOnBookshelf
         // with the Styles. i.e. the style used to build is very likely corrupt.
         // Another reason can be during development when the database structure
         // was changed...
-        final ListStyle style = mVm.getCurrentStyle(this);
+        final ListStyle style = mVm.getStyle(this);
         // so we reset the style to recover.. and restarting the app will work.
         mVm.onStyleChanged(this, BuiltinStyle.DEFAULT_UUID);
         // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
@@ -1650,6 +1643,11 @@ public class BooksOnBookshelf
      */
     private void displayList(@NonNull final List<BooklistNode> targetNodes) {
         if (createListAdapter(true) > 0) {
+
+            // we can get here after a style change (or as initial build obviously)
+            // so make sure the menu reflects the style
+            mToolbarMenuProvider.onPrepareMenu(mVb.toolbar.getMenu());
+
             // Notice the "post()" usage. This is needed because the list
             // will potentially have moved after each step.
             mVb.content.list.post(() -> {
@@ -1849,16 +1847,18 @@ public class BooksOnBookshelf
     }
 
     private void openEmbeddedBookDetails(final long bookId) {
-        final ShowBookDetailsFragment fragment = new ShowBookDetailsFragment();
-        final Bundle args = new Bundle();
-        args.putBoolean(ShowBookDetailsFragment.BKEY_EMBEDDED, true);
-        args.putLong(DBKey.FK_BOOK, bookId);
-        args.putString(ListStyle.BKEY_STYLE_UUID, mVm.getCurrentStyle(this).getUuid());
-        fragment.setArguments(args);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
-                .commit();
+        final FragmentManager fm = getSupportFragmentManager();
+
+        Fragment fragment = fm.findFragmentByTag(ShowBookDetailsFragment.TAG);
+        if (fragment == null) {
+            fragment = ShowBookDetailsFragment.create(
+                    bookId, mVm.getStyle(this).getUuid(), true);
+            fm.beginTransaction()
+              .replace(R.id.details_frame, fragment, ShowBookDetailsFragment.TAG)
+              .commit();
+        } else {
+            ((ShowBookDetailsFragment) fragment).reloadBook(bookId);
+        }
     }
 
     @SuppressLint("LogConditional")
@@ -1904,7 +1904,7 @@ public class BooksOnBookshelf
 
         private void onPrepareMenu(@NonNull final Menu menu) {
             final boolean showPreferredOption =
-                    mVm.getCurrentStyle(BooksOnBookshelf.this).getTopLevel() > 1;
+                    mVm.getStyle(BooksOnBookshelf.this).getTopLevel() > 1;
             menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);
         }
 
@@ -1915,11 +1915,11 @@ public class BooksOnBookshelf
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_STYLE_PICKER) {
-                mOnStylePickerLauncher.launch(mVm.getCurrentStyle(BooksOnBookshelf.this), false);
+                mOnStylePickerLauncher.launch(mVm.getStyle(BooksOnBookshelf.this), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_PREFERRED_EXPANSION) {
-                expandAllNodes(mVm.getCurrentStyle(BooksOnBookshelf.this).getTopLevel(), false);
+                expandAllNodes(mVm.getStyle(BooksOnBookshelf.this).getTopLevel(), false);
                 return true;
 
             } else if (itemId == R.id.MENU_LEVEL_EXPAND) {

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -33,21 +32,14 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Input: {@link SyncWriterConfig}.
- * Output: {@link SyncWriterResults}.
- */
 public class SyncWriterTask
         extends MTask<SyncWriterResults> {
 
     /** Log tag. */
     private static final String TAG = "SyncWriterTask";
 
-    /** Server to sync with */
-    private SyncServer mSyncServer;
     /** export configuration. */
-    @Nullable
-    private SyncWriterConfig mConfig;
+    private SyncWriterHelper mHelper;
 
     public SyncWriterTask() {
         super(R.id.TASK_ID_EXPORT, TAG);
@@ -56,13 +48,10 @@ public class SyncWriterTask
     /**
      * Start the task.
      *
-     * @param syncServer to sync with
-     * @param config     configuration
+     * @param syncWriterHelper configuration
      */
-    public void start(@NonNull final SyncServer syncServer,
-                      @NonNull final SyncWriterConfig config) {
-        mSyncServer = syncServer;
-        mConfig = config;
+    public void start(@NonNull final SyncWriterHelper syncWriterHelper) {
+        mHelper = syncWriterHelper;
         execute();
     }
 
@@ -75,9 +64,6 @@ public class SyncWriterTask
                    CertificateException,
                    StorageException {
 
-        //noinspection ConstantConditions
-        try (SyncWriter writer = mSyncServer.createWriter(context, mConfig)) {
-            return writer.write(context, this);
-        }
+        return mHelper.write(context, this);
     }
 }

@@ -39,6 +39,7 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -50,8 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriter;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -72,10 +72,10 @@ import com.hardbacknutter.org.json.JSONObject;
  * <p>
  * We only UPDATE books which exist on the server.
  * We're not pushing new books to the server !
- * If a book no longer exists on the server, {@link SyncWriterConfig#isDeleteLocalBooks()} decides.
+ * If a book no longer exists on the server, {@link SyncWriterHelper#isDeleteLocalBooks()} decides.
  */
 public class CalibreContentServerWriter
-        implements SyncWriter {
+        implements DataWriter<SyncWriterResults> {
 
     /** Log tag. */
     private static final String TAG = "CalibreServerWriter";
@@ -84,7 +84,7 @@ public class CalibreContentServerWriter
     private final CalibreContentServer mServer;
     /** Export configuration. */
     @NonNull
-    private final SyncWriterConfig mConfig;
+    private final SyncWriterHelper mConfig;
     private final boolean mDoCovers;
     private final boolean mDeleteLocalBook;
 
@@ -103,12 +103,12 @@ public class CalibreContentServerWriter
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final SyncWriterConfig config)
+                                      @NonNull final SyncWriterHelper config)
             throws CertificateException, SSLException {
 
         mConfig = config;
         mServer = new CalibreContentServer(context);
-        mDoCovers = mConfig.getExporterEntries().contains(RecordType.Cover);
+        mDoCovers = mConfig.getRecordTypes().contains(RecordType.Cover);
         mDeleteLocalBook = mConfig.isDeleteLocalBooks();
 
         mDateParser = new ISODateParser();
@@ -228,7 +228,7 @@ public class CalibreContentServerWriter
                 final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
                 final JSONObject changes = collectChanges(library, identifiers, book);
                 mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
-                mResults.booksWritten++;
+                mResults.addBook(book.getId());
             }
         }
     }
@@ -346,7 +346,7 @@ public class CalibreContentServerWriter
                     is.read(bFile);
                 }
                 changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
-                mResults.coversWritten++;
+                mResults.addCover(coverFile);
 
             } else {
                 changes.put(CalibreBook.COVER, "");

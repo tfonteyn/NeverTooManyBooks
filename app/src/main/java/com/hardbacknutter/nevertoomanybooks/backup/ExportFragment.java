@@ -78,13 +78,10 @@ public class ExportFragment
 
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
-
-    /** The ViewModel. */
-    private ExportViewModel mVm;
-
     @NonNull
     private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
-
+    /** The ViewModel. */
+    private ExportViewModel mVm;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
@@ -101,6 +98,7 @@ public class ExportFragment
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
+        // no init
     }
 
     @Nullable
@@ -119,13 +117,27 @@ public class ExportFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-
         toolbar.setTitle(R.string.menu_backup_and_export);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
         mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
+                .getExportHelper().setRecordType(isChecked, RecordType.Cover));
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> mVm
+                .getExportHelper().setIncremental(checkedId == mVb.rbExportNewAndUpdated.getId()));
+
+        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mVm.getExportHelper().setRecordType(isChecked, RecordType.Books);
+            mVb.rbBooksGroup.setEnabled(isChecked);
+        });
+
+        mVb.archiveFormat.setOnItemClickListener(
+                (p, v, position, id) -> updateFormatSelection(mVm.getEncoding(position)));
+
+        mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
         // Check if the task is already running (e.g. after a screen rotation...)
         // Note that after a screen rotation, the full-options screen will NOT be re-shown.
@@ -135,15 +147,15 @@ public class ExportFragment
             if (mVm.isQuickOptionsAlreadyShown()) {
                 showOptions();
             } else {
-                mVm.setQuickOptionsAlreadyShown(true);
                 showQuickOptions();
             }
         }
     }
 
     private void showQuickOptions() {
-        final ExportHelper helper = mVm.getExportHelper();
+        mVm.setQuickOptionsAlreadyShown(true);
 
+        final ExportHelper helper = mVm.getExportHelper();
         // set the default; a backup to archive
         helper.setEncoding(ArchiveEncoding.Zip);
 
@@ -169,37 +181,23 @@ public class ExportFragment
      */
     private void showOptions() {
         final ExportHelper helper = mVm.getExportHelper();
-        final Set<RecordType> exportEntities = helper.getRecordTypes();
 
-        mVb.cbxCovers.setChecked(exportEntities.contains(RecordType.Cover));
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setRecordType(RecordType.Cover, isChecked));
+        final Set<RecordType> recordTypes = helper.getRecordTypes();
+        mVb.cbxBooks.setChecked(recordTypes.contains(RecordType.Books));
+        mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
         final boolean incremental = helper.isIncremental();
-        mVb.rbExportBooksOptionAll.setChecked(!incremental);
-        mVb.rbExportBooksOptionNewAndUpdated.setChecked(incremental);
-        mVb.infExportBooksOptionNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
-                .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
-
-        mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
-        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getExportHelper().setRecordType(RecordType.Books, isChecked);
-            mVb.rbBooksGroup.setEnabled(isChecked);
-        });
+        mVb.rbExportAll.setChecked(!incremental);
+        mVb.rbExportNewAndUpdated.setChecked(incremental);
 
         //noinspection ConstantConditions
         final Pair<Integer, ArrayList<String>> fo = mVm.getFormatOptions(getContext());
         final int initialPos = fo.first;
         final ArrayList<String> list = fo.second;
 
-        final ExtArrayAdapter<String> archiveFormatAdapter = new ExtArrayAdapter<>(
+        mVb.archiveFormat.setAdapter(new ExtArrayAdapter<>(
                 getContext(), R.layout.popup_dropdown_menu_item,
-                ExtArrayAdapter.FilterType.Passthrough, list);
-        mVb.archiveFormat.setAdapter(archiveFormatAdapter);
-        mVb.archiveFormat.setOnItemClickListener(
-                (parent, view, position, id) -> updateFormatSelection(
-                        mVm.getEncoding(position)));
+                ExtArrayAdapter.FilterType.Passthrough, list));
 
         mVb.archiveFormat.setText(list.get(initialPos), false);
         updateFormatSelection(helper.getEncoding());
@@ -210,102 +208,76 @@ public class ExportFragment
     private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
         final ExportHelper helper = mVm.getExportHelper();
+        helper.setEncoding(encoding);
+
+        mVb.archiveFormatInfo.setText(encoding.getShortDescResId());
 
         switch (encoding) {
             case Zip: {
-                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setEncoding(ArchiveEncoding.Zip);
-                helper.setRecordType(RecordType.Styles, true);
-                helper.setRecordType(RecordType.Preferences, true);
-                helper.setRecordType(RecordType.Certificates, true);
+                helper.addRecordType(RecordType.Styles,
+                                     RecordType.Preferences,
+                                     RecordType.Certificates);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(true);
 
                 mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
+                mVb.rbExportNewAndUpdated.setChecked(true);
 
                 mVb.cbxCovers.setChecked(true);
                 mVb.cbxCovers.setEnabled(true);
                 break;
             }
             case Csv: {
-                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setEncoding(ArchiveEncoding.Csv);
-                helper.setRecordType(RecordType.Styles, false);
-                helper.setRecordType(RecordType.Preferences, false);
-                helper.setRecordType(RecordType.Certificates, false);
+                helper.removeRecordType(RecordType.Styles,
+                                        RecordType.Preferences,
+                                        RecordType.Certificates);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
 
                 mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
+                mVb.rbExportNewAndUpdated.setChecked(true);
 
                 mVb.cbxCovers.setChecked(false);
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
             case Json: {
-                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_json_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setEncoding(ArchiveEncoding.Json);
-                helper.setRecordType(RecordType.Styles, false);
-                helper.setRecordType(RecordType.Preferences, false);
-                helper.setRecordType(RecordType.Certificates, false);
-
+                helper.removeRecordType(RecordType.Styles,
+                                        RecordType.Preferences,
+                                        RecordType.Certificates);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
 
                 mVb.rbBooksGroup.setEnabled(true);
-                mVb.rbExportBooksOptionAll.setChecked(true);
+                mVb.rbExportAll.setChecked(true);
 
                 mVb.cbxCovers.setChecked(false);
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
-            case Xml: {
-                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+            case Xml:
+            case SqLiteDb: {
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
-                helper.setEncoding(ArchiveEncoding.Xml);
-                helper.setRecordType(RecordType.Styles, false);
-                helper.setRecordType(RecordType.Preferences, false);
-                helper.setRecordType(RecordType.Certificates, false);
-
+                helper.removeRecordType(RecordType.Styles,
+                                        RecordType.Preferences,
+                                        RecordType.Certificates);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
 
                 // See class docs for XmlArchiveWriter
                 mVb.rbBooksGroup.setEnabled(false);
-                mVb.rbExportBooksOptionAll.setChecked(true);
-
-                mVb.cbxCovers.setChecked(false);
-                mVb.cbxCovers.setEnabled(false);
-                break;
-            }
-            case SqLiteDb: {
-                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
-                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
-
-                helper.setEncoding(ArchiveEncoding.SqLiteDb);
-                helper.setRecordType(RecordType.Styles, false);
-                helper.setRecordType(RecordType.Preferences, false);
-                helper.setRecordType(RecordType.Certificates, false);
-
-
-                mVb.cbxBooks.setChecked(true);
-                mVb.cbxBooks.setEnabled(false);
-
-                mVb.rbBooksGroup.setEnabled(false);
-                mVb.rbExportBooksOptionAll.setChecked(true);
+                mVb.rbExportAll.setChecked(true);
 
                 mVb.cbxCovers.setChecked(false);
                 mVb.cbxCovers.setEnabled(false);
@@ -343,27 +315,27 @@ public class ExportFragment
             @NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
             //noinspection ConstantConditions
             getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
-        }
+        });
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
+            final Context context = getContext();
+            //noinspection ConstantConditions
+            final String msg = ExMsg.map(context, data.getResult())
+                                    .orElse(getString(R.string.error_unknown));
+
             @StringRes
             final int title = mVm.getExportHelper().isBackup()
                               ? R.string.error_backup_failed
                               : R.string.error_export_failed;
-
-            final Context context = getContext();
-            //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
-                                    .orElse(getString(R.string.error_unknown));
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(context)
@@ -373,7 +345,7 @@ public class ExportFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
-        }
+        });
     }
 
     /**
@@ -384,10 +356,8 @@ public class ExportFragment
     private void onExportFinished(@NonNull final LiveDataEvent<TaskResult<ExportResults>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            final ExportResults results = message.getData().requireResult();
-
-            final List<String> items = extractExportedItems(results);
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> {
+            final List<String> items = extractExportedItems(result);
             if (items.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
@@ -443,12 +413,11 @@ public class ExportFragment
                              .create()
                              .show();
             }
-        }
+        });
     }
 
     @NonNull
-    private List<String> extractExportedItems(
-            @NonNull final ExportResults result) {
+    private List<String> extractExportedItems(@NonNull final ExportResults result) {
         final List<String> items = new ArrayList<>();
 
         if (result.getBookCount() > 0) {
@@ -491,6 +460,20 @@ public class ExportFragment
         return items;
     }
 
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+        message.getData().ifPresent(data -> {
+            if (mProgressDelegate == null) {
+                //noinspection ConstantConditions
+                mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                        .setTitle(R.string.menu_backup_and_export)
+                        .setPreventSleep(true)
+                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
+                        .show(getActivity().getWindow());
+            }
+            mProgressDelegate.onProgress(data);
+        });
+    }
+
     /**
      * Create and send an email with the specified Uri.
      *
@@ -524,20 +507,6 @@ public class ExportFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
-        }
-    }
-
-    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
-            if (mProgressDelegate == null) {
-                //noinspection ConstantConditions
-                mProgressDelegate = new ProgressDelegate(getProgressFrame())
-                        .setTitle(R.string.menu_backup_and_export)
-                        .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
-                        .show(getActivity().getWindow());
-            }
-            mProgressDelegate.onProgress(message.getData());
         }
     }
 

@@ -26,7 +26,17 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 public interface CalibreDao {
 
-    void updateOrInsert(@NonNull Book book)
+    /**
+     * Update existing, or insert the Calibre data for the given {@link Book}.
+     *
+     * @param book to process
+     *
+     * @return {@code true} if an <strong>insert</strong> was done.
+     * {@code false} if no insert was <strong>attempted</strong>
+     *
+     * @throws DaoWriteException on failure
+     */
+    boolean updateOrInsert(@NonNull Book book)
             throws DaoWriteException;
 
     /**
@@ -36,9 +46,12 @@ public interface CalibreDao {
      *
      * @param book to process
      *
-     * @throws DaoWriteException on failure
+     * @return {@code true} if an insert was done.
+     * {@code false} if no insert was <strong>attempted</strong>
+     *
+     * @throws DaoWriteException on failure to insert
      */
-    void insert(@NonNull Book book)
+    boolean insert(@NonNull Book book)
             throws DaoWriteException;
 
     /**

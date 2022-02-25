@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -198,31 +199,23 @@ public class EditBookTocFragment
         mEditTocVm.onIsfdbEditions().observe(getViewLifecycleOwner(), this::onIsfdbEditions);
         mEditTocVm.onIsfdbBook().observe(getViewLifecycleOwner(), this::onIsfdbBook);
 
-        mEditTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message -> {
-            if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        });
-        mEditTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message -> {
-            if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_no_editions,
-                              Snackbar.LENGTH_LONG).show();
-            }
-        });
+        mEditTocVm.onIsfdbEditionsCancelled().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(mVb.getRoot(), R.string.cancelled,
+                              Snackbar.LENGTH_LONG).show()));
+        mEditTocVm.onIsfdbEditionsFailure().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(mVb.getRoot(), R.string.warning_no_editions,
+                              Snackbar.LENGTH_LONG).show()));
 
-        mEditTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message -> {
-            if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        });
-        mEditTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message -> {
-            if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_search_failed,
-                              Snackbar.LENGTH_LONG).show();
-            }
-        });
+        mEditTocVm.onIsfdbBookCancelled().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(mVb.getRoot(), R.string.cancelled,
+                              Snackbar.LENGTH_LONG).show()));
+        mEditTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
+                message.getData().ifPresent(data -> Snackbar
+                        .make(mVb.getRoot(), R.string.warning_search_failed,
+                              Snackbar.LENGTH_LONG).show()));
 
         mVb.tocList.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
@@ -253,16 +246,15 @@ public class EditBookTocFragment
 
         mVb.btnAdd.setOnClickListener(v -> onAdd());
 
+        mContextMenu = new ExtPopupMenu(context);
         final Resources res = getResources();
-        final Menu menu = ExtPopupMenu.createMenu(context);
+        final Menu menu = mContextMenu.getMenu();
         menu.add(Menu.NONE, R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_baseline_edit_24);
         menu.add(Menu.NONE, R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.action_delete)
             .setIcon(R.drawable.ic_baseline_delete_24);
-
-        mContextMenu = new ExtPopupMenu(context, menu, this::onContextItemSelected);
 
         // ready for user input
         if (mVb.author.getVisibility() == View.VISIBLE) {
@@ -349,8 +341,8 @@ public class EditBookTocFragment
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem,
+                                       final int position) {
         final int itemId = menuItem.getItemId();
 
         if (itemId == R.id.MENU_EDIT) {
@@ -493,9 +485,9 @@ public class EditBookTocFragment
             author = mVm.getPrimaryAuthor(getContext());
         }
         //noinspection ConstantConditions
-        final TocEntry newTocEntry = new TocEntry(author,
-                                                  mVb.title.getText().toString().trim(),
-                                                  mVb.firstPublication.getText().toString().trim());
+        final TocEntry newTocEntry = new TocEntry(author, mVb.title.getText().toString().trim(),
+                                                  mVb.firstPublication.getText().toString().trim()
+        );
         addNewEntry(newTocEntry);
     }
 
@@ -531,22 +523,25 @@ public class EditBookTocFragment
 
     /**
      * We got one or more editions from ISFDB.
+     * <p>
+     * Stores the urls locally as the user might want to try the next in line.
      */
     private void onIsfdbEditions(@NonNull final LiveDataEvent<TaskResult<List<Edition>>> message) {
-        if (message.isNewEvent()) {
-            // Stores the urls locally as the user might want to try the next in line
+        message.getData().ifPresent(data -> {
+            final List<Edition> result = data.getResult();
+
             mIsfdbEditions.clear();
-            final List<Edition> result = message.getData().getResult();
             if (result != null) {
                 mIsfdbEditions.addAll(result);
             }
             searchIsfdb();
-        }
+        });
     }
 
     private void onIsfdbBook(@NonNull final LiveDataEvent<TaskResult<Bundle>> message) {
-        if (message.isNewEvent()) {
-            final Bundle result = message.getData().getResult();
+        message.getData().ifPresent(data -> {
+            final Bundle result = data.getResult();
+
             if (result == null) {
                 Snackbar.make(mVb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show();
@@ -578,9 +573,10 @@ public class EditBookTocFragment
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
             mConfirmTocResultsLauncher.launch(result, !mIsfdbEditions.isEmpty());
-        }
+        });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void onIsfdbDataConfirmed(@NonNull final Book.ContentType contentType,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (contentType != Book.ContentType.Book) {
@@ -697,6 +693,7 @@ public class EditBookTocFragment
                 super(requestKey);
             }
 
+            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,
                                   @NonNull final Book.ContentType tocBitMask,
@@ -707,6 +704,7 @@ public class EditBookTocFragment
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
+            @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
             static void searchNextEdition(@NonNull final Fragment fragment,
                                           @NonNull final String requestKey) {
                 final Bundle result = new Bundle(1);
@@ -726,9 +724,9 @@ public class EditBookTocFragment
                 bookData.putString(BKEY_REQUEST_KEY, RK_CONFIRM_TOC);
                 bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
 
-                final DialogFragment frag = new ConfirmTocDialogFragment();
-                frag.setArguments(bookData);
-                frag.show(mFragmentManager, TAG);
+                final DialogFragment fragment = new ConfirmTocDialogFragment();
+                fragment.setArguments(bookData);
+                fragment.show(mFragmentManager, TAG);
             }
 
             @Override
@@ -738,7 +736,8 @@ public class EditBookTocFragment
                     searchNextEdition();
                 } else {
                     onResult(Book.ContentType.getType(result.getLong(TOC_BIT_MASK)),
-                             Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST)));
+                             Objects.requireNonNull(result.getParcelableArrayList(TOC_LIST),
+                                                    TOC_LIST));
                 }
             }
 
@@ -810,7 +809,8 @@ public class EditBookTocFragment
                     v -> editEntry(holder.getBindingAdapterPosition()));
 
             holder.rowDetailsView.setOnLongClickListener(v -> {
-                mContextMenu.showAsDropDown(v, holder.getBindingAdapterPosition());
+                mContextMenu.showAsDropDown(v, menuItem ->
+                        onMenuItemSelected(menuItem, holder.getBindingAdapterPosition()));
                 return true;
             });
 
@@ -851,7 +851,7 @@ public class EditBookTocFragment
         @Override
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
-            menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0,
+            menu.add(R.id.MENU_POPULATE_TOC_FROM_ISFDB, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0,
                      R.string.isfdb_menu_populate_toc);
         }
 

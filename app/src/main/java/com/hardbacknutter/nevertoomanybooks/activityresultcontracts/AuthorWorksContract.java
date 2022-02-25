@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -32,22 +31,14 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public class AuthorWorksContract
-        extends ActivityResultContract<AuthorWorksContract.Input, Bundle> {
+        extends ActivityResultContract<AuthorWorksContract.Input, EditBookOutput> {
 
     private static final String TAG = "AuthorWorksContract";
-
-    public static void setResultAndFinish(@NonNull final Activity activity,
-                                          final boolean dataModified) {
-        final Intent resultIntent = new Intent()
-                .putExtra(Entity.BKEY_DATA_MODIFIED, dataModified);
-        activity.setResult(Activity.RESULT_OK, resultIntent);
-        activity.finish();
-    }
 
     @NonNull
     @Override
@@ -56,13 +47,14 @@ public class AuthorWorksContract
         return FragmentHostActivity
                 .createIntent(context, AuthorWorksFragment.class)
                 .putExtra(DBKey.FK_AUTHOR, input.authorId)
-                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId);
+                .putExtra(DBKey.FK_BOOKSHELF, input.bookshelfId)
+                .putExtra(ListStyle.BKEY_UUID, input.styleUuid);
     }
 
     @Override
     @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    public EditBookOutput parseResult(final int resultCode,
+                                      @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
         }
@@ -70,18 +62,23 @@ public class AuthorWorksContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getExtras();
+
+        return intent.getParcelableExtra(EditBookOutput.BKEY);
     }
 
     public static class Input {
 
         final long authorId;
         final long bookshelfId;
+        @NonNull
+        final String styleUuid;
 
         public Input(final long authorId,
-                     final long bookshelfId) {
+                     final long bookshelfId,
+                     @NonNull final String styleUuid) {
             this.authorId = authorId;
             this.bookshelfId = bookshelfId;
+            this.styleUuid = styleUuid;
         }
     }
 }

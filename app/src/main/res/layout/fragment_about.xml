@@ -144,7 +144,7 @@
         />
 
     <TextView
-        android:id="@+id/contacts"
+        android:id="@+id/lbl_contacts"
         style="@style/Text.Header"
         android:layout_marginTop="24dp"
         android:layout_marginStart="@dimen/field_margin_start"
@@ -157,21 +157,14 @@
         android:id="@+id/btn_sourcecode_url"
         style="@style/Button.Url"
         android:text="@string/lbl_sourcecode_url"
-        app:layout_constraintStart_toStartOf="@id/contacts"
-        app:layout_constraintTop_toBottomOf="@id/contacts"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_contacts"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         />
 
-    <!-- actionBarSize is a bit of a hack... but positioning
-        the fragment in the FragmentContainerView constrained to
-        the visible screen is elusive. -->
     <TextView
         android:id="@+id/debug_version"
-        style="@style/Field.Generic.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="?attr/actionBarSize"
+        style="@style/About.DebugVersion"
         android:text=""
-        android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="a7 d13 b2020-11-01"

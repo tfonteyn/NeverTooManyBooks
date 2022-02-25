@@ -31,6 +31,8 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
@@ -52,9 +54,9 @@ public class SearchSitesSingleListContract
         // All sites in a list are always of the same type; just grab it from the first entry
         mListKey = list.get(0).getType().getBundleKey();
 
-        return SearchAdminFragment
-                .createIntent(context)
-                .putExtra(SearchAdminViewModel.BKEY_LIST, list);
+        return FragmentHostActivity
+                .createIntent(context, R.layout.activity_admin_search, SearchAdminFragment.class)
+                .putParcelableArrayListExtra(SearchAdminViewModel.BKEY_LIST, list);
     }
 
     @Nullable

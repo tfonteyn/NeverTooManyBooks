@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -100,7 +100,8 @@ public class AuthorDaoImpl
             + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                     DBKey.KEY_TITLE,
                                     DBKey.KEY_TITLE_OB,
-                                    DBKey.DATE_FIRST_PUBLICATION)
+                                    DBKey.DATE_FIRST_PUBLICATION,
+                                    DBKey.KEY_LANGUAGE)
             + ",1 AS " + DBKey.KEY_BOOK_COUNT
             + _FROM_ + TBL_BOOKS.startJoin(TBL_BOOK_AUTHOR);
 
@@ -122,6 +123,8 @@ public class AuthorDaoImpl
                                           DBKey.KEY_TITLE,
                                           DBKey.KEY_TITLE_OB,
                                           DBKey.DATE_FIRST_PUBLICATION)
+            // The Toc table does not have a language field, just return an empty string
+            + ",'' AS " + DBKey.KEY_LANGUAGE
             // count the number of books this TOC entry is present in.
             + ", COUNT(" + TBL_TOC_ENTRIES.dot(DBKey.PK_ID) + ") AS " + DBKey.KEY_BOOK_COUNT
             // join with the books, so we can group by toc id, and get the number of books.
@@ -496,18 +499,17 @@ public class AuthorDaoImpl
                 switch (type) {
                     case AuthorWork.TYPE_TOC:
                         list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
-                                              author,
-                                              rowData.getString(DBKey.KEY_TITLE),
+                                              author, rowData.getString(DBKey.KEY_TITLE),
                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
                                               rowData.getInt(DBKey.KEY_BOOK_COUNT)));
                         break;
 
                     case AuthorWork.TYPE_BOOK:
-                        // Eventually we'll create a Book here...
-                        list.add(new BookAsWork(rowData.getLong(DBKey.PK_ID),
-                                                author,
-                                                rowData.getString(DBKey.KEY_TITLE),
-                                                rowData.getString(DBKey.DATE_FIRST_PUBLICATION)));
+                        list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
+                                               rowData.getString(DBKey.KEY_TITLE),
+                                               rowData.getString(DBKey.KEY_LANGUAGE),
+                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
+                                               author));
                         break;
 
                     default:

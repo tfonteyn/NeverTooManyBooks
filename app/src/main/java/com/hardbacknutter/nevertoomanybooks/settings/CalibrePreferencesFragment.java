@@ -158,7 +158,7 @@ public class CalibrePreferencesFragment
 
         mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
         mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-        mVm.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
     }
 
     protected void validateConnection() {

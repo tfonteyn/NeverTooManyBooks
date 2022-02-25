@@ -52,7 +52,7 @@ public class SearchBookByExternalIdFragment
         extends SearchBookBaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "BookSearchByExternalId";
+    private static final String TAG = "BookSearchByExternalId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
 
     private static final String SIS_SELECTED_RB_ID = TAG + ":selectedResId";
@@ -72,7 +72,7 @@ public class SearchBookByExternalIdFragment
 
     @NonNull
     @Override
-    public ResultIntentOwner getResultIntentOwner() {
+    protected ResultIntentOwner getResultOwner() {
         return mVm;
     }
 

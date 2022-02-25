@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -95,7 +96,7 @@ public abstract class BaseRecordReader
             book.putLong(DBKey.PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed).
-            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+            final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
                     mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION

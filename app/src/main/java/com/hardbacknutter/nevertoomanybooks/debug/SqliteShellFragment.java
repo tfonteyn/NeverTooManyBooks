@@ -32,6 +32,7 @@ import android.webkit.WebSettings;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 
 import java.util.Locale;
 
@@ -51,7 +52,7 @@ public class SqliteShellFragment
     /** Log tag. */
     public static final String TAG = "SqliteShellFragment";
 
-    public static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
+    private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
 
     private static final int MAX_LINES = 200;
     private static final String UTF_8 = "utf-8";
@@ -71,6 +72,15 @@ public class SqliteShellFragment
     /** View Binding. */
     private FragmentSqliteShellBinding mVb;
     private SynchronizedDb mDb;
+
+    @NonNull
+    public static Fragment create(final boolean allowUpdates) {
+        final Fragment fragment = new SqliteShellFragment();
+        final Bundle args = new Bundle(1);
+        args.putBoolean(BKEY_ALLOW_UPDATES, allowUpdates);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.common;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -29,22 +28,14 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-public interface ArchiveWriter
+@FunctionalInterface
+public interface DataWriter<RESULT>
         extends Closeable {
 
     String ERROR_NO_WRITER_AVAILABLE = "No writer available";
-
-    /**
-     * Get the format version that this archiver is writing out.
-     *
-     * @return the version
-     */
-    @AnyThread
-    int getVersion();
 
     /**
      * Perform a write.
@@ -59,8 +50,8 @@ public interface ArchiveWriter
      */
     @WorkerThread
     @NonNull
-    ExportResults write(@NonNull Context context,
-                        @NonNull ProgressListener progressListener)
+    RESULT write(@NonNull Context context,
+                 @NonNull ProgressListener progressListener)
             throws StorageException, ExportException, IOException;
 
     /**

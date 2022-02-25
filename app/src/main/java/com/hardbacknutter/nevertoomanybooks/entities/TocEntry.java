@@ -25,7 +25,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements Entity, ItemWithTitle, Mergeable, AuthorWork {
+        implements Entity, ReorderTitle, Mergeable, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<>() {
@@ -262,6 +261,7 @@ public class TocEntry
         return mId;
     }
 
+    @Override
     public void setId(final long id) {
         mId = id;
     }
@@ -271,8 +271,8 @@ public class TocEntry
         return AuthorWork.TYPE_TOC;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getTitle() {
         return mTitle;
     }
@@ -284,11 +284,12 @@ public class TocEntry
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        // overkill...  see the getLocale method for more comments
-        //   locale = getLocale(context, AppLocale.getUserLocale(context));
-        return reorderTitleForDisplaying(context, userLocale);
+        if (ReorderTitle.forDisplay(context)) {
+            // Using the locale here is overkill;  see #getLocale(..)
+            return reorder(context);
+        } else {
+            return mTitle;
+        }
     }
 
     @NonNull
@@ -302,9 +303,17 @@ public class TocEntry
 
     @Override
     @NonNull
-    public List<Pair<Long, String>> getBookTitles(@NonNull final Context context) {
-        //URGENT: titles are NOT reordered as per user Preferences!
-        return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId);
+    public List<BookLight> getBookTitles(@NonNull final Context context) {
+
+        final List<BookLight> books =
+                ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId);
+
+        if (ReorderTitle.forDisplay(context)) {
+            // Using the locale here is overkill;  see #getLocale(..)
+            books.forEach(bookTitle -> bookTitle.setTitle(bookTitle.reorder(context)));
+        }
+
+        return books;
     }
 
     @Override
@@ -327,6 +336,7 @@ public class TocEntry
      *
      * @return the item Locale, or the bookLocale.
      */
+    @Override
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale bookLocale) {

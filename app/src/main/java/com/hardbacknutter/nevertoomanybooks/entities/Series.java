@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements Entity, ItemWithTitle, Mergeable {
+        implements Entity, ReorderTitle, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {
@@ -463,6 +463,7 @@ public class Series
         return mId;
     }
 
+    @Override
     public void setId(final long id) {
         mId = id;
     }
@@ -474,13 +475,16 @@ public class Series
      *
      * @return "title" or "title (nr)"
      */
+    @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-
-        // overkill...  see the getLocale method for more comments
-        //   locale = getLocale(context, AppLocale.getUserLocale(context));
-        final String title = reorderTitleForDisplaying(context, userLocale);
+        final String title;
+        if (ReorderTitle.forDisplay(context)) {
+            // Using the locale here is overkill;  see #getLocale(..)
+            title = reorder(context);
+        } else {
+            title = mTitle;
+        }
 
         if (mNumber.isEmpty()) {
             return title;
@@ -489,8 +493,8 @@ public class Series
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getTitle() {
         return mTitle;
     }
@@ -547,6 +551,7 @@ public class Series
      *
      * @return the Locale of the Series
      */
+    @Override
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale bookLocale) {

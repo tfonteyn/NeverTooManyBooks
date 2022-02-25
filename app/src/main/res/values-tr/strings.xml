@@ -97,6 +97,7 @@
     <string name="error_unknown_long">Beklenmedik bir sorun oluştu. Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğini kullanarak desteğe başvurun.</string>
     <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
+    <string name="error_import_failed_for_record">İçe aktarma başarısız (%1$s).</string>
     <string name="error_file_not_recognized">Seçilen dosya tanınmıyor.</string>
     <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
     <string name="httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
@@ -145,7 +146,7 @@
     <string name="txt_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
     <string name="txt_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Daha büyük bir görüntü görüntülemek için bir küçük resme dokunun.</string>
-    <string name="isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
+    <string name="isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">İletişim:</string>
@@ -158,7 +159,7 @@
     <string name="lbl_archive_type_csv">Kitaplar (.csv)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
     <string name="lbl_archive_type_backup_zip">Yedek kopya (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Yedek kopya (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Yedek kopya (.tar)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (.xml)</string>
     <string name="lbl_archive_type_json">JSON dışa aktarma (.json)</string>

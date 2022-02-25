@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
@@ -189,7 +190,7 @@ public class CsvRecordReader
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
-        if (helper.getUpdateOption() == ImportHelper.Updates.OnlyNewer) {
+        if (helper.getUpdateOption() == DataReader.Updates.OnlyNewer) {
             requireColumnOrThrow(context, csvColumnNamesList, DBKey.UTC_DATE_LAST_UPDATED);
         }
 
@@ -320,7 +321,7 @@ public class CsvRecordReader
             // This is risky as we might overwrite a different book which happens
             // to have the same id, but other than skipping there is no other option for now.
             // Ideally, we should ask the user presenting a choice "skip/overwrite"
-            final ImportHelper.Updates updateOption = helper.getUpdateOption();
+            final DataReader.Updates updateOption = helper.getUpdateOption();
             switch (updateOption) {
                 case Overwrite: {
                     mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION

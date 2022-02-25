@@ -59,8 +59,8 @@ public class CalibrePreferencesViewModel
     }
 
     @NonNull
-    LiveData<LiveDataEvent<TaskProgress>> onProgressUpdate() {
-        return mValidateConnectionTask.onProgressUpdate();
+    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
+        return mValidateConnectionTask.onProgress();
     }
 
     void cancelTask(@IdRes final int taskId) {

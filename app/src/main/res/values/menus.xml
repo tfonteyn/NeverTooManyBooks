@@ -140,19 +140,20 @@
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->
-    <item name="MENU_GROUP_BOB" type="id" />
+    <item name="MENU_GROUP_BOB_EXPANSION" type="id" />
     <item name="MENU_LEVEL_PREFERRED_EXPANSION" type="id" />
     <item name="MENU_LEVEL_EXPAND" type="id" />
     <item name="MENU_LEVEL_COLLAPSE" type="id" />
 
     <item name="MENU_STYLE_PICKER" type="id" />
-    <item name="MENU_LEVEL_TOGGLE" type="id" />
+    <item name="MENU_STYLE_LIST_TOGGLE" type="id" />
 
     <!-- Context menu on BoB list. Let the user skip to the next book without a cover. -->
     <item name="MENU_NEXT_MISSING_COVER" type="id" />
 
-    <!-- View a book at an external site.
-     NEWTHINGS: adding a new search engine: optional: add a menu id -->
+    <!-- Book - View a book at an external site.
+     NEWTHINGS: adding a new search engine: optional: add a menu id
+    -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />
     <item name="MENU_VIEW_BOOK_AT_AMAZON" type="id" />
     <item name="MENU_VIEW_BOOK_AT_GOODREADS" type="id" />
@@ -162,18 +163,18 @@
     <item name="MENU_VIEW_BOOK_AT_OPEN_LIBRARY" type="id" />
     <item name="MENU_VIEW_BOOK_AT_STRIP_INFO_BE" type="id" />
 
-    <!-- Amazon search options submenu -->
+    <!-- Book - Amazon search -->
     <item name="SUBMENU_AMAZON_SEARCH" type="id" />
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id" />
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id" />
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
 
-    <!-- Calibre submenu -->
+    <!-- Book - Calibre -->
     <item name="SUBMENU_CALIBRE" type="id" />
     <item name="MENU_CALIBRE_DOWNLOAD" type="id" />
     <item name="MENU_CALIBRE_READ" type="id" />
 
-    <!-- options menu -->
+    <!-- Toolbar menu -->
     <item name="MENU_CALIBRE_SETTINGS" type="id" />
     <item name="MENU_STRIP_INFO_SETTING" type="id" />
 
@@ -186,17 +187,9 @@
     <item name="MENU_SETTINGS" type="id" />
     <item name="MENU_ABOUT" type="id" />
 
-    <item name="MENU_GROUP_CALIBRE" type="id" />
     <item name="SUBMENU_SYNC" type="id" />
-    <item name="SUBMENU_SYNC_CALIBRE" type="id" />
-    <item name="MENU_SYNC_CALIBRE_BOOKSHELVES" type="id" />
-    <item name="MENU_SYNC_CALIBRE_IMPORT" type="id" />
-    <item name="MENU_SYNC_CALIBRE_EXPORT" type="id" />
-
-    <item name="MENU_GROUP_STRIPINFO" type="id" />
-    <item name="SUBMENU_SYNC_STRIP_INFO" type="id" />
-    <item name="MENU_SYNC_STRIP_INFO_IMPORT" type="id" />
-    <item name="MENU_SYNC_STRIP_INFO_EXPORT" type="id" />
+    <item name="MENU_SYNC_CALIBRE" type="id" />
+    <item name="MENU_SYNC_STRIP_INFO" type="id" />
 
 
     <!-- Thumbnail context menu -->
@@ -210,28 +203,28 @@
     <item name="MENU_THUMB_ROTATE_180" type="id" />
     <item name="MENU_THUMB_CROP" type="id" />
 
-    <!-- options menu: on-the-fly access to setting search order -->
+    <!-- Toolbar menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id" />
-    <!-- options menu: start a single scan, batch scan or file import of barcodes. -->
+    <!-- Toolbar menu: start a single scan, batch scan or file import of barcodes. -->
     <item name="MENU_BARCODE_SCAN" type="id" />
     <item name="MENU_BARCODE_SCAN_BATCH" type="id" />
     <item name="MENU_BARCODE_IMPORT" type="id" />
 
-    <!-- options menu: enforce ISBN validity checks during input -->
+    <!-- Toolbar menu: enforce ISBN validity checks during input -->
     <item name="SUBMENU_ISBN_VALIDITY" type="id" />
     <item name="MENU_ISBN_VALIDITY_NONE" type="id" />
     <item name="MENU_ISBN_VALIDITY_LOOSE" type="id" />
     <item name="MENU_ISBN_VALIDITY_STRICT" type="id" />
 
-    <!-- options menu: on the FTS search activity -->
+    <!-- Toolbar menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
 
     <item name="MENU_GROUP_BLNS" type="id" />
     <item name="MENU_PURGE_BLNS" type="id" />
 
-    <!-- options menu -->
+    <!-- Toolbar menu -->
     <item name="MENU_RESET" type="id" />
-    <!-- Options menu, confirming the main action; e.g. Save/Add/Select/... -->
+    <!-- Toolbar menu, confirming the main action; e.g. Save/Add/Select/... -->
     <item name="MENU_ACTION_CONFIRM" type="id" />
 
     <!-- debug options for the SQLite shell activity. -->

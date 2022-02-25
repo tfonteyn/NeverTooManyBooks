@@ -36,12 +36,17 @@ import javax.net.ssl.SSLException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 /**
  * Note on mHasLastUpdateDateField / mSyncDateUserEditable:
@@ -130,7 +135,7 @@ public enum SyncServer
     }
 
     /**
-     * Create an {@link SyncWriter} based on the type.
+     * Create an {@link DataWriter} based on the type.
      *
      * @param context Current context
      * @param config  writer configuration
@@ -141,13 +146,13 @@ public enum SyncServer
      * @throws SSLException         on secure connection failures
      */
     @NonNull
-    public SyncWriter createWriter(@NonNull final Context context,
-                                   @NonNull final SyncWriterConfig config)
+    public DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
+                                                      @NonNull final SyncWriterHelper config)
             throws CertificateException,
                    SSLException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (config.getExporterEntries().isEmpty()) {
+            if (config.getRecordTypes().isEmpty()) {
                 throw new IllegalStateException("getExporterEntries().isEmpty()");
             }
         }
@@ -160,15 +165,15 @@ public enum SyncServer
                 return new StripInfoWriter(config);
 
             default:
-                throw new IllegalStateException(SyncWriter.ERROR_NO_WRITER_AVAILABLE);
+                throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
         }
     }
 
     /**
-     * Create an {@link SyncReader} based on the type.
+     * Create an {@link DataReader} based on the type.
      *
      * @param context Current context
-     * @param config  import configuration
+     * @param helper  import configuration
      *
      * @return a new reader
      *
@@ -179,26 +184,25 @@ public enum SyncServer
      */
     @NonNull
     @WorkerThread
-    public SyncReader createReader(@NonNull final Context context,
-                                   @NonNull final SyncReaderConfig config)
+    public DataReader<SyncReaderMetaData, ReaderResults> createReader(
+            @NonNull final Context context,
+            @NonNull final SyncReaderHelper helper)
             throws ImportException,
                    CertificateException,
-                   IOException {
+                   IOException, InvalidArchiveException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (config.getImportEntries().isEmpty()) {
-                throw new IllegalStateException("getImportEntries() is empty");
-            }
+            SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");
         }
 
-        final SyncReader reader;
+        final DataReader<SyncReaderMetaData, ReaderResults> reader;
         switch (this) {
             case CalibreCS:
-                reader = new CalibreContentServerReader(context, config);
+                reader = new CalibreContentServerReader(context, helper);
                 break;
 
             case StripInfo:
-                reader = new StripInfoReader(context, config);
+                reader = new StripInfoReader(context, helper);
                 break;
 
             default:
@@ -218,5 +222,15 @@ public enum SyncServer
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(this.ordinal());
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "SyncServer{"
+               + "mLabel=" + mLabel
+               + ", mHasLastUpdateDateField=" + mHasLastUpdateDateField
+               + ", mSyncDateIsUserEditable=" + mSyncDateIsUserEditable
+               + '}';
     }
 }

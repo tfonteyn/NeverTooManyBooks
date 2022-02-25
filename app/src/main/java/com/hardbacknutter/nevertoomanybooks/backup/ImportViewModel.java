@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.IdRes;
@@ -32,147 +30,71 @@ import androidx.lifecycle.ViewModel;
 
 import java.io.FileNotFoundException;
 import java.util.Objects;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReadMetaDataTask;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.MetaDataReaderTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
+/**
+ * Coordinate between the UI and the {@link ImportHelper}.
+ * Handle the import related background tasks.
+ */
 public class ImportViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
-    private final ArchiveReadMetaDataTask mReadMetaDataTask = new ArchiveReadMetaDataTask();
-    private final ArchiveReaderTask mReaderTask = new ArchiveReaderTask();
+    private final MetaDataReaderTask<ArchiveMetaData, ImportResults> mMetaDataTask =
+            new MetaDataReaderTask<>();
+    private final DataReaderTask<ArchiveMetaData, ImportResults> mReaderTask =
+            new DataReaderTask<>();
 
-    /** The import configuration. */
     @Nullable
-    private ImportHelper mImportHelper;
-    @Nullable
-    private ArchiveMetaData mMetaData;
+    private ImportHelper mHelper;
 
+    @Override
+    protected void onCleared() {
+        mMetaDataTask.cancel();
+        mReaderTask.cancel();
+        super.onCleared();
+    }
+
+    // not an 'init' as the helper can only be created after the user selected a uri
     @NonNull
     ImportHelper createImportHelper(@NonNull final Context context,
                                     @NonNull final Uri uri)
             throws InvalidArchiveException, FileNotFoundException {
 
-        mImportHelper = ImportHelper.newInstance(context, uri);
-        return mImportHelper;
+        mHelper = new ImportHelper(context, uri);
+        return mHelper;
     }
 
     boolean hasUri() {
         // simple check... the uri will always exist if the helper exists.
-        return mImportHelper != null;
+        return mHelper != null;
     }
 
-    /**
-     * The caller <strong>must</strong> ensure that the helper has been created previously.
-     *
-     * @return the helper
-     *
-     * @throws NullPointerException as a bug
-     */
     @NonNull
     ImportHelper getImportHelper() {
-        return Objects.requireNonNull(mImportHelper, "mImportHelper");
-    }
-
-    @Override
-    protected void onCleared() {
-        mReadMetaDataTask.cancel();
-        mReaderTask.cancel();
-        super.onCleared();
-    }
-
-    public void readMetaData() {
-        Objects.requireNonNull(mImportHelper, "mImportHelper");
-        mReadMetaDataTask.start(mImportHelper);
+        return Objects.requireNonNull(mHelper, "mImportHelper");
     }
 
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<ArchiveMetaData>>> onMetaDataRead() {
-        return mReadMetaDataTask.onFinished();
+    public LiveData<LiveDataEvent<TaskResult<Optional<ArchiveMetaData>>>> onMetaDataRead() {
+        return mMetaDataTask.onFinished();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onMetaDataFailure() {
-        return mReadMetaDataTask.onFailure();
-    }
-
-    @Nullable
-    ArchiveMetaData getMetaData() {
-        return mMetaData;
-    }
-
-    void setMetaData(@Nullable final ArchiveMetaData metaData) {
-        mMetaData = metaData;
-    }
-
-    /**
-     * {@link ArchiveReader#BKEY_RESULTS}: {@link ImportResults}
-     */
-    @Override
-    @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
-    }
-
-    @NonNull
-    Intent onImportFinished(@NonNull final ImportResults result) {
-        mResultIntent.putExtra(ArchiveReader.BKEY_RESULTS, result);
-        return mResultIntent;
-    }
-
-    public boolean isNewBooksOnly() {
-        //noinspection ConstantConditions
-        return mImportHelper.getUpdateOption() == ImportHelper.Updates.Skip;
-    }
-
-    public void setNewBooksOnly() {
-        //noinspection ConstantConditions
-        mImportHelper.setUpdateOption(ImportHelper.Updates.Skip);
-    }
-
-    public boolean isAllBooks() {
-        //noinspection ConstantConditions
-        return mImportHelper.getUpdateOption() == ImportHelper.Updates.Overwrite;
-    }
-
-    public void setAllBooks() {
-        //noinspection ConstantConditions
-        mImportHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
-    }
-
-    public boolean isNewAndUpdatedBooks() {
-        //noinspection ConstantConditions
-        return mImportHelper.getUpdateOption() == ImportHelper.Updates.OnlyNewer;
-    }
-
-    public void setNewAndUpdatedBooks() {
-        //noinspection ConstantConditions
-        mImportHelper.setUpdateOption(ImportHelper.Updates.OnlyNewer);
-    }
-
-    /**
-     * Check if we have sufficient data to start an import.
-     *
-     * @return {@code true} if the "Go" button should be made available
-     */
-    boolean isReadyToGo() {
-        return mMetaData != null;
+        return mMetaDataTask.onFailure();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mReaderTask.onProgressUpdate();
+        return mReaderTask.onProgress();
     }
 
     @NonNull
@@ -190,9 +112,23 @@ public class ImportViewModel
         return mReaderTask.onFinished();
     }
 
+    void readMetaData() {
+        Objects.requireNonNull(mHelper, "mImportHelper");
+        mMetaDataTask.start(mHelper);
+    }
+
+    /**
+     * Check if we have sufficient data to start an import.
+     *
+     * @return {@code true} if the "Go" button should be made available
+     */
+    boolean isReadyToGo() {
+        return mHelper != null && mHelper.getMetaData().isPresent();
+    }
+
     void startImport() {
-        Objects.requireNonNull(mImportHelper, "mImportHelper");
-        mReaderTask.start(mImportHelper);
+        Objects.requireNonNull(mHelper, "mImportHelper");
+        mReaderTask.start(mHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {

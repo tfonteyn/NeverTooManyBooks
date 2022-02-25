@@ -41,13 +41,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ExporterBase;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
@@ -56,7 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 /**
  * Writes to a temporary file in the internal cache first.
  */
-public class ExportHelper {
+public class ExportHelper
+        extends ExporterBase<ExportResults> {
 
     /** Number of app startup's between offers to backup. */
     public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
@@ -67,31 +67,19 @@ public class ExportHelper {
     /** Log tag. */
     private static final String TAG = "ExportHelper";
 
-    /** What is going to be exported. */
-    @NonNull
-    private final Set<RecordType> mRecordTypes;
     /** <strong>Where</strong> we write to. */
     @Nullable
     private Uri mUri;
+
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
     private ArchiveEncoding mEncoding = ArchiveEncoding.Zip;
-
-
-    /**
-     * Do an incremental export. Definition of incremental depends on the writer.
-     * <ul>
-     *     <li>{@code false}: all books</li>
-     *     <li>{@code true}: books added/updated</li>
-     * </ul>
-     */
-    private boolean mIncremental;
 
     /**
      * Constructor.
      */
     public ExportHelper() {
-        mRecordTypes = EnumSet.allOf(RecordType.class);
+        super(EnumSet.allOf(RecordType.class));
     }
 
     /**
@@ -101,7 +89,7 @@ public class ExportHelper {
      */
     @VisibleForTesting
     public ExportHelper(@NonNull final RecordType... recordTypes) {
-        mRecordTypes = EnumSet.copyOf(Arrays.asList(recordTypes));
+        super(EnumSet.copyOf(Arrays.asList(recordTypes)));
     }
 
     @NonNull
@@ -111,6 +99,15 @@ public class ExportHelper {
 
     public void setEncoding(@NonNull final ArchiveEncoding encoding) {
         mEncoding = encoding;
+    }
+
+    @NonNull
+    public Uri getUri() {
+        return Objects.requireNonNull(mUri, "mUri");
+    }
+
+    public void setUri(@NonNull final Uri uri) {
+        mUri = uri;
     }
 
     /**
@@ -123,38 +120,6 @@ public class ExportHelper {
         return mEncoding == ArchiveEncoding.Zip;
     }
 
-    @NonNull
-    public Uri getUri() {
-        return Objects.requireNonNull(mUri, "mUri");
-    }
-
-    public void setUri(@NonNull final Uri uri) {
-        mUri = uri;
-    }
-
-    void setRecordType(@NonNull final RecordType recordType,
-                       final boolean isSet) {
-        if (isSet) {
-            mRecordTypes.add(recordType);
-        } else {
-            mRecordTypes.remove(recordType);
-        }
-    }
-
-    @NonNull
-    public Set<RecordType> getRecordTypes() {
-        return mRecordTypes;
-    }
-
-
-    public boolean isIncremental() {
-        return mIncremental;
-    }
-
-    void setIncremental(final boolean incremental) {
-        mIncremental = incremental;
-    }
-
     /**
      * Get the last time we made a full export in the currently set encoding.
      *
@@ -162,7 +127,7 @@ public class ExportHelper {
      */
     @Nullable
     public LocalDateTime getLastDone() {
-        if (mIncremental) {
+        if (isIncremental()) {
             final String key;
             if (mEncoding == ArchiveEncoding.Zip) {
                 // backwards compatibility
@@ -184,7 +149,7 @@ public class ExportHelper {
      * in the given encoding.
      */
     public void setLastDone() {
-        if (!mIncremental) {
+        if (!isIncremental()) {
             final String date = LocalDateTime.now(ZoneOffset.UTC)
                                              .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
@@ -206,15 +171,17 @@ public class ExportHelper {
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException, StorageException {
+            throws ExportException,
+                   IOException,
+                   StorageException {
 
         Objects.requireNonNull(mUri, "mUri");
-        SanityCheck.requireValue(mRecordTypes, "mExportEntries");
 
         final ExportResults results = new ExportResults();
 
-        try (ArchiveWriter writer = mEncoding.createWriter(context, this)) {
+        try (DataWriter<ExportResults> writer = mEncoding.createWriter(context, this)) {
             results.add(writer.write(context, progressListener));
+
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
             // when the user cancels, so only throw when this is not the case
@@ -255,6 +222,7 @@ public class ExportHelper {
         return new FileOutputStream(getTempFile(context));
     }
 
+    @NonNull
     private File getTempFile(@NonNull final Context context) {
         return new File(context.getCacheDir(), TAG + ".tmp");
     }
@@ -263,10 +231,9 @@ public class ExportHelper {
     @NonNull
     public String toString() {
         return "ExportHelper{"
-               + "mRecordTypes=" + mRecordTypes
+               + super.toString()
                + ", mUri=" + mUri
                + ", mEncoding=" + mEncoding
-               + ", mIncremental=" + mIncremental
                + '}';
     }
 }

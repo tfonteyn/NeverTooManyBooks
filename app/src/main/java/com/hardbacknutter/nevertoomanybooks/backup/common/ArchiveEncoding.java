@@ -25,6 +25,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
@@ -36,9 +37,12 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
@@ -57,22 +61,33 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  * Archive encoding (formats) (partially) supported.
  * <p>
  * This is the top level, i.e. the actual file we read/write.
- * Handled by {@link ArchiveReader} and {@link ArchiveWriter}.
+ * Handled by {@link DataReader} and {@link DataWriter}.
  */
 public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
-    Zip(".zip"),
+    Zip(".zip", R.string.lbl_archive_type_backup_zip,
+        R.string.lbl_archive_type_backup_info),
+
     /** Books as a CSV file; full support for export/import. */
-    Csv(".csv"),
+    Csv(".csv", R.string.lbl_archive_type_csv,
+        R.string.lbl_archive_type_csv_info),
+
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
-    Json(".json"),
+    Json(".json", R.string.lbl_archive_type_json,
+         R.string.lbl_archive_format_json_info),
+
     /** XML <strong>Export only</strong>. */
-    Xml(".xml"),
+    Xml(".xml", R.string.lbl_archive_type_xml,
+        R.string.lbl_archive_format_xml_info),
+
     /** Database. */
-    SqLiteDb(".db"),
+    SqLiteDb(".db", R.string.lbl_archive_type_db,
+             R.string.lbl_archive_format_db_info),
+
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar");
+    Tar(".tar", R.string.lbl_archive_type_backup_tar,
+        R.string.lbl_archive_type_backup_info);
 
     /** {@link Parcelable}. */
     public static final Creator<ArchiveEncoding> CREATOR = new Creator<>() {
@@ -95,14 +110,20 @@ public enum ArchiveEncoding
     /** The <strong>proposed</strong> archive filename extension to write to. */
     @NonNull
     private final String mFileExt;
+    private final int mSelectorResId;
+    private final int shortDescResId;
 
     /**
      * Constructor.
      *
      * @param fileExt to use as the proposed archive filename extension
      */
-    ArchiveEncoding(@NonNull final String fileExt) {
+    ArchiveEncoding(@NonNull final String fileExt,
+                    final int selectorResId,
+                    final int shortDescResId) {
         mFileExt = fileExt;
+        mSelectorResId = selectorResId;
+        this.shortDescResId = shortDescResId;
     }
 
     /**
@@ -235,8 +256,18 @@ public enum ArchiveEncoding
         return mFileExt;
     }
 
+    @StringRes
+    public int getSelectorResId() {
+        return mSelectorResId;
+    }
+
+    @StringRes
+    public int getShortDescResId() {
+        return shortDescResId;
+    }
+
     /**
-     * Create an {@link ArchiveWriter} based on the type.
+     * Create an {@link DataWriter} based on the type.
      *
      * @param context Current context
      * @param helper  writer configuration
@@ -244,8 +275,8 @@ public enum ArchiveEncoding
      * @return a new writer
      */
     @NonNull
-    public ArchiveWriter createWriter(@NonNull final Context context,
-                                      @NonNull final ExportHelper helper)
+    public DataWriter<ExportResults> createWriter(@NonNull final Context context,
+                                                  @NonNull final ExportHelper helper)
             throws FileNotFoundException {
 
         switch (this) {
@@ -268,12 +299,12 @@ public enum ArchiveEncoding
                 // writing to tar is no longer supported
             default:
                 // reminder:do NOT use a InvalidArchiveException which is for readers only.
-                throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
+                throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
         }
     }
 
     /**
-     * Create an {@link ArchiveReader} based on the type.
+     * Create an {@link DataReader} based on the type.
      *
      * @param context Current context
      * @param helper  import configuration
@@ -287,14 +318,15 @@ public enum ArchiveEncoding
      */
     @NonNull
     @WorkerThread
-    public ArchiveReader createReader(@NonNull final Context context,
-                                      @NonNull final ImportHelper helper)
+    public DataReader<ArchiveMetaData, ImportResults> createReader(
+            @NonNull final Context context,
+            @NonNull final ImportHelper helper)
             throws InvalidArchiveException,
                    ImportException,
                    IOException,
                    CoverStorageException {
 
-        final ArchiveReader reader;
+        final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {
             case Zip:
                 reader = new ZipArchiveReader(context, helper);
@@ -319,7 +351,7 @@ public enum ArchiveEncoding
             case Xml:
                 // reading from xml is not supported
             default:
-                throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
+                throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
         }
 
         reader.validate(context);

@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
+ * Implementation of <strong>encoding-agnostic</strong> {@link DataWriter} methods.
  * <p>
  * There is a <strong>strict order</strong> of the entries:
  * <ol>
@@ -77,9 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * {@link com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter}
  * so we could eliminate this class. But let's keep it open for the future for now.
  */
-@SuppressWarnings("RedundantThrows")
 public abstract class ArchiveWriterAbstract
-        implements ArchiveWriter {
+        implements DataWriter<ExportResults> {
 
     /**
      * See {@link ArchiveReaderAbstract} class docs for the version descriptions.
@@ -109,15 +108,6 @@ public abstract class ArchiveWriterAbstract
     protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
         mHelper = helper;
     }
-
-    /**
-     * We always write the latest version archives (no backwards compatibility).
-     */
-    @Override
-    public int getVersion() {
-        return VERSION;
-    }
-
 
     /**
      * Do a full backup.
@@ -290,7 +280,7 @@ public abstract class ArchiveWriterAbstract
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, 1024);
              RecordWriter recordWriter = encoding.createWriter(null)) {
-            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, getVersion(), data));
+            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, data));
         }
 
         putByteArray(RecordType.MetaData.getName() + encoding.getFileExt(),

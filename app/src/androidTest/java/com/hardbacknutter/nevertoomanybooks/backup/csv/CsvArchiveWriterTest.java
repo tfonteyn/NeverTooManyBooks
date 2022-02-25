@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import org.junit.Before;
@@ -47,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -61,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @MediumTest
 public class CsvArchiveWriterTest
@@ -85,7 +85,7 @@ public class CsvArchiveWriterTest
     public void write()
             throws ImportException, DaoWriteException,
                    InvalidArchiveException, ExportException,
-                   IOException, StorageException, CredentialsException {
+                   IOException, StorageException, CredentialsException, CertificateException {
 
         final Context context = ServiceLocator.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");
@@ -134,15 +134,14 @@ public class CsvArchiveWriterTest
                        "MODIFIED" + book.getString(DBKey.KEY_PRIVATE_NOTES));
         bookDao.update(context, book, 0);
 
-        final ImportHelper importHelper = ImportHelper.newInstance(context, Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         // The default, fail if the default was changed without changing this test!
-        assertEquals(ImportHelper.Updates.OnlyNewer, importHelper.getUpdateOption());
+        assertEquals(DataReader.Updates.OnlyNewer, importHelper.getUpdateOption());
 
-        importHelper.setRecordType(RecordType.Books, true);
-        importHelper.setUpdateOption(ImportHelper.Updates.Skip);
+        importHelper.addRecordType(RecordType.Books);
+        importHelper.setUpdateOption(DataReader.Updates.Skip);
 
-        ArchiveMetaData archiveMetaData = importHelper.readMetaData(context);
-        assertNull(archiveMetaData);
+        assertFalse(importHelper.readMetaData(context).isPresent());
 
         ImportResults importResults = importHelper
                 .read(context, new TestProgressListener(TAG + ":import"));
@@ -157,11 +156,10 @@ public class CsvArchiveWriterTest
         assertEquals(0, importResults.booksFailed);
 
 
-        importHelper.setRecordType(RecordType.Books, true);
-        importHelper.setUpdateOption(ImportHelper.Updates.Overwrite);
+        importHelper.addRecordType(RecordType.Books);
+        importHelper.setUpdateOption(DataReader.Updates.Overwrite);
 
-        archiveMetaData = importHelper.readMetaData(context);
-        assertNull(archiveMetaData);
+        assertFalse(importHelper.readMetaData(context).isPresent());
 
         importResults = importHelper.read(context, new TestProgressListener(TAG + ":header"));
         assertNotNull(importResults);

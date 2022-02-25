@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 /**
  * Supported archive entry types.
- * An entry will either be handled directly inside the {@link ArchiveWriter} class,
+ * An entry will either be handled directly inside the {@link DataWriter} class,
  * or preferably handed over to an {@link RecordWriter} for second-level archives.
  * <p>
  * <strong>Not all {@link ArchiveEncoding} classes will support all types.</strong>

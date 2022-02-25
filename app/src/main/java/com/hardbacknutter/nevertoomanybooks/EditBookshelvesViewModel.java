@@ -32,16 +32,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
         extends ViewModel {
-
-    /** Log tag. */
-    private static final String TAG = "EditBookshelvesViewModel";
-
-    public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
 
     /** Currently selected row. */
     private int mSelectedPosition = RecyclerView.NO_POSITION;
@@ -58,8 +54,8 @@ public class EditBookshelvesViewModel
         if (mList == null) {
             mList = ServiceLocator.getInstance().getBookshelfDao().getAll();
             if (args != null) {
-                final long id = args.getLong(BKEY_CURRENT_BOOKSHELF);
-                SanityCheck.requirePositiveValue(id);
+                final long id = args.getLong(DBKey.FK_BOOKSHELF);
+                SanityCheck.requirePositiveValue(id, DBKey.FK_BOOKSHELF);
                 mSelectedPosition = findSelectedPosition(id);
             }
         }

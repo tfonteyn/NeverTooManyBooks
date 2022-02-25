@@ -52,11 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowCoverBrowserGalleryBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -157,7 +154,9 @@ public class CoverBrowserDialogFragment
         mVm.onSearchEditionsTaskCancelled().observe(getViewLifecycleOwner(), message -> dismiss());
         // the task throws no exceptions; but paranoia... dismiss silently is fine
         mVm.onSearchEditionsTaskFailure().observe(getViewLifecycleOwner(), message -> dismiss());
-        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), this::showGallery);
+        mVm.onSearchEditionsTaskFinished().observe(getViewLifecycleOwner(), message -> {
+            message.getData().ifPresent(data -> showGallery(data.getResult()));
+        });
 
         mVm.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
         mPreviewLoader = new ImageViewLoader(mVm.getPreviewDisplayExecutor(),
@@ -208,26 +207,20 @@ public class CoverBrowserDialogFragment
 
     /**
      * Show the user a selection of other covers and allow selection of a replacement.
-     *
-     * @param message the result of {@link SearchEditionsTask}
      */
-    private void showGallery(@NonNull final LiveDataEvent<TaskResult<Collection<String>>> message) {
+    private void showGallery(@Nullable final Collection<String> result) {
         Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
 
-        if (message.isNewEvent()) {
-            final Collection<String> result = message.getData().getResult();
-
-            if (result == null || result.isEmpty()) {
-                mVb.progressBar.hide();
-                mVb.statusMessage.setText(R.string.warning_no_editions);
-                mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
-            } else {
-                // set the list and trigger the adapter
-                mVm.setEditions(result);
-                mGalleryAdapter.notifyDataSetChanged();
-                // Show help message
-                mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
-            }
+        if (result == null || result.isEmpty()) {
+            mVb.progressBar.hide();
+            mVb.statusMessage.setText(R.string.warning_no_editions);
+            mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
+        } else {
+            // set the list and trigger the adapter
+            mVm.setEditions(result);
+            mGalleryAdapter.notifyDataSetChanged();
+            // Show help message
+            mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
         }
     }
 

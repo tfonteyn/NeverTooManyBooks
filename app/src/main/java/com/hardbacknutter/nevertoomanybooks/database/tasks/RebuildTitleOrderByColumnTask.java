@@ -28,7 +28,7 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -66,7 +66,7 @@ public class RebuildTitleOrderByColumnTask
         publishProgress(1, context.getString(R.string.progress_msg_rebuilding_search_index));
 
         try {
-            final boolean reorder = ItemWithTitle.isReorderTitleForSorting();
+            final boolean reorder = ReorderTitle.forSorting(context);
 
             ServiceLocator.getInstance().getMaintenanceDao()
                           .rebuildOrderByTitleColumns(context, reorder);

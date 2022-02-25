@@ -112,7 +112,8 @@
     <string name="X_error_import_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_import_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
-    <string name="error_import_failed">Restauration échouée</string>
+    <string name="error_import_failed">Restauration échouée.</string>
+    <string name="error_import_failed_for_record">Restauration échouée (%1$s).</string>
     <string name="error_file_not_recognized">Le fichier sélectionné n\'est pas reconnu.</string>
     <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
     <string name="httpErrorIO">Impossible d\'établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
@@ -156,7 +157,7 @@
     <string name="info_filter_edition">Sélectionnez 0 ou plusieurs options et appuyez sur «OK» pour les appliquer, ou appuyez sur «Tous les livres» pour les ignorer toutes.</string>
     <string name="X_info_not_authorized">Non autorisé</string>
     <string name="X_info_site_authorization_successful">Autorisation %1$s accordée</string>
-    <string name="isfdb_menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
+    <string name="isfdb_menu_populate_toc">Renseigner les titres automatiquement (ISFDB)</string>
     <string name="isfdb_warning_limited_to">(uniquement pris en charge par le site ISFDB)</string>
     <string name="kilobytes">%.2fko</string>
     <string name="lbl_about_contact">Contact:</string>
@@ -173,7 +174,7 @@
     <string name="lbl_archive_is_export_only">Ceci est uniquement pour l\'exportation de données; l\'importation n\'est pas prise en charge.</string>
     <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
     <string name="lbl_archive_type_backup_zip">Copie de sauvegarde (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Copie de sauvegarde (.tar)</string>
     <string name="lbl_archive_type_csv_info">Exportation des livres vers un fichier CSV</string>
     <string name="lbl_archive_type_csv">Livres (.csv)</string>
     <string name="lbl_archive_type_db">Fichier de base de données (.db)</string>

@@ -160,11 +160,12 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/edition"
-        style="@style/ChipGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/print_run"
         >
-        <!--         chips will be added here dynamically -->
+        <!-- chips will be added here dynamically -->
         <!--            <com.google.android.material.chip.Chip-->
         <!--                style="?attr/appChipDisplayStyle"-->
         <!--                android:layout_width="wrap_content"-->

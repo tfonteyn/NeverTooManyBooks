@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,7 +45,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -57,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -86,15 +83,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public class EditBookViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "EditBookViewModel";
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
 
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> mFields = new ArrayList<>();
@@ -107,10 +99,10 @@ public class EditBookViewModel
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
     private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
+    private final Collection<FieldGroup> mFieldGroups = EnumSet.noneOf(FieldGroup.class);
     private ListStyle mStyle;
     /**
-     * The Book this model represents. The only time this can be {@code null}
-     * is when this model is just initialized, or when the Book was deleted.
+     * The Book we're editing (creating/updating).
      */
     private Book mBook;
     /**
@@ -155,28 +147,11 @@ public class EditBookViewModel
     private List<String> mSeriesTitles;
     /** The currently displayed tab. */
     private int mCurrentTab;
-    private final Collection<FieldGroup> mFieldGroups = EnumSet.noneOf(FieldGroup.class);
     private String mNonBlankRequiredString;
     /** These FieldFormatters can be shared between multiple fields. */
     private FieldFormatter<String> mDateFormatter;
-
-    /**
-     * <ul>
-     * <li>{@link DBKey#FK_BOOK}: book id</li>
-     * <li>{@link Entity#BKEY_DATA_MODIFIED}: boolean</li>
-     * </ul>
-     */
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        // always set the *current* book, so the BoB list can reposition more accurately.
-        if (mBook != null) {
-            mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
-        }
-        return mResultIntent;
-    }
-
     private FieldFormatter<String> mLanguageFormatter;
+    private boolean mIsChanged;
 
     int getCurrentTab() {
         return mCurrentTab;
@@ -203,7 +178,7 @@ public class EditBookViewModel
             mLanguageFormatter = new LanguageFormatter(locale);
 
             if (args != null) {
-                final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
+                final String styleUuid = args.getString(ListStyle.BKEY_UUID);
                 mStyle = ServiceLocator.getInstance().getStyles()
                                        .getStyleOrDefault(context, styleUuid);
 
@@ -329,8 +304,18 @@ public class EditBookViewModel
         } else {
             ServiceLocator.getInstance().getBookDao().update(context, mBook, 0);
         }
-        mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
+        mIsChanged = true;
         mBook.setStage(EntityStage.Stage.Clean);
+    }
+
+    /**
+     * Part of the fragment result data.
+     * This informs the BoB whether it should rebuild its list.
+     *
+     * @return {@code true} if the book was changed and successfully saved.
+     */
+    public boolean isChanged() {
+        return mIsChanged;
     }
 
     /**

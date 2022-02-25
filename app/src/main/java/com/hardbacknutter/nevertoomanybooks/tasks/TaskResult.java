@@ -52,11 +52,21 @@ public class TaskResult<Result> {
         return mTaskId;
     }
 
+    /**
+     * Data MIGHT be present.
+     *
+     * @return Result or {@code null}
+     */
     @Nullable
     public Result getResult() {
         return mResult;
     }
 
+    /**
+     * Data WILL/MUST be present.
+     *
+     * @return Result
+     */
     @NonNull
     public Result requireResult() {
         return Objects.requireNonNull(mResult, MISSING_TASK_RESULTS);

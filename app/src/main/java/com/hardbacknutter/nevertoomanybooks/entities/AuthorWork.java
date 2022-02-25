@@ -23,7 +23,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +31,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
- * Abstracts/shield a {@link Book} / {@link TocEntry} for use in a list
- * of works by an {@link Author}. i.e. {@link AuthorDao#getAuthorWorks}.
+ * Abstracts/shield a {@link Book}, {@link BookLight}, {@link TocEntry}
+ * for use in a list of works by an {@link Author}.
+ * i.e. {@link AuthorDao#getAuthorWorks}.
  */
 public interface AuthorWork {
 
@@ -46,6 +46,9 @@ public interface AuthorWork {
      * Get the type of this entry.
      *
      * @return type
+     *
+     * @see #TYPE_TOC
+     * @see #TYPE_BOOK
      */
     char getWorkType();
 
@@ -77,17 +80,20 @@ public interface AuthorWork {
     /**
      * Get the list of book titles this work is present in.
      * <p>
+     * The titles <strong>should</strong> be reordered for displaying as per user preferences.
+     * i.e. they should use the formatting as applied by {@link #getLabel(Context)}.
+     * <p>
      * The default implementation assumes the work <strong>is</strong> a Book,
      * and simply returns the (single) id/title.
      *
      * @param context Current context
      *
-     * @return list with id/title pairs
+     * @return list
      */
     @NonNull
-    default List<Pair<Long, String>> getBookTitles(@NonNull final Context context) {
-        final List<Pair<Long, String>> list = new ArrayList<>();
-        list.add(new Pair<>(getId(), getLabel(context)));
+    default List<BookLight> getBookTitles(@NonNull final Context context) {
+        final List<BookLight> list = new ArrayList<>();
+        list.add(new BookLight(getId(), getLabel(context), null));
         return list;
     }
 
@@ -96,8 +102,8 @@ public interface AuthorWork {
      * <p>
      * The default implementation assumes the work <strong>is</strong> a Book.
      * <p>
-     * Dev. note: calling this SHOULD be faster then calling {@link #getBookTitles(Context)}
-     * and the size of that list.
+     * Dev. note: calling this <strong>should</strong> be faster than
+     * calling {@link #getBookTitles(Context)} and the size of that list.
      *
      * @return count
      */

@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.search;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -52,13 +52,13 @@ public class SearchBookByTextViewModel
     private final Collection<String> mRecentPublisherNames = new ArrayList<>();
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultIntent = new Intent();
+    private final Bundle mResultData = new Bundle();
     /** Flag: allow/provide searching by publisher. */
     private Boolean mUsePublisher;
 
     @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
+    public Bundle getResultData() {
+        return mResultData;
     }
 
     /**

@@ -32,19 +32,24 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class ImportContract
         extends ActivityResultContract<Void, ImportResults> {
 
     private static final String TAG = "ImportContract";
+    private static final String BKEY_RESULTS = TAG + ":results";
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return FragmentHostActivity.createIntent(context, ImportFragment.class);
+    }
+
+    @NonNull
+    public static Intent createResultIntent(@NonNull final ImportResults result) {
+        return new Intent().putExtra(BKEY_RESULTS, result);
     }
 
     @Override
@@ -58,6 +63,6 @@ public class ImportContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getParcelableExtra(ArchiveReader.BKEY_RESULTS);
+        return intent.getParcelableExtra(BKEY_RESULTS);
     }
 }

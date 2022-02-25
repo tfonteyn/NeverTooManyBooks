@@ -110,7 +110,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mBoBTask.onProgressUpdate();
+        return mBoBTask.onProgress();
     }
 
     @NonNull
@@ -158,7 +158,9 @@ public class BooksOnBookshelfViewModel
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {
-                    mRebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE));
+                    // If present, must not be null
+                    mRebuildMode = Objects.requireNonNull(args.getParcelable(BKEY_LIST_STATE),
+                                                          BKEY_LIST_STATE);
                 }
 
                 // check for an explicit bookshelf set
@@ -312,7 +314,7 @@ public class BooksOnBookshelfViewModel
      * @return style
      */
     @NonNull
-    ListStyle getCurrentStyle(@NonNull final Context context) {
+    ListStyle getStyle(@NonNull final Context context) {
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
         return mBookshelf.getStyle(context);
     }
@@ -448,10 +450,10 @@ public class BooksOnBookshelfViewModel
         return mSearchCriteria;
     }
 
-    boolean setSearchCriteria(@Nullable final Bundle bundle,
+    boolean setSearchCriteria(@Nullable final SearchCriteria data,
                               @SuppressWarnings("SameParameterValue") final boolean clearFirst) {
-        if (bundle != null) {
-            return mSearchCriteria.from(bundle, clearFirst);
+        if (data != null) {
+            return mSearchCriteria.from(data, clearFirst);
         } else {
             return false;
         }
@@ -511,7 +513,7 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     String getHeaderFilterText(@NonNull final Context context) {
-        final ListStyle style = getCurrentStyle(context);
+        final ListStyle style = getStyle(context);
         if (style.isShowHeader(ListStyle.HEADER_SHOW_FILTER)) {
 
             final Collection<String> filterText = style
@@ -522,7 +524,7 @@ public class BooksOnBookshelfViewModel
                     .map(filter -> filter.getLabel(context))
                     .collect(Collectors.toList());
 
-            final String ftsSearchText = mSearchCriteria.getFtsSearchText();
+            final String ftsSearchText = mSearchCriteria.getDisplayText();
             if (!ftsSearchText.isEmpty()) {
                 filterText.add('"' + ftsSearchText + '"');
             }
@@ -537,7 +539,7 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     String getHeaderStyleName(@NonNull final Context context) {
-        final ListStyle style = getCurrentStyle(context);
+        final ListStyle style = getStyle(context);
         if (style.isShowHeader(ListStyle.HEADER_SHOW_STYLE_NAME)) {
             return style.getLabel(context);
         }
@@ -546,7 +548,7 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     String getHeaderBookCount(@NonNull final Context context) {
-        final ListStyle style = getCurrentStyle(context);
+        final ListStyle style = getStyle(context);
         if (style.isShowHeader(ListStyle.HEADER_SHOW_BOOK_COUNT) && mBooklist != null) {
             final int totalBooks = mBooklist.countBooks();
             final int distinctBooks = mBooklist.countDistinctBooks();
@@ -729,15 +731,13 @@ public class BooksOnBookshelfViewModel
         return mBoBTask.isRunning();
     }
 
-    void onBuildFinished(@NonNull final LiveDataEvent<TaskResult<BoBTask.Outcome>> message) {
-        //we already checked, don't check if (message.isNewEvent())
-
+    void onBuildFinished(@NonNull final BoBTask.Outcome outcome) {
         // the new build is completely done. We can safely discard the previous one.
         if (mBooklist != null) {
             mBooklist.close();
         }
 
-        mBooklist = message.getData().requireResult().getList();
+        mBooklist = outcome.getList();
 
         // Save a flag to say list was loaded at least once successfully
         mListHasBeenLoaded = true;

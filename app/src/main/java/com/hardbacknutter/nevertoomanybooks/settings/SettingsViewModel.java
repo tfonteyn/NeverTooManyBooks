@@ -69,7 +69,7 @@ public class SettingsViewModel
 
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mStorageMoverTask.onProgressUpdate();
+        return mStorageMoverTask.onProgress();
     }
 
     @NonNull

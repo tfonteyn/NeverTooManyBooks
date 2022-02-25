@@ -36,8 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
@@ -46,10 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
+ * A minimal implementation of {@link DataReader} which reads a plain CSV file with books.
  */
 public class CsvArchiveReader
-        implements ArchiveReader {
+        implements DataReader<ArchiveMetaData, ImportResults> {
 
     private static final String DB_BACKUP_NAME = "DbCsvBackup.db";
     private static final int DB_BACKUP_COPIES = 3;

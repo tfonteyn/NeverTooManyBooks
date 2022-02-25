@@ -19,21 +19,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReaderTask;
+import com.hardbacknutter.nevertoomanybooks.backup.common.MetaDataReaderTask;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
@@ -42,175 +40,52 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 public class SyncReaderViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
-
-    private final SyncReadMetaDataTask mReadMetaDataTask = new SyncReadMetaDataTask();
-    private final SyncReaderTask mReaderTask = new SyncReaderTask();
-    private SyncReaderConfig mConfig;
+    private final MetaDataReaderTask<SyncReaderMetaData, ReaderResults> mMetaDataTask =
+            new MetaDataReaderTask<>();
+    private final DataReaderTask<SyncReaderMetaData, ReaderResults> mReaderTask =
+            new DataReaderTask<>();
 
     @Nullable
-    private SyncServer mSyncServer;
-    @Nullable
-    private SyncReaderMetaData mMetaData;
+    private SyncReaderHelper mHelper;
+
+    @Override
+    protected void onCleared() {
+        mMetaDataTask.cancel();
+        mReaderTask.cancel();
+        super.onCleared();
+    }
 
     /**
      * Pseudo constructor.
      */
     public void init(@NonNull final Bundle args) {
-        if (mSyncServer == null) {
-            mSyncServer = Objects.requireNonNull(args.getParcelable(SyncServer.BKEY_SITE));
-            if (mSyncServer.hasLastUpdateDateField()) {
-                mConfig = new SyncReaderConfig(SyncReaderConfig.Updates.OnlyNewer);
-            } else {
-                mConfig = new SyncReaderConfig(SyncReaderConfig.Updates.Skip);
-            }
+        if (mHelper == null) {
+            final SyncServer syncServer = Objects.requireNonNull(
+                    args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
+            mHelper = new SyncReaderHelper(syncServer);
         }
     }
 
-    @Override
-    protected void onCleared() {
-        mReadMetaDataTask.cancel();
-        mReaderTask.cancel();
-        super.onCleared();
+    @NonNull
+    SyncReaderHelper getSyncReaderHelper() {
+        return Objects.requireNonNull(mHelper, "mHelper");
     }
 
     @NonNull
-    public SyncServer getSyncServer() {
-        return Objects.requireNonNull(mSyncServer, "mSyncServer");
-    }
-
-    @NonNull
-    SyncReaderConfig getConfig() {
-        return mConfig;
-    }
-
-
-    public void readMetaData() {
-        Objects.requireNonNull(mSyncServer, "mSyncServer");
-        mReadMetaDataTask.start(mSyncServer, mConfig);
-    }
-
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<SyncReaderMetaData>>> onMetaDataRead() {
-        return mReadMetaDataTask.onFinished();
+    public LiveData<LiveDataEvent<TaskResult<Optional<SyncReaderMetaData>>>> onMetaDataRead() {
+        return mMetaDataTask.onFinished();
     }
 
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Exception>>> onMetaDataFailure() {
-        return mReadMetaDataTask.onFailure();
-    }
-
-    @Nullable
-    SyncReaderMetaData getMetaData() {
-        return mMetaData;
-    }
-
-    @CallSuper
-    public void setMetaData(@Nullable final SyncReaderMetaData metaData) {
-        mMetaData = metaData;
-    }
-
-    /**
-     * {@link SyncReader#BKEY_RESULTS}: {@link ReaderResults}
-     */
-    @Override
-    @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
-    }
-
-    @NonNull
-    Intent onImportFinished(@SuppressWarnings("TypeMayBeWeakened")
-                            @NonNull final ReaderResults result) {
-        mResultIntent.putExtra(SyncReader.BKEY_RESULTS, result);
-        return mResultIntent;
-    }
-
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    boolean isNewBooksOnly() {
-        return mConfig.getUpdateOption() == SyncReaderConfig.Updates.Skip;
-    }
-
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    void setNewBooksOnly() {
-        mConfig.setUpdateOption(SyncReaderConfig.Updates.Skip);
-    }
-
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    public boolean isAllBooks() {
-        return mConfig.getUpdateOption() == SyncReaderConfig.Updates.Overwrite;
-    }
-
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    public void setAllBooks() {
-        mConfig.setUpdateOption(SyncReaderConfig.Updates.Overwrite);
-    }
-
-    /** Wrapper to handle {@link SyncReaderConfig.Updates}. */
-    public boolean isNewAndUpdatedBooks() {
-        return mConfig.getUpdateOption() == SyncReaderConfig.Updates.OnlyNewer;
-    }
-
-    /**
-     * Wrapper to handle {@link SyncReaderConfig.Updates}.
-     *
-     * @see SyncReaderConfig for docs
-     */
-    public void setNewAndUpdatedBooks() {
-        mConfig.setUpdateOption(SyncReaderConfig.Updates.OnlyNewer);
-    }
-
-    public boolean isSyncDateUserEditable() {
-        return Objects.requireNonNull(mSyncServer, "mSyncServer")
-                      .isSyncDateUserEditable()
-               && (isNewBooksOnly() || isNewAndUpdatedBooks());
-    }
-
-    @Nullable
-    public LocalDateTime getSyncDate() {
-        return mConfig.getSyncDate();
-    }
-
-    /**
-     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip}
-     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
-     * we limit the fetch to the sync-date.
-     */
-    public void setSyncDate(@Nullable final LocalDateTime syncDate) {
-        mConfig.setSyncDate(syncDate);
-    }
-
-    /**
-     * Check if we have sufficient data to start an import.
-     *
-     * @return {@code true} if the "Go" button should be made available
-     */
-    boolean isReadyToGo() {
-        Objects.requireNonNull(mSyncServer, "mSyncServer");
-
-        switch (mSyncServer) {
-            case CalibreCS: {
-                @Nullable
-                final CalibreLibrary selectedLibrary =
-                        mConfig.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
-                return selectedLibrary != null && selectedLibrary.getTotalBooks() > 0;
-            }
-            case StripInfo:
-                return true;
-
-            default:
-                throw new IllegalArgumentException();
-        }
+        return mMetaDataTask.onFailure();
     }
 
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mReaderTask.onProgressUpdate();
+        return mReaderTask.onProgress();
     }
 
     @NonNull
@@ -228,9 +103,38 @@ public class SyncReaderViewModel
         return mReaderTask.onFinished();
     }
 
+    public void readMetaData() {
+        Objects.requireNonNull(mHelper, "mHelper");
+
+        mMetaDataTask.start(mHelper);
+    }
+
+    /**
+     * Check if we have sufficient data to start an import.
+     *
+     * @return {@code true} if the "Go" button should be made available
+     */
+    boolean isReadyToGo() {
+        Objects.requireNonNull(mHelper, "mHelper");
+
+        switch (mHelper.getSyncServer()) {
+            case CalibreCS: {
+                @Nullable
+                final CalibreLibrary selected = mHelper
+                        .getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+                return selected != null && selected.getTotalBooks() > 0;
+            }
+            case StripInfo:
+                return true;
+
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     void startImport() {
-        Objects.requireNonNull(mSyncServer, "mSyncServer");
-        mReaderTask.start(mSyncServer, mConfig);
+        Objects.requireNonNull(mHelper, "mHelper");
+        mReaderTask.start(mHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {

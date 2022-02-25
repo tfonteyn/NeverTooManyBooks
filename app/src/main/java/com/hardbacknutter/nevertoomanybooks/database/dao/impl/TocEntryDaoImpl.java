@@ -25,7 +25,6 @@ import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -69,7 +70,9 @@ public class TocEntryDaoImpl
 
     /** All Books (id+title (as a pair) only) for a given TocEntry. */
     private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
-            SELECT_ + TBL_BOOKS.dot(DBKey.PK_ID) + ',' + TBL_BOOKS.dot(DBKey.KEY_TITLE)
+            SELECT_ + TBL_BOOKS.dot(DBKey.PK_ID)
+            + ',' + TBL_BOOKS.dot(DBKey.KEY_TITLE)
+            + ',' + TBL_BOOKS.dot(DBKey.KEY_LANGUAGE)
             + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
             + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB);
@@ -143,19 +146,13 @@ public class TocEntryDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final Locale tocLocale;
-        if (lookupLocale) {
-            tocLocale = tocEntry.getLocale(context, bookLocale);
-        } else {
-            tocLocale = bookLocale;
-        }
-
-        final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+        final ReorderTitle.OrderByData obd = tocEntry
+                .createOrderByData(context, lookupLocale, bookLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), tocLocale));
-            stmt.bindString(3, SqlEncode.orderByColumn(obTitle, tocLocale));
+            stmt.bindString(2, SqlEncode.orderByColumn(tocEntry.getTitle(), obd.locale));
+            stmt.bindString(3, SqlEncode.orderByColumn(obd.title, obd.locale));
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -168,16 +165,18 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) final long id) {
-        final List<Pair<Long, String>> list = new ArrayList<>();
+    public List<BookLight> getBookTitles(@IntRange(from = 1) final long id) {
+        final List<BookLight> list = new ArrayList<>();
         try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
                                           new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Pair<>(rowData.getLong(DBKey.PK_ID),
-                                    rowData.getString(DBKey.KEY_TITLE)));
+                list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
+                                       rowData.getString(DBKey.KEY_TITLE),
+                                       rowData.getString(DBKey.KEY_LANGUAGE)));
             }
         }
+
         return list;
     }
 

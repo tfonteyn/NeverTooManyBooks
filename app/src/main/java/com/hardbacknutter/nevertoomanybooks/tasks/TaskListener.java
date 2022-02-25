@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.tasks;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * <strong>Warning:</strong> To prevent unintended garbage collection, you must store
@@ -42,23 +43,29 @@ public interface TaskListener<Result> {
     /**
      * Called when a task finishes.
      *
-     * @param message result of the task
+     * @param taskId id
+     * @param result result of the task
      */
-    void onFinished(@NonNull TaskResult<Result> message);
+    void onFinished(int taskId,
+                    @Nullable Result result);
 
     /**
      * Called when a task was cancelled.
      *
-     * @param message (partial) result of the task
+     * @param taskId id
+     * @param result (potential/partial) result of the task
      */
-    void onCancelled(@NonNull TaskResult<Result> message);
+    void onCancelled(int taskId,
+                     @Nullable Result result);
 
     /**
      * Called when a task failed.
      *
-     * @param message The result is the Exception.
+     * @param taskId    id
+     * @param exception which was thrown
      */
-    void onFailure(@NonNull TaskResult<Exception> message);
+    void onFailure(int taskId,
+                   @Nullable Exception exception);
 
     /**
      * Progress messages.

@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * Reasoning is that we don't support importing from xml.
  */
 public class XmlArchiveWriter
-        implements ArchiveWriter {
+        implements DataWriter<ExportResults> {
 
     /**
      * v4 writes out an XML envelope with two elements inside:<br>
@@ -75,11 +75,6 @@ public class XmlArchiveWriter
         mHelper = helper;
     }
 
-    @Override
-    public int getVersion() {
-        return VERSION;
-    }
-
     @NonNull
     @Override
     public ExportResults write(@NonNull final Context context,
@@ -102,14 +97,13 @@ public class XmlArchiveWriter
                 // manually concat
                 // 1. archive envelope
                 bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
-                         + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(getVersion()) + ">\n");
+                         + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
                 // 2. the actual data inside the container
                 results = recordWriter
                         .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
 
                 // 3. the metadata
-                recordWriter.writeMetaData(bw, ArchiveMetaData
-                        .create(context, getVersion(), results));
+                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
                 // 4. close the envelope
                 bw.write("</" + TAG_APPLICATION_ROOT + ">\n");
             }

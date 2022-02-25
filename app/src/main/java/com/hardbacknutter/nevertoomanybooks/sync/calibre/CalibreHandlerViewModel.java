@@ -140,7 +140,7 @@ public class CalibreHandlerViewModel
 
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mSingleFileDownloadTask.onProgressUpdate();
+        return mSingleFileDownloadTask.onProgress();
     }
 
     @NonNull

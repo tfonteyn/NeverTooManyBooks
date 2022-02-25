@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookdetails;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,43 +28,20 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 
 /**
  * Contains ONLY data in the <strong>Fragment</strong> scope.
  */
 public class ShowBookDetailsViewModel
-        extends ViewModel
-        implements ResultIntentOwner {
+        extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
-
-    private final MutableLiveData<LiveDataEvent<Book>> mBookUpdate = new MutableLiveData<>();
+    private final MutableLiveData<LiveDataEvent<Book>> mBookLoaded = new MutableLiveData<>();
 
     private Book mBook;
-
-    /**
-     * <ul>
-     * <li>{@link DBKey#FK_BOOK}: book id</li>
-     * <li>{@link Entity#BKEY_DATA_MODIFIED}: boolean</li>
-     * </ul>
-     */
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        // always set the *current* book, so the BoB list can reposition more accurately.
-        if (mBook != null) {
-            mResultIntent.putExtra(DBKey.FK_BOOK, mBook.getId());
-        }
-        return mResultIntent;
-    }
 
     /**
      * Pseudo constructor.
@@ -83,13 +58,18 @@ public class ShowBookDetailsViewModel
 
     @NonNull
     public MutableLiveData<LiveDataEvent<Book>> onBookLoaded() {
-        return mBookUpdate;
+        return mBookLoaded;
+    }
+
+    void reloadBook(final long bookId) {
+        mBook = Book.from(bookId);
+        mBookLoaded.setValue(new LiveDataEvent<>(mBook));
     }
 
     void reloadBook() {
         Objects.requireNonNull(mBook, "Book not loaded yet");
         mBook = Book.from(mBook.getId());
-        mBookUpdate.setValue(new LiveDataEvent<>(mBook));
+        mBookLoaded.setValue(new LiveDataEvent<>(mBook));
     }
 
     @NonNull
@@ -100,39 +80,36 @@ public class ShowBookDetailsViewModel
     }
 
     /**
-     * Check if this book available in our library; or if it was lend out.
-     *
-     * @return {@code true} if the book is available for lending.
-     */
-    boolean isAvailable() {
-        return mBook.getLoanee().isEmpty();
-    }
-
-    /**
      * The book was returned, remove the loanee.
+     *
+     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
+     * The caller MUST manually update the display and result-data.
+     *
+     * @return {@code false} on any failure
      */
-    void deleteLoan() {
+    @SuppressWarnings("UnusedReturnValue")
+    boolean deleteLoan() {
         mBook.remove(DBKey.KEY_LOANEE);
-        ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBook, null);
+        return ServiceLocator.getInstance().getLoaneeDao().setLoanee(mBook, null);
     }
 
     /**
      * Toggle the read-status for this book.
      *
+     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
+     * The caller MUST manually update the display and result-data.
+     *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    @SuppressWarnings("UnusedReturnValue")
     boolean toggleRead() {
-        if (mBook.toggleRead()) {
-            mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
-            return true;
-        } else {
-            return false;
-        }
+        return mBook.toggleRead();
     }
 
     /**
      * Delete the current book.
+     *
+     * <strong>Important:</strong> we're not using {@link #mBookLoaded}.
+     * The caller MUST manually update the display and result-data.
      *
      * @return {@code false} on any failure
      */
@@ -141,7 +118,6 @@ public class ShowBookDetailsViewModel
         if (ServiceLocator.getInstance().getBookDao().delete(mBook)) {
             //noinspection ConstantConditions
             mBook = null;
-            mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;
         } else {
             return false;

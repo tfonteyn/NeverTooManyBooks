@@ -19,44 +19,22 @@
  */
 package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreSyncFragment;
 
 public class CalibreSyncContract
-        extends ActivityResultContract<Void, Bundle> {
-
-    private static final String TAG = "CalibreSyncContract";
+        extends SyncContractBase {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @Nullable final Void aVoid) {
         return FragmentHostActivity.createIntent(context, CalibreSyncFragment.class);
-    }
-
-    @Override
-    @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-        }
-
-        if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
-        }
-        return intent.getExtras();
     }
 }

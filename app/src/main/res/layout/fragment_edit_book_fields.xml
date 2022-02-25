@@ -58,7 +58,8 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/cover_operation_progress_bar"
-            style="@style/Progress.Circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
             app:layout_constraintEnd_toEndOf="@id/cover_image_1"

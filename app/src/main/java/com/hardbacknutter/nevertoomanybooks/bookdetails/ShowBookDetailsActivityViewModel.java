@@ -63,7 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
- * Contains ONLY data in the <strong>Activity</strong> scope; i.e. shared between fragments.
+ * Contains data in the <strong>Activity</strong> scope;
+ * i.e. shared between all fragments in the {@link ShowBookPagerFragment} pager adapter.
  */
 public class ShowBookDetailsActivityViewModel
         extends ViewModel {
@@ -71,7 +72,24 @@ public class ShowBookDetailsActivityViewModel
     private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
     /** the list with all fields. */
     private final List<Field<?, ? extends View>> mFields = new ArrayList<>();
+
     private ListStyle mStyle;
+
+    private boolean mModified;
+
+    /**
+     * Part of the fragment result data.
+     * This informs the BoB whether it should rebuild its list.
+     *
+     * @return {@code true} if the book was changed and successfully saved.
+     */
+    public boolean isModified() {
+        return mModified;
+    }
+
+    void updateFragmentResult() {
+        mModified = true;
+    }
 
     /**
      * Pseudo constructor.
@@ -82,7 +100,8 @@ public class ShowBookDetailsActivityViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mStyle == null) {
-            final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
+            // the style can be 'null' here. If so, the default one will be used.
+            final String styleUuid = args.getString(ListStyle.BKEY_UUID);
             mStyle = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
 
             initFields(context);
@@ -90,6 +109,11 @@ public class ShowBookDetailsActivityViewModel
             mMenuHandlers.add(new ViewBookOnWebsiteHandler());
             mMenuHandlers.add(new AmazonHandler());
         }
+    }
+
+    @NonNull
+    public ListStyle getStyle() {
+        return mStyle;
     }
 
     @NonNull

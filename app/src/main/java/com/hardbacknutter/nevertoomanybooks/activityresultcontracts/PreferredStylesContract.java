@@ -22,7 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -36,26 +37,15 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 
 public class PreferredStylesContract
-        extends ActivityResultContract<String, Bundle> {
+        extends ActivityResultContract<String, PreferredStylesContract.Output> {
 
     private static final String TAG = "PreferredStylesContract";
 
-    public static void setResultAndFinish(@NonNull final Activity activity,
-                                          @Nullable final ListStyle selectedStyle,
-                                          final boolean styleModified) {
-        final Intent resultIntent = new Intent();
-
-        // Return the currently selected style UUID, so the caller can apply it.
-        // This is independent from any modification to this or another style,
-        // or the order of the styles.
-        if (selectedStyle != null) {
-            resultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
-        }
-        // Same here, this is independent from the returned style
-        resultIntent.putExtra(EditStyleContract.BKEY_STYLE_MODIFIED, styleModified);
-
-        activity.setResult(Activity.RESULT_OK, resultIntent);
-        activity.finish();
+    @NonNull
+    public static Intent createResultIntent(@Nullable final String uuid,
+                                            final boolean modified) {
+        final Parcelable output = new Output(uuid, modified);
+        return new Intent().putExtra(Output.BKEY, output);
     }
 
     @NonNull
@@ -64,12 +54,12 @@ public class PreferredStylesContract
                                @NonNull final String styleUuid) {
         return FragmentHostActivity
                 .createIntent(context, PreferredStylesFragment.class)
-                .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
+                .putExtra(ListStyle.BKEY_UUID, styleUuid);
     }
 
     @Override
     @Nullable
-    public Bundle parseResult(final int resultCode,
+    public Output parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
@@ -78,6 +68,59 @@ public class PreferredStylesContract
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-        return intent.getExtras();
+
+        return intent.getParcelableExtra(Output.BKEY);
+    }
+
+    public static class Output
+            implements Parcelable {
+
+        public static final Creator<Output> CREATOR = new Creator<>() {
+            @Override
+            public Output createFromParcel(@NonNull final Parcel in) {
+                return new Output(in);
+            }
+
+            @Override
+            public Output[] newArray(final int size) {
+                return new Output[size];
+            }
+        };
+        private static final String BKEY = TAG + ":Output";
+        // Return the currently selected style UUID, so the caller can apply it.
+        // This is independent from any modification to this or another style,
+        // or the order of the styles.
+        @Nullable
+        public final String uuid;
+        // Same here, this is independent from the returned style
+        public final boolean isModified;
+
+        private Output(@Nullable final String uuid,
+                       final boolean modified) {
+            this.uuid = uuid;
+            this.isModified = modified;
+        }
+
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private Output(@NonNull final Parcel in) {
+            uuid = in.readString();
+            isModified = in.readByte() != 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeString(uuid);
+            dest.writeByte((byte) (isModified ? 1 : 0));
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
     }
 }

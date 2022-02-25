@@ -19,61 +19,61 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.ImporterBase;
+import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
-public final class SyncReaderConfig {
+public final class SyncReaderHelper
+        extends ImporterBase<SyncReaderMetaData, ReaderResults> {
 
-    /** <strong>What</strong> is going to be imported. */
+    /** <strong>Where</strong> we read from. */
     @NonNull
-    private final Set<RecordType> mImportEntries = EnumSet.noneOf(RecordType.class);
-
-    /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle mExtraArgs = new Bundle();
+    private final SyncServer mSyncServer;
 
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor mSyncProcessor;
 
-    /**
-     * New Books/Covers are always imported (depending on {@link #mImportEntries}).
-     * Updated Books/Covers will be handled according to this setting.
-     */
-    private Updates mUpdateOption;
+    /** Extra arguments for specific readers. The reader must define them. */
+    private final Bundle mExtraArgs = new Bundle();
+
     @Nullable
     private LocalDateTime mSyncDate;
 
     /**
      * Constructor.
      */
-    SyncReaderConfig(@NonNull final Updates defaultUpdateOption) {
-        mUpdateOption = defaultUpdateOption;
+    SyncReaderHelper(@NonNull final SyncServer syncServer) {
+        super(EnumSet.of(RecordType.MetaData,
+                         RecordType.Books,
+                         RecordType.Cover));
 
-        mImportEntries.add(RecordType.MetaData);
-        mImportEntries.add(RecordType.Books);
-        mImportEntries.add(RecordType.Cover);
+        mSyncServer = syncServer;
+        setUpdateOption(mSyncServer.hasLastUpdateDateField()
+                        ? DataReader.Updates.OnlyNewer
+                        : DataReader.Updates.Skip);
     }
 
-    public void setImportEntry(@NonNull final RecordType recordType,
-                               final boolean isSet) {
-        if (isSet) {
-            mImportEntries.add(recordType);
-        } else {
-            mImportEntries.remove(recordType);
-        }
-    }
-
+    /**
+     * Get the location to read from.
+     */
     @NonNull
-    public Set<RecordType> getImportEntries() {
-        return mImportEntries;
+    public SyncServer getSyncServer() {
+        return mSyncServer;
     }
 
     @Nullable
@@ -91,20 +91,7 @@ public final class SyncReaderConfig {
     }
 
     /**
-     * Get the {@link Updates} setting.
-     *
-     * @return setting
-     */
-    public Updates getUpdateOption() {
-        return mUpdateOption;
-    }
-
-    public void setUpdateOption(@NonNull final Updates updateOption) {
-        mUpdateOption = updateOption;
-    }
-
-    /**
-     * Get the optional sync-date (cut-off) for use with {@link Updates#OnlyNewer}.
+     * Get the optional sync-date (cut-off) for use with {@link DataReader.Updates#OnlyNewer}.
      *
      * @return date or {@code null}
      */
@@ -114,36 +101,30 @@ public final class SyncReaderConfig {
     }
 
     /**
-     * If we want new-books-only {@link SyncReaderConfig.Updates#Skip}
-     * or new-books-and-updates {@link SyncReaderConfig.Updates#OnlyNewer},
+     * If we want new-books-only {@link DataReader.Updates#Skip}
+     * or new-books-and-updates {@link DataReader.Updates#OnlyNewer},
      * we limit the fetch to the sync-date.
      */
     public void setSyncDate(@Nullable final LocalDateTime syncDate) {
         mSyncDate = syncDate;
     }
 
+    @NonNull
+    protected DataReader<SyncReaderMetaData, ReaderResults> createReader(
+            @NonNull final Context context)
+            throws ImportException, CertificateException, IOException, InvalidArchiveException {
+        return mSyncServer.createReader(context, this);
+    }
+
     @Override
     @NonNull
     public String toString() {
-        return "SyncReaderConfig{"
-               + "mImportEntries=" + mImportEntries
-               + ", mUpdates=" + mUpdateOption
+        return "SyncReaderHelper{"
+               + super.toString()
                + ", mSyncDate=" + mSyncDate
                + ", mExtraArgs=" + mExtraArgs
                + ", mSyncProcessor=" + mSyncProcessor
+               + ", mSyncServer=" + mSyncServer
                + '}';
-    }
-
-
-    /**
-     * Existing Books/Covers handling.
-     */
-    public enum Updates {
-        /** skip updates entirely. Current data is untouched. (i.e. new-books only). */
-        Skip,
-        /** Overwrite current data with incoming data. */
-        Overwrite,
-        /** check the "update_date" field and only import newer data. */
-        OnlyNewer
     }
 }

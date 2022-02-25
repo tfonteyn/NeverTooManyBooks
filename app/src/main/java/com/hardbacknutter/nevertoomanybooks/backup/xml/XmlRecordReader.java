@@ -43,6 +43,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -130,11 +131,15 @@ public class XmlRecordReader
 
     @Override
     @NonNull
-    public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
             throws ImportException, IOException {
-        final ArchiveMetaData metaData = new ArchiveMetaData(new Bundle());
-        fromXml(record, new InfoReader(metaData));
-        return metaData;
+        final Bundle bundle = new Bundle();
+        fromXml(record, new InfoReader(bundle));
+        if (bundle.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new ArchiveMetaData(bundle));
+        }
     }
 
     @Override
@@ -575,8 +580,8 @@ public class XmlRecordReader
         @NonNull
         private final Bundle mBundle;
 
-        InfoReader(@NonNull final ArchiveMetaData info) {
-            mBundle = info.getBundle();
+        InfoReader(@NonNull final Bundle bundle) {
+            mBundle = bundle;
         }
 
         @Override

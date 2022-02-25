@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -67,7 +68,7 @@ public class SearchOrderFragment
 
     /** Log tag. */
     private static final String TAG = "SearchOrderFragment";
-    static final String BKEY_TYPE = TAG + ":type";
+    private static final String BKEY_TYPE = TAG + ":type";
 
     private SearchSiteListAdapter mListAdapter;
     private ItemTouchHelper mItemTouchHelper;
@@ -90,6 +91,16 @@ public class SearchOrderFragment
      * All-list mode: a local <strong>deep-copy</strong> of the {@link #mType} list.
      */
     private ArrayList<Site> mSiteList;
+
+    @SuppressWarnings("TypeMayBeWeakened")
+    @NonNull
+    public static Fragment create(@NonNull final Site.Type type) {
+        final Fragment fragment = new SearchOrderFragment();
+        final Bundle args = new Bundle(1);
+        args.putParcelable(BKEY_TYPE, type);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -116,7 +127,6 @@ public class SearchOrderFragment
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
-
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.lbl_websites);
 

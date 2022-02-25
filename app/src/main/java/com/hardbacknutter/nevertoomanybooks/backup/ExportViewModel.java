@@ -29,43 +29,40 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriterTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 
+/**
+ * Coordinate between the UI and the {@link ExportHelper}.
+ * Handle the export related background tasks.
+ */
 @SuppressWarnings("WeakerAccess")
 public class ExportViewModel
         extends ViewModel {
 
-    private static final List<ArchiveEncoding> ENCODINGS =
-            Arrays.asList(ArchiveEncoding.Zip,
-                          ArchiveEncoding.Csv,
-                          ArchiveEncoding.Json,
-                          ArchiveEncoding.Xml,
-                          ArchiveEncoding.SqLiteDb);
+    private static final ArchiveEncoding[] ENCODINGS = {
+            ArchiveEncoding.Zip,
+            ArchiveEncoding.Csv,
+            ArchiveEncoding.Json,
+            ArchiveEncoding.Xml,
+            ArchiveEncoding.SqLiteDb};
 
-    private static final int[] ENCODING_RES_IDS = {
-            R.string.lbl_archive_type_backup_zip,
-            R.string.lbl_archive_type_csv,
-            R.string.lbl_archive_type_json,
-            R.string.lbl_archive_type_xml,
-            R.string.lbl_archive_type_db};
-
-    /** Export configuration. */
     @NonNull
-    private final ExportHelper mExportHelper = new ExportHelper();
+    private final ExportHelper mHelper = new ExportHelper();
+    @NonNull
     private final ArchiveWriterTask mWriterTask = new ArchiveWriterTask();
+
+    /** UI helper. */
     private boolean mQuickOptionsAlreadyShown;
 
-    @NonNull
-    ExportHelper getExportHelper() {
-        return mExportHelper;
+    @Override
+    protected void onCleared() {
+        mWriterTask.cancel();
+        super.onCleared();
     }
 
     boolean isQuickOptionsAlreadyShown() {
@@ -77,6 +74,10 @@ public class ExportViewModel
         mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
     }
 
+    @NonNull
+    ExportHelper getExportHelper() {
+        return mHelper;
+    }
 
     /**
      * Get the {@link ArchiveEncoding} for the given position in the dropdown menu.
@@ -87,7 +88,7 @@ public class ExportViewModel
      */
     @NonNull
     ArchiveEncoding getEncoding(final int position) {
-        return ENCODINGS.get(position);
+        return ENCODINGS[position];
     }
 
     /**
@@ -100,15 +101,15 @@ public class ExportViewModel
      */
     @NonNull
     Pair<Integer, ArrayList<String>> getFormatOptions(@NonNull final Context context) {
-        final ArchiveEncoding currentEncoding = mExportHelper.getEncoding();
+        final ArchiveEncoding currentEncoding = mHelper.getEncoding();
         int initialPos = 0;
         final ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < ENCODINGS.size(); i++) {
-            final ArchiveEncoding encoding = ENCODINGS.get(i);
+        for (int i = 0; i < ENCODINGS.length; i++) {
+            final ArchiveEncoding encoding = ENCODINGS[i];
             if (encoding == currentEncoding) {
                 initialPos = i;
             }
-            list.add(context.getString(ENCODING_RES_IDS[i]));
+            list.add(context.getString(encoding.getSelectorResId()));
         }
 
         return new Pair<>(initialPos, list);
@@ -116,7 +117,7 @@ public class ExportViewModel
 
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mWriterTask.onProgressUpdate();
+        return mWriterTask.onProgress();
     }
 
     @NonNull
@@ -139,8 +140,8 @@ public class ExportViewModel
     }
 
     void startExport(@NonNull final Uri uri) {
-        mExportHelper.setUri(uri);
-        mWriterTask.start(mExportHelper);
+        mHelper.setUri(uri);
+        mWriterTask.start(mHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {

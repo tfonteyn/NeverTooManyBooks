@@ -122,7 +122,7 @@ public enum RecordEncoding {
             default:
                 break;
         }
-        throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
+        throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
     }
 
     @NonNull
@@ -144,6 +144,6 @@ public enum RecordEncoding {
             default:
                 break;
         }
-        throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
+        throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
     }
 }

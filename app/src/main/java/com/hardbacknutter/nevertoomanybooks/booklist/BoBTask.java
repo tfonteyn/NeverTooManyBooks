@@ -265,18 +265,17 @@ public class BoBTask
             }
 
             // if we have a list of ID's, ignore other criteria
-            if (mSearchCriteria.hasIdList()) {
-                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
-
-            } else {
+            if (mSearchCriteria.getBookIdList().isEmpty()) {
                 // Criteria supported by FTS
-                builder.addFilterOnKeywords(mSearchCriteria.getFtsAuthor(),
-                                            mSearchCriteria.getFtsTitle(),
-                                            mSearchCriteria.getFtsSeries(),
+                builder.addFilterOnKeywords(mSearchCriteria.getFtsBookTitle(),
+                                            mSearchCriteria.getFtsSeriesTitle(),
+                                            mSearchCriteria.getFtsAuthor(),
                                             mSearchCriteria.getFtsPublisher(),
                                             mSearchCriteria.getFtsKeywords());
 
                 builder.addFilterOnLoanee(mSearchCriteria.getLoanee());
+            } else {
+                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
             }
 
             // if we have any criteria set at all, the build should expand the book list.

@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,41 +53,36 @@ public class ExtPopupMenu {
     @NonNull
     private final VBLite mVb;
 
-    private final int mPaddingBottom;
     private final int mXOffset;
+    private final int mPaddingBottom;
 
     @NonNull
     private final PopupWindow mPopupWindow;
-    /** Listener for the result. */
-    @NonNull
-    private final ExtPopupMenuListener mListener;
 
-    /** Cached position of the item in the list this menu was invoked on. */
-    private int mPosition;
+    @NonNull
+    private Menu mMenu;
+    private boolean mGroupDividerEnabled;
+    private MenuItemListAdapter mAdapter;
 
     /**
      * Constructor.
-     * <p>
-     * The caller should create a menu by calling {@link #createMenu(Context)},
-     * populate it, and pass it here.
      *
-     * @param menu     the menu options to show
-     * @param listener callback handler
+     * @param context Current context
+     *
+     * @see #getMenu()
+     * @see #inflate(int)
      */
     @SuppressLint("InflateParams")
-    public ExtPopupMenu(@NonNull final Context context,
-                        @NonNull final Menu menu,
-                        @NonNull final ExtPopupMenuListener listener) {
-        mListener = listener;
+    public ExtPopupMenu(@NonNull final Context context) {
+        // legal trick to get an instance of Menu.
+        // We leave the anchor 'null' as we're not actually going to display this object.
+        mMenu = new PopupMenu(context, null).getMenu();
 
         final Resources res = context.getResources();
         mPaddingBottom = res.getDimensionPixelSize(R.dimen.dialogPreferredPaddingBottom);
         mXOffset = res.getDimensionPixelSize(R.dimen.popup_menu_x_offset);
 
         mVb = new VBLite(LayoutInflater.from(context).inflate(R.layout.popup_menu, null, false));
-
-        final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);
-        mVb.itemList.setAdapter(adapter);
 
         mPopupWindow = new PopupWindow(context);
         mPopupWindow.setFocusable(true);
@@ -96,43 +93,120 @@ public class ExtPopupMenu {
         mPopupWindow.setElevation(res.getDimensionPixelSize(R.dimen.popup_menu_elevation));
     }
 
-    public static Menu createMenu(@NonNull final Context context) {
-        // legal trick to get an instance of Menu.
-        // We leave the anchor 'null' as we're not actually going to display this object.
-        return new PopupMenu(context, null).getMenu();
+    /**
+     * Inflate a menu resource into this PopupMenu. This is equivalent to
+     * calling {@code popupMenu.getMenuInflater().inflate(menuRes, popupMenu.getMenu())}.
+     *
+     * @param menuRes Menu resource to inflate
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ExtPopupMenu inflate(@MenuRes final int menuRes) {
+        getMenuInflater().inflate(menuRes, mMenu);
+        return this;
     }
 
-    public ExtPopupMenu setHeader(@Nullable final CharSequence title,
-                                  @Nullable final CharSequence message) {
-        // optional title
+    /**
+     * The {@link Menu} builtin API for group dividers is only available in API 28,
+     * and even there it's not possible to read the value back.
+     * <p>
+     * Call this method to enable the dividers.
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ExtPopupMenu setGroupDividerEnabled() {
+        mGroupDividerEnabled = true;
+        return this;
+    }
+
+    /**
+     * Set the title at the top of the menu.
+     *
+     * @param title to set, {@code null} or {@code ""} to remove
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ExtPopupMenu setTitle(@Nullable final CharSequence title) {
         if (title != null && title.length() > 0) {
             mVb.title.setVisibility(View.VISIBLE);
             mVb.title.setText(title);
         } else {
             mVb.title.setVisibility(View.GONE);
         }
+        return this;
+    }
 
-        // optional message
+    /**
+     * Set the message at the top of the menu.
+     *
+     * @param message to set, {@code null} or {@code ""} to remove
+     *
+     * @return {@code this} (for chaining)
+     */
+    @NonNull
+    public ExtPopupMenu setMessage(@Nullable final CharSequence message) {
         if (message != null && message.length() > 0) {
             mVb.message.setVisibility(View.VISIBLE);
             mVb.message.setText(message);
         } else {
             mVb.message.setVisibility(View.GONE);
         }
-
         return this;
     }
 
     /**
-     * Show as a true popup, just below and a bit indented.
+     * @return a {@link MenuInflater} that can be used to inflate menu items
+     * from XML into the menu returned by {@link #getMenu()}
      *
-     * @param anchor   the view on which to pin the popup window
-     * @param position of the item in a list where the context menu was initiated.
-     *                 Not used here, but passed back to the listener.
+     * @see #getMenu()
+     */
+    public MenuInflater getMenuInflater() {
+        return new MenuInflater(mPopupWindow.getContentView().getContext());
+    }
+
+    /**
+     * Returns the {@link Menu} associated with this popup. Populate the
+     * returned Menu with items before calling one of the {@code show} methods.
+     *
+     * @return the {@link Menu} associated with this popup
+     *
+     * @see #showAsDropDown(View, OnMenuItemClickListener)
+     * @see #show(View, int, OnMenuItemClickListener)
+     * @see #getMenuInflater()
+     */
+    @NonNull
+    public Menu getMenu() {
+        return mMenu;
+    }
+
+    /**
+     * Replace the existing menu with the given one.
+     * This method can be called at any time.
+     *
+     * @param menu to use
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void setMenu(@NonNull final Menu menu) {
+        mMenu = menu;
+        if (mAdapter != null) {
+            mAdapter.setMenu(mMenu);
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Show the menu popup anchored to the given view.
+     *
+     * @param anchor   the view on which to anchor the popup window
+     * @param listener callback with the selected menu item
      */
     public void showAsDropDown(@NonNull final View anchor,
-                               final int position) {
-        mPosition = position;
+                               @NonNull final OnMenuItemClickListener listener) {
+
+        initAdapter(anchor.getContext(), listener);
 
         // So why are we doing the measuring and setting width/height manually?
         // (androids internals... to remind myself)
@@ -170,43 +244,65 @@ public class ExtPopupMenu {
     }
 
     /**
-     * Show centered on the screen.
+     * Display the menu.
      *
-     * @param anchor   the view on which to pin the popup window
-     *                 (Actually only used to get the window token)
-     * @param position of the item in a list where the context menu was initiated.
-     *                 Not used here, but passed back to the listener.
+     * @param view     a view from which the window token can be used
+     * @param gravity  the gravity which controls the placement of the popup window
+     *                 One of {@link Gravity#START}, {@link Gravity#END}
+     *                 or {@link Gravity#CENTER}.
+     * @param listener callback with the selected menu item
+     *
+     * @throws IllegalArgumentException when an invalid gravity value is passed in
      */
-    public void showCentered(@NonNull final View anchor,
-                             final int position) {
-        mPosition = position;
-        mPopupWindow.showAtLocation(anchor, Gravity.CENTER, 0, 0);
+    public void show(@NonNull final View view,
+                     final int gravity,
+                     @NonNull final OnMenuItemClickListener listener) {
+
+        initAdapter(view.getContext(), listener);
+
+        if (gravity == Gravity.START || gravity == Gravity.END) {
+            mPopupWindow.showAtLocation(view, gravity, mXOffset, 0);
+        } else if (gravity == Gravity.CENTER) {
+            mPopupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+        } else {
+            throw new IllegalArgumentException(String.valueOf(gravity));
+        }
     }
 
+    private void initAdapter(@NonNull final Context context,
+                             @NonNull final OnMenuItemClickListener listener) {
+        mAdapter = new MenuItemListAdapter(context, mMenu, listener);
+        mVb.itemList.setAdapter(mAdapter);
+    }
+
+    /**
+     * Interface responsible for receiving menu item click events if the items
+     * themselves do not have individual item click listeners.
+     */
     @FunctionalInterface
-    public interface ExtPopupMenuListener {
+    public interface OnMenuItemClickListener {
 
         /**
-         * Callback handler.
+         * This method will be invoked when a menu item is clicked if the item
+         * itself did not already handle the event.
          *
-         * @param menuItem that was selected
-         * @param position of the item in a list where the context menu was initiated
+         * @param item the menu item that was clicked
          *
-         * @return {@code true} if handled.
+         * @return {@code true} if the event was handled, {@code false}
+         * otherwise
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onMenuItemSelected(@NonNull MenuItem menuItem,
-                                   int position);
+        boolean onMenuItemClick(@NonNull MenuItem item);
     }
 
     private static class VBLite {
 
         @NonNull
-        public final RecyclerView itemList;
+        final RecyclerView itemList;
         @NonNull
-        public final TextView message;
+        final TextView message;
         @NonNull
-        public final TextView title;
+        final TextView title;
         @NonNull
         private final View rootView;
 
@@ -255,6 +351,9 @@ public class ExtPopupMenu {
         @NonNull
         private final LayoutInflater mInflater;
 
+        /** Listener for the result. */
+        private final OnMenuItemClickListener mListener;
+
         /**
          * Constructor.
          *
@@ -263,13 +362,16 @@ public class ExtPopupMenu {
          */
         @SuppressLint("UseCompatLoadingForDrawables")
         MenuItemListAdapter(@NonNull final Context context,
-                            @NonNull final Menu menu) {
+                            @NonNull final Menu menu,
+                            @NonNull final OnMenuItemClickListener listener) {
 
             mInflater = LayoutInflater.from(context);
-            setMenu(menu);
+            mListener = listener;
 
             //noinspection ConstantConditions
             mSubMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
+
+            setMenu(menu);
         }
 
         /**
@@ -279,15 +381,26 @@ public class ExtPopupMenu {
          *
          * @param menu to add.
          */
-        void setMenu(@NonNull final Menu menu) {
+        private void setMenu(@NonNull final Menu menu) {
             mList.clear();
+            int previousGroupId = menu.size() > 0 ? menu.getItem(0).getGroupId() : 0;
+
             for (int i = 0; i < menu.size(); i++) {
                 final MenuItem item = menu.getItem(i);
+                final int groupId = item.getGroupId();
                 if (item.isVisible()) {
+                    if (mGroupDividerEnabled && groupId != previousGroupId) {
+                        previousGroupId = groupId;
+                        // this is silly... but the only way we can create a MenuItem directly
+                        final MenuItem divider = new PopupMenu(mInflater.getContext(), null)
+                                .getMenu()
+                                .add(Menu.NONE, R.id.MENU_DIVIDER, item.getOrder(), "")
+                                .setEnabled(false);
+                        mList.add(divider);
+                    }
                     mList.add(item);
                 }
             }
-            notifyDataSetChanged();
         }
 
         @Override
@@ -316,6 +429,7 @@ public class ExtPopupMenu {
             return holder;
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         void onItemClicked(@NonNull final Holder holder) {
             final MenuItem item = mList.get(holder.getBindingAdapterPosition());
             if (item.isEnabled()) {
@@ -323,9 +437,10 @@ public class ExtPopupMenu {
                     mVb.title.setText(item.getTitle());
                     mVb.title.setVisibility(View.VISIBLE);
                     setMenu(item.getSubMenu());
+                    notifyDataSetChanged();
                 } else {
                     mPopupWindow.dismiss();
-                    mListener.onMenuItemSelected(item, mPosition);
+                    mListener.onMenuItemClick(item);
                 }
             }
         }

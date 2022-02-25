@@ -229,7 +229,8 @@
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/queue"
-        style="@style/ChipGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/lbl_isbn"
         app:layout_constraintStart_toStartOf="@id/lbl_queue"

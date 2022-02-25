@@ -31,6 +31,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -44,7 +45,8 @@ public class AuthorWorksViewModel
         extends ViewModel {
 
     /** The list of TOC/Books we're displaying. */
-    private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
+    private final ArrayList<AuthorWork> mList = new ArrayList<>();
+
     /** Database Access. */
     private BookDao mBookDao;
     /** Author is set in {@link #init}. */
@@ -60,6 +62,8 @@ public class AuthorWorksViewModel
     /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
     private boolean mDataModified;
 
+    private ListStyle mStyle;
+
     /**
      * Pseudo constructor.
      *
@@ -72,14 +76,17 @@ public class AuthorWorksViewModel
         if (mBookDao == null) {
             mBookDao = ServiceLocator.getInstance().getBookDao();
 
+            // the style is allowed to be 'null' here. If it is, the default will be used.
+            final String styleUuid = args.getString(ListStyle.BKEY_UUID);
+            mStyle = ServiceLocator.getInstance().getStyles().getStyleOrDefault(context, styleUuid);
+
             final long authorId = args.getLong(DBKey.FK_AUTHOR, 0);
-            SanityCheck.requirePositiveValue(authorId, "authorId");
+            SanityCheck.requirePositiveValue(authorId, DBKey.FK_AUTHOR);
             mAuthor = Objects.requireNonNull(
                     ServiceLocator.getInstance().getAuthorDao().getById(authorId),
                     String.valueOf(authorId));
 
-            final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF,
-                                                  Bookshelf.ALL_BOOKS);
+            final long bookshelfId = args.getLong(DBKey.FK_BOOKSHELF, Bookshelf.ALL_BOOKS);
             mBookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
             mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
 
@@ -97,14 +104,19 @@ public class AuthorWorksViewModel
     }
 
     void reloadWorkList() {
-        mWorkList.clear();
+        mList.clear();
         final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
 
         final ArrayList<AuthorWork> authorWorks =
                 ServiceLocator.getInstance().getAuthorDao()
                               .getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks);
 
-        mWorkList.addAll(authorWorks);
+        mList.addAll(authorWorks);
+    }
+
+    @NonNull
+    public ListStyle getStyle() {
+        return mStyle;
     }
 
     long getBookshelfId() {
@@ -120,8 +132,8 @@ public class AuthorWorksViewModel
     }
 
     @NonNull
-    ArrayList<AuthorWork> getWorks() {
-        return mWorkList;
+    ArrayList<AuthorWork> getList() {
+        return mList;
     }
 
     @NonNull
@@ -160,7 +172,7 @@ public class AuthorWorksViewModel
 
         if (success) {
             work.setId(0);
-            mWorkList.remove(work);
+            mList.remove(work);
         }
         return success;
     }
@@ -175,7 +187,7 @@ public class AuthorWorksViewModel
     @NonNull
     String getScreenTitle(@NonNull final Context context) {
         return context.getString(R.string.name_hash_nr,
-                                 mAuthor.getLabel(context), getWorks().size());
+                                 mAuthor.getLabel(context), getList().size());
     }
 
     /**
@@ -198,5 +210,9 @@ public class AuthorWorksViewModel
 
     boolean isDataModified() {
         return mDataModified;
+    }
+
+    public void setDataModified() {
+        mDataModified = true;
     }
 }

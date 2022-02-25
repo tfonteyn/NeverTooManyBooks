@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -260,7 +261,7 @@ public class BookDaoImpl
             } catch (@NonNull final IOException e) {
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
-                throw new DaoWriteException(ERROR_STORING_COVERS + book);
+                throw new DaoWriteException(ERROR_STORING_COVERS + book, e);
             }
 
             if (txLock != null) {
@@ -795,15 +796,16 @@ public class BookDaoImpl
                     }
                 }
 
-                final Locale tocLocale = tocEntry.getLocale(context, bookLocale);
-                final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
+                final ReorderTitle.OrderByData obd = tocEntry
+                        .createOrderByData(context, lookupLocale, bookLocale);
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, tocEntry.getPrimaryAuthor().getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, SqlEncode.orderByColumn(obTitle, tocLocale));
-                    stmtInsToc.bindString(4, tocEntry.getFirstPublicationDate()
-                                                     .getIsoString());
+                    stmtInsToc.bindString(3, SqlEncode.orderByColumn(obd.title, obd.locale));
+                    stmtInsToc.bindString(4, tocEntry
+                            .getFirstPublicationDate().getIsoString());
+
                     final long iId = stmtInsToc.executeInsert();
                     if (iId > 0) {
                         tocEntry.setId(iId);
@@ -818,7 +820,7 @@ public class BookDaoImpl
                     synchronized (stmtUpdToc) {
                         stmtUpdToc.bindString(1, tocEntry.getTitle());
                         stmtUpdToc.bindString(2, SqlEncode
-                                .orderByColumn(obTitle, tocLocale));
+                                .orderByColumn(obd.title, obd.locale));
                         stmtUpdToc.bindString(3, tocEntry.getFirstPublicationDate()
                                                          .getIsoString());
                         stmtUpdToc.bindLong(4, tocEntry.getId());

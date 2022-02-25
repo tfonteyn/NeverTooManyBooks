@@ -24,7 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -39,24 +38,10 @@ public class SyncWriterViewModel
         extends ViewModel {
 
     private final SyncWriterTask mWriterTask = new SyncWriterTask();
-    private final SyncWriterConfig mConfig = new SyncWriterConfig();
+    private SyncWriterHelper mHelper;
 
-    @Nullable
-    private SyncServer mSyncServer;
-
+    /** UI helper. */
     private boolean mQuickOptionsAlreadyShown;
-
-    /**
-     * Pseudo constructor.
-     *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     */
-    public void init(@NonNull final Bundle args) {
-        if (mSyncServer == null) {
-            mSyncServer = Objects.requireNonNull(args.getParcelable(SyncServer.BKEY_SITE),
-                                                 SyncServer.BKEY_SITE);
-        }
-    }
 
     @Override
     protected void onCleared() {
@@ -64,15 +49,23 @@ public class SyncWriterViewModel
         super.onCleared();
     }
 
-    @NonNull
-    public SyncServer getSyncServer() {
-        return Objects.requireNonNull(mSyncServer, "mSyncServer");
+    /**
+     * Pseudo constructor.
+     *
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     */
+    public void init(@NonNull final Bundle args) {
+        if (mHelper == null) {
+            final SyncServer syncServer = Objects.requireNonNull(
+                    args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
+
+            mHelper = new SyncWriterHelper(syncServer);
+        }
     }
 
-
     @NonNull
-    SyncWriterConfig getConfig() {
-        return mConfig;
+    SyncWriterHelper getSyncWriterHelper() {
+        return mHelper;
     }
 
     boolean isQuickOptionsAlreadyShown() {
@@ -84,10 +77,9 @@ public class SyncWriterViewModel
         mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
     }
 
-
     @NonNull
     LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mWriterTask.onProgressUpdate();
+        return mWriterTask.onProgress();
     }
 
     @NonNull
@@ -110,8 +102,8 @@ public class SyncWriterViewModel
     }
 
     void startExport() {
-        Objects.requireNonNull(mSyncServer, "mSyncServer");
-        mWriterTask.start(mSyncServer, mConfig);
+        Objects.requireNonNull(mHelper, "mHelper");
+        mWriterTask.start(mHelper);
     }
 
     void cancelTask(@IdRes final int taskId) {

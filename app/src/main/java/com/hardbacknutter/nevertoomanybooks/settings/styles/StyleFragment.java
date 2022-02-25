@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
@@ -36,6 +37,7 @@ import androidx.preference.SwitchPreference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
@@ -57,7 +59,7 @@ public class StyleFragment
         extends StyleBaseFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "StylePreferenceFragment";
+    private static final String TAG = "StylePreferenceFragment";
     private static final String SIS_NAME_SET = TAG + ":nameSet";
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
@@ -71,8 +73,13 @@ public class StyleFragment
                 public void handleOnBackPressed() {
                     mVm.updateOrInsertStyle();
 
+                    final Intent resultIntent = EditStyleContract
+                            .createResultIntent(mVm.getTemplateUuid(),
+                                                mVm.isModified(),
+                                                mVm.getStyle().getUuid());
+
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };

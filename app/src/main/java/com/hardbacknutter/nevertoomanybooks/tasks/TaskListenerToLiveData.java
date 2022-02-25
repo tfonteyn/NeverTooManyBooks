@@ -85,17 +85,20 @@ public class TaskListenerToLiveData<Result>
         return this;
     }
 
-    public void onFinished(@NonNull final TaskResult<Result> message) {
-        mOnFinished.setValue(new LiveDataEvent<>(message));
+    public void onFinished(final int taskId,
+                           @Nullable final Result result) {
+        mOnFinished.setValue(new LiveDataEvent<>(new TaskResult<>(taskId, result)));
     }
 
-    public void onFailure(@NonNull final TaskResult<Exception> message) {
-        mOnFailure.setValue(new LiveDataEvent<>(message));
+    public void onFailure(final int taskId,
+                          @Nullable final Exception exception) {
+        mOnFailure.setValue(new LiveDataEvent<>(new TaskResult<>(taskId, exception)));
     }
 
-    public void onCancelled(@NonNull final TaskResult<Result> message) {
+    public void onCancelled(final int taskId,
+                            @Nullable final Result result) {
         if (mOnCancelled != null) {
-            mOnCancelled.setValue(new LiveDataEvent<>(message));
+            mOnCancelled.setValue(new LiveDataEvent<>(new TaskResult<>(taskId, result)));
         }
     }
 

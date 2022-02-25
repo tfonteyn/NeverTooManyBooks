@@ -34,10 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Input: {@link ExportHelper}.
- * Output: {@link ExportResults}.
- */
 public class ArchiveWriterTask
         extends MTask<ExportResults> {
 
@@ -54,7 +50,7 @@ public class ArchiveWriterTask
     /**
      * Start the task.
      *
-     * @param exportHelper with uri/options
+     * @param exportHelper configuration
      */
     @UiThread
     public void start(@NonNull final ExportHelper exportHelper) {
@@ -66,7 +62,10 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws ExportException, IOException, StorageException {
+            throws ExportException,
+                   IOException,
+                   StorageException {
+
         return mHelper.write(context, this);
     }
 }

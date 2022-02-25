@@ -240,7 +240,7 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
+    public void reloadImage(@IntRange(from = 0, to = 1) final int cIdx) {
         if (mCoverHandler[cIdx] != null) {
             final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
             mCoverHandler[cIdx].onBindView(view);

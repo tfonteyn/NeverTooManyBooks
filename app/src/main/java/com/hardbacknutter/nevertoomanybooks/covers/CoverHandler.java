@@ -31,8 +31,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -74,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -177,17 +176,15 @@ public class CoverHandler {
 
         final LifecycleOwner lifecycleOwner = fragment.getViewLifecycleOwner();
 
-        mCoverBrowserLauncher.registerForFragmentResult(fragment.getChildFragmentManager(),
-                                                        lifecycleOwner);
+        final FragmentManager fm = fragment.getChildFragmentManager();
+        mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         mVm.onFinished().observe(lifecycleOwner, message -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + message);
             }
             hideProgress();
-            if (message.isNewEvent()) {
-                onAfterTransform(message.getData().requireResult());
-            }
+            message.getData().map(TaskResult::requireResult).ifPresent(this::onAfterTransform);
         });
 
         return this;
@@ -237,13 +234,11 @@ public class CoverHandler {
      * @return {@code true} for compatibility with setOnLongClickListener
      */
     private boolean onCreateContextMenu(@NonNull final View anchor) {
-        final Book book = mBookSupplier.get();
-        final Context context = anchor.getContext();
 
-        Menu menu = ExtPopupMenu.createMenu(context);
-        new MenuInflater(context).inflate(R.menu.image, menu);
+        final ExtPopupMenu popupMenu = new ExtPopupMenu(anchor.getContext())
+                .inflate(R.menu.image);
 
-        final File uuidCoverFile = book.getCoverFile(mCIdx);
+        final File uuidCoverFile = mBookSupplier.get().getCoverFile(mCIdx);
         if (uuidCoverFile != null) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
@@ -253,15 +248,14 @@ public class CoverHandler {
             }
         } else {
             // there is no current image; only show the replace menu
-            final MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
-            menu = menuItem.getSubMenu();
+            final MenuItem menuItem = popupMenu.getMenu().findItem(R.id.SUBMENU_THUMB_REPLACE);
+            popupMenu.setMenu(menuItem.getSubMenu());
         }
 
         // we only support alternative edition covers for the front cover.
-        menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
+        popupMenu.getMenu().findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
 
-        new ExtPopupMenu(context, menu, this::onContextItemSelected)
-                .showAsDropDown(anchor, mCIdx);
+        popupMenu.showAsDropDown(anchor, this::onMenuItemSelected);
 
         return true;
     }
@@ -270,12 +264,10 @@ public class CoverHandler {
      * Using {@link ExtPopupMenu} for context menus.
      *
      * @param menuItem that was selected
-     * @param position in the list (i.e. mCIdx)
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          final int position) {
+    private boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
         final int itemId = menuItem.getItemId();
 
         final Book book = mBookSupplier.get();
@@ -283,7 +275,7 @@ public class CoverHandler {
 
         if (itemId == R.id.MENU_DELETE) {
             book.removeCover(mCIdx);
-            mCoverHandlerOwner.refresh(mCIdx);
+            mCoverHandlerOwner.reloadImage(mCIdx);
             return true;
 
         } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
@@ -410,7 +402,7 @@ public class CoverHandler {
             mBookSupplier.get().removeCover(mCIdx);
         }
 
-        mCoverHandlerOwner.refresh(mCIdx);
+        mCoverHandlerOwner.reloadImage(mCIdx);
     }
 
     /**
@@ -492,7 +484,7 @@ public class CoverHandler {
                 final File file = getTempFile();
                 if (file.exists()) {
                     showProgress();
-                    mVm.execute(new TransFormTask.Transformation(file).setScale(true));
+                    mVm.execute(new Transformation(file).setScale(true), file);
                     return;
                 }
             } catch (@NonNull final CoverStorageException e) {
@@ -514,10 +506,10 @@ public class CoverHandler {
             final Context context = mFragmentView.getContext();
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
-                final File file = FileUtils.copy(is, getTempFile());
+                final File file = ImageUtils.copy(is, getTempFile());
 
                 showProgress();
-                mVm.execute(new TransFormTask.Transformation(file).setScale(true));
+                mVm.execute(new Transformation(file).setScale(true), file);
 
             } catch (@NonNull final CoverStorageException | IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
@@ -591,11 +583,12 @@ public class CoverHandler {
                 final NextAction action = NextAction.getLevel(global);
 
                 showProgress();
-                mVm.execute(new TransFormTask.Transformation(file)
+                mVm.execute(new Transformation(file)
                                     .setScale(true)
                                     .setSurfaceRotation(surfaceRotation)
-                                    .setRotation(explicitRotation)
-                                    .setNextAction(action));
+                                    .setRotation(explicitRotation),
+                            file,
+                            action);
             }
         }
     }
@@ -608,9 +601,9 @@ public class CoverHandler {
     private void startRotation(final int angle) {
         final Context context = mFragmentView.getContext();
         try {
-            final File srcFile = mBookSupplier.get().createTempCoverFile(mCIdx);
+            final File file = mBookSupplier.get().createTempCoverFile(mCIdx);
             showProgress();
-            mVm.execute(new TransFormTask.Transformation(srcFile).setRotation(angle));
+            mVm.execute(new Transformation(file).setRotation(angle), file);
 
         } catch (@NonNull final CoverStorageException | IOException e) {
             StandardDialogs.showError(context, ExMsg
@@ -621,13 +614,8 @@ public class CoverHandler {
 
     private void onAfterTransform(@NonNull final TransFormTask.TransformedData result) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "onAfterTransform"
-                       + "|nextAction=" + result.getNextAction()
-                       + "|bitmap=" + (result.getBitmap() != null)
-                       + "|file=" + result.getFile().getAbsolutePath());
+            Log.d(TAG, "onAfterTransform: " + result);
         }
-
-        final Context context = mFragmentView.getContext();
 
         // The bitmap != null decides if the operation was successful.
         if (null != result.getBitmap()) {
@@ -641,16 +629,17 @@ public class CoverHandler {
                         return;
 
                     case Edit:
-                        editPicture(context, result.getFile());
+                        editPicture(mFragmentView.getContext(), result.getFile());
                         return;
 
                     case Done:
                         mBookSupplier.get().setCover(mCIdx, result.getFile());
                         // must use a post to force the View to update.
-                        mFragmentView.post(() -> mCoverHandlerOwner.refresh(mCIdx));
+                        mFragmentView.post(() -> mCoverHandlerOwner.reloadImage(mCIdx));
                         return;
                 }
             } catch (@NonNull final CoverStorageException | IOException e) {
+                final Context context = mFragmentView.getContext();
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(context.getString(R.string.error_unknown)));
@@ -660,7 +649,7 @@ public class CoverHandler {
         // transformation failed
         mBookSupplier.get().removeCover(mCIdx);
         // must use a post to force the View to update.
-        mFragmentView.post(() -> mCoverHandlerOwner.refresh(mCIdx));
+        mFragmentView.post(() -> mCoverHandlerOwner.reloadImage(mCIdx));
     }
 
     /**
@@ -699,17 +688,6 @@ public class CoverHandler {
         }
     }
 
-    public interface CoverHandlerOwner
-            extends ViewModelStoreOwner {
-
-        /**
-         * Refresh/reload the given image into its View.
-         *
-         * @param cIdx 0..n image index
-         */
-        void refresh(int cIdx);
-    }
-
     public enum NextAction {
         /** After taking a picture, do nothing. */
         Done(0),
@@ -746,5 +724,16 @@ public class CoverHandler {
                     return Done;
             }
         }
+    }
+
+    public interface CoverHandlerOwner
+            extends ViewModelStoreOwner {
+
+        /**
+         * Reload the given image into its View.
+         *
+         * @param cIdx 0..n image index
+         */
+        void reloadImage(int cIdx);
     }
 }

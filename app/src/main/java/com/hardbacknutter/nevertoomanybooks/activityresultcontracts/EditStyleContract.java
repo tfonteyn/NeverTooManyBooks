@@ -22,7 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IntDef;
@@ -31,7 +32,6 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -49,34 +49,30 @@ public class EditStyleContract
     private static final String TAG = "EditStyleContract";
     public static final String BKEY_ACTION = TAG + ":action";
     public static final String BKEY_SET_AS_PREFERRED = TAG + ":setAsPreferred";
-    public static final String BKEY_TEMPLATE_UUID = TAG + ":templateUuid";
 
-    /**
-     * Styles related data was modified (or not).
-     * This includes a ListStyle being modified or deleted,
-     * or the order of the preferred styles modified,
-     * or the selected ListStyle changed,
-     * or ...
-     * ENHANCE: make this fine grained and reduce unneeded BoB rebuilds
-     * <p>
-     * <br>type: {@code boolean}
-     */
-    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
 
     @NonNull
     public static Input duplicate(@NonNull final ListStyle style) {
-        return new EditStyleContract.Input(ACTION_CLONE, style, style.isPreferred());
+        return new Input(ACTION_CLONE, style, style.isPreferred());
     }
 
     @NonNull
     public static Input edit(@NonNull final ListStyle style) {
-        return new EditStyleContract.Input(ACTION_EDIT, style, style.isPreferred());
+        return new Input(ACTION_EDIT, style, style.isPreferred());
     }
 
     @NonNull
     public static Input edit(@NonNull final ListStyle style,
                              final boolean setAsPreferred) {
-        return new EditStyleContract.Input(ACTION_EDIT, style, setAsPreferred);
+        return new Input(ACTION_EDIT, style, setAsPreferred);
+    }
+
+    @NonNull
+    public static Intent createResultIntent(@NonNull final String templateUuid,
+                                            final boolean modified,
+                                            @Nullable final String uuid) {
+        final Parcelable output = new Output(templateUuid, modified, uuid);
+        return new Intent().putExtra(Output.BKEY, output);
     }
 
     @NonNull
@@ -86,7 +82,7 @@ public class EditStyleContract
         return SettingsHostActivity
                 .createIntent(context, StyleFragment.class)
                 .putExtra(BKEY_ACTION, input.action)
-                .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
+                .putExtra(ListStyle.BKEY_UUID, input.uuid)
                 .putExtra(BKEY_SET_AS_PREFERRED, input.setAsPreferred);
     }
 
@@ -102,16 +98,7 @@ public class EditStyleContract
             return null;
         }
 
-        final Bundle data = intent.getExtras();
-        if (data == null) {
-            // should not actually ever be the case...
-            return null;
-        }
-
-        return new Output(
-                Objects.requireNonNull(data.getString(BKEY_TEMPLATE_UUID), BKEY_TEMPLATE_UUID),
-                data.getBoolean(BKEY_STYLE_MODIFIED, false),
-                data.getString(ListStyle.BKEY_STYLE_UUID));
+        return intent.getParcelableExtra(Output.BKEY);
     }
 
     @IntDef({ACTION_CLONE, ACTION_EDIT})
@@ -143,7 +130,29 @@ public class EditStyleContract
         }
     }
 
-    public static class Output {
+    public static class Output
+            implements Parcelable {
+
+        public static final Creator<Output> CREATOR = new Creator<>() {
+            @Override
+            public Output createFromParcel(@NonNull final Parcel in) {
+                return new Output(in);
+            }
+
+            @Override
+            public Output[] newArray(final int size) {
+                return new Output[size];
+            }
+        };
+
+        private static final String BKEY = TAG + ":Output";
+
+        /** The uuid which was passed into the {@link Input#uuid} for editing. */
+        @NonNull
+        public final String templateUuid;
+
+        /** SOMETHING was modified. This normally means that BoB will need to rebuild. */
+        public final boolean modified;
 
         /**
          * Either a new UUID if we cloned a style, or the UUID of the style we edited.
@@ -152,17 +161,37 @@ public class EditStyleContract
         @Nullable
         public final String uuid;
 
-        /** The uuid which was passed into the {@link Input#uuid} for editing. */
-        @NonNull
-        public final String templateUuid;
-        public final boolean modified;
-
-        Output(@NonNull final String templateUuid,
-               final boolean modified,
-               @Nullable final String uuid) {
+        private Output(@NonNull final String templateUuid,
+                       final boolean modified,
+                       @Nullable final String uuid) {
             this.templateUuid = templateUuid;
             this.modified = modified;
             this.uuid = uuid;
+        }
+
+        /**
+         * {@link Parcelable} Constructor.
+         *
+         * @param in Parcel to construct the object from
+         */
+        private Output(@NonNull final Parcel in) {
+            uuid = in.readString();
+            //noinspection ConstantConditions
+            templateUuid = in.readString();
+            modified = in.readByte() != 0;
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeString(uuid);
+            dest.writeString(templateUuid);
+            dest.writeByte((byte) (modified ? 1 : 0));
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
         }
     }
 }

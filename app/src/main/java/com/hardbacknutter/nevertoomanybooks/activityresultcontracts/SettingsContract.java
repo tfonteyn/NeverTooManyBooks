@@ -42,12 +42,9 @@ public class SettingsContract
     /** Something changed (or not) that requires a recreation of the caller Activity. */
     private static final String BKEY_RECREATE_ACTIVITY = SettingsFragment.TAG + ":recreate";
 
-    public static void setResultAndFinish(@NonNull final Activity activity,
-                                          final boolean requiresRecreation) {
-        final Intent resultIntent = new Intent()
-                .putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation);
-        activity.setResult(Activity.RESULT_OK, resultIntent);
-        activity.finish();
+    @NonNull
+    public static Intent createResultIntent(final boolean requiresRecreation) {
+        return new Intent().putExtra(BKEY_RECREATE_ACTIVITY, requiresRecreation);
     }
 
     @NonNull

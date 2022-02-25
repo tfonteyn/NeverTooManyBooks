@@ -110,6 +110,7 @@
     <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="error_import_failed">Import mislukt.</string>
+    <string name="error_import_failed_for_record">Import mislukt (%1$s).</string>
     <string name="error_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
     <string name="httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
@@ -170,7 +171,7 @@
     <string name="lbl_archive_is_export_only">Dit is alleen voor het exporteren van gegevens; importeren wordt niet ondersteund.</string>
     <string name="lbl_archive_type_backup_info">Volledig back-up- / herstelarchief</string>
     <string name="lbl_archive_type_backup_zip">Backup kopie (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Backup kopie (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Backup kopie (.tar)</string>
     <string name="lbl_archive_type_csv_info">Export van de boeken naar een CSV-bestand</string>
     <string name="lbl_archive_type_csv">Boeken (.csv)</string>
     <string name="lbl_archive_type_db">Databasebestand (.db)</string>

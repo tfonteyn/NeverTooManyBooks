@@ -255,6 +255,12 @@
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
+
+    <!-- Headings in 'about' dialog -->
+    <string name="lbl_about_contact">Contact:</string>
+    <!-- URL on the 'about' screen -->
+    <string name="lbl_sourcecode_url">github</string>
+
     <!-- Shown in the heading of booklist. -->
     <string name="txt_displaying_n_books_in_m_entries">Displaying %1$d books, in %2$d entries</string>
 
@@ -807,6 +813,9 @@
 
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
+    <!-- import failure for a specific {@link RecordType} -->
+    <string name="error_import_failed_for_record">Import failed (%1$s).</string>
+
     <!-- Displayed when a CSV import fails -->
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
@@ -1494,7 +1503,7 @@
 
     <!-- Text in a dropdown menu. Must be fairly short. -->
     <string name="lbl_archive_type_backup_zip">Backup (.zip)</string>
-    <string name="X_lbl_archive_type_backup_tar">Backup (.tar)</string>
+    <string name="lbl_archive_type_backup_tar">Backup (.tar)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
 
@@ -1531,10 +1540,6 @@
     <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
     <string name="lbl_purge_image_cache">Clear images cache</string>
-
-    <!-- Headings in 'about' dialog -->
-
-    <string name="lbl_about_contact">Contact:</string>
 
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->

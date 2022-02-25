@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -58,8 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncField;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReader;
-import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderConfig;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
+import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
@@ -82,13 +83,13 @@ import com.hardbacknutter.org.json.JSONException;
  * ENHANCE: add 1 or 2 more mapped shelves for the last two options above?
  */
 public class StripInfoReader
-        implements SyncReader {
+        implements DataReader<SyncReaderMetaData, ReaderResults> {
 
     @SuppressWarnings("WeakerAccess")
     public static final String SYNC_PROCESSOR_PREFIX = StripInfoAuth.PREF_KEY + ".fields.update.";
     private static final String TAG = "StripInfoReader";
     @NonNull
-    private final SyncReaderConfig.Updates mUpdateOption;
+    private final Updates mUpdateOption;
 
     private final boolean[] mCoversForNewBooks;
     @NonNull
@@ -105,15 +106,15 @@ public class StripInfoReader
     private ReaderResults mResults;
 
     public StripInfoReader(@NonNull final Context context,
-                           @NonNull final SyncReaderConfig config) {
+                           @NonNull final SyncReaderHelper helper) {
 
-        mUpdateOption = config.getUpdateOption();
+        mUpdateOption = helper.getUpdateOption();
 
-        final boolean doCovers = config.getImportEntries().contains(RecordType.Cover);
+        final boolean doCovers = helper.getRecordTypes().contains(RecordType.Cover);
         mCoversForNewBooks = new boolean[]{doCovers, doCovers};
 
         // Get either the custom passed-in, or the builtin default.
-        final SyncReaderProcessor sp = config.getSyncProcessor();
+        final SyncReaderProcessor sp = helper.getSyncProcessor();
         mSyncProcessor = sp != null ? sp : getDefaultSyncProcessor();
 
         mBookDao = ServiceLocator.getInstance().getBookDao();
@@ -127,12 +128,12 @@ public class StripInfoReader
     /**
      * Get the default SyncProcessor. The simple fields are CopyIfBlank
      * <p>
-     * //ENHANCE: pass an optional user configurable copy into the {@link SyncReaderConfig}
+     * //ENHANCE: pass an optional user configurable copy into the {@link SyncReaderHelper}
      *
      * @return a CopyIfBlank SyncProcessor
      */
     @NonNull
-    public static SyncReaderProcessor getDefaultSyncProcessor() {
+    private static SyncReaderProcessor getDefaultSyncProcessor() {
         return new SyncReaderProcessor.Builder(SYNC_PROCESSOR_PREFIX)
                 .add(R.string.site_stripinfo_be, DBKey.SID_STRIP_INFO)
 

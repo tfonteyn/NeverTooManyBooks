@@ -84,7 +84,7 @@ public class CalibreHandler {
 
     /** Optionally set during initializing. */
     @Nullable
-    private View mProgressDialogView;
+    private View mProgressFrame;
     /** Created only when actually needed. */
     @Nullable
     private ProgressDelegate mProgressDelegate;
@@ -240,7 +240,7 @@ public class CalibreHandler {
      * Called from a details screen. i.e. the data comes from a {@link Book}.
      *
      * @param menuItem to check
-     * @param book       data to use
+     * @param book     data to use
      */
     public boolean onMenuItemSelected(@NonNull final Context context,
                                       @NonNull final MenuItem menuItem,
@@ -285,55 +285,52 @@ public class CalibreHandler {
     private void onFinished(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.lbl_read,
-                               v -> openBookUri(v.getContext(), message.getData().requireResult()))
-                    .show();
-        }
+        message.getData().map(TaskResult::requireResult).ifPresent(result -> Snackbar
+                .make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
+                .setAction(R.string.lbl_read, v -> openBookUri(v.getContext(), result))
+                .show());
     }
 
     private void onCancelled(@NonNull final LiveDataEvent<TaskResult<Uri>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            Snackbar.make(mView, R.string.cancelled, Snackbar.LENGTH_LONG).show();
-        }
+        message.getData().ifPresent(data -> Snackbar
+                .make(mView, R.string.cancelled, Snackbar.LENGTH_LONG).show());
     }
 
     private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = mView.getContext();
             final String msg = ExMsg
-                    .map(context, message.getData().getResult())
+                    .map(context, data.getResult())
                     .orElse(context.getString(R.string.error_network_site_access_failed,
                                               CalibreContentServer.getHostUrl()));
 
             Snackbar.make(mView, msg, Snackbar.LENGTH_LONG).show();
-        }
+        });
     }
 
-    public CalibreHandler setProgressDialogView(@NonNull final View progressDialogView) {
-        mProgressDialogView = progressDialogView;
+    public CalibreHandler setProgressFrame(@NonNull final View progressFrame) {
+        mProgressFrame = progressFrame;
         return this;
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
-            if (mProgressDialogView != null) {
+        message.getData().ifPresent(data -> {
+            if (mProgressFrame != null) {
                 if (mProgressDelegate == null) {
-                    mProgressDelegate = new ProgressDelegate(mProgressDialogView)
+                    mProgressDelegate = new ProgressDelegate(mProgressFrame)
                             .setTitle(R.string.progress_msg_downloading)
                             .setPreventSleep(true)
                             .setIndeterminate(true)
-                            .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
+                            .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
                             .show(mWindow);
                 }
-                mProgressDelegate.onProgress(message.getData());
+                mProgressDelegate.onProgress(data);
             }
-        }
+        });
     }
 
     private void closeProgressDialog() {

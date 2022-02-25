@@ -21,43 +21,33 @@
 
 <resources>
 
-    <!-- Top level Theme to be used in AndroidManifest.xml-->
+    <style name="Theme.App.Startup" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorPrimary">@color/blue_grey_700</item>
+        <item name="colorOnPrimary">@color/blue_grey_200</item>
+        <item name="colorSecondary">@color/teal_800</item>
+        <item name="colorOnSecondary">@color/teal_200</item>
+    </style>
+
     <style name="Theme.App" parent="Base.Theme.App">
-        <!-- ====================================== -->
-        <!-- Material color attributes (dark theme) -->
-        <!-- ====================================== -->
-        <item name="colorPrimary">@color/night_primary</item>
-        <item name="colorOnPrimary">@color/night_on_primary</item>
+        <!-- Material color attributes -->
+        <item name="colorPrimary">@color/blue_grey_900</item>
+        <item name="colorOnPrimary">@color/blue_grey_200</item>
+        <item name="colorSecondary">@color/teal_600</item>
+        <item name="colorOnSecondary">@color/teal_200</item>
 
-        <!--   <item name="colorSecondary">@color/night_secondary</item>-->
-        <!--   <item name="colorOnSecondary">@color/night_on_secondary</item>-->
+        <item name="android:colorBackground">@color/grey_900</item>
 
-        <!-- ====================================== -->
-        <!-- Application specific (dark theme) -->
-        <!-- ====================================== -->
+        <!-- Application specific -->
+        <item name="appToolbarBackground">@color/blue_grey_800</item>
+        <item name="appBobListHeaderBackground">@color/blue_grey_700</item>
+        <item name="appBobCardBackgroundColor">@color/grey_800</item>
+        <item name="appProgressCircleBackgroundColor">@color/grey_800</item>
+
         <item name="appPreferenceAlertColor">@color/red_500</item>
-        <item name="appBobCardBackgroundColor">@color/grey_900</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
         <item name="appNavBarColorCenter">@color/blue_grey_600</item>
         <item name="appNavBarColorEnd">@color/blue_grey_400</item>
     </style>
-
-    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <item name="colorPrimary">@color/night_primary</item>
-        <item name="colorOnPrimary">@color/night_on_primary</item>
-
-        <!--   <item name="colorSecondary">@color/night_secondary</item>-->
-        <!--   <item name="colorOnSecondary">@color/night_on_secondary</item>-->
-    </style>
-
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="colorPrimary">@color/night_primary</item>
-        <item name="colorOnPrimary">@color/night_on_primary</item>
-
-        <!--   <item name="colorSecondary">@color/night_secondary</item>-->
-        <!--   <item name="colorOnSecondary">@color/night_on_secondary</item>-->
-    </style>
-
 </resources>

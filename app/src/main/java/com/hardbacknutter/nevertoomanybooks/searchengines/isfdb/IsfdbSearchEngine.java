@@ -614,156 +614,188 @@ public class IsfdbSearchEngine
                 String fieldName = null;
 
                 // We want the first 'bold' child Element of the li; e.g. "<b>Publisher:</b>"
-                final Element fieldLabelElement = li.selectFirst("b");
-                if (fieldLabelElement != null) {
-                    fieldName = fieldLabelElement.text();
-                }
-
-                if (fieldName == null) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                        Log.d(TAG, "fetch|" + li);
-                    }
-                    continue;
+                final Element labelElement = li.selectFirst("b");
+                if (labelElement != null) {
+                    fieldName = labelElement.text();
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                    Log.d(TAG, "fetch|fieldName=" + fieldName);
+                    if (fieldName == null) {
+                        Log.d(TAG, "fetch|" + li);
+                    } else {
+                        Log.d(TAG, "fetch|fieldName=" + fieldName);
+                    }
                 }
 
-                if ("Publication:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        mTitle = nextSibling.toString().trim();
-                        bookData.putString(DBKey.KEY_TITLE, mTitle);
-                    }
-                } else if ("Author:".equalsIgnoreCase(fieldName)
-                           || "Authors:".equalsIgnoreCase(fieldName)) {
-                    for (final Element a : li.select("a")) {
-                        final Author author = Author.from(a.text());
-                        // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                        mAuthors.add(author);
-                    }
-
-                } else if ("Date:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        // dates are in fact displayed as YYYY-MM-DD which is very nice.
-                        tmpString = nextSibling.toString().trim();
-                        // except that ISFDB uses 00 for the day/month when unknown ...
-                        // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
-                        tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
-                        // and we're paranoid...
-                        final LocalDateTime date = dateParser.parse(tmpString, getLocale(context));
-                        if (date != null) {
-                            // Note that partial dates, e.g. "1987", "1978-03"
-                            // will get 'completed' to "1987-01-01", "1978-03-01"
-                            // This should be acceptable IMHO.
-                            bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
-                                               date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        }
-                    }
-                } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        // we use them in the order found here.
-                        //   <li><b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-                        tmpString = nextSibling.toString().trim();
-                        tmpString = ISBN.cleanText(tmpString);
-                        if (!tmpString.isEmpty()) {
-                            bookData.putString(DBKey.KEY_ISBN, tmpString);
-                        }
-
-                        final Element nextElementSibling = fieldLabelElement.nextElementSibling();
-                        if (nextElementSibling != null) {
-                            tmpString = nextElementSibling.text();
-                            tmpString = ISBN.cleanText(tmpString);
-                            if (!tmpString.isEmpty()) {
-                                bookData.putString(SiteField.ISBN_2, tmpString);
+                if (fieldName != null) {
+                    switch (fieldName) {
+                        case "Publication:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                mTitle = nextSibling.toString().trim();
+                                bookData.putString(DBKey.KEY_TITLE, mTitle);
                             }
+                            break;
                         }
-                    }
-                } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
-                    for (final Element a : li.select("a")) {
-                        final Publisher publisher = Publisher.from(a.text());
-                        // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                        mPublishers.add(publisher);
-                    }
-                } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
-                    for (final Element a : li.select("a")) {
-                        final Series series = Series.from(a.text());
-                        // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                        mSeries.add(series);
-                    }
-                } else if ("Pub. Series #:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        tmpString = nextSibling.toString().trim();
-                        // assume that if we get here, then we added a "Pub. Series:" as last one.
-                        mSeries.get(mSeries.size() - 1).setNumber(tmpString);
-                    }
-                } else if ("Price:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        tmpString = nextSibling.toString().trim();
-                        final Money money = new Money(getLocale(context), tmpString);
-                        if (money.getCurrencyCode() != null) {
-                            bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
-                            bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
-                                               money.getCurrencyCode());
-                        } else {
-                            bookData.putString(DBKey.PRICE_LISTED, tmpString);
+                        case "Author:":
+                        case "Authors:": {
+                            for (final Element a : li.select("a")) {
+                                final Author author = Author.from(a.text());
+                                // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                                mAuthors.add(author);
+                            }
+                            break;
                         }
-                    }
-                } else if ("Pages:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        tmpString = nextSibling.toString().trim();
-                        bookData.putString(DBKey.KEY_PAGES, tmpString);
-                    }
-                } else if ("Format:".equalsIgnoreCase(fieldName)) {
-                    // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
-                    // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
-                    // need to lift "tp".
-                    final Element nextElementSibling = fieldLabelElement.nextElementSibling();
-                    if (nextElementSibling != null) {
-                        tmpString = nextElementSibling.ownText();
-                        bookData.putString(DBKey.KEY_FORMAT, tmpString);
-                    }
-
-                } else if ("Type:".equalsIgnoreCase(fieldName)) {
-                    nextSibling = fieldLabelElement.nextSibling();
-                    if (nextSibling != null) {
-                        // <li><b>Type:</b> COLLECTION
-                        tmpString = nextSibling.toString().trim();
-                        bookData.putString(SiteField.BOOK_TYPE, tmpString);
-                        final Book.ContentType type = TYPE_MAP.get(tmpString);
-                        if (type != null) {
-                            bookData.putLong(DBKey.BITMASK_TOC, type.value);
+                        case "Date:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                // dates are in fact displayed as YYYY-MM-DD which is very nice.
+                                tmpString = nextSibling.toString().trim();
+                                // except that ISFDB uses 00 for the day/month when unknown ...
+                                // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
+                                tmpString = UNKNOWN_M_D_LITERAL.matcher(tmpString).replaceAll("");
+                                // and we're paranoid...
+                                final LocalDateTime date = dateParser.parse(tmpString,
+                                                                            getLocale(context));
+                                if (date != null) {
+                                    // Note that partial dates, e.g. "1987", "1978-03"
+                                    // will get 'completed' to "1987-01-01", "1978-03-01"
+                                    // This should be acceptable IMHO.
+                                    bookData.putString(DBKey.DATE_BOOK_PUBLICATION,
+                                                       date.format(
+                                                               DateTimeFormatter.ISO_LOCAL_DATE));
+                                }
+                            }
+                            break;
                         }
-                    }
-                } else if ("Cover:".equalsIgnoreCase(fieldName)) {
-                    final Elements as = li.select("a");
-                    //TODO: if there are multiple art/artists... will this barf ?
-                    // bookData.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
-                    if (as.size() > 1) {
-                        // Cover artist
-                        final Element a = as.get(1);
-                        final Author author = Author.from(a.text());
-                        author.setType(Author.TYPE_COVER_ARTIST);
-                        // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
-                        mAuthors.add(author);
-                    }
+                        case "ISBN:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                // we use them in the order found here.
+                                // <b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
+                                tmpString = nextSibling.toString().trim();
+                                tmpString = ISBN.cleanText(tmpString);
+                                if (!tmpString.isEmpty()) {
+                                    bookData.putString(DBKey.KEY_ISBN, tmpString);
+                                }
 
-                } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
-                    // send the <ul> children
-                    processExternalIdElements(li.select("ul li"), bookData);
+                                final Element nextElementSibling =
+                                        labelElement.nextElementSibling();
+                                if (nextElementSibling != null) {
+                                    tmpString = nextElementSibling.text();
+                                    tmpString = ISBN.cleanText(tmpString);
+                                    if (!tmpString.isEmpty()) {
+                                        bookData.putString(SiteField.ISBN_2, tmpString);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        case "Publisher:": {
+                            for (final Element a : li.select("a")) {
+                                final Publisher publisher = Publisher.from(a.text());
+                                // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                                mPublishers.add(publisher);
+                            }
+                            break;
+                        }
+                        case "Pub. Series:": {
+                            for (final Element a : li.select("a")) {
+                                final Series series = Series.from(a.text());
+                                // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                                mSeries.add(series);
+                            }
+                            break;
+                        }
+                        case "Pub. Series #:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                tmpString = nextSibling.toString().trim();
+                                // assume that if we get here,
+                                // then we added a "Pub. Series:" as last one.
+                                mSeries.get(mSeries.size() - 1).setNumber(tmpString);
+                            }
+                            break;
+                        }
+                        case "Price:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                tmpString = nextSibling.toString().trim();
+                                final Money money = new Money(getLocale(context), tmpString);
+                                if (money.getCurrencyCode() != null) {
+                                    bookData.putDouble(DBKey.PRICE_LISTED, money.doubleValue());
+                                    bookData.putString(DBKey.PRICE_LISTED_CURRENCY,
+                                                       money.getCurrencyCode());
+                                } else {
+                                    bookData.putString(DBKey.PRICE_LISTED, tmpString);
+                                }
+                            }
+                            break;
+                        }
+                        case "Pages:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                tmpString = nextSibling.toString().trim();
+                                bookData.putString(DBKey.KEY_PAGES, tmpString);
+                            }
+                            break;
+                        }
+                        case "Format:": {
+                            // <li><b>Format:</b> <div ...>tp<sup ...>?</sup>
+                            // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
+                            // need to extract the "tp".
+                            final Element nextElementSibling = labelElement.nextElementSibling();
+                            if (nextElementSibling != null) {
+                                tmpString = nextElementSibling.ownText();
+                                bookData.putString(DBKey.KEY_FORMAT, tmpString);
+                            }
 
-                } else if ("Editors:".equalsIgnoreCase(fieldName)) {
-                    for (final Element a : li.select("a")) {
-                        final Author author = Author.from(a.text());
-                        author.setType(Author.TYPE_EDITOR);
-                        // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
-                        mAuthors.add(author);
+                            break;
+                        }
+                        case "Type:": {
+                            nextSibling = labelElement.nextSibling();
+                            if (nextSibling != null) {
+                                // <li><b>Type:</b> COLLECTION
+                                tmpString = nextSibling.toString().trim();
+                                bookData.putString(SiteField.BOOK_TYPE, tmpString);
+                                final Book.ContentType type = TYPE_MAP.get(tmpString);
+                                if (type != null) {
+                                    bookData.putLong(DBKey.BITMASK_TOC, type.value);
+                                }
+                            }
+                            break;
+                        }
+                        case "Cover:": {
+                            final Elements as = li.select("a");
+                            //TODO: if there are multiple art/artists... will this barf ?
+                            // bookData.putString(SiteField.BOOK_COVER_ART_TXT, as.text());
+                            if (as.size() > 1) {
+                                // Cover artist
+                                final Element a = as.get(1);
+                                final Author author = Author.from(a.text());
+                                author.setType(Author.TYPE_COVER_ARTIST);
+                                // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
+                                mAuthors.add(author);
+                            }
+                            break;
+                        }
+                        case "External IDs:": {
+                            // send the <ul> children
+                            processExternalIdElements(li.select("ul li"), bookData);
+                            break;
+                        }
+                        case "Editors:": {
+                            for (final Element a : li.select("a")) {
+                                final Author author = Author.from(a.text());
+                                author.setType(Author.TYPE_EDITOR);
+                                // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                                mAuthors.add(author);
+                            }
+                            break;
+                        }
+
+                        default:
+                            break;
                     }
                 }
             } catch (@NonNull final IndexOutOfBoundsException e) {
@@ -1035,8 +1067,7 @@ public class IsfdbSearchEngine
                     mFirstPublicationYear = ParseUtils.digits(year);
                 }
 
-                final TocEntry tocEntry = new TocEntry(author, title, year);
-                toc.add(tocEntry);
+                toc.add(new TocEntry(author, title, year));
             }
         }
         return toc;

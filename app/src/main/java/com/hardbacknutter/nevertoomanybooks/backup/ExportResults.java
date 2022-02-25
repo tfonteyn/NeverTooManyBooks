@@ -29,7 +29,7 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
 /**
  * Value class to report back what was exported.
  * <p>
- * Used by {@link RecordWriter} and accumulated in {@link ArchiveWriter}.
+ * Used by {@link RecordWriter} and accumulated in {@link DataWriter}.
  */
 public class ExportResults
         extends WriterResults {

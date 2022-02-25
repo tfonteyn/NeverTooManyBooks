@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.sync;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -46,6 +49,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
 import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -60,18 +64,24 @@ public class SyncWriterFragment
 
     /** Log tag. */
     public static final String TAG = "SyncWriterFragment";
-
-    /** The ViewModel. */
-    private SyncWriterViewModel mVm;
-
-    /** View Binding. */
-    private FragmentSyncExportBinding mVb;
-
     @NonNull
     private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
-
+    /** The ViewModel. */
+    private SyncWriterViewModel mVm;
+    /** View Binding. */
+    private FragmentSyncExportBinding mVb;
     @Nullable
     private ProgressDelegate mProgressDelegate;
+
+    @SuppressWarnings("TypeMayBeWeakened")
+    @NonNull
+    public static Fragment create(@NonNull final SyncServer syncServer) {
+        final Fragment fragment = new SyncWriterFragment();
+        final Bundle args = new Bundle(1);
+        args.putParcelable(SyncServer.BKEY_SITE, syncServer);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -98,13 +108,24 @@ public class SyncWriterFragment
 
         final Toolbar toolbar = getToolbar();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-        toolbar.setTitle(mVm.getSyncServer().getLabel());
+        toolbar.setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel());
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
         mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
         mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
+                .getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover));
+
+        mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> mVm
+                .getSyncWriterHelper()
+                .setIncremental(checkedId == mVb.rbExportNewAndUpdated.getId()));
+
+        mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> mVm
+                .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
         // Check if the task is already running (e.g. after a screen rotation...)
         // Note that after a screen rotation, the full-options screen will NOT be re-shown.
@@ -114,16 +135,17 @@ public class SyncWriterFragment
             if (mVm.isQuickOptionsAlreadyShown()) {
                 showOptions();
             } else {
-                mVm.setQuickOptionsAlreadyShown(true);
                 showQuickOptions();
             }
         }
     }
 
     private void showQuickOptions() {
+        mVm.setQuickOptionsAlreadyShown(true);
+
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
-                .setTitle(mVm.getSyncServer().getLabel())
+                .setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel())
                 .setMessage(R.string.action_synchronize)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.btn_options, (d, w) -> {
@@ -142,51 +164,39 @@ public class SyncWriterFragment
      * Export Step 1b: Show the full options screen to the user.
      */
     private void showOptions() {
-        final SyncWriterConfig config = mVm.getConfig();
-        final Set<RecordType> exportEntities = config.getExporterEntries();
+        final SyncWriterHelper helper = mVm.getSyncWriterHelper();
 
-        mVb.cbxCovers.setChecked(exportEntities.contains(RecordType.Cover));
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> config
-                .setExportEntry(RecordType.Cover, isChecked));
-
-        final boolean incremental = config.isIncremental();
-        mVb.rbExportBooksOptionAll.setChecked(!incremental);
-        mVb.rbExportBooksOptionNewAndUpdated.setChecked(incremental);
-        mVb.infExportBooksOptionNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> config
-                .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
-
+        final Set<RecordType> recordTypes = helper.getRecordTypes();
         mVb.cbxBooks.setChecked(true);
         mVb.cbxBooks.setEnabled(true);
+        mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
-        mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
-
-        mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
-                (v, isChecked) -> mVm.getConfig().setDeleteLocalBooks(isChecked));
+        final boolean incremental = helper.isIncremental();
+        mVb.rbExportAll.setChecked(!incremental);
+        mVb.rbExportNewAndUpdated.setChecked(incremental);
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
-
 
     private void onExportCancelled(
             @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
             //noinspection ConstantConditions
             getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
-        }
+        });
     }
 
     private void onExportFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, message.getData().getResult())
+            final String msg = ExMsg.map(context, data.getResult())
                                     .orElse(getString(R.string.error_unknown));
 
             //noinspection ConstantConditions
@@ -197,7 +207,7 @@ public class SyncWriterFragment
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
-        }
+        });
     }
 
     /**
@@ -209,9 +219,7 @@ public class SyncWriterFragment
             @NonNull final LiveDataEvent<TaskResult<SyncWriterResults>> message) {
         closeProgressDialog();
 
-        if (message.isNewEvent()) {
-            final SyncWriterResults results = message.getData().requireResult();
-
+        message.getData().map(TaskResult::requireResult).ifPresent(results -> {
             final List<String> items = extractExportedItems(results);
             if (items.isEmpty()) {
                 //noinspection ConstantConditions
@@ -219,11 +227,14 @@ public class SyncWriterFragment
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.menu_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
-                        .setPositiveButton(R.string.action_done, (d, w) -> getActivity().finish())
+                        .setPositiveButton(R.string.action_done, (d, w) -> {
+                            //noinspection ConstantConditions
+                            getActivity().setResult(Activity.RESULT_OK);
+                            getActivity().finish();
+                        })
                         .create()
                         .show();
             } else {
-
                 final String itemList = items
                         .stream()
                         .map(s -> getString(R.string.list_element, s))
@@ -234,42 +245,49 @@ public class SyncWriterFragment
                         .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.progress_end_export_successful)
                         .setMessage(itemList)
-                        .setPositiveButton(R.string.action_done, (d, w) -> getActivity().finish())
+                        .setPositiveButton(R.string.action_done, (d, w) -> {
+                            final Intent resultIntent = new Intent()
+                                    .putExtra(SyncContractBase.BKEY_RESULT,
+                                              SyncContractBase.RESULT_WRITE_DONE);
+                            //noinspection ConstantConditions
+                            getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                            getActivity().finish();
+                        })
                         .create()
                         .show();
             }
-        }
+        });
     }
 
     @NonNull
     private List<String> extractExportedItems(@NonNull final SyncWriterResults result) {
         final List<String> items = new ArrayList<>();
 
-        if (result.booksWritten > 0) {
+        if (result.getBookCount() > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_books),
-                                String.valueOf(result.booksWritten)));
+                                String.valueOf(result.getBookCount())));
         }
-        if (result.coversWritten > 0) {
+        if (result.getCoverCount() > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_covers),
-                                String.valueOf(result.coversWritten)));
+                                String.valueOf(result.getCoverCount())));
         }
         return items;
     }
 
     private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
-        if (message.isNewEvent()) {
+        message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
                 mProgressDelegate = new ProgressDelegate(getProgressFrame())
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
-                        .setOnCancelListener(v -> mVm.cancelTask(message.getData().taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
                         .show(getActivity().getWindow());
             }
-            mProgressDelegate.onProgress(message.getData());
-        }
+            mProgressDelegate.onProgress(data);
+        });
     }
 
     private void closeProgressDialog() {
@@ -297,7 +315,7 @@ public class SyncWriterFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (mVm.getConfig().getExporterEntries().size() > 1) {
+                if (mVm.getSyncWriterHelper().getRecordTypes().size() > 1) {
                     mVm.startExport();
                 }
                 return true;
@@ -305,5 +323,4 @@ public class SyncWriterFragment
             return false;
         }
     }
-
 }

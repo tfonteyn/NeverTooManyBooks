@@ -30,13 +30,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
 import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -47,12 +49,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * A generic wrapper to read sqlite db files.
  * <p>
  * The {@link #validate(Context)} should detect which database we're dealing with and
- * create the delegate {@link ArchiveReader} and run {@link #validate(Context)} on it.
+ * create the delegate {@link DataReader} and run {@link #validate(Context)} on it.
  * <p>
  * The incoming db is copied to the internal cache dir first.
  */
 public class DbArchiveReader
-        implements ArchiveReader {
+        implements DataReader<ArchiveMetaData, ImportResults> {
 
     /** Import configuration. */
     @SuppressWarnings("FieldCanBeLocal")
@@ -64,7 +66,7 @@ public class DbArchiveReader
 
     @SuppressWarnings("unused")
     @Nullable
-    private ArchiveReader mDelegateReader;
+    private DataReader<ArchiveMetaData, ImportResults> mDelegateDataReader;
 
 
     /**
@@ -89,12 +91,13 @@ public class DbArchiveReader
 
             // Copy the file from the uri to a place where we can access it as a database.
             File tmpDb = new File(context.getCacheDir(), System.nanoTime() + ".db");
-            tmpDb = FileUtils.copy(is, tmpDb);
+            tmpDb = ImageUtils.copy(is, tmpDb);
             mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
                                                           SQLiteDatabase.OPEN_READONLY);
         }
     }
 
+    @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
             throws InvalidArchiveException, FileNotFoundException {
@@ -105,50 +108,51 @@ public class DbArchiveReader
         }
 
         // Determine if the database file is a supported format
-//        mDelegateReader = SomeDatabaseArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
-//        if (mDelegateReader != null) {
-//            mDelegateReader.validate(context);
+//        mDelegateDataReader = SomeDatabaseArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
+//        if (mDelegateDataReader != null) {
+//            mDelegateDataReader.validate(context);
 //            return;
 //        }
 
-        throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
+        throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
     }
 
-    @Nullable
     @Override
     @WorkerThread
-    public ArchiveMetaData readMetaData(@NonNull final Context context)
+    @NonNull
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
             throws InvalidArchiveException, IOException, ImportException,
                    StorageException {
-        if (mDelegateReader != null) {
-            return mDelegateReader.readMetaData(context);
+        if (mDelegateDataReader != null) {
+            return mDelegateDataReader.readMetaData(context);
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 
-    @NonNull
+
     @Override
     @WorkerThread
+    @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, ImportException, IOException,
                    StorageException, CredentialsException {
 
         // sanity check, we should not even get here if the database is not supported
-        if (mDelegateReader == null) {
-            throw new InvalidArchiveException(ArchiveReader.ERROR_INVALID_INPUT);
+        if (mDelegateDataReader == null) {
+            throw new InvalidArchiveException("File/type is not supported");
         }
 
-        return mDelegateReader.read(context, progressListener);
+        return mDelegateDataReader.read(context, progressListener);
     }
 
     @Override
     public void close()
             throws IOException {
         try {
-            if (mDelegateReader != null) {
-                mDelegateReader.close();
+            if (mDelegateDataReader != null) {
+                mDelegateDataReader.close();
             }
         } finally {
             if (mSQLiteDatabase != null) {

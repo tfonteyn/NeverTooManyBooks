@@ -48,7 +48,8 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_panel"
-                style="@style/TabBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 tools:ignore="SpeakableTextPresentCheck"
                 />
 

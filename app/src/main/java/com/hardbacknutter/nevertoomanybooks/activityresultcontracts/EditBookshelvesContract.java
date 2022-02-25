@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookshelvesFragment;
-import com.hardbacknutter.nevertoomanybooks.EditBookshelvesViewModel;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -41,15 +40,13 @@ public class EditBookshelvesContract
 
     private static final String TAG = "EditBookshelvesContract";
 
-    public static void setResultAndFinish(@NonNull final Activity activity,
-                                          @Nullable final Bookshelf selectedBookshelf) {
+    @NonNull
+    public static Intent createResultIntent(@Nullable final Bookshelf selectedBookshelf) {
         final Intent resultIntent = new Intent();
-
         if (selectedBookshelf != null) {
             resultIntent.putExtra(DBKey.FK_BOOKSHELF, selectedBookshelf.getId());
         }
-        activity.setResult(Activity.RESULT_OK, resultIntent);
-        activity.finish();
+        return resultIntent;
     }
 
     @NonNull
@@ -59,7 +56,7 @@ public class EditBookshelvesContract
         final Intent intent = FragmentHostActivity
                 .createIntent(context, EditBookshelvesFragment.class);
         if (bookshelfId != 0) {
-            intent.putExtra(EditBookshelvesViewModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
+            intent.putExtra(DBKey.FK_BOOKSHELF, (long) bookshelfId);
         }
         return intent;
     }

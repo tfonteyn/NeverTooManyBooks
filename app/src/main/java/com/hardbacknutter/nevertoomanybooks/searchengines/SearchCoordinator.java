@@ -52,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -180,75 +181,13 @@ public class SearchCoordinator
     private SearchEngineRegistry mSearchEngineRegistry;
     /** Cached string resource. */
     private String mListElementPrefixString;
+    private DateParser mDateParser;
 
     /** Observable. */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mSearchCoordinatorProgress;
     }
-
-    /** Listener for <strong>individual</strong> search tasks. */
-    private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
-
-        @Override
-        public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (mSearchProgressMessages) {
-                mSearchProgressMessages.put(message.taskId, message);
-            }
-            // forward the accumulated progress
-            mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
-        }
-
-        @Override
-        public void onFinished(@NonNull final TaskResult<Bundle> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-
-            // sanity check
-            final Bundle result = message.requireResult();
-            synchronized (mSearchResults) {
-                mSearchResults.put(message.getTaskId(), result);
-            }
-            onSearchTaskFinished(message.getTaskId(), result);
-        }
-
-        @Override
-        public void onCancelled(@NonNull final TaskResult<Bundle> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-
-            synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(message.getTaskId(), null);
-            }
-            onSearchTaskFinished(message.getTaskId(), message.getResult());
-        }
-
-        @Override
-        public void onFailure(@NonNull final TaskResult<Exception> message) {
-            //TaskListener, don't check if (message.isNewEvent())
-
-            synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(message.getTaskId(), message.getResult());
-            }
-            onSearchTaskFinished(message.getTaskId(), null);
-        }
-    };
-    private DateParser mDateParser;
-
-    /**
-     * Handles both Successful and Failed searches.
-     * <p>
-     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
-     */
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
-        return mSearchCoordinatorFinished;
-    }
-
-    /** Observable. */
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchCancelled() {
-        return mSearchCoordinatorCancelled;
-    }
-
     /**
      * Process the message and start another task if required.
      *
@@ -293,12 +232,11 @@ public class SearchCoordinator
         final boolean allDone;
         synchronized (mActiveTasks) {
             // Remove the finished task from our list
-            for (final SearchTask searchTask : mActiveTasks) {
-                if (searchTask.getTaskId() == taskId) {
-                    mActiveTasks.remove(searchTask);
-                    break;
-                }
-            }
+            mActiveTasks.stream()
+                        .filter(searchTask -> searchTask.getTaskId() == taskId)
+                        .findFirst()
+                        .ifPresent(mActiveTasks::remove);
+
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineConfig config = mSearchEngineRegistry.getByEngineId(taskId);
@@ -379,6 +317,108 @@ public class SearchCoordinator
                 }
             }
         }
+    }
+
+    /** Listener for <strong>individual</strong> search tasks. */
+    private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
+
+        @Override
+        public void onProgress(@NonNull final TaskProgress message) {
+            synchronized (mSearchProgressMessages) {
+                mSearchProgressMessages.put(message.taskId, message);
+            }
+            // forward the accumulated progress
+            mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+        }
+
+        @Override
+        public void onFinished(final int taskId,
+                               @Nullable final Bundle result) {
+            Objects.requireNonNull(result);
+
+            synchronized (mSearchResults) {
+                mSearchResults.put(taskId, result);
+            }
+            onSearchTaskFinished(taskId, result);
+        }
+
+        @Override
+        public void onCancelled(final int taskId,
+                                @Nullable final Bundle result) {
+            synchronized (mSearchFinishedMessages) {
+                mSearchFinishedMessages.put(taskId, null);
+            }
+            onSearchTaskFinished(taskId, result);
+        }
+
+        @Override
+        public void onFailure(final int taskId,
+                              @Nullable final Exception exception) {
+            synchronized (mSearchFinishedMessages) {
+                mSearchFinishedMessages.put(taskId, exception);
+            }
+            onSearchTaskFinished(taskId, null);
+        }
+    };
+
+    /**
+     * Handles both Successful and Failed searches.
+     * <p>
+     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
+     */
+    @NonNull
+    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
+        return mSearchCoordinatorFinished;
+    }
+
+    /** Observable. */
+    @NonNull
+    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchCancelled() {
+        return mSearchCoordinatorCancelled;
+    }
+
+    /**
+     * Creates {@link TaskProgress} with the global/total progress of all tasks.
+     *
+     * @return instance
+     */
+    @NonNull
+    private TaskProgress accumulateProgress() {
+
+        // Sum the current & max values for each active task.
+        int progressMax = 0;
+        int progressCount = 0;
+
+        // Start with the base message if we have one.
+        final StringBuilder sb;
+        if (mBaseMessage != null && !mBaseMessage.isEmpty()) {
+            sb = new StringBuilder(mBaseMessage);
+        } else {
+            sb = new StringBuilder();
+        }
+
+        synchronized (mSearchProgressMessages) {
+            if (!mSearchProgressMessages.isEmpty()) {
+                // if there was a baseMessage, add a linefeed to it.
+                if (sb.length() > 0) {
+                    sb.append('\n');
+                }
+                // Append each task message
+                sb.append(mSearchProgressMessages
+                                  .values().stream()
+                                  .map(msg -> String.format(mListElementPrefixString, msg.text))
+                                  .collect(Collectors.joining("\n")));
+
+                for (final TaskProgress taskProgress : mSearchProgressMessages.values()) {
+                    progressMax += taskProgress.maxPosition;
+                    progressCount += taskProgress.position;
+                }
+
+            }
+        }
+
+        return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
+                                progressMax, progressCount, null);
     }
 
     @Override
@@ -713,7 +753,6 @@ public class SearchCoordinator
             mSearchTasksEndTime.clear();
         }
     }
-
 
     /**
      * Start all searches which have not been run yet.
@@ -1062,50 +1101,7 @@ public class SearchCoordinator
         mBookData.putParcelableArrayList(key, dest);
     }
 
-    /**
-     * Creates {@link TaskProgress} with the global/total progress of all tasks.
-     *
-     * @return instance
-     */
-    @NonNull
-    private TaskProgress accumulateProgress() {
 
-        // Sum the current & max values for each active task.
-        int progressMax = 0;
-        int progressCount = 0;
-
-        // Start with the base message if we have one.
-        final StringBuilder sb;
-        if (mBaseMessage != null && !mBaseMessage.isEmpty()) {
-            sb = new StringBuilder(mBaseMessage);
-        } else {
-            sb = new StringBuilder();
-        }
-
-        synchronized (mSearchProgressMessages) {
-            if (!mSearchProgressMessages.isEmpty()) {
-                // if there was a baseMessage, add a linefeed to it.
-                if (sb.length() > 0) {
-                    sb.append('\n');
-                }
-                // Append each task message
-                sb.append(mSearchProgressMessages
-                                  .values().stream()
-                                  .map(msg -> String.format(mListElementPrefixString, msg.text))
-                                  .collect(Collectors.joining("\n")));
-
-                for (final TaskProgress taskProgress : mSearchProgressMessages.values()) {
-                    progressMax += taskProgress.maxPosition;
-                    progressCount += taskProgress.position;
-                }
-
-            }
-        }
-
-        return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
-                                progressMax, progressCount, null
-        );
-    }
 
     /**
      * Called when all is said and done. Collects all individual website errors (if any)
@@ -1171,8 +1167,6 @@ public class SearchCoordinator
 
         return context.getString(R.string.error_search_x_failed_y, engineName, msg);
     }
-
-
 
     public void cancelTask(@IdRes final int taskId) {
         // reminder: this object, the SearchCoordinator is a pseudo task
@@ -1258,4 +1252,5 @@ public class SearchCoordinator
             return null;
         }
     }
+
 }
