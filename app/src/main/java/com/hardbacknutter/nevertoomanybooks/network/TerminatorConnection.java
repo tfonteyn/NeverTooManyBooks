@@ -174,6 +174,7 @@ public final class TerminatorConnection
      *
      * @param sslContext (optional) SSL context to use instead of the system one.
      */
+    @NonNull
     public TerminatorConnection setSSLContext(@Nullable final SSLContext sslContext) {
         Objects.requireNonNull(mRequest, "mRequest");
 
