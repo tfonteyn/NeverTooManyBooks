@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -57,6 +56,8 @@ public class SearchBookByIsbnViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookByIsbnViewModel";
     public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
+
+    private static final int BUFFER_SIZE = 65535;
 
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
@@ -155,7 +156,7 @@ public class SearchBookByIsbnViewModel
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 try (Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                     BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE)) {
+                     BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE)) {
 
                     mScanQueue.addAll(
                             reader.lines()
