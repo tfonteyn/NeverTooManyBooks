@@ -324,10 +324,10 @@ public class Book
      * Duplicate a book by putting APPLICABLE (not simply all of them) fields
      * in a Bundle ready for further processing.
      * i.o.w. this is <strong>NOT</strong> a copy constructor.
+     * <p>
+     * <b>Dev. note:</b> keep in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      *
      * @return bundle with book data
-     * <p>
-     * <b>Developer:</b> keep in sync with {@link BookDaoImpl} .SqlAllBooks#BOOK
      */
     @NonNull
     public Bundle duplicate() {
@@ -693,7 +693,7 @@ public class Book
      * @return The persisted file
      *
      * @throws CoverStorageException The covers directory is not available
-     * @throws IOException           on any failure
+     * @throws IOException           on other failures
      * @see #getPersistedCoverFile(int)
      */
     public File persistCover(@NonNull final File downloadedFile,
