@@ -189,7 +189,7 @@ public final class ImageUtils {
     }
 
     /**
-     * Given a InputStream with an image, write it to a file in the covers directory.
+     * Given a InputStream with an image, write it to a file in the {@link CoverDir} directory.
      * We first write to a temporary file, so an existing 'out' file is not destroyed
      * if the stream somehow fails.
      *
@@ -198,9 +198,9 @@ public final class ImageUtils {
      *
      * @return File written to (the one passed in)
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws CoverStorageException The {@link CoverDir} directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
-     * @throws IOException           on failure
+     * @throws IOException           on other failures
      */
     @NonNull
     public static File copy(@Nullable final InputStream is,
