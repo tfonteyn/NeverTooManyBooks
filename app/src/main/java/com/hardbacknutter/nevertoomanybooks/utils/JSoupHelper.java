@@ -68,6 +68,7 @@ public class JSoupHelper {
      *
      * @return String
      */
+    @SuppressWarnings("WeakerAccess")
     @Nullable
     public String getStringOrNull(@NonNull final Element root,
                                   @NonNull final String id) {
@@ -86,6 +87,7 @@ public class JSoupHelper {
      *
      * @return Integer
      */
+    @SuppressWarnings("WeakerAccess")
     @Nullable
     public Integer getIntOrNull(@NonNull final Element root,
                                 @NonNull final String id) {
@@ -155,6 +157,7 @@ public class JSoupHelper {
      *
      * @return unmodifiableMap
      */
+    @SuppressWarnings("unused")
     @NonNull
     public Map<String, String[]> getStyleMap(@NonNull final Element element) {
         final Map<String, String[]> keymaps = new HashMap<>();
