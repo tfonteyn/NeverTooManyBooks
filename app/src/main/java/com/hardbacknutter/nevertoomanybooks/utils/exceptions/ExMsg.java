@@ -88,7 +88,7 @@ public final class ExMsg {
             msg = context.getString(R.string.httpErrorFile);
 
         } else if (e instanceof java.util.zip.ZipException) {
-            // a ZipException is very generic, we'd need to look at the actual text.
+            //TODO: a ZipException is very generic, we'd need to look at the actual text.
             msg = context.getString(R.string.error_import_archive_invalid);
 
         } else if (e instanceof android.database.SQLException
