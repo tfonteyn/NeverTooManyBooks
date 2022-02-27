@@ -163,16 +163,6 @@
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
-    <!-- The user selected a file to import that was not recognised as a valid archive.
-        or, we got a FileNotFoundException when opening the selected file.
-
-        Dev Note: The latter sometimes happens when the device file manager WAS SHOWING the file,
-        and the user was able to select it... but in reality the file was NOT present.
-        This is either a bug in the Android systems we tested on, or some weird caching is going on.
-        Either way: not something we can fix.
-        -->
-    <string name="error_file_not_recognized">The selected file is not recognized.</string>
-
     <!-- A search on a specific website failed, with the specified reason.
          param 1: site name; param 2: message      -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
@@ -183,6 +173,20 @@
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
     <string name="error_email_failed">Failed to send the email.</string>
+
+
+    <!-- FileNotFoundException when opening the selected file.
+    Dev Note: sometimes happens when the device file manager WAS SHOWING the file,
+    and the user was able to select it... but in reality the file was NOT present.
+    This is either a bug in the Android systems we tested on, or some weird caching is going on.
+    Either way: not something we can fix.
+    -->
+    <string name="error_file_not_found">The selected file is not found.</string>
+
+    <!-- The user selected a file to import that was not recognised as a valid archive. -->
+    <string name="error_file_not_recognized">The selected file is not recognized.</string>
+
+    <string name="error_unsupported_version_v">Unsupported version %1$d</string>
 
     <string name="error_import_archive_invalid">The archive file is corrupt or otherwise invalid.</string>
 
