@@ -24,7 +24,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
+import com.hardbacknutter.nevertoomanybooks.io.WriterResults;
 
 /**
  * Value class to report back what was witten.

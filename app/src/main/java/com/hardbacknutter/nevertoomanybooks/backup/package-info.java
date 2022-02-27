@@ -21,20 +21,20 @@
 /**
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
  * is setup by the user UI, and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
  * of the given archive.
  * <p>
  * The ExportHelper is passed to:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel}.DataWriterTask
  * The task gets an writer from the ExportHelper, and delegates the job to it:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.DataWriter}
  * <p>
  * The writer gets the desired list of entries it needs to write from the helper.
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.RecordType}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.RecordType}
  * Writing starts with the header in a fixed format suitable for the archive type
  * Next it loops over the entries, and for each entry
  * invokes an RecordWriter that can write that entry in the desired format.
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.RecordWriter}
  * The output from the RecordWriter is then streamed into the actual archive.
  * <p>
  * When done, the writer copies the archive file to to a {@link android.net.Uri}
@@ -46,18 +46,18 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
  * is setup by the user UI, inspects the Uri and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding}
  * of the given archive.
  * <p>
  * The helper is passed to:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataReaderTask}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel}.DataReaderTask
  * The task gets a reader from the helper, and delegates the job to it:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.DataReader}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.DataReader}
  * <p>
  * The reader parses the archive for one or more
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord}
  * Each of these are passed for actual reading to an importer suitable for that record type.
- * {@link com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader}
+ * {@link com.hardbacknutter.nevertoomanybooks.io.RecordReader}
  * The importer reports back with:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportResults}.
  * The reader accumulates all results from the used importer(s),

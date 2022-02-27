@@ -39,11 +39,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
@@ -56,6 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -116,11 +116,11 @@ public class JsonRecordWriter
     @Override
     public void writeMetaData(@NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
         try {
             writer.write(new BundleCoder().encode(metaData.getData()).toString());
         } catch (@NonNull final JSONException e) {
-            throw new ExportException(e);
+            throw new DataWriterException(e);
         }
     }
 
@@ -128,9 +128,9 @@ public class JsonRecordWriter
     @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<RecordType> entries,
+                               @NonNull final Set<RecordType> recordTypes,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -150,7 +150,7 @@ public class JsonRecordWriter
             // Write styles first, and preferences next! This will facilitate & speedup
             // importing as we'll be seeking in the input archive for these.
 
-            if (entries.contains(RecordType.Styles)
+            if (recordTypes.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_styles));
 
@@ -163,7 +163,7 @@ public class JsonRecordWriter
                 results.styles = styles.size();
             }
 
-            if (entries.contains(RecordType.Preferences)
+            if (recordTypes.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(R.string.lbl_settings));
 
@@ -173,7 +173,7 @@ public class JsonRecordWriter
                 results.preferences = 1;
             }
 
-            if (entries.contains(RecordType.Certificates)
+            if (recordTypes.contains(RecordType.Certificates)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_certificate_ca));
@@ -195,7 +195,7 @@ public class JsonRecordWriter
                 }
             }
 
-            if (entries.contains(RecordType.Bookshelves)
+            if (recordTypes.contains(RecordType.Bookshelves)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.lbl_bookshelves));
@@ -209,7 +209,7 @@ public class JsonRecordWriter
                 results.bookshelves = bookshelves.size();
             }
 
-            if (entries.contains(RecordType.CalibreLibraries)
+            if (recordTypes.contains(RecordType.CalibreLibraries)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgress(1, context.getString(
                         R.string.site_calibre));
@@ -223,10 +223,10 @@ public class JsonRecordWriter
                 results.calibreLibraries = libraries.size();
             }
 
-            if (entries.contains(RecordType.Books)
+            if (recordTypes.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
 
-                final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
+                final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
                 final JsonCoder<Book> coder = new BookCoder(context,
                                                             getBookshelfCoder(context),
@@ -268,7 +268,7 @@ public class JsonRecordWriter
             }
 
         } catch (@NonNull final JSONException e) {
-            throw new ExportException(e);
+            throw new DataWriterException(e);
         }
 
         // Write the complete json output in one go

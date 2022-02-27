@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 
 /**
  * Value class to report back what was imported.

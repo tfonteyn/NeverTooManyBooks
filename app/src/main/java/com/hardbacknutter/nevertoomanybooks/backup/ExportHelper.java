@@ -39,15 +39,16 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ExporterBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
@@ -57,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * Writes to a temporary file in the internal cache first.
  */
 public class ExportHelper
-        extends ExporterBase<ExportResults> {
+        extends DataWriterHelperBase<ExportResults> {
 
     /** Number of app startup's between offers to backup. */
     public static final int BACKUP_COUNTDOWN_DEFAULT = 5;
@@ -74,13 +75,19 @@ public class ExportHelper
 
     /** <strong>How</strong> to write to the Uri. */
     @NonNull
-    private ArchiveEncoding mEncoding = ArchiveEncoding.Zip;
+    private ArchiveEncoding mEncoding;
 
     /**
      * Constructor.
      */
     public ExportHelper() {
-        super(EnumSet.allOf(RecordType.class));
+        // set the default
+        mEncoding = ArchiveEncoding.Zip;
+        addRecordType(EnumSet.of(RecordType.Styles,
+                                 RecordType.Preferences,
+                                 RecordType.Certificates,
+                                 RecordType.Books,
+                                 RecordType.Cover));
     }
 
     /**
@@ -89,8 +96,10 @@ public class ExportHelper
      * @param recordTypes to write
      */
     @VisibleForTesting
-    public ExportHelper(@NonNull final RecordType... recordTypes) {
-        super(EnumSet.copyOf(Arrays.asList(recordTypes)));
+    public ExportHelper(@NonNull final ArchiveEncoding encoding,
+                        @NonNull final Set<RecordType> recordTypes) {
+        mEncoding = encoding;
+        addRecordType(recordTypes);
     }
 
     @NonNull
@@ -173,7 +182,7 @@ public class ExportHelper
     @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException,
+            throws DataWriterException,
                    IOException,
                    StorageException,
                    CertificateException {
@@ -208,7 +217,6 @@ public class ExportHelper
         FileUtils.delete(getTempFile(context));
         return results;
     }
-
 
     /**
      * Create/get the OutputStream to write to.

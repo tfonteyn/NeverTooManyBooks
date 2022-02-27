@@ -35,10 +35,10 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -64,48 +64,47 @@ public class TarArchiveReader
         super(context, helper);
     }
 
-    @Override
-    @Nullable
     @WorkerThread
-    public ArchiveReaderRecord seek(@NonNull final RecordType type)
-            throws InvalidArchiveException, IOException {
+    @Override
+    @NonNull
+    public Optional<ArchiveReaderRecord> seek(@NonNull final RecordType type)
+            throws DataReaderException, IOException {
         try {
             TarArchiveEntry entry;
             while (true) {
                 entry = getInputStream().getNextTarEntry();
                 if (entry == null) {
-                    return null;
+                    return Optional.empty();
                 }
 
-                final Optional<RecordType> detectedType =
-                        RecordType.getType(entry.getName());
+                final Optional<RecordType> detectedType = RecordType.getType(entry.getName());
                 if (detectedType.isPresent() && type == detectedType.get()) {
-                    return new TarArchiveRecord(this, entry);
+                    return Optional.of(new TarArchiveRecord(this, entry));
                 }
             }
         } catch (@NonNull final IOException e) {
             //VERY annoying... the apache tar library does not throw a unique exception.
             // We reluctantly look at the message, to give the user better error details
             if ("Error detected parsing the header".equals(e.getMessage())) {
-                throw new InvalidArchiveException(e);
+                throw new DataReaderException(e);
             } else {
                 throw e;
             }
         }
     }
 
-    @Override
-    @Nullable
     @WorkerThread
-    public ArchiveReaderRecord next()
+    @Override
+    @NonNull
+    public Optional<ArchiveReaderRecord> next()
             throws IOException {
 
         final TarArchiveEntry entry = getInputStream().getNextTarEntry();
         if (entry == null) {
-            return null;
+            return Optional.empty();
         }
 
-        return new TarArchiveRecord(this, entry);
+        return Optional.of(new TarArchiveRecord(this, entry));
     }
 
     /**

@@ -56,18 +56,18 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -149,13 +149,13 @@ public class SyncReaderFragment
                                                R.string.lbl_sync_date,
                                                mVb.lblSyncDate.getId());
 
-        mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onImportCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mVm.onImportFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        mVm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mVm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
             mVm.getSyncReaderHelper().setRecordType(isChecked, RecordType.Books);
@@ -181,12 +181,12 @@ public class SyncReaderFragment
             updateSyncDateVisibility();
         });
 
-        mVb.syncDate.setOnClickListener(
-                v -> mSyncDatePicker.launch(mVm.getSyncReaderHelper().getSyncDate(),
-                                            this::onSyncDateSet));
+        mVb.syncDate.setOnClickListener(v -> mSyncDatePicker.launch(
+                mVm.getSyncReaderHelper().getSyncDate(), this::onSyncDateSet));
 
-        // Either first time, or if the task is already running - either is fine.
-        showOptions();
+        if (!mVm.isRunning()) {
+            showOptions();
+        }
     }
 
     @Override
@@ -205,7 +205,7 @@ public class SyncReaderFragment
         if (metaData.isPresent()) {
             showMetaData(metaData.get());
         } else {
-            mVm.readMetaData();
+            mVm.startReadingMetaData();
             showMetaData(null);
         }
 
@@ -498,7 +498,7 @@ public class SyncReaderFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                mVm.startImport();
+                mVm.startReadingData();
                 return true;
             }
             return false;

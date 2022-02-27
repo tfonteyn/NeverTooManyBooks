@@ -34,11 +34,11 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -79,15 +79,15 @@ public class CsvRecordWriter
     @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<RecordType> entries,
+                               @NonNull final Set<RecordType> recordTypes,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
         final ExportResults results = new ExportResults();
 
-        if (entries.contains(RecordType.Books)) {
+        if (recordTypes.contains(RecordType.Books)) {
 
-            final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
+            final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
             final BookCoder bookCoder = new BookCoder(context);
 
             int delta = 0;

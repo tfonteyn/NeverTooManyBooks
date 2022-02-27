@@ -17,41 +17,48 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
- * Importing data can give a detailed reason of failure.
+ * Importing data can give a detailed reason of failure and the message passed
+ * to the constructors <strong>MUST</strong> be localized. It can/will be shown to the user.
  */
-public class ImportException
+public class DataReaderException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = 6654228248803658711L;
+    private static final long serialVersionUID = -1993624111906098070L;
 
-    public ImportException(@NonNull final String message) {
-        super(message);
+    public DataReaderException(@NonNull final String localizedMessage) {
+        super(localizedMessage);
     }
 
-    public ImportException(@NonNull final Throwable cause) {
+    public DataReaderException(@NonNull final Throwable cause) {
         super(cause);
     }
 
-    public ImportException(@NonNull final String message,
-                           @NonNull final Throwable cause) {
-        super(message, cause);
+    public DataReaderException(@NonNull final String localizedMessage,
+                               @NonNull final Throwable cause) {
+        super(localizedMessage, cause);
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getUserMessage(@NonNull final Context context) {
-        //TODO: look at cause and give more details
-        return context.getString(R.string.error_import_file_not_supported);
+        // if a custom message was added, use that.
+        if (getMessage() != null) {
+            return getMessage();
+        }
+
+        return ExMsg.map(context, getCause())
+                    .orElse(context.getString(R.string.error_import_file_not_supported));
     }
 }

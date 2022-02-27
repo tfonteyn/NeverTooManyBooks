@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -28,8 +28,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -38,67 +36,61 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public interface DataReader<METADATA, RESULTS>
         extends Closeable {
 
-    String ERROR_NO_READER_AVAILABLE = "No reader available";
-
     /**
      * Checks if the current archive looks valid.
-     * Does not need to be exhaustive. The default implementation does nothing.
+     * The default implementation does nothing.
      *
      * @param context Current context
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws IOException         on other failures
      */
     @WorkerThread
     default void validate(@NonNull final Context context)
-            throws InvalidArchiveException,
-                   ImportException,
+            throws DataReaderException,
                    IOException {
         // do nothing
     }
 
     /**
-     * Get the {@link METADATA} object read from the backup.
+     * Read the meta-data about what we'll attempt to import.
      *
      * @param context Current context
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws DataReaderException     on a decoding/parsing of data issue
+     * @throws StorageException        there is an issue with the storage media
      * @throws IOException             on other failures
      */
-    @NonNull
     @WorkerThread
+    @NonNull
     default Optional<METADATA> readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException,
-                   IOException,
-                   ImportException,
-                   StorageException {
+            throws DataReaderException,
+                   StorageException,
+                   IOException {
         return Optional.empty();
     }
 
     /**
-     * Perform a restore/import.
-     * <p>
-     * See {@link ArchiveReaderAbstract} for a default implementation.
+     * Perform a full read.
      *
      * @param context          Current context
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
-     * @return the import results summary
+     * @return results summary
      *
-     * @throws IOException             on failure
-     * @throws ImportException         on failure
-     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws DataReaderException     on a decoding/parsing of data issue
+     * @throws StorageException        there is an issue with the storage media
+     * @throws IOException             on other failures
      */
-    @NonNull
     @WorkerThread
+    @NonNull
     RESULTS read(@NonNull Context context,
                  @NonNull ProgressListener progressListener)
-            throws InvalidArchiveException,
-                   IOException,
-                   ImportException,
+            throws DataReaderException,
                    StorageException,
+                   IOException,
                    CredentialsException;
 
     /**

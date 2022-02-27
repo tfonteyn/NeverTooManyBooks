@@ -23,7 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.BasicMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.BasicMetaData;
 
 public class SyncReaderMetaData
         extends BasicMetaData {

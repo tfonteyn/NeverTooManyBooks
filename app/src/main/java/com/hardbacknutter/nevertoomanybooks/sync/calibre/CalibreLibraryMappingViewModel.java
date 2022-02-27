@@ -52,7 +52,6 @@ public class CalibreLibraryMappingViewModel
         return mLibraries;
     }
 
-
     public void extractLibraryData(@Nullable final SyncReaderMetaData metaData) {
         Objects.requireNonNull(metaData);
 
@@ -122,5 +121,4 @@ public class CalibreLibraryMappingViewModel
         ServiceLocator.getInstance().getCalibreLibraryDao().update(vlib);
         return mappedBookshelf;
     }
-
 }

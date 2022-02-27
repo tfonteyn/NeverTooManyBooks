@@ -17,25 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-/**
- * Implements Closeable to enforce a cleanup structure.
- */
 @FunctionalInterface
 public interface RecordReader
         extends Closeable {
@@ -44,18 +41,22 @@ public interface RecordReader
     int BUFFER_SIZE = 65535;
 
     /**
-     * Read the archive information block.
+     * Read the meta-data about what we'll attempt to import.
      *
-     * @param record to read data from
+     * @param context Current context
+     * @param record  to read data from
      *
-     * @return Optional with the archive info
+     * @return Optional with the meta-data
      *
-     * @throws ImportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
+    @WorkerThread
     @NonNull
-    default Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException, ImportException {
+    default Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
+                                                   @NonNull final ArchiveReaderRecord record)
+            throws DataReaderException,
+                   IOException {
         return Optional.empty();
     }
 
@@ -67,18 +68,21 @@ public interface RecordReader
      * @param helper           ImportHelper for options etc...
      * @param progressListener Progress and cancellation provider
      *
-     * @return {@link ImportResults}
+     * @return results summary
      *
-     * @throws ImportException  on a decoding/parsing of data issue
+     * @throws DataReaderException  on a decoding/parsing of data issue
      * @throws StorageException there is an issue with the storage media
-     * @throws IOException      on failure
+     * @throws IOException      on other failures
      */
+    @WorkerThread
     @NonNull
     ImportResults read(@NonNull Context context,
                        @NonNull ArchiveReaderRecord record,
                        @NonNull ImportHelper helper,
                        @NonNull ProgressListener progressListener)
-            throws ImportException, IOException, StorageException;
+            throws DataReaderException,
+                   StorageException,
+                   IOException;
 
     /**
      * Override if the implementation needs to close something.

@@ -22,19 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 
 /**
  * Coordinate between the UI and the {@link ExportHelper}.
@@ -42,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
  */
 @SuppressWarnings("WeakerAccess")
 public class ExportViewModel
-        extends ViewModel {
+        extends DataWriterViewModel<ExportResults> {
 
     private static final ArchiveEncoding[] ENCODINGS = {
             ArchiveEncoding.Zip,
@@ -53,25 +47,16 @@ public class ExportViewModel
 
     @NonNull
     private final ExportHelper mHelper = new ExportHelper();
-    @NonNull
-    private final DataWriterTask<ExportResults> mWriterTask = new DataWriterTask<>();
 
     /** UI helper. */
     private boolean mQuickOptionsAlreadyShown;
-
-    @Override
-    protected void onCleared() {
-        mWriterTask.cancel();
-        super.onCleared();
-    }
 
     boolean isQuickOptionsAlreadyShown() {
         return mQuickOptionsAlreadyShown;
     }
 
-    void setQuickOptionsAlreadyShown(
-            @SuppressWarnings("SameParameterValue") final boolean quickOptionsAlreadyShown) {
-        mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
+    void setQuickOptionsAlreadyShown() {
+        mQuickOptionsAlreadyShown = true;
     }
 
     @NonNull
@@ -115,40 +100,15 @@ public class ExportViewModel
         return new Pair<>(initialPos, list);
     }
 
-    @NonNull
-    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mWriterTask.onProgress();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<ExportResults>>> onExportCancelled() {
-        return mWriterTask.onCancelled();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onExportFailure() {
-        return mWriterTask.onFailure();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<ExportResults>>> onExportFinished() {
-        return mWriterTask.onFinished();
-    }
-
-    boolean isExportRunning() {
-        return mWriterTask.isRunning();
+    @Override
+    public boolean isReadyToGo() {
+        // slightly bogus test... right now Prefs/Styles are always included,
+        // but we're keeping all variations of DataReader/DataWriter classes the same
+        return mHelper.getRecordTypes().size() > 1;
     }
 
     void startExport(@NonNull final Uri uri) {
         mHelper.setUri(uri);
-        mWriterTask.start(mHelper);
-    }
-
-    void cancelTask(@IdRes final int taskId) {
-        if (taskId == mWriterTask.getTaskId()) {
-            mWriterTask.cancel();
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
+        startWritingData(mHelper);
     }
 }

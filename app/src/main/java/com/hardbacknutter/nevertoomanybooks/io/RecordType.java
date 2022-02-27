@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import androidx.annotation.NonNull;
 
@@ -36,8 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
  * An entry will either be handled directly inside the {@link DataWriter} class,
  * or preferably handed over to an {@link RecordWriter} for second-level archives.
  * <p>
- * <strong>Not all {@link ArchiveEncoding} classes will support all types.</strong>
- * <p>
+ * <strong>Not all reader/writer classes will support all types.</strong>
  * <p>
  * TODO: implement magic-byte checks just like we do on top-level archive files.
  * Checking the prefix of the file name is a bit shaky
@@ -54,6 +53,12 @@ public enum RecordType {
      * Archive meta data.
      * Contains a list of key=value pairs.
      * ONLY ONE PER ARCHIVE.
+     * <p>
+     * Adding this type to the {@link DataWriterHelperBase} has no effect.
+     * The encoding decides whether to write meta-data.
+     * <p>
+     * Adding this type to the {@link DataReaderHelperBase} has no effect.
+     * The reader will always try and detect meta-data.
      */
     MetaData("info"),
 
@@ -104,15 +109,15 @@ public enum RecordType {
     Cover(""),
 
     /**
-     * Container element, which in turn can contain other records.
-     */
-    AutoDetect("data"),
-
-    /**
      * The full database file.
      * ONLY ONE PER ARCHIVE.
      */
-    Database("database");
+    Database("database"),
+
+    /**
+     * Container element, which in turn can contain other records.
+     */
+    AutoDetect("data");
 
     /** Log tag. */
     private static final String TAG = "RecordType";

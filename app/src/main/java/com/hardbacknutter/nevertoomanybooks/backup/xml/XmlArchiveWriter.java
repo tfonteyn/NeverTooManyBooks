@@ -32,13 +32,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -79,7 +79,7 @@ public class XmlArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(null);

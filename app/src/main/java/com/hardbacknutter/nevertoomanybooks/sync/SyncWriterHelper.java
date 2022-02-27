@@ -31,15 +31,15 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ExporterBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class SyncWriterHelper
-        extends ExporterBase<SyncWriterResults> {
+        extends DataWriterHelperBase<SyncWriterResults> {
 
     /** Extra arguments for specific writers. The writer must define them. */
     private final Bundle mExtraArgs = new Bundle();
@@ -55,9 +55,11 @@ public class SyncWriterHelper
      * Constructor.
      */
     SyncWriterHelper(@NonNull final SyncServer syncServer) {
-        super(EnumSet.of(RecordType.Books,
-                         RecordType.Cover));
         mSyncServer = syncServer;
+
+        // set the default
+        addRecordType(EnumSet.of(RecordType.Books,
+                                 RecordType.Cover));
     }
 
     @NonNull
@@ -86,7 +88,7 @@ public class SyncWriterHelper
     @WorkerThread
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
-            throws ExportException,
+            throws DataWriterException,
                    IOException,
                    StorageException,
                    CertificateException {

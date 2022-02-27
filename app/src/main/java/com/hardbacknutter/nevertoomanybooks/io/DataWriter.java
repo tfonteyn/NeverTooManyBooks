@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -27,7 +27,6 @@ import androidx.annotation.WorkerThread;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -38,21 +37,21 @@ public interface DataWriter<RESULT>
     String ERROR_NO_WRITER_AVAILABLE = "No writer available";
 
     /**
-     * Perform a write.
+     * Perform a full write.
      *
      * @param context          Current context
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
-     * @return the export results summary
+     * @return results summary
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     @WorkerThread
     @NonNull
     RESULT write(@NonNull Context context,
                  @NonNull ProgressListener progressListener)
-            throws StorageException, ExportException, IOException;
+            throws StorageException, DataWriterException, IOException;
 
     /**
      * Override if the implementation needs to close something.

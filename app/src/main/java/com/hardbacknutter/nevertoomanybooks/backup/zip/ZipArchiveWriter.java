@@ -37,9 +37,9 @@ import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**

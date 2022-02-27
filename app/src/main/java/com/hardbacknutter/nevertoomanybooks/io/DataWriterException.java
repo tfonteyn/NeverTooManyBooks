@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -26,24 +26,32 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
-public class InvalidArchiveException
+/**
+ * Exporting data can give a detailed reason of failure.
+ */
+public class DataWriterException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -3484895935028782830L;
+    private static final long serialVersionUID = -1777048008850619347L;
 
-    public InvalidArchiveException(@NonNull final Throwable cause) {
+    public DataWriterException(@NonNull final String message) {
+        super(message);
+    }
+
+    public DataWriterException(@NonNull final Throwable cause) {
         super(cause);
     }
 
-    public InvalidArchiveException(@NonNull final String message) {
-        super(message);
+    public DataWriterException(@NonNull final String message,
+                               @NonNull final Throwable cause) {
+        super(message, cause);
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
         //TODO: look at cause and give more details
-        return context.getString(R.string.error_import_file_not_supported);
+        return context.getString(R.string.error_export_failed);
     }
 }

@@ -32,12 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -111,20 +111,21 @@ public abstract class BaseRecordReader
                 }
                 case OnlyNewer: {
                     final LocalDateTime localDate = mBookDao.getLastUpdateDate(databaseBookId);
-                    final LocalDateTime importDate = mDateParser.parse(
-                            book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                    if (localDate != null) {
+                        final LocalDateTime importDate = mDateParser.parse(
+                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
 
-                    if (localDate != null && importDate != null
-                        && importDate.isAfter(localDate)) {
+                        if (importDate != null && importDate.isAfter(localDate)) {
 
-                        mBookDao.update(context, book,
-                                        BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                        | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                        mResults.booksUpdated++;
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                            Log.d(TAG, "UUID=" + uuid
-                                       + "|databaseBookId=" + databaseBookId
-                                       + "|OnlyNewer|" + book.getTitle());
+                            mBookDao.update(context, book,
+                                            BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            mResults.booksUpdated++;
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                                Log.d(TAG, "UUID=" + uuid
+                                           + "|databaseBookId=" + databaseBookId
+                                           + "|OnlyNewer|" + book.getTitle());
+                            }
                         }
                     }
                     break;

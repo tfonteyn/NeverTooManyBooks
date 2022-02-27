@@ -36,10 +36,10 @@ import java.util.zip.ZipInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 
 /**
  * Implementation of ZIP-specific reader functions.
@@ -66,40 +66,40 @@ public class ZipArchiveReader
     }
 
     @Override
-    @Nullable
     @WorkerThread
-    public ArchiveReaderRecord seek(@NonNull final RecordType type)
-            throws InvalidArchiveException, IOException {
+    @NonNull
+    public Optional<ArchiveReaderRecord> seek(@NonNull final RecordType type)
+            throws DataReaderException, IOException {
         try {
             ZipEntry entry;
             while (true) {
                 entry = getInputStream().getNextEntry();
                 if (entry == null) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 final Optional<RecordType> detectedType = RecordType.getType(entry.getName());
                 if (detectedType.isPresent() && type == detectedType.get()) {
-                    return new ZipArchiveRecord(this, entry);
+                    return Optional.of(new ZipArchiveRecord(this, entry));
                 }
             }
         } catch (@NonNull final ZipException e) {
-            throw new InvalidArchiveException(e);
+            throw new DataReaderException(e);
         }
     }
 
     @Override
-    @Nullable
     @WorkerThread
-    public ArchiveReaderRecord next()
+    @NonNull
+    public Optional<ArchiveReaderRecord> next()
             throws IOException {
 
         final ZipEntry entry = getInputStream().getNextEntry();
         if (entry == null) {
-            return null;
+            return Optional.empty();
         }
 
-        return new ZipArchiveRecord(this, entry);
+        return Optional.of(new ZipArchiveRecord(this, entry));
     }
 
     /**
@@ -173,11 +173,12 @@ public class ZipArchiveReader
         @Override
         public long getLastModifiedEpochMilli() {
             final long time = mEntry.getTime();
-            if (time != -1) {
-                return time;
-            } else {
-                // just pretend
+            if (time == -1) {
+                // it's unlikely there won't be a 'time',
+                // but if its missing use 'now' ... i.e. pretend the incoming data is newer
                 return Instant.now().toEpochMilli();
+            } else {
+                return time;
             }
         }
 

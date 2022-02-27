@@ -21,41 +21,21 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
-import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReaderTask;
-import com.hardbacknutter.nevertoomanybooks.backup.common.MetaDataReaderTask;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderViewModel;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 public class SyncReaderViewModel
-        extends ViewModel {
-
-    private final MetaDataReaderTask<SyncReaderMetaData, ReaderResults> mMetaDataTask =
-            new MetaDataReaderTask<>();
-    private final DataReaderTask<SyncReaderMetaData, ReaderResults> mReaderTask =
-            new DataReaderTask<>();
+        extends DataReaderViewModel<SyncReaderMetaData, ReaderResults> {
 
     @Nullable
     private SyncReaderHelper mHelper;
-
-    @Override
-    protected void onCleared() {
-        mMetaDataTask.cancel();
-        mReaderTask.cancel();
-        super.onCleared();
-    }
 
     /**
      * Pseudo constructor.
@@ -73,48 +53,13 @@ public class SyncReaderViewModel
         return Objects.requireNonNull(mHelper, "mHelper");
     }
 
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Optional<SyncReaderMetaData>>>> onMetaDataRead() {
-        return mMetaDataTask.onFinished();
-    }
-
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Exception>>> onMetaDataFailure() {
-        return mMetaDataTask.onFailure();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mReaderTask.onProgress();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<ReaderResults>>> onImportCancelled() {
-        return mReaderTask.onCancelled();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onImportFailure() {
-        return mReaderTask.onFailure();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<ReaderResults>>> onImportFinished() {
-        return mReaderTask.onFinished();
-    }
-
-    public void readMetaData() {
+    public void startReadingMetaData() {
         Objects.requireNonNull(mHelper, "mHelper");
-
-        mMetaDataTask.start(mHelper);
+        startReadingMetaData(mHelper);
     }
 
-    /**
-     * Check if we have sufficient data to start an import.
-     *
-     * @return {@code true} if the "Go" button should be made available
-     */
-    boolean isReadyToGo() {
+    @Override
+    public boolean isReadyToGo() {
         Objects.requireNonNull(mHelper, "mHelper");
 
         switch (mHelper.getSyncServer()) {
@@ -132,16 +77,8 @@ public class SyncReaderViewModel
         }
     }
 
-    void startImport() {
+    void startReadingData() {
         Objects.requireNonNull(mHelper, "mHelper");
-        mReaderTask.start(mHelper);
-    }
-
-    void cancelTask(@IdRes final int taskId) {
-        if (taskId == mReaderTask.getTaskId()) {
-            mReaderTask.cancel();
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
+        startReadingData(mHelper);
     }
 }

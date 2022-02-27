@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -46,37 +45,39 @@ public interface RecordWriter
      * @param writer   Writer to write to
      * @param metaData the bundle of information to write
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on other failures
      */
     @WorkerThread
     default void writeMetaData(@NonNull final Writer writer,
                                @NonNull final ArchiveMetaData metaData)
-            throws ExportException, IOException {
+            throws DataWriterException,
+                   IOException {
         // do nothing
     }
 
     /**
-     * Write a set of {@link RecordType} records.
+     * Write a Set of {@link RecordType} records.
      * Unsupported record types should/will be silently skipped.
      *
      * @param context          Current context
      * @param writer           Writer to write to
-     * @param entries          The set of entries which should be written.
+     * @param recordTypes      The set of records which should be written.
      * @param progressListener Progress and cancellation interface
      *
-     * @return {@link ExportResults}
+     * @return results summary
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     @WorkerThread
     @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull Writer writer,
-                        @NonNull Set<RecordType> entries,
+                        @NonNull Set<RecordType> recordTypes,
                         @NonNull ProgressListener progressListener)
-            throws ExportException, IOException;
+            throws DataWriterException,
+                   IOException;
 
 
     /**

@@ -42,15 +42,15 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -113,29 +113,31 @@ public abstract class ArchiveWriterAbstract
      * Do a full backup.
      *
      * @param context          Current context
-     * @param progressListener to send progress updates to
+     * @param progressListener Progress and cancellation interface
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @return results summary
+     *
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     @NonNull
     @Override
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException,
+            throws DataWriterException,
                    IOException,
                    StorageException {
 
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
 
-        final Set<RecordType> exportEntities = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
 
         // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-        if (exportEntities.contains(RecordType.Books)) {
-            exportEntities.add(RecordType.Bookshelves);
-            exportEntities.add(RecordType.CalibreLibraries);
+        if (recordTypes.contains(RecordType.Books)) {
+            recordTypes.add(RecordType.Bookshelves);
+            recordTypes.add(RecordType.CalibreLibraries);
         }
 
         final LocalDateTime dateSince = mHelper.getLastDone();
@@ -148,7 +150,7 @@ public abstract class ArchiveWriterAbstract
             }
 
             final boolean writeCovers = this instanceof SupportsCovers
-                                        && exportEntities.contains(RecordType.Cover);
+                                        && recordTypes.contains(RecordType.Cover);
             if (writeCovers) {
                 // assume 1 book == 1 cover
                 steps = 2 * steps;
@@ -158,7 +160,7 @@ public abstract class ArchiveWriterAbstract
 
             // Prepare data/files we need information of BEFORE we can write the archive header
             final File tmpBooksFile;
-            if (!progressListener.isCancelled() && exportEntities.contains(RecordType.Books)) {
+            if (!progressListener.isCancelled() && recordTypes.contains(RecordType.Books)) {
                 tmpBooksFile = prepareBooks(context, dateSince, progressListener);
             } else {
                 tmpBooksFile = null;
@@ -182,7 +184,7 @@ public abstract class ArchiveWriterAbstract
                                                       RecordType.Bookshelves,
                                                       RecordType.CalibreLibraries);
             for (final RecordType type : typeList) {
-                if (!progressListener.isCancelled() && exportEntities.contains(type)) {
+                if (!progressListener.isCancelled() && recordTypes.contains(type)) {
                     mResults.add(writeRecord(context, type, progressListener));
                 }
             }
@@ -225,17 +227,17 @@ public abstract class ArchiveWriterAbstract
      * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover} as needed.
      *
      * @param context          Current context
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
      * @return the temporary books file
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
                               @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
@@ -267,12 +269,12 @@ public abstract class ArchiveWriterAbstract
      * @param context current context
      * @param data    to add to the header bundle
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.MetaData);
 
@@ -301,18 +303,18 @@ public abstract class ArchiveWriterAbstract
      *
      * @param context          Current context
      * @param recordType       of record
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
-     * @return a new {@link ExportResults} object
+     * @return results summary
      *
-     * @throws ExportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataWriterException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     @NonNull
     private ExportResults writeRecord(@NonNull final Context context,
                                       @NonNull final RecordType recordType,
                                       @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final RecordEncoding encoding = getEncoding(recordType);
 
@@ -340,7 +342,7 @@ public abstract class ArchiveWriterAbstract
      * to the archive.
      *
      * @param context          Current context
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
      * @throws CoverStorageException The covers directory is not available
      * @throws IOException           on failure
@@ -416,7 +418,7 @@ public abstract class ArchiveWriterAbstract
          * Write the covers.
          *
          * @param context          Current context
-         * @param progressListener Listener to receive progress information.
+         * @param progressListener Progress and cancellation interface
          *
          * @throws IOException on failure
          */

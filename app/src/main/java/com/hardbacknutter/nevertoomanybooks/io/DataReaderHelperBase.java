@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -27,14 +27,12 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.net.ssl.SSLException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -49,11 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * @param <METADATA> the result object from a {@link #readMetaData(Context)}
  * @param <RESULTS>  the result object from a {@link #read(Context, ProgressListener)}
  */
-public abstract class ImporterBase<METADATA, RESULTS> {
+public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
     /** <strong>What</strong> is going to be imported. */
     @NonNull
-    private final Set<RecordType> mRecordTypes;
+    private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
 
     @Nullable
     private METADATA mMetaData;
@@ -65,12 +63,12 @@ public abstract class ImporterBase<METADATA, RESULTS> {
     @NonNull
     private DataReader.Updates mUpdateOption = DataReader.Updates.Skip;
 
-    public ImporterBase(@NonNull final Set<RecordType> defaultRecordTypes) {
-        mRecordTypes = defaultRecordTypes;
+    public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
+        mRecordTypes.addAll(recordTypes);
     }
 
-    public void addRecordType(@NonNull final RecordType... recordTypes) {
-        mRecordTypes.addAll(Arrays.asList(recordTypes));
+    public void addRecordType(@NonNull final RecordType recordType) {
+        mRecordTypes.add(recordType);
     }
 
     public void setRecordType(final boolean add,
@@ -84,6 +82,8 @@ public abstract class ImporterBase<METADATA, RESULTS> {
 
     @NonNull
     public Set<RecordType> getRecordTypes() {
+        // sanity check
+        mRecordTypes.remove(RecordType.MetaData);
         // Return a copy!
         return EnumSet.copyOf(mRecordTypes);
     }
@@ -120,15 +120,15 @@ public abstract class ImporterBase<METADATA, RESULTS> {
      *
      * @return reader
      *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws IOException             on other failures
+     * @throws DataReaderException on failure to produce a supported reader
+     * @throws IOException         on other failures
      */
+    @NonNull
     protected abstract DataReader<METADATA, RESULTS> createReader(@NonNull Context context)
-            throws ImportException,
+            throws DataReaderException,
                    CertificateException,
                    CoverStorageException,
-                   IOException,
-                   InvalidArchiveException;
+                   IOException;
 
     /**
      * Read the {@link METADATA} object from the backup.
@@ -137,18 +137,16 @@ public abstract class ImporterBase<METADATA, RESULTS> {
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws ImportException         on a decoding/parsing of data issue
+     * @throws DataReaderException         on a decoding/parsing of data issue
      * @throws IOException             on other failures
      * @throws SSLException            on secure connection failures
      */
     @NonNull
     public Optional<METADATA> readMetaData(@NonNull final Context context)
-            throws ImportException,
-                   IOException,
+            throws DataReaderException,
                    CertificateException,
                    StorageException,
-                   InvalidArchiveException {
+                   IOException {
 
         try (DataReader<METADATA, RESULTS> reader = createReader(context)) {
             final Optional<METADATA> metaData = reader.readMetaData(context);
@@ -162,8 +160,7 @@ public abstract class ImporterBase<METADATA, RESULTS> {
      *
      * @param context Current context
      *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws ImportException         on a decoding/parsing of data issue
+     * @throws DataReaderException         on a decoding/parsing of data issue
      * @throws IOException             on other failures
      * @throws SSLException            on secure connection failures
      */
@@ -171,8 +168,7 @@ public abstract class ImporterBase<METADATA, RESULTS> {
     @WorkerThread
     public RESULTS read(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws ImportException,
-                   InvalidArchiveException,
+            throws DataReaderException,
                    IOException,
                    StorageException,
                    CredentialsException, CertificateException {
@@ -187,7 +183,7 @@ public abstract class ImporterBase<METADATA, RESULTS> {
     @Override
     @NonNull
     public String toString() {
-        return "ImporterBase{"
+        return "DataReaderHelperBase{"
                + "mRecordTypes=" + mRecordTypes
                + ", mUpdateOption=" + mUpdateOption
                + ", mMetaData=" + mMetaData

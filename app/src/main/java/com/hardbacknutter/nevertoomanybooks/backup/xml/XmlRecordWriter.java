@@ -39,9 +39,6 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -54,6 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreVirtualLibrary;
@@ -130,13 +130,13 @@ public class XmlRecordWriter
     @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<RecordType> entries,
+                               @NonNull final Set<RecordType> recordTypes,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
         final ExportResults results = new ExportResults();
 
-        if (entries.contains(RecordType.Books)) {
+        if (recordTypes.contains(RecordType.Books)) {
 
             // parsing will be faster if these go in the order done here.
             progressListener.publishProgress(
@@ -165,7 +165,7 @@ public class XmlRecordWriter
 
             progressListener.publishProgress(1, context.getString(R.string.lbl_books));
             results.add(writeBooks(context, writer, mUtcSinceDateTime,
-                                   entries.contains(RecordType.Cover),
+                                   recordTypes.contains(RecordType.Cover),
                                    progressListener));
         }
 
@@ -397,6 +397,8 @@ public class XmlRecordWriter
      * @param context          Current context
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
+     *
+     * @return results summary
      *
      * @throws IOException on failure
      */

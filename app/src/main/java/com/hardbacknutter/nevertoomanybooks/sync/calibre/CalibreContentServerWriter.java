@@ -38,9 +38,6 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
@@ -50,6 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
@@ -84,7 +84,7 @@ public class CalibreContentServerWriter
     private final CalibreContentServer mServer;
     /** Export configuration. */
     @NonNull
-    private final SyncWriterHelper mConfig;
+    private final SyncWriterHelper mHelper;
     private final boolean mDoCovers;
     private final boolean mDeleteLocalBook;
 
@@ -97,19 +97,19 @@ public class CalibreContentServerWriter
      * Constructor.
      *
      * @param context Current context
-     * @param config  export configuration
+     * @param helper  export configuration
      *
      * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
-                                      @NonNull final SyncWriterHelper config)
+                                      @NonNull final SyncWriterHelper helper)
             throws CertificateException, SSLException {
 
-        mConfig = config;
+        mHelper = helper;
         mServer = new CalibreContentServer(context);
-        mDoCovers = mConfig.getRecordTypes().contains(RecordType.Cover);
-        mDeleteLocalBook = mConfig.isDeleteLocalBooks();
+        mDoCovers = mHelper.getRecordTypes().contains(RecordType.Cover);
+        mDeleteLocalBook = mHelper.isDeleteLocalBooks();
 
         mDateParser = new ISODateParser();
     }
@@ -118,7 +118,7 @@ public class CalibreContentServerWriter
     @Override
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         mResults = new SyncWriterResults();
 
@@ -135,7 +135,7 @@ public class CalibreContentServerWriter
             for (final CalibreLibrary library : mServer.getLibraries()) {
 
                 final LocalDateTime dateSince;
-                if (mConfig.isIncremental()) {
+                if (mHelper.isIncremental()) {
                     dateSince = library.getLastSyncDate();
                 } else {
                     dateSince = null;
@@ -150,7 +150,7 @@ public class CalibreContentServerWriter
                 libraryDao.update(library);
             }
         } catch (@NonNull final JSONException e) {
-            throw new ExportException(e);
+            throw new DataWriterException(e);
         }
         return mResults;
     }

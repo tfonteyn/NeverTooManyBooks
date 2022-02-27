@@ -29,10 +29,10 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.WriterResults;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.io.WriterResults;
 
 /**
  * Value class to report back what was exported.

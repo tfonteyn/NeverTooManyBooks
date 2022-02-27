@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
@@ -116,7 +117,6 @@ public enum RecordEncoding {
                 return new CsvRecordWriter(utcSinceDateTime);
             case Xml:
                 return new XmlRecordWriter(utcSinceDateTime);
-
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
             default:
@@ -128,7 +128,7 @@ public enum RecordEncoding {
     @NonNull
     public RecordReader createReader(@NonNull final Context context,
                                      @NonNull final Set<RecordType> importEntriesAllowed)
-            throws InvalidArchiveException {
+            throws DataReaderException {
         switch (this) {
             case Json:
                 return new JsonRecordReader(context, importEntriesAllowed);
@@ -144,6 +144,6 @@ public enum RecordEncoding {
             default:
                 break;
         }
-        throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
+        throw new DataReaderException(context.getString(R.string.error_file_not_recognized));
     }
 }

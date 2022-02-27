@@ -123,7 +123,6 @@ public final class XmlUtils {
      * @return the tag, or an empty string if the value was empty.
      */
     @NonNull
-
     static String tagWithCData(@NonNull final String tag,
                                @Nullable final String name,
                                @NonNull final String value) {

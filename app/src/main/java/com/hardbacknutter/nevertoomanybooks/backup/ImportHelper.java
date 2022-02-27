@@ -29,17 +29,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ImporterBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
 public final class ImportHelper
-        extends ImporterBase<ArchiveMetaData, ImportResults> {
+        extends DataReaderHelperBase<ArchiveMetaData, ImportResults> {
 
     /** <strong>Where</strong> we read from. */
     @NonNull
@@ -57,19 +58,20 @@ public final class ImportHelper
      * @param context Current context
      * @param uri     to read from
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws DataReaderException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public ImportHelper(@NonNull final Context context,
                         @NonNull final Uri uri)
-            throws FileNotFoundException, InvalidArchiveException {
-        super(EnumSet.of(RecordType.MetaData));
+            throws FileNotFoundException, DataReaderException {
 
         mUri = uri;
         mUriInfo = new UriInfo(mUri);
         mEncoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
-                () -> new InvalidArchiveException(uri.toString()));
+                () -> new DataReaderException(context.getString(
+                        R.string.error_import_file_not_supported)));
 
+        // set the defaults according to the encoding
         switch (mEncoding) {
             case Csv:
                 addRecordType(RecordType.Books);
@@ -78,11 +80,11 @@ public final class ImportHelper
 
             case Zip:
             case Tar:
-                addRecordType(RecordType.Styles,
-                              RecordType.Preferences,
-                              RecordType.Certificates,
-                              RecordType.Books,
-                              RecordType.Cover);
+                addRecordType(EnumSet.of(RecordType.Styles,
+                                         RecordType.Preferences,
+                                         RecordType.Certificates,
+                                         RecordType.Books,
+                                         RecordType.Cover));
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
@@ -92,10 +94,10 @@ public final class ImportHelper
                 break;
 
             case Json:
-                addRecordType(RecordType.Styles,
-                              RecordType.Preferences,
-                              RecordType.Certificates,
-                              RecordType.Books);
+                addRecordType(EnumSet.of(RecordType.Styles,
+                                         RecordType.Preferences,
+                                         RecordType.Certificates,
+                                         RecordType.Books));
                 setUpdateOption(DataReader.Updates.OnlyNewer);
                 break;
 
@@ -137,7 +139,8 @@ public final class ImportHelper
     @NonNull
     protected DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context)
-            throws InvalidArchiveException, IOException, CoverStorageException, ImportException {
+            throws IOException, CoverStorageException,
+                   DataReaderException {
         return mEncoding.createReader(context, this);
     }
 

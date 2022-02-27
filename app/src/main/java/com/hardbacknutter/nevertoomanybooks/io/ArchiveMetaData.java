@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 import android.os.Build;
@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -54,8 +55,6 @@ public class ArchiveMetaData
     private static final String INFO_SDK = "SDK";
     /** Stores the database version. */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
-
-    private static final String ERROR_MISSING_VERSION_INFORMATION = "Missing version information";
 
     /**
      * Constructor used while reading from an Archive.
@@ -162,13 +161,14 @@ public class ArchiveMetaData
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws DataReaderException on failure to recognise a supported archive
      */
-    public void validate()
-            throws InvalidArchiveException {
+    public void validate(@NonNull final Context context)
+            throws DataReaderException {
         // extremely simple check: the archiver version field must be present
         if (!getData().containsKey(INFO_ARCHIVER_VERSION)) {
-            throw new InvalidArchiveException(ERROR_MISSING_VERSION_INFORMATION);
+            throw new DataReaderException(context.getString(
+                    R.string.error_file_not_recognized));
         }
     }
 }

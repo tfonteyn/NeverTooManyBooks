@@ -22,32 +22,27 @@ package com.hardbacknutter.nevertoomanybooks.sync;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriterTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 
 public class SyncWriterViewModel
-        extends ViewModel {
+        extends DataWriterViewModel<SyncWriterResults> {
 
-    private final DataWriterTask<SyncWriterResults> mWriterTask = new DataWriterTask<>();
     private SyncWriterHelper mHelper;
 
     /** UI helper. */
     private boolean mQuickOptionsAlreadyShown;
 
-    @Override
-    protected void onCleared() {
-        mWriterTask.cancel();
-        super.onCleared();
+    boolean isQuickOptionsAlreadyShown() {
+        return mQuickOptionsAlreadyShown;
+    }
+
+    void setQuickOptionsAlreadyShown() {
+        mQuickOptionsAlreadyShown = true;
     }
 
     /**
@@ -69,50 +64,15 @@ public class SyncWriterViewModel
         return mHelper;
     }
 
-    boolean isQuickOptionsAlreadyShown() {
-        return mQuickOptionsAlreadyShown;
-    }
-
-    void setQuickOptionsAlreadyShown(
-            @SuppressWarnings("SameParameterValue") final boolean quickOptionsAlreadyShown) {
-        mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskProgress>> onProgress() {
-        return mWriterTask.onProgress();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<SyncWriterResults>>> onExportCancelled() {
-        return mWriterTask.onCancelled();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<Exception>>> onExportFailure() {
-        return mWriterTask.onFailure();
-    }
-
-    @NonNull
-    LiveData<LiveDataEvent<TaskResult<SyncWriterResults>>> onExportFinished() {
-        return mWriterTask.onFinished();
-    }
-
-    boolean isExportRunning() {
-        return mWriterTask.isRunning();
+    @Override
+    public boolean isReadyToGo() {
+        // slightly bogus test... right now Prefs/Styles are always included,
+        // but we're keeping all variations of DataReader/DataWriter classes the same
+        return mHelper.getRecordTypes().size() > 1;
     }
 
     void startExport() {
         Objects.requireNonNull(mHelper, "mHelper");
-        mWriterTask.start(mHelper);
+        startWritingData(mHelper);
     }
-
-    void cancelTask(@IdRes final int taskId) {
-        if (taskId == mWriterTask.getTaskId()) {
-            mWriterTask.cancel();
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
-    }
-
 }

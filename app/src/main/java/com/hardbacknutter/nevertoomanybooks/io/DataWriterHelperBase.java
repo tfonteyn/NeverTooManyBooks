@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 
@@ -26,19 +26,24 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-public abstract class ExporterBase<RESULTS> {
+/**
+ * For better or worse... this class and it's children implementations
+ * are passed around a lot, and hence thighly coupled.
+ * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
+ *
+ * @param <RESULTS> the result object from a {@link #write(Context, ProgressListener)}
+ */
+public abstract class DataWriterHelperBase<RESULTS> {
 
-    /** <strong>What</strong> is going to be imported. */
+    /** <strong>What</strong> is going to be exported. */
     @NonNull
-    private final Set<RecordType> mRecordTypes;
+    private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
 
     /**
      * Do an incremental export. Definition of incremental depends on the writer.
@@ -49,16 +54,12 @@ public abstract class ExporterBase<RESULTS> {
      */
     private boolean mIncremental;
 
-    public ExporterBase(@NonNull final Set<RecordType> defaultRecordTypes) {
-        mRecordTypes = defaultRecordTypes;
+    public void addRecordType(@NonNull final Set<RecordType> recordTypes) {
+        mRecordTypes.addAll(recordTypes);
     }
 
-    public void addRecordType(@NonNull final RecordType... recordTypes) {
-        mRecordTypes.addAll(Arrays.asList(recordTypes));
-    }
-
-    public void removeRecordType(@NonNull final RecordType... recordTypes) {
-        Arrays.stream(recordTypes).forEach(mRecordTypes::remove);
+    public void removeRecordType(@NonNull final Set<RecordType> recordTypes) {
+        mRecordTypes.removeAll(recordTypes);
     }
 
     public void setRecordType(final boolean add,
@@ -72,6 +73,8 @@ public abstract class ExporterBase<RESULTS> {
 
     @NonNull
     public Set<RecordType> getRecordTypes() {
+        // sanity check
+        mRecordTypes.remove(RecordType.MetaData);
         // Return a copy!
         return EnumSet.copyOf(mRecordTypes);
     }
@@ -84,19 +87,19 @@ public abstract class ExporterBase<RESULTS> {
         mIncremental = incremental;
     }
 
-    @NonNull
     @WorkerThread
+    @NonNull
     public abstract RESULTS write(@NonNull Context context,
                                   @NonNull ProgressListener progressListener)
-            throws ExportException,
-                   IOException,
+            throws DataWriterException,
                    StorageException,
+                   IOException,
                    CertificateException;
 
     @Override
     @NonNull
     public String toString() {
-        return "ExporterBase{"
+        return "DataWriterHelperBase{"
                + "mRecordTypes=" + mRecordTypes
                + ", mIncremental=" + mIncremental
                + '}';

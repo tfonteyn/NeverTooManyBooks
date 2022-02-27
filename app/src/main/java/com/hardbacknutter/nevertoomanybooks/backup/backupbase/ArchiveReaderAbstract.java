@@ -38,23 +38,21 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * This is the base for full-fledged archives which can contain
- * all {@link RecordType}.
+ * This is the base for full-fledged archives which can contain all {@link RecordType}.
  * <p>
  * It's encoding-agnostic with the exception of {@link RecordEncoding#Cover}.
  * <p>
@@ -99,8 +97,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public abstract class ArchiveReaderAbstract
         implements DataReader<ArchiveMetaData, ImportResults> {
 
-    private static final String ERROR_INVALID_HEADER = "Header is invalid / not found";
-
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
@@ -140,14 +136,14 @@ public abstract class ArchiveReaderAbstract
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException {
+            throws DataReaderException, IOException {
         if (mMetaData == null) {
             // reading it will either assign a value to mMetaData, or throw exceptions
             readMetaData(context);
         }
 
         // the info block will/can do more checks.
-        mMetaData.validate();
+        mMetaData.validate(context);
     }
 
     @NonNull
@@ -164,19 +160,18 @@ public abstract class ArchiveReaderAbstract
     @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, ImportException, IOException {
+            throws DataReaderException, IOException {
 
         if (mMetaData == null) {
-            final ArchiveReaderRecord record = seek(RecordType.MetaData);
-            if (record == null) {
-                throw new InvalidArchiveException(ERROR_INVALID_HEADER);
-            }
+            final ArchiveReaderRecord record = seek(RecordType.MetaData)
+                    .orElseThrow(() -> new DataReaderException(
+                            context.getString(R.string.error_file_not_recognized)));
 
             final Optional<RecordEncoding> encoding = record.getEncoding();
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
                         .get().createReader(context, EnumSet.of(RecordType.MetaData))) {
-                    mMetaData = recordReader.readMetaData(record).orElse(null);
+                    mMetaData = recordReader.readMetaData(context, record).orElse(null);
                 }
             }
 
@@ -185,7 +180,8 @@ public abstract class ArchiveReaderAbstract
 
             // An archive based on this class <strong>must</strong> have an info block.
             if (mMetaData == null) {
-                throw new InvalidArchiveException(ERROR_INVALID_HEADER);
+                throw new DataReaderException(context.getString(
+                        R.string.error_file_not_recognized));
             }
         }
 
@@ -202,21 +198,19 @@ public abstract class ArchiveReaderAbstract
      * </ol>
      *
      * @param context          Current context
-     * @param progressListener Listener to receive progress information.
+     * @param progressListener Progress and cancellation interface
      *
-     * @return results
+     * @return results summary
      *
-     * @throws IOException             on failure
-     * @throws ImportException         on record format failures
-     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException         on failure
+     * @throws DataReaderException on record format failures
      */
     @NonNull
     @Override
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException {
+            throws DataReaderException, IOException, StorageException {
 
         // Sanity check: the archive info should have been read during the validate phase
         // This is also a check that the validate method has been called.
@@ -232,10 +226,9 @@ public abstract class ArchiveReaderAbstract
                 break;
 
             case 1:
-                throw new InvalidArchiveException("v1 no longer supported");
-
             default:
-                throw new InvalidArchiveException("version=" + archiveVersion);
+                throw new DataReaderException(context.getString(
+                        R.string.error_unsupported_version_v, archiveVersion));
         }
 
         return mResults;
@@ -244,23 +237,22 @@ public abstract class ArchiveReaderAbstract
     private void readV2(@NonNull final Context context,
                         @NonNull final ArchiveMetaData metaData,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException {
+            throws DataReaderException, IOException, StorageException {
 
-        final Set<RecordType> importEntries = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
 
         try {
-            final boolean readCertificates = importEntries.contains(RecordType.Certificates);
+            final boolean readCertificates = recordTypes.contains(RecordType.Certificates);
 
-            final boolean readCovers = importEntries.contains(RecordType.Cover);
+            final boolean readCovers = recordTypes.contains(RecordType.Cover);
             if (readCovers) {
                 mCoverReader = new CoverRecordReader();
             }
 
-            final boolean readBooks = importEntries.contains(RecordType.Books);
+            final boolean readBooks = recordTypes.contains(RecordType.Books);
             if (readBooks) {
-                importEntries.add(RecordType.Bookshelves);
-                importEntries.add((RecordType.CalibreLibraries));
+                recordTypes.add(RecordType.Bookshelves);
+                recordTypes.add((RecordType.CalibreLibraries));
             }
 
             int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
@@ -277,32 +269,33 @@ public abstract class ArchiveReaderAbstract
 
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
-            if (importEntries.contains(RecordType.Styles)) {
+            if (recordTypes.contains(RecordType.Styles)) {
                 progressListener.publishProgress(
                         1, context.getString(R.string.lbl_styles_long));
-                final ArchiveReaderRecord record = seek(RecordType.Styles);
-                if (record != null) {
-                    readRecord(context, importEntries, record, progressListener);
+                final Optional<ArchiveReaderRecord> record = seek(RecordType.Styles);
+                if (record.isPresent()) {
+                    readRecord(context, recordTypes, record.get(), progressListener);
                 }
                 closeInputStream();
             }
 
             // Seek the preferences record next, so we can apply any prefs while reading data.
-            if (importEntries.contains(RecordType.Preferences)) {
+            if (recordTypes.contains(RecordType.Preferences)) {
                 progressListener.publishProgress(
                         1, context.getString(R.string.lbl_settings));
-                final ArchiveReaderRecord record = seek(RecordType.Preferences);
-                if (record != null) {
-                    readRecord(context, importEntries, record, progressListener);
+                final Optional<ArchiveReaderRecord> record = seek(RecordType.Preferences);
+                if (record.isPresent()) {
+                    readRecord(context, recordTypes, record.get(), progressListener);
                 }
                 closeInputStream();
             }
 
-            ArchiveReaderRecord record;
+            Optional<ArchiveReaderRecord> nextRecord;
             // process each entry based on type, unless we are cancelled.
-            while ((record = next()) != null
+            while ((nextRecord = next()).isPresent()
                    && !progressListener.isCancelled()) {
 
+                final ArchiveReaderRecord record = nextRecord.get();
                 if (record.getType().isPresent()) {
                     final RecordType type = record.getType().get();
 
@@ -312,7 +305,7 @@ public abstract class ArchiveReaderAbstract
                         || (type == RecordType.CalibreLibraries && readBooks)
                         || (type == RecordType.Books && readBooks)
                     ) {
-                        readRecord(context, importEntries, record, progressListener);
+                        readRecord(context, recordTypes, record, progressListener);
                     }
                 }
             }
@@ -329,8 +322,7 @@ public abstract class ArchiveReaderAbstract
                             @NonNull final Set<RecordType> importEntriesAllowed,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException,
-                   IOException, StorageException {
+            throws DataReaderException, IOException, StorageException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {
@@ -383,9 +375,9 @@ public abstract class ArchiveReaderAbstract
      *
      * @throws IOException on failure
      */
-    @Nullable
     @WorkerThread
-    protected abstract ArchiveReaderRecord next()
+    @NonNull
+    protected abstract Optional<ArchiveReaderRecord> next()
             throws IOException;
 
     /**
@@ -396,13 +388,13 @@ public abstract class ArchiveReaderAbstract
      *
      * @return the record if found, or {@code null} if not found.
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on failure
+     * @throws DataReaderException wraps a format specific Exception
+     * @throws IOException         on failure
      */
-    @Nullable
     @WorkerThread
-    protected abstract ArchiveReaderRecord seek(@NonNull RecordType type)
-            throws InvalidArchiveException, IOException;
+    @NonNull
+    protected abstract Optional<ArchiveReaderRecord> seek(@NonNull RecordType type)
+            throws DataReaderException, IOException;
 
     /**
      * Reset the reader so {@link #next()} will get the first record.

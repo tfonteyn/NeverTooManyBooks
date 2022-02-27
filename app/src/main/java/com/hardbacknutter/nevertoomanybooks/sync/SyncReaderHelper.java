@@ -30,27 +30,23 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ImporterBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 
 public final class SyncReaderHelper
-        extends ImporterBase<SyncReaderMetaData, ReaderResults> {
+        extends DataReaderHelperBase<SyncReaderMetaData, ReaderResults> {
 
     /** <strong>Where</strong> we read from. */
     @NonNull
     private final SyncServer mSyncServer;
-
+    /** Extra arguments for specific readers. The reader must define them. */
+    private final Bundle mExtraArgs = new Bundle();
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor mSyncProcessor;
-
-    /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle mExtraArgs = new Bundle();
-
     @Nullable
     private LocalDateTime mSyncDate;
 
@@ -58,11 +54,12 @@ public final class SyncReaderHelper
      * Constructor.
      */
     SyncReaderHelper(@NonNull final SyncServer syncServer) {
-        super(EnumSet.of(RecordType.MetaData,
-                         RecordType.Books,
-                         RecordType.Cover));
-
         mSyncServer = syncServer;
+
+        // set the defaults
+        addRecordType(EnumSet.of(RecordType.Books,
+                                 RecordType.Cover));
+
         setUpdateOption(mSyncServer.hasLastUpdateDateField()
                         ? DataReader.Updates.OnlyNewer
                         : DataReader.Updates.Skip);
@@ -112,7 +109,9 @@ public final class SyncReaderHelper
     @NonNull
     protected DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context)
-            throws ImportException, CertificateException, IOException, InvalidArchiveException {
+            throws DataReaderException,
+                   CertificateException,
+                   IOException {
         return mSyncServer.createReader(context, this);
     }
 

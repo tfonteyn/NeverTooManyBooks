@@ -48,6 +48,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,12 +56,12 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -101,8 +102,8 @@ public class ExportFragment
         // no init
     }
 
-    @Nullable
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -120,9 +121,9 @@ public class ExportFragment
         toolbar.setTitle(R.string.menu_backup_and_export);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        mVm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        mVm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        mVm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
                 .getExportHelper().setRecordType(isChecked, RecordType.Cover));
@@ -139,9 +140,7 @@ public class ExportFragment
 
         mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        // Check if the task is already running (e.g. after a screen rotation...)
-        // Note that after a screen rotation, the full-options screen will NOT be re-shown.
-        if (!mVm.isExportRunning()) {
+        if (!mVm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog
             if (mVm.isQuickOptionsAlreadyShown()) {
@@ -153,7 +152,7 @@ public class ExportFragment
     }
 
     private void showQuickOptions() {
-        mVm.setQuickOptionsAlreadyShown(true);
+        mVm.setQuickOptionsAlreadyShown();
 
         final ExportHelper helper = mVm.getExportHelper();
         // set the default; a backup to archive
@@ -216,9 +215,10 @@ public class ExportFragment
             case Zip: {
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.addRecordType(RecordType.Styles,
-                                     RecordType.Preferences,
-                                     RecordType.Certificates);
+                // Don't change Books/Covers, but add:
+                helper.addRecordType(EnumSet.of(RecordType.Styles,
+                                                RecordType.Preferences,
+                                                RecordType.Certificates));
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(true);
@@ -233,9 +233,9 @@ public class ExportFragment
             case Csv: {
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.removeRecordType(RecordType.Styles,
-                                        RecordType.Preferences,
-                                        RecordType.Certificates);
+                helper.removeRecordType(EnumSet.of(RecordType.Styles,
+                                                   RecordType.Preferences,
+                                                   RecordType.Certificates));
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -250,9 +250,9 @@ public class ExportFragment
             case Json: {
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.removeRecordType(RecordType.Styles,
-                                        RecordType.Preferences,
-                                        RecordType.Certificates);
+                helper.removeRecordType(EnumSet.of(RecordType.Styles,
+                                                   RecordType.Preferences,
+                                                   RecordType.Certificates));
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -268,9 +268,9 @@ public class ExportFragment
             case SqLiteDb: {
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
-                helper.removeRecordType(RecordType.Styles,
-                                        RecordType.Preferences,
-                                        RecordType.Certificates);
+                helper.removeRecordType(EnumSet.of(RecordType.Styles,
+                                                   RecordType.Preferences,
+                                                   RecordType.Certificates));
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -530,14 +530,19 @@ public class ExportFragment
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
             button.setText(menuItem.getTitle());
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+
+            onPrepareMenu(menu);
+        }
+
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ACTION_CONFIRM)
+                .setEnabled(mVm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (mVm.getExportHelper().getRecordTypes().size() > 1) {
-                    exportPickUri();
-                }
+                exportPickUri();
                 return true;
             }
             return false;

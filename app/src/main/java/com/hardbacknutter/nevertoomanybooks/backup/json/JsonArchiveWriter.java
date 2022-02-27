@@ -33,14 +33,14 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -80,7 +80,7 @@ public class JsonArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws ExportException, IOException {
+            throws DataWriterException, IOException {
 
         final LocalDateTime dateSince = mHelper.getLastDone();
 
@@ -92,11 +92,11 @@ public class JsonArchiveWriter
 
             final ExportResults results;
 
-            final Set<RecordType> exportEntities = mHelper.getRecordTypes();
+            final Set<RecordType> recordTypes = mHelper.getRecordTypes();
             // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-            if (exportEntities.contains(RecordType.Books)) {
-                exportEntities.add(RecordType.Bookshelves);
-                exportEntities.add(RecordType.CalibreLibraries);
+            if (recordTypes.contains(RecordType.Books)) {
+                recordTypes.add(RecordType.Bookshelves);
+                recordTypes.add(RecordType.CalibreLibraries);
             }
 
             try (OutputStream os = mHelper.createOutputStream(context);
@@ -114,7 +114,7 @@ public class JsonArchiveWriter
                 bw.write(",\"" + RecordType.AutoDetect.getName() + "\":");
 
                 // 3. the actual data inside the container
-                results = recordWriter.write(context, bw, exportEntities, progressListener);
+                results = recordWriter.write(context, bw, recordTypes, progressListener);
 
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");

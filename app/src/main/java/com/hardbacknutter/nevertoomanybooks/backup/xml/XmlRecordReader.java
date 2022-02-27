@@ -57,15 +57,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
@@ -77,6 +72,11 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -91,10 +91,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * on a Tar archive entry. This class uses a {@link BufferedReaderNoClose} to get around that.
  *
  * @deprecated the main backup to a zip file is moving towards storing all text data in JSON
- * We're keeping this XML reader for a while longer so we're able to read older backups;
- * i.e. {@link ArchiveWriterAbstract} version 2.
- * See {@link ArchiveReaderAbstract}
- * class docs for the version descriptions.
+ *         We're keeping this XML reader for a while longer so we're able to read older backups;
+ *         i.e. {@link ArchiveWriterAbstract} version 2.
+ *         See {@link ArchiveReaderAbstract}
+ *         class docs for the version descriptions.
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
@@ -131,8 +131,9 @@ public class XmlRecordReader
 
     @Override
     @NonNull
-    public Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws ImportException, IOException {
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
+                                                  @NonNull final ArchiveReaderRecord record)
+            throws DataReaderException, IOException {
         final Bundle bundle = new Bundle();
         fromXml(record, new InfoReader(bundle));
         if (bundle.isEmpty()) {
@@ -148,7 +149,7 @@ public class XmlRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper unused,
                               @NonNull final ProgressListener progressListener)
-            throws ImportException, IOException {
+            throws DataReaderException, IOException {
 
         final ImportResults results = new ImportResults();
 
@@ -179,12 +180,12 @@ public class XmlRecordReader
      * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
      *
-     * @throws ImportException on a decoding/parsing of data issue
-     * @throws IOException     on failure
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws IOException         on failure
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
-            throws ImportException, IOException {
+            throws DataReaderException, IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new XmlFilterHandler(buildFilters(accessor));
@@ -204,8 +205,8 @@ public class XmlRecordReader
             throw new IllegalStateException(e);
 
         } catch (@NonNull final SAXException e) {
-            // wrap parser exceptions in an ImportException /
-            throw new ImportException(e);
+            // wrap parser exceptions in an DataReaderException /
+            throw new DataReaderException(e);
         }
     }
 

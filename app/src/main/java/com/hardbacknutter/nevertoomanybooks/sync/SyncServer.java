@@ -35,18 +35,17 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 
 /**
  * Note on mHasLastUpdateDateField / mSyncDateUserEditable:
@@ -138,7 +137,7 @@ public enum SyncServer
      * Create an {@link DataWriter} based on the type.
      *
      * @param context Current context
-     * @param config  writer configuration
+     * @param helper  writer configuration
      *
      * @return a new writer
      *
@@ -147,22 +146,20 @@ public enum SyncServer
      */
     @NonNull
     public DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
-                                                      @NonNull final SyncWriterHelper config)
+                                                      @NonNull final SyncWriterHelper helper)
             throws CertificateException,
                    SSLException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (config.getRecordTypes().isEmpty()) {
-                throw new IllegalStateException("getExporterEntries().isEmpty()");
-            }
+            SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");
         }
 
         switch (this) {
             case CalibreCS:
-                return new CalibreContentServerWriter(context, config);
+                return new CalibreContentServerWriter(context, helper);
 
             case StripInfo:
-                return new StripInfoWriter(config);
+                return new StripInfoWriter(helper);
 
             default:
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
@@ -177,7 +174,7 @@ public enum SyncServer
      *
      * @return a new reader
      *
-     * @throws ImportException      on a decoding/parsing of data issue
+     * @throws DataReaderException  on a decoding/parsing of data issue
      * @throws CertificateException on failures related to a user installed CA.
      * @throws SSLException         on secure connection failures
      * @throws IOException          on other failures
@@ -187,9 +184,9 @@ public enum SyncServer
     public DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context,
             @NonNull final SyncReaderHelper helper)
-            throws ImportException,
+            throws DataReaderException,
                    CertificateException,
-                   IOException, InvalidArchiveException {
+                   IOException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");

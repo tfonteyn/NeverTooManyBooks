@@ -33,11 +33,11 @@ import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StripInfoDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.network.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;

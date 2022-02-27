@@ -50,9 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SyncContractBase;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSyncExportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -65,7 +65,7 @@ public class SyncWriterFragment
     /** Log tag. */
     public static final String TAG = "SyncWriterFragment";
     @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
     /** The ViewModel. */
     private SyncWriterViewModel mVm;
     /** View Binding. */
@@ -111,12 +111,17 @@ public class SyncWriterFragment
         toolbar.setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel());
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onExportCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mVm.onExportFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mVm.onExportFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        mVm.onWriteDataCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        mVm.onWriteDataFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        mVm.onWriteDataFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
-                .getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover));
+        mVb.cbxBooks.setChecked(true);
+        mVb.cbxBooks.setEnabled(true);
+
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            mVm.getSyncWriterHelper().setRecordType(isChecked, RecordType.Cover);
+            mToolbarMenuProvider.onPrepareMenu(getToolbar().getMenu());
+        });
 
         mVb.infExportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
@@ -127,9 +132,7 @@ public class SyncWriterFragment
         mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((v, isChecked) -> mVm
                 .getSyncWriterHelper().setDeleteLocalBooks(isChecked));
 
-        // Check if the task is already running (e.g. after a screen rotation...)
-        // Note that after a screen rotation, the full-options screen will NOT be re-shown.
-        if (!mVm.isExportRunning()) {
+        if (!mVm.isRunning()) {
             // The task is NOT yet running.
             // Show either the full-options screen or the quick-options dialog
             if (mVm.isQuickOptionsAlreadyShown()) {
@@ -141,7 +144,7 @@ public class SyncWriterFragment
     }
 
     private void showQuickOptions() {
-        mVm.setQuickOptionsAlreadyShown(true);
+        mVm.setQuickOptionsAlreadyShown();
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
@@ -167,8 +170,6 @@ public class SyncWriterFragment
         final SyncWriterHelper helper = mVm.getSyncWriterHelper();
 
         final Set<RecordType> recordTypes = helper.getRecordTypes();
-        mVb.cbxBooks.setChecked(true);
-        mVb.cbxBooks.setEnabled(true);
         mVb.cbxCovers.setChecked(recordTypes.contains(RecordType.Cover));
 
         final boolean incremental = helper.isIncremental();
@@ -310,14 +311,19 @@ public class SyncWriterFragment
             final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
             button.setText(menuItem.getTitle());
             button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+
+            onPrepareMenu(menu);
+        }
+
+        public void onPrepareMenu(@NonNull final Menu menu) {
+            menu.findItem(R.id.MENU_ACTION_CONFIRM)
+                .setEnabled(mVm.isReadyToGo());
         }
 
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                if (mVm.getSyncWriterHelper().getRecordTypes().size() > 1) {
-                    mVm.startExport();
-                }
+                mVm.startExport();
                 return true;
             }
             return false;

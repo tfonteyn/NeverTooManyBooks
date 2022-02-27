@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.common;
+package com.hardbacknutter.nevertoomanybooks.io;
 
 import android.content.Context;
 import android.net.Uri;
@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
@@ -61,12 +60,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  * Archive encoding (formats) (partially) supported.
  * <p>
  * This is the top level, i.e. the actual file we read/write.
- * Handled by {@link DataReader} and {@link DataWriter}.
  */
 public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
-    Zip(".zip", R.string.lbl_archive_type_backup_zip,
+    Zip(".zip",
+        R.string.lbl_archive_type_backup_zip,
         R.string.lbl_archive_type_backup_info),
 
     /** Books as a CSV file; full support for export/import. */
@@ -274,6 +273,7 @@ public enum ArchiveEncoding
      *
      * @return a new writer
      */
+    @WorkerThread
     @NonNull
     public DataWriter<ExportResults> createWriter(@NonNull final Context context,
                                                   @NonNull final ExportHelper helper)
@@ -298,7 +298,6 @@ public enum ArchiveEncoding
             case Tar:
                 // writing to tar is no longer supported
             default:
-                // reminder:do NOT use a InvalidArchiveException which is for readers only.
                 throw new IllegalStateException(DataWriter.ERROR_NO_WRITER_AVAILABLE);
         }
     }
@@ -311,18 +310,16 @@ public enum ArchiveEncoding
      *
      * @return a new reader
      *
-     * @throws InvalidArchiveException on failure to produce a supported reader
-     * @throws ImportException         on a decoding/parsing of data issue
-     * @throws SSLException            on secure connection failures
-     * @throws IOException             on other failures
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws SSLException        on secure connection failures
+     * @throws IOException         on other failures
      */
-    @NonNull
     @WorkerThread
+    @NonNull
     public DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context,
             @NonNull final ImportHelper helper)
-            throws InvalidArchiveException,
-                   ImportException,
+            throws DataReaderException,
                    IOException,
                    CoverStorageException {
 
@@ -351,7 +348,8 @@ public enum ArchiveEncoding
             case Xml:
                 // reading from xml is not supported
             default:
-                throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
+                throw new DataReaderException(context.getString(
+                        R.string.error_file_not_recognized));
         }
 
         reader.validate(context);

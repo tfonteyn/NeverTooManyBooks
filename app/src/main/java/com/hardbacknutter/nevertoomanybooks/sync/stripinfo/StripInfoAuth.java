@@ -176,7 +176,7 @@ public class StripInfoAuth {
      * @return the valid user id
      *
      * @throws CredentialsException on login failure
-     * @throws IOException          on any other failure
+     * @throws IOException          on other failures
      */
     @NonNull
     public String login()

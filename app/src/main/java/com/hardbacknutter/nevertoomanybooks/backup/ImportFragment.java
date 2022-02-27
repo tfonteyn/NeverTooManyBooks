@@ -59,13 +59,13 @@ import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -135,8 +135,8 @@ public class ImportFragment
         // no init
     }
 
-    @Nullable
     @Override
+    @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
@@ -157,13 +157,13 @@ public class ImportFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
         mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-        mVm.onImportCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mVm.onImportFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mVm.onImportFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        mVm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mVm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
 
         mVb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
@@ -198,13 +198,15 @@ public class ImportFragment
             }
         });
 
-        if (mVm.hasUri()) {
-            // if we already have a uri when called (from getArguments()),
-            // or e.g. after a screen rotation, just show the screen/options again
-            showOptions();
-        } else {
-            // start the import process by asking the user for a Uri
-            mOpenUriLauncher.launch(MIME_TYPES);
+        if (!mVm.isRunning()) {
+            if (mVm.hasUri()) {
+                // if we already have a uri when called (from getArguments()),
+                // or e.g. after a screen rotation, just show the screen/options again
+                showOptions();
+            } else {
+                // start the import process by asking the user for a Uri
+                mOpenUriLauncher.launch(MIME_TYPES);
+            }
         }
     }
 
@@ -226,11 +228,11 @@ public class ImportFragment
                 //noinspection ConstantConditions
                 helper = mVm.createImportHelper(getContext(), uri);
 
-            } catch (@NonNull final InvalidArchiveException e) {
-                onImportNotSupported(R.string.error_import_file_not_supported);
+            } catch (@NonNull final DataReaderException e) {
+                onImportNotSupported(e.getUserMessage(getContext()));
                 return;
             } catch (@NonNull final FileNotFoundException e) {
-                onImportNotSupported(R.string.error_file_not_recognized);
+                onImportNotSupported(getString(R.string.error_file_not_found));
                 return;
             }
 
@@ -258,7 +260,7 @@ public class ImportFragment
 
                 case Xml:
                 default:
-                    onImportNotSupported(R.string.error_import_file_not_supported);
+                    onImportNotSupported(getString(R.string.error_import_file_not_supported));
                     break;
             }
         }
@@ -322,7 +324,7 @@ public class ImportFragment
             }
             case Xml: {
                 // shouldn't even get here
-                onImportNotSupported(R.string.error_import_file_not_supported);
+                onImportNotSupported(getString(R.string.error_import_file_not_supported));
                 break;
             }
         }
@@ -369,11 +371,11 @@ public class ImportFragment
         }
     }
 
-    private void onImportNotSupported(@StringRes final int stringResId) {
+    private void onImportNotSupported(@NonNull final CharSequence msg) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_baseline_error_24)
-                .setMessage(stringResId)
+                .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                 .create()
                 .show();

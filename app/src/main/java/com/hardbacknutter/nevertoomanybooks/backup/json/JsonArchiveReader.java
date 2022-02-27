@@ -30,19 +30,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -56,6 +58,9 @@ public class JsonArchiveReader
     @NonNull
     private final ImportHelper mHelper;
 
+    @Nullable
+    private ArchiveMetaData mMetaData;
+
     /**
      * Constructor.
      *
@@ -65,12 +70,58 @@ public class JsonArchiveReader
         mHelper = helper;
     }
 
+    @WorkerThread
+    @Override
+    public void validate(@NonNull final Context context)
+            throws DataReaderException, IOException {
+        if (mMetaData == null) {
+            // reading it will either assign a value to mMetaData, or throw exceptions
+            readMetaData(context);
+        }
+
+        // the info block will/can do more checks.
+        mMetaData.validate(context);
+    }
+
+    @NonNull
+    @Override
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
+            throws IOException, DataReaderException {
+
+        if (mMetaData == null) {
+            @Nullable
+            final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
+            if (is == null) {
+                throw new FileNotFoundException(mHelper.getUri().toString());
+            }
+
+            //noinspection TryFinallyCanBeTryWithResources
+            try (RecordReader recordReader = new JsonRecordReader(
+                    context, EnumSet.of(RecordType.MetaData))) {
+                // wrap the entire input into a single record.
+                final ArchiveReaderRecord record = new JsonArchiveRecord(
+                        mHelper.getUriInfo().getDisplayName(context), is);
+
+                mMetaData = recordReader.readMetaData(context, record).orElse(null);
+            } finally {
+                is.close();
+            }
+
+            // An archive based on this class <strong>must</strong> have an info block.
+            if (mMetaData == null) {
+                throw new DataReaderException(context.getString(
+                        R.string.error_file_not_recognized));
+            }
+        }
+        return Optional.of(mMetaData);
+    }
+
     @NonNull
     @Override
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws ImportException, IOException, StorageException {
+            throws DataReaderException, IOException, StorageException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
@@ -78,14 +129,14 @@ public class JsonArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        final Set<RecordType> importEntries = mHelper.getRecordTypes();
+        final Set<RecordType> recordTypes = mHelper.getRecordTypes();
         // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-        if (importEntries.contains(RecordType.Books)) {
-            importEntries.add(RecordType.Bookshelves);
-            importEntries.add((RecordType.CalibreLibraries));
+        if (recordTypes.contains(RecordType.Books)) {
+            recordTypes.add(RecordType.Bookshelves);
+            recordTypes.add((RecordType.CalibreLibraries));
         }
 
-        try (RecordReader recordReader = new JsonRecordReader(context, importEntries)) {
+        try (RecordReader recordReader = new JsonRecordReader(context, recordTypes)) {
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
                     mHelper.getUriInfo().getDisplayName(context), is);

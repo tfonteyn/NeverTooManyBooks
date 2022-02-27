@@ -32,13 +32,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -100,7 +100,7 @@ public class DbArchiveReader
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, FileNotFoundException {
+            throws DataReaderException, FileNotFoundException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -114,14 +114,14 @@ public class DbArchiveReader
 //            return;
 //        }
 
-        throw new InvalidArchiveException(DataReader.ERROR_NO_READER_AVAILABLE);
+        throw new DataReaderException(context.getString(R.string.error_file_not_recognized));
     }
 
     @Override
     @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, ImportException,
+            throws IOException, DataReaderException,
                    StorageException {
         if (mDelegateDataReader != null) {
             return mDelegateDataReader.readMetaData(context);
@@ -136,12 +136,13 @@ public class DbArchiveReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, ImportException, IOException,
+            throws DataReaderException, IOException,
                    StorageException, CredentialsException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateDataReader == null) {
-            throw new InvalidArchiveException("File/type is not supported");
+            throw new DataReaderException(context.getString(
+                    R.string.error_file_not_recognized));
         }
 
         return mDelegateDataReader.read(context, progressListener);

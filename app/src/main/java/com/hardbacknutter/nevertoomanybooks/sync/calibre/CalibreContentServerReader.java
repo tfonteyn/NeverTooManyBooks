@@ -45,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
@@ -59,11 +56,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -245,12 +245,12 @@ public class CalibreContentServerReader
     @Override
     @WorkerThread
     public Optional<SyncReaderMetaData> readMetaData(@NonNull final Context context)
-            throws ImportException, IOException {
+            throws DataReaderException, IOException {
 
         try {
             initLibrary(context);
         } catch (@NonNull final JSONException e) {
-            throw new ImportException(e);
+            throw new DataReaderException(e);
         }
 
         final Bundle args = new Bundle();
@@ -270,7 +270,7 @@ public class CalibreContentServerReader
     @WorkerThread
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws DiskFullException, CoverStorageException, ImportException, IOException {
+            throws DiskFullException, CoverStorageException, DataReaderException, IOException {
 
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -372,7 +372,7 @@ public class CalibreContentServerReader
                      && !progressListener.isCancelled());
 
         } catch (@NonNull final JSONException e) {
-            throw new ImportException(e);
+            throw new DataReaderException(e);
         }
 
         // always set the sync date!

@@ -100,8 +100,8 @@ public class CalibreLibraryMappingFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVm.onMetaDataRead().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mVm.onMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
+        mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
         //noinspection ConstantConditions
         mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
@@ -133,13 +133,35 @@ public class CalibreLibraryMappingFragment
             }
         });
 
+        // We're only using the meta-data task, so just check if we already have libraries
         if (mVm.getLibraries().isEmpty()) {
             Snackbar.make(view, R.string.progress_msg_connecting, Snackbar.LENGTH_SHORT).show();
-            mVm.readMetaData();
+            mVm.startReadingMetaData();
         } else {
-            onLibrarySelected(0);
-            mVb.getRoot().setVisibility(View.VISIBLE);
+            showOptions();
         }
+    }
+
+    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+        message.getData().ifPresent(data -> {
+            final Context context = getContext();
+            //noinspection ConstantConditions
+            final String msg = ExMsg.map(context, data.getResult())
+                                    .orElse(getString(R.string.error_network_site_access_failed,
+                                                      CalibreContentServer.getHostUrl()));
+
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(R.drawable.ic_baseline_error_24)
+                    .setTitle(R.string.lbl_calibre_content_server)
+                    .setMessage(msg)
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        d.dismiss();
+                        // just pop, we're always called from a fragment
+                        getParentFragmentManager().popBackStack();
+                    })
+                    .create()
+                    .show();
+        });
     }
 
     private void onMetaDataRead(@NonNull final
@@ -148,11 +170,18 @@ public class CalibreLibraryMappingFragment
             mVm.extractLibraryData(result);
             mLibraryArrayAdapter.notifyDataSetChanged();
 
-            onLibrarySelected(0);
-            mVb.getRoot().setVisibility(View.VISIBLE);
-
-            mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
+            showOptions();
         });
+    }
+
+    /**
+     * Update the screen with server specific options and values.
+     */
+    private void showOptions() {
+        onLibrarySelected(0);
+        mVb.getRoot().setVisibility(View.VISIBLE);
+
+        mVb.infExtNotInstalled.setVisibility(mVm.isExtInstalled() ? View.GONE : View.VISIBLE);
     }
 
     private void addBookshelf(@NonNull final Bookshelf bookshelf,
@@ -193,27 +222,7 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
-        message.getData().ifPresent(data -> {
-            final Context context = getContext();
-            //noinspection ConstantConditions
-            final String msg = ExMsg.map(context, data.getResult())
-                                    .orElse(getString(R.string.error_network_site_access_failed,
-                                                      CalibreContentServer.getHostUrl()));
 
-            new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_baseline_error_24)
-                    .setTitle(R.string.lbl_calibre_content_server)
-                    .setMessage(msg)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        d.dismiss();
-                        // just pop, we're always called from a fragment
-                        getParentFragmentManager().popBackStack();
-                    })
-                    .create()
-                    .show();
-        });
-    }
 
     private static class Holder
             extends RecyclerView.ViewHolder {
