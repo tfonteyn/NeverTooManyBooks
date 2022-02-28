@@ -144,14 +144,22 @@ public class BookCoder {
     @NonNull
     private final List<Domain> mExternalIdDomains;
 
-    private final Map<Long, String> mCalibreLibraryId2StrMap = new HashMap<>();
-    private final Map<String, Long> mCalibreLibraryStr2IdMap = new HashMap<>();
+    private final ServiceLocator mSl;
+    @Nullable
+    private Map<Long, String> mCalibreLibraryId2StrMap;
+    @Nullable
+    private Map<String, Long> mCalibreLibraryStr2IdMap;
 
     public BookCoder(@NonNull final Context context) {
+        mSl = ServiceLocator.getInstance();
 
         mBookshelfCoder = new StringList<>(new BookshelfCoder(context));
-
         mExternalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+    }
+
+    private void buildCalibreMappings() {
+        mCalibreLibraryId2StrMap = new HashMap<>();
+        mCalibreLibraryStr2IdMap = new HashMap<>();
 
         ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries()
                       .forEach(library -> {
@@ -160,6 +168,7 @@ public class BookCoder {
                           mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
                                                        library.getId());
                       });
+
     }
 
     @NonNull
@@ -220,12 +229,19 @@ public class BookCoder {
         line.add(encode(book.getString(DBKey.KEY_CALIBRE_BOOK_UUID)));
         line.add(encode(book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
-        // we write the String ID! not the internal row id
-        final String clbStrId = mCalibreLibraryId2StrMap.get(
-                book.getLong(DBKey.FK_CALIBRE_LIBRARY));
-        // Guard against obsolete libraries (not actually sure this is needed... paranoia)
-        if (clbStrId != null && !clbStrId.isEmpty()) {
-            line.add(encode(clbStrId));
+        // we write the Calibre String ID! not the internal row id
+        final long clbRowId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
+        if (clbRowId != 0) {
+            if (mCalibreLibraryId2StrMap == null) {
+                buildCalibreMappings();
+            }
+            final String clbStrId = mCalibreLibraryId2StrMap.get(clbRowId);
+            // Guard against obsolete libraries (not actually sure this is needed... paranoia)
+            if (clbStrId != null && !clbStrId.isEmpty()) {
+                line.add(encode(clbStrId));
+            } else {
+                line.add("");
+            }
         } else {
             line.add("");
         }
@@ -303,6 +319,11 @@ public class BookCoder {
     }
 
 
+    /**
+     * Database access is strictly limited to fetching ID's for the list elements.
+     *
+     * @return the decoded book
+     */
     public Book decode(@NonNull final Context context,
                        @NonNull final String[] csvColumnNames,
                        @NonNull final String[] csvDataRow) {
@@ -343,6 +364,9 @@ public class BookCoder {
         book.remove(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID);
 
         if (!stringId.isEmpty()) {
+            if (mCalibreLibraryStr2IdMap == null) {
+                buildCalibreMappings();
+            }
             final Long id = mCalibreLibraryStr2IdMap.get(stringId);
             if (id != null) {
                 book.putLong(DBKey.FK_CALIBRE_LIBRARY, id);
@@ -379,7 +403,7 @@ public class BookCoder {
         if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                Bookshelf.pruneList(bookshelves);
+                mSl.getBookshelfDao().pruneList(bookshelves);
                 book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
             }
         }
@@ -439,7 +463,7 @@ public class BookCoder {
             list = mAuthorCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Author.pruneList(list, context, false, bookLocale);
+                mSl.getAuthorDao().pruneList(context, list, false, bookLocale);
             }
         }
 
@@ -485,7 +509,7 @@ public class BookCoder {
             final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Series.pruneList(list, context, false, bookLocale);
+                mSl.getSeriesDao().pruneList(context, list, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
             }
         }
@@ -511,7 +535,7 @@ public class BookCoder {
             final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Publisher.pruneList(list, context, false, bookLocale);
+                mSl.getPublisherDao().pruneList(context, list, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
             }
         }
@@ -540,7 +564,7 @@ public class BookCoder {
             final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                TocEntry.pruneList(list, context, false, bookLocale);
+                mSl.getTocEntryDao().pruneList(context, list, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_TOC_LIST, list);
             }
         }
