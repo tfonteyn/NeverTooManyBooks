@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import org.junit.Before;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -91,16 +90,15 @@ public abstract class BaseSetup
             throws DaoWriteException, CoverStorageException {
         super.setup();
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final Context context = mSl.getLocalizedAppContext();
 
-        final SynchronizedDb db = serviceLocator.getDb();
+        final SynchronizedDb db = mSl.getDb();
         Constants.deleteTocs(db);
         Constants.deleteBooks(db);
         Constants.deleteAuthors(db);
         Constants.deletePublishers(db);
 
-        final BookDao bookDao = serviceLocator.getBookDao();
+        final BookDao bookDao = mSl.getBookDao();
         // all books will sit on the same shelf for now
         //Constants.deleteBookshelves(db);
         bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);

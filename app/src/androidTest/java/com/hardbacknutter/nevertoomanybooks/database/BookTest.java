@@ -106,15 +106,15 @@ public class BookTest {
         mPublisherList.clear();
         mTocEntryList.clear();
 
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
+        final ServiceLocator sl = ServiceLocator.getInstance();
+        final SynchronizedDb db = sl.getDb();
 
-        final SynchronizedDb db = serviceLocator.getDb();
         Constants.deleteTocs(db);
         Constants.deleteBooks(db);
         Constants.deleteAuthors(db);
         Constants.deletePublishers(db);
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = sl.getLocalizedAppContext();
 
         final int actualVolume = CoverDir.initVolume(context, 0);
         assertEquals(0, actualVolume);
@@ -138,7 +138,7 @@ public class BookTest {
         mAuthor[1] = Author.from(AuthorFullName(1));
 
         // insert author[0] but do NOT insert author[1]
-        mAuthorId[0] = serviceLocator.getAuthorDao().insert(context, mAuthor[0]);
+        mAuthorId[0] = sl.getAuthorDao().insert(context, mAuthor[0]);
         mAuthorList.clear();
         mAuthorList.add(mAuthor[0]);
 
@@ -147,8 +147,8 @@ public class BookTest {
 
         // insert publisher[0] but do NOT publisher author[1]
 
-        mPublisherId[0] = serviceLocator.getPublisherDao()
-                                        .insert(context, mPublisher[0], Locale.getDefault());
+        mPublisherId[0] = sl.getPublisherDao()
+                            .insert(context, mPublisher[0], Locale.getDefault());
         mPublisherList.clear();
         mPublisherList.add(mPublisher[0]);
 
@@ -200,8 +200,9 @@ public class BookTest {
     public void book()
             throws DaoWriteException, IOException, CoverStorageException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final ServiceLocator sl = ServiceLocator.getInstance();
+        final Context context = sl.getLocalizedAppContext();
+        final BookDao bookDao = sl.getBookDao();
 
         final File coverDir = CoverDir.getDir(context);
         assertNotNull(NEED_A_PICTURES_DIRECTORY, coverDir);
@@ -335,8 +336,9 @@ public class BookTest {
     @Test
     public void showBookVM()
             throws DaoWriteException, CoverStorageException, IOException {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+        final ServiceLocator sl = ServiceLocator.getInstance();
+        final Context context = sl.getLocalizedAppContext();
+        final BookDao bookDao = sl.getBookDao();
         mBook[0] = prepareAndInsertBook(context, bookDao);
         mBookId[0] = mBook[0].getId();
 
@@ -387,7 +389,7 @@ public class BookTest {
 
     private void checkBookAfterInitialInsert(final Book book)
             throws CoverStorageException {
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 

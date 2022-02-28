@@ -28,7 +28,6 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -56,8 +55,8 @@ public class AuthorTest
     public void crud() {
         boolean updateOk;
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
 
         author[0] = Author.from(AuthorFullName(0));
         authorId[0] = authorDao.insert(context, author[0]);
@@ -100,8 +99,8 @@ public class AuthorTest
         long existingId;
         final Author tmpAuthor;
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
 
         // rename an author
         // UPDATE in the database
@@ -163,8 +162,8 @@ public class AuthorTest
         final long idBefore;
         long existingId;
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
 
         // rename an author
         // UPDATE in the database
