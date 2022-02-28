@@ -201,7 +201,7 @@ public class SearchCoordinator
             mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // clear obsolete progress status
         synchronized (mSearchProgressMessages) {
