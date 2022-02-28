@@ -64,12 +64,46 @@ public class DBCleaner {
     /** Database Access. */
     @NonNull
     private final SynchronizedDb mDb;
+    @NonNull
+    private final ServiceLocator mSl;
 
     /**
      * Constructor.
      */
     public DBCleaner() {
-        mDb = ServiceLocator.getInstance().getDb();
+        mSl = ServiceLocator.getInstance();
+        mDb = mSl.getDb();
+    }
+
+    public int clean(@NonNull final Context context) {
+        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
+
+        // do a mass update of any languages not yet converted to ISO 639-2 codes
+        languages(context, userLocale);
+
+        // make sure there are no 'T' separators in datetime fields
+        datetimeFormat();
+
+        // validate booleans to have 0/1 content (could do just ALL_TABLES)
+        booleanColumns(DBDefinitions.TBL_BOOKS,
+                       DBDefinitions.TBL_AUTHORS,
+                       DBDefinitions.TBL_SERIES);
+
+        // clean/correct style UUID's on Bookshelves for deleted styles.
+        bookshelves(context);
+
+        //TEST: we only check & log for now, but don't update yet...
+        // we need to test with bad data
+        bookBookshelf(true);
+
+        // re-sort positional links - theoretically this should never be needed... flw.
+        int modified;
+        modified = mSl.getAuthorDao().repositionAuthor(context);
+        modified += mSl.getSeriesDao().repositionSeries(context);
+        modified += mSl.getPublisherDao().repositionPublishers(context);
+        modified += mSl.getTocEntryDao().repositionTocEntries(context);
+
+        return modified;
     }
 
     /**
@@ -81,10 +115,8 @@ public class DBCleaner {
     public void languages(@NonNull final Context context,
                           @NonNull final Locale userLocale) {
 
-
-        final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-        final LanguageDao languageDao = serviceLocator.getLanguageDao();
-        final Languages langHelper = serviceLocator.getLanguages();
+        final LanguageDao languageDao = mSl.getLanguageDao();
+        final Languages langHelper = mSl.getLanguages();
 
         for (final String lang : languageDao.getList()) {
             if (lang != null && !lang.isEmpty()) {
@@ -160,9 +192,8 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        for (final Bookshelf bookshelf : ServiceLocator.getInstance().getBookshelfDao().getAll()) {
-            bookshelf.validateStyle(context);
-        }
+        mSl.getBookshelfDao().getAll()
+           .forEach(bookshelf -> bookshelf.validateStyle(context));
     }
 
     /**

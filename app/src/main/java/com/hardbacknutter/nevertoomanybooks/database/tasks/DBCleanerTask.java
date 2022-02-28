@@ -25,13 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -67,34 +63,8 @@ public class DBCleanerTask
     protected Boolean doWork(@NonNull final Context context) {
         publishProgress(1, context.getString(R.string.progress_msg_optimizing));
 
-        final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        final DBCleaner cleaner = new DBCleaner();
         try {
-            // do a mass update of any languages not yet converted to ISO 639-2 codes
-            cleaner.languages(context, userLocale);
-
-            // make sure there are no 'T' separators in datetime fields
-            cleaner.datetimeFormat();
-
-            // validate booleans to have 0/1 content (could do just ALL_TABLES)
-            cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,
-                                   DBDefinitions.TBL_AUTHORS,
-                                   DBDefinitions.TBL_SERIES);
-
-            // clean/correct style UUID's on Bookshelves for deleted styles.
-            cleaner.bookshelves(context);
-
-            //TEST: we only check & log for now, but don't update yet...
-            // we need to test with bad data
-            cleaner.bookBookshelf(true);
-
-            final ServiceLocator serviceLocator = ServiceLocator.getInstance();
-
-            // re-sort positional links - theoretically this should never be needed... flw.
-            int modified = serviceLocator.getAuthorDao().repositionAuthor(context);
-            modified += serviceLocator.getSeriesDao().repositionSeries(context);
-            modified += serviceLocator.getPublisherDao().repositionPublishers(context);
-            modified += serviceLocator.getTocEntryDao().repositionTocEntries(context);
+            final int modified = new DBCleaner().clean(context);
 
             if (modified > 0) {
                 Logger.warn(TAG, "reposition modified=" + modified);
