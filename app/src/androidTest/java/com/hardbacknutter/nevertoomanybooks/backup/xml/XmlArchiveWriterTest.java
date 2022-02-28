@@ -27,19 +27,19 @@ import androidx.test.filters.MediumTest;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -58,7 +58,7 @@ public class XmlArchiveWriterTest
     public void setup()
             throws DaoWriteException, CoverStorageException {
         super.setup();
-        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
+        mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
@@ -66,9 +66,9 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, ExportException, StorageException, CertificateException {
+            throws IOException, DataWriterException, StorageException, CertificateException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -77,8 +77,9 @@ public class XmlArchiveWriterTest
 
         // doesn't actually matter what we specify here.
         // The XmlArchiveWriter is hardcoded to always/only write Books.
-        final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Books);
-        exportHelper.setEncoding(ArchiveEncoding.Xml);
+        final ExportHelper exportHelper = new ExportHelper(
+                ArchiveEncoding.Xml,
+                EnumSet.of(RecordType.Books));
         exportHelper.setUri(Uri.fromFile(file));
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));

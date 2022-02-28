@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Before;
@@ -41,20 +42,19 @@ import org.junit.Test;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -75,7 +75,7 @@ public class CsvArchiveWriterTest
     public void setup()
             throws DaoWriteException, CoverStorageException {
         super.setup();
-        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
+        mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
@@ -83,19 +83,18 @@ public class CsvArchiveWriterTest
 
     @Test
     public void write()
-            throws ImportException, DaoWriteException,
-                   InvalidArchiveException, ExportException,
+            throws DataReaderException, DaoWriteException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(RecordType.Books);
-        exportHelper.setEncoding(ArchiveEncoding.Csv);
+        final ExportHelper exportHelper = new ExportHelper(ArchiveEncoding.Csv,
+                                                           EnumSet.of(RecordType.Books));
         exportHelper.setUri(Uri.fromFile(file));
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));

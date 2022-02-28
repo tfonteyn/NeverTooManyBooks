@@ -28,25 +28,24 @@ import androidx.test.filters.MediumTest;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -68,20 +67,19 @@ public class ZipArchiveWriterTest
     public void setup()
             throws DaoWriteException, CoverStorageException {
         super.setup();
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
+        final Context context = mSl.getLocalizedAppContext();
+        mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
-        mNrOfStyles = ServiceLocator.getInstance().getStyles().getStyles(context, true).size();
+        mNrOfStyles = mSl.getStyles().getStyles(context, true).size();
     }
 
     @Test
     public void write()
-            throws ImportException, ExportException,
-                   InvalidArchiveException,
+            throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -92,11 +90,11 @@ public class ZipArchiveWriterTest
 
         // Full backup except covers.
         final ExportHelper exportHelper = new ExportHelper(
-                RecordType.MetaData,
-                RecordType.Books,
-                RecordType.Preferences,
-                RecordType.Certificates,
-                RecordType.Styles);
+                ArchiveEncoding.Zip,
+                EnumSet.of(RecordType.Books,
+                           RecordType.Preferences,
+                           RecordType.Certificates,
+                           RecordType.Styles));
         exportHelper.setEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(uri);
 
@@ -115,10 +113,10 @@ public class ZipArchiveWriterTest
 
     private void read(@NonNull final Uri uri,
                       final long expectedNrOfBooks)
-            throws InvalidArchiveException, ImportException, IOException,
+            throws DataReaderException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
 
         final ImportHelper importHelper = new ImportHelper(context, uri);
         // The default, fail if the default was changed without changing this test!
@@ -129,7 +127,7 @@ public class ZipArchiveWriterTest
         final ArchiveMetaData archiveMetaData = importHelper.readMetaData(context).orElse(null);
         assertNotNull(archiveMetaData);
         assertEquals(mBookInDb, (long) archiveMetaData.getBookCount().orElse(-1));
-        assertEquals(0, (long) archiveMetaData.getCoverCount().orElse(-1));
+        assertEquals(-1, (long) archiveMetaData.getCoverCount().orElse(-1));
 
         final ImportResults importResults = importHelper.read(context, new TestProgressListener(
                 TAG + ":header"));

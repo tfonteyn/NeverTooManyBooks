@@ -27,7 +27,9 @@ import androidx.test.filters.MediumTest;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,20 +37,20 @@ import org.junit.Test;
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -71,30 +73,30 @@ public class JsonArchiveWriterTest
     public void setup()
             throws DaoWriteException, CoverStorageException {
         super.setup();
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        mBookInDb = ServiceLocator.getInstance().getBookDao().count();
+        final Context context = mSl.getLocalizedAppContext();
+        mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
         }
-        mNrOfStyles = ServiceLocator.getInstance().getStyles().getStyles(context, true).size();
+        mNrOfStyles = mSl.getStyles().getStyles(context, true).size();
     }
 
     @Test
     public void styles()
-            throws ImportException, ExportException,
-                   InvalidArchiveException,
+            throws DataReaderException, DataWriterException,
                    IOException, StorageException, CredentialsException, CertificateException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Styles);
+        final ExportHelper exportHelper = new ExportHelper(
+                ArchiveEncoding.Json,
+                EnumSet.of(RecordType.Styles));
 
-        exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
@@ -121,12 +123,10 @@ public class JsonArchiveWriterTest
 
     @Test
     public void books()
-            throws ImportException, DaoWriteException,
-                   InvalidArchiveException,
-                   IOException, ExportException,
+            throws DataReaderException, DataWriterException, DaoWriteException, IOException,
                    StorageException, CredentialsException, CertificateException {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
@@ -134,16 +134,11 @@ public class JsonArchiveWriterTest
         final ExportResults exportResults;
 
         final ExportHelper exportHelper = new ExportHelper(
-                RecordType.MetaData,
-                RecordType.Books
-                ,
-                // write out styles/prefs just to have them in the output file.
-                // No further tests with them in this method.
-                RecordType.Preferences,
-                RecordType.Styles
-        );
+                ArchiveEncoding.Json,
+                EnumSet.of(RecordType.Preferences,
+                           RecordType.Styles,
+                           RecordType.Books));
 
-        exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         exportResults = exportHelper.write(context, new TestProgressListener(TAG + ":export"));
@@ -175,7 +170,12 @@ public class JsonArchiveWriterTest
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Skip);
 
-        assertTrue(importHelper.readMetaData(context).isPresent());
+        final Optional<ArchiveMetaData> optMetaData = importHelper.readMetaData(context);
+        assertTrue(optMetaData.isPresent());
+        final ArchiveMetaData metaData = optMetaData.get();
+        assertTrue(metaData.getBookCount().isPresent());
+        assertEquals(mBookInDb, (long) metaData.getBookCount().get());
+
 
         ImportResults importResults = importHelper
                 .read(context, new TestProgressListener(TAG + ":import"));
@@ -192,8 +192,6 @@ public class JsonArchiveWriterTest
 
         importHelper.addRecordType(RecordType.Books);
         importHelper.setUpdateOption(DataReader.Updates.Overwrite);
-
-        assertTrue(importHelper.readMetaData(context).isPresent());
 
         importResults = importHelper.read(context, new TestProgressListener(TAG + ":header"));
         assertNotNull(importResults);
