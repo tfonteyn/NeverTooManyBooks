@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -62,6 +63,10 @@ public class SynchronizedDb
     private static final String ERROR_TX_INSIDE_SHARED = "Inside shared TX";
     private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
 
+    @NonNull
+    private final SQLiteOpenHelper mSqLiteOpenHelper;
+    private final int mPreparedStmtCacheSize;
+
     /** Underlying (and open for writing) database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -78,7 +83,13 @@ public class SynchronizedDb
     private final SQLiteDatabase.CursorFactory mTypedCursorFactory =
             (db, d, et, q) -> new TypedCursor(d, et, q, getSynchronizer());
 
-    /** Currently held transaction lock, if any. */
+
+    /**
+     * Currently held transaction lock, if any.
+     * <p>
+     * Set in {@link #beginTransaction(boolean)}
+     * and released in {@link #endTransaction(Synchronizer.SyncLock)}
+     */
     @Nullable
     private Synchronizer.SyncLock mTxLock;
 
@@ -87,11 +98,12 @@ public class SynchronizedDb
      *
      * @param synchronizer     Synchronizer to use
      * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
+     *
+     * @throws SQLiteException if the database cannot be opened
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
-        mSynchronizer = synchronizer;
-        mSqlDb = open(sqLiteOpenHelper);
+        this(synchronizer, sqLiteOpenHelper, -1);
     }
 
     /**
@@ -102,20 +114,26 @@ public class SynchronizedDb
      * android/database/sqlite/SQLiteDatabaseConfiguration.java: public int maxSqlCacheSize;
      * the default is in fact 25 as set in the constructor of that class.
      *
-     * @param synchronizer      Synchronizer to use
-     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
-     * @param preparedStmtCache the number or prepared statements to cache.
+     * @param synchronizer          Synchronizer to use
+     * @param sqLiteOpenHelper      SQLiteOpenHelper to open the underlying database
+     * @param preparedStmtCacheSize the number or prepared statements to cache.
+     *
+     * @throws SQLiteException if the database cannot be opened
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-                          @IntRange(from = 25, to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
-                          final int preparedStmtCache) {
-        this(synchronizer, sqLiteOpenHelper);
+                          @IntRange(to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
+                          final int preparedStmtCacheSize) {
+        mSynchronizer = synchronizer;
+        mSqLiteOpenHelper = sqLiteOpenHelper;
+        mPreparedStmtCacheSize = preparedStmtCacheSize;
 
-        // only set when bigger than the default
-        if ((preparedStmtCache > 25)
-            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
-            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
+        // Trigger onCreate/onUpdate/... for the database
+        final Synchronizer.SyncLock syncLock = mSynchronizer.getExclusiveLock();
+        try {
+            mSqlDb = getWritableDatabase();
+        } finally {
+            syncLock.unlock();
         }
     }
 
@@ -140,20 +158,37 @@ public class SynchronizedDb
     }
 
     /**
-     * Open the actual database.
+     * Open the database for reading. {@see SqLiteOpenHelper#getReadableDatabase()}
      *
-     * @param sqLiteOpenHelper SQLiteOpenHelper interface
+     * @return database
      *
-     * @return a writable database
+     * @throws SQLiteException if the database cannot be opened for reading
      */
     @NonNull
-    private SQLiteDatabase open(@NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
-        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
-        try {
-            return sqLiteOpenHelper.getWritableDatabase();
-        } finally {
-            exclusiveLock.unlock();
+    private SQLiteDatabase getReadableDatabase() {
+        final SQLiteDatabase db = mSqLiteOpenHelper.getReadableDatabase();
+        // only set when bigger than the default
+        if ((mPreparedStmtCacheSize > 25)) {
+            db.setMaxSqlCacheSize(mPreparedStmtCacheSize);
         }
+        return db;
+    }
+
+    /**
+     * Open the database for writing. {@see SqLiteOpenHelper#getWritableDatabase()}
+     *
+     * @return database
+     *
+     * @throws SQLiteException if the database cannot be opened for writing
+     */
+    @NonNull
+    private SQLiteDatabase getWritableDatabase() {
+        final SQLiteDatabase db = mSqLiteOpenHelper.getWritableDatabase();
+        // only set when bigger than the default
+        if ((mPreparedStmtCacheSize > 25)) {
+            db.setMaxSqlCacheSize(mPreparedStmtCacheSize);
+        }
+        return db;
     }
 
     @Override
