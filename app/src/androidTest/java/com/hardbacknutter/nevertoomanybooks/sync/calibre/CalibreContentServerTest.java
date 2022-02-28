@@ -48,7 +48,7 @@ public class CalibreContentServerTest {
         final ArrayList<Series> series = new ArrayList<>();
         series.add(Series.from("Rama"));
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final CalibreContentServer server = new CalibreContentServer(context);
 
