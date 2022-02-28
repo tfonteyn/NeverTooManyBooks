@@ -42,7 +42,12 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -199,8 +204,8 @@ public final class SyncReaderProcessor
      * @param bookData     the data to merge with the book
      *
      * @return a {@link Book} object with the <strong>DELTA</strong> fields that we need.
-     * The book id will always be set.
-     * It can be passed to {@link BookDao#update(Context, Book, int)}
+     *         The book id will always be set.
+     *         It can be passed to {@link BookDao#update(Context, Book, int)}
      */
     @Nullable
     public Book process(@NonNull final Context context,
@@ -345,12 +350,14 @@ public final class SyncReaderProcessor
                              @NonNull final Locale bookLocale,
                              @NonNull final Bundle bookData,
                              @NonNull final String key) {
+        final ServiceLocator sl = ServiceLocator.getInstance();
         switch (key) {
             case Book.BKEY_AUTHOR_LIST: {
                 final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
-                    Author.pruneList(list, context, false, bookLocale);
+                    final AuthorDao authorDao = sl.getAuthorDao();
+                    authorDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
@@ -358,7 +365,8 @@ public final class SyncReaderProcessor
                 final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
-                    Series.pruneList(list, context, false, bookLocale);
+                    final SeriesDao seriesDao = sl.getSeriesDao();
+                    seriesDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
@@ -366,7 +374,8 @@ public final class SyncReaderProcessor
                 final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
-                    Publisher.pruneList(list, context, false, bookLocale);
+                    final PublisherDao publisherDao = sl.getPublisherDao();
+                    publisherDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
@@ -374,7 +383,8 @@ public final class SyncReaderProcessor
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
-                    TocEntry.pruneList(list, context, false, bookLocale);
+                    final TocEntryDao tocEntryDao = sl.getTocEntryDao();
+                    tocEntryDao.pruneList(context, list, false, bookLocale);
                 }
                 break;
             }
@@ -382,7 +392,8 @@ public final class SyncReaderProcessor
                 final ArrayList<Bookshelf> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(book.getParcelableArrayList(key));
-                    Bookshelf.pruneList(list);
+                    final BookshelfDao bookshelfDao = sl.getBookshelfDao();
+                    bookshelfDao.pruneList(list);
                 }
                 break;
             }
