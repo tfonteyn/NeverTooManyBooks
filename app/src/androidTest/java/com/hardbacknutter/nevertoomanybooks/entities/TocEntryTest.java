@@ -30,8 +30,8 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,9 +45,9 @@ public class TocEntryTest
 
     @Test
     public void pruneTocEntries01() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
+        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -78,7 +78,8 @@ public class TocEntryTest
         tocEntry = new TocEntry(author0, "title 2");
         list.add(tocEntry);
 
-        final boolean modified = TocEntry.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -96,9 +97,9 @@ public class TocEntryTest
 
     @Test
     public void pruneTocEntries02() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
+        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -123,7 +124,8 @@ public class TocEntryTest
         tocEntry = new TocEntry(2, author0, "title 2", null, 0);
         list.add(tocEntry);
 
-        final boolean modified = TocEntry.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -141,11 +143,12 @@ public class TocEntryTest
         assertEquals(2019, tocEntry.getFirstPublicationDate().getYearValue());
     }
 
+
     @Test
     public void pruneTocEntries03() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
+        final TocEntryDao tocEntryDao = mSl.getTocEntryDao();
 
         final Author author0 = Author.from(ISAAC_ASIMOV);
         long authorId0 = authorDao.fixId(context, author0, false, Locale.getDefault());
@@ -190,7 +193,8 @@ public class TocEntryTest
         tocEntry = new TocEntry(0, author0, "title 3", "1975", 0);
         list.add(tocEntry);
 
-        final boolean modified = TocEntry.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = tocEntryDao.pruneList(context, list, false,
+                                                       Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 6, list.size());

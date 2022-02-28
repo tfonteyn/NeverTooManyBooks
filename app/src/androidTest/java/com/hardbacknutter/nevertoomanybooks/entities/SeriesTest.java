@@ -31,7 +31,6 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 
 import static org.junit.Assert.assertEquals;
@@ -61,9 +60,8 @@ public class SeriesTest
 
     @Test
     public void pruneSeries01List() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final SeriesDao seriesDao = mSl.getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
         Series series;
@@ -118,7 +116,8 @@ public class SeriesTest
         series.setId(100);
         list.add(series);
 
-        final boolean modified = Series.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = seriesDao.pruneList(context, list, false,
+                                                     Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());

@@ -31,7 +31,6 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 
 import static org.junit.Assert.assertEquals;
@@ -64,9 +63,8 @@ public class PublisherTest
 
     @Test
     public void prunePublisherNames01() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final PublisherDao publisherDao = mSl.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -94,7 +92,8 @@ public class PublisherTest
         publisher.setId(1002);
         list.add(publisher);
 
-        final boolean modified = Publisher.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -113,9 +112,8 @@ public class PublisherTest
 
     @Test
     public void prunePublisherNames02() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final PublisherDao publisherDao = mSl.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -147,8 +145,8 @@ public class PublisherTest
         publisher.setId(1002);
         list.add(publisher);
 
-        final boolean modified =
-                Publisher.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 2, list.size());
@@ -167,9 +165,8 @@ public class PublisherTest
 
     @Test
     public void prunePublisherNames03() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final PublisherDao publisherDao = mSl.getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -220,7 +217,8 @@ public class PublisherTest
         publisher.setId(1003);
         list.add(publisher);
 
-        final boolean modified = Publisher.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = publisherDao.pruneList(context, list, false,
+                                                        Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());

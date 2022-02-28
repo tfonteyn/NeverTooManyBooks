@@ -32,7 +32,6 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 
 import static org.junit.Assert.assertEquals;
@@ -79,9 +78,8 @@ public class AuthorTest
 
     @Test
     public void pruneAuthorList01() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
 
         final List<Author> list = new ArrayList<>();
         Author author;
@@ -148,7 +146,8 @@ public class AuthorTest
         author.setType(Author.TYPE_CONTRIBUTOR);
         list.add(author);
 
-        final boolean modified = Author.pruneList(list, context, false, Locale.getDefault());
+        final boolean modified = authorDao.pruneList(context, list, false,
+                                                     Locale.getDefault());
 
         assertTrue(list.toString(), modified);
         assertEquals(list.toString(), 3, list.size());
@@ -179,9 +178,8 @@ public class AuthorTest
 
     @Test
     public void pruneAuthorList02() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+        final Context context = mSl.getLocalizedAppContext();
+        final AuthorDao authorDao = mSl.getAuthorDao();
 
         final List<Author> authorList = new ArrayList<>();
         Author author;
@@ -205,7 +203,8 @@ public class AuthorTest
         author.setType(Author.TYPE_AFTERWORD);
         authorList.add(author);
 
-        final boolean modified = Author.pruneList(authorList, context, false, Locale.getDefault());
+        final boolean modified = authorDao.pruneList(context, authorList, false,
+                                                     Locale.getDefault());
 
         assertTrue(modified);
         assertEquals(1, authorList.size());
