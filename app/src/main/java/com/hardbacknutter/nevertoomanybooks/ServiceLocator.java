@@ -281,6 +281,7 @@ public final class ServiceLocator {
             mDBHelper.close();
         }
 
+        //noinspection ConstantConditions
         sInstance = null;
     }
 
@@ -376,15 +377,6 @@ public final class ServiceLocator {
         }
     }
 
-
-    /**
-     * Called during startup. This will trigger the creation/upgrade/open process.
-     */
-    void initialiseDb() {
-        mDBHelper = new DBHelper(mAppContext);
-        mDBHelper.initialiseDb(mAppContext);
-    }
-
     /**
      * Main entry point for clients to get the main database.
      *
@@ -393,9 +385,8 @@ public final class ServiceLocator {
     @NonNull
     public SynchronizedDb getDb() {
         synchronized (this) {
-            // Needed due to situations where the app has been asleep for awhile.
             if (mDBHelper == null) {
-                initialiseDb();
+                mDBHelper = new DBHelper(mAppContext);
             }
         }
         return mDBHelper.getDb();

@@ -49,7 +49,7 @@ public abstract class BaseDBTest {
         mSl = ServiceLocator.getInstance();
 
         CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
-        mSl.initialiseDb();
+        mSl.getDb();
     }
 
     @After

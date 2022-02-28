@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -134,6 +133,8 @@ public class DBHelper
     @Nullable
     private SynchronizedDb mSynchronizedDb;
 
+    private final int stmtCacheSize;
+
     /**
      * Constructor.
      *
@@ -141,6 +142,10 @@ public class DBHelper
      */
     public DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+
+        // default 25, see SynchronizedDb javadoc
+        stmtCacheSize = PreferenceManager.getDefaultSharedPreferences(context)
+                                         .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
     }
 
     /**
@@ -215,37 +220,21 @@ public class DBHelper
     }
 
     /**
-     * Create the Synchronized database.
-     * <p>
-     * Called during startup. If needed, this will trigger the creation/upgrade process.
-     *
-     * @param context Current context
-     */
-    public void initialiseDb(@NonNull final Context context) {
-        synchronized (this) {
-            if (mSynchronizedDb != null) {
-                return;
-            }
-
-            // default 25, see SynchronizedDb javadoc
-            final int stmtCacheSize = PreferenceManager.getDefaultSharedPreferences(context)
-                                                       .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
-
-            // Dev note: don't move this to the constructor, "this" must
-            // be fully constructed before we can pass it to the SynchronizedDb constructor
-            mSynchronizedDb = new SynchronizedDb(sSynchronizer, this,
-                                                 stmtCacheSize);
-        }
-    }
-
-    /**
-     * Get the Synchronized database.
+     * Get the main database.
      *
      * @return database connection
      */
     @NonNull
     public SynchronizedDb getDb() {
-        return Objects.requireNonNull(mSynchronizedDb, "Not initialized");
+        synchronized (this) {
+            if (mSynchronizedDb == null) {
+                // Dev note: don't move this to the constructor, "this" must
+                // be fully constructed before we can pass it to the SynchronizedDb constructor
+                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this,
+                                                     stmtCacheSize);
+            }
+        }
+        return mSynchronizedDb;
     }
 
     @Override
@@ -609,7 +598,7 @@ public class DBHelper
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
@@ -635,7 +624,7 @@ public class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {

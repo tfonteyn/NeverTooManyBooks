@@ -243,7 +243,7 @@ public class StartupActivity
     private void initDb() {
         try {
             // Create/Upgrade/Open the main database as needed.
-            ServiceLocator.getInstance().initialiseDb();
+            ServiceLocator.getInstance().getDb();
 
         } catch (@NonNull final Exception e) {
             onFailure(e);
