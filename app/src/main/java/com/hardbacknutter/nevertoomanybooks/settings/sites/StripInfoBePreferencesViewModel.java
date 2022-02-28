@@ -24,12 +24,16 @@ import android.content.Context;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
@@ -48,6 +52,28 @@ public class StripInfoBePreferencesViewModel
     protected void onCleared() {
         mValidateConnectionTask.cancel();
         super.onCleared();
+    }
+
+    /**
+     * Get two arrays with matching name and id's for all Bookshelves.
+     *
+     * @return Pair of (entries,entryValues)
+     */
+    @NonNull
+    Pair<CharSequence[], CharSequence[]> getBookshelves() {
+        final ArrayList<Bookshelf> all;
+        all = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final CharSequence[] entries = new CharSequence[all.size()];
+        final CharSequence[] entryValues = new CharSequence[all.size()];
+
+        int i = 0;
+        for (final Bookshelf bookshelf : all) {
+            entries[i] = bookshelf.getName();
+            entryValues[i] = String.valueOf(bookshelf.getId());
+            i++;
+        }
+
+        return new Pair<>(entries, entryValues);
     }
 
     @NonNull

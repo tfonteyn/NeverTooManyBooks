@@ -27,14 +27,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
@@ -46,9 +44,6 @@ public class StripInfoBePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "StripInfoBePrefFrag";
-
-    private StripInfoBePreferencesViewModel mVm;
-
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -56,6 +51,7 @@ public class StripInfoBePreferencesFragment
                     proposeConnectionValidation(StripInfoHandler.PK_ENABLED);
                 }
             };
+    private StripInfoBePreferencesViewModel mVm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -92,37 +88,25 @@ public class StripInfoBePreferencesFragment
             }
         });
 
-        final ArrayList<Bookshelf> all = ServiceLocator.getInstance().getBookshelfDao().getAll();
-        final CharSequence[] entries = new CharSequence[all.size()];
-        final CharSequence[] entryValues = new CharSequence[all.size()];
-
-        int i = 0;
-        for (final Bookshelf bookshelf : all) {
-            entries[i] = bookshelf.getName();
-            entryValues[i] = String.valueOf(bookshelf.getId());
-            i++;
-        }
-
         //noinspection ConstantConditions
         final String defValue = String.valueOf(
                 Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
                          .getId());
 
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, entries,
-                                entryValues);
-        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, entries,
-                                entryValues);
+        final Pair<CharSequence[], CharSequence[]> values = mVm.getBookshelves();
+        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, values);
+        initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, values);
     }
 
-    private void initBookshelfMapperPref(@NonNull final CharSequence key,
-                                         @NonNull final String defValue,
-                                         @NonNull final CharSequence[] entries,
-                                         @NonNull final CharSequence[] entryValues) {
+    private void initBookshelfMapperPref(
+            @NonNull final CharSequence key,
+            @NonNull final String defValue,
+            @NonNull final Pair<CharSequence[], CharSequence[]> values) {
 
         final ListPreference p = findPreference(key);
         //noinspection ConstantConditions
-        p.setEntries(entries);
-        p.setEntryValues(entryValues);
+        p.setEntries(values.first);
+        p.setEntryValues(values.second);
         p.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         // The ListPreference has an issue that the initial value is set during the inflation
