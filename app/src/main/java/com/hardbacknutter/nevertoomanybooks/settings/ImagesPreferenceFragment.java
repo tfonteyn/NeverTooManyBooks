@@ -64,7 +64,6 @@ public class ImagesPreferenceFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setTitle(R.string.lbl_purge_image_cache)
                     .setMessage(R.string.lbl_purge_image_cache)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
