@@ -227,8 +227,8 @@ public final class ServiceLocator {
      * @return Application Context using the user preferred Locale
      */
     @NonNull
-    public static Context getLocalizedAppContext() {
-        return sInstance.getAppLocale().apply(sInstance.mAppContext);
+    public Context getLocalizedAppContext() {
+        return getAppLocale().apply(sInstance.mAppContext);
     }
 
 
@@ -269,7 +269,26 @@ public final class ServiceLocator {
         return new File(sInstance.mAppContext.getFilesDir(), DIR_UPGRADES);
     }
 
+    /**
+     * Called between multiple tests so we get a clean db for each test.
+     */
+    @VisibleForTesting
+    void reset() {
+        if (mCoversDbHelper != null) {
+            mCoversDbHelper.close();
+        }
+        if (mDBHelper != null) {
+            mDBHelper.close();
+        }
 
+        sInstance = null;
+    }
+
+    /**
+     * Get the styles cache container.
+     *
+     * @return singleton
+     */
     @NonNull
     public Styles getStyles() {
         synchronized (this) {
@@ -280,6 +299,11 @@ public final class ServiceLocator {
         return mStyles;
     }
 
+    /**
+     * Get the language cache container.
+     *
+     * @return singleton
+     */
     @NonNull
     public Languages getLanguages() {
         synchronized (this) {
