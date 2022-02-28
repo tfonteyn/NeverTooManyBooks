@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -38,8 +37,8 @@ public class UserStyleTest
 
     @Test
     public void clone01() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final Context context = mSl.getLocalizedAppContext();
+        final Styles styles = mSl.getStyles();
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
 
         assertNotNull(s1);
