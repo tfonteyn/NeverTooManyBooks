@@ -27,6 +27,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -124,6 +126,33 @@ public class TocEntryDaoImpl
      */
     public TocEntryDaoImpl() {
         super(TAG);
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Context context,
+                             @NonNull final Collection<TocEntry> list,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final TocEntry current = entityMerger.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = current.getLocale(context, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+            // Don't lookup the locale a 2nd time.
+            fixId(context, current, false, locale);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     @Override

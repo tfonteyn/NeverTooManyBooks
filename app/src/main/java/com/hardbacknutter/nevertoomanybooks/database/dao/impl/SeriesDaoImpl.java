@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -274,6 +275,34 @@ public class SeriesDaoImpl
 
         return 0 < mDb.update(TBL_SERIES.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(seriesId)});
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Context context,
+                             @NonNull final Collection<Series> list,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Series current = entityMerger.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = current.getLocale(context, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+
+            // Don't lookup the locale a 2nd time.
+            fixId(context, current, false, locale);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     @Override

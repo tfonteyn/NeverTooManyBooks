@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -124,6 +125,23 @@ public interface PublisherDao {
     long countBooks(@NonNull Context context,
                     @NonNull Publisher publisher,
                     @NonNull Locale bookLocale);
+
+    /**
+     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
+     *
+     * @param context      Current context
+     * @param list         List to clean up
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Publisher> list,
+                      boolean lookupLocale,
+                      @NonNull Locale bookLocale);
 
     /**
      * Try to find the {@link Publisher}.

@@ -1039,7 +1039,8 @@ public class Book
                              final boolean lookupLocale) {
         final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
         if (!authors.isEmpty()) {
-            if (Author.pruneList(authors, context, lookupLocale, getLocale(context))) {
+            final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+            if (authorDao.pruneList(context, authors, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1075,7 +1076,8 @@ public class Book
                             final boolean lookupLocale) {
         final ArrayList<Series> series = getParcelableArrayList(BKEY_SERIES_LIST);
         if (!series.isEmpty()) {
-            if (Series.pruneList(series, context, lookupLocale, getLocale(context))) {
+            final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+            if (seriesDao.pruneList(context, series, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1100,7 +1102,8 @@ public class Book
                                 final boolean lookupLocale) {
         final ArrayList<Publisher> publishers = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         if (!publishers.isEmpty()) {
-            if (Publisher.pruneList(publishers, context, lookupLocale, getLocale(context))) {
+            final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+            if (publisherDao.pruneList(context, publishers, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }

@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -178,6 +179,28 @@ public interface AuthorDao {
      */
     boolean setComplete(long authorId,
                         boolean isComplete);
+
+    /**
+     * Passed a list of Author, remove duplicates.
+     * Consolidates author/- and author/type.
+     * <p>
+     * ENHANCE: Add aliases table to allow further pruning
+     * (e.g. Joe Haldeman == Joe W Haldeman).
+     *
+     * @param context      Current context
+     * @param list         List to clean up
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<Author> list,
+                      boolean lookupLocale,
+                      @NonNull Locale bookLocale);
 
     /**
      * Try to find the {@link Author}.

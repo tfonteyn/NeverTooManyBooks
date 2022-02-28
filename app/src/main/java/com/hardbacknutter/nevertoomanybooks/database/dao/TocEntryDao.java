@@ -26,6 +26,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,6 +34,24 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public interface TocEntryDao {
+
+    /**
+     * Passed a list of Objects, remove duplicates.
+     *
+     * @param context      Current context
+     * @param list         List to clean up
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull Context context,
+                      @NonNull Collection<TocEntry> list,
+                      boolean lookupLocale,
+                      @NonNull Locale bookLocale);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).

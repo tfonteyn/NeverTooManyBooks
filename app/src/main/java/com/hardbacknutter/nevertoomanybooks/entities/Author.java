@@ -32,7 +32,6 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -407,52 +406,6 @@ public class Author
         }
     }
 
-    /**
-     * Passed a list of Author, remove duplicates.
-     * Consolidates author/- and author/type.
-     * <p>
-     * ENHANCE: Add aliases table to allow further pruning
-     * (e.g. Joe Haldeman == Joe W Haldeman).
-     *
-     * @param list         List to clean up
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<Author> list,
-                                    @NonNull final Context context,
-                                    final boolean lookupLocale,
-                                    @NonNull final Locale bookLocale) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
-
-        final EntityMerger<Author> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Author current = entityMerger.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = current.getLocale(context, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-
-            // Don't lookup the locale a 2nd time.
-            authorDao.fixId(context, current, false, locale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
-    }
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -700,7 +653,7 @@ public class Author
     /**
      * Equality: <strong>id, family and given-names</strong>.
      * <ul>
-     *   <li>'type' is on a per book basis. See {@link #pruneList}.</li>
+     *   <li>'type' is on a per book basis. See {@link AuthorDao#pruneList}.</li>
      *   <li>'isComplete' is a user setting and is ignored.</li>
      * </ul>
      *

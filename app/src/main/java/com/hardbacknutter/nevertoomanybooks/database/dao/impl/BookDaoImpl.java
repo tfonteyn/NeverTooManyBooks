@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -519,8 +520,10 @@ public class BookDaoImpl
             }
         }
 
+        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
+
         // fix id's and remove duplicates; shelves don't use a Locale, hence no lookup done.
-        Bookshelf.pruneList(list);
+        bookshelfDao.pruneList(list);
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookBookshelfByBookId(bookId);
@@ -530,7 +533,6 @@ public class BookDaoImpl
             return;
         }
 
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
 
         try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_BOOKSHELF)) {
             for (final Bookshelf bookshelf : list) {
@@ -578,8 +580,10 @@ public class BookDaoImpl
             }
         }
 
+        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
+
         // fix id's and remove duplicates
-        Author.pruneList(list, context, lookupLocale, bookLocale);
+        authorDao.pruneList(context, list, lookupLocale, bookLocale);
 
         // Just delete all current links; we'll insert them from scratch (easier positioning)
         deleteBookAuthorByBookId(bookId);
@@ -588,8 +592,6 @@ public class BookDaoImpl
         if (list.isEmpty()) {
             return;
         }
-
-        final AuthorDao authorDao = ServiceLocator.getInstance().getAuthorDao();
 
         int position = 0;
         try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_AUTHOR)) {
@@ -641,8 +643,10 @@ public class BookDaoImpl
             }
         }
 
+        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
+
         // fix id's and remove duplicates
-        Series.pruneList(list, context, lookupLocale, bookLocale);
+        seriesDao.pruneList(context, list, lookupLocale, bookLocale);
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookSeriesByBookId(bookId);
@@ -652,7 +656,6 @@ public class BookDaoImpl
             return;
         }
 
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
 
         int position = 0;
         try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_SERIES)) {
@@ -704,8 +707,10 @@ public class BookDaoImpl
             }
         }
 
+        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
+
         // fix id's and remove duplicates
-        Publisher.pruneList(list, context, lookupLocale, bookLocale);
+        publisherDao.pruneList(context, list, lookupLocale, bookLocale);
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookPublishersByBookId(bookId);
@@ -715,7 +720,6 @@ public class BookDaoImpl
             return;
         }
 
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
 
         int position = 0;
         try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_PUBLISHER)) {
@@ -768,7 +772,8 @@ public class BookDaoImpl
         }
 
         // fix id's and remove duplicates
-        TocEntry.pruneList(list, context, lookupLocale, bookLocale);
+        final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
+        tocEntryDao.pruneList(context, list, lookupLocale, bookLocale);
 
         // Just delete all current links; we'll insert them from scratch (easier positioning)
         deleteBookTocEntryByBookId(bookId);

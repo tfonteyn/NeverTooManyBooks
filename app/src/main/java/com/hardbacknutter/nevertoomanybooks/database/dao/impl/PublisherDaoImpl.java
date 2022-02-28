@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 
@@ -244,6 +245,25 @@ public class PublisherDaoImpl
             stmt.bindLong(1, publisher.getId());
             return stmt.simpleQueryForLongOrZero();
         }
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Context context,
+                             @NonNull final Collection<Publisher> list,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<Publisher> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Publisher current = entityMerger.next();
+            fixId(context, current, lookupLocale, bookLocale);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     @Override

@@ -26,13 +26,11 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -176,47 +174,6 @@ public class TocEntry
         }
 
         return false;
-    }
-
-    /**
-     * Passed a list of Objects, remove duplicates.
-     *
-     * @param list         List to clean up
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<TocEntry> list,
-                                    @NonNull final Context context,
-                                    final boolean lookupLocale,
-                                    @NonNull final Locale bookLocale) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final TocEntryDao tocEntryDao = ServiceLocator.getInstance().getTocEntryDao();
-
-        final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final TocEntry current = entityMerger.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = current.getLocale(context, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-            // Don't lookup the locale a 2nd time.
-            tocEntryDao.fixId(context, current, false, locale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
     }
 
     /**

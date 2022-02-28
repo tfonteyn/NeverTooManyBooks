@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
@@ -42,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -230,29 +228,6 @@ public class Bookshelf
     }
 
     /**
-     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
-     *
-     * @param list List to clean up
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<Bookshelf> list) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final BookshelfDao bookshelfDao = ServiceLocator.getInstance().getBookshelfDao();
-        final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Bookshelf current = entityMerger.next();
-            bookshelfDao.fixId(current);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
-    }
-
-    /**
      * Set this bookshelf as the current/preferred.
      *
      * @param global Global preferences
@@ -326,7 +301,7 @@ public class Bookshelf
      * Normally in the range 0..x, but can theoretically be {@link RecyclerView#NO_POSITION} !
      *
      * @return value for {@link LinearLayoutManager#scrollToPosition(int)}
-     * or {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
+     *         or {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
     @IntRange(from = RecyclerView.NO_POSITION)
     public int getFirstVisibleItemPosition() {

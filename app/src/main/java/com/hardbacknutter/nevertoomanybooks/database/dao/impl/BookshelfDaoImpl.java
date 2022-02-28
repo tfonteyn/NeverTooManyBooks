@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -36,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -170,6 +172,22 @@ public class BookshelfDaoImpl
     @NonNull
     public Cursor fetchAllUserShelves() {
         return mDb.rawQuery(SELECT_ALL_USER_SHELVES, null);
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Collection<Bookshelf> list) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Bookshelf current = entityMerger.next();
+            fixId(current);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     @Override

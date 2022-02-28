@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -81,6 +82,15 @@ public interface BookshelfDao {
      */
     @NonNull
     Cursor fetchAllUserShelves();
+
+    /**
+     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
+     *
+     * @param list List to clean up
+     *
+     * @return {@code true} if the list was modified.
+     */
+    boolean pruneList(@NonNull final Collection<Bookshelf> list);
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).

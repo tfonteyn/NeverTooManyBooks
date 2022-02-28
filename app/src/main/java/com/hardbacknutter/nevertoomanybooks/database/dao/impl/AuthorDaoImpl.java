@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -569,6 +570,34 @@ public class AuthorDaoImpl
 
         return 0 < mDb.update(TBL_AUTHORS.getName(), cv, DBKey.PK_ID + "=?",
                               new String[]{String.valueOf(authorId)});
+    }
+
+    @Override
+    public boolean pruneList(@NonNull final Context context,
+                             @NonNull final Collection<Author> list,
+                             final boolean lookupLocale,
+                             @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<Author> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Author current = entityMerger.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = current.getLocale(context, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+
+            // Don't lookup the locale a 2nd time.
+            fixId(context, current, false, locale);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     @Override

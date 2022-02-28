@@ -26,7 +26,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -365,66 +364,6 @@ public class Series
         return newSeries;
     }
 
-    /**
-     * Passed a list of Series, remove duplicates.
-     * Consolidates series/- and series/number.
-     * <p>
-     * Remove Series from the list where the titles are the same, but one entry has a
-     * {@code null} or empty number.
-     * e.g. the following list should be processed as indicated:
-     * <p>
-     * foo(5)
-     * foo <-- delete
-     * bar <-- delete
-     * bar <-- delete
-     * bar(1)
-     * foo(5) <-- delete
-     * foo(6)
-     * <p>
-     * Note we keep BOTH foo(5) + foo(6)
-     * <p>
-     * ENHANCE: Add aliases table to allow further pruning
-     * (e.g. Foundation == The Foundation Saga).
-     *
-     * @param list         to prune
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<Series> list,
-                                    @NonNull final Context context,
-                                    final boolean lookupLocale,
-                                    @NonNull final Locale bookLocale) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final SeriesDao seriesDao = ServiceLocator.getInstance().getSeriesDao();
-
-        final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Series current = entityMerger.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = current.getLocale(context, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-
-            // Don't lookup the locale a 2nd time.
-            seriesDao.fixId(context, current, false, locale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
-    }
-
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
@@ -626,7 +565,7 @@ public class Series
     /**
      * Equality: <strong>id, title</strong>.
      * <ul>
-     *   <li>'number' is on a per book basis. See {@link #pruneList}.</li>
+     *   <li>'number' is on a per book basis. See {@link SeriesDao#pruneList}.</li>
      *   <li>'isComplete' is a user setting and is ignored.</li>
      * </ul>
      *
@@ -661,6 +600,8 @@ public class Series
     }
 
     public enum Details {
-        Full, Normal, Short
+        Full,
+        Normal,
+        Short
     }
 }

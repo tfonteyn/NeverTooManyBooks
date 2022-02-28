@@ -26,13 +26,10 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
@@ -101,38 +98,6 @@ public class Publisher
      */
     public static Publisher from(@NonNull final String name) {
         return new Publisher(name);
-    }
-
-    /**
-     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
-     *
-     * @param list         List to clean up
-     * @param context      Current context
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<Publisher> list,
-                                    @NonNull final Context context,
-                                    final boolean lookupLocale,
-                                    @NonNull final Locale bookLocale) {
-        if (list.isEmpty()) {
-            return false;
-        }
-
-        final PublisherDao publisherDao = ServiceLocator.getInstance().getPublisherDao();
-
-        final EntityMerger<Publisher> entityMerger = new EntityMerger<>(list);
-        while (entityMerger.hasNext()) {
-            final Publisher current = entityMerger.next();
-            publisherDao.fixId(context, current, lookupLocale, bookLocale);
-            entityMerger.merge(current);
-        }
-
-        return entityMerger.isListModified();
     }
 
     @SuppressWarnings("SameReturnValue")
