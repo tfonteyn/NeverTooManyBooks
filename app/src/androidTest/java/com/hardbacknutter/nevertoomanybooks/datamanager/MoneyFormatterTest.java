@@ -36,7 +36,7 @@ public class MoneyFormatterTest {
 
     @Test
     public void formatUS() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.US);
         assertEquals("$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
         assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
@@ -46,7 +46,7 @@ public class MoneyFormatterTest {
     @Test
     public void formatUK() {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.UK);
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         assertEquals("US$1,234.50", f.format(context, new Money(1234.50d, Money.USD)));
         assertEquals("£1,234.50", f.format(context, new Money(1234.50d, Money.GBP)));
         assertEquals("€1,234.50", f.format(context, new Money(1234.50d, Money.EUR)));
@@ -55,7 +55,7 @@ public class MoneyFormatterTest {
     @Test
     public void formatGERMANY() {
         final FieldFormatter<Money> f = new MoneyFormatter(Locale.GERMANY);
-        final Context context = ServiceLocator.getLocalizedAppContext();
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
         assertEquals("1.234,50 $", f.format(context, new Money(1234.50d, Money.USD)));
         assertEquals("1.234,50 £", f.format(context, new Money(1234.50d, Money.GBP)));
         assertEquals("1.234,50 €", f.format(context, new Money(1234.50d, Money.EUR)));
