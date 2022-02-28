@@ -121,7 +121,7 @@ abstract class TaskBase<Result>
             Thread.currentThread().setName(mTaskName);
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
-            final Context context = ServiceLocator.getLocalizedAppContext();
+            final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
             try {
                 final Result result = doWork(context);
                 if (isCancelled()) {
