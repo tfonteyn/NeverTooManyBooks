@@ -46,14 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -62,6 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
@@ -141,7 +141,7 @@ public class CsvRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, ImportException, IOException {
+            throws CoverStorageException, DataReaderException, IOException {
 
         mResults = new ImportResults();
 
@@ -178,7 +178,7 @@ public class CsvRecordReader
                            @NonNull final ImportHelper helper,
                            @NonNull final List<String> books,
                            @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, ImportException {
+            throws CoverStorageException, DataReaderException {
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
@@ -210,7 +210,6 @@ public class CsvRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
-        // Iterate through each imported row or until cancelled
         while (row < books.size() && !progressListener.isCancelled()) {
 
             if (!db.inTransaction()) {
@@ -220,7 +219,7 @@ public class CsvRecordReader
                 final String[] csvDataRow = parse(context, row, books.get(row));
 
                 if (csvDataRow.length != csvColumnNames.length) {
-                    throw new ImportException(context.getString(
+                    throw new DataReaderException(context.getString(
                             R.string.error_import_csv_column_count_mismatch, row));
                 }
 
@@ -250,7 +249,7 @@ public class CsvRecordReader
                 //TODO: use a meaningful user-displaying string.
                 handleRowException(row, e, context.getString(R.string.error_import_csv_line, row));
 
-            } catch (@NonNull final ImportException e) {
+            } catch (@NonNull final DataReaderException e) {
                 handleRowException(row, e, e.getUserMessage(context));
 
             } finally {
@@ -335,19 +334,20 @@ public class CsvRecordReader
                 }
                 case OnlyNewer: {
                     final LocalDateTime localDate = mBookDao.getLastUpdateDate(importNumericId);
-                    final LocalDateTime importDate = mDateParser.parse(
-                            book.getString(DBKey.UTC_DATE_LAST_UPDATED));
+                    if (localDate != null) {
+                        final LocalDateTime importDate = mDateParser.parse(
+                                book.getString(DBKey.UTC_DATE_LAST_UPDATED));
 
-                    if (localDate != null && importDate != null
-                        && importDate.isAfter(localDate)) {
+                        if (importDate != null && importDate.isAfter(localDate)) {
 
-                        mBookDao.update(context, book,
-                                        BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                        | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                        mResults.booksUpdated++;
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                            Log.d(TAG, "importNumericId=" + importNumericId
-                                       + "|update|" + book.getTitle());
+                            mBookDao.update(context, book,
+                                            BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                            | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            mResults.booksUpdated++;
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                                Log.d(TAG, "importNumericId=" + importNumericId
+                                           + "|update|" + book.getTitle());
+                            }
                         }
                     }
                     break;
@@ -460,13 +460,13 @@ public class CsvRecordReader
      *
      * @return an array representing the row
      *
-     * @throws ImportException on failure to parse this line
+     * @throws DataReaderException on failure to parse this line
      */
     @NonNull
     private String[] parse(@NonNull final Context context,
                            final int row,
                            @NonNull final String line)
-            throws ImportException {
+            throws DataReaderException {
         try {
             // Fields found in row
             final Collection<String> fields = new ArrayList<>();
@@ -555,9 +555,8 @@ public class CsvRecordReader
                             case '"':
                                 if (sb.length() > 0) {
                                     // Fields with inner quotes MUST be escaped
-                                    final String msg = context.getString(
-                                            R.string.warning_import_csv_unescaped_quote, row, pos);
-                                    throw new ImportException(msg);
+                                    throw new DataReaderException(context.getString(
+                                            R.string.warning_import_csv_unescaped_quote, row, pos));
                                 } else {
                                     inQuotes = true;
                                 }
@@ -595,8 +594,8 @@ public class CsvRecordReader
             // StackOverflowError has been seen when the StringBuilder overflows.
             // The stack at the time was 1040kb. Not reproduced as yet.
             Log.e(TAG, "line.length=" + line.length() + "\n" + line, e);
-            throw new ImportException(context.getString(R.string.error_import_csv_line_to_long,
-                                                        row, line.length()), e);
+            throw new DataReaderException(context.getString(R.string.error_import_csv_line_to_long,
+                                                            row, line.length()), e);
         }
     }
 
@@ -607,12 +606,12 @@ public class CsvRecordReader
      * @param columnsPresent the column names which are present
      * @param names          columns which should be checked for, in order of preference
      *
-     * @throws ImportException if no suitable column is present
+     * @throws DataReaderException if no suitable column is present
      */
     private void requireColumnOrThrow(@NonNull final Context context,
                                       @NonNull final List<String> columnsPresent,
                                       @NonNull final String... names)
-            throws ImportException {
+            throws DataReaderException {
 
 
         for (final String name : names) {
@@ -621,8 +620,7 @@ public class CsvRecordReader
             }
         }
 
-        final String msg = context.getString(R.string.error_import_csv_missing_columns_x,
-                                             TextUtils.join(",", names));
-        throw new ImportException(msg);
+        throw new DataReaderException(context.getString(
+                R.string.error_import_csv_missing_columns_x, TextUtils.join(",", names)));
     }
 }
