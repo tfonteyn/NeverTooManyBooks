@@ -221,17 +221,6 @@ public final class ServiceLocator {
         return sInstance.mAppContext;
     }
 
-    /**
-     * Get a <strong>new</strong>> localized Application Context
-     *
-     * @return Application Context using the user preferred Locale
-     */
-    @NonNull
-    public Context getLocalizedAppContext() {
-        return getAppLocale().apply(sInstance.mAppContext);
-    }
-
-
     @NonNull
     public static SharedPreferences getGlobalPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(sInstance.mAppContext);
@@ -270,10 +259,20 @@ public final class ServiceLocator {
     }
 
     /**
+     * Get a <strong>new</strong>> localized Application Context
+     *
+     * @return Application Context using the user preferred Locale
+     */
+    @NonNull
+    public Context getLocalizedAppContext() {
+        return getAppLocale().apply(sInstance.mAppContext);
+    }
+
+    /**
      * Called between multiple tests so we get a clean db for each test.
      */
     @VisibleForTesting
-    void reset() {
+    void recreate() {
         if (mCoversDbHelper != null) {
             mCoversDbHelper.close();
         }
@@ -281,8 +280,10 @@ public final class ServiceLocator {
             mDBHelper.close();
         }
 
+        final Context appContext = sInstance.mAppContext;
         //noinspection ConstantConditions
         sInstance = null;
+        create(appContext);
     }
 
     /**
@@ -380,6 +381,13 @@ public final class ServiceLocator {
     /**
      * Main entry point for clients to get the main database.
      *
+     * <strong>Dev. note:</strong>
+     * This method always returns the same object for the duration of the apps life!
+     * our DBHelper caches a single SynchronizedDb,
+     * which in turn caches the database from the underlying SQLiteOpenHelper
+     * which in turn caches the actual database.
+     * Or in short: it's safe to use this as a singleton.
+     *
      * @return the database instance
      */
     @NonNull
@@ -396,6 +404,8 @@ public final class ServiceLocator {
      * Main entry point for clients to get the covers database.
      *
      * @return the database instance
+     *
+     * @see #getDb()
      */
     @NonNull
     public SynchronizedDb getCoversDb() {

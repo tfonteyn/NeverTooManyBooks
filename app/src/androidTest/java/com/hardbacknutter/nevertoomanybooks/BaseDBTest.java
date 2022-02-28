@@ -55,6 +55,6 @@ public abstract class BaseDBTest {
     @After
     @CallSuper
     public void closeDb() {
-        mSl.reset();
+        mSl.recreate();
     }
 }
