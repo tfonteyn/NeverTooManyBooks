@@ -53,23 +53,24 @@ public class StripInfoWriter
 
     /** Export configuration. */
     @NonNull
-    private final SyncWriterHelper mConfig;
+    private final SyncWriterHelper mSyncWriterHelper;
 
     private final boolean mDeleteLocalBook;
 
     @NonNull
     private final CollectionFormUploader mCollectionForm = new CollectionFormUploader();
+
     @SuppressWarnings("FieldCanBeLocal")
     private SyncWriterResults mResults;
 
     /**
      * Constructor.
      *
-     * @param config export configuration
+     * @param syncWriterHelper export configuration
      */
-    public StripInfoWriter(@NonNull final SyncWriterHelper config) {
-        mConfig = config;
-        mDeleteLocalBook = mConfig.isDeleteLocalBooks();
+    public StripInfoWriter(@NonNull final SyncWriterHelper syncWriterHelper) {
+        mSyncWriterHelper = syncWriterHelper;
+        mDeleteLocalBook = mSyncWriterHelper.isDeleteLocalBooks();
     }
 
     @NonNull
@@ -86,23 +87,23 @@ public class StripInfoWriter
         // reset; won't take effect until the next publish call.
         progressListener.setIndeterminate(null);
 
-        final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final LocalDateTime dateSince;
-        if (mConfig.isIncremental()) {
+        if (mSyncWriterHelper.isIncremental()) {
             dateSince = new ISODateParser().parse(
                     global.getString(StripInfoAuth.PK_LAST_SYNC, null));
         } else {
             dateSince = null;
         }
 
+        final ServiceLocator sl = ServiceLocator.getInstance();
+        final BookDao bookDao = sl.getBookDao();
+        final StripInfoDao stripInfoDao = sl.getStripInfoDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToStripInfo(dateSince)) {
             int delta = 0;
             long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
-
-            final StripInfoDao stripInfoDao = ServiceLocator.getInstance().getStripInfoDao();
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor);
@@ -133,6 +134,7 @@ public class StripInfoWriter
                 }
             }
         }
+
         // always set the sync date!
         global.edit()
               .putString(StripInfoAuth.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(

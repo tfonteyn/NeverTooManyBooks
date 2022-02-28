@@ -42,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -52,6 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUnavailableException;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -63,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
@@ -168,7 +168,7 @@ public class StripInfoReader
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws IOException,
-                   ImportException,
+                   DataReaderException,
                    CredentialsException,
                    DiskFullException,
                    CoverStorageException {
@@ -218,7 +218,7 @@ public class StripInfoReader
                 }
             }
         } catch (@NonNull final SearchException e) {
-            throw new ImportException(e);
+            throw new DataReaderException(e);
         }
 
         // always set the sync date!
