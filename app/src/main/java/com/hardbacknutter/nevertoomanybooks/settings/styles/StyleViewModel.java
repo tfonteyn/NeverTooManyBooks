@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -38,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class StyleViewModel
         extends ViewModel {
@@ -102,6 +104,28 @@ public class StyleViewModel
     @NonNull
     UserStyle getStyle() {
         return mStyle;
+    }
+
+    /**
+     * Get two arrays with matching name and id's for all Bookshelves.
+     *
+     * @return Pair of (entries,entryValues)
+     */
+    @NonNull
+    Pair<CharSequence[], CharSequence[]> getBookshelves() {
+        final ArrayList<Bookshelf> all;
+        all = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final CharSequence[] entries = new CharSequence[all.size()];
+        final CharSequence[] entryValues = new CharSequence[all.size()];
+
+        int i = 0;
+        for (final Bookshelf bookshelf : all) {
+            entries[i] = bookshelf.getName();
+            entryValues[i] = String.valueOf(bookshelf.getId());
+            i++;
+        }
+
+        return new Pair<>(entries, entryValues);
     }
 
     void setModified() {

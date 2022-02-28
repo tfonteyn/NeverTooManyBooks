@@ -25,19 +25,16 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
 /**
@@ -91,25 +88,17 @@ public class StyleFiltersFragment
         preference.setSummaryProvider(TriStateMultiSelectListPreference
                                               .SimpleSummaryProvider.getInstance());
 
-
         final MultiSelectListPreference bookshelves = findPreference(Filters.PK_FILTER_BOOKSHELVES);
 
         if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
+            final Pair<CharSequence[], CharSequence[]> values = mVm.getBookshelves();
+
             //noinspection ConstantConditions
             bookshelves.setVisible(true);
-
-            final ArrayList<Bookshelf> list =
-                    ServiceLocator.getInstance().getBookshelfDao().getAll();
-            bookshelves.setEntryValues(
-                    list.stream()
-                        .map(bookshelf -> String.valueOf(bookshelf.getId()))
-                        .toArray(String[]::new));
-
-            bookshelves.setEntries(list.stream().map(Bookshelf::getName).toArray(String[]::new));
-
+            bookshelves.setEntries(values.first);
+            bookshelves.setEntryValues(values.second);
             bookshelves.setSummaryProvider(TriStateMultiSelectListPreference
                                                    .SimpleSummaryProvider.getInstance());
-
         } else {
             //noinspection ConstantConditions
             bookshelves.setVisible(false);
