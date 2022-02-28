@@ -27,7 +27,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,21 +37,14 @@ import java.security.cert.CertificateEncodingException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.common.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.common.DataReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.common.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
@@ -71,6 +63,11 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.io.DataReader;
+import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
+import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -163,16 +160,29 @@ public class JsonRecordReader
 
     @Override
     @NonNull
-    public Optional<ArchiveMetaData> readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws ImportException, IOException {
+    public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
+                                                  @NonNull final ArchiveReaderRecord record)
+            throws DataReaderException,
+                   IOException {
         try {
             // Don't close this stream
             final InputStream is = record.getInputStream();
             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-            final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
-            // read the entire record into a single String
-            final String content = reader.lines().collect(Collectors.joining());
-            final Bundle data = new BundleCoder().decode(new JSONObject(content));
+            final JSONTokener tokener = new JSONTokener(isr);
+            JSONObject root = new JSONObject(tokener);
+
+            // Is this a JsonArchiveWriter format ?
+            // Then descend into the container object.
+            if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
+                root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
+            }
+
+            final JSONObject jsonData = root.optJSONObject(RecordType.MetaData.getName());
+            if (jsonData == null) {
+                throw new DataReaderException(context.getString(
+                        R.string.error_file_not_recognized));
+            }
+            final Bundle data = new BundleCoder().decode(jsonData);
             if (data.isEmpty()) {
                 return Optional.empty();
             } else {
@@ -180,7 +190,7 @@ public class JsonRecordReader
             }
 
         } catch (@NonNull final JSONException e) {
-            throw new ImportException(e);
+            throw new DataReaderException(e);
 
         } catch (@NonNull final UncheckedIOException e) {
             //noinspection ConstantConditions
@@ -194,7 +204,7 @@ public class JsonRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, ImportException, IOException {
+            throws CoverStorageException, DataReaderException, IOException {
 
         mResults = new ImportResults();
 
@@ -210,7 +220,7 @@ public class JsonRecordReader
                 JSONObject root = new JSONObject(tokener);
 
                 // Is this a JsonArchiveWriter format ?
-                // Then descend to the container (data) object.
+                // Then descend to the container and into the data object.
                 if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
                     root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT)
                                .getJSONObject(RecordType.AutoDetect.getName());
@@ -250,8 +260,8 @@ public class JsonRecordReader
                     }
                 }
             } catch (@NonNull final JSONException e) {
-                throw new ImportException(context.getString(R.string.error_import_failed_for_record,
-                                                            recordType.getName()), e);
+                throw new DataReaderException(context.getString(
+                        R.string.error_import_failed_for_record, recordType.getName()), e);
 
             } catch (@NonNull final UncheckedIOException e) {
                 //noinspection ConstantConditions
@@ -406,7 +416,6 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
-        // Iterate through each imported element
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 
             if (!db.inTransaction()) {
