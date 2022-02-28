@@ -165,8 +165,8 @@ public class StartupViewModel
         return mStartupStage;
     }
 
-    int getNextStartupStage() {
-        if (mStartupStage < 5) {
+    int getNextStartupStage(@SuppressWarnings("SameParameterValue") final int max) {
+        if (mStartupStage < max) {
             mStartupStage++;
         }
         return mStartupStage;

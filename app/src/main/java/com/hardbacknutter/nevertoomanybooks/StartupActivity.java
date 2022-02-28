@@ -143,7 +143,7 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage() {
-        switch (mVm.getNextStartupStage()) {
+        switch (mVm.getNextStartupStage(5)) {
             case 1:
                 initStorage();
                 return;
@@ -169,6 +169,7 @@ public class StartupActivity
                 throw new IllegalArgumentException(String.valueOf(mVm.getStartupStage()));
         }
     }
+
     private void initStorage() {
         final int storedVolumeIndex = CoverDir.getVolume(this);
         final int actualVolumeIndex;
