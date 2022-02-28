@@ -29,8 +29,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
@@ -287,8 +285,8 @@ public class SynchronizedDb
      * However, to avoid the overhead, loops should use {@link #compileStatement} instead.
      *
      * @return the number of rows affected if a whereClause is passed in, 0
-     * otherwise. To remove all rows and get a count pass "1" as the
-     * whereClause.
+     *         otherwise. To remove all rows and get a count pass "1" as the
+     *         whereClause.
      */
     @SuppressWarnings("UnusedReturnValue")
     public int delete(@NonNull final String table,
@@ -407,7 +405,8 @@ public class SynchronizedDb
      * @param editTable     the name of the first table, which is editable
      *
      * @return A {@link TypedCursor} object, which is positioned before the first entry.
-     * Note that {@link Cursor}s are not synchronized, see the documentation for more details.
+     *         Note that {@link Cursor}s are not synchronized,
+     *         see the documentation for more details.
      */
     @NonNull
     public TypedCursor rawQueryWithTypedCursor(@NonNull final String sql,
@@ -566,8 +565,8 @@ public class SynchronizedDb
     }
 
     @NonNull
-    public File getDatabaseFile() {
-        return new File(mSqlDb.getPath());
+    public String getDatabasePath() {
+        return mSqlDb.getPath();
     }
 
     /**
