@@ -24,7 +24,6 @@ import android.content.Context;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.BaseDBTest;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
@@ -37,8 +36,8 @@ public class BookshelfBooklistGroupTest
 
     @Test
     public void cc() {
-        final Context context = ServiceLocator.getLocalizedAppContext();
-        final Styles styles = ServiceLocator.getInstance().getStyles();
+        final Context context = mSl.getLocalizedAppContext();
+        final Styles styles = mSl.getStyles();
         final ListStyle s1 = styles.getStyle(context, BuiltinStyle.UUID_FOR_TESTING_ONLY);
         assertNotNull(s1);
 
