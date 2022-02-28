@@ -25,12 +25,15 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -129,11 +132,12 @@ public class DBHelper
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
+    @IntRange(from = 25, to = SQLiteDatabase.MAX_SQL_CACHE_SIZE)
+    private final int stmtCacheSize;
+
     /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS CALLING {@link #getDb()}. */
     @Nullable
     private SynchronizedDb mSynchronizedDb;
-
-    private final int stmtCacheSize;
 
     /**
      * Constructor.
@@ -144,8 +148,9 @@ public class DBHelper
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
 
         // default 25, see SynchronizedDb javadoc
-        stmtCacheSize = PreferenceManager.getDefaultSharedPreferences(context)
-                                         .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
+        final int size = PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getInt(PK_STARTUP_DB_STMT_CACHE_SIZE, 25);
+        stmtCacheSize = MathUtils.clamp(size, 25, SQLiteDatabase.MAX_SQL_CACHE_SIZE);
     }
 
     /**
@@ -223,6 +228,8 @@ public class DBHelper
      * Get the main database.
      *
      * @return database connection
+     *
+     * @throws SQLiteException if the database cannot be opened
      */
     @NonNull
     public SynchronizedDb getDb() {
