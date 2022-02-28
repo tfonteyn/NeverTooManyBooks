@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.os.StrictMode;
+
 import androidx.annotation.CallSuper;
 
+import org.junit.After;
 import org.junit.Before;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
@@ -29,12 +32,29 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
 
 public abstract class BaseDBTest {
 
+    protected ServiceLocator mSl;
+
     @Before
     @CallSuper
     public void setup()
             throws DaoWriteException, CoverStorageException {
 
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                                       .detectLeakedSqlLiteObjects()
+                                       .detectLeakedClosableObjects()
+                                       .penaltyDeath()
+                                       .penaltyLog()
+                                       .build());
+
+        mSl = ServiceLocator.getInstance();
+
         CoverDir.initVolume(ServiceLocator.getAppContext(), 0);
-        ServiceLocator.getInstance().initialiseDb();
+        mSl.initialiseDb();
+    }
+
+    @After
+    @CallSuper
+    public void closeDb() {
+        mSl.reset();
     }
 }
