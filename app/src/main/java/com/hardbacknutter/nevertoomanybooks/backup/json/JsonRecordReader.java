@@ -171,18 +171,25 @@ public class JsonRecordReader
             final JSONTokener tokener = new JSONTokener(isr);
             JSONObject root = new JSONObject(tokener);
 
-            // Is this a JsonArchiveWriter format ?
-            // Then descend into the container object.
+            // If it's a JsonArchiveWriter: descend into the container object.
             if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
                 root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
+                // we should now have "data" and "info"
             }
 
-            final JSONObject jsonData = root.optJSONObject(RecordType.MetaData.getName());
-            if (jsonData == null) {
+            // If we have MetaData on the current level, descend into it
+            if (root.has(RecordType.MetaData.getName())) {
+                root = root.optJSONObject(RecordType.MetaData.getName());
+            }
+
+            // Sanity check before we try decoding
+            if (root == null) {
                 throw new DataReaderException(context.getString(
                         R.string.error_file_not_recognized));
             }
-            final Bundle data = new BundleCoder().decode(jsonData);
+
+            // We should now be 'in' the MetaData object
+            final Bundle data = new BundleCoder().decode(root);
             if (data.isEmpty()) {
                 return Optional.empty();
             } else {
