@@ -232,7 +232,7 @@ public class CalibreContentServerReader
 //                .build();
 //    }
 
-    private void initLibrary(@NonNull final Context context)
+    private void readLibraryMetaData(@NonNull final Context context)
             throws IOException, JSONException {
 
         mServer.readMetaData(context);
@@ -248,7 +248,7 @@ public class CalibreContentServerReader
             throws DataReaderException, IOException {
 
         try {
-            initLibrary(context);
+            readLibraryMetaData(context);
         } catch (@NonNull final JSONException e) {
             throw new DataReaderException(e);
         }
@@ -285,7 +285,7 @@ public class CalibreContentServerReader
         try {
             // Always (re)read the meta data here.
             // Don't assume we still have the same instance as when readMetaData was called.
-            initLibrary(context);
+            readLibraryMetaData(context);
 
             //noinspection ConstantConditions
             final int totalNum = mLibrary.getTotalBooks();
