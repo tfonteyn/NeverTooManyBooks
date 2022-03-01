@@ -192,38 +192,6 @@ public class AmazonSearchEngine
         return getLocale(context, getSiteUrl());
     }
 
-    /**
-     * Derive the Locale from the actual url.
-     *
-     * @param context Current context
-     * @param baseUrl to digest
-     *
-     * @return Locale matching the url root domain
-     */
-    @NonNull
-    private Locale getLocale(@NonNull final Context context,
-                             @NonNull final String baseUrl) {
-
-        final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
-        switch (root) {
-            case "com":
-                return Locale.US;
-
-            case "uk":
-                // country code is GB (july 2020: for now...)
-                return Locale.UK;
-
-            default:
-                // other amazon sites are (should be ?) just the country code.
-                final Locale locale = ServiceLocator.getInstance().getAppLocale()
-                                                    .getLocale(context, root);
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "getLocale", "locale=" + locale);
-                }
-                return locale != null ? locale : Locale.US;
-        }
-    }
-
     @NonNull
     private Bundle genericSearch(@NonNull final Context context,
                                  @NonNull final String url,

@@ -31,7 +31,10 @@ import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -122,6 +125,41 @@ public abstract class SearchEngineBase
     @Override
     public Locale getLocale(@NonNull final Context context) {
         return mConfig.getLocale();
+    }
+
+    /**
+     * Derive the Locale from the actual url.
+     * <p>
+     * Sites which support multiple countries, should overwrite {@link #getLocale(Context)} with
+     * {@code getLocale(context, getSiteUrl()); }
+     *
+     * @param context Current context
+     * @param baseUrl to digest
+     *
+     * @return Locale matching the url root domain
+     */
+    @NonNull
+    protected Locale getLocale(@NonNull final Context context,
+                               @NonNull final String baseUrl) {
+
+        final String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
+        switch (root) {
+            case "com":
+                return Locale.US;
+
+            case "uk":
+                // country code is GB (july 2020: for now...)
+                return Locale.UK;
+
+            default:
+                // other sites are (should be ?) just the country code.
+                final Locale locale = ServiceLocator.getInstance().getAppLocale()
+                                                    .getLocale(context, root);
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.d(TAG, "getLocale", "locale=" + locale);
+                }
+                return locale != null ? locale : Locale.US;
+        }
     }
 
     @Override

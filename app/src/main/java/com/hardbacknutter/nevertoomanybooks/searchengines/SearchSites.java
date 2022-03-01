@@ -125,23 +125,27 @@ public final class SearchSites {
 
     /**
      * Register all {@link SearchEngine} classes.
+     * <p>
+     * NEWTHINGS: adding a new search engine: add the search engine class
      */
     static void registerSearchEngineClasses(@NonNull final SearchEngineRegistry registry) {
         //dev note: we could scan for the annotation or for classes implementing the interface...
         // ... but that means traversing the class path. Not really worth the hassle.
         // For the BuildConfig.ENABLE_ usage: see app/build.gradle
-
-        // NEWTHINGS: adding a new search engine: add the search engine class
         // The order added is not relevant
+
+        // full/english functionality
         registry.add(AmazonSearchEngine.createConfig())
                 .add(GoodreadsSearchEngine.createConfig())
                 .add(IsfdbSearchEngine.createConfig())
                 .add(OpenLibrarySearchEngine.createConfig());
 
+        // uses old google api which theoretically can be disabled at any time by google
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
             registry.add(GoogleBooksSearchEngine.createConfig());
         }
 
+        // Alternative Edition search only!
         if (BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
             registry.add(LibraryThingSearchEngine.createConfig());
         }

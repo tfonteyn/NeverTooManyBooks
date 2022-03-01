@@ -29,6 +29,7 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -45,16 +46,19 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
- * Confirmed in LT forums; The entire API is currently disabled.
- * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
+ * <a href="https://www.librarything.com/services/">LibraryThing API</a>
+ * <p>
  * 2020-05-05: removed all non-functional code.
  * We can still:
  * - Search for alternative editions.
  * - View books on the site for which we previously stored a native id.
  * Keep in mind that the LT id can also be gathered from other sites (e.g. OpenLibrary)
+ * <p>
+ * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
  */
 public class LibraryThingSearchEngine
         extends SearchEngineBase
@@ -63,6 +67,8 @@ public class LibraryThingSearchEngine
 
     /** Preferences prefix. */
     private static final String PREF_KEY = "librarything";
+    /** Type: {@code String}. */
+    public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -90,6 +96,12 @@ public class LibraryThingSearchEngine
                 .build();
     }
 
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        // Derive the Locale from the user configured url.
+        return getLocale(context, getSiteUrl());
+    }
 
     @NonNull
     @Override

@@ -17,39 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
+import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
-/**
- * Used/defined in xml/preferences.xml
- */
 @Keep
-public class SearchInternetPreferenceFragment
+public class LibraryThingPreferencesFragment
         extends BasePreferenceFragment {
-
-    private static final String PSK_SEARCH_SITE_STRIP_INFO_BE = "psk_search_site_stripinfo_be";
-
-    private static final String PSK_SEARCH_SITE_LIBRARY_THING = "psk_search_site_librarything";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
+        setPreferencesFromResource(R.xml.preferences_site_librarything, rootKey);
 
+        final EditTextPreference etp = findPreference(LibraryThingSearchEngine.PK_HOST_URL);
         //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_STRIP_INFO_BE)
-                .setVisible(BuildConfig.ENABLE_STRIP_INFO_LOGIN);
-
-        //noinspection ConstantConditions
-        findPreference(PSK_SEARCH_SITE_LIBRARY_THING)
-                .setVisible(BuildConfig.ENABLE_LIBRARY_THING_ALT_ED);
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_URI);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
     }
 }

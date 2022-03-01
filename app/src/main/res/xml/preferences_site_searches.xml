@@ -78,10 +78,17 @@
             android:title="@string/site_isfdb">
         </Preference>
 
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.LibraryThingPreferencesFragment"
+            android:icon="@drawable/ic_baseline_find_in_page_24"
+            android:key="psk_search_site_librarything"
+            android:title="@string/site_library_thing">
+        </Preference>
+
         <!-- under development - disabled in release. -->
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.StripInfoBePreferencesFragment"
-            android:icon="@drawable/ic_stripinfo"
+            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_stripinfo_be"
             android:title="@string/site_stripinfo_be">
         </Preference>
