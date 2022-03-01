@@ -79,8 +79,8 @@ public class ExportFragment
 
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
     /** The ViewModel. */
     private ExportViewModel mVm;
     /** The launcher for picking a Uri to write to. */
@@ -117,6 +117,7 @@ public class ExportFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.menu_backup_and_export);
 

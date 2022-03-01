@@ -93,8 +93,7 @@ public class ImportFragment
      */
     private static final String MIME_TYPES = "*/*";
 
-    @NonNull
-    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    private ToolbarMenuProvider mToolbarMenuProvider;
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
@@ -150,6 +149,7 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_import);
 

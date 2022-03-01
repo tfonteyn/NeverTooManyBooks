@@ -51,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterFragment;
 public class StripInfoSyncFragment
         extends BaseFragment {
 
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
 
     /** View Binding. */
     private FragmentSyncStripinfoBinding mVb;
@@ -72,6 +72,7 @@ public class StripInfoSyncFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.action_synchronize);
 

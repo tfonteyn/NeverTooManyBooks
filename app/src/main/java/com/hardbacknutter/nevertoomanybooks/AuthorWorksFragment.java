@@ -87,8 +87,7 @@ public class AuthorWorksFragment
     /** Optional. Show the books. Defaults to {@code true}. */
     static final String BKEY_WITH_BOOKS = TAG + ":books";
 
-    @NonNull
-    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** The Fragment ViewModel. */
     private AuthorWorksViewModel mVm;
     /** Display a Book. */
@@ -155,6 +154,7 @@ public class AuthorWorksFragment
         final Context context = getContext();
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         //noinspection ConstantConditions
         toolbar.setTitle(mVm.getScreenTitle(context));

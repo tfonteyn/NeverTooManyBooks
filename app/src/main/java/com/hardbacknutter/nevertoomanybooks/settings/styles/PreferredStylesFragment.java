@@ -71,7 +71,8 @@ public class PreferredStylesFragment
 
     /** Log tag. */
     public static final String TAG = "PreferredStylesFragment";
-
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
     /** The adapter for the list. */
     private ListStylesAdapter mListAdapter;
     private PreferredStylesViewModel mVm;
@@ -123,23 +124,6 @@ public class PreferredStylesFragment
                     }
                 }
             });
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new MenuProvider() {
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.editing_styles, menu);
-            prepareMenu(menu, mVm.getSelectedPosition());
-        }
-
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
-                                                                   mVm.getSelectedPosition());
-        }
-    };
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -185,6 +169,7 @@ public class PreferredStylesFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_styles_long);
 
@@ -288,6 +273,24 @@ public class PreferredStylesFragment
         Holder(@NonNull final RowEditPreferredStylesBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.editing_styles, menu);
+            prepareMenu(menu, mVm.getSelectedPosition());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            return PreferredStylesFragment.this.onMenuItemSelected(menuItem,
+                                                                   mVm.getSelectedPosition());
         }
     }
 

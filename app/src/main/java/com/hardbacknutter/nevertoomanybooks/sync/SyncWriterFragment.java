@@ -64,8 +64,7 @@ public class SyncWriterFragment
 
     /** Log tag. */
     public static final String TAG = "SyncWriterFragment";
-    @NonNull
-    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** The ViewModel. */
     private SyncWriterViewModel mVm;
     /** View Binding. */
@@ -107,6 +106,7 @@ public class SyncWriterFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(mVm.getSyncWriterHelper().getSyncServer().getLabel());
 

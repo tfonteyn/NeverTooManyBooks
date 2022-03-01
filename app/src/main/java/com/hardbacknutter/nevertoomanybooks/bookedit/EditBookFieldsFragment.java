@@ -105,8 +105,8 @@ public class EditBookFieldsFragment
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
 
     @NonNull
     @Override
@@ -136,6 +136,7 @@ public class EditBookFieldsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 

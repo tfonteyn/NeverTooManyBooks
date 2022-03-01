@@ -99,9 +99,7 @@ public abstract class EditBookBaseFragment
 
     private DateParser mDateParser;
 
-    @NonNull
-    private final MenuHandlersMenuProvider mMenuHandlersMenuProvider =
-            new MenuHandlersMenuProvider();
+    private MenuHandlersMenuProvider mMenuHandlersMenuProvider;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -117,6 +115,7 @@ public abstract class EditBookBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mMenuHandlersMenuProvider = new MenuHandlersMenuProvider();
         toolbar.addMenuProvider(mMenuHandlersMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 
@@ -183,6 +182,8 @@ public abstract class EditBookBaseFragment
             toolbar.setTitle(title);
             toolbar.setSubtitle(Author.getCondensedNames(context, book.getAuthors()));
         }
+
+        mMenuHandlersMenuProvider.onPrepareMenu(toolbar.getMenu());
     }
 
     /**
@@ -279,7 +280,6 @@ public abstract class EditBookBaseFragment
             }
         }
 
-        //URGENT: calling onPrepareMenu here is mostly enough, but not 100% accurate
         mMenuHandlersMenuProvider.onPrepareMenu(getToolbar().getMenu());
     }
 

@@ -249,8 +249,6 @@ public class BooksOnBookshelf
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksContract.Input> mAuthorWorksLauncher =
             registerForActivityResult(new AuthorWorksContract(), this::onBookEditFinished);
-    private ToolbarMenuProvider mToolbarMenuProvider;
-
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsContract(), data -> {
@@ -287,6 +285,7 @@ public class BooksOnBookshelf
                 }
             });
 
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
 

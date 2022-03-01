@@ -71,8 +71,10 @@ public class SearchBookByIsbnFragment
     /** See remarks in {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}. */
     private static final String MIME_TYPES = "*/*";
 
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mSearchSitesToolbarMenuProvider;
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
 
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
@@ -129,7 +131,9 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
         toolbar.addMenuProvider(mSearchSitesToolbarMenuProvider, getViewLifecycleOwner());
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_search_isbn);
 

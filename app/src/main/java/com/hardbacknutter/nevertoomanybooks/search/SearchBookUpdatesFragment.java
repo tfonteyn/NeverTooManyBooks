@@ -81,8 +81,8 @@ public class SearchBookUpdatesFragment
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
 
     /** The extended SearchCoordinator. */
     private SearchBookUpdatesViewModel mVm;
@@ -126,7 +126,9 @@ public class SearchBookUpdatesFragment
         final Bundle args = getArguments();
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
+
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
             toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));

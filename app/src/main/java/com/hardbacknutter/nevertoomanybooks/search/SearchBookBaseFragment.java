@@ -61,8 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 public abstract class SearchBookBaseFragment
         extends BaseFragment {
 
-    @NonNull
-    final MenuProvider mSearchSitesToolbarMenuProvider = new SearchSitesToolbarMenuProvider();
     private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);
     /** Set the hosting Activity result, and close it. */
@@ -274,7 +272,7 @@ public abstract class SearchBookBaseFragment
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 
-    private class SearchSitesToolbarMenuProvider
+    class SearchSitesToolbarMenuProvider
             implements MenuProvider {
 
         @Override

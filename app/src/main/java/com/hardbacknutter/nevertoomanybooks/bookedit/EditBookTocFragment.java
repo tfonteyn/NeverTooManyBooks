@@ -114,8 +114,8 @@ public class EditBookTocFragment
      */
     @NonNull
     private final List<Edition> mIsfdbEditions = new ArrayList<>();
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
     /** the rows. A reference to the parcelled list in the Book. */
     private ArrayList<TocEntry> mList;
     /** View Binding. */
@@ -189,6 +189,7 @@ public class EditBookTocFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 

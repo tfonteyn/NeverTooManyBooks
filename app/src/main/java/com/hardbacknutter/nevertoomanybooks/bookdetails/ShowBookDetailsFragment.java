@@ -110,8 +110,8 @@ public class ShowBookDetailsFragment
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -315,7 +315,12 @@ public class ShowBookDetailsFragment
     }
 
     private void bindBook(@NonNull final Book book) {
+        // The menu is entirely dependent on the book we're displaying
         final Toolbar toolbar = getToolbar();
+        if (mToolbarMenuProvider != null) {
+            toolbar.removeMenuProvider(mToolbarMenuProvider);
+        }
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner(),
                                 Lifecycle.State.RESUMED);
 

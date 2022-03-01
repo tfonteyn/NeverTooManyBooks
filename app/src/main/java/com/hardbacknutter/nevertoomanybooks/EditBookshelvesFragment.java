@@ -103,23 +103,9 @@ public class EditBookshelvesFragment
                     mListAdapter.notifyItemChanged(mVm.getSelectedPosition());
                 }
             };
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new MenuProvider() {
-        @Override
-        public void onCreateMenu(@NonNull final Menu menu,
-                                 @NonNull final MenuInflater menuInflater) {
-            MenuCompat.setGroupDividerEnabled(menu, true);
-            menuInflater.inflate(R.menu.editing_bookshelves, menu);
-            prepareMenu(menu, mVm.getSelectedPosition());
-        }
 
-        @Override
-        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
-            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
-                                                                   mVm.getSelectedPosition());
-        }
-    };
-
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
@@ -148,6 +134,7 @@ public class EditBookshelvesFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_bookshelves);
 
@@ -235,6 +222,24 @@ public class EditBookshelvesFragment
         Holder(@NonNull final RowEditBookshelfBinding vb) {
             super(vb.getRoot());
             this.vb = vb;
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            MenuCompat.setGroupDividerEnabled(menu, true);
+            menuInflater.inflate(R.menu.editing_bookshelves, menu);
+            prepareMenu(menu, mVm.getSelectedPosition());
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            return EditBookshelvesFragment.this.onMenuItemSelected(menuItem,
+                                                                   mVm.getSelectedPosition());
         }
     }
 

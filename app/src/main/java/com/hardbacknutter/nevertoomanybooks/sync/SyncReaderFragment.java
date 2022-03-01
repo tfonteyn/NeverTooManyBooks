@@ -80,8 +80,7 @@ public class SyncReaderFragment
     /** Log tag. */
     public static final String TAG = "SyncReaderFragment";
 
-    @NonNull
-    private final ToolbarMenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    private ToolbarMenuProvider mToolbarMenuProvider;
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
@@ -138,6 +137,7 @@ public class SyncReaderFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(mVm.getSyncReaderHelper().getSyncServer().getLabel());
 

@@ -72,8 +72,8 @@ public class EditBookFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
-    @NonNull
-    private final MenuProvider mToolbarMenuProvider = new ToolbarMenuProvider();
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
     /** Host for the tabbed fragments. */
     private TabAdapter mTabAdapter;
     /** View model. Must be in the Activity scope. */
@@ -122,6 +122,7 @@ public class EditBookFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
 
         //noinspection ConstantConditions
