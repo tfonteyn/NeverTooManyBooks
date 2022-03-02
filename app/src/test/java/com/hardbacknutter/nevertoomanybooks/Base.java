@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -210,8 +211,9 @@ public class Base {
                         .putBoolean("search.site.amazon.data.enabled", true)
                         .putBoolean("search.site.googlebooks.data.enabled", false)
                         .putBoolean("search.site.isfdb.data.enabled", true)
-                        .putBoolean("search.site.kbnl.data.enabled", true)
+                        .putBoolean("search.site.kbnl.data.enabled", false)
                         .putBoolean("search.site.lastdodo.data.enabled", true)
+                        .putBoolean("search.site.librarything.data.enabled", false)
                         .putBoolean("search.site.openlibrary.data.enabled", true)
                         .putBoolean("search.site.stripinfo.data.enabled", false)
 
@@ -224,23 +226,34 @@ public class Base {
 
         when(mMockPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
                                         nullable(String.class)))
-                .thenAnswer((Answer<String>) invocation -> {
-                    if (mLocale0 != null) {
-                        final String iso3 = mLocale0.getISO3Language();
-                        if (Locale.US.getISO3Language().equals(iso3)) {
-                            return "https://www.amazon.com";
-                        } else if (Locale.UK.getISO3Language().equals(iso3)) {
-                            return "https://www.amazon.co.uk";
-                        } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
-                            return "https://www.amazon.fr";
-                        } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
-                            return "https://www.amazon.de";
-                        } else if (new Locale("nl").getISO3Language().equals(iso3)) {
-                            return "https://www.amazon.nl";
-                        }
-                    }
-                    return "https://www.amazon.com";
-                });
+                .thenAnswer((Answer<String>) invocation ->
+                        getLocalizedSiteUrl("amazon", true));
+
+        when(mMockPreferences.getString(eq(LibraryThingSearchEngine.PK_HOST_URL),
+                                        nullable(String.class)))
+                .thenAnswer((Answer<String>) invocation ->
+                        getLocalizedSiteUrl("librarything", false));
+    }
+
+    @NonNull
+    private String getLocalizedSiteUrl(@NonNull final String site,
+                                       final boolean hasUkSite) {
+        if (mLocale0 != null) {
+            final String iso3 = mLocale0.getISO3Language();
+            if (Locale.US.getISO3Language().equals(iso3)) {
+                return "https://www." + site + ".com";
+            } else if (Locale.FRANCE.getISO3Language().equals(iso3)) {
+                return "https://www." + site + ".fr";
+            } else if (Locale.GERMANY.getISO3Language().equals(iso3)) {
+                return "https://www." + site + ".de";
+            } else if (new Locale("nl").getISO3Language().equals(iso3)) {
+                return "https://www." + site + ".nl";
+
+            } else if (hasUkSite && Locale.UK.getISO3Language().equals(iso3)) {
+                return "https://www." + site + ".co.uk";
+            }
+        }
+        return "https://www." + site + ".com";
     }
 
     /*
