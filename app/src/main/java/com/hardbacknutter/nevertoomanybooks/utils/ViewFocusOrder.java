@@ -34,6 +34,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 /**
  * Ensure that next up/down/left/right View is visible.
  * Sets the nextFocusX attributes on the visible fields.
+ * <p>
+ * URGENT: 2022-02-28: fails to do a full job on sw800 tablet layout for editing a book
+ * i.e. {@link com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublicationFragment}
  */
 public final class ViewFocusOrder {
 
