@@ -240,7 +240,7 @@ public abstract class EditBookBaseFragment
         }
 
         if (mVm.handlesField(getFragmentId(), R.id.cbx_read)) {
-            addReadCheckboxOnClickListener(global);
+            addReadCheckboxOnClickListener();
         }
     }
 
@@ -314,24 +314,19 @@ public abstract class EditBookBaseFragment
      * Set the OnClickListener for the 'read' fields.
      * <p>
      * When user checks 'read', set the read-end date to today (unless set before)
-     *
-     * @param global Global preferences
      */
-    private void addReadCheckboxOnClickListener(@NonNull final SharedPreferences global) {
-        // only bother when it's in use
-        if (DBKey.isUsed(global, DBKey.BOOL_READ)) {
-            mVm.requireField(R.id.cbx_read)
-               .requireView().setOnClickListener(v -> {
-                   if (((Checkable) v).isChecked()) {
-                       final Field<String, TextView> readEnd = mVm.requireField(R.id.read_end);
-                       if (readEnd.isEmpty()) {
-                           readEnd.setValue(
-                                   LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                           readEnd.onChanged();
-                       }
+    private void addReadCheckboxOnClickListener() {
+        mVm.requireField(R.id.cbx_read)
+           .requireView().setOnClickListener(v -> {
+               if (((Checkable) v).isChecked()) {
+                   final Field<String, TextView> readEnd = mVm.requireField(R.id.read_end);
+                   if (readEnd.isEmpty()) {
+                       readEnd.setValue(
+                               LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                       readEnd.onChanged();
                    }
-               });
-        }
+               }
+           });
     }
 
     /**
