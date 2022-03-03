@@ -31,7 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -48,7 +48,6 @@
             android:layout_width="@dimen/cover_details_0_width"
             android:layout_height="@dimen/cover_details_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -60,8 +59,7 @@
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="@id/cover_image_0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cover_image_0"
             tools:src="@sample/covers"
             />
@@ -107,35 +105,19 @@
             tools:text="@sample/data.json/book/title"
             />
 
-        <TextView
+        <CheckBox
             android:id="@+id/read"
-            style="@style/Label.Checked"
+            style="@style/Field.Checkable"
             android:text="@string/lbl_read"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <TextView
-            android:id="@+id/lbl_anthology_or_collection"
-            style="@style/Label.Checked"
-            android:text="@string/lbl_anthology"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/read"
-            />
-
         <RatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Indicator"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/Field.RatingBar.Indicator.Medium"
+            app:layout_constraintStart_toEndOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_flags_rating_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="read,lbl_anthology_or_collection,rating,title"
             />
 
         <TextView
@@ -143,7 +125,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_flags_rating_bottom"
+            app:layout_constraintTop_toBottomOf="@id/read"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -239,7 +221,7 @@
             android:id="@+id/toc_frame"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:layout_marginTop="@dimen/field_margin_top"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

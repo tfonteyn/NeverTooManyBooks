@@ -31,7 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.37"
+            app:layout_constraintGuide_percent="0.33"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7"
+            app:layout_constraintGuide_percent="0.66"
             />
 
         <ImageView
@@ -67,10 +67,8 @@
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintEnd_toStartOf="@id/col1"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
-            app:layout_constraintTop_toTopOf="@id/cover_image_0"
+            app:layout_constraintBottom_toBottomOf="@id/cover_image_0"
             tools:src="@sample/covers"
             />
 
@@ -107,35 +105,19 @@
             tools:text="@sample/data.json/book/title"
             />
 
-        <TextView
+        <CheckBox
             android:id="@+id/read"
-            style="@style/Label.Checked"
+            style="@style/Field.Checkable"
             android:text="@string/lbl_read"
             app:layout_constraintStart_toEndOf="@id/col1"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <TextView
-            android:id="@+id/lbl_anthology_or_collection"
-            style="@style/Label.Checked"
-            android:text="@string/lbl_anthology"
-            app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/read"
-            />
-
         <RatingBar
             android:id="@+id/rating"
-            style="@style/Field.RatingBar.Indicator"
+            style="@style/Field.RatingBar.Indicator.Medium"
             app:layout_constraintEnd_toEndOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_flags_rating_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="read,lbl_anthology_or_collection,rating,title"
             />
 
         <TextView
@@ -143,7 +125,7 @@
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="@id/col2"
             app:layout_constraintStart_toEndOf="@id/col1"
-            app:layout_constraintTop_toBottomOf="@id/barrier_flags_rating_bottom"
+            app:layout_constraintTop_toBottomOf="@id/read"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -194,7 +176,6 @@
             android:id="@+id/series_title"
             style="@style/Field.Generic.Small"
             app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/lbl_series"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
@@ -230,6 +211,7 @@
             style="@style/Field.Description"
             app:layout_constraintEnd_toEndOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"

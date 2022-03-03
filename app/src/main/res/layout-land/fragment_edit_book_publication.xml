@@ -29,7 +29,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -170,11 +170,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_listed_currency"
-            style="@style/TIL.AutoCompleteTextView"
-            android:layout_width="wrap_content"
-            android:hint="@string/lbl_currency"
+            style="@style/TIL.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
-            app:layout_constraintEnd_toStartOf="@id/lbl_price_listed"
             app:layout_constraintStart_toStartOf="parent"
             >
 
@@ -190,9 +187,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_listed"
-            style="@style/TIL"
+            style="@style/TIL.Price"
             android:hint="@string/lbl_price_listed"
-            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_pages"
             >

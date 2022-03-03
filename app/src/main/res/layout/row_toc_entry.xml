@@ -41,7 +41,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription,TouchTargetSizeCheck"
+        tools:ignore="ContentDescription"
         tools:src="@drawable/ic_baseline_library_books_24"
         tools:visibility="visible"
         />
@@ -53,7 +53,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_type"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="@sample/data.json/book/title"
         />
 
@@ -63,7 +63,7 @@
         app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="(1971)"
         />
 
@@ -72,7 +72,7 @@
         style="@style/Field.Generic.Inline.Small"
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="@sample/data.json/author/full_name"
         />
 

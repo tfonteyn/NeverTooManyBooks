@@ -23,25 +23,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/screen_border"
+    style="@style/TopCentered"
+    tools:context=".FragmentHostActivity"
     >
 
     <TextView
         android:id="@+id/header"
-        style="@style/Text.Header.Indented"
+        style="@style/Text.Header"
+        android:layout_marginStart="@dimen/preference_header_margin_start"
         android:text="@string/pg_style_groups"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <!-- URGENT - fails to scroll -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="@dimen/screen_border"
-        android:layout_marginEnd="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"

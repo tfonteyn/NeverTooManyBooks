@@ -50,7 +50,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_calibre_library"
         style="@style/Button.DropdownMenu"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="@dimen/field_margin_start"
         android:layout_marginTop="@dimen/section_margin_top"
         android:hint="@string/lbl_library"
         android:visibility="gone"
@@ -73,12 +73,13 @@
     <!-- will be invisible if there is no meta-data. -->
     <TextView
         android:id="@+id/archive_content"
-        style="@style/Text.Body.Small"
-        android:layout_marginStart="20dp"
+        style="@style/Text.Body"
+        android:layout_marginStart="@dimen/field_margin_inline"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textIsSelectable="true"
         android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_calibre_library"
-        tools:ignore="SelectableText"
         tools:text="Books: 123\nCovers: 456"
         />
 
@@ -172,11 +173,9 @@
         android:id="@+id/inf_sync_date"
         style="@style/Text.Header"
         android:text="@string/lbl_import_books_option_new_and_updated_cutoff_date"
-        android:layout_marginEnd="@dimen/field_margin_inline"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/lbl_sync_date"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/middle"
         tools:visibility="visible"
         />
 
@@ -193,7 +192,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/sync_date"
             style="@style/TIE.ReadOnly"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="@dimen/field_margin_start"
             tools:text="@sample/data.json/date/long"
             />
 

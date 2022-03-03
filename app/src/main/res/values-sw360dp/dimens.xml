@@ -25,12 +25,27 @@
     land:  w640dp h336dp
 -->
 <resources>
+    <dimen name="progress_width">340dp</dimen>
+    <dimen name="progress_padding">8dp</dimen>
+
+    <dimen name="section_margin_top">8dp</dimen>
+    <dimen name="field_margin_top">8dp</dimen>
     <dimen name="field_margin_start">8dp</dimen>
     <dimen name="field_margin_inline">12dp</dimen>
-    <dimen name="field_margin_inline_large">48dp</dimen>
 
-    <dimen name="bob_list_end_margin">2dp</dimen>
+    <!-- fixed width TIL fields -->
+    <dimen name="til_fixed_width_year">120dp</dimen>
+    <dimen name="til_fixed_width_price">160dp</dimen>
+    <dimen name="til_fixed_width_currency">140dp</dimen>
+    <dimen name="til_fixed_width_language">200dp</dimen>
+    <dimen name="til_fixed_width_series_num">200dp</dimen>
+    <dimen name="til_fixed_width_external_id">200dp</dimen>
 
-    <dimen name="screen_min_width">340dp</dimen>
-    <dimen name="progress_width">340dp</dimen>
+    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
+    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
+    <dimen name="btn_open_toc_text_size">14sp</dimen>
+
+    <dimen name="bob_list_end_margin">4dp</dimen>
+
+    <dimen name="top_centered_min_width">352dp</dimen>
 </resources>

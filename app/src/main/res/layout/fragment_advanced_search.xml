@@ -18,147 +18,151 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content"
-    style="@style/TopCentered"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    style="@style/TopNestedScroller"
+    tools:context=".FragmentHostActivity"
     >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_author"
-        style="@style/TIL"
-        android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content"
+        style="@style/TopCentered"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/author"
-            style="@style/TIE"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            tools:ignore="Autofill"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_author"
+            style="@style/TIL"
+            android:hint="@string/lbl_author"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/author"
+                style="@style/TIE"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_title"
+            style="@style/TIL"
+            android:hint="@string/lbl_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                style="@style/TIE"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_series"
+            style="@style/TIL"
+            android:hint="@string/lbl_series"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/series_title"
+                style="@style/TIE"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_publisher"
+            style="@style/TIL"
+            android:hint="@string/lbl_publisher"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/publisher"
+                style="@style/TIE"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--    <com.google.android.material.textfield.TextInputLayout-->
+        <!--        android:id="@+id/lbl_lend_out_to"-->
+        <!--        style="@style/TIL"-->
+        <!--        android:hint="@string/lbl_lend_out"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintTop_toBottomOf="@id/lbl_publisher"-->
+        <!--        >-->
+
+        <!--        <com.google.android.material.textfield.TextInputEditText-->
+        <!--            android:id="@+id/loanee"-->
+        <!--            style="@style/TIE"-->
+        <!--            android:imeOptions="actionDone"-->
+        <!--            android:inputType="textMultiLine"-->
+        <!--            tools:ignore="Autofill"-->
+        <!--            />-->
+
+        <!--    </com.google.android.material.textfield.TextInputLayout>-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_keywords"
+            style="@style/TIL"
+            android:hint="@string/lbl_keywords"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/keywords"
+                style="@style/TIE"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/books_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textIsSelectable="true"
+            app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
+            app:layout_constraintEnd_toStartOf="@id/btn_search"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="# books found"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_title"
-        style="@style/TIL"
-        android:hint="@string/lbl_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/title"
-            style="@style/TIE"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            tools:ignore="Autofill"
+        <Button
+            android:id="@+id/btn_search"
+            style="@style/Button.Action.Submit"
+            android:text="@string/btn_show_list"
+            app:layout_constraintEnd_toEndOf="@id/lbl_keywords"
+            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
             />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_series"
-        style="@style/TIL"
-        android:hint="@string/lbl_series"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/series_title"
-            style="@style/TIE"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            tools:ignore="Autofill"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_publisher"
-        style="@style/TIL"
-        android:hint="@string/lbl_publisher"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_series"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/publisher"
-            style="@style/TIE"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            tools:ignore="Autofill"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!--    <com.google.android.material.textfield.TextInputLayout-->
-    <!--        android:id="@+id/lbl_lend_out_to"-->
-    <!--        style="@style/TIL"-->
-    <!--        android:hint="@string/lbl_lend_out"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/lbl_publisher"-->
-    <!--        >-->
-
-    <!--        <com.google.android.material.textfield.TextInputEditText-->
-    <!--            android:id="@+id/loanee"-->
-    <!--            style="@style/TIE"-->
-    <!--            android:imeOptions="actionDone"-->
-    <!--            android:inputType="textMultiLine"-->
-    <!--            tools:ignore="Autofill"-->
-    <!--            />-->
-
-    <!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_keywords"
-        style="@style/TIL"
-        android:hint="@string/lbl_keywords"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/keywords"
-            style="@style/TIE"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine"
-            tools:ignore="Autofill"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/books_found"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_search"
-        tools:text="# books found"
-        />
-
-    <Button
-        android:id="@+id/btn_search"
-        style="@style/Button.Action.Submit"
-        android:text="@string/btn_show_list"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

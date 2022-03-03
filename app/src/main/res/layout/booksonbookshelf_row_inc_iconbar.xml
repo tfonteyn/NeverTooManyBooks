@@ -29,7 +29,6 @@
     android:focusable="true"
     android:longClickable="true"
     android:orientation="vertical"
-    tools:ignore="TouchTargetSizeCheck"
     tools:viewBindingIgnore="true"
     >
 

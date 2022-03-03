@@ -19,16 +19,15 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/container_margin"
-    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-    app:spanCount="1"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_edit_bookshelf"
-    />
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/ic_baseline_check_box_24"
+        android:state_checked="true" />
+
+    <item android:drawable="@drawable/ic_baseline_check_box_outline_blank_24"
+        android:state_checked="false" />
+
+    <item
+        android:drawable="@drawable/ic_baseline_check_box_outline_blank_24" />
+
+</selector>

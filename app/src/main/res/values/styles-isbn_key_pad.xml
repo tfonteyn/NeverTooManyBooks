@@ -33,12 +33,7 @@
 
     <!-- 0..9 and X -->
     <style name="IsbnKeyPad.NumberButton">
-        <item name="android:textSize">22sp</item>
-    </style>
-
-    <style name="IsbnKeyPad.SearchButton">
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/isbn_keypad_number_text_size</item>
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton" parent="Widget.Material3.Button.IconButton">
@@ -50,4 +45,19 @@
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
+    <style name="IsbnKeyPad.SearchButton">
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="android:text">@android:string/search_go</item>
+    </style>
+
+    <style name="IsbnKeyPad.ClearQueueButton" parent="Widget.Material3.Button.ElevatedButton.Icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:layout_marginTop">@dimen/section_margin_top</item>
+        <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="iconGravity">end</item>
+        <item name="icon">@drawable/ic_baseline_cancel_24</item>
+    </style>
 </resources>

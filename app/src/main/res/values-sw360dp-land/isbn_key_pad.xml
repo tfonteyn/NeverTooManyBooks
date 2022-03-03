@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,4 +26,7 @@
 -->
 <resources>
     <dimen name="isbn_keypad_key_height">64dp</dimen>
+    <dimen name="isbn_keypad_key_width">146dp</dimen>
+
+    <dimen name="isbn_keypad_number_text_size">22sp</dimen>
 </resources>

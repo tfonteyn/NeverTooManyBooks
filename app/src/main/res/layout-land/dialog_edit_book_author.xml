@@ -92,6 +92,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_family_name"
                 style="@style/TIL.AutoCompleteTextView"
+                android:layout_marginEnd="@dimen/field_margin_inline"
                 android:hint="@string/lbl_family_name"
                 app:layout_constraintEnd_toStartOf="@id/lbl_given_names"
                 app:layout_constraintStart_toStartOf="parent"
@@ -110,9 +111,11 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_given_names"
                 style="@style/TIL.AutoCompleteTextView"
+                android:layout_marginStart="@dimen/field_margin_inline"
+                android:layout_marginEnd="@dimen/field_margin_inline"
                 android:hint="@string/lbl_given_names"
-                android:paddingStart="@dimen/field_margin_inline"
-                android:paddingEnd="@dimen/field_margin_inline"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 app:layout_constraintBaseline_toBaselineOf="@id/lbl_family_name"
                 app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
                 app:layout_constraintStart_toEndOf="@id/lbl_family_name"
@@ -148,9 +151,11 @@
 
             <View
                 android:id="@+id/barrier_types_top"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="?attr/colorPrimary"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="?attr/dividerHorizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_use_author_type"
                 />
 

@@ -33,7 +33,7 @@
     <style name="Flag.Read">
         <item name="android:contentDescription">@string/lbl_read</item>
         <item name="android:src">@drawable/ic_baseline_file_download_done_24</item>
-        <item name="android:tint">?attr/colorSecondary</item>
+        <item name="android:tint">?attr/colorControlActivated</item>
     </style>
 
     <!-- A book is a first edition. -->
@@ -51,7 +51,7 @@
     <!-- A book is signed. Meant to be used with a text label. -->
     <style name="Flag.Signed.Check">
         <item name="android:src">@drawable/ic_baseline_check_24</item>
-        <item name="android:tint">?attr/colorSecondary</item>
+        <item name="android:tint">?attr/colorControlActivated</item>
     </style>
 
     <!-- A book has been lend out. -->
@@ -65,6 +65,6 @@
     <style name="Flag.Complete">
         <item name="android:contentDescription">@string/lbl_is_complete</item>
         <item name="android:src">@drawable/ic_baseline_done_all_24</item>
-        <item name="android:tint">?attr/colorSecondary</item>
+        <item name="android:tint">?attr/colorControlActivated</item>
     </style>
 </resources>

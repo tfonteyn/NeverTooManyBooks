@@ -28,22 +28,25 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="TIL.Button" parent="Widget.Material3.Button.IconButton" />
-
-    <!-- Icon button positioned at the end of an EditText; serving as a extended edit action. -->
-    <style name="TIL.Button.ExtEdit">
-        <item name="android:enabled">true</item>
+    <style name="TIL.Button" parent="Widget.Material3.Button.IconButton">
         <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <!-- Icon button positioned at the end of an EditText to start a barcode scan. -->
+    <style name="TIL.Button.Scan" parent="Widget.Material3.Button.ElevatedButton.Icon">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:enabled">true</item>
         <item name="android:layout_marginTop">6dp</item>
         <item name="android:layout_marginStart">8dp</item>
+        <item name="android:contentDescription">@string/menu_barcode_scan</item>
+        <item name="icon">@drawable/ic_barcode</item>
         <item name="iconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- mimic the endIconMode="clear_text" for fields where using the builtin icon does not work -->
     <style name="TIL.Button.Clear">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
         <item name="android:visibility">invisible</item>
         <item name="android:elevation">4dp</item>
         <item name="android:src">@drawable/ic_baseline_cancel_24</item>
@@ -55,7 +58,7 @@
     <style name="TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <item name="android:layout_margin">@dimen/til_margin</item>
         <item name="endIconMode">clear_text</item>
     </style>
 
@@ -66,28 +69,49 @@
 
     <!-- a fixed width box for an external id field. -->
     <style name="TIL.ExternalId">
-        <item name="android:layout_width">280dp</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_external_id</item>
     </style>
 
     <!-- a fixed width box for a 4-digit year. -->
     <style name="TIL.Year">
         <item name="android:hint">@string/lbl_year</item>
-        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_year</item>
     </style>
 
     <!-- a fixed width box for a books number in a series. -->
     <style name="TIL.SeriesNum">
         <item name="android:hint">@string/lbl_series_num</item>
-        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_series_num</item>
     </style>
 
-    <!-- TextWatcher handles the icon. -->
+    <!-- An ISBN field - a TextWatcher handles the icon. -->
     <style name="TIL.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
-        <item name="startIconTint">?attr/colorSecondary</item>
+        <item name="startIconTint">?attr/colorControlActivated</item>
     </style>
 
+    <!-- An ISBN field with adjacent Scan button. -->
+    <style name="TIL.Isbn.Scan">
+    </style>
+
+    <!-- A multi-line note/description field. -->
+    <style name="TIL.Note">
+    </style>
+
+    <style name="TIL.Price">
+        <item name="android:layout_width">@dimen/til_fixed_width_price</item>
+    </style>
+
+    <style name="TIL.Currency" parent="TIL.AutoCompleteTextView">
+        <item name="android:hint">@string/lbl_currency</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_currency</item>
+    </style>
+
+    <style name="TIL.Language" parent="TIL.AutoCompleteTextView">
+        <item name="android:hint">@string/lbl_language</item>
+        <item name="android:layout_width">@dimen/til_fixed_width_language</item>
+    </style>
 
     <!-- A TextInputLayout style specific for fields where the inner field is a (Material)AutoCompleteTextView.
 
@@ -102,7 +126,7 @@
         parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <item name="android:layout_margin">@dimen/til_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
@@ -116,7 +140,7 @@
         <item name="endIconTint">?attr/colorOnSurface</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <item name="android:layout_margin">@dimen/til_margin</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -195,14 +219,11 @@
     <!-- International three character currency code (uppercase).
          Not localized.
     -->
-    <style name="TIA.Currency" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="TIA.Currency">
+        <item name="android:completionThreshold">1</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
-        <item name="android:minWidth">120dp</item>
         <item name="android:maxLength">3</item>
-        <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
         <item name="android:background">@null</item>
     </style>
@@ -210,10 +231,5 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="Edit.Rating" parent="Widget.AppCompat.RatingBar">
-        <item name="android:numStars">5</item>
-        <!-- don't add a margin to top/bottom; the height is already 57dp which is 1dp more then actually wanted.-->
-        <item name="android:layout_marginStart">@dimen/til_field_margin</item>
-        <item name="android:layout_marginEnd">@dimen/til_field_margin</item>
-    </style>
+
 </resources>

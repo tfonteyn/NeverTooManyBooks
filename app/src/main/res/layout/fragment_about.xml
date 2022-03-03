@@ -52,9 +52,9 @@
     <TextView
         android:id="@+id/version"
         style="@style/About.Version"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="@id/app_name"
         app:layout_constraintTop_toBottomOf="@id/app_name"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
         tools:text="a.b.c"
         />
 
@@ -110,37 +110,37 @@
     <TextView
         android:id="@+id/book_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="1234"
-        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/series_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="234"
-        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/author_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="567"
-        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/publisher_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="89"
-        tools:ignore="SelectableText"
         />
 
     <TextView

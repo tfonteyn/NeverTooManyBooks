@@ -29,7 +29,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -48,12 +48,12 @@
             app:layout_constraintGuide_percent="0.5"
             />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/col3"
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.73"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,col1"
             />
 
         <ImageView
@@ -62,7 +62,6 @@
             android:layout_width="@dimen/cover_edit_0_width"
             android:layout_height="@dimen/cover_edit_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintEnd_toStartOf="@id/cover_image_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -73,8 +72,8 @@
             style="@style/CoverImage"
             android:layout_width="@dimen/cover_edit_1_width"
             android:layout_height="@dimen/cover_edit_1_height"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -97,7 +96,7 @@
             style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
             >
 
@@ -113,8 +112,8 @@
             android:id="@+id/lbl_title"
             style="@style/TIL"
             android:hint="@string/lbl_title"
-            app:layout_constraintEnd_toStartOf="@id/col3"
-            app:layout_constraintStart_toStartOf="@id/col1"
+            app:layout_constraintEnd_toStartOf="@id/lbl_language"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
@@ -130,11 +129,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_language"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_language"
+            style="@style/TIL.Language"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/col3"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -147,9 +144,18 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_covers_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title,lbl_language"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
-            style="@style/TIL.Isbn"
+            style="@style/TIL.Isbn.Scan"
+            android:layout_marginTop="@dimen/section_margin_top"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toStartOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
@@ -167,21 +173,11 @@
 
         <Button
             android:id="@+id/btn_scan"
-            style="@style/TIL.Button.ExtEdit"
-            android:contentDescription="@string/menu_barcode_scan"
-            app:icon="@drawable/ic_barcode"
+            style="@style/TIL.Button.Scan"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
             app:layout_constraintTop_toTopOf="@id/lbl_isbn"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_covers_bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="cover_image_0,cover_image_1,lbl_title,lbl_language"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -240,7 +236,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_description"
-            style="@style/TIL"
+            style="@style/TIL.Note"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_description"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="parent"
@@ -252,8 +249,8 @@
                 style="@style/notesTextEntry"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
-                tools:text="@tools:sample/lorem/random"
                 tools:maxLines="10"
+                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

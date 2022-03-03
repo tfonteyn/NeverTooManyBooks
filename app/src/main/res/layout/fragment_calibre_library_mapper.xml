@@ -25,6 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopCentered"
     android:visibility="invisible"
+    tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 
@@ -82,8 +83,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_bookshelf"
         style="@style/Button.DropdownMenu"
+        android:layout_marginTop="@dimen/field_margin_top"
         android:hint="@string/lbl_bookshelf"
-        android:paddingTop="@dimen/field_label_margin_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_library_name"
         app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
@@ -105,6 +106,7 @@
         style="@style/Text.Header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:text="@string/lbl_virtual_libraries"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,21 +114,20 @@
         tools:visibility="visible"
         />
 
+    <!-- URGENT - fails to scroll -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/virtualLibraries"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         android:nestedScrollingEnabled="true"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.562"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_vlibs"
-        app:layout_constraintVertical_bias="0.0"
         tools:itemCount="4"
         tools:listitem="@layout/row_edit_calibre_library"
         tools:visibility="visible"

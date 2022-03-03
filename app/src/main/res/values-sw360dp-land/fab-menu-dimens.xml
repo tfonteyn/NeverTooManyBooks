@@ -19,16 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/container_margin"
-    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-    app:spanCount="1"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_edit_bookshelf"
-    />
+<resources>
+    <dimen name="fab_menu_translationX">-70dp</dimen>
+
+    <dimen name="fab_menu_translationX_0">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_1">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_2">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_3">@dimen/fab_menu_translationX</dimen>
+    <dimen name="fab_menu_translationX_4">@dimen/fab_menu_translationX</dimen>
+
+    <dimen name="fab_menu_translationY_0">30dp</dimen>
+    <dimen name="fab_menu_translationY_1">-35dp</dimen>
+    <dimen name="fab_menu_translationY_2">-100dp</dimen>
+    <dimen name="fab_menu_translationY_3">-165dp</dimen>
+    <dimen name="fab_menu_translationY_4">-230dp</dimen>
+</resources>

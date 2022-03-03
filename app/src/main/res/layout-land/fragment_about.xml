@@ -24,7 +24,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopCentered"
-    android:minWidth="500dp"
     tools:context=".FragmentHostActivity"
     >
 
@@ -53,9 +52,9 @@
     <TextView
         android:id="@+id/version"
         style="@style/About.Version"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="@id/app_name"
         app:layout_constraintTop_toBottomOf="@id/app_name"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
         tools:text="a.b.c"
         />
 
@@ -111,37 +110,37 @@
     <TextView
         android:id="@+id/book_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
-        tools:ignore="SelectableText"
         tools:text="1234"
         />
 
     <TextView
         android:id="@+id/series_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
-        tools:ignore="SelectableText"
         tools:text="234"
         />
 
     <TextView
         android:id="@+id/author_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
-        tools:ignore="SelectableText"
         tools:text="567"
         />
 
     <TextView
         android:id="@+id/publisher_count"
         style="@style/About.Statistic"
+        android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
-        tools:ignore="SelectableText"
-        tools:text="89"
+        tools:text="13"
         />
 
     <TextView

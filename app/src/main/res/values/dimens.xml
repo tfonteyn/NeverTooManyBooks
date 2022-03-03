@@ -42,31 +42,19 @@
     land: w533dp h296dp
 -->
 <resources>
+    <!-- use a double redirect; e.g.  <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>     -->
+    <item name="match_parent" format="integer" type="dimen">-1</item>
+    <item name="wrap_content" format="integer" type="dimen">-2</item>
+
     <!--
      https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
-          No idea why they calculate them in the above link.
-      0: compact; 1: medium; 2: expanded
+
+                    width         height
+      0  Compact    < 600dp      < 480dp
+      1  Medium     600dp+       480dp+     ==> sw600
+      2  Expanded   840dp+       900dp+     ==> sw800
     -->
     <integer name="window_class">0</integer>
-
-    <!-- The minimum width for layouts which are centered.
-        android:layout_width="wrap_content"
-        android:layout_gravity="center_horizontal"
-     This is based on 4WVGA 4.0" -->
-    <dimen name="screen_min_width">300dp</dimen>
-
-
-    <!-- elevation for the progress overlay. -->
-    <dimen name="progress_z_backdrop">4dp</dimen>
-    <!-- elevation for the progress overlay. -->
-    <dimen name="progress_z">8dp</dimen>
-    <!-- offset from the top for the progress overlay. -->
-    <dimen name="progress_margin_top">100dp</dimen>
-    <!-- same as "screen_min_width". -->
-    <dimen name="progress_width">300dp</dimen>
-    <!-- generic padding for progress views. -->
-    <dimen name="progress_padding">8dp</dimen>
-
 
     <!-- Navigation panel header. -->
     <dimen name="nav_header_horizontal_padding">16dp</dimen>
@@ -76,129 +64,18 @@
     <!-- square dimensions of the icon. -->
     <dimen name="nav_header_icon_size">100dp</dimen>
 
-    <!-- Spacing around the FAB. -->
-    <dimen name="fab_margin">16dp</dimen>
 
-    <!-- in portrait, the start of the fab-menu is shown above the fab button,
-         with a small offset to the left -->
-    <dimen name="fab_menu_translationX">-30dp</dimen>
+    <!-- elevation for the progress overlay. -->
+    <dimen name="progress_z_backdrop">4dp</dimen>
+    <!-- elevation for the progress overlay. -->
+    <dimen name="progress_z">8dp</dimen>
+    <!-- offset from the top for the progress overlay. -->
+    <dimen name="progress_margin_top">100dp</dimen>
+    <!-- layout_width for the progress dialog. -->
+    <dimen name="progress_width">300dp</dimen>
+    <!-- generic padding for progress title/message/bar views. -->
+    <dimen name="progress_padding">4dp</dimen>
 
-    <dimen name="fab_menu_translationX_0">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_1">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_2">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_3">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_4">@dimen/fab_menu_translationX</dimen>
-
-    <dimen name="fab_menu_translationY_0">-10dp</dimen>
-    <!-- add "-65" to place each button above the previous one -->
-    <dimen name="fab_menu_translationY_1">-75dp</dimen>
-    <dimen name="fab_menu_translationY_2">-140dp</dimen>
-    <dimen name="fab_menu_translationY_3">-205dp</dimen>
-    <dimen name="fab_menu_translationY_4">-270dp</dimen>
-
-    <!-- The above separate definitions allow us to set them as "tools:" attributes
-         but it's these arrays which are accessed from code. -->
-    <array name="fab_menu_translationX_all">
-        <item>@dimen/fab_menu_translationX_0</item>
-        <item>@dimen/fab_menu_translationX_1</item>
-        <item>@dimen/fab_menu_translationX_2</item>
-        <item>@dimen/fab_menu_translationX_3</item>
-        <item>@dimen/fab_menu_translationX_4</item>
-    </array>
-
-    <array name="fab_menu_translationY_all">
-        <item>@dimen/fab_menu_translationY_0</item>
-        <item>@dimen/fab_menu_translationY_1</item>
-        <item>@dimen/fab_menu_translationY_2</item>
-        <item>@dimen/fab_menu_translationY_3</item>
-        <item>@dimen/fab_menu_translationY_4</item>
-    </array>
-
-    <!-- the margin around the CardView. -->
-    <dimen name="bob_book_card_margin">8dp</dimen>
-    <!-- The content padding used for the CardView content displaying a Book. -->
-    <dimen name="bob_book_card_content_padding">4dp</dimen>
-    <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
-    <dimen name="bob_group_level_1_margin_top">4dp</dimen>
-    <!-- indent multiplier for the levels in the booklist:
-         paddingStart = (level-1) * bob_group_level_padding_start. -->
-    <dimen name="bob_group_level_padding_start">8dp</dimen>
-    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
-
-    <!-- on larger screens we'll add an end-margin to allow easier scrolling. -->
-    <dimen name="bob_list_end_margin">0dp</dimen>
-
-    <!-- The text size (in sp units, but in float notation) for all text in a book list row.
-         For reference:
-        {@code
-           <dimen name="text_size_small_material">14sp</dimen>
-           <dimen name="text_size_medium_material">18sp</dimen>
-           <dimen name="text_size_large_material">22sp</dimen>
-        }
-
-         Index 2 -> 18sp being the default.
-    -->
-    <array name="bob_text_size_in_sp">
-        <item>12.0</item>
-        <item>14.0</item>
-        <item>18.0</item>
-        <item>22.0</item>
-        <item>32.0</item>
-    </array>
-    <!-- Padding scale factor (we multiply this value with the actual padding settings)
-         to go with "bob_text_size_in_sp".
-         Index 2 -> 1x being the default.
-    -->
-    <array name="bob_text_padding_in_percent">
-        <item>0.77</item>
-        <item>0.88</item>
-        <item>1</item>
-        <item>1.11</item>
-        <item>1.22</item>
-    </array>
-
-
-    <!-- generic drawable padding when the icon is placed in front of a text. -->
-    <dimen name="drawable_padding_start">20dp</dimen>
-    <!-- generic drawable padding when the icon is placed at the end of the text. -->
-    <dimen name="drawable_padding_end">10dp</dimen>
-
-
-    <!-- layout_margin for top level layouts. -->
-    <dimen name="screen_border">4dp</dimen>
-
-    <!-- The margin on top of a generic section/group of data on a screen. -->
-    <dimen name="section_margin_top">4dp</dimen>
-    <!-- margin (start or end) applied to the 2nd, 3rd.. section on a line. -->
-    <dimen name="section_margin_inline">40dp</dimen>
-
-    <!-- compliments "?attr/dialogPreferredPadding" which is used for start/end.
-         the 18/12 is taken from "abc_dialog_padding_top_material" -->
-    <dimen name="dialogPreferredPaddingTop">18dp</dimen>
-    <dimen name="dialogPreferredPaddingBottom">12dp</dimen>
-
-
-    <!-- Margin applied around all TextInputLayout fields. Larger on larger size displays. -->
-    <dimen name="til_field_margin">2dp</dimen>
-
-
-    <!-- Above the label of a field. -->
-    <dimen name="field_label_margin_top">4dp</dimen>
-
-    <!-- Start margin (and optional end) applied to a field.
-         Used for individual fields, or with a Guideline for a group of fields. -->
-    <dimen name="field_margin_start">4dp</dimen>
-    <!-- margin (start or end) applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="field_margin_inline">6dp</dimen>
-    <dimen name="field_margin_inline_large">12dp</dimen>
-
-
-    <!-- The width of an on-screen menu/action/url button.
-         Intended to be 'almost' as wide as a phone screen in portrait mode.
-         The 296 value is based on 4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
-         Should/can be overridden in bigger-screen dimen.xml files.
-    -->
-    <dimen name="large_menu_button">296dp</dimen>
 
     <!-- ExtPopupMenu: the indentation for a dropdown -->
     <dimen name="popup_menu_x_offset">48dp</dimen>
@@ -206,5 +83,98 @@
     <dimen name="popup_menu_elevation">8dp</dimen>
     <!-- ExtPopupMenu: when a title is visible, we want some border. -->
     <dimen name="popup_menu_title_padding">4dp</dimen>
+    <!-- ExtPopupMenu and similar dialogs: drawable padding. -->
+    <dimen name="popup_menu_drawable_padding">20dp</dimen>
+
+
+    <!-- compliments "?attr/dialogPreferredPadding" which is used for start/end.
+         the 18/12 is taken from "abc_dialog_padding_top_material" -->
+    <dimen name="dialogPreferredPaddingTop">18dp</dimen>
+    <dimen name="dialogPreferredPaddingBottom">12dp</dimen>
+
+    <!-- Make a header text align with list elements which are preceded by an icon.
+         Intention is to mimic a PreferenceCategory title indent. -->
+    <dimen name="preference_header_margin_start">52dp</dimen>
+
+    <!-- layout_margin for top level layouts. -->
+    <dimen name="container_margin">4dp</dimen>
+
+
+    <!-- The margin on top of a generic section/group of data on a screen. -->
+    <dimen name="section_margin_top">4dp</dimen>
+    <!-- Top margin applied to a field (or its label). -->
+    <dimen name="field_margin_top">4dp</dimen>
+    <!-- Start margin (and occasionally end) applied to a field. -->
+    <dimen name="field_margin_start">4dp</dimen>
+    <!-- Start margin (and occasionally end) applied to the 2nd, 3rd.. field on a line of fields. -->
+    <dimen name="field_margin_inline">6dp</dimen>
+
+
+    <!-- Margin applied around all TIL fields. -->
+    <dimen name="til_margin">2dp</dimen>
+    <!-- fixed width TIL fields -->
+    <dimen name="til_fixed_width_year">120dp</dimen>
+    <dimen name="til_fixed_width_price">160dp</dimen>
+    <dimen name="til_fixed_width_currency">140dp</dimen>
+    <dimen name="til_fixed_width_language">160dp</dimen>
+    <dimen name="til_fixed_width_series_num">200dp</dimen>
+    <dimen name="til_fixed_width_external_id">160dp</dimen>
+
+    <!-- sw360 uses the normal "wrap_content" -->
+    <dimen name="btn_open_toc_width">72dp</dimen>
+    <dimen name="btn_open_toc_height">40dp</dimen>
+
+    <!--  ?attr/textAppearanceLabelLarge ->  textSide: 14sp -> this is the normal size
+          ?attr/textAppearanceLabelMedium -> textSide: 12sp   -->
+    <dimen name="btn_open_toc_text_size">12sp</dimen>
+
+    <!-- the margin around the CardView. -->
+    <dimen name="bob_book_card_margin">8dp</dimen>
+    <!-- The content padding used for the CardView content displaying a Book. -->
+    <dimen name="bob_book_card_content_padding">4dp</dimen>
+    <!-- top margin for the top-level rows (groups); also known as "fat_finger_spacer" -->
+    <dimen name="bob_group_level_1_margin_top">4dp</dimen>
+    <!-- multipliers for the levels in the booklist:
+         paddingStart = (level-1) * bob_group_level_padding_start. -->
+    <dimen name="bob_group_level_padding_start">8dp</dimen>
+    <dimen name="bob_group_level_bullet_padding">4dp</dimen>
+
+    <!-- on larger screens we'll add an end-margin to allow easier scrolling. -->
+    <dimen name="bob_list_end_margin">2dp</dimen>
+
+    <!-- The text size (in sp units, but in float notation) for all text in a book list row. -->
+    <array name="bob_text_size_in_sp">
+        <item>12.0</item>
+        <!-- <dimen name="text_size_small_material">14sp</dimen> -->
+        <item>14.0</item>
+        <!-- DEFAULT - <dimen name="text_size_medium_material">18sp</dimen> -->
+        <item>18.0</item>
+        <!-- <dimen name="text_size_large_material">22sp</dimen> -->
+        <item>22.0</item>
+        <item>32.0</item>
+    </array>
+    <!-- Padding multiplier for the actual padding settings to go with "bob_text_size_in_sp". -->
+    <array name="bob_text_padding_in_percent">
+        <item>0.77</item>
+        <item>0.88</item>
+        <!-- DEFAULT -->
+        <item>1</item>
+        <item>1.11</item>
+        <item>1.22</item>
+    </array>
+
+
+    <!-- The width for the "@style/TopCentered" - 8dp less than the next sw-->
+    <dimen name="top_centered_min_width">312dp</dimen>
+    <dimen name="top_centered_max_width">600dp</dimen>
+
+
+    <!-- The maximum size for a generic TIL -->
+    <dimen name="til_constraint_width_max">400dp</dimen>
+    <!-- TODO: we might be getting a bit too clever... a TIL which has a TIL.Button.ExtEdit at the end...
+        The latter is 48dp + 8dp start margin; so... "til_constraint_width_max" - 48 - 8 = 344 -->
+    <dimen name="til_constraint_width_max_with_ext_edit">344dp</dimen>
+    <!-- all TIL fields align at the start. -->
+    <dimen name="til_constraint_horizontal_bias">0</dimen>
 
 </resources>

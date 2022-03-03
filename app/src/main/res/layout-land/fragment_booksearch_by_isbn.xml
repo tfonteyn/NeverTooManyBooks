@@ -45,7 +45,6 @@
         <com.hardbacknutter.nevertoomanybooks.widgets.IsbnTextInputEditText
             android:id="@+id/isbn"
             style="@style/TIE.Isbn"
-            android:layout_width="match_parent"
             tools:ignore="Autofill,LabelFor"
             tools:text="@sample/data.json/isbn/d13"
             />
@@ -181,7 +180,6 @@
     <Button
         android:id="@+id/btn_search"
         style="@style/IsbnKeyPad.SearchButton"
-        android:text="@android:string/search_go"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_0"
         app:layout_constraintTop_toBottomOf="@id/key_9"
@@ -192,39 +190,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="end"
-        app:constraint_referenced_ids="lbl_queue,queue"
+        app:constraint_referenced_ids="queue"
         />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/queue_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="lbl_queue,btn_clear_queue,queue"
+        app:constraint_referenced_ids="btn_clear_queue,queue"
         />
 
-    <TextView
-        android:id="@+id/lbl_queue"
-        style="@style/Label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lbl_queue"
-        android:textIsSelectable="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/btn_clear_queue"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btn_clear_queue"
-        tools:visibility="visible"
-        />
 
-    <ImageButton
+    <Button
         android:id="@+id/btn_clear_queue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/transparent"
-        android:contentDescription="@string/btn_clear_queue"
-        android:src="@drawable/ic_mtrl_chip_close_circle_18"
-        app:layout_constraintStart_toEndOf="@id/lbl_queue"
-        app:layout_constraintTop_toTopOf="parent"
+        style="@style/IsbnKeyPad.ClearQueueButton"
+        android:text="@string/btn_clear_queue"
+        app:layout_constraintStart_toStartOf="@id/key_X"
+        app:layout_constraintTop_toBottomOf="@id/key_X"
         />
 
     <com.google.android.material.chip.ChipGroup
@@ -232,9 +214,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintEnd_toStartOf="@id/lbl_isbn"
-        app:layout_constraintStart_toStartOf="@id/lbl_queue"
-        app:layout_constraintTop_toBottomOf="@id/lbl_queue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"
         >
         <!--                <com.google.android.material.chip.Chip-->

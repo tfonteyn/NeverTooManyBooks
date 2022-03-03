@@ -32,7 +32,7 @@
         style="@style/BoB.Header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="@sample/data.json/styles/name"
         />
 
@@ -41,7 +41,7 @@
         style="@style/BoB.Header.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="the optional search text"
         />
 
@@ -50,7 +50,7 @@
         style="@style/BoB.Header.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_text"
-        tools:ignore="SelectableText,TouchTargetSizeCheck"
+        tools:ignore="SelectableText"
         tools:text="@string/txt_displaying_n_books_in_m_entries"
         />
 

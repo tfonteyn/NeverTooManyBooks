@@ -24,12 +24,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screen_border"
+    android:layout_margin="@dimen/container_margin"
     >
 
     <TextView
         android:id="@+id/header"
-        style="@style/Text.Header.Indented"
+        style="@style/Text.Header"
+        android:layout_marginStart="@dimen/preference_header_margin_start"
         android:text="@string/site_stripinfo_be"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -51,6 +52,7 @@
         android:text="@string/action_import"
         app:icon="@drawable/ic_baseline_cloud_download_24"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_sync"
         />
 
@@ -60,6 +62,7 @@
         android:text="@string/action_export"
         app:icon="@drawable/ic_baseline_send_24"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />
 

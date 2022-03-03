@@ -25,7 +25,7 @@
     android:id="@id/btn_option"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawablePadding="@dimen/drawable_padding_start"
+    android:drawablePadding="@dimen/popup_menu_drawable_padding"
     android:ellipsize="marquee"
     android:gravity="center_vertical"
     android:minHeight="?attr/listPreferredItemHeightSmall"

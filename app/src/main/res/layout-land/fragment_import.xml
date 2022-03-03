@@ -49,22 +49,24 @@
     <TextView
         android:id="@+id/archive_name"
         style="@style/Text.Body"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textIsSelectable="true"
         android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
-        tools:ignore="SelectableText"
         tools:text="archive name"
         />
 
     <TextView
         android:id="@+id/archive_content"
-        style="@style/Text.Body.Small"
-        android:layout_marginStart="@dimen/field_margin_start"
+        style="@style/Text.Body"
+        android:layout_marginStart="@dimen/field_margin_inline"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:layout_marginTop="@dimen/section_margin_top"
+        android:textIsSelectable="true"
         app:layout_constraintStart_toStartOf="@id/archive_name"
         app:layout_constraintTop_toBottomOf="@id/archive_name"
-        tools:ignore="SelectableText"
         tools:text="Books: 123\nCovers: 456"
         />
 

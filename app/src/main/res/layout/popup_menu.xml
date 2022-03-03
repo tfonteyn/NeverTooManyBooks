@@ -40,7 +40,6 @@
         android:textAppearance="?attr/textAppearancePopupMenuHeader"
         android:textIsSelectable="true"
         android:visibility="gone"
-        tools:ignore="TouchTargetSizeCheck"
         tools:text="Optional title"
         tools:visibility="visible"
         />
@@ -53,7 +52,6 @@
         android:padding="@dimen/popup_menu_title_padding"
         android:textIsSelectable="true"
         android:visibility="gone"
-        tools:ignore="TouchTargetSizeCheck"
         tools:text="Optional message"
         tools:visibility="visible"
         />

@@ -112,11 +112,20 @@
         />
 
     <TextView
+        android:id="@+id/lbl_anthology"
+        style="@style/Field.Generic.Small"
+        android:text="@string/lbl_anthology"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_publication"
+        app:layout_constraintTop_toBottomOf="@id/format"
+        />
+
+    <TextView
         android:id="@+id/color"
         style="@style/Field.Generic.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
-        app:layout_constraintTop_toBottomOf="@id/format"
+        app:layout_constraintTop_toBottomOf="@id/lbl_anthology"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/color/name"
         />

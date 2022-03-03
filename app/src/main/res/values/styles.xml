@@ -21,23 +21,24 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- *************************************************************************************** -->
     <!-- Label for a field (both view and edit screens). -->
-    <!-- *************************************************************************************** -->
     <style name="Label" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
     </style>
 
+    <!-- Label for a TextView with a 'check' at the end - used on view screens -->
     <style name="Label.Checked">
-        <item name="android:drawablePadding">@dimen/drawable_padding_end</item>
-        <item name="drawableEndCompat">@drawable/ic_baseline_check_box_24</item>
-        <item name="drawableTint">?attr/colorSecondary</item>
+        <item name="android:drawablePadding">@dimen/field_margin_inline</item>
+        <item name="android:drawableEnd">@drawable/ic_baseline_check_24</item>
+        <item name="drawableTint">?attr/colorControlActivated</item>
     </style>
+
+
 
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
@@ -50,21 +51,10 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <style name="Text.Header.Indented">
-        <!-- Make a header text align with list elements which are preceded by an icon.
-             Intention is to mimic a PreferenceCategory title indent. -->
-        <item name="android:layout_marginStart">52dp</item>
-    </style>
-
     <style name="Text.Body" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">true</item>
-        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-    </style>
-
-    <style name="Text.Body.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -169,9 +159,10 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
 
         <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
+
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -179,8 +170,7 @@
     <!-- *************************************************************************************** -->
 
     <!-- The TextInputLayout view as the equivalent of a Spinner for menu selections. -->
-    <style name="Button.DropdownMenu"
-        parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style name="Button.DropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- make the drop down arrow better visible. -->
@@ -189,7 +179,7 @@
 
     <!-- A button in a list of action-options. -->
     <style name="Button.Menu" parent="Widget.Material3.Button.TextButton">
-        <item name="android:layout_width">@dimen/large_menu_button</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">?attr/listPreferredItemHeight</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>
@@ -220,10 +210,14 @@
         <item name="android:insetRight">4dp</item>
     </style>
 
-    <!-- Opens more details etc... from within a screen. e.g. the "show toc" button. -->
-    <style name="Button.Action.Open" parent="Widget.Material3.Button.TonalButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <!-- The "show toc" button. -->
+    <style name="Button.Action.OpenToc" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:layout_width">@dimen/btn_open_toc_width</item>
+        <item name="android:layout_height">@dimen/btn_open_toc_height</item>
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="android:textSize">@dimen/btn_open_toc_text_size</item>
+        <item name="android:text">@string/lbl_toc</item>
+        <item name="android:contentDescription">@string/btn_show_toc_long</item>
     </style>
 
     <!-- A button which will take the user to an external website. -->
@@ -259,28 +253,25 @@
     <style name="About.Version" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
     <style name="About.Statistic" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:gravity">end</item>
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
     </style>
 
-    <style name="About.DebugVersion" parent="Field.Generic.Small">
+    <style name="About.DebugVersion" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- actionBarSize is a bit of a hack... but positioning
-             the fragment in the FragmentContainerView constrained to
-             the visible screen is elusive. -->
-        <item name="android:layout_marginBottom">?attr/actionBarSize</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:layout_marginBottom">@dimen/section_margin_top</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:textStyle">italic</item>
-
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -298,8 +289,9 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:layout_margin">@dimen/screen_border</item>
-        <item name="android:minWidth">@dimen/screen_min_width</item>
+        <item name="android:layout_margin">@dimen/container_margin</item>
+        <item name="android:minWidth">@dimen/top_centered_min_width</item>
+        <item name="android:maxWidth">@dimen/top_centered_max_width</item>
     </style>
 
     <!-- *************************************************************************************** -->

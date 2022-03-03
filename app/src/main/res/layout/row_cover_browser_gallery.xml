@@ -35,7 +35,6 @@
         android:textIsSelectable="true"
         android:textSize="@dimen/cover_browser_gallery_text_size"
         android:textStyle="italic"
-        tools:ignore="SmallSp,TouchTargetSizeCheck"
         tools:text="@sample/data.json/sites/name"
         />
 

@@ -64,12 +64,13 @@
                 />
 
             <TextView
-                android:id="@+id/statusMessage"
-                style="@style/Text.Body.Small"
+                android:id="@+id/status_message"
+                style="@style/Text.Body"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 app:layout_constraintStart_toStartOf="@id/progress_bar"
                 app:layout_constraintTop_toBottomOf="@id/progress_bar"
-                tools:ignore="SelectableText,TouchTargetSizeCheck"
                 tools:text="@string/progress_msg_searching_editions"
+                tools:ignore="SelectableText"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -82,7 +83,7 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/preview"
-                app:layout_constraintTop_toBottomOf="@id/statusMessage"
+                app:layout_constraintTop_toBottomOf="@id/status_message"
                 app:spanCount="@integer/cover_browser_gallery_span_count"
                 tools:itemCount="20"
                 tools:listitem="@layout/row_cover_browser_gallery"

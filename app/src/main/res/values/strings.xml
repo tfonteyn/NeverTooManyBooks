@@ -798,7 +798,7 @@
          Hence this string can/should be read as "Only import books modified since this date"
          Translated strings are usually longer... add one or more '\n' as needed.
          -->
-    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Only import books modified</string>
+    <string name="lbl_import_books_option_new_and_updated_cutoff_date">Only import books modified since</string>
     <string name="lbl_sync_date">Since</string>
 
     <!-- Radio button text -->

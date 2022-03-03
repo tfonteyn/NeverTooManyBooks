@@ -29,12 +29,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <TextView
             android:id="@+id/header"
-            style="@style/Text.Header.Indented"
+            style="@style/Text.Header"
+            android:layout_marginStart="@dimen/preference_header_margin_start"
             android:text="@string/pt_maintenance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,6 +47,7 @@
             android:text="@string/tip_reset_all"
             app:icon="@drawable/ic_baseline_undo_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/header"
             />
 
@@ -55,6 +57,7 @@
             android:text="@string/lbl_purge_files"
             app:icon="@drawable/ic_baseline_remove_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_reset_tips"
             />
 
@@ -64,6 +67,7 @@
             android:text="@string/lbl_purge_blns"
             app:icon="@drawable/ic_baseline_remove_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
             />
 
@@ -73,6 +77,7 @@
             android:text="@string/menu_rebuild_fts"
             app:icon="@drawable/ic_baseline_build_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
@@ -82,12 +87,14 @@
             android:text="@string/menu_rebuild_index"
             app:icon="@drawable/ic_baseline_build_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_fts"
             />
 
         <TextView
             android:id="@+id/btn_debug"
-            style="@style/Text.Header.Indented"
+            style="@style/Text.Header"
+            android:layout_marginStart="@dimen/preference_header_margin_start"
             android:text="@string/debug"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_index"
@@ -99,6 +106,7 @@
             android:text="@string/lbl_send_debug"
             app:icon="@drawable/ic_baseline_bug_report_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug"
             />
 
@@ -109,6 +117,7 @@
             android:visibility="gone"
             app:icon="@drawable/ic_baseline_content_copy_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug_send_mail"
             tools:visibility="visible"
             />
@@ -120,6 +129,7 @@
             android:visibility="gone"
             app:icon="@drawable/ic_baseline_keyboard_24"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug_dump_prefs"
             tools:visibility="visible"
             />

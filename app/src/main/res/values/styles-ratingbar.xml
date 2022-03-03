@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2018-2021 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Overridden in sw360 -->
+    <style name="Field.RatingBar.Indicator" parent="Field.RatingBar.Indicator.Small" />
+
+    <style name="Field.RatingBar.Indicator.Small" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:numStars">5</item>
+        <!-- There is no label. -->
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <style name="Field.RatingBar.Indicator.Medium" parent="Widget.AppCompat.RatingBar.Indicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:numStars">5</item>
+        <!-- There is no label. -->
+        <item name="android:layout_marginTop">@dimen/field_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <!-- Large size, editable -->
+    <style name="Field.RatingBar.Editable" parent="Widget.AppCompat.RatingBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:numStars">5</item>
+        <!--  There is no label.
+              Don't add a margin to top/bottom; the height is already 57dp which is 1dp more then actually wanted.
+              As this is always used on screens with TIL fields, we use the TIL margins here.
+         -->
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
+    </style>
+</resources>

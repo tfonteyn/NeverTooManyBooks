@@ -19,12 +19,6 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
-    -->
 <resources>
-    <dimen name="bob_list_end_margin">4dp</dimen>
-    <dimen name="progress_width">380dp</dimen>
+    <style name="Field.RatingBar.Indicator" parent="Field.RatingBar.Indicator.Medium" />
 </resources>

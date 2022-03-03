@@ -108,7 +108,7 @@
         android:id="@+id/lbl_archive_format"
         style="@style/Button.DropdownMenu"
         android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginTop="@dimen/field_label_margin_top"
+        android:layout_marginTop="@dimen/field_margin_top"
         android:hint="@string/lbl_archive_format"
         app:layout_constraintStart_toEndOf="@id/middle"
         app:layout_constraintTop_toBottomOf="@id/header"
@@ -127,7 +127,7 @@
 
     <TextView
         android:id="@+id/archive_format_info"
-        style="@style/Text.Body.Small"
+        style="@style/Text.Body"
         android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +139,7 @@
 
     <TextView
         android:id="@+id/archive_format_info_long"
-        style="@style/Text.Body.Small"
+        style="@style/Text.Body"
         android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintEnd_toEndOf="parent"

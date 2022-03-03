@@ -31,6 +31,7 @@
         <item name="android:focusable">true</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:scaleType">fitStart</item>
+        <item name="layout_constraintHorizontal_bias">0</item>
     </style>
 
     <style name="CoverImage.BrowserPreview">

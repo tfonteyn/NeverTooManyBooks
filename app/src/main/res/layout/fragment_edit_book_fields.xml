@@ -29,7 +29,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <ImageView
@@ -38,7 +38,6 @@
             android:layout_width="@dimen/cover_edit_0_width"
             android:layout_height="@dimen/cover_edit_0_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintEnd_toStartOf="@id/cover_image_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -49,8 +48,8 @@
             style="@style/CoverImage"
             android:layout_width="@dimen/cover_edit_1_width"
             android:layout_height="@dimen/cover_edit_1_height"
+            android:layout_marginStart="@dimen/field_margin_inline"
             android:contentDescription="@string/lbl_cover_back"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cover_image_0"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
@@ -79,6 +78,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.ReadOnly"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,9 +114,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_language"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_language"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/TIL.Language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
@@ -133,7 +131,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
-            style="@style/TIL.Isbn"
+            style="@style/TIL.Isbn.Scan"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
@@ -151,9 +149,7 @@
 
         <Button
             android:id="@+id/btn_scan"
-            style="@style/TIL.Button.ExtEdit"
-            android:contentDescription="@string/menu_barcode_scan"
-            app:icon="@drawable/ic_barcode"
+            style="@style/TIL.Button.Scan"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_isbn"
@@ -215,7 +211,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_description"
-            style="@style/TIL"
+            style="@style/TIL.Note"
             android:hint="@string/lbl_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -227,8 +223,8 @@
                 style="@style/notesTextEntry"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
-                tools:text="@tools:sample/lorem/random"
                 tools:maxLines="10"
+                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

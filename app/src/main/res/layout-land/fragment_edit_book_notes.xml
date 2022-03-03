@@ -33,7 +33,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screen_border"
+        android:layout_margin="@dimen/container_margin"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:layout_marginTop="@dimen/field_margin_top"
             android:text="@string/lbl_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -58,10 +58,8 @@
 
         <RatingBar
             android:id="@+id/rating"
-            style="@style/Edit.Rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/col1"
+            style="@style/Field.RatingBar.Editable"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="SpeakableTextPresentCheck"
             />
@@ -157,9 +155,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid_currency"
-            style="@style/TIL.AutoCompleteTextView"
-            android:layout_width="wrap_content"
-            android:hint="@string/lbl_currency"
+            style="@style/TIL.Currency"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
             app:layout_constraintStart_toStartOf="parent"
             >
@@ -176,9 +172,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid"
-            style="@style/TIL"
+            style="@style/TIL.Price"
             android:hint="@string/lbl_price_paid"
-            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             >
@@ -238,9 +233,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/field_margin_start"
-            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:layout_marginTop="@dimen/field_margin_top"
             android:text="@string/lbl_signed"
-            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintTop_toTopOf="parent"
             tools:checked="true"
             />
@@ -265,7 +260,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_personal_notes"
-            style="@style/TIL"
+            style="@style/TIL.Note"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -277,8 +272,8 @@
                 style="@style/notesTextEntry"
                 android:imeOptions="actionDone"
                 tools:ignore="Autofill"
-                tools:text="@tools:sample/lorem/random"
                 tools:maxLines="5"
+                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

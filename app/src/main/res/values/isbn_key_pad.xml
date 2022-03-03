@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,6 +29,8 @@
     <dimen name="isbn_keypad_key_height">64dp</dimen>
     <!-- The ISBN keypad key width.  -->
     <dimen name="isbn_keypad_key_width">96dp</dimen>
+
+    <dimen name="isbn_keypad_number_text_size">22sp</dimen>
 
     <!-- The ISBN keypad margin for the keys. -->
     <dimen name="isbn_keypad_key_margin">4dp</dimen>

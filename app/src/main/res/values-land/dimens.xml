@@ -20,29 +20,21 @@
   -->
 
 <resources>
-    <!-- The minimum width for layouts which are centered.
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
-         This is based on 4WVGA 4.0" -->
-    <dimen name="screen_min_width">520dp</dimen>
-
     <dimen name="progress_margin_top">50dp</dimen>
     <dimen name="progress_width">340dp</dimen>
 
-    <!-- in portrait, the start of the fab-menu is shown on the left of the fab button -->
-    <dimen name="fab_menu_translationX">-70dp</dimen>
+    <!-- fixed width TIL fields -->
+    <dimen name="til_fixed_width_year">120dp</dimen>
+    <dimen name="til_fixed_width_price">130dp</dimen>
+    <dimen name="til_fixed_width_currency">120dp</dimen>
+    <dimen name="til_fixed_width_language">200dp</dimen>
+    <dimen name="til_fixed_width_series_num">200dp</dimen>
+    <dimen name="til_fixed_width_external_id">200dp</dimen>
 
-    <!-- on the smallest screen, the 5 buttons are split in two columns -->
-    <dimen name="fab_menu_translationX_0">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_1">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_2">-260dp</dimen>
-    <dimen name="fab_menu_translationX_3">@dimen/fab_menu_translationX</dimen>
-    <dimen name="fab_menu_translationX_4">-260dp</dimen>
+    <dimen name="btn_open_toc_width">@dimen/wrap_content</dimen>
+    <dimen name="btn_open_toc_height">@dimen/wrap_content</dimen>
+    <dimen name="btn_open_toc_text_size">14sp</dimen>
 
-    <dimen name="fab_menu_translationY_0">10dp</dimen>
-    <dimen name="fab_menu_translationY_1">-55dp</dimen>
-    <dimen name="fab_menu_translationY_2">-20dp</dimen>
-    <dimen name="fab_menu_translationY_3">-120dp</dimen>
-    <dimen name="fab_menu_translationY_4">-85dp</dimen>
-
+    <dimen name="top_centered_min_width">520dp</dimen>
+    <dimen name="top_centered_max_width">800dp</dimen>
 </resources>
