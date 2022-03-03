@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -74,10 +75,15 @@ public class EditBookExternalIdFragment
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
+
+        //noinspection ConstantConditions
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
         // hide unwanted fields
         // Force hidden fields to stay hidden; this will allow us to temporarily remove
         // some sites without removing the data.
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), false, true));
+        fields.forEach(field -> field.setVisibility(global, getView(), false, true));
     }
 }

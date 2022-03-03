@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -292,7 +294,11 @@ public class EditBookTocFragment
         populateTocBits(book.getContentType());
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), false, false));
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
+        //noinspection ConstantConditions
+        fields.forEach(field -> field.setVisibility(global, getView(), false, false));
     }
 
     private void populateTocBits(@NonNull final Book.ContentType contentType) {

@@ -236,8 +236,12 @@ public class EditBookFieldsFragment
             mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
 
+
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), false, false));
+        fields.forEach(field -> field.setVisibility(global, getView(), false, false));
     }
 
     @Override
