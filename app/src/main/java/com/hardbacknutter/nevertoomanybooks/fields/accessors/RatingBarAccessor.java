@@ -30,21 +30,12 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * RatingBar accessor.
  * <p>
  * A {@code null} value is always handled as {@code 0}.
- *
- * <pre>
- *     {@code
- *             <RatingBar
- *             android:id="@+id/rating"
- *             style="@style/Field.RatingBar"
- *             android:layout_width="wrap_content"
- *             android:layout_height="wrap_content"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
- *             />}
- * </pre>
  */
 public class RatingBarAccessor
-        extends BaseDataAccessor<Float, RatingBar> {
+        extends BaseFieldViewAccessor<Float, RatingBar> {
+
+    /** Are we viewing {@code false} or editing {@code true} a Field. */
+    private final boolean mIsEditable;
 
     public RatingBarAccessor(final boolean isEditable) {
         mIsEditable = isEditable;

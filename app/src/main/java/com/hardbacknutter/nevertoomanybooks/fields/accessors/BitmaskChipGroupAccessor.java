@@ -43,13 +43,16 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class BitmaskChipGroupAccessor
-        extends BaseDataAccessor<Integer, ChipGroup> {
+        extends BaseFieldViewAccessor<Integer, ChipGroup> {
 
     @NonNull
     private final Function<Context, Map<Integer, String>> mValuesSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
+
+    /** Are we viewing {@code false} or editing {@code true} a Field. */
+    private final boolean mIsEditable;
 
     /**
      * Constructor.

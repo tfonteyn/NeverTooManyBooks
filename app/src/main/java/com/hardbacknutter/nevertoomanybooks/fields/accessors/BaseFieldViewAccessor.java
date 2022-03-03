@@ -39,10 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
  * @param <T> type of Field value.
  * @param <V> type of Field View.
  */
-public abstract class BaseDataAccessor<T, V extends View>
+public abstract class BaseFieldViewAccessor<T, V extends View>
         implements FieldViewAccessor<T, V> {
 
+    /** Allows callbacks to the Field. */
     Field<T, V> mField;
+
     /**
      * The value which is currently held in memory.
      * If there is no current View, then this value *is* the correct current value.
@@ -53,8 +55,7 @@ public abstract class BaseDataAccessor<T, V extends View>
      */
     @Nullable
     T mRawValue;
-    /** Specific to accessors that need to know if we're viewing or editing a Field. */
-    boolean mIsEditable;
+
     /**
      * The value as originally loaded from the database
      * by {@link #setInitialValue(DataManager)}.
@@ -158,10 +159,9 @@ public abstract class BaseDataAccessor<T, V extends View>
     @Override
     @NonNull
     public String toString() {
-        return "BaseDataAccessor{" +
+        return "BaseFieldViewAccessor{" +
                mField.getKey() +
-               ": mIsEditable=" + mIsEditable +
-               ", mInitialValue=" + mInitialValue +
+               ": mInitialValue=" + mInitialValue +
                ", mRawValue=" + mRawValue +
                ", mCurrentValue=" + getValue() +
                '}';

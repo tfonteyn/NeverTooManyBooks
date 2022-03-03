@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldImpl;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
@@ -854,186 +855,189 @@ public class EditBookViewModel
     }
 
     private void initFieldsMain(@NonNull final FragmentId fragmentId) {
-        mFields.add(new Field<>(fragmentId, R.id.author,
-                                new TextViewAccessor<>(new AuthorListFormatter(
-                                        Author.Details.Short, true, false)),
-                                Book.BKEY_AUTHOR_LIST,
-                                DBKey.FK_AUTHOR)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.author,
+                                    new TextViewAccessor<>(new AuthorListFormatter(
+                                            Author.Details.Short, true, false)),
+                                    Book.BKEY_AUTHOR_LIST,
+                                    DBKey.FK_AUTHOR)
                             .setErrorViewId(R.id.lbl_author)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString)));
 
-        mFields.add(new Field<>(fragmentId, R.id.series_title,
-                                new TextViewAccessor<>(new SeriesListFormatter(
-                                        Series.Details.Short, true, false)),
-                                Book.BKEY_SERIES_LIST,
-                                DBKey.KEY_SERIES_TITLE)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.series_title,
+                                    new TextViewAccessor<>(new SeriesListFormatter(
+                                            Series.Details.Short, true, false)),
+                                    Book.BKEY_SERIES_LIST,
+                                    DBKey.KEY_SERIES_TITLE)
                             .setRelatedFields(R.id.lbl_series));
 
-        mFields.add(new Field<>(fragmentId, R.id.title,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_TITLE)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.title,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_TITLE)
                             .setErrorViewId(R.id.lbl_title)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString)));
 
-        mFields.add(new Field<>(fragmentId, R.id.description,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_DESCRIPTION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.description,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_DESCRIPTION)
                             .setRelatedFields(R.id.lbl_description));
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        mFields.add(new Field<>(fragmentId, R.id.isbn,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_ISBN)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.isbn,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_ISBN)
                             .setRelatedFields(R.id.lbl_isbn));
 
-        mFields.add(new Field<>(fragmentId, R.id.language,
-                                new AutoCompleteTextAccessor(
-                                        mLanguageFormatter, true,
-                                        this::getAllLanguagesCodes),
-                                DBKey.KEY_LANGUAGE)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.language,
+                                    new AutoCompleteTextAccessor(
+                                            mLanguageFormatter, true,
+                                            this::getAllLanguagesCodes),
+                                    DBKey.KEY_LANGUAGE)
                             .setErrorViewId(R.id.lbl_language)
                             .setFieldValidator(field -> field.setErrorIfEmpty(
                                     mNonBlankRequiredString)));
 
-        mFields.add(new Field<>(fragmentId, R.id.genre,
-                                new AutoCompleteTextAccessor(this::getAllGenres),
-                                DBKey.KEY_GENRE)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.genre,
+                                    new AutoCompleteTextAccessor(this::getAllGenres),
+                                    DBKey.KEY_GENRE)
                             .setRelatedFields(R.id.lbl_genre));
 
         // Personal fields
 
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
-        mFields.add(new Field<>(fragmentId, R.id.bookshelves,
-                                new EditTextAccessor<>(new CsvFormatter(), true),
-                                Book.BKEY_BOOKSHELF_LIST,
-                                DBKey.FK_BOOKSHELF)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.bookshelves,
+                                    new EditTextAccessor<>(new CsvFormatter(), true),
+                                    Book.BKEY_BOOKSHELF_LIST,
+                                    DBKey.FK_BOOKSHELF)
                             .setRelatedFields(R.id.lbl_bookshelves));
     }
 
     private void initFieldsPublication(@NonNull final FragmentId fragmentId) {
 
-        mFields.add(new Field<>(fragmentId, R.id.pages,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_PAGES)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.pages,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_PAGES)
                             .setRelatedFields(R.id.lbl_pages));
 
-        mFields.add(new Field<>(fragmentId, R.id.format,
-                                new AutoCompleteTextAccessor(this::getAllFormats),
-                                DBKey.KEY_FORMAT)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.format,
+                                    new AutoCompleteTextAccessor(this::getAllFormats),
+                                    DBKey.KEY_FORMAT)
                             .setRelatedFields(R.id.lbl_format));
 
-        mFields.add(new Field<>(fragmentId, R.id.color,
-                                new AutoCompleteTextAccessor(this::getAllColors),
-                                DBKey.KEY_COLOR)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.color,
+                                    new AutoCompleteTextAccessor(this::getAllColors),
+                                    DBKey.KEY_COLOR)
                             .setRelatedFields(R.id.lbl_color));
 
-        mFields.add(new Field<>(fragmentId, R.id.publisher,
-                                new TextViewAccessor<>(new CsvFormatter()),
-                                Book.BKEY_PUBLISHER_LIST,
-                                DBKey.KEY_PUBLISHER_NAME)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.publisher,
+                                    new TextViewAccessor<>(new CsvFormatter()),
+                                    Book.BKEY_PUBLISHER_LIST,
+                                    DBKey.KEY_PUBLISHER_NAME)
                             .setRelatedFields(R.id.lbl_publisher));
 
 
-        mFields.add(new Field<>(fragmentId, R.id.date_published,
-                                new TextViewAccessor<>(mDateFormatter),
-                                DBKey.DATE_BOOK_PUBLICATION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.date_published,
+                                    new TextViewAccessor<>(mDateFormatter),
+                                    DBKey.DATE_BOOK_PUBLICATION)
                             .setResetButton(R.id.date_published_clear, "")
                             .setTextInputLayout(R.id.lbl_date_published));
 
-        mFields.add(new Field<>(fragmentId, R.id.first_publication,
-                                new TextViewAccessor<>(mDateFormatter),
-                                DBKey.DATE_FIRST_PUBLICATION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.first_publication,
+                                    new TextViewAccessor<>(mDateFormatter),
+                                    DBKey.DATE_FIRST_PUBLICATION)
                             .setResetButton(R.id.first_publication_clear, "")
                             .setTextInputLayout(R.id.lbl_first_publication));
 
         // MUST be defined before the currency field is defined.
-        mFields.add(new Field<>(fragmentId, R.id.price_listed,
-                                new DecimalEditTextAccessor(new DoubleNumberFormatter()),
-                                DBKey.PRICE_LISTED));
-        mFields.add(new Field<>(fragmentId, R.id.price_listed_currency,
-                                new AutoCompleteTextAccessor(this::getAllListPriceCurrencyCodes),
-                                DBKey.PRICE_LISTED_CURRENCY)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.price_listed,
+                                    new DecimalEditTextAccessor(new DoubleNumberFormatter()),
+                                    DBKey.PRICE_LISTED));
+        mFields.add(new FieldImpl<>(fragmentId, R.id.price_listed_currency,
+                                    new AutoCompleteTextAccessor(
+                                            this::getAllListPriceCurrencyCodes),
+                                    DBKey.PRICE_LISTED_CURRENCY)
                             .setRelatedFields(R.id.lbl_price_listed,
                                               R.id.lbl_price_listed_currency,
                                               R.id.price_listed_currency));
 
-        mFields.add(new Field<>(fragmentId, R.id.print_run,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_PRINT_RUN)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.print_run,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_PRINT_RUN)
                             .setRelatedFields(R.id.lbl_print_run));
 
-        mFields.add(new Field<>(fragmentId, R.id.edition,
-                                new BitmaskChipGroupAccessor(Book.Edition::getEditions, true),
-                                DBKey.BITMASK_EDITION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.edition,
+                                    new BitmaskChipGroupAccessor(Book.Edition::getEditions, true),
+                                    DBKey.BITMASK_EDITION)
                             .setRelatedFields(R.id.lbl_edition));
     }
 
     private void initFieldsNotes(@NonNull final Context context,
                                  @NonNull final FragmentId fragmentId) {
 
-        mFields.add(new Field<>(fragmentId, R.id.cbx_read,
-                                new CompoundButtonAccessor(true),
-                                DBKey.BOOL_READ));
-        mFields.add(new Field<>(fragmentId, R.id.cbx_signed,
-                                new CompoundButtonAccessor(true),
-                                DBKey.BOOL_SIGNED));
+        mFields.add(new FieldImpl<>(fragmentId, R.id.cbx_read,
+                                    new CompoundButtonAccessor(true),
+                                    DBKey.BOOL_READ));
+        mFields.add(new FieldImpl<>(fragmentId, R.id.cbx_signed,
+                                    new CompoundButtonAccessor(true),
+                                    DBKey.BOOL_SIGNED));
 
-        mFields.add(new Field<>(fragmentId, R.id.rating,
-                                new RatingBarAccessor(true),
-                                DBKey.KEY_RATING));
+        mFields.add(new FieldImpl<>(fragmentId, R.id.rating,
+                                    new RatingBarAccessor(true),
+                                    DBKey.KEY_RATING));
 
-        mFields.add(new Field<>(fragmentId, R.id.notes,
-                                new EditTextAccessor<>(),
-                                DBKey.KEY_PRIVATE_NOTES)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.notes,
+                                    new EditTextAccessor<>(),
+                                    DBKey.KEY_PRIVATE_NOTES)
                             .setRelatedFields(R.id.lbl_notes));
 
         // MUST be defined before the currency.
-        mFields.add(new Field<>(fragmentId, R.id.price_paid,
-                                new DecimalEditTextAccessor(new DoubleNumberFormatter()),
-                                DBKey.PRICE_PAID));
-        mFields.add(new Field<>(fragmentId, R.id.price_paid_currency,
-                                new AutoCompleteTextAccessor(this::getAllPricePaidCurrencyCodes),
-                                DBKey.PRICE_PAID_CURRENCY)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.price_paid,
+                                    new DecimalEditTextAccessor(new DoubleNumberFormatter()),
+                                    DBKey.PRICE_PAID));
+        mFields.add(new FieldImpl<>(fragmentId, R.id.price_paid_currency,
+                                    new AutoCompleteTextAccessor(
+                                            this::getAllPricePaidCurrencyCodes),
+                                    DBKey.PRICE_PAID_CURRENCY)
                             .setRelatedFields(R.id.lbl_price_paid,
                                               R.id.lbl_price_paid_currency,
                                               R.id.price_paid_currency));
 
-        mFields.add(new Field<>(fragmentId, R.id.condition,
-                                new ExposedDropDownMenuAccessor(context, R.array.conditions_book,
-                                                                true),
-                                DBKey.KEY_BOOK_CONDITION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.condition,
+                                    new ExposedDropDownMenuAccessor(context,
+                                                                    R.array.conditions_book,
+                                                                    true),
+                                    DBKey.KEY_BOOK_CONDITION)
                             .setRelatedFields(R.id.lbl_condition));
-        mFields.add(new Field<>(fragmentId, R.id.condition_cover,
-                                new ExposedDropDownMenuAccessor(context,
-                                                                R.array.conditions_dust_cover,
-                                                                true),
-                                DBKey.KEY_BOOK_CONDITION_COVER)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.condition_cover,
+                                    new ExposedDropDownMenuAccessor(context,
+                                                                    R.array.conditions_dust_cover,
+                                                                    true),
+                                    DBKey.KEY_BOOK_CONDITION_COVER)
                             .setRelatedFields(R.id.lbl_condition_cover));
 
-        mFields.add(new Field<>(fragmentId, R.id.location,
-                                new AutoCompleteTextAccessor(this::getAllLocations),
-                                DBKey.KEY_LOCATION)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.location,
+                                    new AutoCompleteTextAccessor(this::getAllLocations),
+                                    DBKey.KEY_LOCATION)
                             .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long));
 
-        mFields.add(new Field<>(fragmentId, R.id.date_acquired,
-                                new TextViewAccessor<>(mDateFormatter),
-                                DBKey.DATE_ACQUIRED)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.date_acquired,
+                                    new TextViewAccessor<>(mDateFormatter),
+                                    DBKey.DATE_ACQUIRED)
                             .setResetButton(R.id.date_acquired_clear, "")
                             .setTextInputLayout(R.id.lbl_date_acquired));
 
-        mFields.add(new Field<>(fragmentId, R.id.read_start,
-                                new TextViewAccessor<>(mDateFormatter),
-                                DBKey.DATE_READ_START)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.read_start,
+                                    new TextViewAccessor<>(mDateFormatter),
+                                    DBKey.DATE_READ_START)
                             .setResetButton(R.id.read_start_clear, "")
                             .setTextInputLayout(R.id.lbl_read_start)
                             .setFieldValidator(this::validateReadStartAndEndFields));
 
-        mFields.add(new Field<>(fragmentId, R.id.read_end,
-                                new TextViewAccessor<>(mDateFormatter),
-                                DBKey.DATE_READ_END)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.read_end,
+                                    new TextViewAccessor<>(mDateFormatter),
+                                    DBKey.DATE_READ_END)
                             .setResetButton(R.id.read_end_clear, "")
                             .setTextInputLayout(R.id.lbl_read_end)
                             .setFieldValidator(this::validateReadStartAndEndFields));
@@ -1075,29 +1079,29 @@ public class EditBookViewModel
         // These FieldFormatters can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
-        mFields.add(new Field<>(fragmentId, R.id.site_goodreads,
-                                new EditTextAccessor<>(longNumberFormatter, true),
-                                DBKey.SID_GOODREADS_BOOK)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.site_goodreads,
+                                    new EditTextAccessor<>(longNumberFormatter, true),
+                                    DBKey.SID_GOODREADS_BOOK)
                             .setRelatedFields(R.id.lbl_site_goodreads));
 
-        mFields.add(new Field<>(fragmentId, R.id.site_isfdb,
-                                new EditTextAccessor<>(longNumberFormatter, true),
-                                DBKey.SID_ISFDB)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.site_isfdb,
+                                    new EditTextAccessor<>(longNumberFormatter, true),
+                                    DBKey.SID_ISFDB)
                             .setRelatedFields(R.id.lbl_site_isfdb));
 
-        mFields.add(new Field<>(fragmentId, R.id.site_library_thing,
-                                new EditTextAccessor<>(longNumberFormatter, true),
-                                DBKey.SID_LIBRARY_THING)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.site_library_thing,
+                                    new EditTextAccessor<>(longNumberFormatter, true),
+                                    DBKey.SID_LIBRARY_THING)
                             .setRelatedFields(R.id.lbl_site_library_thing));
 
-        mFields.add(new Field<>(fragmentId, R.id.site_strip_info_be,
-                                new EditTextAccessor<>(longNumberFormatter, true),
-                                DBKey.SID_STRIP_INFO)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.site_strip_info_be,
+                                    new EditTextAccessor<>(longNumberFormatter, true),
+                                    DBKey.SID_STRIP_INFO)
                             .setRelatedFields(R.id.lbl_site_strip_info_be));
 
-        mFields.add(new Field<>(fragmentId, R.id.site_open_library,
-                                new EditTextAccessor<>(),
-                                DBKey.SID_OPEN_LIBRARY)
+        mFields.add(new FieldImpl<>(fragmentId, R.id.site_open_library,
+                                    new EditTextAccessor<>(),
+                                    DBKey.SID_OPEN_LIBRARY)
                             .setRelatedFields(R.id.lbl_site_open_library));
     }
 

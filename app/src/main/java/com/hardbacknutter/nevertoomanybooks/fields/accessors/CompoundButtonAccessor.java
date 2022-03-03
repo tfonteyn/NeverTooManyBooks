@@ -55,7 +55,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </pre>
  */
 public class CompoundButtonAccessor
-        extends BaseDataAccessor<Boolean, CompoundButton> {
+        extends BaseFieldViewAccessor<Boolean, CompoundButton> {
+
+    /** Are we viewing {@code false} or editing {@code true} a Field. */
+    private final boolean mIsEditable;
 
     public CompoundButtonAccessor(final boolean isEditable) {
         mIsEditable = isEditable;

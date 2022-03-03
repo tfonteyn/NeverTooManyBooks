@@ -45,12 +45,15 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class EntityListChipGroupAccessor
-        extends BaseDataAccessor<ArrayList<Entity>, ChipGroup> {
+        extends BaseFieldViewAccessor<ArrayList<Entity>, ChipGroup> {
 
     private final Supplier<List<Entity>> mListSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
+
+    /** Are we viewing {@code false} or editing {@code true} a Field. */
+    private final boolean mIsEditable;
 
     /**
      * Constructor.

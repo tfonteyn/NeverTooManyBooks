@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.view.View;
+import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,12 +28,14 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * BooleanIndicatorAccessor accessor. Ties a boolean value to visible/gone for a generic View.
+ * BooleanIndicatorAccessor accessor.
+ * Ties a boolean value to visible/gone for a generic View.
+ * If the View is {@link Checkable}, then it's kept visible and the value 'checked'.
  * <p>
  * A {@code null} value is always handled as {@code false}.
  */
 public class BooleanIndicatorAccessor
-        extends BaseDataAccessor<Boolean, View> {
+        extends BaseFieldViewAccessor<Boolean, View> {
 
     @NonNull
     @Override
@@ -46,7 +49,12 @@ public class BooleanIndicatorAccessor
 
         final View view = getView();
         if (view != null) {
-            view.setVisibility(mRawValue ? View.VISIBLE : View.GONE);
+            if (view instanceof Checkable) {
+                view.setVisibility(View.VISIBLE);
+                ((Checkable) view).setChecked(mRawValue);
+            } else {
+                view.setVisibility(mRawValue ? View.VISIBLE : View.GONE);
+            }
         }
     }
 

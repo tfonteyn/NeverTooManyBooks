@@ -59,10 +59,13 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * </pre>
  */
 public class ExposedDropDownMenuAccessor
-        extends BaseDataAccessor<Integer, AutoCompleteTextView> {
+        extends BaseFieldViewAccessor<Integer, AutoCompleteTextView> {
 
     @NonNull
     private final ExtArrayAdapter<CharSequence> mAdapter;
+
+    /** Are we viewing {@code false} or editing {@code true} a Field. */
+    private final boolean mIsEditable;
 
     /**
      * Constructor.

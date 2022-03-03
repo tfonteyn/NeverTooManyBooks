@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * @param <V> type of Field View, must extend TextView
  */
 public abstract class TextAccessor<T, V extends TextView>
-        extends BaseDataAccessor<T, V> {
+        extends BaseFieldViewAccessor<T, V> {
 
     /** Optional formatter. */
     @Nullable
