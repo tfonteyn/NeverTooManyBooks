@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -220,6 +221,11 @@ public class ShowBookDetailsFragment
         createSyncDelegates(global);
 
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
+
+        final Field<Boolean, CheckBox> cbxRead = mAVm.requireField(R.id.read);
+        cbxRead.requireView().setOnClickListener(v -> {
+            toggleReadStatus(mVm.getBook());
+        });
     }
 
     /**
@@ -310,6 +316,20 @@ public class ShowBookDetailsFragment
         }
     }
 
+    private void toggleReadStatus(@NonNull final Book book) {
+        final boolean read = mVm.toggleRead();
+        mAVm.updateFragmentResult();
+
+        mAVm.requireField(R.id.read).setValue(read);
+        if (mEmbedded) {
+            mToolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
+        }
+
+        if (mBookChangedListener != null) {
+            mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
+        }
+    }
+
     private void onBindBook(@NonNull final LiveDataEvent<Book> message) {
         message.getData().ifPresent(this::bindBook);
     }
@@ -344,7 +364,10 @@ public class ShowBookDetailsFragment
         bindToc(book);
 
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(getView(), true, false));
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        //noinspection ConstantConditions
+        fields.forEach(field -> field.setVisibility(global, getView()));
 
         // Hide the 'Edition' label if neither edition chips or print-run fields are shown
         setSectionVisibility(R.id.lbl_edition,
@@ -410,7 +433,7 @@ public class ShowBookDetailsFragment
     private void bindToc(@NonNull final Book book) {
         //noinspection ConstantConditions
         final TextView lblAnthologyOrCollection =
-                getView().findViewById(R.id.lbl_anthology_or_collection);
+                getView().findViewById(R.id.lbl_anthology);
         switch (book.getContentType()) {
             case Collection:
                 lblAnthologyOrCollection.setVisibility(View.VISIBLE);
@@ -635,20 +658,6 @@ public class ShowBookDetailsFragment
 
             if (mBookChangedListener != null) {
                 mBookChangedListener.onBookUpdated(book, DBKey.KEY_LOANEE);
-            }
-        }
-
-        private void toggleReadStatus(@NonNull final Book book) {
-            final boolean read = mVm.toggleRead();
-            mAVm.updateFragmentResult();
-
-            mAVm.requireField(R.id.read).setValue(read);
-            if (mEmbedded) {
-                updateMenuReadOptions(getToolbar().getMenu());
-            }
-
-            if (mBookChangedListener != null) {
-                mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
             }
         }
 
