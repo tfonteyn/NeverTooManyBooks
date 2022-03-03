@@ -192,11 +192,13 @@ public class BooklistAdapter
         coverSizes.recycle();
 
         // The thumbnail scale defines the Book layout file to use.
-        // The layout names ending in 3/4 are ONLY as reference,
+        // The layout names ending in 2/3 are ONLY as reference,
         // with the hardcoded values in them always replaced at runtime.
         if (frontCoverScale > ListStyle.IMAGE_SCALE_2_MEDIUM) {
+            // Large
             mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
         } else {
+            // Small and Medium
             mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_2;
         }
 
