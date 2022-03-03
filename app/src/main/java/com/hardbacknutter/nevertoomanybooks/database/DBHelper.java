@@ -853,7 +853,6 @@ public class DBHelper
                          .remove("compat.image.cropper.viewlayertype")
                          .remove("edit.book.tab.authSer")
                          .remove("edit.book.tab.nativeId")
-                         .remove("fields.visibility.bookshelf")
                          .remove("goodreads.enabled")
                          .remove("goodreads.showMenu")
                          .remove("goodreads.search.collect.genre")
@@ -866,6 +865,9 @@ public class DBHelper
                          .remove("startup.lastVersion")
                          .remove("tmp.edit.book.tab.authSer")
                          .remove("ui.messages.use")
+
+                         .remove("fields.visibility.bookshelf")
+                         .remove("fields.visibility.read")
                          .apply();
     }
 }

@@ -327,33 +327,34 @@ public final class DBKey {
      * NEWTHINGS: new fields visibility.
      * Same set as on xml/preferences_field_visibility.xml
      */
-    @StringDef({KEY_PUBLISHER_NAME,
-                KEY_SERIES_TITLE,
+    @StringDef({
 
-                KEY_ISBN,
-                KEY_BOOK_AUTHOR_TYPE_BITMASK,
-                BITMASK_TOC,
-                KEY_DESCRIPTION,
-                DATE_BOOK_PUBLICATION,
-                DATE_FIRST_PUBLICATION,
-                KEY_FORMAT,
-                KEY_COLOR,
-                KEY_GENRE,
-                KEY_LANGUAGE,
-                KEY_PAGES,
-                PRICE_LISTED,
-                KEY_LOANEE,
-                KEY_PRIVATE_NOTES,
-                KEY_BOOK_CONDITION,
-                KEY_BOOK_CONDITION_COVER,
-                KEY_LOCATION,
-                PRICE_PAID,
-                BOOL_READ,
-                DATE_READ_START,
-                DATE_READ_END,
-                BITMASK_EDITION,
-                BOOL_SIGNED,
-                KEY_RATING})
+            KEY_BOOK_AUTHOR_TYPE_BITMASK,
+            KEY_BOOK_CONDITION,
+            KEY_BOOK_CONDITION_COVER,
+            DATE_BOOK_PUBLICATION,
+            KEY_COLOR,
+            KEY_DESCRIPTION,
+            BITMASK_EDITION,
+            DATE_FIRST_PUBLICATION,
+            KEY_FORMAT,
+            KEY_GENRE,
+            KEY_ISBN,
+            KEY_LANGUAGE,
+            KEY_LOANEE,
+            KEY_LOCATION,
+            KEY_PAGES,
+            PRICE_LISTED,
+            PRICE_PAID,
+            KEY_PRIVATE_NOTES,
+            KEY_PUBLISHER_NAME,
+            KEY_RATING,
+            DATE_READ_START,
+            DATE_READ_END,
+            KEY_SERIES_TITLE,
+            BOOL_SIGNED,
+            BITMASK_TOC
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UserSelectedDomain {
 

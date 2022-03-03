@@ -189,14 +189,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/lbl_price_paid" />
 
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="fields.visibility.read"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_read" />
-
         <SwitchPreference
             android:defaultValue="true"
             android:key="fields.visibility.read_start"
