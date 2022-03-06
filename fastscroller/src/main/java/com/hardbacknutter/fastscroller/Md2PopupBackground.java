@@ -75,7 +75,7 @@ class Md2PopupBackground
                        @AttrRes final int bgColorAttr) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(FastScroller.getColorInt(context, bgColorAttr));
+        mPaint.setColor(AttrUtils.getColorInt(context, bgColorAttr));
         mPaint.setStyle(Paint.Style.FILL);
 
         final Resources res = context.getResources();

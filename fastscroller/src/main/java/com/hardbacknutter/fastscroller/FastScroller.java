@@ -19,15 +19,11 @@
  */
 package com.hardbacknutter.fastscroller;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.util.TypedValue;
 
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -71,8 +67,10 @@ public final class FastScroller {
         final Context context = recyclerView.getContext();
 
         // These will resolve to the Material style default drawables.
-        final Drawable track = getDrawable(context, android.R.attr.fastScrollTrackDrawable);
-        final Drawable thumb = getDrawable(context, android.R.attr.fastScrollThumbDrawable);
+        final Drawable track = AttrUtils
+                .getDrawable(context, android.R.attr.fastScrollTrackDrawable);
+        final Drawable thumb = AttrUtils
+                .getDrawable(context, android.R.attr.fastScrollThumbDrawable);
 
         final StateListDrawable thumbDrawable = (StateListDrawable) thumb;
 
@@ -96,49 +94,10 @@ public final class FastScroller {
 
 
     /**
-     * Get a color int value for the given attribute.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *
-     * @return A single color value in the form 0xAARRGGBB.
-     */
-    @ColorInt
-    static int getColorInt(@NonNull final Context context,
-                           @SuppressWarnings("SameParameterValue") @AttrRes final int attr)
-            throws Resources.NotFoundException {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return context.getResources().getColor(tv.resourceId, theme);
-    }
-
-    /**
-     * Get a Drawable for the given attribute.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *
-     * @return A Drawable
-     *
-     * @throws Resources.NotFoundException if the given ID does not exist.
-     */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private static Drawable getDrawable(@NonNull final Context context,
-                                        @AttrRes final int attr)
-            throws Resources.NotFoundException {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return context.getResources().getDrawable(tv.resourceId, theme);
-    }
-
-    /**
      * The adapter should implement this interface.
      * The OverlayProvider will call the method to get the text to display.
      */
+    @FunctionalInterface
     public interface PopupTextProvider {
 
         /**
