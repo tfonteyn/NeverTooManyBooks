@@ -302,7 +302,7 @@ public class Styles {
         style.setId(styleDao.getStyleIdByUuid(style.getUuid()));
         if (style.getId() == 0) {
             if (styleDao.insert(style) > 0) {
-                if (style instanceof UserStyle) {
+                if (style.isUserDefined()) {
                     mUserStyleCache.put(style.getUuid(), (UserStyle) style);
                 }
                 return true;
@@ -332,12 +332,10 @@ public class Styles {
 
         if (ServiceLocator.getInstance().getStyleDao().update(style)) {
             // we're assuming the caches will exist & are populated
-            if (style instanceof UserStyle) {
+            if (style.isUserDefined()) {
                 mUserStyleCache.put(style.getUuid(), (UserStyle) style);
-            } else if (style instanceof BuiltinStyle) {
-                mBuiltinStyleCache.put(style.getUuid(), (BuiltinStyle) style);
             } else {
-                throw new IllegalStateException("Unhandled style: " + style);
+                mBuiltinStyleCache.put(style.getUuid(), (BuiltinStyle) style);
             }
             return true;
         }
@@ -361,7 +359,7 @@ public class Styles {
         }
 
         if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
-            if (style instanceof UserStyle) {
+            if (style.isUserDefined()) {
                 mUserStyleCache.remove(style.getUuid());
                 context.deleteSharedPreferences(style.getUuid());
             }

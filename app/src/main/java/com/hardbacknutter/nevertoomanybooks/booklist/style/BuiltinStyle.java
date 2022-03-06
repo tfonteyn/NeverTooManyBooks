@@ -205,15 +205,20 @@ public final class BuiltinStyle
         }
     }
 
-    public static boolean isBuiltin(@NonNull final String uuid) {
+    public static boolean isUserDefined(@NonNull final String uuid) {
         if (!uuid.isEmpty()) {
             // Use the array, not the cache!
             for (final String key : ID_UUID) {
                 if (key.equals(uuid)) {
-                    return true;
+                    return false;
                 }
             }
         }
+        return true;
+    }
+
+    @Override
+    public boolean isUserDefined() {
         return false;
     }
 

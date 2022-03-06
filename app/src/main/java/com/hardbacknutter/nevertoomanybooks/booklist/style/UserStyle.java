@@ -124,8 +124,8 @@ public class UserStyle
 
         mExpansionLevel = new PInteger(true, mPersistenceLayer, style.mExpansionLevel);
         mShowHeaderInfo = new PBitmask(true, mPersistenceLayer, style.mShowHeaderInfo);
-        mGroupRowPreferredHeight = new PBoolean(true, mPersistenceLayer,
-                                                style.mGroupRowPreferredHeight);
+        mUseGroupRowPreferredHeight = new PBoolean(true, mPersistenceLayer,
+                                                   style.mUseGroupRowPreferredHeight);
 
         mTextScale = new TextScale(true, mPersistenceLayer, style.mTextScale);
 
@@ -152,6 +152,11 @@ public class UserStyle
     public static UserStyle createFromImport(@NonNull final Context context,
                                              @NonNull final String uuid) {
         return new UserStyle(context, uuid);
+    }
+
+    @Override
+    public boolean isUserDefined() {
+        return true;
     }
 
     @NonNull

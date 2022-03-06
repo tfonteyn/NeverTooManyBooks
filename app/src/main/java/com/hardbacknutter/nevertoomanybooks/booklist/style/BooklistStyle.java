@@ -141,7 +141,7 @@ public abstract class BooklistStyle
      * Should rows be shown using WRAP_CONTENT (false),
      * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
-    PBoolean mGroupRowPreferredHeight;
+    PBoolean mUseGroupRowPreferredHeight;
     /** Text related settings. */
     TextScale mTextScale;
     /** Configuration for the groups in this style. */
@@ -201,8 +201,8 @@ public abstract class BooklistStyle
         mShowHeaderInfo = new PBitmask(isPersistent, mPersistenceLayer,
                                        PK_LIST_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
-        mGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
-                                                PK_SCALE_GROUP_ROW, true);
+        mUseGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
+                                                   PK_SCALE_GROUP_ROW, true);
 
         mTextScale = new TextScale(isPersistent, mPersistenceLayer);
 
@@ -230,7 +230,7 @@ public abstract class BooklistStyle
 
     @Override
     public int getGroupRowHeight(@NonNull final Context context) {
-        if (mGroupRowPreferredHeight.getValue()) {
+        if (mUseGroupRowPreferredHeight.getValue()) {
             if (mListPreferredItemHeightSmall == 0) {
                 mListPreferredItemHeightSmall = AttrUtils
                         .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
@@ -421,7 +421,7 @@ public abstract class BooklistStyle
         final Map<String, PPref<?>> map = new HashMap<>();
 
         map.put(mExpansionLevel.getKey(), mExpansionLevel);
-        map.put(mGroupRowPreferredHeight.getKey(), mGroupRowPreferredHeight);
+        map.put(mUseGroupRowPreferredHeight.getKey(), mUseGroupRowPreferredHeight);
         map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
         map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
@@ -459,7 +459,7 @@ public abstract class BooklistStyle
                && Objects.equals(mSortAuthorByGivenName, style.mSortAuthorByGivenName)
                && Objects.equals(mExpansionLevel, style.mExpansionLevel)
                && Objects.equals(mShowHeaderInfo, style.mShowHeaderInfo)
-               && Objects.equals(mGroupRowPreferredHeight, style.mGroupRowPreferredHeight)
+               && Objects.equals(mUseGroupRowPreferredHeight, style.mUseGroupRowPreferredHeight)
                && Objects.equals(mTextScale, style.mTextScale)
                && Objects.equals(mListScreenBookFields, style.mListScreenBookFields)
                && Objects.equals(mDetailScreenBookFields, style.mDetailScreenBookFields)
@@ -471,7 +471,7 @@ public abstract class BooklistStyle
     public int hashCode() {
         return Objects.hash(mId, mUuid, mMenuPosition, mIsPreferred,
                             mShowAuthorByGivenName, mSortAuthorByGivenName,
-                            mExpansionLevel, mShowHeaderInfo, mGroupRowPreferredHeight,
+                            mExpansionLevel, mShowHeaderInfo, mUseGroupRowPreferredHeight,
                             mTextScale, mListScreenBookFields, mDetailScreenBookFields,
                             mGroups, mFilters);
     }
@@ -489,7 +489,7 @@ public abstract class BooklistStyle
                + ", mSortAuthorByGivenName=" + mSortAuthorByGivenName
 
                + ", mExpansionLevel=" + mExpansionLevel
-               + ", mGroupsUseListPreferredHeight=" + mGroupRowPreferredHeight
+               + ", mGroupsUseListPreferredHeight=" + mUseGroupRowPreferredHeight
                + ", mListPreferredItemHeightSmall=" + mListPreferredItemHeightSmall
                + ", mShowHeaderInfo=" + mShowHeaderInfo
 

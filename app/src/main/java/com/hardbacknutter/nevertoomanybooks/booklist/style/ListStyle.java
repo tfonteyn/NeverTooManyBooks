@@ -79,6 +79,8 @@ public interface ListStyle {
     @NonNull
     StylePersistenceLayer getPersistenceLayer();
 
+    boolean isUserDefined();
+
     @NonNull
     UserStyle clone(@NonNull Context context);
 
