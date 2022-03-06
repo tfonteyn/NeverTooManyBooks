@@ -19,21 +19,31 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
-import android.view.WindowManager;
 
 import androidx.annotation.AnyRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
+/**
+ * Why not use MaterialColors.getColor(context, attr) :
+ * If the resource is a plain color, then this is the same as the code used above.
+ * However, if the resource is a reference (using a string) then
+ * - MaterialColors.getColor  DOES NOT RESOLVE THIS
+ * - getResources().getColor will resolve it correctly.
+ * <p>
+ * example, for "R.attr.colorControlNormal" we get:
+ * TypedValue{t=0x3/d=0x9f3 "res/color/text_color_secondary.xml" a=1 r=0x1060233}
+ * - MaterialColors.getColor returns the data part: 0x9f3  (tv.data)
+ * - getResources().getColor resolves it and return the correct color int.
+ */
 public final class AttrUtils {
+
+    private static final String ERROR_FAILED_TO_RESOLVE_ATTRIBUTE = "Failed to resolve attribute ";
 
     private AttrUtils() {
     }
@@ -45,15 +55,23 @@ public final class AttrUtils {
      * @param attr    attribute id to resolve
      *
      * @return resource ID
+     *
+     * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */
     @AnyRes
     public static int getResId(@NonNull final Context context,
-                               @AttrRes final int attr) {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return tv.resourceId;
+                               @AttrRes final int attr)
+            throws Resources.NotFoundException {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
+        try {
+            final int resId = a.getResourceId(0, 0);
+            if (resId != 0) {
+                return resId;
+            }
+        } finally {
+            a.recycle();
+        }
+        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }
 
     /**
@@ -64,28 +82,22 @@ public final class AttrUtils {
      *
      * @return A single color value in the form 0xAARRGGBB.
      *
-     * @throws Resources.NotFoundException if the requested Color does not exist.
+     * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */
     @ColorInt
     public static int getColorInt(@NonNull final Context context,
                                   @AttrRes final int attr)
             throws Resources.NotFoundException {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return context.getResources().getColor(tv.resourceId, theme);
-
-        // Why not use MaterialColors.getColor(context, attr) :
-        // If the resource is a plain color, then this is the same as the code used above.
-        // However, if the resource is a reference (using a string) then
-        // - MaterialColors.getColor  DOES NOT RESOLVE THIS
-        // - getResources().getColor will resolve it correctly.
-        //
-        // example, for "R.attr.colorControlNormal" we get:
-        //   TypedValue{t=0x3/d=0x9f3 "res/color/text_color_secondary.xml" a=1 r=0x1060233}
-        // - MaterialColors.getColor returns the data part: 0x9f3  (tv.data)
-        // - getResources().getColor resolves it and return the correct color int.
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
+        try {
+            final int color = a.getColor(0, 0);
+            if (color != 0) {
+                return color;
+            }
+        } finally {
+            a.recycle();
+        }
+        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }
 
     /**
@@ -96,18 +108,22 @@ public final class AttrUtils {
      *
      * @return A Drawable
      *
-     * @throws Resources.NotFoundException if the requested Drawable does not exist.
+     * @throws Resources.NotFoundException if the requested attribute/resource does not exist.
      */
-    @SuppressWarnings("unused")
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @NonNull
     public static Drawable getDrawable(@NonNull final Context context,
                                        @AttrRes final int attr)
             throws Resources.NotFoundException {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return context.getResources().getDrawable(tv.resourceId, theme);
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
+        try {
+            final Drawable drawable = a.getDrawable(0);
+            if (drawable != null) {
+                return drawable;
+            }
+        } finally {
+            a.recycle();
+        }
+        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }
 
     /**
@@ -119,34 +135,17 @@ public final class AttrUtils {
      * @return size in integer pixels
      */
     public static int getDimensionPixelSize(@NonNull final Context context,
-                                            @AttrRes final int attr) {
-
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
+                                            @AttrRes final int attr)
+            throws Resources.NotFoundException {
+        final TypedArray a = context.obtainStyledAttributes(new int[]{attr});
         try {
-            final DisplayMetrics metrics = new DisplayMetrics();
-            if (Build.VERSION.SDK_INT >= 30) {
-                //noinspection ConstantConditions
-                context.getDisplay().getRealMetrics(metrics);
-            } else {
-                final WindowManager wm = (WindowManager)
-                        context.getSystemService(Context.WINDOW_SERVICE);
-                wm.getDefaultDisplay().getMetrics(metrics);
+            final int dimension = a.getDimensionPixelSize(0, 0);
+            if (dimension != 0) {
+                return dimension;
             }
-            return (int) tv.getDimension(metrics);
-
-        } catch (@NonNull final UnsupportedOperationException e) {
-            // When running androidTest, we get:
-            // java.lang.UnsupportedOperationException: Tried to obtain display from a Context
-            // not associated with one. Only visual Contexts (such as Activity or one created
-            // with Context#createWindowContext) or ones created with Context#createDisplayContext
-            // are associated with displays. Other types of Contexts are typically related
-            // to background entities and may return an arbitrary display.
-
-            // fake a response
-            return 48;
+        } finally {
+            a.recycle();
         }
+        throw new Resources.NotFoundException(ERROR_FAILED_TO_RESOLVE_ATTRIBUTE + attr);
     }
 }
