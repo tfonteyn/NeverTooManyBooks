@@ -27,6 +27,7 @@ import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PBooleanTest
         extends Base {
@@ -46,6 +47,6 @@ public class PBooleanTest
 
         final PBoolean p2 = new PBoolean(false, mLayerMock, p1);
         assertEquals(p1, p2);
-        assertEquals(true, p2.getValue());
+        assertTrue(p2.isTrue());
     }
 }
