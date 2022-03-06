@@ -58,7 +58,7 @@ public class PublisherTest
         assertEquals(pPublisher, publisher);
 
         assertEquals(pPublisher.getId(), publisher.getId());
-        assertEquals(pPublisher.getTitle(), publisher.getTitle());
+        assertEquals(pPublisher.getName(), publisher.getName());
     }
 
     @Test
