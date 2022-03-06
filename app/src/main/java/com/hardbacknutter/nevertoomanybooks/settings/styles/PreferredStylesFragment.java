@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditPreferredStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -213,7 +212,7 @@ public class PreferredStylesFragment
                                 ? null : mVm.getStyle(position);
 
         // only user styles can be edited/deleted
-        final boolean isUserStyle = style instanceof UserStyle;
+        final boolean isUserStyle = style != null && style.isUserDefined();
         menu.findItem(R.id.MENU_EDIT).setVisible(isUserStyle);
         menu.findItem(R.id.MENU_DELETE).setVisible(isUserStyle);
 

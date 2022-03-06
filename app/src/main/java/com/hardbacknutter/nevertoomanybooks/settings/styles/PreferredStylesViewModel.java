@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 
 @SuppressWarnings("WeakerAccess")
 public class PreferredStylesViewModel
@@ -258,12 +257,12 @@ public class PreferredStylesViewModel
 
             } else {
                 // Check the type of the ORIGINAL (i.e. template) style.
-                if (origStyle instanceof UserStyle) {
+                if (origStyle.isUserDefined()) {
                     // It's a clone of an user-defined style.
                     // Put it directly after the user-defined original
                     mList.add(editedRow, style);
 
-                } else if (origStyle instanceof BuiltinStyle) {
+                } else {
                     // It's a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // if the original style was a preferred style,
@@ -284,15 +283,13 @@ public class PreferredStylesViewModel
                         // Put it directly after the original
                         mList.add(editedRow, style);
                     }
-                } else {
-                    throw new IllegalStateException("Unhandled style: " + style);
                 }
             }
         }
 
         // Not sure if this check is really needed... or already covered above
         // if the style was cloned from a builtin style,
-        if (BuiltinStyle.isBuiltin(templateUuid)) {
+        if (!BuiltinStyle.isUserDefined(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
             mList.stream()

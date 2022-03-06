@@ -34,7 +34,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -88,7 +87,7 @@ public class StyleViewModel
                 final int action = args.getInt(EditStyleContract.BKEY_ACTION,
                                                EditStyleContract.ACTION_EDIT);
 
-                if (action == EditStyleContract.ACTION_CLONE || style instanceof BuiltinStyle) {
+                if (action == EditStyleContract.ACTION_CLONE || !style.isUserDefined()) {
                     mStyle = style.clone(context);
                 } else {
                     mStyle = (UserStyle) style;

@@ -59,7 +59,7 @@ public class StyleFiltersFragment
 
         preference = findPreference(Filters.PK_FILTER_READ);
         //noinspection ConstantConditions
-        preference.setVisible(DBKey.isUsed(global, DBKey.BOOL_READ));
+        preference.setVisible(true);
         preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
         preference = findPreference(Filters.PK_FILTER_SIGNED);
