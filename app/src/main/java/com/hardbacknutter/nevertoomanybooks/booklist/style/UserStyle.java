@@ -140,15 +140,18 @@ public class UserStyle
         mGroups = new Groups(true, this, style.mGroups);
     }
 
+    @NonNull
     public static UserStyle createGlobal(@NonNull final Context context) {
         return new UserStyle(context);
     }
 
+    @NonNull
     public static UserStyle createFromDatabase(@NonNull final Context context,
                                                @NonNull final DataHolder rowData) {
         return new UserStyle(context, rowData);
     }
 
+    @NonNull
     public static UserStyle createFromImport(@NonNull final Context context,
                                              @NonNull final String uuid) {
         return new UserStyle(context, uuid);
@@ -159,8 +162,8 @@ public class UserStyle
         return true;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getTypeDescription(@NonNull final Context context) {
         return context.getString(R.string.style_is_user_defined);
     }
