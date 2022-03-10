@@ -23,7 +23,13 @@ import androidx.fragment.app.Fragment;
 
 /**
  * A non-null replacement for {@link Fragment#getTag()}.
+ * <p>
+ * Identifies the concrete fragment classes which will handle one or more {@link FieldGroup} lists.
  */
 public enum FragmentId {
-    Main, Publication, Notes, Toc, ExternalId
+    Main,
+    Publication,
+    Notes,
+    Toc,
+    ExternalId
 }

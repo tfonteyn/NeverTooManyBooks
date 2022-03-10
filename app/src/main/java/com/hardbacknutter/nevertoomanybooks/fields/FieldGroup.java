@@ -20,9 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.fields;
 
 /**
- * Arbitrary grouping of a set of fields which are created in one operation.
- * A fragment will handle one or more field groups.
+ * Arbitrary grouping of a list of fields which are created in one operation.
+ * A {@link FragmentId} will handle one or more FieldGroup lists.
  */
 public enum FieldGroup {
-    Main, Publication, Notes, Toc, ExternalId
+    Main,
+    Publication,
+    Notes,
+    Toc,
+    ExternalId
 }
