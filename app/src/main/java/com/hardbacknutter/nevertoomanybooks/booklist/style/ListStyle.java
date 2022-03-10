@@ -193,6 +193,7 @@ public interface ListStyle {
      *
      * @return TextScale
      */
+    @NonNull
     TextScale getTextScale();
 
     /**
