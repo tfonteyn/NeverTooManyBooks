@@ -114,8 +114,8 @@ public class PBoolean
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getKey() {
         return mKey;
     }
@@ -130,8 +130,8 @@ public class PBoolean
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Boolean getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions

@@ -100,8 +100,8 @@ public class PInteger
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getKey() {
         return mKey;
     }
@@ -116,8 +116,8 @@ public class PInteger
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public Integer getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions

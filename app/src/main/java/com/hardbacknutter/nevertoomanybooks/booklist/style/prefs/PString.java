@@ -98,8 +98,8 @@ public class PString
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getKey() {
         return mKey;
     }
@@ -114,8 +114,8 @@ public class PString
         }
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getValue() {
         if (mPersisted) {
             //noinspection ConstantConditions
