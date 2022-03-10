@@ -304,7 +304,6 @@ public abstract class FFBaseDialogFragment
      *
      * @return {@code true} if the event was handled, {@code false} otherwise.
      */
-    @SuppressWarnings("UnusedReturnValue")
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         return false;
     }
