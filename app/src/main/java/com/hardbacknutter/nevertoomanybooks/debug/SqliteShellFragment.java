@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.WebSettings;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -54,7 +56,7 @@ public class SqliteShellFragment
     public static final String TAG = "SqliteShellFragment";
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
-
+    //URGENT: add menu button/dialog to edit this number
     private static final int MAX_LINES = 200;
     private static final String UTF_8 = "utf-8";
     private static final String TEXT_HTML = "text/html";
@@ -115,6 +117,15 @@ public class SqliteShellFragment
 
         final WebSettings settings = mVb.output.getSettings();
         settings.setTextZoom(75);
+
+        mVb.input.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                BaseActivity.hideKeyboard(v);
+                execute();
+                return true;
+            }
+            return false;
+        });
     }
 
 //    private void textSmaller() {
@@ -126,6 +137,10 @@ public class SqliteShellFragment
 //        final WebSettings settings = outputView.getSettings();
 //        settings.setTextZoom(settings.getTextZoom() + 10);
 //    }
+
+    private void execute() {
+        executeSql(mVb.input.getText().toString().trim());
+    }
 
     private void executeSql(@NonNull final String sql) {
         final String lcSql = sql.toLowerCase(Locale.ROOT);
@@ -145,6 +160,7 @@ public class SqliteShellFragment
                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
+                //TODO: parse for keyword 'limit' and add default if not present
                 try (Cursor cursor = mDb.rawQuery(sql, null)) {
                     getToolbar().setTitle(STR_LAST_COUNT + cursor.getCount());
 
@@ -201,7 +217,7 @@ public class SqliteShellFragment
             final int itemId = menuItem.getItemId();
 
             if (itemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
-                executeSql(mVb.input.getText().toString().trim());
+                execute();
                 return true;
 
             } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
