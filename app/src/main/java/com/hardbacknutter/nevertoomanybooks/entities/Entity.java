@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,36 +20,29 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
+import java.util.function.Supplier;
+
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
+
 /**
- * An item (entity) in a database table always has an id and some user-friendly label
- * aka 'displayName'.
- * <p>
- * Must be Parcelable.
+ * An Entity always has an id and some user-friendly label (aka 'displayName')
+ * and optionally it's own Locale.
  */
-public interface Entity
-        extends Parcelable {
+public interface Entity {
 
     /**
-     * One <strong>or more</strong> entities were modified (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    String BKEY_DATA_MODIFIED = "Entity:modified";
-
-    /**
-     * Get the database row id of the entity.
+     * Get the database row id of the Entity.
      *
      * @return id
      */
     long getId();
 
     /**
-     * Get the label to use. This is for <strong>displaying only</strong>.
+     * Get the label to use for <strong>displaying</strong>.
      *
      * @param context Current context
      *
@@ -57,4 +50,38 @@ public interface Entity
      */
     @NonNull
     String getLabel(@NonNull Context context);
+
+    /**
+     * Convenience method; called by (some) implementations of {@link #getLabel(Context)}.
+     *
+     * @param context Current context
+     * @param source  unformatted string
+     * @param locale  to use
+     *
+     * @return formatted string
+     */
+    @NonNull
+    default String getLabel(@NonNull final Context context,
+                            @NonNull final String source,
+                            @NonNull final Supplier<Locale> locale) {
+        if (ReorderHelper.forDisplay(context)) {
+            return ReorderHelper.reorder(context, source, locale.get());
+        } else {
+            return source;
+        }
+    }
+
+    /**
+     * Get the Locale of the Entity.
+     *
+     * @param context        Current context
+     * @param fallbackLocale Locale to use if the Entity does not have a Locale of its own.
+     *
+     * @return the Entity Locale, or the fallbackLocale.
+     */
+    @NonNull
+    default Locale getLocale(@NonNull final Context context,
+                             @NonNull final Locale fallbackLocale) {
+        return fallbackLocale;
+    }
 }
