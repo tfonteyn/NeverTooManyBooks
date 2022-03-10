@@ -98,13 +98,13 @@ public final class ParcelUtils {
     }
 
     @NonNull
-    public static Parcelable wrap(@NonNull final ArrayList<Long> list) {
+    public static Parcelable wrap(@NonNull final List<Long> list) {
         return new ParcelableArrayListLong(list);
     }
 
     @NonNull
-    public static ArrayList<Long> unwrap(@NonNull final Bundle args,
-                                         @NonNull final String key) {
+    public static List<Long> unwrap(@NonNull final Bundle args,
+                                    @NonNull final String key) {
         return ((ParcelableArrayListLong)
                         Objects.requireNonNull(args.getParcelable(key), key)).unwrap();
     }
@@ -125,9 +125,9 @@ public final class ParcelUtils {
         };
 
         @NonNull
-        private final ArrayList<Long> list;
+        private final List<Long> list;
 
-        private ParcelableArrayListLong(@NonNull final ArrayList<Long> list) {
+        private ParcelableArrayListLong(@NonNull final List<Long> list) {
             this.list = list;
         }
 
@@ -142,7 +142,7 @@ public final class ParcelUtils {
         }
 
         @NonNull
-        private ArrayList<Long> unwrap() {
+        private List<Long> unwrap() {
             return list;
         }
 
