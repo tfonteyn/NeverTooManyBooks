@@ -25,14 +25,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_scroller"
     style="@style/TopNestedScroller"
-    tools:viewBindingIgnore="true"
+    android:visibility="invisible"
+    tools:context=".FragmentHostActivity"
+    tools:visibility="visible"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/TopCentered"
-        android:visibility="invisible"
-        tools:context=".FragmentHostActivity"
-        tools:visibility="visible"
         >
 
         <androidx.constraintlayout.widget.Guideline
@@ -127,7 +126,6 @@
             tools:visibility="visible"
             />
 
-        <!-- URGENT - fails to scroll -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/virtualLibraries"
             android:layout_width="0dp"

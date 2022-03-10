@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference;
 
 /**
  * Used/defined in xml/preferences_styles.xml

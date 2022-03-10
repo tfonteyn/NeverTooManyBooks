@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -86,20 +85,20 @@ public final class StandardDialogs {
      * or just the current book.
      *
      * @param context    Current context
-     * @param original   entity
-     * @param modified   entity
+     * @param original   entity label
+     * @param modified   entity label
      * @param onAllBooks Runnable to execute if the user 'all books''
      * @param onThisBook Runnable to execute if the user 'this book''
      */
     public static void confirmScopeForChange(@NonNull final Context context,
-                                             @NonNull final Entity original,
-                                             @NonNull final Entity modified,
+                                             @NonNull final String original,
+                                             @NonNull final String modified,
                                              @NonNull final Runnable onAllBooks,
                                              @NonNull final Runnable onThisBook) {
         final String allBooks = context.getString(R.string.btn_all_books);
         final String message = context.getString(R.string.confirm_scope_for_change,
-                                                 original.getLabel(context),
-                                                 modified.getLabel(context),
+                                                 original,
+                                                 modified,
                                                  allBooks);
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_baseline_warning_24)

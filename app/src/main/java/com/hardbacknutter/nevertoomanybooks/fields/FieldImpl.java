@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -30,96 +28,23 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.material.textfield.TextInputLayout;
-
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BooleanIndicatorAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
-/**
- * Field definition contains all information and methods necessary
- * to manage display and extraction of data in a view.
- * <ul>Features provides are:
- *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
- *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
- *          will work as expected as will setting the value of an ExposedDropDownMenu).
- *          As new view types are added, it will be necessary to add new {@link FieldViewAccessor}
- *          implementations.
- *          In some specific circumstances, an accessor can be defined manually.</li>
- *      <li> Custom data accessors and formatters to provide application-specific data rules.</li>
- *      <li> simplified extraction of data.</li>
- * </ul>
- * <p>
- * Accessors
- * <p>
- * A {@link FieldViewAccessor} handles interactions between the value and the View
- * (with an optional {@link FieldFormatter}).
- * <p>
- * Formatters
- * <p>
- * A Formatter can be set on any class extending {@link TextAccessor},
- * i.e. for TextView and EditText elements.
- * Formatters should implement {@link FieldFormatter#format(Context, Object)} where the Object
- * is transformed to a String - DO NOT CHANGE class variables while doing this.
- * In contrast {@link FieldFormatter#apply} CAN change class variables
- * but should leave the real formatter to the format method.
- * <p>
- * This way, other code can access {@link FieldFormatter#format(Context, Object)}
- * without side-effects.
- * <p>
- * <ul>Data flows to and from a view as follows:
- *      <li>IN  (no formatter ):<br>
- *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
- *          {@link FieldViewAccessor#setValue(Object)} ->
- *          populates the View.</li>
- *      <li>IN  (with formatter):<br>
- *          {@link FieldViewAccessor#setInitialValue(DataManager)} ->
- *          {@link FieldViewAccessor#setValue(Object)} ->
- *          {@link FieldFormatter#apply} ->
- *          populates the View.</li>
- *       <li>OUT (no formatter ):
- *          View ->
- *          {@link FieldViewAccessor#getValue()} ->
- *          {@link FieldViewAccessor#getValue(DataManager)}</li>
- *      <li>OUT (with formatter):
- *          View ->
- *          {@link EditFieldFormatter#extract} ->
- *          {@link FieldViewAccessor#getValue()} ->
- *          {@link FieldViewAccessor#getValue(DataManager)}</li>
- * </ul>
- *
- * @param <T> type of Field value.
- * @param <V> type of View for this field
- */
-@SuppressWarnings("FieldNotUsedInToString")
 public class FieldImpl<T, V extends View>
         implements Field<T, V> {
 
-    /** Log tag. */
-    private static final String TAG = "FieldImpl";
-
-    /** Accessor to use. Encapsulates the formatter. */
     @NonNull
-    private final FieldViewAccessor<T, V> mFieldViewAccessor;
-
-    private final FragmentId mFragmentId;
+    protected final FragmentId mFragmentId;
     /** Field ID. */
     @IdRes
-    private final int mId;
-
+    protected final int mId;
     /**
      * Key used to access a {@link DataManager} or {@code Bundle}.
      * <ul>
@@ -134,69 +59,37 @@ public class FieldImpl<T, V extends View>
      * See {@link #isAutoPopulated()}.
      */
     @NonNull
-    private final String mKey;
-
+    protected final String mKey;
     /**
      * The preference key (field-name) to check if this Field is used or not.
      * i.e. the key to be used for {@link DBKey#isUsed(SharedPreferences, String)}.
      */
     @NonNull
-    private final String mIsUsedKey;
+    protected final String mIsUsedKey;
 
     /** Fields that need to follow visibility. */
-    private final Collection<Integer> mRelatedFields = new HashSet<>();
-
-    @Nullable
-    private FieldValidator<T, V> mValidator;
-    @Nullable
-    private WeakReference<AfterFieldChangeListener> mAfterFieldChangeListener;
-    @IdRes
-    private int mErrorViewId;
-    @IdRes
-    private int mTextInputLayoutId;
-
-    @IdRes
-    private int mResetBtnId;
-    @Nullable
-    private T mResetValue;
-    @Nullable
-    private WeakReference<View> mResetBtnViewReference;
+    protected final Collection<Integer> mRelatedFields = new HashSet<>();
 
     /**
-     * Constructor.
-     *
-     * @param id       for this field.
-     * @param accessor to use
-     * @param key      Key used to access a {@link DataManager}
-     *                 Set to {@code ""} to suppress all access.
-     *                 (also used as the preference key to check if this Field is used or not)
+     * Accessor to use. Encapsulates the formatter.
      */
-    public FieldImpl(@NonNull final FragmentId fragmentId,
-                     @IdRes final int id,
-                     @NonNull final FieldViewAccessor<T, V> accessor,
-                     @NonNull final String key) {
-        this(fragmentId, id, accessor, key, key);
-    }
+    @NonNull
+    final FieldViewAccessor<T, V> mFieldViewAccessor;
 
     /**
      * Constructor.
      *
      * @param id        for this field.
-     * @param accessor  to use
      * @param key       Key used to access a {@link DataManager}
      *                  Set to {@code ""} to suppress all access.
      * @param entityKey The preference key to check if this Field is used or not
+     * @param accessor  to use
      */
-    public FieldImpl(@NonNull final FragmentId fragmentId,
-                     @IdRes final int id,
-                     @NonNull final FieldViewAccessor<T, V> accessor,
-                     @NonNull final String key,
-                     @NonNull final String entityKey) {
-
-        if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requireValue(key, "key");
-        }
-
+    FieldImpl(@NonNull final FragmentId fragmentId,
+              @IdRes final int id,
+              @NonNull final String key,
+              @NonNull final String entityKey,
+              @NonNull final FieldViewAccessor<T, V> accessor) {
         mFragmentId = fragmentId;
         mId = id;
         mKey = key;
@@ -208,8 +101,6 @@ public class FieldImpl<T, V extends View>
 
     /**
      * set the field ID's which should follow visibility with this Field.
-     * <p>
-     * Consider calling {@link #setErrorViewId} instead if it's a single related label-field.
      *
      * <p>
      * <strong>Dev. note:</strong> this could be done using
@@ -217,116 +108,10 @@ public class FieldImpl<T, V extends View>
      * but that means creating a group for EACH field. That would be overkill.
      *
      * @param relatedFields labels etc
-     *
-     * @return {@code this} (for chaining)
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public FieldImpl<T, V> setRelatedFields(@NonNull @IdRes final Integer... relatedFields) {
-        mRelatedFields.addAll(Arrays.asList(relatedFields));
-        return this;
-    }
-
-    /**
-     * Set the id for the surrounding TextInputLayout (if this field has one).
-     * <ul>
-     *     <li>This <strong>must</strong> be called to make the end-icon clear_text work.</li>
-     *     <li>The id will override any id set by {@link #setErrorViewId}.</li>
-     *     <li>The id is added to {@link #setRelatedFields} so it is used for visibility.</li>
-     * </ul>
-     *
-     * @param viewId view id
-     *
-     * @return {@code this} (for chaining)
-     */
-    public FieldImpl<T, V> setTextInputLayout(@IdRes final int viewId) {
-        mTextInputLayoutId = viewId;
-        mErrorViewId = viewId;
-        mRelatedFields.add(viewId);
-        return this;
-    }
-
-    /**
-     * Set the validator for this field. This can be set independently from calling
-     * {@link #setErrorViewId} for cross-validation / error reporting.
-     *
-     * @param validator to use
-     *
-     * @return {@code this} (for chaining)
-     */
-    public FieldImpl<T, V> setFieldValidator(@NonNull final FieldValidator<T, V> validator) {
-        mValidator = validator;
-        return this;
-    }
-
-    /**
-     * Set the id for the error view. This can be set independently from calling
-     * {@link #setFieldValidator} for cross-validation / error reporting.
-     * <ul>
-     *     <li>This call will override the value set by {@link #setTextInputLayout}.</li>
-     *     <li>The id is added to {@link #setRelatedFields} so it is used for visibility.</li>
-     * </ul>
-     *
-     * @param viewId view id
-     *
-     * @return {@code this} (for chaining)
-     */
-    public FieldImpl<T, V> setErrorViewId(@IdRes final int viewId) {
-        mErrorViewId = viewId;
-        mRelatedFields.add(viewId);
-        return this;
-    }
-
-    /**
-     * Enable a clear/reset button for a picker enabled field.
-     *
-     * @param id         of the button (on which the onClickListener wil be set)
-     * @param resetValue value to set when clicked
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public FieldImpl<T, V> setResetButton(@IdRes final int id,
-                                          @Nullable final T resetValue) {
-        mResetBtnId = id;
-        mResetValue = resetValue;
-        return this;
-    }
-
-    @Override
-    @NonNull
-    public FragmentId getFragmentId() {
-        return mFragmentId;
-    }
-
-    @Override
-    @IdRes
-    public int getId() {
-        return mId;
-    }
-
-    @Override
     @CallSuper
-    public void setParentView(@NonNull final SharedPreferences global,
-                              @NonNull final View parent) {
-        mFieldViewAccessor.setView(parent.findViewById(mId));
-        if (isUsed(global)) {
-            if (mErrorViewId != 0) {
-                mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
-            }
-            if (mTextInputLayoutId != 0) {
-                final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
-                til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue(null));
-            }
-            if (mResetBtnId != 0) {
-                mResetBtnViewReference = new WeakReference<>(parent.findViewById(mResetBtnId));
-                mResetBtnViewReference.get().setOnClickListener(v -> {
-                    mFieldViewAccessor.setValue(mResetValue);
-                    v.setVisibility(View.INVISIBLE);
-                });
-            }
-        } else {
-            setVisibility(parent, View.GONE);
-        }
+    void addRelatedFields(@NonNull @IdRes final Integer... relatedFields) {
+        mRelatedFields.addAll(Arrays.asList(relatedFields));
     }
 
     @Override
@@ -341,17 +126,29 @@ public class FieldImpl<T, V extends View>
         return mFieldViewAccessor.requireView();
     }
 
+    @CallSuper
     @Override
-    public void setAfterFieldChangeListener(@Nullable final AfterFieldChangeListener listener) {
-        mAfterFieldChangeListener = listener != null ? new WeakReference<>(listener) : null;
-    }
-
-    @Override
-    public void setVisibility(@NonNull final SharedPreferences global,
+    public void setParentView(@NonNull final SharedPreferences global,
                               @NonNull final View parent) {
-        setVisibility(global, parent, true, false);
+        mFieldViewAccessor.setView(parent.findViewById(mId));
+        if (!isUsed(global)) {
+            setVisibility(parent, View.GONE);
+        }
     }
 
+    @CallSuper
+    @Override
+    public void setValue(@Nullable final T value) {
+        mFieldViewAccessor.setValue(value);
+    }
+
+    @CallSuper
+    @Override
+    public void setInitialValue(@NonNull final DataManager source) {
+        mFieldViewAccessor.setInitialValue(source);
+    }
+
+    @CallSuper
     @Override
     @SuppressWarnings("StatementWithEmptyBody")
     public void setVisibility(@NonNull final SharedPreferences global,
@@ -380,6 +177,7 @@ public class FieldImpl<T, V extends View>
         setRelatedFieldsVisibility(parent, view.getVisibility());
     }
 
+    @CallSuper
     @Override
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
@@ -394,67 +192,26 @@ public class FieldImpl<T, V extends View>
      * @param parent     parent view for all related fields.
      * @param visibility to use
      */
-    private void setRelatedFieldsVisibility(@NonNull final View parent,
-                                            final int visibility) {
+    protected void setRelatedFieldsVisibility(@NonNull final View parent,
+                                              final int visibility) {
         for (final int fieldId : mRelatedFields) {
             final View view = parent.findViewById(fieldId);
             if (view != null) {
                 view.setVisibility(visibility);
             }
         }
-
-        if (mResetBtnViewReference != null) {
-            final View clearBtnView = Objects.requireNonNull(mResetBtnViewReference.get());
-            if (visibility == View.VISIBLE) {
-                clearBtnView.setVisibility(mFieldViewAccessor.isEmpty()
-                                           ? View.INVISIBLE : View.VISIBLE);
-            } else {
-                clearBtnView.setVisibility(visibility);
-            }
-        }
     }
 
     @Override
-    public void setError(@Nullable final String errorText) {
-        mFieldViewAccessor.setError(errorText);
+    @NonNull
+    public FragmentId getFragmentId() {
+        return mFragmentId;
     }
 
     @Override
-    public void setErrorIfEmpty(@NonNull final String errorText) {
-        mFieldViewAccessor.setErrorIfEmpty(errorText);
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return mFieldViewAccessor.isEmpty();
-    }
-
-    @Override
-    public void getValue(@NonNull final DataManager target) {
-        mFieldViewAccessor.getValue(target);
-        //TODO: is there a point calling 'validate' here?
-        if (mValidator != null) {
-            mValidator.validate(this);
-        }
-    }
-
-    @Override
-    @Nullable
-    public T getValue() {
-        return mFieldViewAccessor.getValue();
-    }
-
-    @Override
-    public void setValue(@Nullable final T value) {
-        mFieldViewAccessor.setValue(value);
-        if (mValidator != null) {
-            mValidator.validate(this);
-        }
-    }
-
-    @Override
-    public void setInitialValue(@NonNull final DataManager source) {
-        mFieldViewAccessor.setInitialValue(source);
+    @IdRes
+    public int getId() {
+        return mId;
     }
 
     @Override
@@ -474,40 +231,15 @@ public class FieldImpl<T, V extends View>
     }
 
     @Override
-    @CallSuper
-    public void onChanged() {
-        if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
-            mAfterFieldChangeListener.get().onAfterFieldChange(this);
-
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                // mAfterFieldChangeListener == null is perfectly fine.
-                // i.e. it will be null during population of fields.
-                if (mAfterFieldChangeListener != null) {
-                    // The REFERENT being dead is however not fine, so log this in debug.
-                    // flw: this message should never be seen!
-                    Log.w(TAG, "onChanged|mAfterFieldChangeListener was dead");
-                }
-            }
-        }
-
-        if (mResetBtnViewReference != null) {
-            final View clearBtnView = Objects.requireNonNull(mResetBtnViewReference.get());
-            clearBtnView.setVisibility(mFieldViewAccessor.isEmpty()
-                                       ? View.INVISIBLE : View.VISIBLE);
-        }
-    }
-
-    @Override
     @NonNull
     public String toString() {
         return "FieldImpl{"
-               + "mId=" + mId
-               + ", mIsUsedKey=`" + mIsUsedKey + '`'
-               + ", mKey=`" + mKey + '`'
-               + ", mFieldDataAccessor=" + mFieldViewAccessor
-               + ", mValidator=" + mValidator
+               + "mFragmentId=" + mFragmentId
+               + ", mId=" + mId
+               + ", mKey='" + mKey + '\''
+               + ", mIsUsedKey='" + mIsUsedKey + '\''
+               + ", mRelatedFields=" + mRelatedFields
+               + ", mFieldViewAccessor=" + mFieldViewAccessor
                + '}';
     }
-
 }

@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -65,16 +64,16 @@ public class TocEntryDaoImpl
     /** Log tag. */
     private static final String TAG = "TocEntryDaoImpl";
 
-    /** All Books (id only) for a given TocEntry. */
+    /** All Book id's for a given {@link TocEntry}. */
     private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
             SELECT_ + DBKey.FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
             + _WHERE_ + DBKey.FK_TOC_ENTRY + "=?";
 
-    /** All Books (id+title (as a pair) only) for a given TocEntry. */
+    /** All Books as {@link BookLight} for a given {@link TocEntry}. */
     private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
-            SELECT_ + TBL_BOOKS.dot(DBKey.PK_ID)
-            + ',' + TBL_BOOKS.dot(DBKey.KEY_TITLE)
-            + ',' + TBL_BOOKS.dot(DBKey.KEY_LANGUAGE)
+            SELECT_ + TBL_BOOKS.dotAs(DBKey.PK_ID,
+                                      DBKey.KEY_TITLE,
+                                      DBKey.KEY_LANGUAGE)
             + _FROM_ + TBL_BOOK_TOC_ENTRIES.startJoin(TBL_BOOKS)
             + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(DBKey.FK_TOC_ENTRY) + "=?"
             + _ORDER_BY_ + TBL_BOOKS.dot(DBKey.KEY_TITLE_OB);
@@ -82,7 +81,7 @@ public class TocEntryDaoImpl
     /** {@link TocEntry}, all columns. */
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
 
-    /** All TocEntry's for a Book; ordered by position in the book. */
+    /** All {@link TocEntry}'s for a Book; ordered by position in the book. */
     private static final String TOC_ENTRIES_BY_BOOK_ID =
             SELECT_ + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                             DBKey.FK_AUTHOR,
@@ -175,8 +174,14 @@ public class TocEntryDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = tocEntry
-                .createOrderByData(context, lookupLocale, bookLocale);
+        final OrderByHelper.OrderByData obd;
+        if (lookupLocale) {
+            obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
+                                                  bookLocale, tocEntry::getLocale);
+        } else {
+            obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
+                                                  bookLocale, null);
+        }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
@@ -194,7 +199,8 @@ public class TocEntryDaoImpl
 
     @Override
     @NonNull
-    public List<BookLight> getBookTitles(@IntRange(from = 1) final long id) {
+    public List<BookLight> getBookTitles(@IntRange(from = 1) final long id,
+                                         @NonNull final Author author) {
         final List<BookLight> list = new ArrayList<>();
         try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
                                           new String[]{String.valueOf(id)})) {
@@ -202,7 +208,8 @@ public class TocEntryDaoImpl
             while (cursor.moveToNext()) {
                 list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
                                        rowData.getString(DBKey.KEY_TITLE),
-                                       rowData.getString(DBKey.KEY_LANGUAGE)));
+                                       rowData.getString(DBKey.KEY_LANGUAGE),
+                                       author, null));
             }
         }
 

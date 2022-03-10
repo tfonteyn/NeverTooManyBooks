@@ -179,7 +179,8 @@ public class BooklistGroup {
     @Id
     private final int mId;
     /** The underlying group key object. */
-    private GroupKey mGroupKey;
+    @NonNull
+    private final GroupKey mGroupKey;
     /**
      * The domains represented by this group.
      * Set at <strong>runtime</strong> by the BooklistBuilder
@@ -199,6 +200,7 @@ public class BooklistGroup {
                   final boolean isPersistent,
                   @NonNull final ListStyle style) {
         mId = id;
+        mGroupKey = initGroupKey();
 
         mPersisted = isPersistent;
         mStyle = style;
@@ -238,27 +240,19 @@ public class BooklistGroup {
     public static BooklistGroup newInstance(@Id final int id,
                                             final boolean isPersistent,
                                             @NonNull final ListStyle style) {
-        final BooklistGroup group;
         switch (id) {
             case AUTHOR:
-                group = new AuthorBooklistGroup(isPersistent, style);
-                break;
+                return new AuthorBooklistGroup(isPersistent, style);
             case SERIES:
-                group = new SeriesBooklistGroup(isPersistent, style);
-                break;
+                return new SeriesBooklistGroup(isPersistent, style);
             case PUBLISHER:
-                group = new PublisherBooklistGroup(isPersistent, style);
-                break;
+                return new PublisherBooklistGroup(isPersistent, style);
             case BOOKSHELF:
-                group = new BookshelfBooklistGroup(isPersistent, style);
-                break;
+                return new BookshelfBooklistGroup(isPersistent, style);
 
             default:
-                group = new BooklistGroup(id, isPersistent, style);
-                break;
+                return new BooklistGroup(id, isPersistent, style);
         }
-        group.initGroupKey();
-        return group;
     }
 
     /**
@@ -396,13 +390,14 @@ public class BooklistGroup {
      * Create/get a GroupKey. We create the keys only once and keep them in a static cache map.
      * This must be called <strong>after</strong> construction, i.e. from {@link #newInstance}.
      */
-    private void initGroupKey() {
+    @NonNull
+    private GroupKey initGroupKey() {
         GroupKey groupKey = GROUP_KEYS.get(mId);
         if (groupKey == null) {
             groupKey = createGroupKey();
             GROUP_KEYS.put(mId, groupKey);
         }
-        mGroupKey = groupKey;
+        return groupKey;
     }
 
     /**
@@ -414,6 +409,7 @@ public class BooklistGroup {
      * @return new GroupKey instance
      */
     @SuppressLint("SwitchIntDef")
+    @NonNull
     public GroupKey createGroupKey() {
         // NEWTHINGS: BooklistGroup.KEY
         switch (mId) {
@@ -705,6 +701,7 @@ public class BooklistGroup {
     }
 
     @VisibleForTesting
+    @NonNull
     public GroupKey getGroupKey() {
         return mGroupKey;
     }
@@ -767,6 +764,7 @@ public class BooklistGroup {
      *
      * @return list
      */
+    @NonNull
     public ArrayList<DomainExpression> getBaseDomains() {
         return mGroupKey.getBaseDomains();
     }
@@ -777,9 +775,9 @@ public class BooklistGroup {
      *
      * @return list
      */
-    @Nullable
+    @NonNull
     public ArrayList<Domain> getAccumulatedDomains() {
-        return mAccumulatedDomains;
+        return Objects.requireNonNull(mAccumulatedDomains);
     }
 
     /**
@@ -787,7 +785,7 @@ public class BooklistGroup {
      *
      * @param accumulatedDomains list of domains.
      */
-    public void setAccumulatedDomains(@Nullable final ArrayList<Domain> accumulatedDomains) {
+    public void setAccumulatedDomains(@NonNull final ArrayList<Domain> accumulatedDomains) {
         mAccumulatedDomains = accumulatedDomains;
     }
 

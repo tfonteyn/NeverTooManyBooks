@@ -157,7 +157,7 @@ public interface AuthorDao {
                     @NonNull Locale bookLocale);
 
     /**
-     * Count the TocEntry's for the given {@link Author}.
+     * Count the {@link TocEntry}'s for the given {@link Author}.
      *
      * @param context    Current context
      * @param author     to count the TocEntries of

@@ -19,118 +19,123 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopCentered"
+    android:id="@+id/root_scroller"
+    style="@style/TopNestedScroller"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 
-    <TextView
-        android:id="@+id/header"
-        style="@style/Text.Header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lbl_library"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UseCompatTextViewDrawableXml"
-        />
-
-    <ImageButton
-        android:id="@+id/inf_ext_not_installed"
-        style="@style/Button.InfoPopup"
-        android:contentDescription="@string/lbl_calibre_content_server_extension_info"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/header"
-        app:layout_constraintStart_toEndOf="@id/header"
-        tools:visibility="visible"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_library_name"
-        style="@style/Button.DropdownMenu"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_inline"
-        app:layout_constraintEnd_toStartOf="@id/btn_create"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/TopCentered"
         >
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/library_name"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/header"
+            style="@style/Text.Header"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor"
-            tools:text="@sample/data.json/library/name"
+            android:text="@string/lbl_library"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UseCompatTextViewDrawableXml"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/btn_create"
-        style="@style/Button.Action.Submit"
-        android:text="@string/action_create"
-        app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/lbl_library_name"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_bookshelf"
-        style="@style/Button.DropdownMenu"
-        android:layout_marginTop="@dimen/field_margin_top"
-        android:hint="@string/lbl_bookshelf"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/lbl_library_name"
-        app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
-        >
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/bookshelf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor"
-            tools:text="@sample/data.json/shelves/name"
+        <ImageButton
+            android:id="@+id/inf_ext_not_installed"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/lbl_calibre_content_server_extension_info"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/header"
+            app:layout_constraintStart_toEndOf="@id/header"
+            tools:visibility="visible"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_library_name"
+            style="@style/Button.DropdownMenu"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_inline"
+            app:layout_constraintEnd_toStartOf="@id/btn_create"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            >
 
-    <TextView
-        android:id="@+id/header_vlibs"
-        style="@style/Text.Header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/section_margin_top"
-        android:text="@string/lbl_virtual_libraries"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_bookshelf"
-        tools:visibility="visible"
-        />
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/library_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/library/name"
+                />
 
-    <!-- URGENT - fails to scroll -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/virtualLibraries"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="@dimen/container_margin"
-        android:nestedScrollingEnabled="true"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header_vlibs"
-        tools:itemCount="4"
-        tools:listitem="@layout/row_edit_calibre_library"
-        tools:visibility="visible"
-        />
+        </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/btn_create"
+            style="@style/Button.Action.Submit"
+            android:text="@string/action_create"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lbl_library_name"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_bookshelf"
+            style="@style/Button.DropdownMenu"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:hint="@string/lbl_bookshelf"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_library_name"
+            app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/bookshelf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/shelves/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/header_vlibs"
+            style="@style/Text.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:text="@string/lbl_virtual_libraries"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelf"
+            tools:visibility="visible"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/virtualLibraries"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/container_margin"
+            android:nestedScrollingEnabled="true"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+            tools:itemCount="4"
+            tools:listitem="@layout/row_edit_calibre_library"
+            tools:visibility="visible"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

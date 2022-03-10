@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
- * Writes to a temporary file in the internal cache first.
+ * The glue between the ViewModel and the underlying business logic to perform an export/backup.
  */
 public class ExportHelper
         extends DataWriterHelperBase<ExportResults> {

@@ -36,6 +36,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -194,12 +195,24 @@ public class PartialDate
 
     /**
      * Does the date have any fields set?
-     * A PartialDate is considered to be non-empty if at least the year is set.
+     * A PartialDate is considered to be present if at least the year is set.
      *
-     * @return {@code true} if the date is empty.
+     * @return {@code true} if the date is present.
      */
-    public boolean isEmpty() {
-        return !mYearSet;
+    public boolean isPresent() {
+        return mYearSet;
+    }
+
+    /**
+     * If a value is present, invoke the specified consumer with the value,
+     * otherwise do nothing.
+     *
+     * @param consumer block to be executed if a value is present
+     */
+    public void ifPresent(@NonNull final Consumer<PartialDate> consumer) {
+        if (mYearSet) {
+            consumer.accept(this);
+        }
     }
 
     /**
@@ -253,7 +266,7 @@ public class PartialDate
 
     /**
      * Get the year field. Will be {@code 1} if the field was not set.
-     * A call to {@link #isEmpty()} should be made before.
+     * A call to {@link #isPresent()} ()} should be made before.
      *
      * @return year value
      */

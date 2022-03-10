@@ -69,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtPopupMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
 
 /**
- * Display all TocEntry's for an Author.
+ * Display all {@link TocEntry}'s for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
  *
  * <strong>Note:</strong> when an item is clicked, we start a <strong>NEW</strong> Activity.
@@ -215,7 +215,7 @@ public class AuthorWorksFragment
     private void deleteWork(final int position,
                             @NonNull final AuthorWork work) {
         switch (work.getWorkType()) {
-            case AuthorWork.TYPE_TOC: {
+            case TocEntry: {
                 //noinspection ConstantConditions
                 StandardDialogs.deleteTocEntry(
                         getContext(), work.getLabel(getContext()),
@@ -225,7 +225,8 @@ public class AuthorWorksFragment
                         });
                 break;
             }
-            case AuthorWork.TYPE_BOOK: {
+            case Book:
+            case BookLight: {
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(
                         getContext(), work.getLabel(getContext()),
@@ -249,7 +250,7 @@ public class AuthorWorksFragment
         final AuthorWork work = mVm.getList().get(position);
 
         switch (work.getWorkType()) {
-            case AuthorWork.TYPE_TOC: {
+            case TocEntry: {
                 final TocEntry tocEntry = (TocEntry) work;
                 final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
                 if (bookIdList.size() == 1) {
@@ -274,7 +275,8 @@ public class AuthorWorksFragment
                 }
                 break;
             }
-            case AuthorWork.TYPE_BOOK: {
+            case Book:
+            case BookLight: {
                 mDisplayBookLauncher.launch(new ShowBookPagerContract.Input(
                         work.getId(), mVm.getStyle().getUuid(), null, 0));
 

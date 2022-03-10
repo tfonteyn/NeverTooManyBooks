@@ -99,9 +99,9 @@ public class EditPublisherDialogFragment
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+                                             BKEY_REQUEST_KEY);
         mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                            "KEY_FK_PUBLISHER");
+                                            DBKey.FK_PUBLISHER);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Publisher(mPublisher.getName());

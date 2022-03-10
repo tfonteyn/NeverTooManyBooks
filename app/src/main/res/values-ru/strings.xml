@@ -311,7 +311,7 @@
     <string name="menu_lend_return_book">Заимствованная книга возвращается</string>
     <string name="menu_rebuild_fts">Переобрать FTS</string>
     <string name="menu_rebuild_index">Перестроить индекс</string>
-    <string name="lbl_local_search">Расширенный локальный поиск</string>
+    <string name="lbl_local_search_long">Расширенный локальный поиск</string>
     <string name="menu_set_complete">Отметка завершена</string>
     <string name="menu_set_incomplete">Отметить не полностью</string>
     <string name="menu_set_read">Марк читать</string>
@@ -450,12 +450,12 @@
     <string name="style_builtin_update_date">Дата обновления</string>
     <string name="style_is_builtin">Встроенный</string>
     <string name="style_is_user_defined">Определенный пользователем</string>
-    <string name="lbl_alternative_editions">Альтернативные издания</string>
-    <string name="lbl_toc">оглавление</string>
-    <string name="lbl_details">Детали</string>
-    <string name="lbl_ext_id">Внешний идентификатор</string>
-    <string name="lbl_notes">заметки</string>
-    <string name="lbl_publication_tab">публикация</string>
+    <string name="lbl_tab_alternative_editions">Альтернативные издания</string>
+    <string name="lbl_tab_table_of_content">оглавление</string>
+    <string name="lbl_tab_details">Детали</string>
+    <string name="lbl_tab_lbl_ext_id">Внешний идентификатор</string>
+    <string name="lbl_tab_notes">заметки</string>
+    <string name="lbl_tab_publication">публикация</string>
     <string name="tip_authors_book_may_appear_more_than_once">Если показывается по авторам, то одна и та же книга может появиться в списке многократно. В этом случае удаление одной из таких книг, удалит и все остальные из списка.</string>
     <string name="tip_authors_works">Используемые значки</string>
     <string name="tip_authors_works_book">Книга.</string>

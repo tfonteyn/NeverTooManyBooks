@@ -152,6 +152,7 @@ class BooklistBuilder {
 
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
+
     @NonNull
     private RebuildBooklist mRebuildMode;
 
@@ -287,6 +288,7 @@ class BooklistBuilder {
      *
      * @return the Booklist ready to use
      */
+    @NonNull
     public Booklist build(@NonNull final Context context) {
 
         final boolean isFilteredOnBookshelves = !mBookshelves.get(0).isAllBooks();
@@ -762,24 +764,25 @@ class BooklistBuilder {
                 // (by checking the 'current' record/table)
                 final StringBuilder whereClause = new StringBuilder();
 
-                //noinspection ConstantConditions
-                for (final Domain groupDomain : group.getAccumulatedDomains()) {
-                    listColumns.append(',').append(groupDomain.getName());
-                    listValues.append(", NEW.").append(groupDomain.getName());
+                group.getAccumulatedDomains().stream()
+                     .map(Domain::getName)
+                     .forEach(domainName -> {
+                         listColumns.append(',').append(domainName);
+                         listValues.append(", NEW.").append(domainName);
 
-                    // Only add to the where-clause if the group is part of the SORT list
-                    if (sortedDomainNames.contains(groupDomain.getName())) {
-                        if (whereClause.length() > 0) {
-                            whereClause.append(_AND_);
-                        }
-                        whereClause.append("COALESCE(")
-                                   .append(mTriggerHelperTable.dot(groupDomain.getName()))
-                                   .append(",'')=COALESCE(NEW.")
-                                   .append(groupDomain.getName())
-                                   .append(",'')")
-                                   .append(_COLLATION);
-                    }
-                }
+                         // Only add to the where-clause if the group is part of the SORT list
+                         if (sortedDomainNames.contains(domainName)) {
+                             if (whereClause.length() > 0) {
+                                 whereClause.append(_AND_);
+                             }
+                             whereClause.append("COALESCE(")
+                                        .append(mTriggerHelperTable.dot(domainName))
+                                        .append(",'')=COALESCE(NEW.")
+                                        .append(domainName)
+                                        .append(",'')")
+                                        .append(_COLLATION);
+                         }
+                     });
 
                 // (re)Create the trigger
                 mTriggerHelperLevelTriggerName[index] = mListTable.getName() + "_TG_LEVEL_" + level;

@@ -100,6 +100,7 @@ public class SeriesBooklistGroup
     }
 
     @Override
+    @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomain.
@@ -119,8 +120,7 @@ public class SeriesBooklistGroup
                 .addGroupDomain(
                         // Group by complete-flag
                         new DomainExpression(DOM_SERIES_IS_COMPLETE,
-                                             TBL_SERIES.dot(
-                                                     DBKey.BOOL_SERIES_IS_COMPLETE)))
+                                             TBL_SERIES.dot(DBKey.BOOL_SERIES_IS_COMPLETE)))
                 .addBaseDomain(
                         // The series number in the base data in sorted order.
                         // This field is NOT displayed.

@@ -315,7 +315,7 @@
     <string name="menu_lend_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="menu_rebuild_fts">Ανακατασκευή FTS</string>
     <string name="menu_rebuild_index">Αναδημιουργία ευρετηρίου</string>
-    <string name="lbl_local_search">Προηγμένη τοπική αναζήτηση</string>
+    <string name="lbl_local_search_long">Προηγμένη τοπική αναζήτηση</string>
     <string name="menu_set_complete">Ορίστε να «ολοκληρώσετε»</string>
     <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
     <string name="menu_set_read">Ορίστε ως «διαβάσετε»</string>
@@ -457,12 +457,12 @@
     <string name="style_builtin_update_date">Ημερομηνία ενημέρωσης</string>
     <string name="style_is_builtin">Ενσωματωμένο</string>
     <string name="style_is_user_defined">Καθορισμενο-από-χρήστη</string>
-    <string name="lbl_alternative_editions">Εναλλακτικές εκδόσεις</string>
-    <string name="lbl_toc">περιεχόμενο</string>
-    <string name="lbl_details">Λεπτομ</string>
-    <string name="lbl_ext_id">Εξωτερικό αναγνωριστικό</string>
-    <string name="lbl_notes">Σημειώσεις</string>
-    <string name="lbl_publication_tab">Δημοσίευση</string>
+    <string name="lbl_tab_alternative_editions">Εναλλακτικές εκδόσεις</string>
+    <string name="lbl_tab_table_of_content">περιεχόμενο</string>
+    <string name="lbl_tab_details">Λεπτομ</string>
+    <string name="lbl_tab_lbl_ext_id">Εξωτερικό αναγνωριστικό</string>
+    <string name="lbl_tab_notes">Σημειώσεις</string>
+    <string name="lbl_tab_publication">Δημοσίευση</string>
     <string name="tip_authors_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε συγγραφέα, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
     <string name="tip_authors_works">Χρησιμοποιούμενα εικονίδια</string>
     <string name="tip_authors_works_book">Βιβλίο.</string>

@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -142,7 +144,7 @@ public class AuthorWorksViewModel
     }
 
     /**
-     * Delete the given AuthorWork.
+     * Delete the given {@link AuthorWork}.
      *
      * @param context Current context
      * @param work    to delete
@@ -154,13 +156,20 @@ public class AuthorWorksViewModel
                    @NonNull final AuthorWork work) {
         final boolean success;
         switch (work.getWorkType()) {
-            case AuthorWork.TYPE_TOC: {
+            case TocEntry: {
                 success = ServiceLocator.getInstance().getTocEntryDao()
                                         .delete(context, (TocEntry) work);
                 break;
             }
-            case AuthorWork.TYPE_BOOK: {
-                success = mBookDao.delete(work.getId());
+            case Book: {
+                success = mBookDao.delete((Book) work);
+                if (success) {
+                    mDataModified = true;
+                }
+                break;
+            }
+            case BookLight: {
+                success = mBookDao.delete((BookLight) work);
                 if (success) {
                     mDataModified = true;
                 }
@@ -171,7 +180,6 @@ public class AuthorWorksViewModel
         }
 
         if (success) {
-            work.setId(0);
             mList.remove(work);
         }
         return success;

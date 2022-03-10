@@ -268,7 +268,7 @@
     <string name="lbl_level_collapse">Tout réduire</string>
     <string name="lbl_level_expand">Tout étendre</string>
     <string name="lbl_level_reset">Niveau d\'expansion préféré</string>
-    <string name="lbl_local_search">Recherche locale avancée</string>
+    <string name="lbl_local_search_long">Recherche locale avancée</string>
     <string name="lbl_location_long">Localisation du livre</string>
     <string name="lbl_location">Localisation</string>
     <string name="lbl_month">Mois</string>
@@ -492,12 +492,12 @@
     <string name="style_builtin_update_date">Date de mise à jour</string>
     <string name="style_is_builtin">Par défaut</string>
     <string name="style_is_user_defined">Défini par l\'utilisateur</string>
-    <string name="lbl_alternative_editions">Éditions alt.</string>
-    <string name="lbl_toc">Contenu</string>
-    <string name="lbl_details">Détails</string>
-    <string name="lbl_ext_id">ID externe</string>
-    <string name="lbl_notes">Notes</string>
-    <string name="lbl_publication_tab">Édition</string>
+    <string name="lbl_tab_alternative_editions">Éditions alt.</string>
+    <string name="lbl_tab_table_of_content">Contenu</string>
+    <string name="lbl_tab_details">Détails</string>
+    <string name="lbl_tab_lbl_ext_id">ID externe</string>
+    <string name="lbl_tab_notes">Notes</string>
+    <string name="lbl_tab_publication">Édition</string>
     <string name="tip_authors_book_may_appear_more_than_once">S\'il est affiché pour chacun de ses auteurs, un livre peut apparaître plusieurs fois dans la liste. Dans ce cas, supprimer l\'un de ces livres supprimera toutes ses copies de la liste.</string>
     <string name="tip_authors_works_book">Livre.</string>
     <string name="tip_authors_works_multiple_books">L\'entrée est présente dans plusieurs livres.</string>

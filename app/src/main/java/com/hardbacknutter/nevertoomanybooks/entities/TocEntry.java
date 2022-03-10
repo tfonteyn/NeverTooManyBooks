@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements Entity, ReorderTitle, Mergeable, AuthorWork {
+        implements ParcelableEntity, Mergeable, AuthorWork {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<>() {
@@ -224,11 +224,16 @@ public class TocEntry
     }
 
     @Override
-    public char getWorkType() {
-        return AuthorWork.TYPE_TOC;
+    @NonNull
+    public Type getWorkType() {
+        return AuthorWork.Type.TocEntry;
     }
 
-    @Override
+    /**
+     * Get the <strong>unformatted</strong> title.
+     *
+     * @return the title
+     */
     @NonNull
     public String getTitle() {
         return mTitle;
@@ -241,12 +246,8 @@ public class TocEntry
     @NonNull
     @Override
     public String getLabel(@NonNull final Context context) {
-        if (ReorderTitle.forDisplay(context)) {
-            // Using the locale here is overkill;  see #getLocale(..)
-            return reorder(context);
-        } else {
-            return mTitle;
-        }
+        // Using the locale here is overkill;  see #getLocale(..)
+        return getLabel(context, mTitle, () -> null);
     }
 
     @NonNull
@@ -261,16 +262,7 @@ public class TocEntry
     @Override
     @NonNull
     public List<BookLight> getBookTitles(@NonNull final Context context) {
-
-        final List<BookLight> books =
-                ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId);
-
-        if (ReorderTitle.forDisplay(context)) {
-            // Using the locale here is overkill;  see #getLocale(..)
-            books.forEach(bookTitle -> bookTitle.setTitle(bookTitle.reorder(context)));
-        }
-
-        return books;
+        return ServiceLocator.getInstance().getTocEntryDao().getBookTitles(mId, mAuthor);
     }
 
     @Override
@@ -307,7 +299,7 @@ public class TocEntry
         final TocEntry incoming = (TocEntry) mergeable;
 
         // If the incoming TocEntry has no date set, we're done
-        if (incoming.getFirstPublicationDate().isEmpty()) {
+        if (!incoming.getFirstPublicationDate().isPresent()) {
             if (mId == 0 && incoming.getId() > 0) {
                 mId = incoming.getId();
             }
@@ -315,7 +307,7 @@ public class TocEntry
         }
 
         // If this TocEntry has no date set, copy the incoming data
-        if (mFirstPublicationDate.isEmpty()) {
+        if (!mFirstPublicationDate.isPresent()) {
             mFirstPublicationDate = incoming.getFirstPublicationDate();
             if (mId == 0 && incoming.getId() > 0) {
                 mId = incoming.getId();

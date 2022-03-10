@@ -59,9 +59,9 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws DataReaderException     on a decoding/parsing of data issue
-     * @throws StorageException        there is an issue with the storage media
-     * @throws IOException             on other failures
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws StorageException    there is an issue with the storage media
+     * @throws IOException         on other failures
      */
     @WorkerThread
     @NonNull
@@ -80,9 +80,9 @@ public interface DataReader<METADATA, RESULTS>
      *
      * @return results summary
      *
-     * @throws DataReaderException     on a decoding/parsing of data issue
-     * @throws StorageException        there is an issue with the storage media
-     * @throws IOException             on other failures
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws StorageException    there is an issue with the storage media
+     * @throws IOException         on other failures
      */
     @WorkerThread
     @NonNull
@@ -92,6 +92,26 @@ public interface DataReader<METADATA, RESULTS>
                    StorageException,
                    IOException,
                    CredentialsException;
+
+    /**
+     * Try to cancel the currently running read.
+     * <p>
+     * This is a <strong>PUSH</strong> action as compared to
+     * {@link ProgressListener#isCancelled()} which is a <strong>PULL</strong> action.
+     * <p>
+     * This would be used when the DataReader uses another helper object
+     * to which it would need to propagate the cancel signal.
+     * e.g. to cancel an http connection thread.
+     * <p>
+     * By default, we just return {@code true}.
+     *
+     * @param taskId of the task we're cancelling
+     *
+     * @return {@code true} if an actual read task was cancelled.
+     */
+    default boolean cancel(final int taskId) {
+        return true;
+    }
 
     /**
      * Override if the implementation needs to close something.

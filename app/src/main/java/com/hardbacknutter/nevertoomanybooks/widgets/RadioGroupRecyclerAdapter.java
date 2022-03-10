@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,9 +61,10 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
      * Constructor.
      *
      * @param context   Current context
-     * @param items     List of items
+     * @param items     List of items; each a Pair with an id and the display-string
      * @param selection (optional) the pre-selected item
-     * @param listener  (optional) to send a selection to
+     * @param listener  (optional) to send a selection to as the user changes them;
+     *                  alternatively use {@link #getSelection()} when done.
      */
     public RadioGroupRecyclerAdapter(@NonNull final Context context,
                                      @NonNull final List<Pair<ID, CS>> items,
@@ -95,13 +97,14 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         holder.btnOption.setText(item.second);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void onItemCheckChanged(@NonNull final Holder holder) {
-
         final int position = holder.getAbsoluteAdapterPosition();
 
         mSelection = mItems.get(position).first;
         // this triggers a bind call for all rows, which in turn (un)sets the checked row.
         notifyDataSetChanged();
+
         if (mOnSelectionListener != null) {
             // use a post allowing the UI to update the view first
             holder.btnOption.post(() -> mOnSelectionListener.onSelected(mSelection));

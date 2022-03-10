@@ -24,6 +24,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -34,30 +36,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * A 'light' Book object used where the full {@link Book} would be a performance penalty.
  */
 public class BookLight
-        implements AuthorWork, ReorderTitle {
+        implements AuthorWork, Entity {
 
-    @Nullable
+    @NonNull
+    private final String mTitle;
+    @NonNull
     private final String mLanguage;
+    @Nullable
+    private final Author mPrimaryAuthor;
     @NonNull
     private final PartialDate mFirstPublicationDate;
-    @Nullable
-    private final Author mAuthor;
     private long mId;
-    @NonNull
-    private String mTitle;
-
-    /**
-     * Constructor.
-     *
-     * @param id       book id
-     * @param title    Title
-     * @param language Language
-     */
-    public BookLight(final long id,
-                     @NonNull final String title,
-                     @Nullable final String language) {
-        this(id, title, language, null, null);
-    }
 
     /**
      * Constructor.
@@ -65,24 +54,25 @@ public class BookLight
      * @param id                   book id
      * @param title                Title
      * @param language             Language
+     * @param primaryAuthor        Author of title
      * @param firstPublicationDate first publication
-     * @param author               Author of title
      */
     public BookLight(final long id,
                      @NonNull final String title,
-                     @Nullable final String language,
-                     @Nullable final String firstPublicationDate,
-                     @Nullable final Author author) {
+                     @NonNull final String language,
+                     @Nullable final Author primaryAuthor,
+                     @Nullable final String firstPublicationDate) {
         mId = id;
         mTitle = title;
         mLanguage = language;
-        mAuthor = author;
+        mPrimaryAuthor = primaryAuthor;
         mFirstPublicationDate = new PartialDate(firstPublicationDate);
     }
 
     @Override
-    public char getWorkType() {
-        return AuthorWork.TYPE_BOOK;
+    @NonNull
+    public Type getWorkType() {
+        return AuthorWork.Type.BookLight;
     }
 
     @Override
@@ -90,26 +80,33 @@ public class BookLight
         return mId;
     }
 
-    @Override
     public void setId(final long id) {
         mId = id;
     }
 
-    @Override
+    /**
+     * Get the <strong>unformatted</strong> title.
+     * <p>
+     * You probably want to call {@link #getLabel(Context)} instead.
+     *
+     * @return the title
+     */
     @NonNull
     public String getTitle() {
         return mTitle;
     }
 
-    public void setTitle(@NonNull final String title) {
-        mTitle = title;
+    @NonNull
+    public List<BookLight> getBookTitles(@NonNull final Context context) {
+        final List<BookLight> list = new ArrayList<>();
+        list.add(this);
+        return list;
     }
 
-    @Override
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale defValue) {
-        if (mLanguage == null || mLanguage.isEmpty()) {
+        if (mLanguage.isEmpty()) {
             return defValue;
         } else {
             final Locale locale = ServiceLocator.getInstance().getAppLocale()
@@ -121,17 +118,13 @@ public class BookLight
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        if (ReorderTitle.forDisplay(context)) {
-            return reorder(context);
-        } else {
-            return getTitle();
-        }
+        return getLabel(context, mTitle, () -> null);
     }
 
     @Override
     @Nullable
     public Author getPrimaryAuthor() {
-        return mAuthor;
+        return mPrimaryAuthor;
     }
 
     @Override

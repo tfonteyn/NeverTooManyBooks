@@ -298,8 +298,6 @@ public class EditBookshelvesFragment
             final Bookshelf bookshelf = mVm.getBookshelf(position);
 
             holder.vb.name.setText(bookshelf.getName());
-
-            // set the 'selected' state of the current row
             holder.itemView.setSelected(position == mVm.getSelectedPosition());
         }
 

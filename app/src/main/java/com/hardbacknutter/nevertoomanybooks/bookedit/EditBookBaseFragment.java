@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragm
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -93,13 +94,11 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldId, date.getIsoString());
                 }
             };
-    /** Listener for all field changes. MUST keep strong reference. */
-    private final Field.AfterFieldChangeListener mAfterFieldChangeListener =
-            this::onAfterFieldChange;
-
     private DateParser mDateParser;
-
     private MenuHandlersMenuProvider mMenuHandlersMenuProvider;
+    /** Listener for all field changes. MUST keep strong reference. */
+    private final EditField.AfterFieldChangeListener mAfterFieldChangeListener =
+            this::onAfterFieldChange;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -146,7 +145,7 @@ public abstract class EditBookBaseFragment
         }
 
         // update the Fields for THIS fragment with their current View instances
-        final List<Field<?, ? extends View>> fields = mVm.getFields(getFragmentId());
+        final List<EditField<?, ? extends View>> fields = mVm.getFields(getFragmentId());
         fields.forEach(field -> {
             //noinspection ConstantConditions
             field.setParentView(global, getView());
@@ -191,14 +190,14 @@ public abstract class EditBookBaseFragment
      * The base class (this one) manages all the actual fields, but 'special' fields can/should
      * be handled in overrides, calling super as the first step.
      * <p>
-     * The {@link Field.AfterFieldChangeListener} is disabled and
+     * The {@link EditField.AfterFieldChangeListener} is disabled and
      * the book is locked during this call.
      *
      * @param fields current field collection
      * @param book   loaded book
      */
     @CallSuper
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         final SharedPreferences global = PreferenceManager
@@ -217,7 +216,11 @@ public abstract class EditBookBaseFragment
         }
 
         // Bulk load the data into the Views.
-        Field.load(book, fields);
+
+        // do NOT call onChanged, as this is the initial load
+        fields.stream()
+              .filter(Field::isAutoPopulated)
+              .forEach(field -> field.setInitialValue(book));
 
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
@@ -246,7 +249,7 @@ public abstract class EditBookBaseFragment
 
     /** Listener for all field changes. */
     @CallSuper
-    public void onAfterFieldChange(@NonNull final Field<?, ? extends View> field) {
+    public void onAfterFieldChange(@NonNull final EditField<?, ? extends View> field) {
         final Book book = mVm.getBook();
 
         book.setStage(EntityStage.Stage.Dirty);
@@ -319,7 +322,7 @@ public abstract class EditBookBaseFragment
         mVm.requireField(R.id.cbx_read)
            .requireView().setOnClickListener(v -> {
                if (((Checkable) v).isChecked()) {
-                   final Field<String, TextView> readEnd = mVm.requireField(R.id.read_end);
+                   final EditField<String, TextView> readEnd = mVm.requireField(R.id.read_end);
                    if (readEnd.isEmpty()) {
                        readEnd.setValue(
                                LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
@@ -353,8 +356,8 @@ public abstract class EditBookBaseFragment
                                     @IdRes final int endFieldId,
                                     final int endTitleId) {
 
-        final Field<String, TextView> startField = mVm.requireField(startFieldId);
-        final Field<String, TextView> endField = mVm.requireField(endFieldId);
+        final EditField<String, TextView> startField = mVm.requireField(startFieldId);
+        final EditField<String, TextView> endField = mVm.requireField(endFieldId);
 
         if (startField.isUsed(global)) {
             // Always a single date picker for the start-date
@@ -394,7 +397,7 @@ public abstract class EditBookBaseFragment
                                @IdRes final int fieldId,
                                @StringRes final int titleId) {
 
-        final Field<String, TextView> field = mVm.requireField(fieldId);
+        final EditField<String, TextView> field = mVm.requireField(fieldId);
         if (field.isUsed(global)) {
             final SingleDatePicker dp = new SingleDatePicker(getChildFragmentManager(),
                                                              titleId, fieldId);
@@ -416,7 +419,7 @@ public abstract class EditBookBaseFragment
     private void addPartialDatePicker(@NonNull final SharedPreferences global,
                                       @IdRes final int fieldId,
                                       @StringRes final int titleId) {
-        final Field<String, TextView> field = mVm.requireField(fieldId);
+        final EditField<String, TextView> field = mVm.requireField(fieldId);
         if (field.isUsed(global)) {
             field.requireView().setOnClickListener(v -> mPartialDatePickerLauncher
                     .launch(titleId, field.getId(), field.getValue(), false));
@@ -439,7 +442,7 @@ public abstract class EditBookBaseFragment
     private void onDateSet(@IdRes final int fieldId,
                            @NonNull final String dateStr) {
 
-        final Field<String, TextView> field = mVm.requireField(fieldId);
+        final EditField<String, TextView> field = mVm.requireField(fieldId);
         field.setValue(dateStr);
         field.onChanged();
 

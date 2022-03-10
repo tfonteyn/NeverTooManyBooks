@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -130,6 +131,8 @@ public interface BookDao {
      * @return {@code true} if a row was deleted
      */
     boolean delete(@NonNull Book book);
+
+    boolean delete(@NonNull BookLight bookLight);
 
     /**
      * Delete the given book (and its covers).
@@ -238,7 +241,7 @@ public interface BookDao {
      *
      * @param context      Current context
      * @param bookId       of the book
-     * @param list         the list of TocEntry
+     * @param list         the list of {@link TocEntry}
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.

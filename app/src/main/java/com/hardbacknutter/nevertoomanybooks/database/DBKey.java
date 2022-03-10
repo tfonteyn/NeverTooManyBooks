@@ -248,15 +248,8 @@ public final class DBKey {
     public static final String KEY_BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
 
 
-    /**
-     * Column alias.
-     * <ul>The type of an {@link AuthorWork} entry.
-     *     <li>{@link AuthorWork#TYPE_TOC}</li>
-     *     <li>{@link AuthorWork#TYPE_BOOK}</li>
-     * </ul>
-     */
+    /** Column alias for {@link AuthorWork.Type} */
     public static final String KEY_TOC_TYPE = "type";
-
 
     /** FTS Primary key. */
     public static final String KEY_FTS_BOOK_ID = "docid";

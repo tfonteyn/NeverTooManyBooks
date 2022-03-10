@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 /**
- * StringList factory for a TocEntry.
+ * StringList factory for a {@link TocEntry}.
  * <p>
  * Format:
  * <ul>
@@ -65,23 +65,23 @@ public class TocEntryCoder
     @NonNull
     @Override
     public String encode(@NonNull final TocEntry tocEntry) {
-        String result = escape(tocEntry.getTitle(), ESCAPE_CHARS);
+        final StringBuilder result = new StringBuilder(escape(tocEntry.getTitle(), ESCAPE_CHARS));
 
-        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
+        tocEntry.getFirstPublicationDate().ifPresent(date -> {
             // start with a space for readability
             // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + tocEntry.getFirstPublicationDate().getIsoString() + ')';
-        }
+            result.append(" (").append(date.getIsoString()).append(')');
+        });
 
-        return result
-               + ' ' + getObjectSeparator()
-               // we only use the name here
-               + ' ' + new StringList<>(new AuthorCoder())
-                       .encodeElement(tocEntry.getPrimaryAuthor());
+        return result.append(+' ').append(getObjectSeparator()).append(' ')
+                     .append(new StringList<>(
+                             // we only use the name here
+                             new AuthorCoder()).encodeElement(tocEntry.getPrimaryAuthor()))
+                     .toString();
     }
 
     /**
-     * Attempts to parse a single string into an TocEntry.
+     * Attempts to parse a single string into a {@link TocEntry}.
      * <ul>The date *must* match a pattern of a (partial) ISO date string:
      * <li>(YYYY)</li>
      * <li>(YYYY-MM)</li>

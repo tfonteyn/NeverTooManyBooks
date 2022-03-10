@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class EntityMerger<T extends Mergeable> {
+public class EntityMerger<T extends Mergeable>
+        implements Iterator<T> {
 
     /** Keep track of id. */
     private final Map<Long, T> idCodes = new HashMap<>();
@@ -48,10 +49,12 @@ public class EntityMerger<T extends Mergeable> {
         mIt = list.iterator();
     }
 
+    @Override
     public boolean hasNext() {
         return mIt.hasNext();
     }
 
+    @Override
     @NonNull
     public T next() {
         return mIt.next();

@@ -226,11 +226,12 @@ public class TocFragment
             initTypeButton(holder.vb.btnType, viewType);
 
             holder.vb.btnType.setOnClickListener(v -> {
-                final String titles = mTocList
+                final String titles = mAuthorWorkList
                         .get(holder.getBindingAdapterPosition())
                         .getBookTitles(v.getContext())
                         .stream()
-                        .map(bt -> v.getContext().getString(R.string.list_element, bt.getTitle()))
+                        .map(bt -> v.getContext().getString(R.string.list_element,
+                                                            bt.getLabel(v.getContext())))
                         .collect(Collectors.joining("\n"));
                 StandardDialogs.infoPopup(
                         holder.vb.btnType,

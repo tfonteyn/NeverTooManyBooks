@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -172,8 +171,14 @@ public class SeriesDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = series
-                .createOrderByData(context, lookupLocale, bookLocale);
+        final OrderByHelper.OrderByData obd;
+        if (lookupLocale) {
+            obd = OrderByHelper.createOrderByData(context, series.getTitle(),
+                                                  bookLocale, series::getLocale);
+        } else {
+            obd = OrderByHelper.createOrderByData(context, series.getTitle(),
+                                                  bookLocale, null);
+        }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindString(1, SqlEncode.orderByColumn(series.getTitle(), obd.locale));
@@ -342,7 +347,8 @@ public class SeriesDaoImpl
                        @NonNull final Series series,
                        @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = series.createOrderByData(context, true, bookLocale);
+        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
+                context, series.getTitle(), bookLocale, series::getLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, series.getTitle());
@@ -361,7 +367,8 @@ public class SeriesDaoImpl
                           @NonNull final Series series,
                           @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = series.createOrderByData(context, true, bookLocale);
+        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
+                context, series.getTitle(), bookLocale, series::getLocale);
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.KEY_SERIES_TITLE, series.getTitle());

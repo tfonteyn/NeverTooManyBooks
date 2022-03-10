@@ -35,37 +35,33 @@ public class SyncReaderViewModel
         extends DataReaderViewModel<SyncReaderMetaData, ReaderResults> {
 
     @Nullable
-    private SyncReaderHelper mHelper;
+    private SyncReaderHelper mSyncReaderHelper;
 
     /**
      * Pseudo constructor.
      */
     public void init(@NonNull final Bundle args) {
-        if (mHelper == null) {
+        if (mSyncReaderHelper == null) {
             final SyncServer syncServer = Objects.requireNonNull(
                     args.getParcelable(SyncServer.BKEY_SITE), SyncServer.BKEY_SITE);
-            mHelper = new SyncReaderHelper(syncServer);
+            mSyncReaderHelper = new SyncReaderHelper(syncServer);
         }
     }
 
+    @Override
     @NonNull
-    SyncReaderHelper getSyncReaderHelper() {
-        return Objects.requireNonNull(mHelper, "mHelper");
-    }
-
-    public void startReadingMetaData() {
-        Objects.requireNonNull(mHelper, "mHelper");
-        startReadingMetaData(mHelper);
+    public SyncReaderHelper getDataReaderHelper() {
+        return Objects.requireNonNull(mSyncReaderHelper, "mHelper");
     }
 
     @Override
     public boolean isReadyToGo() {
-        Objects.requireNonNull(mHelper, "mHelper");
+        Objects.requireNonNull(mSyncReaderHelper, "mSyncReaderHelper");
 
-        switch (mHelper.getSyncServer()) {
+        switch (mSyncReaderHelper.getSyncServer()) {
             case CalibreCS: {
                 @Nullable
-                final CalibreLibrary selected = mHelper
+                final CalibreLibrary selected = mSyncReaderHelper
                         .getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
                 return selected != null && selected.getTotalBooks() > 0;
             }
@@ -75,10 +71,5 @@ public class SyncReaderViewModel
             default:
                 throw new IllegalArgumentException();
         }
-    }
-
-    void startReadingData() {
-        Objects.requireNonNull(mHelper, "mHelper");
-        startReadingData(mHelper);
     }
 }

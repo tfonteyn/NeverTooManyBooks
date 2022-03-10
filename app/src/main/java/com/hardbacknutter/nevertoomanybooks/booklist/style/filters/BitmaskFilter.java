@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
-import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference;
 
 public class BitmaskFilter
         implements StyleFilter<Integer>, PInt {

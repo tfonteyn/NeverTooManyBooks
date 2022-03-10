@@ -98,10 +98,8 @@ public class EditSeriesDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
-        mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
-                                         "KEY_FK_SERIES");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES), DBKey.FK_SERIES);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Series(mSeries.getTitle(), mSeries.isComplete());

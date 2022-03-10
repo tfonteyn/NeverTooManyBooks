@@ -62,9 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -358,8 +358,17 @@ public class BookDaoImpl
     public boolean delete(@NonNull final Book book) {
         final boolean success = delete(book.getId());
         if (success) {
-            book.setId(0);
+            book.remove(DBKey.PK_ID);
             book.remove(KEY_BOOK_UUID);
+        }
+        return success;
+    }
+
+    @Override
+    public boolean delete(@NonNull final BookLight bookLight) {
+        final boolean success = delete(bookLight.getId());
+        if (success) {
+            bookLight.setId(0);
         }
         return success;
     }
@@ -801,8 +810,14 @@ public class BookDaoImpl
                     }
                 }
 
-                final ReorderTitle.OrderByData obd = tocEntry
-                        .createOrderByData(context, lookupLocale, bookLocale);
+                final OrderByHelper.OrderByData obd;
+                if (lookupLocale) {
+                    obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
+                                                          bookLocale, tocEntry::getLocale);
+                } else {
+                    obd = OrderByHelper.createOrderByData(context, tocEntry.getTitle(),
+                                                          bookLocale, null);
+                }
 
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, tocEntry.getPrimaryAuthor().getId());
@@ -873,8 +888,8 @@ public class BookDaoImpl
     }
 
     /**
-     * Delete the link between TocEntry's and the given Book.
-     * Note that the actual TocEntry's are NOT deleted here.
+     * Delete the link between {@link TocEntry}'s and the given Book.
+     * Note that the actual {@link TocEntry}'s are NOT deleted here.
      *
      * @param bookId id of the book
      */

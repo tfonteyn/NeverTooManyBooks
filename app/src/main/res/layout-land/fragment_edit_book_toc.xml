@@ -19,132 +19,138 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/container_margin"
+    android:id="@+id/root_scroller"
+    style="@style/TopNestedScroller"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_title"
-        style="@style/TIL"
-        android:hint="@string/lbl_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/col1"
-        app:layout_constraintTop_toTopOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/container_margin"
         >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/title"
-            style="@style/titleTextEntry"
-            android:imeOptions="actionNext"
-            tools:ignore="Autofill"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_author"
-        style="@style/TIL.AutoCompleteTextView"
-        android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toEndOf="@id/lbl_title"
-        app:layout_constraintStart_toStartOf="@id/lbl_title"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
-        >
-
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/author"
-            style="@style/acPersonalNameTextEntry"
-            android:imeOptions="actionNext"
-            tools:ignore="LabelFor"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <RadioGroup
-        android:id="@+id/rg_book_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginTop="@dimen/field_margin_top"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="@id/lbl_title"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        >
-
-        <RadioButton
-            android:id="@+id/rb_is_collection"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/col1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_collection"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"
             />
 
-        <RadioButton
-            android:id="@+id/rb_is_anthology"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_title"
+            style="@style/TIL"
+            android:hint="@string/lbl_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/col1"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                style="@style/titleTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_author"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_author"
+            app:layout_constraintEnd_toEndOf="@id/lbl_title"
+            app:layout_constraintStart_toStartOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/author"
+                style="@style/acPersonalNameTextEntry"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <RadioGroup
+            android:id="@+id/rg_book_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lbl_anthology"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            >
+
+            <RadioButton
+                android:id="@+id/rb_is_collection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_collection"
+                />
+
+            <RadioButton
+                android:id="@+id/rb_is_anthology"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_anthology"
+                />
+
+            <RadioButton
+                android:id="@+id/rb_is_neither"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/neither"
+                />
+        </RadioGroup>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_first_publication"
+            style="@style/TIL.Year"
+            app:layout_constraintEnd_toEndOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/first_publication"
+                style="@style/TIE.Year"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_add"
+            style="@style/Button.Action.Submit"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:text="@string/action_add"
+            app:layout_constraintEnd_toEndOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
             />
 
-        <RadioButton
-            android:id="@+id/rb_is_neither"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/neither"
-            />
-    </RadioGroup>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_first_publication"
-        style="@style/TIL.Year"
-        app:layout_constraintEnd_toEndOf="@id/lbl_title"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/first_publication"
-            style="@style/TIE.Year"
-            android:imeOptions="actionDone"
-            tools:ignore="Autofill"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tocList"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginEnd="@dimen/field_margin_start"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/col1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/row_edit_toc_entry"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/btn_add"
-        style="@style/Button.Action.Submit"
-        android:layout_marginTop="@dimen/field_margin_top"
-        android:text="@string/action_add"
-        app:layout_constraintEnd_toEndOf="@id/lbl_title"
-        app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
-        />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tocList"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginEnd="@dimen/field_margin_start"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/col1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/row_edit_toc_entry"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

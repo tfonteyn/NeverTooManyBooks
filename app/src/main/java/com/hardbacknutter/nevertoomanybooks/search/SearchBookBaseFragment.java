@@ -170,7 +170,7 @@ public abstract class SearchBookBaseFragment
                         .setTitle(R.string.progress_msg_searching)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> mCoordinator.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });

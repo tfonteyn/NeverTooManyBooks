@@ -58,6 +58,7 @@ public class AuthorCoder
     public String encode(@NonNull final Author author) {
         // Note the use of NAME_SEPARATOR between family and given-names,
         // i.e. the names are considered ONE field with a private separator.
+        // Always add the given-name even when empty!
         String result = escape(author.getFamilyName(), ESCAPE_CHARS)
                         + NAME_SEPARATOR + ' '
                         + escape(author.getGivenNames(), ESCAPE_CHARS);

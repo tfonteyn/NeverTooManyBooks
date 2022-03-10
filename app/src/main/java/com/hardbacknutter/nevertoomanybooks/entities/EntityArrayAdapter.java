@@ -31,7 +31,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
- * An ArrayAdapter for using an {@link Entity} with an {@link android.widget.AutoCompleteTextView}.
+ * An ArrayAdapter for using an {@link Entity}
+ * with an {@link android.widget.AutoCompleteTextView}.
  *
  * @param <T> type of list item
  */
@@ -67,11 +68,11 @@ public class EntityArrayAdapter<T extends Entity>
     }
 
     /**
-     * Return the id of the Entity.
+     * Return the id of the ParcelableEntity.
      *
      * @param position of the item
      *
-     * @return Entity id
+     * @return ParcelableEntity id
      */
     @Override
     public long getItemId(final int position) {
@@ -80,7 +81,7 @@ public class EntityArrayAdapter<T extends Entity>
     }
 
     /**
-     * Return the label of the Entity.
+     * Return the label of the ParcelableEntity.
      *
      * @param item to use
      *

@@ -175,8 +175,8 @@ public abstract class BooklistStyle
      *
      * @return cloned/new instance
      */
-    @NonNull
     @Override
+    @NonNull
     public UserStyle clone(@NonNull final Context context) {
         SanityCheck.requireValue(mUuid, "mUuid");
         // A cloned style is *always* a UserStyle/persistent regardless of the original
@@ -309,6 +309,7 @@ public abstract class BooklistStyle
     }
 
     @Override
+    @NonNull
     public TextScale getTextScale() {
         return mTextScale;
     }

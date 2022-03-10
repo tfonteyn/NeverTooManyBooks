@@ -134,7 +134,7 @@ public class StyleDaoImpl
     public long insert(@NonNull final ListStyle style) {
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_STYLE)) {
             stmt.bindString(1, style.getUuid());
-            stmt.bindBoolean(2, style instanceof BuiltinStyle);
+            stmt.bindBoolean(2, !style.isUserDefined());
             stmt.bindBoolean(3, style.isPreferred());
             stmt.bindLong(4, style.getMenuPosition());
             final long iId = stmt.executeInsert();

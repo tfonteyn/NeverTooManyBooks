@@ -131,6 +131,7 @@ public class AuthorBooklistGroup
     }
 
     @Override
+    @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomain.
@@ -147,8 +148,7 @@ public class AuthorBooklistGroup
                 .addGroupDomain(
                         // Group by complete-flag
                         new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
-                                             TBL_AUTHORS.dot(
-                                                     DBKey.BOOL_AUTHOR_IS_COMPLETE)));
+                                             TBL_AUTHORS.dot(DBKey.BOOL_AUTHOR_IS_COMPLETE)));
     }
 
     @Override
@@ -166,8 +166,8 @@ public class AuthorBooklistGroup
                                     DomainExpression.SORT_ASC);
     }
 
-    @NonNull
     @Override
+    @NonNull
     public ArrayList<DomainExpression> getGroupDomains() {
         // We inject the mSortedDomain as first in the list.
         final ArrayList<DomainExpression> list = new ArrayList<>();
@@ -176,9 +176,9 @@ public class AuthorBooklistGroup
         return list;
     }
 
-    @NonNull
     @Override
     @CallSuper
+    @NonNull
     public Map<String, PPref<?>> getRawPreferences() {
         final Map<String, PPref<?>> map = super.getRawPreferences();
         map.put(mPrimaryType.getKey(), mPrimaryType);

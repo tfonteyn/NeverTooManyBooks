@@ -25,7 +25,7 @@
     <item
         android:id="@id/MENU_ADVANCED_SEARCH"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="@string/lbl_local_search" />
+        android:title="@string/lbl_local_search_long" />
 
     <item
         android:id="@id/MENU_MANAGE_BOOKSHELVES"

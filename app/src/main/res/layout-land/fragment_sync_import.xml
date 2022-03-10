@@ -18,183 +18,188 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopCentered"
+    android:id="@+id/root_scroller"
+    style="@style/TopNestedScroller"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 
-    <!--suppress LongLine -->
-    <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
-        android:id="@+id/rb_books_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="rb_import_new_only,rb_import_all,rb_import_new_and_updated"
-        tools:ignore="MissingConstraints"
-        />
-
-    <TextView
-        android:id="@+id/header"
-        style="@style/Text.Header"
-        android:text="@string/lbl_import_options"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <!-- only visible for Calibre. -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_calibre_library"
-        style="@style/Button.DropdownMenu"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginTop="@dimen/section_margin_top"
-        android:hint="@string/lbl_library"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        tools:visibility="visible"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/TopCentered"
         >
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/calibre_library"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor"
-            tools:text="@sample/data.json/library/name"
+        <!--suppress LongLine -->
+        <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+            android:id="@+id/rb_books_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="rb_import_new_only,rb_import_all,rb_import_new_and_updated"
+            tools:ignore="MissingConstraints"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/header"
+            style="@style/Text.Header"
+            android:text="@string/lbl_import_options"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <!-- will be invisible if there is no meta-data. -->
-    <TextView
-        android:id="@+id/archive_content"
-        style="@style/Text.Body"
-        android:layout_marginStart="@dimen/field_margin_inline"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textIsSelectable="true"
-        android:layout_marginTop="@dimen/section_margin_top"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_calibre_library"
-        tools:text="Books: 123\nCovers: 456"
-        />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/middle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_books"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginTop="@dimen/section_margin_top"
-        android:checked="true"
-        android:text="@string/lbl_books"
-        app:layout_constraintStart_toEndOf="@id/middle"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        />
-
-    <RadioButton
-        android:id="@+id/rb_import_new_only"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:text="@string/lbl_import_books_option_new_only"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/cbx_books"
-        />
-
-    <ImageButton
-        android:id="@+id/inf_import_new_only"
-        style="@style/Button.InfoPopup"
-        android:contentDescription="@string/txt_import_books_option_new_only"
-        app:layout_constraintStart_toEndOf="@id/rb_import_new_only"
-        app:layout_constraintTop_toTopOf="@id/rb_import_new_only"
-        />
-
-    <RadioButton
-        android:id="@+id/rb_import_new_and_updated"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:checked="true"
-        android:text="@string/lbl_import_books_option_new_and_updated"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/rb_import_new_only"
-        />
-
-    <ImageButton
-        android:id="@+id/inf_import_new_and_updated"
-        style="@style/Button.InfoPopup"
-        android:contentDescription="@string/txt_import_books_option_new_and_updated"
-        app:layout_constraintStart_toEndOf="@id/rb_import_new_and_updated"
-        app:layout_constraintTop_toTopOf="@id/rb_import_new_and_updated"
-        />
-
-    <RadioButton
-        android:id="@+id/rb_import_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:text="@string/lbl_import_books_option_all"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/rb_import_new_and_updated"
-        />
-
-    <ImageButton
-        android:id="@+id/inf_import_all"
-        style="@style/Button.InfoPopup"
-        android:contentDescription="@string/txt_import_books_option_all"
-        app:layout_constraintStart_toEndOf="@id/rb_import_all"
-        app:layout_constraintTop_toTopOf="@id/rb_import_all"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_covers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/lbl_covers_long"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/rb_import_all"
-        />
-
-
-    <TextView
-        android:id="@+id/inf_sync_date"
-        style="@style/Text.Header"
-        android:text="@string/lbl_import_books_option_new_and_updated_cutoff_date"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/lbl_sync_date"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_sync_date"
-        style="@style/TIL.ReadOnly"
-        android:hint="@string/lbl_sync_date"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/cbx_covers"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/sync_date"
-            style="@style/TIE.ReadOnly"
+        <!-- only visible for Calibre. -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_calibre_library"
+            style="@style/Button.DropdownMenu"
             android:layout_marginStart="@dimen/field_margin_start"
-            tools:text="@sample/data.json/date/long"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:hint="@string/lbl_library"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            tools:visibility="visible"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/calibre_library"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/library/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- will be invisible if there is no meta-data. -->
+        <TextView
+            android:id="@+id/archive_content"
+            style="@style/Text.Body"
+            android:layout_marginStart="@dimen/field_margin_inline"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textIsSelectable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_calibre_library"
+            tools:text="Books: 123\nCovers: 456"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_books"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:checked="true"
+            android:text="@string/lbl_books"
+            app:layout_constraintStart_toEndOf="@id/middle"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_import_new_only"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/lbl_import_books_option_new_only"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/cbx_books"
+            />
+
+        <ImageButton
+            android:id="@+id/inf_import_new_only"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/txt_import_books_option_new_only"
+            app:layout_constraintStart_toEndOf="@id/rb_import_new_only"
+            app:layout_constraintTop_toTopOf="@id/rb_import_new_only"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_import_new_and_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:checked="true"
+            android:text="@string/lbl_import_books_option_new_and_updated"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_new_only"
+            />
+
+        <ImageButton
+            android:id="@+id/inf_import_new_and_updated"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/txt_import_books_option_new_and_updated"
+            app:layout_constraintStart_toEndOf="@id/rb_import_new_and_updated"
+            app:layout_constraintTop_toTopOf="@id/rb_import_new_and_updated"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_import_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/lbl_import_books_option_all"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_new_and_updated"
+            />
+
+        <ImageButton
+            android:id="@+id/inf_import_all"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/txt_import_books_option_all"
+            app:layout_constraintStart_toEndOf="@id/rb_import_all"
+            app:layout_constraintTop_toTopOf="@id/rb_import_all"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_covers"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/lbl_covers_long"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_import_all"
+            />
+
+
+        <TextView
+            android:id="@+id/inf_sync_date"
+            style="@style/Text.Header"
+            android:text="@string/lbl_import_books_option_new_and_updated_cutoff_date"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/lbl_sync_date"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_sync_date"
+            style="@style/TIL.ReadOnly"
+            android:hint="@string/lbl_sync_date"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/cbx_covers"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/sync_date"
+                style="@style/TIE.ReadOnly"
+                android:layout_marginStart="@dimen/field_margin_start"
+                tools:text="@sample/data.json/date/long"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

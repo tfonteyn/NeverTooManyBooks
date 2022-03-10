@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.network.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncAction;
@@ -265,7 +264,7 @@ public class SearchBookUpdatesFragment
                 final Intent resultIntent = EditBookOutput
                         .createResultIntent(
                                 result.getLong(DBKey.FK_BOOK, 0),
-                                result.getBoolean(Entity.BKEY_DATA_MODIFIED, false))
+                                result.getBoolean(SearchBookUpdatesViewModel.BKEY_MODIFIED, false))
                         .putExtra(SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, lastBookId);
 
                 //noinspection ConstantConditions
@@ -309,7 +308,7 @@ public class SearchBookUpdatesFragment
                         .setIndeterminate(true)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });

@@ -78,10 +78,9 @@ public class EditBookshelfDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mBookshelf = Objects.requireNonNull(args.getParcelable(DBKey.FK_BOOKSHELF),
-                                            "KEY_FK_BOOKSHELF");
+                                            DBKey.FK_BOOKSHELF);
 
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();

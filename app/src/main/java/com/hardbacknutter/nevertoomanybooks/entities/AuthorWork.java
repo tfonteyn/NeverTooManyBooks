@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
@@ -34,23 +33,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * Abstracts/shield a {@link Book}, {@link BookLight}, {@link TocEntry}
  * for use in a list of works by an {@link Author}.
  * i.e. {@link AuthorDao#getAuthorWorks}.
+ * <p>
+ * The {@link Type#value} allows us to return the type directly from a DAO using an SQL column.
  */
 public interface AuthorWork {
-
-    /** {@link TocEntry}; 'T' as returned by the DAO SQL. */
-    char TYPE_TOC = 'T';
-    /** {@link Book}; 'B'  as returned by the DAO SQL. */
-    char TYPE_BOOK = 'B';
 
     /**
      * Get the type of this entry.
      *
      * @return type
-     *
-     * @see #TYPE_TOC
-     * @see #TYPE_BOOK
      */
-    char getWorkType();
+    @NonNull
+    Type getWorkType();
 
     /**
      * Get the database row id of the entity.
@@ -59,14 +53,12 @@ public interface AuthorWork {
      */
     long getId();
 
-    void setId(long id);
-
     /**
-     * Get the formatted title.
+     * Get the label to use for <strong>displaying</strong>.
      *
      * @param context Current context
      *
-     * @return formatted title
+     * @return the label to use.
      */
     @NonNull
     String getLabel(@NonNull Context context);
@@ -80,22 +72,14 @@ public interface AuthorWork {
     /**
      * Get the list of book titles this work is present in.
      * <p>
-     * The titles <strong>should</strong> be reordered for displaying as per user preferences.
-     * i.e. they should use the formatting as applied by {@link #getLabel(Context)}.
-     * <p>
-     * The default implementation assumes the work <strong>is</strong> a Book,
-     * and simply returns the (single) id/title.
+     * The embedded titles should/will be unformatted.
      *
      * @param context Current context
      *
      * @return list
      */
     @NonNull
-    default List<BookLight> getBookTitles(@NonNull final Context context) {
-        final List<BookLight> list = new ArrayList<>();
-        list.add(new BookLight(getId(), getLabel(context), null));
-        return list;
-    }
+    List<BookLight> getBookTitles(@NonNull Context context);
 
     /**
      * Get the number of books this work is present in.
@@ -109,5 +93,33 @@ public interface AuthorWork {
      */
     default int getBookCount() {
         return 1;
+    }
+
+    enum Type {
+        /** 'T' as returned by the DAO SQL. */
+        TocEntry('T'),
+        /** 'L'  as returned by the DAO SQL. */
+        BookLight('L'),
+
+        Book('B');
+
+        public final char value;
+
+        Type(final char value) {
+            this.value = value;
+        }
+
+        public static Type getType(final char value) {
+            switch (value) {
+                case 'T':
+                    return TocEntry;
+                case 'L':
+                    return BookLight;
+                case 'B':
+                    return Book;
+                default:
+                    throw new IllegalArgumentException(String.valueOf(value));
+            }
+        }
     }
 }

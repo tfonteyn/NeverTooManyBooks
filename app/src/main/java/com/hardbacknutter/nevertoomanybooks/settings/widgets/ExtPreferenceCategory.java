@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.widgets;
+package com.hardbacknutter.nevertoomanybooks.settings.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -30,10 +30,11 @@ import androidx.preference.PreferenceViewHolder;
 
 /**
  * In your "res/som_prefs.xml" file(s), replace {@code <PreferenceCategory ...}
- * with {@code <com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory ...}
+ * with {@code <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory ...}
  * and the {@code android:summary} attribute will be able to display multiple lines
  * of text.
  */
+@SuppressWarnings("unused")
 public class ExtPreferenceCategory
         extends PreferenceCategory {
 

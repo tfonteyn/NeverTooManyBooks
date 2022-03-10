@@ -23,11 +23,10 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 
 /**
  * Interface for all field-level validators.
- * Could be replaced with a {@code Consumer<Field<T, V>>}.
  */
 @FunctionalInterface
 public interface FieldValidator<T, V extends View> {
@@ -37,5 +36,5 @@ public interface FieldValidator<T, V extends View> {
      *
      * @param field to validate
      */
-    void validate(@NonNull Field<T, V> field);
+    void validate(@NonNull EditField<T, V> field);
 }

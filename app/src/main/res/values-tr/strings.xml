@@ -316,7 +316,7 @@
     <string name="menu_lend_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="menu_rebuild_index">Dizini yeniden oluştur</string>
-    <string name="lbl_local_search">Gelişmiş Yerel Arama</string>
+    <string name="lbl_local_search_long">Gelişmiş Yerel Arama</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>
@@ -455,12 +455,12 @@
     <string name="style_builtin_update_date">Gün ve ayı güncelle</string>
     <string name="style_is_builtin">Yerleşik</string>
     <string name="style_is_user_defined">Kullanıcı tanımlı</string>
-    <string name="lbl_alternative_editions">Alt. Basımlar</string>
-    <string name="lbl_toc">Içerik</string>
-    <string name="lbl_details">Ayrıntılar</string>
-    <string name="lbl_ext_id">Harici Kimlik</string>
-    <string name="lbl_notes">Notlar</string>
-    <string name="lbl_publication_tab">Yayınlama</string>
+    <string name="lbl_tab_alternative_editions">Alt. Basımlar</string>
+    <string name="lbl_tab_table_of_content">Içerik</string>
+    <string name="lbl_tab_details">Ayrıntılar</string>
+    <string name="lbl_tab_lbl_ext_id">Harici Kimlik</string>
+    <string name="lbl_tab_notes">Notlar</string>
+    <string name="lbl_tab_publication">Yayınlama</string>
     <string name="tip_authors_book_may_appear_more_than_once">Eğer her yazar için gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
     <string name="tip_authors_works">Kullanılan simgeler</string>
     <string name="tip_authors_works_book">Kitap.</string>

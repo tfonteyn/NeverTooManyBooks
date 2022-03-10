@@ -27,6 +27,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.util.function.Supplier;
+
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogProgressBinding;
 
 public class ProgressDelegate {
@@ -74,6 +76,8 @@ public class ProgressDelegate {
         return this;
     }
 
+    //URGENT: when cancelling during connecting to a remote server (e.g. calibre) this does not work.
+    // need to break the actual TerminatorConnection
     @NonNull
     public ProgressDelegate setOnCancelListener(@Nullable final View.OnClickListener listener) {
         mVb.btnCancel.setOnClickListener(listener);
@@ -81,9 +85,12 @@ public class ProgressDelegate {
     }
 
     @NonNull
-    public ProgressDelegate show(@NonNull final Window window) {
+    public ProgressDelegate show(@NonNull final Supplier<Window> windowSupplier) {
+        if (mVb.getRoot().getVisibility() == View.VISIBLE) {
+            return this;
+        }
         if (mPreventSleep) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            windowSupplier.get().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         mVb.getRoot().setVisibility(View.VISIBLE);
         return this;

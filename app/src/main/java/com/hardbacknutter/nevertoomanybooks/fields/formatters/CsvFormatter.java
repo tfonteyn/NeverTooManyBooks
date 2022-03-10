@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * FieldFormatter for a list field. Formats the Entity's as a CSV String.
+ * FieldFormatter for a list field. Formats the ParcelableEntity's as a CSV String.
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
  * </ul>

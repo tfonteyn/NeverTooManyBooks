@@ -232,6 +232,11 @@ public class CalibreContentServerReader
 //                .build();
 //    }
 
+    @Override
+    public boolean cancel(final int taskId) {
+        return mServer.cancelFetch();
+    }
+
     private void readLibraryMetaData(@NonNull final Context context)
             throws IOException, JSONException {
 

@@ -41,8 +41,8 @@ public class ImportViewModel
 
     // not an 'init' as the helper can only be created after the user selected a uri
     @NonNull
-    ImportHelper createImportHelper(@NonNull final Context context,
-                                    @NonNull final Uri uri)
+    ImportHelper createDataReaderHelper(@NonNull final Context context,
+                                        @NonNull final Uri uri)
             throws DataReaderException, FileNotFoundException {
 
         mHelper = new ImportHelper(context, uri);
@@ -54,23 +54,14 @@ public class ImportViewModel
         return mHelper != null;
     }
 
+    @Override
     @NonNull
-    ImportHelper getImportHelper() {
+    public ImportHelper getDataReaderHelper() {
         return Objects.requireNonNull(mHelper, "mImportHelper");
-    }
-
-    void readMetaData() {
-        Objects.requireNonNull(mHelper, "mImportHelper");
-        startReadingMetaData(mHelper);
     }
 
     @Override
     public boolean isReadyToGo() {
         return mHelper != null && mHelper.getMetaData().isPresent();
-    }
-
-    void startImport() {
-        Objects.requireNonNull(mHelper, "mImportHelper");
-        startReadingData(mHelper);
     }
 }

@@ -62,14 +62,15 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
      * Constructor.
      *
      * @param context   Current context
-     * @param items     List of items
-     * @param selection (optional) the pre-selected items
-     * @param listener  (optional) to send a selection to
+     * @param items     List of items; each a Pair with an id and the display-string
+     * @param selection (optional) the pre-selected item id's
+     * @param listener  (optional) to send a selection to as the user changes them;
+     *                  alternatively use {@link #getSelection()} when done.
      */
-    ChecklistRecyclerAdapter(@NonNull final Context context,
-                             @NonNull final List<Pair<ID, CS>> items,
-                             @Nullable final Set<ID> selection,
-                             @Nullable final SelectionListener<ID> listener) {
+    public ChecklistRecyclerAdapter(@NonNull final Context context,
+                                    @NonNull final List<Pair<ID, CS>> items,
+                                    @Nullable final Set<ID> selection,
+                                    @Nullable final SelectionListener<ID> listener) {
 
         mInflater = LayoutInflater.from(context);
         mItems = items;
@@ -98,7 +99,6 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
     }
 
     private void onItemCheckChanged(@NonNull final Holder holder) {
-
         final int position = holder.getAbsoluteAdapterPosition();
 
         final boolean selected = holder.btnOption.isChecked();

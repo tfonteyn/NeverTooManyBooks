@@ -38,6 +38,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.List;
 import java.util.Optional;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncServer;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -67,6 +69,9 @@ public class CalibreLibraryMappingFragment
     private List<Bookshelf> mBookshelfList;
     private ExtArrayAdapter<CalibreLibrary> mLibraryArrayAdapter;
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
+
+    @Nullable
+    private ProgressDelegate mProgressDelegate;
 
     @NonNull
     public static Fragment create() {
@@ -101,6 +106,7 @@ public class CalibreLibraryMappingFragment
         super.onViewCreated(view, savedInstanceState);
 
         mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
         mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
         //noinspection ConstantConditions
@@ -135,14 +141,55 @@ public class CalibreLibraryMappingFragment
 
         // We're only using the meta-data task, so just check if we already have libraries
         if (mVm.getLibraries().isEmpty()) {
-            Snackbar.make(view, R.string.progress_msg_connecting, Snackbar.LENGTH_SHORT).show();
-            mVm.startReadingMetaData();
+            readMetaData();
         } else {
             showOptions();
         }
     }
 
+    private void readMetaData() {
+        // There will be no progress messages as reading the data itself is very fast, but
+        // connection can take a long time, so bring up the progress dialog now
+        if (mProgressDelegate == null) {
+            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                    .setTitle(R.string.progress_msg_connecting)
+                    .setPreventSleep(true)
+                    .setIndeterminate(true)
+                    .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+        }
+        //noinspection ConstantConditions
+        mProgressDelegate.show(() -> getActivity().getWindow());
+        mVm.readMetaData();
+    }
+
+    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
+            Optional<SyncReaderMetaData>>> message) {
+        closeProgressDialog();
+
+        message.getData().flatMap(TaskResult::requireResult).ifPresent(result -> {
+            mVm.extractLibraryData(result);
+            mLibraryArrayAdapter.notifyDataSetChanged();
+
+            showOptions();
+        });
+    }
+
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+            Optional<SyncReaderMetaData>>> message) {
+        closeProgressDialog();
+
+        message.getData().ifPresent(data -> {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
+                    .show();
+            //noinspection ConstantConditions
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+        });
+    }
+
     private void onMetaDataFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+        closeProgressDialog();
+
         message.getData().ifPresent(data -> {
             final Context context = getContext();
             //noinspection ConstantConditions
@@ -161,16 +208,6 @@ public class CalibreLibraryMappingFragment
                     })
                     .create()
                     .show();
-        });
-    }
-
-    private void onMetaDataRead(@NonNull final
-                                LiveDataEvent<TaskResult<Optional<SyncReaderMetaData>>> message) {
-        message.getData().flatMap(TaskResult::requireResult).ifPresent(result -> {
-            mVm.extractLibraryData(result);
-            mLibraryArrayAdapter.notifyDataSetChanged();
-
-            showOptions();
         });
     }
 
@@ -222,7 +259,13 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-
+    private void closeProgressDialog() {
+        if (mProgressDelegate != null) {
+            //noinspection ConstantConditions
+            mProgressDelegate.dismiss(getActivity().getWindow());
+            mProgressDelegate = null;
+        }
+    }
 
     private static class Holder
             extends RecyclerView.ViewHolder {

@@ -21,30 +21,36 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
+import com.hardbacknutter.nevertoomanybooks.widgets.ChecklistRecyclerAdapter;
 
 /**
- * DialogFragment to edit a list of {@link Entity}.
+ * DialogFragment to edit a list of {@link ParcelableEntity}.
  * <p>
  * Replacement for the AlertDialog with MultipleChoice setup.
  */
@@ -55,6 +61,8 @@ public class MultiChoiceDialogFragment
     public static final String TAG = "MultiChoiceDialogFragment";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     private static final String BKEY_DIALOG_TITLE = TAG + ":title";
+    private static final String BKEY_DIALOG_MESSAGE = TAG + ":msg";
+
     /** Argument. */
     private static final String BKEY_FIELD_ID = TAG + ":fieldId";
     /** Argument. */
@@ -67,11 +75,13 @@ public class MultiChoiceDialogFragment
     private int mFieldId;
     @Nullable
     private String mDialogTitle;
+    @Nullable
+    private String mDialogMessage;
 
     /** The list of items to display. */
-    private ArrayList<Entity> mAllItems;
+    private List<ParcelableEntity> mAllItems;
     /** The list of selected items. */
-    private ArrayList<Entity> mSelectedItems;
+    private ArrayList<ParcelableEntity> mSelectedItems;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -80,6 +90,7 @@ public class MultiChoiceDialogFragment
         Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
+        mDialogMessage = args.getString(BKEY_DIALOG_MESSAGE, null);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
         mAllItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_ALL), BKEY_ALL);
@@ -93,28 +104,50 @@ public class MultiChoiceDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         @SuppressLint("InflateParams")
-        final View root = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
-        final ViewGroup itemListView = root.findViewById(R.id.item_list);
-        // Takes the list of items and create a list of checkboxes in the display.
-        for (final Entity item : mAllItems) {
-            final CompoundButton itemView = new CheckBox(getContext());
-            //noinspection ConstantConditions
-            itemView.setText(item.getLabel(getContext()));
-            itemView.setChecked(mSelectedItems.contains(item));
+        final View view = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
 
-            itemView.setOnCheckedChangeListener((v, isChecked) -> {
-                if (isChecked) {
-                    mSelectedItems.add(item);
-                } else {
-                    mSelectedItems.remove(item);
-                }
-            });
-            itemListView.addView(itemView);
+        final TextView messageView = view.findViewById(R.id.message);
+        if (mDialogMessage != null && !mDialogMessage.isEmpty()) {
+            messageView.setText(mDialogMessage);
+            messageView.setVisibility(View.VISIBLE);
+        } else {
+            messageView.setVisibility(View.GONE);
         }
 
+        final Context context = getContext();
+
+        final List<Pair<Long, String>> items = new ArrayList<>();
+        for (final ParcelableEntity item : mAllItems) {
+            //noinspection ConstantConditions
+            items.add(new Pair<>(item.getId(), item.getLabel(context)));
+        }
+
+        final Set<Long> selection = mSelectedItems.stream().map(Entity::getId)
+                                                  .collect(Collectors.toSet());
+
         //noinspection ConstantConditions
-        return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
+        final ChecklistRecyclerAdapter<Long, String> adapter =
+                new ChecklistRecyclerAdapter<>(context, items, selection, (id, checked) -> {
+                    // always remove
+                    mSelectedItems.stream()
+                                  .filter(item -> item.getId() == id)
+                                  .findFirst()
+                                  .ifPresent(item -> mSelectedItems.remove(item));
+
+                    // and (re)add when needed
+                    if (checked) {
+                        mAllItems.stream()
+                                 .filter(item -> item.getId() == id)
+                                 .findFirst()
+                                 .ifPresent(item -> mSelectedItems.add(item));
+                    }
+                });
+
+        final RecyclerView listView = view.findViewById(R.id.multi_choice_items);
+        listView.setAdapter(adapter);
+
+        return new MaterialAlertDialogBuilder(context)
+                .setView(view)
                 .setTitle(mDialogTitle)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> saveChanges())
@@ -132,7 +165,7 @@ public class MultiChoiceDialogFragment
         outState.putParcelableArrayList(BKEY_SELECTED, mSelectedItems);
     }
 
-    public abstract static class Launcher
+    public abstract static class Launcher<T extends ParcelableEntity>
             extends FragmentLauncherBase {
 
         private static final String FIELD_ID = "fieldId";
@@ -142,10 +175,11 @@ public class MultiChoiceDialogFragment
             super(requestKey);
         }
 
-        static void setResult(@NonNull final Fragment fragment,
-                              @NonNull final String requestKey,
-                              @IdRes final int fieldId,
-                              @NonNull final ArrayList<Entity> selectedItems) {
+        static <T extends ParcelableEntity> void setResult(@NonNull final Fragment fragment,
+                                                           @NonNull final String requestKey,
+                                                           @IdRes final int fieldId,
+                                                           @NonNull
+                                                           final ArrayList<T> selectedItems) {
             final Bundle result = new Bundle(2);
             result.putInt(FIELD_ID, fieldId);
             result.putParcelableArrayList(SELECTED_ITEMS, selectedItems);
@@ -163,8 +197,8 @@ public class MultiChoiceDialogFragment
          */
         public void launch(@NonNull final String dialogTitle,
                            @IdRes final int fieldId,
-                           @NonNull final ArrayList<Entity> allItems,
-                           @NonNull final ArrayList<Entity> selectedItems) {
+                           @NonNull final ArrayList<T> allItems,
+                           @NonNull final ArrayList<T> selectedItems) {
 
             final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
@@ -193,6 +227,6 @@ public class MultiChoiceDialogFragment
          * @param selectedItems the list of <strong>checked</strong> items
          */
         public abstract void onResult(@IdRes int fieldId,
-                                      @NonNull ArrayList<Entity> selectedItems);
+                                      @NonNull ArrayList<T> selectedItems);
     }
 }

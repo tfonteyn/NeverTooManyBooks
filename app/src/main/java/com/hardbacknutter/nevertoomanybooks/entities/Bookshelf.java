@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * See {@link #getStyle(Context)}.
  */
 public class Bookshelf
-        implements Entity, Mergeable {
+        implements ParcelableEntity, Mergeable {
 
     /** Log tag. */
     public static final String TAG = "Bookshelf";
@@ -245,8 +245,8 @@ public class Bookshelf
         mId = id;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getLabel(@NonNull final Context context) {
         return mName;
     }

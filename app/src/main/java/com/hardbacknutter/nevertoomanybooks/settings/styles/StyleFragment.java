@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklist
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.widgets.MultiSelectListPreferenceSummaryProvider;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.MultiSelectListPreferenceSummaryProvider;
 
 /**
  * Main fragment to edit a Style.

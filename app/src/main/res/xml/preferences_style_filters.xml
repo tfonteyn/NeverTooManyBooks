@@ -62,7 +62,7 @@
             />
 
         <!--        -->
-        <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
+        <com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
             android:entries="@array/pe_bob_filter_edition"
@@ -82,7 +82,7 @@
             />
 
         <!-- under development - disabled in release. -->
-        <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
+        <com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
             android:icon="@drawable/ic_baseline_filter_list_24"

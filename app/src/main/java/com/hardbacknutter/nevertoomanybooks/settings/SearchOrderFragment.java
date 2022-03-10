@@ -229,7 +229,7 @@ public class SearchOrderFragment
                     info.add(context.getString(R.string.lbl_barcode));
                 }
                 if (searchEngine instanceof SearchEngine.ByExternalId) {
-                    info.add(context.getString(R.string.lbl_ext_id));
+                    info.add(context.getString(R.string.lbl_tab_lbl_ext_id));
                 }
                 if (searchEngine instanceof SearchEngine.ByText) {
                     info.add(context.getString(android.R.string.search_go));

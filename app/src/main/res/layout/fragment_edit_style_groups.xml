@@ -36,9 +36,8 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <!-- URGENT - fails to scroll -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/groupList"
+        android:id="@+id/group_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/container_margin"

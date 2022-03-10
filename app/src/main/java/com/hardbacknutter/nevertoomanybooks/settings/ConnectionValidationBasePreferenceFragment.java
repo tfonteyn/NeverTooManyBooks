@@ -82,7 +82,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
                         .setPreventSleep(false)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });

@@ -106,8 +106,15 @@
         <item name="android:background">?attr/colorSurfaceInverse</item>
         <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
         <!-- Background/text is inverse, so use padding instead of margins -->
-        <item name="android:padding">@dimen/container_margin</item>
-        <item name="android:layout_margin">0dp</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:paddingTop">@dimen/container_margin</item>
+        <item name="android:paddingBottom">@dimen/container_margin</item>
+        <item name="android:paddingStart">@dimen/container_margin</item>
+        <item name="android:paddingEnd">@dimen/container_margin</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
     </style>
 
 

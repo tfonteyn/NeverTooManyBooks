@@ -315,7 +315,7 @@
     <string name="menu_lend_return_book">El libro prestado esta de vuelta</string>
     <string name="menu_rebuild_fts">Reconstruir FTS</string>
     <string name="menu_rebuild_index">Reconstruir índice</string>
-    <string name="lbl_local_search">Búsqueda local avanzada</string>
+    <string name="lbl_local_search_long">Búsqueda local avanzada</string>
     <string name="menu_set_complete">Marcar como completo</string>
     <string name="menu_set_incomplete">Marcar como incompleto</string>
     <string name="menu_set_read">Marcar como leído</string>
@@ -458,12 +458,12 @@
     <string name="style_builtin_update_date">Fecha de actualización</string>
     <string name="style_is_builtin">Predefinido</string>
     <string name="style_is_user_defined">Definido por el usuario</string>
-    <string name="lbl_alternative_editions">Ediciones Alt.</string>
-    <string name="lbl_toc">Contenido</string>
-    <string name="lbl_details">Detalles</string>
-    <string name="lbl_ext_id">ID externo</string>
-    <string name="lbl_notes">Notas</string>
-    <string name="lbl_publication_tab">Publicación</string>
+    <string name="lbl_tab_alternative_editions">Ediciones Alt.</string>
+    <string name="lbl_tab_table_of_content">Contenido</string>
+    <string name="lbl_tab_details">Detalles</string>
+    <string name="lbl_tab_lbl_ext_id">ID externo</string>
+    <string name="lbl_tab_notes">Notas</string>
+    <string name="lbl_tab_publication">Publicación</string>
     <string name="tip_authors_book_may_appear_more_than_once">Si se muestra para cada autor, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
     <string name="tip_authors_works">Iconos utilizados</string>
     <string name="tip_authors_works_book">Libro.</string>

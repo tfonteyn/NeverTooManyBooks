@@ -19,22 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StyleableRes;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
-import java.util.Objects;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Stripped down copy of {@link DividerItemDecoration} which only draws the decorator
@@ -42,10 +38,6 @@ import java.util.Objects;
  */
 public class TopLevelItemDecoration
         extends RecyclerView.ItemDecoration {
-
-    @SuppressLint("ResourceType")
-    @StyleableRes
-    private static final int[] ATTRS = {android.R.attr.listDivider};
 
     private final Rect mBounds = new Rect();
     @NonNull
@@ -55,12 +47,10 @@ public class TopLevelItemDecoration
      * Creates a divider {@link RecyclerView.ItemDecoration} that can be used with a
      * {@link LinearLayoutManager}.
      *
-     * @param context Current context@param context\s+[^c ]
+     * @param context Current context
      */
     public TopLevelItemDecoration(@NonNull final Context context) {
-        final TypedArray ta = context.getTheme().obtainStyledAttributes(ATTRS);
-        mDivider = Objects.requireNonNull(ta.getDrawable(0), Arrays.toString(ATTRS));
-        ta.recycle();
+        mDivider = AttrUtils.getDrawable(context, android.R.attr.listDivider);
     }
 
     @Override

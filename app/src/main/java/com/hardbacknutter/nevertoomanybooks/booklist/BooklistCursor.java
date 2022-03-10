@@ -193,6 +193,7 @@ public class BooklistCursor
     }
 
     @Override
+    @Nullable
     public String getString(final int column) {
         return getActiveCursor().getString(column);
     }
@@ -290,6 +291,7 @@ public class BooklistCursor
      *
      * @return cursor
      */
+    @NonNull
     private Cursor getCursor(final int position) {
 
         // Get the id we use for the cursor at the new position

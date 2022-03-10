@@ -79,9 +79,6 @@ public class SyncReaderFragment
 
     /** Log tag. */
     public static final String TAG = "SyncReaderFragment";
-
-    private ToolbarMenuProvider mToolbarMenuProvider;
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -91,7 +88,7 @@ public class SyncReaderFragment
                     getActivity().finish();
                 }
             };
-
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** The ViewModel. */
     private SyncReaderViewModel mVm;
 
@@ -139,37 +136,35 @@ public class SyncReaderFragment
         final Toolbar toolbar = getToolbar();
         mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
-        toolbar.setTitle(mVm.getSyncReaderHelper().getSyncServer().getLabel());
+        toolbar.setTitle(mVm.getDataReaderHelper().getSyncServer().getLabel());
 
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mSyncDatePicker = new SingleDatePicker(getChildFragmentManager(),
-                                               R.string.lbl_sync_date,
-                                               mVb.lblSyncDate.getId());
-
         mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
         mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
         mVm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
         mVm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getSyncReaderHelper().setRecordType(isChecked, RecordType.Books);
+            mVm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
-                .getSyncReaderHelper().setRecordType(isChecked, RecordType.Cover));
+                .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
 
         mVb.infImportNewOnly.setOnClickListener(StandardDialogs::infoPopup);
         mVb.infImportNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         mVb.infImportAll.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            final SyncReaderHelper helper = mVm.getSyncReaderHelper();
+            final SyncReaderHelper helper = mVm.getDataReaderHelper();
             if (checkedId == mVb.rbImportNewOnly.getId()) {
                 helper.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == mVb.rbImportNewAndUpdated.getId()) {
@@ -181,8 +176,12 @@ public class SyncReaderFragment
             updateSyncDateVisibility();
         });
 
+        mSyncDatePicker = new SingleDatePicker(getChildFragmentManager(),
+                                               R.string.lbl_sync_date,
+                                               mVb.lblSyncDate.getId());
+
         mVb.syncDate.setOnClickListener(v -> mSyncDatePicker.launch(
-                mVm.getSyncReaderHelper().getSyncDate(), this::onSyncDateSet));
+                mVm.getDataReaderHelper().getSyncDate(), this::onSyncDateSet));
 
         if (!mVm.isRunning()) {
             showOptions();
@@ -199,13 +198,13 @@ public class SyncReaderFragment
      * Update the screen with specific options and values.
      */
     private void showOptions() {
-        final SyncReaderHelper helper = mVm.getSyncReaderHelper();
+        final SyncReaderHelper helper = mVm.getDataReaderHelper();
 
         final Optional<SyncReaderMetaData> metaData = helper.getMetaData();
         if (metaData.isPresent()) {
             showMetaData(metaData.get());
         } else {
-            mVm.startReadingMetaData();
+            readMetaData();
             showMetaData(null);
         }
 
@@ -228,9 +227,39 @@ public class SyncReaderFragment
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void onMetaDataRead(@NonNull final
-                                LiveDataEvent<TaskResult<Optional<SyncReaderMetaData>>> message) {
+    private void readMetaData() {
+        // There will be no progress messages as reading the data itself is very fast, but
+        // connection can take a long time, so bring up the progress dialog now
+        if (mProgressDelegate == null) {
+            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                    .setTitle(R.string.progress_msg_connecting)
+                    .setPreventSleep(true)
+                    .setIndeterminate(true)
+                    .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+        }
+        //noinspection ConstantConditions
+        mProgressDelegate.show(() -> getActivity().getWindow());
+        mVm.readMetaData();
+    }
+
+    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
+            Optional<SyncReaderMetaData>>> message) {
+        closeProgressDialog();
+
         message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
+    }
+
+    protected void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+            Optional<SyncReaderMetaData>>> message) {
+        closeProgressDialog();
+
+        message.getData().ifPresent(data -> {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
+                    .show();
+            //noinspection ConstantConditions
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+        });
     }
 
     /**
@@ -244,7 +273,7 @@ public class SyncReaderFragment
             mVb.archiveContent.setVisibility(View.INVISIBLE);
             mVb.lblCalibreLibrary.setVisibility(View.GONE);
         } else {
-            final SyncReaderHelper helper = mVm.getSyncReaderHelper();
+            final SyncReaderHelper helper = mVm.getDataReaderHelper();
             switch (helper.getSyncServer()) {
                 case CalibreCS: {
                     mVb.archiveContent.setVisibility(View.VISIBLE);
@@ -281,7 +310,7 @@ public class SyncReaderFragment
             mVb.calibreLibrary.setOnItemClickListener(
                     (av, v, position, id) -> onCalibreLibrarySelected(libraries.get(position)));
 
-            CalibreLibrary library = mVm.getSyncReaderHelper().getExtraArgs()
+            CalibreLibrary library = mVm.getDataReaderHelper().getExtraArgs()
                                         .getParcelable(CalibreContentServer.BKEY_LIBRARY);
             if (library == null) {
                 library = data.getParcelable(CalibreContentServer.BKEY_LIBRARY);
@@ -300,7 +329,7 @@ public class SyncReaderFragment
                                              getString(R.string.lbl_books),
                                              String.valueOf(library.getTotalBooks())));
 
-        mVm.getSyncReaderHelper().getExtraArgs()
+        mVm.getDataReaderHelper().getExtraArgs()
            .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
 
         // do this again, as the selection will affect the menu
@@ -322,7 +351,7 @@ public class SyncReaderFragment
     }
 
     private void updateSyncDateVisibility() {
-        final SyncReaderHelper helper = mVm.getSyncReaderHelper();
+        final SyncReaderHelper helper = mVm.getDataReaderHelper();
         final DataReader.Updates updateOption = helper.getUpdateOption();
         final boolean showSyncDateField =
                 helper.getSyncServer().isSyncDateUserEditable()
@@ -339,7 +368,7 @@ public class SyncReaderFragment
      * @param lastSyncDate to use
      */
     private void updateSyncDate(@Nullable final LocalDateTime lastSyncDate) {
-        mVm.getSyncReaderHelper().setSyncDate(lastSyncDate);
+        mVm.getDataReaderHelper().setSyncDate(lastSyncDate);
         //noinspection ConstantConditions
         mVb.syncDate.setText(DateUtils.displayDate(getContext(), lastSyncDate));
     }
@@ -353,7 +382,7 @@ public class SyncReaderFragment
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });
@@ -379,8 +408,8 @@ public class SyncReaderFragment
         });
     }
 
-    private void onImportCancelled(@NonNull final
-                                   LiveDataEvent<TaskResult<ReaderResults>> message) {
+    private void onImportCancelled(@NonNull final LiveDataEvent<TaskResult<
+            ReaderResults>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
@@ -401,7 +430,8 @@ public class SyncReaderFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<ReaderResults>> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<
+            ReaderResults>> message) {
         closeProgressDialog();
 
         message.getData().map(TaskResult::requireResult).ifPresent(
@@ -498,7 +528,15 @@ public class SyncReaderFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                mVm.startReadingData();
+                if (mProgressDelegate == null) {
+                    mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                            .setTitle(R.string.lbl_importing)
+                            .setPreventSleep(true)
+                            .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_IMPORT));
+                }
+                //noinspection ConstantConditions
+                mProgressDelegate.show(() -> getActivity().getWindow());
+                mVm.readData();
                 return true;
             }
             return false;

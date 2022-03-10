@@ -18,135 +18,140 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopCentered"
+    android:id="@+id/root_scroller"
+    style="@style/TopNestedScroller"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 
-    <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
-        android:id="@+id/rb_books_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="rb_export_all,rb_export_new_and_updated"
-        tools:ignore="MissingConstraints"
-        />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/middle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"
-        />
-
-    <TextView
-        android:id="@+id/header"
-        style="@style/Text.Header"
-        android:text="@string/lbl_export_options"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_books"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:checked="true"
-        android:text="@string/lbl_books"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        />
-
-    <RadioButton
-        android:id="@+id/rb_export_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:checked="true"
-        android:text="@string/lbl_export_books_option_all"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/cbx_books"
-        />
-
-    <RadioButton
-        android:id="@+id/rb_export_new_and_updated"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:text="@string/lbl_export_books_option_since_last_full_backup"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/rb_export_all"
-        />
-
-    <ImageButton
-        android:id="@+id/inf_export_new_and_updated"
-        style="@style/Button.InfoPopup"
-        android:contentDescription="@string/txt_export_books_option_since_last_full_backup"
-        app:layout_constraintEnd_toEndOf="@id/middle"
-        app:layout_constraintStart_toEndOf="@id/rb_export_new_and_updated"
-        app:layout_constraintTop_toTopOf="@id/rb_export_new_and_updated"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_covers"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/lbl_covers_long"
-        app:layout_constraintStart_toStartOf="@id/cbx_books"
-        app:layout_constraintTop_toBottomOf="@id/rb_export_new_and_updated"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_archive_format"
-        style="@style/Button.DropdownMenu"
-        android:layout_marginStart="@dimen/field_margin_start"
-        android:layout_marginTop="@dimen/field_margin_top"
-        android:hint="@string/lbl_archive_format"
-        app:layout_constraintStart_toEndOf="@id/middle"
-        app:layout_constraintTop_toBottomOf="@id/header"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/TopCentered"
         >
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/archive_format"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor"
-            tools:text="@sample/data.json/export_format/name"
+        <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+            android:id="@+id/rb_books_group"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="rb_export_all,rb_export_new_and_updated"
+            tools:ignore="MissingConstraints"
             />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"
+            />
 
-    <TextView
-        android:id="@+id/archive_format_info"
-        style="@style/Text.Body"
-        android:layout_width="0dp"
-        android:layout_marginStart="@dimen/field_margin_start"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
-        app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
-        tools:ignore="SelectableText"
-        tools:text="@string/lbl_archive_format_xml_info"
-        />
+        <TextView
+            android:id="@+id/header"
+            style="@style/Text.Header"
+            android:text="@string/lbl_export_options"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-    <TextView
-        android:id="@+id/archive_format_info_long"
-        style="@style/Text.Body"
-        android:layout_width="0dp"
-        android:layout_marginStart="@dimen/field_margin_start"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
-        app:layout_constraintTop_toBottomOf="@id/archive_format_info"
-        tools:ignore="SelectableText"
-        tools:text="@string/lbl_archive_is_export_only"
-        />
+        <CheckBox
+            android:id="@+id/cbx_books"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:checked="true"
+            android:text="@string/lbl_books"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <RadioButton
+            android:id="@+id/rb_export_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:checked="true"
+            android:text="@string/lbl_export_books_option_all"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/cbx_books"
+            />
+
+        <RadioButton
+            android:id="@+id/rb_export_new_and_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:text="@string/lbl_export_books_option_since_last_full_backup"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_export_all"
+            />
+
+        <ImageButton
+            android:id="@+id/inf_export_new_and_updated"
+            style="@style/Button.InfoPopup"
+            android:contentDescription="@string/txt_export_books_option_since_last_full_backup"
+            app:layout_constraintEnd_toEndOf="@id/middle"
+            app:layout_constraintStart_toEndOf="@id/rb_export_new_and_updated"
+            app:layout_constraintTop_toTopOf="@id/rb_export_new_and_updated"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_covers"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/lbl_covers_long"
+            app:layout_constraintStart_toStartOf="@id/cbx_books"
+            app:layout_constraintTop_toBottomOf="@id/rb_export_new_and_updated"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_archive_format"
+            style="@style/Button.DropdownMenu"
+            android:layout_marginStart="@dimen/field_margin_start"
+            android:layout_marginTop="@dimen/field_margin_top"
+            android:hint="@string/lbl_archive_format"
+            app:layout_constraintStart_toEndOf="@id/middle"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/archive_format"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/export_format/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/archive_format_info"
+            style="@style/Text.Body"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/field_margin_start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
+            app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
+            tools:ignore="SelectableText"
+            tools:text="@string/lbl_archive_format_xml_info"
+            />
+
+        <TextView
+            android:id="@+id/archive_format_info_long"
+            style="@style/Text.Body"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/field_margin_start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
+            app:layout_constraintTop_toBottomOf="@id/archive_format_info"
+            tools:ignore="SelectableText"
+            tools:text="@string/lbl_archive_is_export_only"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

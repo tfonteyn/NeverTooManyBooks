@@ -469,7 +469,7 @@ public class ExportFragment
                         .setTitle(R.string.menu_backup_and_export)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });
@@ -549,5 +549,4 @@ public class ExportFragment
             return false;
         }
     }
-
 }

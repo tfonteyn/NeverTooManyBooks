@@ -304,28 +304,28 @@ public class EditBookFragment
 
             // Build the tab class/title list.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class,
-                                  R.string.lbl_details,
-                                  R.string.lbl_details));
+                                  R.string.lbl_tab_details,
+                                  R.string.lbl_tab_details));
             mTabs.add(new TabInfo(EditBookPublicationFragment.class,
-                                  R.string.lbl_publication_tab,
+                                  R.string.lbl_tab_publication,
                                   R.string.lbl_publication));
 
             // on EXPANDED screens the notes fields are incorporated in the publication fragment
             if (WindowClass.getCurrent(container) != WindowClass.EXPANDED) {
                 mTabs.add(new TabInfo(EditBookNotesFragment.class,
-                                      R.string.lbl_notes,
+                                      R.string.lbl_tab_notes,
                                       R.string.lbl_personal_notes));
             }
 
             if (DBKey.isUsed(global, DBKey.BITMASK_TOC)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class,
-                                      R.string.lbl_toc,
+                                      R.string.lbl_tab_table_of_content,
                                       R.string.lbl_table_of_content));
             }
             if (EditBookExternalIdFragment.isShowTab(global)) {
                 mTabs.add(new TabInfo(EditBookExternalIdFragment.class,
-                                      R.string.lbl_ext_id,
-                                      R.string.lbl_ext_id));
+                                      R.string.lbl_tab_lbl_ext_id,
+                                      R.string.lbl_tab_lbl_ext_id));
             }
         }
 

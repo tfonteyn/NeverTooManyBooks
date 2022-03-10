@@ -33,11 +33,13 @@ import androidx.annotation.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -86,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageExcepti
  */
 public class Book
         extends DataManager
-        implements AuthorWork, ReorderTitle {
+        implements AuthorWork, Entity {
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -156,7 +158,7 @@ public class Book
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
      *
-     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#wrap(ArrayList)
+     * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#wrap(List)
      * @see com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils#unwrap(Bundle, String)
      */
     public static final String BKEY_BOOK_ID_LIST = TAG + ":id_list";
@@ -430,23 +432,26 @@ public class Book
     }
 
     /**
-     * Set the id.
+     * Get the <strong>unformatted</strong> title.
      *
-     * @param id the book id.
+     * @return the title
      */
-    @Override
-    public void setId(final long id) {
-        putLong(DBKey.PK_ID, id);
-    }
-
-    @Override
     @NonNull
     public String getTitle() {
         return getString(DBKey.KEY_TITLE);
     }
 
+    @NonNull
+    public List<BookLight> getBookTitles(@NonNull final Context context) {
+        return Collections.singletonList(
+                new BookLight(getId(), getTitle(),
+                              getString(DBKey.KEY_LANGUAGE),
+                              getPrimaryAuthor(),
+                              getString(DBKey.DATE_FIRST_PUBLICATION)));
+    }
+
     /**
-     * Get the label to use. This is for <strong>displaying only</strong>.
+     * Get the label to use for <strong>displaying</strong>.
      *
      * @param context Current context
      *
@@ -454,11 +459,7 @@ public class Book
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        if (ReorderTitle.forDisplay(context)) {
-            return reorder(context, getLocale(context));
-        } else {
-            return getTitle();
-        }
+        return getLabel(context, getTitle(), () -> getLocale(context));
     }
 
     /**
@@ -484,7 +485,6 @@ public class Book
      *
      * @return the Locale, or the users preferred Locale if no language was set.
      */
-    @Override
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale unused) {
@@ -528,9 +528,9 @@ public class Book
     }
 
     /**
-     * Get the first author in the list of authors for this book.
+     * Get the first {@link Author} in the list of authors for this book.
      *
-     * @return the Author or {@code null} if none present
+     * @return the {@link Author} or {@code null} if none present
      */
     @Nullable
     public Author getPrimaryAuthor() {
@@ -544,14 +544,14 @@ public class Book
     }
 
     /**
-     * Get the first Series in the list of Series for this book.
+     * Get the first {@link Series} in the list of Series for this book.
      *
-     * @return the Series, or {@code null} if none present
+     * @return Optional of the first {@link Series}
      */
-    @Nullable
-    public Series getPrimarySeries() {
+    @NonNull
+    public Optional<Series> getPrimarySeries() {
         final List<Series> list = getSeries();
-        return list.isEmpty() ? null : list.get(0);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @NonNull
@@ -560,14 +560,14 @@ public class Book
     }
 
     /**
-     * Get the first Publisher in the list of Publishers for this book.
+     * Get the first {@link Publisher} in the list of Publishers for this book.
      *
-     * @return the Publisher, or {@code null} if none present
+     * @return Optional of the first {@link Publisher}
      */
-    @Nullable
-    public Publisher getPrimaryPublisher() {
+    @NonNull
+    public Optional<Publisher> getPrimaryPublisher() {
         final List<Publisher> list = getPublishers();
-        return list.isEmpty() ? null : list.get(0);
+        return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
 
     @NonNull
@@ -580,8 +580,8 @@ public class Book
         return getParcelableArrayList(BKEY_TOC_LIST);
     }
 
-    @NonNull
     @Override
+    @NonNull
     public PartialDate getFirstPublicationDate() {
         return new PartialDate(getString(DBKey.DATE_FIRST_PUBLICATION));
     }
@@ -621,6 +621,7 @@ public class Book
         }
     }
 
+    @NonNull
     public ContentType getContentType() {
         return ContentType.getType(getLong(DBKey.BITMASK_TOC));
     }
@@ -632,23 +633,28 @@ public class Book
     /**
      * Get the name of the loanee (if any).
      *
-     * @return name, or {@code ""} if none
+     * @return Optional of name
      */
     @NonNull
-    public String getLoanee() {
+    public Optional<String> getLoanee() {
+        final String loanee;
         // We SHOULD have it...
         if (contains(DBKey.KEY_LOANEE)) {
-            return getString(DBKey.KEY_LOANEE);
+            loanee = getString(DBKey.KEY_LOANEE);
 
         } else {
             // but if not, go explicitly fetch it.
-            String loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
-            if (loanee == null) {
-                loanee = "";
+            loanee = ServiceLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
+            if (loanee != null) {
+                // store for reuse - note we store "" as well, to prevent calling the db repeatedly
+                putString(DBKey.KEY_LOANEE, loanee);
             }
-            // store for reuse
-            putString(DBKey.KEY_LOANEE, loanee);
-            return loanee;
+        }
+
+        if (loanee == null || loanee.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(loanee);
         }
     }
 
@@ -696,6 +702,7 @@ public class Book
      * @throws IOException           on other failures
      * @see #getPersistedCoverFile(int)
      */
+    @NonNull
     public File persistCover(@NonNull final File downloadedFile,
                              @IntRange(from = 0, to = 1) final int cIdx)
             throws CoverStorageException, IOException {
@@ -1141,22 +1148,19 @@ public class Book
         final String authorStr = author != null ? author.getFormattedName(true)
                                                 : context.getString(R.string.unknown_author);
 
-        final Series series = getPrimarySeries();
-        final String seriesStr = series != null ? " (" + series.getLabel(context) + ')' : "";
+        final String seriesStr = getPrimarySeries()
+                .map(value -> context.getString(R.string.brackets, value.getLabel(context)))
+                .orElse("");
 
         //remove trailing 0's
         final float rating = getFloat(DBKey.KEY_RATING);
-        final String ratingStr;
+        String ratingStr;
         if (rating > 0) {
-            // force rounding down
+            // force rounding down and check the fraction
             final int ratingTmp = (int) rating;
-            // get fraction
-            final float decimal = rating - ratingTmp;
-            if (decimal > 0) {
-                ratingStr = '(' + String.valueOf(rating) + '/' + RATING_STARS + ')';
-            } else {
-                ratingStr = '(' + String.valueOf(ratingTmp) + '/' + RATING_STARS + ')';
-            }
+            ratingStr = String.valueOf(rating - ratingTmp > 0 ? rating : ratingTmp);
+            ratingStr = context.getString(R.string.brackets, ratingStr + '/' + RATING_STARS);
+
         } else {
             ratingStr = "";
         }
@@ -1180,8 +1184,9 @@ public class Book
     }
 
     @Override
-    public char getWorkType() {
-        return AuthorWork.TYPE_BOOK;
+    @NonNull
+    public Type getWorkType() {
+        return AuthorWork.Type.Book;
     }
 
     /**
@@ -1219,6 +1224,7 @@ public class Book
             this.value = value;
         }
 
+        @NonNull
         public static ContentType getType(final long value) {
             if ((value & BIT_MULTIPLE_WORKS) == 0) {
                 return Book;

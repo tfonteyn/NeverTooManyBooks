@@ -97,7 +97,7 @@ public class AuthorDaoImpl
      * We need KEY_TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_BOOK_TITLES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.TYPE_BOOK + "' AS " + DBKey.KEY_TOC_TYPE
+            SELECT_ + "'" + AuthorWork.Type.BookLight.value + "' AS " + DBKey.KEY_TOC_TYPE
             + ',' + TBL_BOOKS.dotAs(DBKey.PK_ID,
                                     DBKey.KEY_TITLE,
                                     DBKey.KEY_TITLE_OB,
@@ -111,15 +111,14 @@ public class AuthorDaoImpl
     private static final String SELECT_ALL = "SELECT * FROM " + TBL_AUTHORS.getName();
 
     /**
-     * All TocEntry's for an Author,
-     * returned as an {@link AuthorWork}.
+     * All {@link TocEntry}'s for an Author, returned as an {@link AuthorWork}.
      * <p>
      * ORDER BY clause NOT added here, as this statement is used in a union as well.
      * <p>
      * We need KEY_TITLE_OB as it will be used to ORDER BY
      */
     private static final String SELECT_TOC_ENTRIES_BY_AUTHOR_ID =
-            SELECT_ + "'" + AuthorWork.TYPE_TOC + "' AS " + DBKey.KEY_TOC_TYPE
+            SELECT_ + "'" + AuthorWork.Type.TocEntry.value + "' AS " + DBKey.KEY_TOC_TYPE
             + ',' + TBL_TOC_ENTRIES.dotAs(DBKey.PK_ID,
                                           DBKey.KEY_TITLE,
                                           DBKey.KEY_TITLE_OB,
@@ -496,23 +495,27 @@ public class AuthorDaoImpl
         try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                final char type = rowData.getString(DBKey.KEY_TOC_TYPE).charAt(0);
+                final AuthorWork.Type type =
+                        AuthorWork.Type.getType(rowData.getString(DBKey.KEY_TOC_TYPE).charAt(0));
+
                 switch (type) {
-                    case AuthorWork.TYPE_TOC:
+                    case TocEntry:
                         list.add(new TocEntry(rowData.getLong(DBKey.PK_ID),
                                               author, rowData.getString(DBKey.KEY_TITLE),
                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
                                               rowData.getInt(DBKey.KEY_BOOK_COUNT)));
                         break;
 
-                    case AuthorWork.TYPE_BOOK:
+                    case BookLight:
                         list.add(new BookLight(rowData.getLong(DBKey.PK_ID),
                                                rowData.getString(DBKey.KEY_TITLE),
                                                rowData.getString(DBKey.KEY_LANGUAGE),
-                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION),
-                                               author));
+                                               author,
+                                               rowData.getString(DBKey.DATE_FIRST_PUBLICATION)
+                        ));
                         break;
 
+                    case Book:
                     default:
                         throw new IllegalArgumentException(String.valueOf(type));
                 }

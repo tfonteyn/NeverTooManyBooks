@@ -181,7 +181,7 @@
     This is either a bug in the Android systems we tested on, or some weird caching is going on.
     Either way: not something we can fix.
     -->
-    <string name="error_file_not_found">The selected file is not found.</string>
+    <string name="error_file_not_found">File not found: %1$s</string>
 
     <!-- The user selected a file to import that was not recognised as a valid archive. -->
     <string name="error_file_not_recognized">The selected file is not recognized.</string>
@@ -886,7 +886,8 @@
     <string name="lbl_strict_isbn">Strict ISBN</string>
 
     <!-- menu option -->
-    <string name="lbl_local_search">Advanced Local Search</string>
+    <string name="lbl_local_search">Local Search</string>
+    <string name="lbl_local_search_long">Advanced Local Search</string>
     <!-- menu option -->
     <string name="lbl_about">About</string>
 
@@ -1245,18 +1246,18 @@
     <!-- ####################################################################################### -->
 
     <!-- Edit book: Name of the 'Details' tab -->
-    <string name="lbl_details">Details</string>
+    <string name="lbl_tab_details">Details</string>
     <!-- Edit book: Name of the 'Publication' tab. -->
-    <string name="lbl_publication_tab">Publication</string>
+    <string name="lbl_tab_publication">Publication</string>
     <!-- Edit book: Name of the 'Notes' tab.-->
-    <string name="lbl_notes">Notes</string>
+    <string name="lbl_tab_notes">Notes</string>
     <!-- Edit book: Name of the 'Table Of Content' tab. -->
-    <string name="lbl_toc">TOC</string>
+    <string name="lbl_tab_table_of_content">TOC</string>
     <!-- Edit book: Name of the 'External website id' tab.-->
-    <string name="lbl_ext_id">External ID</string>
+    <string name="lbl_tab_lbl_ext_id">External ID</string>
 
     <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
-    <string name="lbl_alternative_editions">Alt. Ed.</string>
+    <string name="lbl_tab_alternative_editions">Alt. Ed.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->

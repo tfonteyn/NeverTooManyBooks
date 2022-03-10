@@ -111,7 +111,6 @@ public class ShowBookDetailsFragment
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-    @SuppressWarnings("FieldCanBeLocal")
     private ToolbarMenuProvider mToolbarMenuProvider;
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
@@ -223,9 +222,7 @@ public class ShowBookDetailsFragment
         mVm.onBookLoaded().observe(getViewLifecycleOwner(), this::onBindBook);
 
         final Field<Boolean, CheckBox> cbxRead = mAVm.requireField(R.id.read);
-        cbxRead.requireView().setOnClickListener(v -> {
-            toggleReadStatus(mVm.getBook());
-        });
+        cbxRead.requireView().setOnClickListener(v -> toggleReadStatus(mVm.getBook()));
     }
 
     /**
@@ -357,7 +354,10 @@ public class ShowBookDetailsFragment
 
         final List<Field<?, ? extends View>> fields = mAVm.getFields();
 
-        Field.load(book, fields);
+        // do NOT call onChanged, as this is the initial load
+        fields.stream()
+              .filter(Field::isAutoPopulated)
+              .forEach(field -> field.setInitialValue(book));
 
         bindCoverImages();
         bindLoanee(book);
@@ -367,7 +367,7 @@ public class ShowBookDetailsFragment
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         //noinspection ConstantConditions
-        fields.forEach(field -> field.setVisibility(global, getView()));
+        fields.forEach(field -> field.setVisibility(global, getView(), true, false));
 
         // Hide the 'Edition' label if neither edition chips or print-run fields are shown
         setSectionVisibility(R.id.lbl_edition,
@@ -417,23 +417,21 @@ public class ShowBookDetailsFragment
         final TextView lendTo = getView().findViewById(R.id.lend_to);
         //noinspection ConstantConditions
         if (mAVm.useLoanee(getContext())) {
-            final String loanee = book.getLoanee();
-            if (loanee.isEmpty()) {
-                lendTo.setText("");
-                lendTo.setVisibility(View.GONE);
-            } else {
-                lendTo.setText(getString(R.string.lbl_lend_out_to_name, loanee));
+            final String loanee = book.getLoanee()
+                                      .map(s -> getString(R.string.lbl_lend_out_to_name, s))
+                                      .orElse(null);
+            if (loanee != null) {
+                lendTo.setText(loanee);
                 lendTo.setVisibility(View.VISIBLE);
+                return;
             }
-        } else {
-            lendTo.setVisibility(View.GONE);
         }
+        lendTo.setVisibility(View.GONE);
     }
 
     private void bindToc(@NonNull final Book book) {
         //noinspection ConstantConditions
-        final TextView lblAnthologyOrCollection =
-                getView().findViewById(R.id.lbl_anthology);
+        final TextView lblAnthologyOrCollection = getView().findViewById(R.id.lbl_anthology);
         switch (book.getContentType()) {
             case Collection:
                 lblAnthologyOrCollection.setVisibility(View.VISIBLE);
@@ -474,7 +472,6 @@ public class ShowBookDetailsFragment
      *
      * @param book to load
      */
-    @SuppressWarnings("ConstantConditions")
     private void bindTocButton(@NonNull final Button showTocBtn,
                                @NonNull final Book book) {
 
@@ -487,6 +484,7 @@ public class ShowBookDetailsFragment
                 final Fragment fragment = TocFragment.create(tocList, book);
                 // yes, it must be the Activity FragmentManager,
                 // as that is where the R.id.main_fragment View is located.
+                //noinspection ConstantConditions
                 final FragmentManager fm = getActivity().getSupportFragmentManager();
                 fm.beginTransaction()
                   .setReorderingAllowed(true)
@@ -692,9 +690,9 @@ public class ShowBookDetailsFragment
             // Always check KEY_LOANEE usage independent from the style in use.
             //noinspection ConstantConditions
             if (mAVm.useLoanee(getContext())) {
-                final boolean isAvailable = mVm.getBook().getLoanee().isEmpty();
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(isAvailable);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(!isAvailable);
+                final boolean isLendOut = mVm.getBook().getLoanee().isPresent();
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(!isLendOut);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(isLendOut);
             } else {
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(false);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(false);

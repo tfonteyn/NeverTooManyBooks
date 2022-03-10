@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -66,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
 public class Author
-        implements Entity, Mergeable {
+        implements ParcelableEntity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<>() {
@@ -154,6 +153,7 @@ public class Author
 
     /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
+
     /**
      * ENHANCE: author middle name; needs internationalisation ?
      * <p>
@@ -374,16 +374,6 @@ public class Author
     }
 
     /**
-     * Get the global default for this preference.
-     *
-     * @return {@code true} if we want "given-names family" formatted authors.
-     */
-    private static boolean isShowGivenNameFirst() {
-        return ServiceLocator.getGlobalPreferences()
-                             .getBoolean(Prefs.pk_show_author_name_given_first, false);
-    }
-
-    /**
      * Get the Authors. If there is more than one, we get the first Author + an ellipsis.
      *
      * @param context Current context
@@ -485,16 +475,60 @@ public class Author
         mId = id;
     }
 
-    /**
-     * Return the <strong>preferred</strong> 'human readable' version of the name.
-     *
-     * @param context Current context
-     *
-     * @return formatted name
-     */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        return getFormattedName(isShowGivenNameFirst());
+        return getLabel(context, Details.Normal);
+    }
+
+    /**
+     * Get the label to use for <strong>displaying</strong>.
+     *
+     * <ul>
+     *     <li>{@link Details#Full}: standard formatted name combined
+     *          (if enabled) with the author type. The latter uses HTML formatting.
+     *     </li>
+     *     <li>{@link Details#Normal}: standard formatted name.</li>
+     *     <li>{@link Details#Short}: initial + family-name</li>
+     * </ul>
+     *
+     * @param context Current context
+     * @param details the amount of details wanted
+     *
+     * @return the label to use.
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context,
+                           @NonNull final Details details) {
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        final boolean givenFirst = global.getBoolean(Prefs.pk_show_author_name_given_first,
+                                                     false);
+
+        switch (details) {
+            case Full: {
+                String label = getFormattedName(givenFirst);
+                if (DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+                    final String type = getTypeLabels(context);
+                    if (!type.isEmpty()) {
+                        label += " <small><i>" + type + "</i></small>";
+                    }
+                }
+                return label;
+            }
+            case Normal: {
+                return getFormattedName(givenFirst);
+            }
+            case Short: {
+                if (mGivenNames.isEmpty()) {
+                    return mFamilyName;
+                } else if (givenFirst) {
+                    return mGivenNames.substring(0, 1) + ' ' + mFamilyName;
+                } else {
+                    return mFamilyName + ' ' + mGivenNames.charAt(0);
+                }
+            }
+        }
+        throw new IllegalArgumentException("detail=" + details);
     }
 
     /**
@@ -516,28 +550,6 @@ public class Author
                 return mFamilyName + ", " + mGivenNames;
             }
         }
-    }
-
-    /**
-     * Return the preferred 'human readable' version of the name,
-     * combined (if enabled) with the author type.
-     * The latter uses HTML formatting.
-     *
-     * @param context Current context
-     *
-     * @return HTML formatted name and type.
-     */
-    @NonNull
-    public String getExtLabel(@NonNull final Context context) {
-        String authorLabel = getLabel(context);
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        if (DBKey.isUsed(global, DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            final String type = getTypeLabels(context);
-            if (!type.isEmpty()) {
-                authorLabel += " <small><i>" + type + "</i></small>";
-            }
-        }
-        return authorLabel;
     }
 
     /**
@@ -564,7 +576,6 @@ public class Author
         return "";
     }
 
-
     /**
      * Syntax sugar to set the names in one call.
      *
@@ -582,6 +593,12 @@ public class Author
         return mFamilyName;
     }
 
+    /**
+     * Get the given name ('first' name) of the Author.
+     * Will be {@code ""} if unknown.
+     *
+     * @return given-name
+     */
     @NonNull
     public String getGivenNames() {
         return mGivenNames;
@@ -615,6 +632,7 @@ public class Author
      *
      * @return the item Locale, or the userLocale.
      */
+    @Override
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale userLocale) {
@@ -745,10 +763,6 @@ public class Author
                + ", mType=0b" + Integer.toBinaryString(mType)
                + ", mType=" + sj
                + '}';
-    }
-
-    public enum Details {
-        Full, Normal, Short
     }
 
     // NEWTHINGS: author type: add to the IntDef

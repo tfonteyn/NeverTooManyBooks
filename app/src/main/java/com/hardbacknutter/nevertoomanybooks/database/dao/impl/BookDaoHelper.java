@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -98,8 +97,8 @@ public class BookDaoHelper {
     BookDaoHelper process(@NonNull final Context context) {
         // Handle TITLE
         if (mBook.contains(DBKey.KEY_TITLE)) {
-            final ReorderTitle.OrderByData obd =
-                    mBook.createOrderByData(context, false, mBookLocale);
+            final OrderByHelper.OrderByData obd = OrderByHelper
+                    .createOrderByData(context, mBook.getTitle(), mBookLocale, null);
             mBook.putString(DBKey.KEY_TITLE_OB, SqlEncode.orderByColumn(obd.title, obd.locale));
         }
 

@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityMerger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -161,8 +160,14 @@ public class PublisherDaoImpl
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, lookupLocale,
-                                                                         bookLocale);
+        final OrderByHelper.OrderByData obd;
+        if (lookupLocale) {
+            obd = OrderByHelper.createOrderByData(context, publisher.getName(),
+                                                  bookLocale, publisher::getLocale);
+        } else {
+            obd = OrderByHelper.createOrderByData(context, publisher.getName(),
+                                                  bookLocale, null);
+        }
 
         try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindString(1, SqlEncode.orderByColumn(publisher.getName(), obd.locale));
@@ -303,7 +308,8 @@ public class PublisherDaoImpl
                        @NonNull final Publisher publisher,
                        @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, true, bookLocale);
+        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
+                context, publisher.getName(), bookLocale, publisher::getLocale);
 
         try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, publisher.getName());
@@ -321,7 +327,8 @@ public class PublisherDaoImpl
                           @NonNull final Publisher publisher,
                           @NonNull final Locale bookLocale) {
 
-        final ReorderTitle.OrderByData obd = publisher.createOrderByData(context, true, bookLocale);
+        final OrderByHelper.OrderByData obd = OrderByHelper.createOrderByData(
+                context, publisher.getName(), bookLocale, publisher::getLocale);
 
         final ContentValues cv = new ContentValues();
         cv.put(DBKey.KEY_PUBLISHER_NAME, publisher.getName());

@@ -58,7 +58,11 @@
     <style name="TIL" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_margin</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
         <item name="endIconMode">clear_text</item>
     </style>
 
@@ -126,7 +130,11 @@
         parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_margin</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
@@ -140,7 +148,11 @@
         <item name="endIconTint">?attr/colorOnSurface</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:layout_margin">@dimen/til_margin</item>
+        <!-- 4x so we can override individually (is this another Android bug?) -->
+        <item name="android:layout_marginTop">@dimen/til_margin</item>
+        <item name="android:layout_marginBottom">@dimen/til_margin</item>
+        <item name="android:layout_marginStart">@dimen/til_margin</item>
+        <item name="android:layout_marginEnd">@dimen/til_margin</item>
     </style>
 
     <!-- *************************************************************************************** -->

@@ -92,9 +92,6 @@ public class ImportFragment
      * Also see {@link #mOpenUriLauncher}.
      */
     private static final String MIME_TYPES = "*/*";
-
-    private ToolbarMenuProvider mToolbarMenuProvider;
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -106,7 +103,7 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-
+    private ToolbarMenuProvider mToolbarMenuProvider;
     /** The ViewModel. */
     private ImportViewModel mVm;
 
@@ -158,37 +155,38 @@ public class ImportFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mVm.onReadMetaDataFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mVm.onReadMetaDataCancelled().observe(getViewLifecycleOwner(), this::onMetaDataCancelled);
         mVm.onReadMetaDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
         mVm.onReadDataCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
         mVm.onReadDataFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mVm.onReadDataFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
 
         mVb.infNewOnly.setOnClickListener(StandardDialogs::infoPopup);
         mVb.infNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         mVb.infAll.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            mVm.getImportHelper().setRecordType(isChecked, RecordType.Books);
+            mVm.getDataReaderHelper().setRecordType(isChecked, RecordType.Books);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
-                .getImportHelper().setRecordType(isChecked, RecordType.Cover));
+                .getDataReaderHelper().setRecordType(isChecked, RecordType.Cover));
 
         mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> mVm
-                .getImportHelper().setRecordType(isChecked, RecordType.Styles));
+                .getDataReaderHelper().setRecordType(isChecked, RecordType.Styles));
 
         mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            final ImportHelper helper = mVm.getImportHelper();
+            final ImportHelper helper = mVm.getDataReaderHelper();
             helper.setRecordType(isChecked, RecordType.Preferences);
             helper.setRecordType(isChecked, RecordType.Certificates);
         });
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            final ImportHelper helper = mVm.getImportHelper();
+            final ImportHelper helper = mVm.getDataReaderHelper();
             if (checkedId == mVb.rbImportNewOnly.getId()) {
                 helper.setUpdateOption(DataReader.Updates.Skip);
             } else if (checkedId == mVb.rbImportNewAndUpdated.getId()) {
@@ -210,6 +208,7 @@ public class ImportFragment
         }
     }
 
+
     /**
      * Called when the user selected a uri to read from.
      * Prepares the options suited for the selected import file.
@@ -226,13 +225,13 @@ public class ImportFragment
             final ImportHelper helper;
             try {
                 //noinspection ConstantConditions
-                helper = mVm.createImportHelper(getContext(), uri);
+                helper = mVm.createDataReaderHelper(getContext(), uri);
 
             } catch (@NonNull final DataReaderException e) {
                 onImportNotSupported(e.getUserMessage(getContext()));
                 return;
             } catch (@NonNull final FileNotFoundException e) {
-                onImportNotSupported(getString(R.string.error_file_not_found));
+                onImportNotSupported(getString(R.string.error_file_not_found, uri.getPath()));
                 return;
             }
 
@@ -270,7 +269,7 @@ public class ImportFragment
      * Update the screen with archive specific options and values.
      */
     private void showOptions() {
-        final ImportHelper helper = mVm.getImportHelper();
+        final ImportHelper helper = mVm.getDataReaderHelper();
 
         //noinspection ConstantConditions
         mVb.archiveName.setText(helper.getUriInfo().getDisplayName(getContext()));
@@ -279,7 +278,7 @@ public class ImportFragment
         if (metaData.isPresent()) {
             showMetaData(metaData.get());
         } else {
-            mVm.readMetaData();
+            readMetaData();
             showMetaData(null);
         }
 
@@ -332,9 +331,37 @@ public class ImportFragment
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void onMetaDataRead(@NonNull final
-                                LiveDataEvent<TaskResult<Optional<ArchiveMetaData>>> message) {
+    private void readMetaData() {
+        // There will be no progress messages as reading the data itself is very fast, but
+        // connection can take a long time, so bring up the progress dialog now
+        if (mProgressDelegate == null) {
+            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                    .setTitle(R.string.progress_msg_connecting)
+                    .setPreventSleep(true)
+                    .setIndeterminate(true)
+                    .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_READ_META_DATA));
+        }
+        //noinspection ConstantConditions
+        mProgressDelegate.show(() -> getActivity().getWindow());
+        mVm.readMetaData();
+    }
+
+    private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
+            Optional<ArchiveMetaData>>> message) {
         message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
+    }
+
+    private void onMetaDataCancelled(@NonNull final LiveDataEvent<TaskResult<
+            Optional<ArchiveMetaData>>> message) {
+        closeProgressDialog();
+
+        message.getData().ifPresent(data -> {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
+                    .show();
+            //noinspection ConstantConditions
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
+        });
     }
 
     /**
@@ -389,7 +416,7 @@ public class ImportFragment
                         .setTitle(R.string.lbl_importing)
                         .setPreventSleep(true)
                         .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });
@@ -415,8 +442,8 @@ public class ImportFragment
         });
     }
 
-    private void onImportCancelled(@NonNull final
-                                   LiveDataEvent<TaskResult<ImportResults>> message) {
+    private void onImportCancelled(@NonNull final LiveDataEvent<TaskResult<
+            ImportResults>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
@@ -439,7 +466,8 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<ImportResults>> message) {
+    private void onImportFinished(@NonNull final LiveDataEvent<TaskResult<
+            ImportResults>> message) {
         closeProgressDialog();
 
         message.getData().map(TaskResult::requireResult).ifPresent(
@@ -582,7 +610,15 @@ public class ImportFragment
         @Override
         public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-                mVm.startImport();
+                if (mProgressDelegate == null) {
+                    mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                            .setTitle(R.string.lbl_importing)
+                            .setPreventSleep(true)
+                            .setOnCancelListener(v -> mVm.cancelTask(R.id.TASK_ID_IMPORT));
+                }
+                //noinspection ConstantConditions
+                mProgressDelegate.show(() -> getActivity().getWindow());
+                mVm.readData();
                 return true;
             }
             return false;

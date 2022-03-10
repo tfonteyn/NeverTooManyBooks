@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -238,6 +239,7 @@ public class EditBookPublisherListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void processChanges(@NonNull final Publisher original,
                                 @NonNull final Publisher modified) {
 
@@ -246,14 +248,16 @@ public class EditBookPublisherListDialogFragment
             return;
         }
 
+        final Context context = getContext();
+
         // The name was modified. Check if it's used by any other books.
         //noinspection ConstantConditions
-        if (mVm.isSingleUsage(getContext(), original)) {
+        if (mVm.isSingleUsage(context, original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified);
-            mVm.getBook().prunePublishers(getContext(), true);
+            mVm.getBook().prunePublishers(context, true);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -261,11 +265,12 @@ public class EditBookPublisherListDialogFragment
         // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         StandardDialogs.confirmScopeForChange(
-                getContext(), original, modified,
+                context, original.getLabel(context), modified.getLabel(context),
                 () -> changeForAllBooks(original, modified),
                 () -> changeForThisBook(original, modified));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForAllBooks(@NonNull final Publisher original,
                                    @NonNull final Publisher modified) {
 
@@ -278,6 +283,7 @@ public class EditBookPublisherListDialogFragment
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForThisBook(@NonNull final Publisher original,
                                    @NonNull final Publisher modified) {
         // treat the new data as a new Publisher; save it so we have a valid id.
@@ -324,7 +330,6 @@ public class EditBookPublisherListDialogFragment
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
 
-        @SuppressWarnings("FieldCanBeLocal")
         private EditBookViewModel mVm;
 
         /** Displayed for info only. */
@@ -373,12 +378,14 @@ public class EditBookPublisherListDialogFragment
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
+            //noinspection ConstantConditions
+            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
+
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 "BKEY_REQUEST_KEY");
+                                                 BKEY_REQUEST_KEY);
             mPublisher = Objects.requireNonNull(args.getParcelable(DBKey.FK_PUBLISHER),
-                                                "KEY_FK_PUBLISHER");
-
+                                                DBKey.FK_PUBLISHER);
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
@@ -393,12 +400,8 @@ public class EditBookPublisherListDialogFragment
         public void onViewCreated(@NonNull final View view,
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
             mVb = DialogEditBookPublisherBinding.bind(view);
             mVb.toolbar.setSubtitle(mBookTitle);
-
-            //noinspection ConstantConditions
-            mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
             //noinspection ConstantConditions
             final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(

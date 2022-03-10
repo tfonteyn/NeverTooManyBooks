@@ -95,6 +95,8 @@
             hence the Activity will not restart on those changes,
             which makes handling the startup tasks a lot easier.
 
+            URGENT: this does mean that the "do you want to backup" dialog will be shown sideways....
+
             Using specific Theme for the startup activity so it looks like a dialog as intended.
         -->
         <activity

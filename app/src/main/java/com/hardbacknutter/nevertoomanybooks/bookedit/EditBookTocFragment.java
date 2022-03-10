@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.searchengines.isfdb.Edition;
@@ -287,7 +287,7 @@ public class EditBookTocFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
@@ -793,7 +793,7 @@ public class EditBookTocFragment
          * Constructor.
          *
          * @param context           Current context
-         * @param items             List of TocEntry's
+         * @param items             List of {@link TocEntry}'s
          * @param dragStartListener Listener to handle the user moving rows up and down
          */
         TocListEditAdapter(@NonNull final Context context,
@@ -835,13 +835,13 @@ public class EditBookTocFragment
             holder.authorView.setText(tocEntry.getPrimaryAuthor().getLabel(getContext()));
 
             final PartialDate date = tocEntry.getFirstPublicationDate();
-            if (date.isEmpty()) {
-                holder.firstPublicationView.setVisibility(View.GONE);
-            } else {
+            if (date.isPresent()) {
                 holder.firstPublicationView.setVisibility(View.VISIBLE);
                 // cut the date to just the year.
                 holder.firstPublicationView.setText(getString(R.string.brackets,
                                                               String.valueOf(date.getYearValue())));
+            } else {
+                holder.firstPublicationView.setVisibility(View.GONE);
             }
         }
 

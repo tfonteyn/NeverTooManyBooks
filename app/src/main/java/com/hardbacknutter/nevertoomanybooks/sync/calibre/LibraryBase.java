@@ -30,10 +30,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 
 abstract class LibraryBase
-        implements Entity {
+        implements ParcelableEntity {
 
     /** Row ID. */
     private long mId;

@@ -44,10 +44,8 @@ public class TocEntryCoder
         data.put(DBKey.KEY_TITLE, tocEntry.getTitle());
         data.put(DBKey.FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
 
-        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
-            data.put(DBKey.DATE_FIRST_PUBLICATION,
-                     tocEntry.getFirstPublicationDate().getIsoString());
-        }
+        tocEntry.getFirstPublicationDate().ifPresent(
+                date -> data.put(DBKey.DATE_FIRST_PUBLICATION, date.getIsoString()));
 
         return data;
     }

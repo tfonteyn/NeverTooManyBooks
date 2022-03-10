@@ -793,13 +793,7 @@ public class XmlRecordReader
                 uuid = tag.name;
             }
 
-            if (BuiltinStyle.isBuiltin(uuid)) {
-                //noinspection ConstantConditions
-                mStyle = mStyles.getStyle(mContext, uuid);
-                // We do NOT read preferences for known builtin styles
-                mStylePrefs = null;
-
-            } else {
+            if (BuiltinStyle.isUserDefined(uuid)) {
                 mStyle = UserStyle.createFromImport(mContext, uuid);
                 ((UserStyle) mStyle).setName(tag.name);
 
@@ -814,6 +808,12 @@ public class XmlRecordReader
                 for (final BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
                     mStylePrefs.putAll(group.getRawPreferences());
                 }
+            } else {
+                //noinspection ConstantConditions
+                mStyle = mStyles.getStyle(mContext, uuid);
+                // We do NOT read preferences for known builtin styles
+                mStylePrefs = null;
+
             }
 
             // not bothering with slightly older backups where the 'preferred' flag was a PPref
@@ -839,7 +839,7 @@ public class XmlRecordReader
 
         @Override
         public void endElement() {
-            if (mStyle instanceof UserStyle) {
+            if (mStyle.isUserDefined()) {
                 // we now have the groups themselves (one of the 'flat' prefs) set on the style,
                 // so transfer their specific Preferences.
                 for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -874,7 +874,7 @@ public class XmlRecordReader
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
             if (mStylePrefs != null) {
-                if (UserStyle.PK_STYLE_NAME.equals(key) && mStyle instanceof UserStyle) {
+                if (UserStyle.PK_STYLE_NAME.equals(key) && mStyle.isUserDefined()) {
                     // backwards compatibility
                     ((UserStyle) mStyle).setName(value);
                 } else {

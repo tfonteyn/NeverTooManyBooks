@@ -313,7 +313,7 @@
     <string name="menu_lend_return_book">Pożyczona książka powraca</string>
     <string name="menu_rebuild_fts">Odbuduj FTS</string>
     <string name="menu_rebuild_index">Przebuduj indeks</string>
-    <string name="lbl_local_search">Zaawansowane wyszukiwanie lokalne</string>
+    <string name="lbl_local_search_long">Zaawansowane wyszukiwanie lokalne</string>
     <string name="menu_set_complete">Ustaw na „uzupełnij”</string>
     <string name="menu_set_incomplete">Ustaw na „niekompletny”</string>
     <string name="menu_set_read">Ustaw jako „czytaj”</string>
@@ -452,12 +452,12 @@
     <string name="style_builtin_update_date">Data aktualizacji</string>
     <string name="style_is_builtin">Wbudowany</string>
     <string name="style_is_user_defined">Określony przez użytkownika</string>
-    <string name="lbl_alternative_editions">Alt. wersje</string>
-    <string name="lbl_toc">Treści</string>
-    <string name="lbl_details">Detale</string>
-    <string name="lbl_ext_id">Zewnętrzny ID</string>
-    <string name="lbl_notes">Notatki</string>
-    <string name="lbl_publication_tab">Publikacja</string>
+    <string name="lbl_tab_alternative_editions">Alt. wersje</string>
+    <string name="lbl_tab_table_of_content">Treści</string>
+    <string name="lbl_tab_details">Detale</string>
+    <string name="lbl_tab_lbl_ext_id">Zewnętrzny ID</string>
+    <string name="lbl_tab_notes">Notatki</string>
+    <string name="lbl_tab_publication">Publikacja</string>
     <string name="tip_authors_book_may_appear_more_than_once">Jeśli jest wyświetlana dla każdego autora, pojedyncza książka może pojawić się więcej niż raz na liście. W takim przypadku usunięcie jednej z tych książek spowoduje usunięcie wszystkich instancji z listy.</string>
     <string name="tip_authors_works">Użyte ikony</string>
     <string name="tip_authors_works_book">Książka.</string>

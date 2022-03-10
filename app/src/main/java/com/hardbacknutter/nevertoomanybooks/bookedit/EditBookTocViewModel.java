@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
+@SuppressWarnings("WeakerAccess")
 public class EditBookTocViewModel
         extends ViewModel {
 

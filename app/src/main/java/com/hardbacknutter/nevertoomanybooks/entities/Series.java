@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements Entity, ReorderTitle, Mergeable {
+        implements ParcelableEntity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<>() {
@@ -417,13 +417,8 @@ public class Series
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        final String title;
-        if (ReorderTitle.forDisplay(context)) {
-            // Using the locale here is overkill;  see #getLocale(..)
-            title = reorder(context);
-        } else {
-            title = mTitle;
-        }
+        // Using the locale here is overkill;  see #getLocale(..)
+        final String title = getLabel(context, mTitle, () -> null);
 
         if (mNumber.isEmpty()) {
             return title;
@@ -432,7 +427,11 @@ public class Series
         }
     }
 
-    @Override
+    /**
+     * Get the <strong>unformatted</strong> title.
+     *
+     * @return the title
+     */
     @NonNull
     public String getTitle() {
         return mTitle;
@@ -494,7 +493,6 @@ public class Series
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale bookLocale) {
-
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
         // See also {@link #pruneList}
         // were we use batch mode. Also: a french book belonging to a dutch series...

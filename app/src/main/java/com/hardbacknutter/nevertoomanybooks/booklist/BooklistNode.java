@@ -225,6 +225,8 @@ public class BooklistNode {
 
     /** The state we want a node to <strong>become</strong>. */
     public enum NextState {
-        Expand, Collapse, Toggle
+        Expand,
+        Collapse,
+        Toggle
     }
 }

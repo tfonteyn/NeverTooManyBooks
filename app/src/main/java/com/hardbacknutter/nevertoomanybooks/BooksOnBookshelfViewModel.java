@@ -637,6 +637,7 @@ public class BooksOnBookshelfViewModel
         return mBookDao.setRead(bookId, isRead);
     }
 
+    @NonNull
     Book getBook(@IntRange(from = 1) final long bookId) {
         return Book.from(bookId);
     }
@@ -712,7 +713,8 @@ public class BooksOnBookshelfViewModel
     int[] onBookLend(@IntRange(from = 1) final long bookId,
                      @Nullable final String loanee) {
         Objects.requireNonNull(mBooklist, ERROR_NULL_BOOKLIST);
-        return mBooklist.updateBookLoanee(bookId, loanee).stream()
+        return mBooklist.updateBookLoanee(bookId, loanee)
+                        .stream()
                         .mapToInt(BooklistNode::getAdapterPosition)
                         .toArray();
     }

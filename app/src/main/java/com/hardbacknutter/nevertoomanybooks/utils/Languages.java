@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
@@ -69,13 +70,38 @@ public class Languages {
     }
 
     /**
+     * Try to convert a Language to a Locale.
+     *
+     * @param context  Current context
+     * @param language ISO codes (2 or 3 char), or a display-string (4+ characters)
+     *
+     * @return the best matching Locale we could determine
+     *
+     * @see AppLocale#getLocale(Context, String)
+     */
+    @NonNull
+    public static Locale toLocale(@NonNull final Context context,
+                                  @Nullable final String language) {
+        Locale locale;
+        if (language == null || language.isEmpty()) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = ServiceLocator.getInstance().getAppLocale().getLocale(context, language);
+            if (locale == null) {
+                locale = context.getResources().getConfiguration().getLocales().get(0);
+            }
+        }
+        return locale;
+    }
+
+    /**
      * Try to convert a Language ISO code to the display name.
      *
      * @param context Current context
      * @param iso3    the ISO code
      *
      * @return the display name for the language,
-     * or the input string itself if it was an invalid ISO code
+     *         or the input string itself if it was an invalid ISO code
      */
     @NonNull
     public String getDisplayNameFromISO3(@NonNull final Context context,
@@ -157,7 +183,7 @@ public class Languages {
      * @param iso3    ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return a language code that can be used with {@code new Locale(x)},
-     * or the incoming string if conversion failed.
+     *         or the incoming string if conversion failed.
      */
     @NonNull
     String getLocaleIsoFromISO3(@NonNull final Context context,

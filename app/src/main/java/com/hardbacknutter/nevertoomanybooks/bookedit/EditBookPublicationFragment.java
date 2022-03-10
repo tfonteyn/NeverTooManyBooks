@@ -35,7 +35,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowClass;
@@ -85,7 +85,7 @@ public class EditBookPublicationFragment
 
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().prunePublishers(getContext(), true);

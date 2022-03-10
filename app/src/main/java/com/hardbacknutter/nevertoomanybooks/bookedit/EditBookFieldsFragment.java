@@ -56,8 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MultiChoiceDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldGroup;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -72,12 +72,13 @@ public class EditBookFieldsFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + MultiChoiceDialogFragment.TAG;
 
-    private final MultiChoiceDialogFragment.Launcher mEditBookshelvesLauncher =
-            new MultiChoiceDialogFragment.Launcher(RK_EDIT_BOOKSHELVES) {
+    private final MultiChoiceDialogFragment.Launcher<Bookshelf> mEditBookshelvesLauncher =
+            new MultiChoiceDialogFragment.Launcher<>(RK_EDIT_BOOKSHELVES) {
                 @Override
                 public void onResult(@IdRes final int fieldId,
-                                     @NonNull final ArrayList<Entity> selectedItems) {
-                    final Field<List<Entity>, TextView> field = mVm.requireField(fieldId);
+                                     @NonNull final ArrayList<Bookshelf> selectedItems) {
+                    final EditField<List<Bookshelf>, TextView> field =
+                            mVm.requireField(fieldId);
                     mVm.getBook().putParcelableArrayList(field.getKey(), selectedItems);
                     field.setValue(selectedItems);
                     field.onChanged();
@@ -169,8 +170,8 @@ public class EditBookFieldsFragment
 
         // Bookshelves editor (dialog)
         mVb.bookshelves.setOnClickListener(v -> {
-            final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
-            final ArrayList<Entity> selectedItems = new ArrayList<>(
+            final ArrayList<Bookshelf> allItems = new ArrayList<>(mVm.getAllBookshelves());
+            final ArrayList<Bookshelf> selectedItems = new ArrayList<>(
                     mVm.getBook().getBookshelves());
 
             mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
@@ -218,7 +219,7 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    void onPopulateViews(@NonNull final List<Field<?, ? extends View>> fields,
+    void onPopulateViews(@NonNull final List<EditField<?, ? extends View>> fields,
                          @NonNull final Book book) {
         //noinspection ConstantConditions
         mVm.getBook().pruneAuthors(getContext(), true);

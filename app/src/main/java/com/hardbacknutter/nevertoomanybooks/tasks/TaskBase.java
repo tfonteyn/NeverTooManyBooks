@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -129,6 +130,9 @@ abstract class TaskBase<Result>
                 } else {
                     setFinished(result);
                 }
+            } catch (@NonNull final CancellationException e) {
+                setCancelled(null);
+
             } catch (@NonNull final Exception e) {
                 Logger.error(mTaskName, e);
                 setFailure(e);
@@ -138,6 +142,7 @@ abstract class TaskBase<Result>
         });
     }
 
+
     /**
      * The actual 'work' method.
      *
@@ -145,22 +150,18 @@ abstract class TaskBase<Result>
      *
      * @return task result
      *
-     * @throws Exception depending on implementation
+     * @throws CancellationException if the user cancelled us
+     * @throws Exception             depending on implementation
      */
     @Nullable
     @WorkerThread
     protected abstract Result doWork(@NonNull Context context)
-            throws Exception;
+            throws CancellationException, Exception;
 
     /**
      * Called when the task successfully finishes.
      */
     protected abstract void setFinished(@Nullable Result result);
-
-    /**
-     * Called when the task was cancelled.
-     */
-    protected abstract void setCancelled(@Nullable Result result);
 
     /**
      * Called when the task fails with an Exception.
@@ -178,6 +179,11 @@ abstract class TaskBase<Result>
     public boolean isCancelled() {
         return mIsCancelled.get();
     }
+
+    /**
+     * Called when the task was cancelled.
+     */
+    protected abstract void setCancelled(@Nullable Result result);
 
     public boolean isRunning() {
         return mStatus == Status.Running;
@@ -242,6 +248,9 @@ abstract class TaskBase<Result>
      * A task is {@link Status#Created} when it has never been queued.
      */
     public enum Status {
-        Created, Pending, Running, Finished
+        Created,
+        Pending,
+        Running,
+        Finished
     }
 }

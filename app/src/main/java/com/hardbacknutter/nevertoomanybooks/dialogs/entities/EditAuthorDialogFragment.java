@@ -98,10 +98,8 @@ public class EditAuthorDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
-        mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
-                                         "KEY_FK_AUTHOR");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
+        mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR), DBKey.FK_AUTHOR);
 
         if (savedInstanceState == null) {
             mCurrentEdit = new Author(mAuthor.getFamilyName(),

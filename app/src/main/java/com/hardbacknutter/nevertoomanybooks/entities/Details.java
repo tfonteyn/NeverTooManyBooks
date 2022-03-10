@@ -17,26 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
-import android.content.Context;
+package com.hardbacknutter.nevertoomanybooks.entities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-
-public class EntityFormatter<T extends Entity>
-        implements FieldFormatter<T> {
-
-    @NonNull
-    @Override
-    public String format(@NonNull final Context context,
-                         @Nullable final T rawValue) {
-        if (rawValue == null) {
-            return "";
-        } else {
-            return rawValue.getLabel(context);
-        }
-    }
+public enum Details {
+    Full,
+    Normal,
+    Short
 }

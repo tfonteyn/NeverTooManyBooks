@@ -28,11 +28,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.search.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
@@ -50,16 +52,20 @@ public class UpdateSingleBookContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Book book) {
 
-        final ArrayList<Long> bookIdList = new ArrayList<>();
+        final List<Long> bookIdList = new ArrayList<>();
         bookIdList.add(book.getId());
 
-        //noinspection ConstantConditions
-        return FragmentHostActivity
+        final Intent intent = FragmentHostActivity
                 .createIntent(context, SearchBookUpdatesFragment.class)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, ParcelUtils.wrap(bookIdList))
-                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle())
-                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,
-                          book.getPrimaryAuthor().getLabel(context));
+                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle());
+
+        final Author author = book.getPrimaryAuthor();
+        if (author != null) {
+            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,
+                            author.getLabel(context));
+        }
+        return intent;
     }
 
     @Override

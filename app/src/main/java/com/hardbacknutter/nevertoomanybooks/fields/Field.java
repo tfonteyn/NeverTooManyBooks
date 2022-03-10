@@ -26,39 +26,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 public interface Field<T, V extends View> {
-
-    /**
-     * Load all fields from the passed {@link DataManager}.
-     * The values will be passed from the DataManager to the individual fields;
-     * then to the view accessor; the optional formatter; and finally into the View.
-     *
-     * @param dataManager {@link DataManager} to load Field objects from.
-     */
-    static void load(@NonNull final DataManager dataManager,
-                     @NonNull final List<Field<?, ? extends View>> fields) {
-
-        // do NOT call onChanged, as this is the initial load
-        fields.stream()
-              .filter(Field::isAutoPopulated)
-              .forEach(field -> field.setInitialValue(dataManager));
-    }
-
-    /**
-     * Save all fields to the passed {@link DataManager}.
-     *
-     * @param dataManager {@link DataManager} to put Field objects in.
-     */
-    static void save(@NonNull final List<Field<?, ? extends View>> fields,
-                     @NonNull final DataManager dataManager) {
-        fields.stream()
-              .filter(Field::isAutoPopulated)
-              .forEach(field -> field.getValue(dataManager));
-    }
 
     /**
      * Get the {@link FragmentId} in which this Field is handled.
@@ -88,17 +58,6 @@ public interface Field<T, V extends View> {
     @NonNull
     V requireView();
 
-    void setAfterFieldChangeListener(@Nullable AfterFieldChangeListener listener);
-
-    /**
-     * Set the visibility for the field and its related fields.
-     * Empty fields are hidden, already hidden fields are kept hidden (even when it has content)
-     *
-     * @param parent parent view; used to find the <strong>related fields</strong>
-     */
-    void setVisibility(@NonNull SharedPreferences global,
-                       @NonNull View parent);
-
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
      *
@@ -123,15 +82,6 @@ public interface Field<T, V extends View> {
     void setVisibility(@NonNull View parent,
                        int visibility);
 
-    void setError(@Nullable String errorText);
-
-    void setErrorIfEmpty(@NonNull String errorText);
-
-    boolean isEmpty();
-
-    @Nullable
-    T getValue();
-
     /**
      * Set the value directly. (e.g. upon another field changing... etc...)
      *
@@ -139,7 +89,6 @@ public interface Field<T, V extends View> {
      */
     void setValue(@Nullable T value);
 
-    void getValue(@NonNull DataManager target);
 
     /**
      * Load the field from the passed {@link DataManager}.
@@ -164,20 +113,9 @@ public interface Field<T, V extends View> {
     boolean isUsed(@NonNull SharedPreferences global);
 
     /**
-     * Propagate the fact that this field was changed to the {@link AfterFieldChangeListener}.
-     */
-    void onChanged();
-
-    /**
      * Check if this field can be automatically populated.
      *
      * @return {@code true} if it can
      */
     boolean isAutoPopulated();
-
-    @FunctionalInterface
-    interface AfterFieldChangeListener {
-
-        void onAfterFieldChange(@NonNull Field<?, ? extends View> field);
-    }
 }

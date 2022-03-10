@@ -78,6 +78,6 @@ class SingleFileDownloadTask
         if (!mServer.isMetaDataRead()) {
             mServer.readMetaData(context);
         }
-        return mServer.getFile(context, mFolder, mBook, this);
+        return mServer.fetchFile(context, mBook, mFolder, this);
     }
 }

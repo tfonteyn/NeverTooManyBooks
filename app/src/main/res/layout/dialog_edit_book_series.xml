@@ -108,6 +108,7 @@
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- keep this here; so it uses the full frame width -->
             <include
                 layout="@layout/inc_dialog_buttonbar"
                 android:layout_width="match_parent"

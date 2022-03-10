@@ -39,6 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 
+/**
+ * The glue between the ViewModel and the underlying business logic to perform an import.
+ */
 public final class ImportHelper
         extends DataReaderHelperBase<ArchiveMetaData, ImportResults> {
 

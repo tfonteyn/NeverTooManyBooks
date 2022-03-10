@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -242,8 +243,11 @@ public class EditBookSeriesListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void processChanges(@NonNull final Series original,
                                 @NonNull final Series modified) {
+
+        final Context context = getContext();
 
         // name not changed ?
         if (original.getTitle().equals(modified.getTitle())) {
@@ -255,7 +259,7 @@ public class EditBookSeriesListDialogFragment
                 // so if the number is different, just update it
                 original.setNumber(modified.getNumber());
                 //noinspection ConstantConditions
-                mVm.getBook().pruneSeries(getContext(), true);
+                mVm.getBook().pruneSeries(context, true);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -263,12 +267,12 @@ public class EditBookSeriesListDialogFragment
 
         // The name was modified. Check if it's used by any other books.
         //noinspection ConstantConditions
-        if (mVm.isSingleUsage(getContext(), original)) {
+        if (mVm.isSingleUsage(context, original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
-            mVm.getBook().pruneSeries(getContext(), true);
+            mVm.getBook().pruneSeries(context, true);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -276,11 +280,12 @@ public class EditBookSeriesListDialogFragment
         // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         StandardDialogs.confirmScopeForChange(
-                getContext(), original, modified,
+                context, original.getLabel(context), modified.getLabel(context),
                 () -> changeForAllBooks(original, modified),
                 () -> changeForThisBook(original, modified));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForAllBooks(@NonNull final Series original,
                                    @NonNull final Series modified) {
         // This change is done in the database right NOW!
@@ -292,6 +297,7 @@ public class EditBookSeriesListDialogFragment
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForThisBook(@NonNull final Series original,
                                    @NonNull final Series modified) {
         // treat the new data as a new Series; save it so we have a valid id.
@@ -387,16 +393,14 @@ public class EditBookSeriesListDialogFragment
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            final Bundle args = requireArguments();
-
             //noinspection ConstantConditions
             mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+            final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  BKEY_REQUEST_KEY);
             mSeries = Objects.requireNonNull(args.getParcelable(DBKey.FK_SERIES),
                                              DBKey.FK_SERIES);
-
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
@@ -413,7 +417,6 @@ public class EditBookSeriesListDialogFragment
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             mVb = DialogEditBookSeriesBinding.bind(view);
-
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions

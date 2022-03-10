@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,13 +28,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 public class SeriesListFormatter
         extends HtmlFormatter<List<Series>> {
 
     @NonNull
-    private final Series.Details mDetails;
+    private final Details mDetails;
     private final boolean mSingleLine;
 
     /**
@@ -46,7 +47,7 @@ public class SeriesListFormatter
      * @param enableLinks {@code true} to enable links.
      *                    Ignored if the View has an onClickListener
      */
-    public SeriesListFormatter(@NonNull final Series.Details details,
+    public SeriesListFormatter(@NonNull final Details details,
                                final boolean singleLine,
                                final boolean enableLinks) {
         super(enableLinks);

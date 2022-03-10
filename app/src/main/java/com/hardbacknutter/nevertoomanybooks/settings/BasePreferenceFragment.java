@@ -35,7 +35,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
+import com.hardbacknutter.nevertoomanybooks.settings.widgets.TriStateMultiSelectListPreference;
 
 /**
  * Base settings page. This handles:

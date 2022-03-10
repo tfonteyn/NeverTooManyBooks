@@ -99,6 +99,7 @@ public class BookshelfBooklistGroup
     }
 
     @Override
+    @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key.
         // We override the display domain in #createDisplayDomain.

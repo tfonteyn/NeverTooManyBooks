@@ -25,13 +25,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuProvider;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -93,6 +98,9 @@ public class SearchFtsFragment
     @Nullable
     private String mKeywordsSearchText;
 
+    @SuppressWarnings("FieldCanBeLocal")
+    private MenuProvider mToolbarMenuProvider;
+
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -141,6 +149,8 @@ public class SearchFtsFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Toolbar toolbar = getToolbar();
+        mToolbarMenuProvider = new ToolbarMenuProvider();
+        toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
         toolbar.setTitle(R.string.lbl_local_search);
 
         if (mTitleSearchText != null) {
@@ -172,21 +182,21 @@ public class SearchFtsFragment
         mVb.publisher.addTextChangedListener(mTextWatcher);
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
-        // When the show results buttons is tapped, return and show the resulting booklist.
-        mVb.btnSearch.setOnClickListener(v -> {
-            final Intent resultIntent = SearchFtsContract
-                    .createResultIntent(mBookIdList,
-                                        mTitleSearchText,
-                                        mSeriesTitleSearchText,
-                                        mAuthorSearchText,
-                                        mPublisherNameSearchText,
-                                        mKeywordsSearchText);
-            //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, resultIntent);
-            getActivity().finish();
-        });
-
         // Timer will be started in OnResume().
+    }
+
+    // When the show results buttons is tapped, return and show the resulting booklist.
+    private void showList() {
+        final Intent resultIntent = SearchFtsContract
+                .createResultIntent(mBookIdList,
+                                    mTitleSearchText,
+                                    mSeriesTitleSearchText,
+                                    mAuthorSearchText,
+                                    mPublisherNameSearchText,
+                                    mKeywordsSearchText);
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, resultIntent);
+        getActivity().finish();
     }
 
     /**
@@ -215,11 +225,10 @@ public class SearchFtsFragment
     private void updateUi() {
         final int count = mBookIdList.size();
         final String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-        mVb.booksFound.setText(s);
+        getToolbar().setSubtitle(s);
     }
 
     private void viewToModel() {
-
         //noinspection ConstantConditions
         mTitleSearchText = mVb.title.getText().toString().trim();
         //noinspection ConstantConditions
@@ -339,6 +348,30 @@ public class SearchFtsFragment
                 //noinspection ConstantConditions
                 getView().getHandler().post(SearchFtsFragment.this::updateUi);
             }
+        }
+    }
+
+    private class ToolbarMenuProvider
+            implements MenuProvider {
+
+        @Override
+        public void onCreateMenu(@NonNull final Menu menu,
+                                 @NonNull final MenuInflater menuInflater) {
+            menuInflater.inflate(R.menu.toolbar_action_go, menu);
+
+            final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+            final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+            button.setText(R.string.btn_show_list);
+            button.setOnClickListener(v -> onMenuItemSelected(menuItem));
+        }
+
+        @Override
+        public boolean onMenuItemSelected(@NonNull final MenuItem menuItem) {
+            if (menuItem.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+                showList();
+                return true;
+            }
+            return false;
         }
     }
 }

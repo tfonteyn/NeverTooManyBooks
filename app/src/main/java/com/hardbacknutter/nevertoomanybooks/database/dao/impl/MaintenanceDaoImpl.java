@@ -36,8 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
@@ -116,10 +116,11 @@ public class MaintenanceDaoImpl
     }
 
     @Override
-    public void rebuildOrderByTitleColumns(@NonNull final Context context,
-                                           final boolean reorder) {
+    public void rebuildOrderByTitleColumns(@NonNull final Context context) {
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
         final AppLocale appLocale = ServiceLocator.getInstance().getAppLocale();
+
+        final boolean reorder = OrderByHelper.forSorting(context);
 
         // Books
         String language;
@@ -212,7 +213,7 @@ public class MaintenanceDaoImpl
 
         final String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = ReorderTitle.reorder(context, title, locale);
+            rebuildObTitle = ReorderHelper.reorder(context, title, locale);
         } else {
             // Use the actual/original title
             rebuildObTitle = title;

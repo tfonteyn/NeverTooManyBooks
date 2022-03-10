@@ -73,9 +73,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.ReorderTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ReorderHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -155,7 +156,7 @@ public class BooklistAdapter
                               .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
-        mReorderTitleForDisplaying = ReorderTitle.forDisplay(context);
+        mReorderTitleForDisplaying = ReorderHelper.forDisplay(context);
 
         // getItemId is implemented.
         setHasStableIds(true);
@@ -271,8 +272,8 @@ public class BooklistAdapter
     }
 
     @SuppressLint("SwitchIntDef")
-    @NonNull
     @Override
+    @NonNull
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
                                             @BooklistGroup.Id final int groupId) {
 
@@ -332,6 +333,7 @@ public class BooklistAdapter
      *
      * @return the view
      */
+    @NonNull
     private View createView(@NonNull final ViewGroup parent,
                             @BooklistGroup.Id final int groupKeyId) {
         //noinspection ConstantConditions
@@ -437,7 +439,7 @@ public class BooklistAdapter
                     return context.getString(R.string.bob_empty_series);
 
                 } else if (mReorderTitleForDisplaying) {
-                    return ReorderTitle.reorder(context, text, locale);
+                    return ReorderHelper.reorder(context, text, locale);
                 } else {
                     return text;
                 }
@@ -447,7 +449,7 @@ public class BooklistAdapter
                     return context.getString(R.string.bob_empty_publisher);
 
                 } else if (mReorderTitleForDisplaying) {
-                    return ReorderTitle.reorder(context, text, locale);
+                    return ReorderHelper.reorder(context, text, locale);
                 } else {
                     return text;
                 }
@@ -635,8 +637,8 @@ public class BooklistAdapter
      *
      * <br><br>{@inheritDoc}
      */
-    @Nullable
     @Override
+    @NonNull
     public String[] getPopupText(final int position) {
         return new String[]{getLevelText(position, 1),
                             getLevelText(position, 2)};
@@ -737,8 +739,6 @@ public class BooklistAdapter
         /** Book row details. Based on global visibility user preference. */
         boolean lending;
         /** Book row details. Based on global visibility user preference. */
-        boolean read;
-        /** Book row details. Based on global visibility user preference. */
         boolean series;
         /** Book row details. Based on global visibility user preference. */
         boolean signed;
@@ -776,7 +776,6 @@ public class BooklistAdapter
             // Based on global visibility user preference.
             edition = DBKey.isUsed(global, DBKey.BITMASK_EDITION);
             lending = DBKey.isUsed(global, DBKey.KEY_LOANEE);
-            read = DBKey.isUsed(global, DBKey.BOOL_READ);
             series = DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE);
             signed = DBKey.isUsed(global, DBKey.BOOL_SIGNED);
 
@@ -808,7 +807,6 @@ public class BooklistAdapter
 
             edition = edition && rowData.contains(DBKey.BITMASK_EDITION);
             lending = lending && rowData.contains(DBKey.KEY_LOANEE);
-            read = read && rowData.contains(DBKey.BOOL_READ);
             series = series && rowData.contains(DBKey.KEY_BOOK_NUM_IN_SERIES);
             signed = signed && rowData.contains(DBKey.BOOL_SIGNED);
 
@@ -1028,18 +1026,18 @@ public class BooklistAdapter
 
             final String title;
             if (mReorderTitle) {
-                title = ReorderTitle.reorder(itemView.getContext(),
-                                             rowData.getString(DBKey.KEY_TITLE),
-                                             rowData.getString(DBKey.KEY_LANGUAGE));
+                final Context context = itemView.getContext();
+                final String language = rowData.getString(DBKey.KEY_LANGUAGE);
+                final Locale locale = Languages.toLocale(context, language);
+
+                title = ReorderHelper.reorder(context, rowData.getString(DBKey.KEY_TITLE), locale);
             } else {
                 title = rowData.getString(DBKey.KEY_TITLE);
             }
             mTitleView.setText(title);
 
-            if (mInUse.read) {
-                final boolean isSet = rowData.getBoolean(DBKey.BOOL_READ);
-                mReadIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
-            }
+            mReadIconView.setVisibility(rowData.getBoolean(DBKey.BOOL_READ) ? View.VISIBLE
+                                                                            : View.GONE);
 
             if (mInUse.signed) {
                 final boolean isSet = rowData.getBoolean(DBKey.BOOL_SIGNED);
@@ -1342,6 +1340,7 @@ public class BooklistAdapter
          *
          * @return the formatted text
          */
+        @NonNull
         public String format(@Nullable final String text) {
             return mAdapter.format(itemView.getContext(), mGroupKeyId, text, null);
         }
@@ -1446,6 +1445,7 @@ public class BooklistAdapter
         }
 
         @Override
+        @NonNull
         public String format(@Nullable final String text) {
             final Context context = itemView.getContext();
             // FIXME: translated series are reordered in the book's language

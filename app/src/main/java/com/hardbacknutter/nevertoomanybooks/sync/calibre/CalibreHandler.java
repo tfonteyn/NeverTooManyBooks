@@ -326,7 +326,7 @@ public class CalibreHandler {
                             .setPreventSleep(true)
                             .setIndeterminate(true)
                             .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                            .show(mWindow);
+                            .show(() -> mWindow);
                 }
                 mProgressDelegate.onProgress(data);
             }

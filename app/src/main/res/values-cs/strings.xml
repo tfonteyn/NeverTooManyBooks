@@ -312,7 +312,7 @@
     <string name="menu_lend_return_book">Vypůjčená kniha je zpět</string>
     <string name="menu_rebuild_fts">Obnovit FTS</string>
     <string name="menu_rebuild_index">Znovu vytvořit index</string>
-    <string name="lbl_local_search">Rozšířené místní vyhledávání</string>
+    <string name="lbl_local_search_long">Rozšířené místní vyhledávání</string>
     <string name="menu_set_complete">Nastavit na „kompletní“</string>
     <string name="menu_set_incomplete">Nastaveno na „neúplné“</string>
     <string name="menu_set_read">Nastavit jako čtení</string>
@@ -451,12 +451,12 @@
     <string name="style_builtin_update_date">Datum aktualizace</string>
     <string name="style_is_builtin">Vestavěný</string>
     <string name="style_is_user_defined">Definován uživatelem</string>
-    <string name="lbl_alternative_editions">Alt. vydání</string>
-    <string name="lbl_toc">Obsah</string>
-    <string name="lbl_details">Podrobnosti</string>
-    <string name="lbl_ext_id">Externí ID</string>
-    <string name="lbl_notes">Poznámky</string>
-    <string name="lbl_publication_tab">Vydání</string>
+    <string name="lbl_tab_alternative_editions">Alt. vydání</string>
+    <string name="lbl_tab_table_of_content">Obsah</string>
+    <string name="lbl_tab_details">Podrobnosti</string>
+    <string name="lbl_tab_lbl_ext_id">Externí ID</string>
+    <string name="lbl_tab_notes">Poznámky</string>
+    <string name="lbl_tab_publication">Vydání</string>
     <string name="tip_authors_book_may_appear_more_than_once">Při zobrazení pod každým autorem se může stát, že jedna kniha se objeví v seznamu vícekrát - pokud však v takovém případě odstraníte kterýkoli z těchto záznamů, budou odstraněny všechny.</string>
     <string name="tip_authors_works">Použité ikony</string>
     <string name="tip_authors_works_book">Kniha.</string>

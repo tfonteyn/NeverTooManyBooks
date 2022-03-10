@@ -71,7 +71,7 @@ public class ListStyleCoder
         out.put(DBKey.BOOL_STYLE_IS_PREFERRED, style.isPreferred());
         out.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
-        if (style instanceof UserStyle) {
+        if (style.isUserDefined()) {
             out.put(STYLE_NAME, ((UserStyle) style).getName());
 
             final JSONObject dest = new JSONObject();
@@ -99,14 +99,7 @@ public class ListStyleCoder
 
         final Styles styles = ServiceLocator.getInstance().getStyles();
 
-        if (BuiltinStyle.isBuiltin(uuid)) {
-            final ListStyle style = styles.getStyle(mContext, uuid);
-            //noinspection ConstantConditions
-            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
-            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
-            return style;
-
-        } else {
+        if (BuiltinStyle.isUserDefined(uuid)) {
             final UserStyle style = UserStyle.createFromImport(mContext, uuid);
             style.setName(data.getString(STYLE_NAME));
             style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
@@ -133,6 +126,14 @@ public class ListStyleCoder
                 }
             }
             return style;
+
+        } else {
+            final ListStyle style = styles.getStyle(mContext, uuid);
+            //noinspection ConstantConditions
+            style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBKey.KEY_STYLE_MENU_POSITION));
+            return style;
+
         }
     }
 

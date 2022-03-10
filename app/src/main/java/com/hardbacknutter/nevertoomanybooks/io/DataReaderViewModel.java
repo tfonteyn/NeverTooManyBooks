@@ -61,6 +61,11 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
     }
 
     @NonNull
+    public LiveData<LiveDataEvent<TaskResult<Optional<METADATA>>>> onReadMetaDataCancelled() {
+        return mMetaDataTask.onCancelled();
+    }
+
+    @NonNull
     public LiveData<LiveDataEvent<TaskResult<Optional<METADATA>>>> onReadMetaDataFinished() {
         return mMetaDataTask.onFinished();
     }
@@ -85,17 +90,6 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         return mReaderTask.onFinished();
     }
 
-    @UiThread
-    protected void startReadingMetaData(@NonNull final
-                                        DataReaderHelperBase<METADATA, RESULTS> helper) {
-        mMetaDataTask.start(helper);
-    }
-
-    @UiThread
-    protected void startReadingData(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
-        mReaderTask.start(helper);
-    }
-
     /**
      * Check if we have sufficient data to start an import.
      *
@@ -103,12 +97,28 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
      */
     public abstract boolean isReadyToGo();
 
+    @NonNull
+    public abstract DataReaderHelperBase<METADATA, RESULTS> getDataReaderHelper();
+
+    @UiThread
+    public void readMetaData() {
+        mMetaDataTask.start(getDataReaderHelper());
+    }
+
+    @UiThread
+    public void readData() {
+        mReaderTask.start(getDataReaderHelper());
+    }
+
     public boolean isRunning() {
         return mReaderTask.isRunning();
     }
 
     public void cancelTask(@IdRes final int taskId) {
-        if (taskId == mReaderTask.getTaskId()) {
+        if (taskId == mMetaDataTask.getTaskId()) {
+            mMetaDataTask.cancel();
+
+        } else if (taskId == mReaderTask.getTaskId()) {
             mReaderTask.cancel();
         } else {
             throw new IllegalArgumentException("taskId=" + taskId);
@@ -135,6 +145,12 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         public void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
             mHelper = helper;
             execute();
+        }
+
+        @Override
+        public boolean cancel() {
+            mHelper.cancel(getTaskId());
+            return super.cancel();
         }
 
         @WorkerThread
@@ -171,6 +187,12 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         void start(@NonNull final DataReaderHelperBase<METADATA, RESULTS> helper) {
             mHelper = helper;
             execute();
+        }
+
+        @Override
+        public boolean cancel() {
+            mHelper.cancel(getTaskId());
+            return super.cancel();
         }
 
         @WorkerThread

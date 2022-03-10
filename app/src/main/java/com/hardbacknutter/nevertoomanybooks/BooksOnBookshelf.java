@@ -840,6 +840,12 @@ public class BooksOnBookshelf
             case BooklistGroup.BOOK: {
                 final MenuInflater inflater = getMenuInflater();
                 inflater.inflate(R.menu.book, menu);
+
+                if (!hasEmbeddedDetailsFrame()) {
+                    // explicitly hide; but otherwise leave it to the details-frame menu handler.
+                    menu.findItem(R.id.MENU_SYNC_LIST_WITH_DETAILS).setVisible(false);
+                }
+
                 if (mCalibreHandler != null) {
                     mCalibreHandler.onCreateMenu(menu, inflater);
                 }
@@ -1420,7 +1426,7 @@ public class BooksOnBookshelf
 
         } else if (DBKey.KEY_LOANEE.equals(key)) {
             Objects.requireNonNull(book);
-            positions = mVm.onBookLend(book.getId(), book.getLoanee());
+            positions = mVm.onBookLend(book.getId(), book.getLoanee().orElse(null));
 
         } else {
             // ENHANCE: update the modified row without a rebuild.

@@ -65,6 +65,7 @@ public enum RebuildBooklist
      *
      * @return Mode
      */
+    @NonNull
     public static RebuildBooklist getPreferredMode(@NonNull final Context context) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final int value = Prefs.getIntListPref(global, Prefs.pk_booklist_rebuild_state,

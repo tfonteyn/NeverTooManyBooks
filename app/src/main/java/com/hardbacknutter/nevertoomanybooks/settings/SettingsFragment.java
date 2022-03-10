@@ -377,7 +377,7 @@ public class SettingsFragment
                         .setPreventSleep(true)
                         .setIndeterminate(true)
                         .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
-                        .show(getActivity().getWindow());
+                        .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });

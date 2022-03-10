@@ -95,6 +95,7 @@ public class PublisherBooklistGroup
     }
 
     @Override
+    @NonNull
     public GroupKey createGroupKey() {
         // We use the foreign ID to create the key domain.
         // We override the display domain in #createDisplayDomain.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,12 +29,13 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 
 public class AuthorListFormatter
         extends HtmlFormatter<List<Author>> {
 
     @NonNull
-    private final Author.Details mDetails;
+    private final Details mDetails;
     private final boolean mSingleLine;
 
     /**
@@ -46,7 +47,7 @@ public class AuthorListFormatter
      * @param enableLinks {@code true} to enable links.
      *                    Ignored if the View has an onClickListener
      */
-    public AuthorListFormatter(@NonNull final Author.Details details,
+    public AuthorListFormatter(@NonNull final Details details,
                                final boolean singleLine,
                                final boolean enableLinks) {
         super(enableLinks);
@@ -64,39 +65,29 @@ public class AuthorListFormatter
 
         switch (mDetails) {
             case Full:
+            case Normal: {
                 if (mSingleLine) {
                     return rawValue.stream()
-                                   .map(author -> author.getExtLabel(context))
+                                   .map(author -> author.getLabel(context, mDetails))
                                    .collect(Collectors.joining("; "));
                 } else {
                     return rawValue.stream()
-                                   .map(author -> author.getExtLabel(context))
+                                   .map(author -> author.getLabel(context, mDetails))
                                    .map(s -> "<li>" + s + "</li>")
                                    .collect(Collectors.joining("", "<ul>", "</ul>"));
                 }
-
-            case Normal:
-                if (mSingleLine) {
-                    return rawValue.stream()
-                                   .map(author -> author.getLabel(context))
-                                   .collect(Collectors.joining("; "));
-                } else {
-                    return rawValue.stream()
-                                   .map(author -> author.getLabel(context))
-                                   .map(s -> "<li>" + s + "</li>")
-                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
-                }
-
-            case Short:
+            }
+            case Short: {
                 if (rawValue.size() > 1) {
+                    // special case, we use the Normal setting and use the "and_others" suffix
                     return context.getString(R.string.and_others_plus,
-                                             rawValue.get(0).getLabel(context),
+                                             rawValue.get(0).getLabel(context, Details.Normal),
                                              rawValue.size() - 1);
                 } else {
-                    return rawValue.get(0).getLabel(context);
+                    return rawValue.get(0).getLabel(context, mDetails);
                 }
+            }
         }
         return "";
     }
-
 }

@@ -45,10 +45,7 @@ public interface MaintenanceDao {
      * Optional reordering or restoring
      *
      * @param context Current context
-     * @param reorder flag {@code true} to store a reorder string,
-     *                or {@code false} to restore the original string
      */
-    void rebuildOrderByTitleColumns(@NonNull Context context,
-                                    boolean reorder);
+    void rebuildOrderByTitleColumns(@NonNull Context context);
 
 }

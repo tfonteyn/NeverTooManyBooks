@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.BookLight;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -75,12 +76,12 @@ public interface TocEntryDao {
                @NonNull Locale bookLocale);
 
     /**
-     * Return the TocEntry id. The incoming object is not modified.
+     * Return the {@link TocEntry} id. The incoming object is not modified.
      * Note that the publication year is NOT used for comparing, under the assumption that
      * two search-sources can give different dates by mistake.
      *
      * @param context      Current context
-     * @param tocEntry     tocEntry to search for
+     * @param tocEntry     to search for
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
@@ -107,15 +108,17 @@ public interface TocEntryDao {
      * The titles are returned "as-is". If re-ordering is needed, the caller must do this
      * after getting the list.
      *
-     * @param id TOC id
+     * @param id     TOC id
+     * @param author the Author will be used when creating the BookLight objects.
      *
      * @return list of id/titles/language of books.
      */
     @NonNull
-    List<BookLight> getBookTitles(@IntRange(from = 1) long id);
+    List<BookLight> getBookTitles(@IntRange(from = 1) long id,
+                                  @NonNull Author author);
 
     /**
-     * Get the list of TocEntry for this book.
+     * Get the list of {@link TocEntry}'s for this book.
      *
      * @param bookId of the book
      *
@@ -125,7 +128,8 @@ public interface TocEntryDao {
     ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) long bookId);
 
     /**
-     * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
+     * Get a list of book ID's (most often just the one) in which this {@link TocEntry}
+     * (story) is present.
      *
      * @param tocId id of the entry (story)
      *

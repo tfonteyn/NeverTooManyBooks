@@ -145,24 +145,5 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/books_found"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textIsSelectable="true"
-            app:layout_constraintBaseline_toBaselineOf="@id/btn_search"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="# books found"
-            />
-
-        <Button
-            android:id="@+id/btn_search"
-            style="@style/Button.Action.Submit"
-            android:text="@string/btn_show_list"
-            app:layout_constraintEnd_toEndOf="@id/lbl_keywords"
-            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
-            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

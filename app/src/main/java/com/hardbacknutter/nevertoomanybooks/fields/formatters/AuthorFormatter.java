@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,12 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 
 public class AuthorFormatter
         extends HtmlFormatter<Author> {
 
     /** how much details to show. */
-    private final Author.Details mDetails;
+    private final Details mDetails;
 
     /**
      * Constructor.
@@ -39,7 +40,7 @@ public class AuthorFormatter
      * @param enableLinks {@code true} to enable links.
      *                    Ignored if the View has an onClickListener
      */
-    public AuthorFormatter(@NonNull final Author.Details details,
+    public AuthorFormatter(@NonNull final Details details,
                            final boolean enableLinks) {
         super(enableLinks);
         mDetails = details;
@@ -49,20 +50,6 @@ public class AuthorFormatter
     @Override
     public String format(@NonNull final Context context,
                          @Nullable final Author author) {
-        if (author == null) {
-            return "";
-        }
-
-        switch (mDetails) {
-            case Full:
-                return author.getExtLabel(context);
-
-            case Normal:
-                return author.getLabel(context);
-
-            case Short:
-                return author.getGivenNames().substring(0, 1) + ' ' + author.getFamilyName();
-        }
-        return "";
+        return author == null ? "" : author.getLabel(context, mDetails);
     }
 }

@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -50,6 +51,7 @@ import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -68,6 +70,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -84,11 +92,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
@@ -192,6 +199,8 @@ public class CalibreContentServer {
     private static final int CONNECT_TIMEOUT_IN_SECONDS = 5;
     private static final int READ_TIMEOUT_IN_SECONDS = 3;
 
+    private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
+
     @NonNull
     private final Uri mServerUri;
     /** The header string: "Basic user:password". (in base64) */
@@ -212,6 +221,13 @@ public class CalibreContentServer {
     @Nullable
     private SSLContext mSslContext;
     private boolean mCalibreExtensionInstalled;
+
+    @GuardedBy("this")
+    @Nullable
+    private Future<String> mCurrentFetchJsonFuture;
+    @GuardedBy("this")
+    @Nullable
+    private Future<Uri> mCurrentFetchFileFuture;
 
     /**
      * Constructor.
@@ -358,6 +374,51 @@ public class CalibreContentServer {
     }
 
     /**
+     * Create the custom SSLContext if there is a custom CA file configured.
+     *
+     * @param ca the server CA
+     *
+     * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
+     *
+     * @throws CertificateException on failures related to a user installed CA.
+     */
+    @Nullable
+    private SSLContext getSslContext(@NonNull final X509Certificate ca)
+            throws CertificateException, SSLException {
+
+        try {
+            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry(SERVER_CA, ca);
+
+            final TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(keyStore);
+
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+
+            return sslContext;
+
+        } catch (@NonNull final KeyStoreException | NoSuchAlgorithmException e) {
+            // As we're using defaults for the keystore type and trust algorithm,
+            // we should never get these 2... flw
+            throw new SSLException(e);
+
+        } catch (@NonNull final KeyManagementException e) {
+            // wrap for ease of handling; it is in fact almost certain that
+            // we would throw a CertificateException BEFORE we can even
+            // get a KeyManagementException
+            throw new CertificateException(e);
+
+        } catch (@NonNull final IOException ignore) {
+            // we are (have to) assuming that the server CA is loaded
+            // in the Android system keystore.
+            return null;
+        }
+    }
+
+    /**
      * Make a short call to test the connection.
      *
      * @return {@code true} if al is well.
@@ -366,7 +427,7 @@ public class CalibreContentServer {
      */
     public boolean validateConnection()
             throws IOException {
-        return !fetch("/ajax/library-info", BUFFER_SMALL).isEmpty();
+        return !fetch(ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
     }
 
     boolean isMetaDataRead() {
@@ -407,8 +468,7 @@ public class CalibreContentServer {
         final Bookshelf currentBookshelf = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
-        final String url = "/ajax/library-info";
-        final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
+        final JSONObject source = new JSONObject(fetch(ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
 
         final JSONObject libraryMap = source.getJSONObject("library_map");
         final String defaultLibraryId = source.getString("default_library");
@@ -1047,23 +1107,126 @@ public class CalibreContentServer {
     }
 
     /**
+     * Fetch the given url path content as a single string.
+     *
+     * @param path   the path to read
+     * @param buffer size for the read
+     *
+     * @return content
+     *
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on failures
+     */
+    @NonNull
+    private String fetch(@NonNull final String path,
+                         final int buffer)
+            throws IOException,
+                   CancellationException {
+
+        try {
+            mCurrentFetchJsonFuture = ASyncExecutor.SERVICE.submit(() -> doFetch(path, buffer));
+            return mCurrentFetchJsonFuture.get(mConnectTimeoutInMs + mReadTimeoutInMs,
+                                               TimeUnit.MILLISECONDS);
+
+        } catch (@NonNull final RejectedExecutionException
+                | ExecutionException
+                | InterruptedException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            mCurrentFetchJsonFuture = null;
+        }
+    }
+
+    @NonNull
+    private String doFetch(@NonNull final String path,
+                           final int buffer)
+            throws IOException {
+        try {
+            final HttpURLConnection request = createGetRequest(mServerUri + path);
+
+            request.connect();
+
+            HttpUtils.checkResponseCode(request, R.string.site_calibre);
+
+            try (InputStream is = request.getInputStream();
+                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(isr, buffer)) {
+
+                return reader.lines().collect(Collectors.joining());
+            } finally {
+                request.disconnect();
+            }
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
+        }
+    }
+
+    /**
      * Download the main format file for the given book and store it in the given folder.
      *
      * @param context Current context
-     * @param folder  to store the download in
      * @param book    to download
+     * @param folder  to store the download in
      *
      * @return the file
      *
-     * @throws IOException on failures
+     * @throws CancellationException  if the user cancelled us
+     * @throws SocketTimeoutException if the timeout expires before
+     *                                the connection can be established
+     * @throws IOException            on failures
      */
     @NonNull
-    Uri getFile(@NonNull final Context context,
-                @NonNull final Uri folder,
-                @NonNull final Book book,
-                @NonNull final ProgressListener progressListener)
+    Uri fetchFile(@NonNull final Context context,
+                  @NonNull final Book book,
+                  @NonNull final Uri folder,
+                  @NonNull final ProgressListener progressListener)
             throws IOException {
 
+        final DocumentFile destFile = getDocumentFile(context, book, folder, true);
+
+        try {
+            mCurrentFetchFileFuture = ASyncExecutor.SERVICE.submit(
+                    () -> doFetchFile(context, book, progressListener, destFile));
+            return mCurrentFetchFileFuture.get(mConnectTimeoutInMs + mReadTimeoutInMs,
+                                               TimeUnit.MILLISECONDS);
+
+        } catch (@NonNull final RejectedExecutionException
+                | ExecutionException
+                | InterruptedException e) {
+            // cleanup any partial download
+            if (destFile.exists()) {
+                //FIXME: we're ignoring any failure to delete
+                destFile.delete();
+            }
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e);
+
+        } catch (@NonNull final TimeoutException e) {
+            throw new SocketTimeoutException(e.getMessage());
+
+        } finally {
+            mCurrentFetchFileFuture = null;
+        }
+    }
+
+    @NonNull
+    private Uri doFetchFile(@NonNull final Context context,
+                            @NonNull final Book book,
+                            @NonNull final ProgressListener progressListener,
+                            final DocumentFile destFile)
+            throws IOException {
         // Build the URL from where to download the file
         final int id = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
         final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
@@ -1073,20 +1236,23 @@ public class CalibreContentServer {
                 mLibraries.stream()
                           .filter(library -> library.getId() == libraryId)
                           .findFirst()
-                          .orElseThrow(() -> new FileNotFoundException(
-                                  "library not found: " + libraryId));
+                          .orElseThrow(() -> new FileNotFoundException(context.getString(
+                                  R.string.error_file_not_found, String.valueOf(libraryId))));
 
         final String url = mServerUri + "/get/" + format + "/" + id + "/"
                            + calibreLibrary.getLibraryStringId();
 
-        // and where to write the file
-        final DocumentFile destFile = getDocumentFile(context, book, folder, true);
-        final Uri destUri = destFile.getUri();
+        try {
+            final HttpURLConnection request = createGetRequest(url);
 
-        try (TerminatorConnection con = doGet(url)) {
+            request.connect();
+
+            HttpUtils.checkResponseCode(request, R.string.site_calibre);
+
+            final Uri destUri = destFile.getUri();
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
-                    try (InputStream is = con.getInputStream();
+                    try (InputStream is = request.getInputStream();
                          BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
                          BufferedOutputStream bos = new BufferedOutputStream(os)) {
 
@@ -1095,32 +1261,159 @@ public class CalibreContentServer {
                         FileUtils.copy(bis, bos);
                     }
                 }
+            } finally {
+                request.disconnect();
+            }
+
+            if (destFile.exists()) {
+                return destUri;
+            } else {
+                throw new FileNotFoundException(context.getString(
+                        R.string.error_file_not_found, destFile.getName()));
+            }
+        } catch (@NonNull final UncheckedIOException e) {
+            throw Objects.requireNonNull(e.getCause());
+        }
+    }
+
+    public boolean cancelFetch() {
+        synchronized (this) {
+            if (mCurrentFetchJsonFuture != null) {
+                return mCurrentFetchJsonFuture.cancel(true);
+            } else if (mCurrentFetchFileFuture != null) {
+                return mCurrentFetchFileFuture.cancel(true);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Create a GET request, but does not connect.
+     *
+     * @param url to use
+     *
+     * @return the request
+     *
+     * @throws IOException on any failure
+     */
+    @NonNull
+    private HttpURLConnection createGetRequest(@NonNull final String url)
+            throws IOException {
+
+        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        // Don't trust the caches when doing a GET; they have proven to be cumbersome on Android
+        request.setUseCaches(false);
+        request.setConnectTimeout(mConnectTimeoutInMs);
+        request.setReadTimeout(mReadTimeoutInMs);
+
+        if (mSslContext != null) {
+            ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
+        }
+        if (mAuthHeader != null) {
+            request.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
+        }
+
+        return request;
+    }
+
+    /**
+     * Get the DocumentFile for the given book.
+     *
+     * @param context  Current context
+     * @param book     to get
+     * @param folder   where the files are
+     * @param creating set {@code true} when creating, set {@code false} for checking existence
+     */
+    @NonNull
+    DocumentFile getDocumentFile(@NonNull final Context context,
+                                 @NonNull final Book book,
+                                 @NonNull final Uri folder,
+                                 final boolean creating)
+            throws FileNotFoundException {
+
+        // we're not assuming ANYTHING....
+        final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
+        if (root == null) {
+            throw new FileNotFoundException(folder.toString());
+        }
+
+        final String authorDirectory = createAuthorDirectoryName(context, book);
+
+        // FIRST check if it exists
+        DocumentFile authorFolder = root.findFile(authorDirectory);
+        if (authorFolder == null) {
+            if (creating) {
+                authorFolder = root.createDirectory(authorDirectory);
+            }
+            if (authorFolder == null) {
+                throw new FileNotFoundException(authorDirectory);
             }
         }
 
-        if (destFile.exists()) {
-            return destUri;
-        } else {
-            throw new FileNotFoundException("No error, but not found? destFile=" + destFile);
+        final String fileName = createFilename(context, book);
+        final String fileExt = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+
+        // FIRST check if it exists using the format extension
+        DocumentFile bookFile = authorFolder.findFile(fileName + "." + fileExt);
+        if (bookFile == null) {
+            if (creating) {
+                // when creating, we must NOT directly use the extension,
+                // but deduce the mime type from the extension.
+                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
+                if (mimeType == null) {
+                    // shouldn't be needed, ... flw
+                    mimeType = "application/" + fileExt;
+                }
+                bookFile = authorFolder.createFile(mimeType, fileName);
+            }
+            if (bookFile == null) {
+                throw new FileNotFoundException(fileName);
+            }
         }
+
+        return bookFile;
     }
 
+    @VisibleForTesting
     @NonNull
-    private TerminatorConnection doGet(@NonNull final String url)
-            throws IOException {
+    String createAuthorDirectoryName(@NonNull final Context context,
+                                     @NonNull final Book book)
+            throws FileNotFoundException {
+        final Author primaryAuthor = Objects.requireNonNullElseGet(
+                book.getPrimaryAuthor(), () -> Author.createUnknownAuthor(context));
 
-        final TerminatorConnection con = new TerminatorConnection(url)
-                .setConnectTimeout(mConnectTimeoutInMs)
-                .setReadTimeout(mReadTimeoutInMs)
-                .setSSLContext(mSslContext);
-
-        if (mAuthHeader != null) {
-            con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
+        String authorDirectory = primaryAuthor.getFamilyName();
+        final String givenNames = primaryAuthor.getGivenNames();
+        if (!givenNames.isEmpty()) {
+            authorDirectory += ", " + givenNames;
         }
 
-        HttpUtils.checkResponseCode(con.getRequest(), R.string.site_calibre);
-        return con;
+        authorDirectory = FileUtils.buildValidFilename(authorDirectory);
+
+        // A little extra nastiness... if our name ends with a '.'
+        // then Android, in its infinite wisdom, will remove it
+        // If we escape it, Android will turn it into a '_'
+        // Hence, we remove it ourselves, so a subsequent findFile will work.
+        while (authorDirectory.endsWith(".") && authorDirectory.length() > 2) {
+            authorDirectory = authorDirectory.substring(0, authorDirectory.length() - 1).trim();
+        }
+        return authorDirectory;
     }
+
+    @VisibleForTesting
+    @NonNull
+    String createFilename(@NonNull final Context context,
+                          @NonNull final Book book)
+            throws FileNotFoundException {
+        final String name = book.getPrimarySeries()
+                                .map(series -> series.getLabel(context) + " - ")
+                                .orElse("")
+                            + book.getTitle();
+
+        // Combine, and filter all other invalid characters for filenames
+        return FileUtils.buildValidFilename(name);
+    }
+
 
     /**
      * Send updates to the server.
@@ -1174,172 +1467,4 @@ public class CalibreContentServer {
         }
     }
 
-    /**
-     * Get the DocumentFile for the given book.
-     *
-     * @param context  Current context
-     * @param book     to get
-     * @param folder   where the files are
-     * @param creating set {@code true} when creating, set {@code false} for checking existence
-     */
-    @NonNull
-    DocumentFile getDocumentFile(@NonNull final Context context,
-                                 @NonNull final Book book,
-                                 @NonNull final Uri folder,
-                                 final boolean creating)
-            throws FileNotFoundException {
-
-        // we're not assuming ANYTHING....
-        final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
-        if (root == null) {
-            throw new FileNotFoundException(folder.toString());
-        }
-
-        final String authorDirectory = createAuthorDirectoryName(book);
-
-        // FIRST check if it exists
-        DocumentFile authorFolder = root.findFile(authorDirectory);
-        if (authorFolder == null) {
-            if (creating) {
-                authorFolder = root.createDirectory(authorDirectory);
-            }
-            if (authorFolder == null) {
-                throw new FileNotFoundException(authorDirectory);
-            }
-        }
-
-        final String fileName = createFilename(context, book);
-        final String fileExt = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-
-        // FIRST check if it exists using the format extension
-        DocumentFile bookFile = authorFolder.findFile(fileName + "." + fileExt);
-        if (bookFile == null) {
-            if (creating) {
-                // when creating, we must NOT directly use the extension,
-                // but deduce the mime type from the extension.
-                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt);
-                if (mimeType == null) {
-                    // shouldn't be needed, ... flw
-                    mimeType = "application/" + fileExt;
-                }
-                bookFile = authorFolder.createFile(mimeType, fileName);
-            }
-            if (bookFile == null) {
-                throw new FileNotFoundException(fileName);
-            }
-        }
-
-        return bookFile;
-    }
-
-    @VisibleForTesting
-    @NonNull
-    String createFilename(@NonNull final Context context,
-                          @NonNull final Book book)
-            throws FileNotFoundException {
-        String seriesPrefix = "";
-        final Series primarySeries = book.getPrimarySeries();
-        if (primarySeries != null) {
-            seriesPrefix = primarySeries.getLabel(context) + " - ";
-        }
-
-        // Combine, and filter all other invalid characters for filenames
-        return FileUtils.buildValidFilename(seriesPrefix + book.getTitle());
-    }
-
-    @VisibleForTesting
-    @NonNull
-    String createAuthorDirectoryName(@NonNull final Book book)
-            throws FileNotFoundException {
-        final Author primaryAuthor = book.getPrimaryAuthor();
-        if (primaryAuthor == null) {
-            // This should never happen... flw
-            throw new FileNotFoundException("primaryAuthor was null");
-        }
-
-        String authorDirectory = FileUtils.buildValidFilename(
-                primaryAuthor.getFormattedName(false));
-
-        // A little extra nastiness... if our name ends with a '.'
-        // then Android, in its infinite wisdom, will remove it
-        // If we escape it, Android will turn it into a '_'
-        // Hence, we remove it ourselves, so a subsequent findFile will work.
-        while (authorDirectory.endsWith(".") && authorDirectory.length() > 2) {
-            authorDirectory = authorDirectory.substring(0, authorDirectory.length() - 1).trim();
-        }
-        return authorDirectory;
-    }
-
-    /**
-     * Fetch the given url path content as a single string.
-     *
-     * @param path   the path to read
-     * @param buffer size for the read
-     *
-     * @return content
-     *
-     * @throws IOException on failures
-     */
-    @NonNull
-    private String fetch(@NonNull final String path,
-                         final int buffer)
-            throws IOException {
-
-        try (TerminatorConnection con = doGet(mServerUri + path)) {
-            try (InputStream is = con.getInputStream();
-                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                 BufferedReader reader = new BufferedReader(isr, buffer)) {
-
-                return reader.lines().collect(Collectors.joining());
-            }
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
-        }
-    }
-
-    /**
-     * Create the custom SSLContext if there is a custom CA file configured.
-     *
-     * @param ca the server CA
-     *
-     * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
-     *
-     * @throws CertificateException on failures related to a user installed CA.
-     */
-    @Nullable
-    private SSLContext getSslContext(@NonNull final X509Certificate ca)
-            throws CertificateException, SSLException {
-
-        try {
-            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry(SERVER_CA, ca);
-
-            final TrustManagerFactory tmf = TrustManagerFactory
-                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(keyStore);
-
-            final SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, tmf.getTrustManagers(), null);
-
-            return sslContext;
-
-        } catch (@NonNull final KeyStoreException | NoSuchAlgorithmException e) {
-            // As we're using defaults for the keystore type and trust algorithm,
-            // we should never get these 2... flw
-            throw new SSLException(e);
-
-        } catch (@NonNull final KeyManagementException e) {
-            // wrap for ease of handling; it is in fact almost certain that
-            // we would throw a CertificateException BEFORE we can even
-            // get a KeyManagementException
-            throw new CertificateException(e);
-
-        } catch (@NonNull final IOException ignore) {
-            // we are (have to) assuming that the server CA is loaded
-            // in the Android system keystore.
-            return null;
-        }
-    }
 }

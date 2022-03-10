@@ -49,6 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  */
 public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private DataReader<METADATA, RESULTS> mReader;
+
     /** <strong>What</strong> is going to be imported. */
     @NonNull
     private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
@@ -148,10 +152,18 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                    StorageException,
                    IOException {
 
-        try (DataReader<METADATA, RESULTS> reader = createReader(context)) {
-            final Optional<METADATA> metaData = reader.readMetaData(context);
+        try {
+            mReader = createReader(context);
+            final Optional<METADATA> metaData = mReader.readMetaData(context);
             mMetaData = metaData.orElse(null);
             return metaData;
+        } finally {
+            synchronized (this) {
+                if (mReader != null) {
+                    mReader.close();
+                    mReader = null;
+                }
+            }
         }
     }
 
@@ -175,8 +187,26 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
         SanityCheck.requireValue(mRecordTypes, "mRecordTypes");
 
-        try (DataReader<METADATA, RESULTS> reader = createReader(context)) {
-            return reader.read(context, progressListener);
+        try {
+            mReader = createReader(context);
+            return mReader.read(context, progressListener);
+        } finally {
+            synchronized (this) {
+                if (mReader != null) {
+                    mReader.close();
+                    mReader = null;
+                }
+            }
+        }
+    }
+
+    public void cancel(final int taskId) {
+        synchronized (this) {
+            if (mReader != null) {
+                if (mReader.cancel(taskId)) {
+                    mReader = null;
+                }
+            }
         }
     }
 
@@ -189,4 +219,5 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
                + ", mMetaData=" + mMetaData
                + '}';
     }
+
 }

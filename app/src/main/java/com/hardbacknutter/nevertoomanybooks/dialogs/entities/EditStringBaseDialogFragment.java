@@ -85,8 +85,7 @@ public abstract class EditStringBaseDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mOriginalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {

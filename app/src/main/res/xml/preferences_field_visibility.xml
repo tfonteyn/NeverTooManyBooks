@@ -24,7 +24,7 @@
      The list here must be kept in sync with {@link DBKey#UserSelectedDomain}
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory
+    <com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory
         android:icon="@drawable/ic_baseline_visibility_24"
         android:summary="@string/txt_manage_fields"
         android:title="@string/pg_ui_field_visibility">
@@ -223,5 +223,5 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_rating" />
-    </com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory>
+    </com.hardbacknutter.nevertoomanybooks.settings.widgets.ExtPreferenceCategory>
 </PreferenceScreen>

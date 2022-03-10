@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * Represents a Publisher.
  */
 public class Publisher
-        implements Entity, ReorderTitle, Mergeable {
+        implements ParcelableEntity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR = new Creator<>() {
@@ -131,16 +131,12 @@ public class Publisher
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        if (ReorderTitle.forDisplay(context)) {
-            // Using the locale here is overkill;  see #getLocale(..)
-            return reorder(context);
-        } else {
-            return mName;
-        }
+        // Using the locale here is overkill;  see #getLocale(..)
+        return getLabel(context, mName, () -> null);
     }
 
     /**
-     * Get the unformatted name.
+     * Get the <strong>unformatted</strong> name.
      *
      * @return the name
      */
@@ -158,12 +154,6 @@ public class Publisher
         mName = name;
     }
 
-    @Override
-    @NonNull
-    public String getTitle() {
-        return mName;
-    }
-
     /**
      * Replace local details from another publisher.
      *
@@ -177,6 +167,7 @@ public class Publisher
     @NonNull
     public Locale getLocale(@NonNull final Context context,
                             @NonNull final Locale bookLocale) {
+        //ENHANCE: The Publisher Locale should be based on the country where they are.
         return bookLocale;
     }
 

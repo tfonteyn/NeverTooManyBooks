@@ -46,7 +46,7 @@ public abstract class TocBaseAdapter
     /** Cached inflater. */
     protected final LayoutInflater mInflater;
     @NonNull
-    protected final List<AuthorWork> mTocList;
+    protected final List<AuthorWork> mAuthorWorkList;
     private final String mBookStr;
     private final Drawable mBookEntryIcon;
     private final String mMultipleBooksStr;
@@ -55,14 +55,14 @@ public abstract class TocBaseAdapter
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param tocList to show
+     * @param context        Current context
+     * @param authorWorkList to show
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public TocBaseAdapter(@NonNull final Context context,
-                          @NonNull final List<AuthorWork> tocList) {
+                          @NonNull final List<AuthorWork> authorWorkList) {
         mInflater = LayoutInflater.from(context);
-        mTocList = tocList;
+        mAuthorWorkList = authorWorkList;
 
         final Resources.Theme theme = context.getTheme();
         final Resources res = context.getResources();
@@ -77,21 +77,12 @@ public abstract class TocBaseAdapter
 
     protected void initTypeButton(@NonNull final ImageButton btnType,
                                   final int viewType) {
-        switch (viewType) {
-            case AuthorWork.TYPE_TOC: {
-                btnType.setImageDrawable(mTocEntryIcon);
-                btnType.setContentDescription(mMultipleBooksStr);
-                break;
-            }
-            case AuthorWork.TYPE_BOOK: {
-                btnType.setImageDrawable(mBookEntryIcon);
-                btnType.setContentDescription(mBookStr);
-                break;
-            }
-            default: {
-                // we should never get here... flw
-                break;
-            }
+        if (viewType == AuthorWork.Type.TocEntry.value) {
+            btnType.setImageDrawable(mTocEntryIcon);
+            btnType.setContentDescription(mMultipleBooksStr);
+        } else {
+            btnType.setImageDrawable(mBookEntryIcon);
+            btnType.setContentDescription(mBookStr);
         }
     }
 
@@ -101,30 +92,27 @@ public abstract class TocBaseAdapter
 
         final Context context = mInflater.getContext();
 
-        final AuthorWork work = mTocList.get(position);
+        final AuthorWork work = mAuthorWorkList.get(position);
 
-        // Show the icon if it's a TocEntry and appears in more than one book
-        // in our collection, or if this entry is a Book
-        final char workType = work.getWorkType();
-        if ((workType == AuthorWork.TYPE_TOC && work.getBookCount() > 1)
-            || (workType == AuthorWork.TYPE_BOOK)) {
-            holder.getIconBtnView().setVisibility(View.VISIBLE);
-        } else {
+        // No icon for TocEntry which appear in a single book
+        if (work.getWorkType() == AuthorWork.Type.TocEntry && work.getBookCount() <= 1) {
             holder.getIconBtnView().setVisibility(View.INVISIBLE);
+        } else {
+            holder.getIconBtnView().setVisibility(View.VISIBLE);
         }
 
         holder.getTitleView().setText(work.getLabel(context));
 
         final PartialDate date = work.getFirstPublicationDate();
-        if (date.isEmpty()) {
-            holder.getFirstPublicationView().setVisibility(View.GONE);
-        } else {
+        if (date.isPresent()) {
             // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
             // cut the date to just the year.
             final String fp = context.getString(R.string.brackets,
                                                 String.valueOf(date.getYearValue()));
             holder.getFirstPublicationView().setText(fp);
             holder.getFirstPublicationView().setVisibility(View.VISIBLE);
+        } else {
+            holder.getFirstPublicationView().setVisibility(View.GONE);
         }
 
         final TextView authorView = holder.getAuthorView();
@@ -138,20 +126,19 @@ public abstract class TocBaseAdapter
 
     @Override
     public int getItemViewType(final int position) {
-        final AuthorWork work = mTocList.get(position);
-        return work.getWorkType();
+        final AuthorWork work = mAuthorWorkList.get(position);
+        return work.getWorkType().value;
     }
 
     @Override
     public int getItemCount() {
-        return mTocList.size();
+        return mAuthorWorkList.size();
     }
 
     @NonNull
     @Override
     public String[] getPopupText(final int position) {
-        final String title = mTocList.get(position).getLabel(mInflater.getContext());
-        return new String[]{title};
+        return new String[]{mAuthorWorkList.get(position).getLabel(mInflater.getContext())};
     }
 
     public abstract static class TocHolder

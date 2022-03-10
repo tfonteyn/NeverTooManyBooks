@@ -115,7 +115,6 @@ public class SearchBookByExternalIdFragment
         mVb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
         mVb.btnSearch.setOnClickListener(v -> startSearch());
 
-        // soft-keyboards 'search' button act as a shortcut to start the search
         mVb.externalId.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 BaseActivity.hideKeyboard(v);

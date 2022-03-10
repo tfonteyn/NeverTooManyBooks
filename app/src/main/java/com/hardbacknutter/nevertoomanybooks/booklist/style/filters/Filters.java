@@ -207,6 +207,7 @@ public class Filters {
      *
      * @return summary text
      */
+    @NonNull
     public String getSummaryText(@NonNull final Context context,
                                  final boolean all) {
 

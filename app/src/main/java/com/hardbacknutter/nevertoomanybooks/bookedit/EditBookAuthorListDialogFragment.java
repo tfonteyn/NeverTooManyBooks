@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.bookedit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorList
 import com.hardbacknutter.nevertoomanybooks.dialogs.FFBaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -224,7 +226,7 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
-    private boolean saveChanges() {
+    protected boolean saveChanges() {
         if (!mVb.author.getText().toString().isEmpty()) {
             // Discarding applies to the edit field(s) only. The list itself is still saved.
             //noinspection ConstantConditions
@@ -248,8 +250,11 @@ public class EditBookAuthorListDialogFragment
      * @param modified the modifications the user made in a placeholder object.
      *                 Non-modified data was copied here as well.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void processChanges(@NonNull final Author original,
                                 @NonNull final Author modified) {
+
+        final Context context = getContext();
 
         // name not changed ?
         if (original.getFamilyName().equals(modified.getFamilyName())
@@ -262,7 +267,7 @@ public class EditBookAuthorListDialogFragment
                 // so if the type is different, just update it
                 original.setType(modified.getType());
                 //noinspection ConstantConditions
-                mVm.getBook().pruneAuthors(getContext(), true);
+                mVm.getBook().pruneAuthors(context, true);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -270,12 +275,12 @@ public class EditBookAuthorListDialogFragment
 
         // The name was modified. Check if it's used by any other books.
         //noinspection ConstantConditions
-        if (mVm.isSingleUsage(getContext(), original)) {
+        if (mVm.isSingleUsage(context, original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
-            mVm.getBook().pruneAuthors(getContext(), true);
+            mVm.getBook().pruneAuthors(context, true);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -283,11 +288,12 @@ public class EditBookAuthorListDialogFragment
         // At this point, we know the object was modified and it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         StandardDialogs.confirmScopeForChange(
-                getContext(), original, modified,
+                context, original.getLabel(context), modified.getLabel(context),
                 () -> changeForAllBooks(original, modified),
                 () -> changeForThisBook(original, modified));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForAllBooks(@NonNull final Author original,
                                    @NonNull final Author modified) {
         // This change is done in the database right NOW!
@@ -299,6 +305,7 @@ public class EditBookAuthorListDialogFragment
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void changeForThisBook(@NonNull final Author original,
                                    @NonNull final Author modified) {
         // treat the new data as a new Author; save it so we have a valid id.
@@ -420,16 +427,14 @@ public class EditBookAuthorListDialogFragment
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            final Bundle args = requireArguments();
-
             //noinspection ConstantConditions
             mVm = new ViewModelProvider(getActivity()).get(EditBookViewModel.class);
 
+            final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                                 "BKEY_REQUEST_KEY");
+                                                 BKEY_REQUEST_KEY);
             mAuthor = Objects.requireNonNull(args.getParcelable(DBKey.FK_AUTHOR),
-                                             "KEY_FK_AUTHOR");
-
+                                             DBKey.FK_AUTHOR);
             mBookTitle = args.getString(DBKey.KEY_TITLE);
 
             if (savedInstanceState == null) {
@@ -448,7 +453,6 @@ public class EditBookAuthorListDialogFragment
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             mVb = DialogEditBookAuthorBinding.bind(view);
-
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
@@ -493,7 +497,6 @@ public class EditBookAuthorListDialogFragment
 
                 if (mCurrentEdit.getType() == Author.TYPE_UNKNOWN) {
                     setTypeEnabled(false);
-
                 } else {
                     setTypeEnabled(true);
                     for (int i = 0; i < mTypeButtons.size(); i++) {
@@ -529,7 +532,7 @@ public class EditBookAuthorListDialogFragment
             return false;
         }
 
-        private boolean saveChanges() {
+        protected boolean saveChanges() {
             viewToModel();
 
             // basic check only, we're doing more extensive checks later on.
@@ -593,7 +596,7 @@ public class EditBookAuthorListDialogFragment
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
 
-            mFormatter = new AuthorFormatter(Author.Details.Full, false);
+            mFormatter = new AuthorFormatter(Details.Full, false);
         }
 
         @NonNull

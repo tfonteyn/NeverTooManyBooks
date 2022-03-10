@@ -38,7 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterViewModel;
 public class ExportViewModel
         extends DataWriterViewModel<ExportResults> {
 
-    private static final ArchiveEncoding[] ENCODINGS = {
+    /**
+     * The encodings we currently (fully or limited) support writing.
+     */
+    public static final ArchiveEncoding[] ENCODINGS = {
             ArchiveEncoding.Zip,
             ArchiveEncoding.Csv,
             ArchiveEncoding.Json,

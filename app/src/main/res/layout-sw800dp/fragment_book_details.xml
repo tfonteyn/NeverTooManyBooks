@@ -88,6 +88,7 @@
             android:id="@+id/lend_to"
             style="@style/Field.LendOutToBar"
             android:visibility="gone"
+            android:layout_marginStart="@dimen/field_margin_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"

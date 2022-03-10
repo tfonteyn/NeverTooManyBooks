@@ -31,8 +31,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -44,8 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -64,6 +62,7 @@ public class SearchBookUpdatesViewModel
     /** Log tag. */
     private static final String TAG = "SearchBookUpdatesViewModel";
     static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+    static final String BKEY_MODIFIED = TAG + ":m";
 
     /** Prefix to store the settings. */
     private static final String SYNC_PROCESSOR_PREFIX = "fields.update.usage.";
@@ -94,7 +93,7 @@ public class SearchBookUpdatesViewModel
 
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
-    private ArrayList<Long> mBookIdList;
+    private List<Long> mBookIdList;
 
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
@@ -363,13 +362,12 @@ public class SearchBookUpdatesViewModel
 
                     if (canSearch) {
                         // optional: whether this is used will depend on SearchEngine/Preferences
-                        final Publisher publisher = mCurrentBook.getPrimaryPublisher();
-                        if (publisher != null) {
+                        mCurrentBook.getPrimaryPublisher().ifPresent(publisher -> {
                             final String publisherName = publisher.getName();
                             if (!publisherName.isEmpty()) {
                                 setPublisherSearchText(publisherName);
                             }
-                        }
+                        });
 
                         // optional: whether this is used will depend on SearchEngine/Preferences
                         final boolean[] fetchCovers = new boolean[2];
@@ -473,7 +471,7 @@ public class SearchBookUpdatesViewModel
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
-            results.putBoolean(Entity.BKEY_DATA_MODIFIED, true);
+            results.putBoolean(BKEY_MODIFIED, true);
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {

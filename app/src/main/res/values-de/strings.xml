@@ -267,7 +267,7 @@
     <string name="lbl_level_collapse">Alles minimieren</string>
     <string name="lbl_level_expand">Alles ausklappen</string>
     <string name="lbl_level_reset">Bevorzugte Ausbaustufe</string>
-    <string name="lbl_local_search">Erweiterte lokale Suche</string>
+    <string name="lbl_local_search_long">Erweiterte lokale Suche</string>
     <string name="lbl_location_long">Standort des Buches</string>
     <string name="lbl_location">Standort</string>
     <string name="lbl_month">Monat</string>
@@ -491,12 +491,12 @@
     <string name="style_builtin_update_date">Änderungsdatum</string>
     <string name="style_is_builtin">Eingebaut</string>
     <string name="style_is_user_defined">Benutzerdefiniert</string>
-    <string name="lbl_alternative_editions">Alt. Editionen</string>
-    <string name="lbl_toc">Inhalt</string>
-    <string name="lbl_details">Details</string>
-    <string name="lbl_ext_id">Externe ID</string>
-    <string name="lbl_notes">Notizen</string>
-    <string name="lbl_publication_tab">Veröffentlichung</string>
+    <string name="lbl_tab_alternative_editions">Alt. Editionen</string>
+    <string name="lbl_tab_table_of_content">Inhalt</string>
+    <string name="lbl_tab_details">Details</string>
+    <string name="lbl_tab_lbl_ext_id">Externe ID</string>
+    <string name="lbl_tab_notes">Notizen</string>
+    <string name="lbl_tab_publication">Veröffentlichung</string>
     <string name="tip_authors_book_may_appear_more_than_once">Ein Buch kann mehrfach in einer Liste erscheinen, wenn es bei jedem Autor angezeigt wird. In diesem Fall führt das Löschen eines Buchs zum Löschen aller Vorkommen von der Liste.</string>
     <string name="tip_authors_works_book">Buch.</string>
     <string name="tip_authors_works_multiple_books">Eintrag ist in mehreren Büchern vorhanden.</string>

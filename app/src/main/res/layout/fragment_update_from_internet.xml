@@ -19,40 +19,37 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/TopNestedScroller"
+    style="@style/TopCentered"
     tools:context=".FragmentHostActivity"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        style="@style/TopCentered">
+    <TextView
+        android:id="@+id/header"
+        style="@style/Text.Body"
+        android:text="@string/txt_select_fields_to_update"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
-        <TextView
-            android:id="@+id/select_fields_blurb"
-            style="@style/Text.Body"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:text="@string/txt_select_fields_to_update"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/field_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/container_margin"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        tools:itemCount="10"
+        tools:listitem="@layout/row_update_from_internet"
+        />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/field_list"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/container_margin"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/select_fields_blurb"
-            tools:itemCount="10"
-            tools:listitem="@layout/row_update_from_internet"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

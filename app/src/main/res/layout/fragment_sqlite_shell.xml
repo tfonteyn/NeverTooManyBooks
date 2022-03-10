@@ -37,6 +37,7 @@
             android:hint="@string/lbl_sql_query"
             android:inputType="text|textMultiLine"
             android:minHeight="48dp"
+            android:imeOptions="actionGo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

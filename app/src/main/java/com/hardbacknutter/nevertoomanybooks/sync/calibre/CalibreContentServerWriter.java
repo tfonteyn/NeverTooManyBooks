@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.net.ssl.SSLException;
 
@@ -267,29 +268,24 @@ public class CalibreContentServerWriter
         }
         changes.put(CalibreBook.AUTHOR_ARRAY, authors);
 
-        final Series series = localBook.getPrimarySeries();
-        if (series != null) {
-            changes.put(CalibreBook.SERIES, series.getTitle());
+        final Optional<Series> optSeries = localBook.getPrimarySeries();
+
+        final String seriesTitle = optSeries.map(Series::getTitle).orElse("");
+        // Calibre can only accept Floats; send '1' on any error, as that is the Calibre default
+        float number = 1;
+        if (optSeries.isPresent()) {
             try {
-                // Calibre can only accept Floats
-                final float number = Float.parseFloat(series.getNumber());
-                changes.put(CalibreBook.SERIES_INDEX, number);
+                number = Float.parseFloat(optSeries.get().getNumber());
             } catch (@NonNull final NumberFormatException ignore) {
-                // send '1' as that is the Calibre default
-                changes.put(CalibreBook.SERIES_INDEX, 1);
             }
-        } else {
-            changes.put(CalibreBook.SERIES, "");
-            // send '1' as that is the Calibre default
-            changes.put(CalibreBook.SERIES_INDEX, 1);
         }
 
-        final Publisher publisher = localBook.getPrimaryPublisher();
-        if (publisher != null) {
-            changes.put(CalibreBook.PUBLISHER, publisher.getName());
-        } else {
-            changes.put(CalibreBook.PUBLISHER, "");
-        }
+        changes.put(CalibreBook.SERIES, seriesTitle);
+        changes.put(CalibreBook.SERIES_INDEX, number);
+
+        changes.put(CalibreBook.PUBLISHER, localBook.getPrimaryPublisher()
+                                                    .map(Publisher::getName)
+                                                    .orElse(""));
 
         changes.put(CalibreBook.RATING, (int) localBook.getFloat(DBKey.KEY_RATING));
 

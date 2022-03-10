@@ -64,7 +64,7 @@ public class EditTocEntryDialogFragment
 
     private ExtArrayAdapter<String> mAuthorAdapter;
 
-    /** The TocEntry we're editing. */
+    /** The one we're editing. */
     private TocEntry mTocEntry;
 
     /** Current edit. */
@@ -89,10 +89,9 @@ public class EditTocEntryDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBKey.KEY_TITLE);
-        mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), "BKEY_TOC_ENTRY");
+        mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), BKEY_TOC_ENTRY);
 
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();
@@ -121,9 +120,10 @@ public class EditTocEntryDialogFragment
         mVb.toolbar.setSubtitle(mBookTitle);
 
         mVb.title.setText(mTitle);
-        if (!mFirstPublicationDate.isEmpty()) {
-            mVb.firstPublication.setText(String.valueOf(mFirstPublicationDate.getYearValue()));
-        }
+
+        mFirstPublicationDate.ifPresent(date ->
+                                                mVb.firstPublication.setText(
+                                                        String.valueOf(date.getYearValue())));
 
         updateMultiAuthor(mHasMultipleAuthors);
         mVb.cbxIsAnthology.setOnCheckedChangeListener(
