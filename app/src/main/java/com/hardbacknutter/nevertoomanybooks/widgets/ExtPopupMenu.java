@@ -159,7 +159,7 @@ public class ExtPopupMenu {
 
     /**
      * @return a {@link MenuInflater} that can be used to inflate menu items
-     * from XML into the menu returned by {@link #getMenu()}
+     *         from XML into the menu returned by {@link #getMenu()}
      *
      * @see #getMenu()
      */
@@ -208,39 +208,49 @@ public class ExtPopupMenu {
 
         initAdapter(anchor.getContext(), listener);
 
-        // So why are we doing the measuring and setting width/height manually?
-        // (androids internals... to remind myself)
-        //
-        // The PopupWindow is set to LayoutParams.WRAP_CONTENT / LayoutParams.WRAP_CONTENT
-        // and this fails to work reliably.
-        // Setting it to MATCH works as expected due to the Android *explicitly* checking for it.
-        //
-        // The real width/height is dynamic due to the RecyclerView.
-        // but we need an absolute value for PopupWindow#findDropDownPosition which calls
-        // PopupWindow#tryFitVertical + PopupWindow#tryFitHorizontal.
-        //
-        // The latter try to determine the absolute position of the window versus the anchor.
-        // i.e. as requested under the anchor, or if not enough space, above the anchor.
-        //
-        // PopupWindow lines 1414 is where things start to go wrong.
-        // 'p' is initialized to the original width/height -> WRAP_CONTENT
-        // instead of the ACTUAL width/height....
-        // line 2427 states:
-        //         // WRAP_CONTENT case. findDropDownPosition will have resolved this to
-        //        // absolute values, but we don't want to update mWidth/mHeight to these
-        //        // absolute values.
-        // Reality: no it does not... it just uses mWidth/mHeight *AS-IS*. i.e. wrap -> "-2"
-        // and so it does its calculations using the absolute value of -2... oops...
-
-        // a more or less accurate way of setting the width/height...
-        final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        final View contentView = mPopupWindow.getContentView();
-        contentView.measure(spec, spec);
-
-        mPopupWindow.setHeight(contentView.getMeasuredHeight() + mPaddingBottom);
-        mPopupWindow.setWidth(contentView.getMeasuredWidth());
+        final int[] wh = calculatePopupWindowWidthAndHeight();
+        mPopupWindow.setWidth(wh[0]);
+        mPopupWindow.setHeight(wh[1]);
         // preferred location: halfway on top of the anchor, and indented by mXOffset
         mPopupWindow.showAsDropDown(anchor, mXOffset, -anchor.getHeight() / 2);
+    }
+
+    /**
+     * A more or less accurate way of setting the width/height...
+     * <p>
+     * So why are we doing the measuring and setting width/height manually?
+     * (androids internals... to remind myself)
+     * <p>
+     * The PopupWindow is set to LayoutParams.WRAP_CONTENT / LayoutParams.WRAP_CONTENT
+     * and this fails to work reliably.
+     * Setting it to MATCH works as expected due to the Android *explicitly* checking for it.
+     * <p>
+     * The real width/height is dynamic due to the RecyclerView.
+     * but we need an absolute value for PopupWindow#findDropDownPosition which calls
+     * PopupWindow#tryFitVertical + PopupWindow#tryFitHorizontal.
+     * <p>
+     * The latter try to determine the absolute position of the window versus the anchor.
+     * i.e. as requested under the anchor, or if not enough space, above the anchor.
+     * <p>
+     * PopupWindow lines 1414 is where things start to go wrong.
+     * 'p' is initialized to the original width/height -> WRAP_CONTENT
+     * instead of the ACTUAL width/height....
+     * line 2427 states:
+     * <pre>
+     * // WRAP_CONTENT case. findDropDownPosition will have resolved
+     * // this to absolute values, but we don't want to update
+     * // mWidth/mHeight to these absolute values.
+     * </pre>
+     * Reality: no it does not... it just uses mWidth/mHeight *AS-IS*. i.e. wrap -> "-2"
+     * and so it does its calculations using the absolute value of -2... oops...
+     *
+     * @return int[0] width, int[1] height
+     */
+    private int[] calculatePopupWindowWidthAndHeight() {
+        final View contentView = mPopupWindow.getContentView();
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        return new int[]{contentView.getMeasuredWidth(),
+                         contentView.getMeasuredHeight() + mPaddingBottom};
     }
 
     /**
@@ -289,7 +299,7 @@ public class ExtPopupMenu {
          * @param item the menu item that was clicked
          *
          * @return {@code true} if the event was handled, {@code false}
-         * otherwise
+         *         otherwise
          */
         @SuppressWarnings("UnusedReturnValue")
         boolean onMenuItemClick(@NonNull MenuItem item);
@@ -438,6 +448,10 @@ public class ExtPopupMenu {
                     mVb.title.setVisibility(View.VISIBLE);
                     setMenu(item.getSubMenu());
                     notifyDataSetChanged();
+
+                    final int[] wh = calculatePopupWindowWidthAndHeight();
+                    mPopupWindow.update(wh[0], wh[1]);
+
                 } else {
                     mPopupWindow.dismiss();
                     mListener.onMenuItemClick(item);
