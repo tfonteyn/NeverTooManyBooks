@@ -24,11 +24,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
- * Stores and retrieves data from a TextView.
+ * Handles a {@link TextView}.
  * <p>
  * The actual value is simply stored in a local variable.
  * No attempt to extract is done.
@@ -77,7 +79,7 @@ public class TextViewAccessor<T>
                 } catch (@NonNull final ClassCastException e) {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
-                    // See {@link BookCursor} class docs.
+                    // See {@link TypedCursor} class docs.
                     // Also see {@link SearchCoordinator#accumulateStringData}
                     Logger.error(TAG, e, value);
                 }
@@ -86,5 +88,20 @@ public class TextViewAccessor<T>
             // No formatter, or ClassCastException.
             view.setText(mRawValue != null ? String.valueOf(mRawValue) : "");
         }
+    }
+
+    @Override
+    public boolean isChanged() {
+        // We don't know the type of the value
+        final T value = getValue();
+        if (isEmpty(mInitialValue) && isEmpty(value)) {
+            return false;
+        }
+        return !Objects.equals(mInitialValue, value);
+    }
+
+    public boolean isEmpty() {
+        // We don't know the type of the value
+        return isEmpty(getValue());
     }
 }

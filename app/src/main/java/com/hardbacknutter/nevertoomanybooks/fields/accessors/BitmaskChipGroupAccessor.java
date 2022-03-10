@@ -60,8 +60,7 @@ public class BitmaskChipGroupAccessor
      * @param supplier   for a Map with all <strong>possible</strong> values
      * @param isEditable flag
      */
-    public BitmaskChipGroupAccessor(@NonNull final Function<Context, Map<Integer, String>>
-                                            supplier,
+    public BitmaskChipGroupAccessor(@NonNull final Function<Context, Map<Integer, String>> supplier,
                                     final boolean isEditable) {
         mValuesSupplier = supplier;
         mIsEditable = isEditable;
@@ -139,7 +138,16 @@ public class BitmaskChipGroupAccessor
     }
 
     @Override
+    public boolean isChanged() {
+        final Integer value = getValue();
+        if ((mInitialValue == null || mInitialValue == 0) && value == 0) {
+            return false;
+        }
+        return !value.equals(mInitialValue);
+    }
+
+    @Override
     public boolean isEmpty() {
-        return mRawValue == null || mRawValue == 0;
+        return getValue() == 0;
     }
 }

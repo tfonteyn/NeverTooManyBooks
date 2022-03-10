@@ -39,20 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </ul>
  * <p>
  * NOT covered is {@code CheckedTextView extends TextView}'
- *
- * <pre>
- *     {@code
- *             <CheckBox
- *             android:id="@+id/cbx_read"
- *             android:layout_width="0dp"
- *             android:layout_height="wrap_content"
- *             android:text="@string/lbl_read"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/rating"
- *             tools:checked="true"
- *             />}
- * </pre>
  */
 public class CompoundButtonAccessor
         extends BaseFieldViewAccessor<Boolean, CompoundButton> {
@@ -99,6 +85,11 @@ public class CompoundButtonAccessor
     @Override
     public void getValue(@NonNull final DataManager target) {
         target.putBoolean(mField.getKey(), getValue());
+    }
+
+    @Override
+    public boolean isChanged() {
+        return (mInitialValue != null && mInitialValue) != getValue();
     }
 
     @Override

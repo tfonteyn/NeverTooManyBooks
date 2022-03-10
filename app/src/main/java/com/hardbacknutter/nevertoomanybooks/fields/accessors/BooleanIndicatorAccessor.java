@@ -28,9 +28,8 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * BooleanIndicatorAccessor accessor.
  * Ties a boolean value to visible/gone for a generic View.
- * If the View is {@link Checkable}, then it's kept visible and the value 'checked'.
+ * If the View is {@link Checkable}, then it's kept visible and the value (un)checked.
  * <p>
  * A {@code null} value is always handled as {@code false}.
  */
@@ -66,6 +65,11 @@ public class BooleanIndicatorAccessor
     @Override
     public void getValue(@NonNull final DataManager target) {
         target.putBoolean(mField.getKey(), getValue());
+    }
+
+    @Override
+    public boolean isChanged() {
+        return (mInitialValue != null && mInitialValue) != getValue();
     }
 
     @Override

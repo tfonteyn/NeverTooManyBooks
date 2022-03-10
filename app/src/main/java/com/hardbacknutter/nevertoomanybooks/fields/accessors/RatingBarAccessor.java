@@ -81,6 +81,15 @@ public class RatingBarAccessor
     }
 
     @Override
+    public boolean isChanged() {
+        final Float value = getValue();
+        if ((mInitialValue == null || mInitialValue == 0f) && value == 0f) {
+            return false;
+        }
+        return !value.equals(mInitialValue);
+    }
+
+    @Override
     public boolean isEmpty() {
         return getValue().equals(0f);
     }

@@ -20,19 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.view.View;
-import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Handles interactions between the value and the View (with optional {@link FieldFormatter}).
@@ -41,36 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * @param <V> type of Field View.
  */
 public interface FieldViewAccessor<T, V extends View> {
-
-    /**
-     * Check if the given value is considered to be 'empty'.
-     * The encapsulated type decides what 'empty' means.
-     * <p>
-     * This default implementation considers an Object to be empty if:
-     * <ul>
-     *      <li>{@code null}</li>
-     *      <li>{@code Money.isZero()}</li>
-     *      <li>{@code Number.doubleValue() == 0.0d}</li>
-     *      <li>{@code Boolean == false}</li>
-     *      <li>empty Collection</li>
-     *      <li>checkable not checked</li>
-     *      <li>{@code String.isEmpty()}</li>
-     * </ul>
-     * If the test can be optimized (i.e. if {@link #getValue} can be shortcut),
-     * then you should override {@link #isEmpty()}.
-     *
-     * @return {@code true} if empty.
-     */
-    static boolean isEmpty(@Nullable final Object o) {
-        //noinspection rawtypes
-        return o == null
-               || o instanceof Money && ((Money) o).isZero()
-               || o instanceof Number && ((Number) o).doubleValue() == 0.0d
-               || o instanceof Boolean && !(Boolean) o
-               || o instanceof Collection && ((Collection) o).isEmpty()
-               || o instanceof Checkable && !((Checkable) o).isChecked()
-               || o.toString().isEmpty();
-    }
 
     /**
      * Hook up the field.
@@ -149,7 +116,7 @@ public interface FieldViewAccessor<T, V extends View> {
 
     /**
      * Get the value from the view associated with the Field
-     * and put a <strong>native typed value</strong> in the passed collection.
+     * and put a <strong>native typed value</strong> in the passed {@link DataManager}.
      *
      * @param target Collection to save value into.
      */
@@ -169,13 +136,18 @@ public interface FieldViewAccessor<T, V extends View> {
     void setInitialValue(@NonNull DataManager source);
 
     /**
+     * Check if the current value is different from the initial value.
+     *
+     * @return {@code true} if different
+     */
+    boolean isChanged();
+
+    /**
      * Check if this field is considered to be 'empty'.
      *
      * @return {@code true} if empty.
      */
-    default boolean isEmpty() {
-        return isEmpty(getValue());
-    }
+    boolean isEmpty();
 
     /**
      * Convenience method to facilitate creating a non-empty {@link FieldValidator}.

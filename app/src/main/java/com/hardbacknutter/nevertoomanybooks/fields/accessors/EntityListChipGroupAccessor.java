@@ -35,19 +35,20 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
 
 /**
- * A {@link ChipGroup} where each {@link Chip} represents one {@link Entity} in a list.
+ * A {@link ChipGroup} where each {@link Chip} represents one {@link ParcelableEntity} in a list.
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
  * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
-public class EntityListChipGroupAccessor
-        extends BaseFieldViewAccessor<ArrayList<Entity>, ChipGroup> {
+public class EntityListChipGroupAccessor<T extends ParcelableEntity>
+        extends BaseFieldViewAccessor<ArrayList<T>, ChipGroup> {
 
-    private final Supplier<List<Entity>> mListSupplier;
+    @NonNull
+    private final Supplier<List<T>> mListSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
@@ -61,14 +62,15 @@ public class EntityListChipGroupAccessor
      * @param listSupplier for a list with all <strong>possible</strong> values
      * @param isEditable   flag
      */
-    public EntityListChipGroupAccessor(@NonNull final Supplier<List<Entity>> listSupplier,
+    public EntityListChipGroupAccessor(@NonNull final Supplier<List<T>> listSupplier,
                                        final boolean isEditable) {
         mListSupplier = listSupplier;
         mIsEditable = isEditable;
 
         if (mIsEditable) {
             mEditChipListener = view -> {
-                final Entity current = (Entity) view.getTag();
+                //noinspection unchecked
+                final T current = (T) view.getTag();
                 if (((Checkable) view).isChecked()) {
                     //noinspection ConstantConditions
                     mRawValue.add(current);
@@ -85,12 +87,12 @@ public class EntityListChipGroupAccessor
 
     @NonNull
     @Override
-    public ArrayList<Entity> getValue() {
+    public ArrayList<T> getValue() {
         return mRawValue != null ? mRawValue : new ArrayList<>();
     }
 
     @Override
-    public void setValue(@Nullable final ArrayList<Entity> value) {
+    public void setValue(@Nullable final ArrayList<T> value) {
         mRawValue = value != null ? value : new ArrayList<>();
 
         final ChipGroup chipGroup = getView();
@@ -99,7 +101,7 @@ public class EntityListChipGroupAccessor
             final Context context = chipGroup.getContext();
 
             // *all* values
-            for (final Entity entity : mListSupplier.get()) {
+            for (final T entity : mListSupplier.get()) {
                 final boolean isSet = mRawValue.contains(entity);
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {
@@ -136,7 +138,16 @@ public class EntityListChipGroupAccessor
     }
 
     @Override
+    public boolean isChanged() {
+        final ArrayList<T> value = getValue();
+        if ((mInitialValue == null || mInitialValue.isEmpty()) && value.isEmpty()) {
+            return false;
+        }
+        return !value.equals(mInitialValue);
+    }
+
+    @Override
     public boolean isEmpty() {
-        return mRawValue == null || mRawValue.isEmpty();
+        return getValue().isEmpty();
     }
 }

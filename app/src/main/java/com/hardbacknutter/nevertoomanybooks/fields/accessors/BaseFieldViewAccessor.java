@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.view.View;
+import android.widget.Checkable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,10 +29,12 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.fields.EditField;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * Base implementation.
@@ -42,8 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 public abstract class BaseFieldViewAccessor<T, V extends View>
         implements FieldViewAccessor<T, V> {
 
-    /** Allows callbacks to the Field. */
-    Field<T, V> mField;
+    /**
+     * The value as originally loaded from the database
+     * by {@link #setInitialValue(DataManager)}.
+     */
+    @Nullable
+    T mInitialValue;
 
     /**
      * The value which is currently held in memory.
@@ -56,22 +63,48 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
     @Nullable
     T mRawValue;
 
-    /**
-     * The value as originally loaded from the database
-     * by {@link #setInitialValue(DataManager)}.
-     */
-    @Nullable
-    private T mInitialValue;
+
+    /** Allows callbacks to the Field. */
+    Field<T, V> mField;
+
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<V> mViewReference;
+
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<View> mErrorViewReference;
 
-    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private String mErrorText;
+
+    /**
+     * Check if the given value is considered to be 'empty'.
+     * The encapsulated type decides what 'empty' means.
+     * <p>
+     * An Object is considered to be empty if:
+     * <ul>
+     *      <li>{@code null}</li>
+     *      <li>{@code Money.isZero()}</li>
+     *      <li>{@code Number.doubleValue() == 0.0d}</li>
+     *      <li>{@code Boolean == false}</li>
+     *      <li>{@code Collection.isEmpty}</li>
+     *      <li>{@code !Checkable.isChecked()}</li>
+     *      <li>{@code String.isEmpty()}</li>
+     * </ul>
+     *
+     * @return {@code true} if empty.
+     */
+    public static boolean isEmpty(@Nullable final Object o) {
+        //noinspection rawtypes
+        return o == null
+               || o instanceof Money && ((Money) o).isZero()
+               || o instanceof Number && ((Number) o).doubleValue() == 0.0d
+               || o instanceof Boolean && !(Boolean) o
+               || o instanceof Collection && ((Collection) o).isEmpty()
+               || o instanceof Checkable && !((Checkable) o).isChecked()
+               || o.toString().isEmpty();
+    }
 
     @Override
     public void setField(@NonNull final Field<T, V> field) {
@@ -97,6 +130,7 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
     public void setErrorView(@Nullable final View errorView) {
         if (errorView != null) {
             mErrorViewReference = new WeakReference<>(errorView);
+            // Restore any previous error text
             if (mErrorText != null) {
                 setError(mErrorText);
             }
@@ -126,6 +160,8 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
                 } else if (errorView instanceof TextView) {
                     final TextView textView = (TextView) errorView;
                     textView.setError(errorText);
+                } else {
+                    throw new IllegalStateException("Wrong view type: " + errorView);
                 }
             }
         }
@@ -136,34 +172,26 @@ public abstract class BaseFieldViewAccessor<T, V extends View>
         setValue(value);
     }
 
-    public boolean isChanged() {
-        // an initial null/empty value, and a current empty value is considered no-change.
-        final T currentValue = getValue();
-        if (FieldViewAccessor.isEmpty(mInitialValue) && this.isEmpty()) {
-            return false;
-        }
-        return !Objects.equals(mInitialValue, currentValue);
-    }
-
     /**
      * Call back to the field letting it know the value was changed.
      * <p>
      * FIXME: "initial" -(1)-> "new" -(2)-> "initial"; step (1) is broadcast; step (2) is NOT !
      */
     void broadcastChange() {
-        if (isChanged()) {
-            mField.onChanged();
+        if (isChanged() && mField instanceof EditField) {
+            ((EditField<T, V>) (mField)).onChanged();
         }
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "BaseFieldViewAccessor{" +
-               mField.getKey() +
-               ": mInitialValue=" + mInitialValue +
-               ", mRawValue=" + mRawValue +
-               ", mCurrentValue=" + getValue() +
-               '}';
+        return "BaseFieldViewAccessor{"
+               + "mField=`" + mField.getKey() + "`"
+               + ": mInitialValue=`" + mInitialValue + "`"
+               + ", mRawValue=`" + mRawValue + "`"
+               + ", mCurrentValue=`" + getValue() + "`"
+               + ", mErrorText=`" + mErrorText + "`"
+               + '}';
     }
 }

@@ -35,28 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  * The value is expected to be the list position.
  * <p>
  * A {@code null} value is always handled as {@code 0}.
- *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_condition"
- *             style="@style/ExposedDropdownMenu.Dense"
- *             android:hint="@string/lbl_condition"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
- *             >
- *
- *             <com.google.android.material.textfield.MaterialAutoCompleteTextView
- *                 android:id="@+id/condition"
- *                 android:layout_width="match_parent"
- *                 android:layout_height="wrap_content"
- *                 android:inputType="none"
- *                 tools:ignore="LabelFor"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
  */
 public class ExposedDropDownMenuAccessor
         extends BaseFieldViewAccessor<Integer, AutoCompleteTextView> {
@@ -126,6 +104,11 @@ public class ExposedDropDownMenuAccessor
     @Override
     public void getValue(@NonNull final DataManager target) {
         target.putInt(mField.getKey(), getValue());
+    }
+
+    @Override
+    public boolean isChanged() {
+        return !getValue().equals(mInitialValue);
     }
 
     @Override

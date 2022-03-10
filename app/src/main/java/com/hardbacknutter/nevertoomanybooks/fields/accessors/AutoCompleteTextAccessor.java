@@ -24,6 +24,7 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
@@ -31,12 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 
 /**
- * The value is the text of the AutoCompleteTextView.
+ * The value is the text of the {@link AutoCompleteTextView}.
  * <p>
  * A {@code null} value is always handled as {@code ""}.
  */
 public class AutoCompleteTextAccessor
-        extends BaseEditTextAccessor<String, AutoCompleteTextView> {
+        extends EditTextAccessor<String, AutoCompleteTextView> {
 
     /** The list for the adapter. */
     @NonNull
@@ -48,7 +49,6 @@ public class AutoCompleteTextAccessor
      * @param listSupplier Supplier with auto complete values
      */
     public AutoCompleteTextAccessor(@NonNull final Supplier<List<String>> listSupplier) {
-        super(null, false);
         mListSupplier = listSupplier;
     }
 
@@ -70,5 +70,20 @@ public class AutoCompleteTextAccessor
     public void setView(@NonNull final AutoCompleteTextView view) {
         super.setView(view);
         view.setAdapter(new FieldArrayAdapter(view.getContext(), mListSupplier.get(), mFormatter));
+    }
+
+    @Override
+    public boolean isChanged() {
+        final String value = getValue();
+        if ((mInitialValue == null || mInitialValue.isEmpty())
+            && (value == null || value.isEmpty())) {
+            return false;
+        }
+        return !Objects.equals(mInitialValue, value);
+    }
+
+    public boolean isEmpty() {
+        final String value = getValue();
+        return value == null || value.isEmpty();
     }
 }

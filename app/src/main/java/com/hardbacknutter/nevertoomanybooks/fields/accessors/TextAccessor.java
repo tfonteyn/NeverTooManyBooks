@@ -29,6 +29,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
  * Base implementation for {@link TextViewAccessor} and {@link EditTextAccessor}.
+ * <p>
+ * Supports an optional {@link FieldFormatter}.
  *
  * @param <T> type of Field value. Usually just String, but any type supported by the
  *            {@link DataManager} should work (if not -> bug).
