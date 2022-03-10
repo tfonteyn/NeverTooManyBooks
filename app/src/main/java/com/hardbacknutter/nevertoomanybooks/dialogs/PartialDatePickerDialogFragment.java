@@ -141,8 +141,7 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
-                                             "BKEY_REQUEST_KEY");
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY), BKEY_REQUEST_KEY);
         mDialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
