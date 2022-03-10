@@ -142,6 +142,7 @@ public class TextScale {
      *
      * @return summary text
      */
+    @NonNull
     public String getSummaryText(@NonNull final Context context) {
         return context.getResources().getStringArray(R.array.pe_bob_text_scale)[mScale.getValue()];
     }
