@@ -106,7 +106,8 @@ public final class FastScroller {
          * @param position to use
          *
          * @return an array with the lines. The length of the array is variable.
-         * <strong>CAN RETURN {@code null}</strong>
+         * The array itself <strong>CAN BE {@code null}</strong>.
+         * and individual lines in the array <strong>CAN BE {@code null}</strong>.
          */
         @Nullable
         String[] getPopupText(int position);
