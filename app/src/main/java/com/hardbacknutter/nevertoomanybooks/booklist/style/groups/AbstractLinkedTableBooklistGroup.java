@@ -45,7 +45,7 @@ public abstract class AbstractLinkedTableBooklistGroup
     @NonNull
     private final PBoolean mUnderEach;
 
-    AbstractLinkedTableBooklistGroup(final int id,
+    AbstractLinkedTableBooklistGroup(@Id final int id,
                                      final boolean isPersistent,
                                      @NonNull final ListStyle style,
                                      @NonNull final String pkUnderEach) {
@@ -64,10 +64,11 @@ public abstract class AbstractLinkedTableBooklistGroup
         mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, group.mUnderEach);
     }
 
+    @NonNull
     protected abstract DomainExpression createDisplayDomain();
 
-    @NonNull
     @Override
+    @NonNull
     public DomainExpression getDisplayDomain() {
         return mDisplayDomain;
     }
@@ -81,9 +82,9 @@ public abstract class AbstractLinkedTableBooklistGroup
         return mUnderEach.isTrue();
     }
 
-    @NonNull
     @Override
     @CallSuper
+    @NonNull
     public Map<String, PPref<?>> getRawPreferences() {
         final Map<String, PPref<?>> map = super.getRawPreferences();
         map.put(mUnderEach.getKey(), mUnderEach);
