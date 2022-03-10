@@ -234,6 +234,7 @@ public final class BuiltinStyle
         return ID_UUID[id];
     }
 
+    @NonNull
     public static BuiltinStyle createFromDatabase(@NonNull final Context context,
                                                   @NonNull final DataHolder rowData) {
 
@@ -435,8 +436,8 @@ public final class BuiltinStyle
         return style;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public String getTypeDescription(@NonNull final Context context) {
         return context.getString(R.string.style_is_builtin);
     }
