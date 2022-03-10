@@ -73,7 +73,8 @@ public final class HttpUtils {
     }
 
     /**
-     * Implicitly connect (if not already done so) and check the response code.
+     * If already connected, simply check the response code.
+     * Otherwise implicitly connect by getting the response code.
      *
      * @param request   to check
      * @param siteResId site identifier
