@@ -129,6 +129,7 @@ public class ListScreenBookFields
      *
      * @return summary text
      */
+    @NonNull
     public String getCoverScaleSummaryText(@NonNull final Context context) {
         final int scale = getCoverScale();
         return context.getResources().getStringArray(R.array.pe_bob_thumbnail_scale)[scale];
@@ -188,6 +189,7 @@ public class ListScreenBookFields
      *
      * @return summary text
      */
+    @NonNull
     public String getSummaryText(@NonNull final Context context) {
         final List<String> labels = getLabels(context);
         if (labels.isEmpty()) {
