@@ -57,7 +57,7 @@ public class CalibreContentServerTest {
 
         book.putString(DBKey.KEY_TITLE, "Rama");
 
-        final String dir = server.createAuthorDirectoryName(book);
+        final String dir = server.createAuthorDirectoryName(context, book);
         assertEquals("Clarke, Arthur C", dir);
 
         String fileName = server.createFilename(context, book);
