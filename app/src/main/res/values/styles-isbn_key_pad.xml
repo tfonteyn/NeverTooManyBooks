@@ -47,6 +47,7 @@
 
     <style name="IsbnKeyPad.SearchButton">
         <item name="android:textAppearance">?attr/textAppearanceButton</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:text">@android:string/search_go</item>
     </style>
 
