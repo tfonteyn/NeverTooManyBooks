@@ -751,7 +751,8 @@ public class TableDefinition {
     }
 
 //    /**
-//     * URGENT: the use of recreateAndReload is dangerous right now and can break updates.
+//     * The use of recreateAndReload is dangerous right now and can break updates.
+//     *
 //     * More specifically: the recreateAndReload routine can only be used ONCE per table.
 //     * We'll need to keep previous table definitions as BC used to do.
 //     * <p>
