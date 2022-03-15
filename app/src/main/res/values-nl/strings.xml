@@ -25,7 +25,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>
-    <string name="acra_resReportSendSuccessToast">Dank u!</string>
+    <string name="txt_thank_you">Dank u!</string>
     <string name="acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="action_add">Toevoegen</string>
     <string name="X_action_clear_credentials">Certificaatgegevens wissen</string>

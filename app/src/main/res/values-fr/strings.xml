@@ -28,7 +28,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
     <string name="acra_resDialogText">&APP_NAME; a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez «OK» pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>
-    <string name="acra_resReportSendSuccessToast">Merci !</string>
+    <string name="txt_thank_you">Merci !</string>
     <string name="acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="action_add">Ajouter</string>
     <string name="X_action_clear_credentials">Effacer les identifiants</string>

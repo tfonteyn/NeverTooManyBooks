@@ -38,7 +38,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
-    <string name="acra_resReportSendSuccessToast">Dziękuję Ci!</string>
+    <string name="txt_thank_you">Dziękuję Ci!</string>
     <string name="acra_resToastText">&APP_NAME; niespodziewanie się zawiesił. Pomóż nam ulepszyć aplikację, zgłaszając tę awarię.</string>
     <string name="and_others">%s …</string>
     <string name="book_color_full_color">Kolorowy</string>

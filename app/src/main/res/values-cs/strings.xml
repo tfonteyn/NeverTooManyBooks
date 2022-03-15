@@ -38,7 +38,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
     <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem „OK“ nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
-    <string name="acra_resReportSendSuccessToast">Děkujeme!</string>
+    <string name="txt_thank_you">Děkujeme!</string>
     <string name="acra_resToastText">Došlo k neočekávanému pádu aplikace &APP_NAME;. Prosím pomozte nám zlepšit aplikaci a informujte nás o tomto problému.</string>
     <string name="and_others">%s …</string>
     <string name="book_color_full_color">Barevný</string>

@@ -38,7 +38,7 @@
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
-    <string name="acra_resReportSendSuccessToast">¡Muchas gracias!</string>
+    <string name="txt_thank_you">¡Muchas gracias!</string>
     <string name="acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="and_others">%s …</string>
     <string name="book_color_full_color">De colores</string>
