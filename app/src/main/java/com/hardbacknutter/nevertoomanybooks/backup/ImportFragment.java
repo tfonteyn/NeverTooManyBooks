@@ -348,6 +348,7 @@ public class ImportFragment
 
     private void onMetaDataRead(@NonNull final LiveDataEvent<TaskResult<
             Optional<ArchiveMetaData>>> message) {
+        closeProgressDialog();
         message.getData().flatMap(TaskResult::requireResult).ifPresent(this::showMetaData);
     }
 
