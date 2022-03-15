@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
+import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
@@ -256,7 +257,7 @@ public class CalibreContentServer {
         } else {
             final String password = global.getString(PK_HOST_PASS, "");
             //noinspection ConstantConditions
-            mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
+            mAuthHeader = createBasicAuthHeader(username, password);
         }
 
         // accommodate the (usually) self-signed CA certificate
@@ -369,6 +370,14 @@ public class CalibreContentServer {
             return (X509Certificate) CertificateFactory.getInstance("X.509")
                                                        .generateCertificate(is);
         }
+    }
+
+    @AnyThread
+    @NonNull
+    private String createBasicAuthHeader(@NonNull final String username,
+                                         @NonNull final String password) {
+        return "Basic " + Base64.encodeToString(
+                (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
     }
 
     /**
