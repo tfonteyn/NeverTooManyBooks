@@ -104,7 +104,6 @@ public class App
         final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
                 .withBuildConfigClass(BuildConfig.class)
                 .withReportFormat(StringFormat.JSON)
-                //.withReportSendSuccessToast(getString(R.string.acra_resReportSendSuccessToast))
                 .withReportSendFailureToast(getString(R.string.error_email_failed))
                 .withApplicationLogFileDir(Directory.FILES)
                 .withApplicationLogFile(APPLICATION_LOG_FILE)
