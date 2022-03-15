@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -75,12 +74,12 @@ public class DbArchiveReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws IOException           on failure to copy the database file
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on failure to copy the database file
      */
     public DbArchiveReader(@NonNull final Context context,
                            @NonNull final ImportHelper helper)
-            throws CoverStorageException, IOException {
+            throws StorageException, IOException {
 
         mHelper = helper;
 
@@ -100,7 +99,8 @@ public class DbArchiveReader
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws DataReaderException, FileNotFoundException {
+            throws DataReaderException,
+                   FileNotFoundException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -121,8 +121,10 @@ public class DbArchiveReader
     @WorkerThread
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws IOException, DataReaderException,
-                   StorageException {
+            throws DataReaderException,
+                   CredentialsException,
+                   StorageException,
+                   IOException {
         if (mDelegateDataReader != null) {
             return mDelegateDataReader.readMetaData(context);
         } else {
@@ -136,8 +138,10 @@ public class DbArchiveReader
     @NonNull
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws DataReaderException, IOException,
-                   StorageException, CredentialsException {
+            throws DataReaderException,
+                   CredentialsException,
+                   StorageException,
+                   IOException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateDataReader == null) {

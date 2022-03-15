@@ -62,6 +62,10 @@ public class TestProgressListener
     }
 
     @Override
+    public void cancel() {
+    }
+
+    @Override
     public boolean isCancelled() {
         return false;
     }

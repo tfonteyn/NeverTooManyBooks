@@ -53,6 +53,12 @@ public class HttpStatusException
     @StringRes
     private final int mSiteResId;
 
+    /**
+     * @param siteResId     the site string res; which will be embedded in a default user message
+     * @param statusCode    the original status code from the HTTP request
+     * @param statusMessage the original status message from the HTTP request
+     * @param url           (optional) The full url, for debugging
+     */
     HttpStatusException(@StringRes final int siteResId,
                         final int statusCode,
                         @NonNull final String statusMessage,

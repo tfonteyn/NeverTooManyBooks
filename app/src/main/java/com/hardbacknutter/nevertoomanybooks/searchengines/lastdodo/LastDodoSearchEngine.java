@@ -50,9 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
@@ -109,7 +108,7 @@ public class LastDodoSearchEngine
     public Bundle searchByExternalId(@NonNull final Context context,
                                      @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -126,7 +125,7 @@ public class LastDodoSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -154,7 +153,7 @@ public class LastDodoSearchEngine
                                   @NonNull final Document document,
                                   @NonNull final boolean[] fetchCovers,
                                   @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // Grab the first search result, and redirect to that page
         final Element section = document.selectFirst("div.cw-lot_content");
@@ -175,7 +174,7 @@ public class LastDodoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
         super.parse(context, document, fetchCovers, bookData);
 
         //noinspection NonConstantStringShouldBeStringBuffer
@@ -349,7 +348,7 @@ public class LastDodoSearchEngine
                              @Nullable final String isbn,
                              @NonNull final boolean[] fetchCovers,
                              @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         final Element images = document.getElementById("images_container");
         if (images != null) {
             final Elements aas = images.select("a");

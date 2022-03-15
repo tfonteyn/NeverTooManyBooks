@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 /**
  * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/ParcelMock.java">ParcelMock</a>
  */
-@SuppressWarnings("ReturnOfNull")
 public final class ParcelMock {
 
     private ParcelMock() {

@@ -68,10 +68,23 @@ public final class Prefs {
 
 
     public static final String pk_suffix_host_url = ".host.url";
-    public static final String pk_suffix_timeout_connect = ".timeout.connect";
-    public static final String pk_suffix_timeout_read = ".timeout.read";
+
+    public static final String pk_suffix_timeout_connect_in_seconds = ".timeout.connect";
+    public static final String pk_suffix_timeout_read_in_seconds = ".timeout.read";
 
     private Prefs() {
+    }
+
+    public static int getTimeoutValueInMs(@NonNull final SharedPreferences preferences,
+                                          @NonNull final String key,
+                                          final int defValueInMs) {
+        final int seconds = preferences.getInt(key, 0);
+        // <1000 as sanity check for roque preference file imports
+        if (seconds > 0 && seconds < 1000) {
+            return seconds * 1000;
+        } else {
+            return defValueInMs;
+        }
     }
 
     /**

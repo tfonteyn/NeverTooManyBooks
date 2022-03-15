@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Parse one or more "Publication" records.
@@ -210,6 +209,10 @@ class IsfdbPublicationListHandler
 
     /**
      * Populate the results Bundle for each appropriate element.
+     *
+     * @throws SAXException with potentially embedded
+     *                      {@link EOFException}: NOT AN ERROR but means parsing is done here.
+     *                      {@link StorageException} as an error
      */
     @Override
     @CallSuper
@@ -358,7 +361,7 @@ class IsfdbPublicationListHandler
                                         SearchCoordinator.BKEY_FILE_SPEC_ARRAY[0], list);
 
                             }
-                        } catch (@NonNull final DiskFullException | CoverStorageException e) {
+                        } catch (@NonNull final StorageException e) {
                             throw new SAXException(e);
                         }
                     }

@@ -41,9 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -240,7 +237,7 @@ class GoogleBooksEntryHandler
     @NonNull
     private final Locale mLocale;
     @NonNull
-    private final SearchEngine mSearchEngine;
+    private final GoogleBooksSearchEngine mSearchEngine;
     private boolean mInSuggestedRetailPriceTag;
     private boolean mInRetailPriceTag;
 
@@ -251,7 +248,7 @@ class GoogleBooksEntryHandler
      * @param fetchCovers  Set to {@code true} if we want to get covers
      * @param bookData     Bundle to update <em>(passed in to allow mocking)</em>
      */
-    GoogleBooksEntryHandler(@NonNull final SearchEngine searchEngine,
+    GoogleBooksEntryHandler(@NonNull final GoogleBooksSearchEngine searchEngine,
                             @NonNull final boolean[] fetchCovers,
                             @NonNull final Bundle bookData,
                             @NonNull final Locale locale) {
@@ -298,9 +295,9 @@ class GoogleBooksEntryHandler
 
                 final String fileSpec;
                 try {
-                    fileSpec = mSearchEngine
-                            .saveImage(url, mBookData.getString(DBKey.KEY_ISBN), 0, null);
-                } catch (@NonNull final DiskFullException | CoverStorageException e) {
+                    fileSpec = mSearchEngine.saveImage(url, mBookData.getString(DBKey.KEY_ISBN),
+                                                       0, null);
+                } catch (@NonNull final StorageException e) {
                     throw new SAXException(e);
                 }
 

@@ -22,31 +22,48 @@ package com.hardbacknutter.nevertoomanybooks.searchengines;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class SearchEngineBase
         implements SearchEngine {
 
     @NonNull
     private final SearchEngineConfig mConfig;
+
+    /**
+     * Set by a client or from within the task.
+     * It's a <strong>request</strong> to cancel while running.
+     */
+    private final AtomicBoolean mCancelled = new AtomicBoolean();
+    @NonNull
+    private final ImageDownloader mImageDownloader;
     @Nullable
-    private Canceller mCaller;
-    private java.util.function.Supplier<Bundle> mBundleSupplier = Bundle::new;
+    private Cancellable mCaller;
+    @NonNull
+    private Supplier<Bundle> mBundleSupplier = Bundle::new;
 
     /**
      * Constructor.
@@ -55,6 +72,7 @@ public abstract class SearchEngineBase
      */
     public SearchEngineBase(@NonNull final SearchEngineConfig config) {
         mConfig = config;
+        mImageDownloader = new ImageDownloader(createFutureGetRequest());
     }
 
     /**
@@ -97,41 +115,17 @@ public abstract class SearchEngineBase
         }
     }
 
-    @SearchSites.EngineId
-    @Override
-    public int getId() {
-        return mConfig.getEngineId();
-    }
-
     @NonNull
     @Override
     public SearchEngineConfig getConfig() {
         return mConfig;
     }
 
-    @NonNull
-    @Override
-    public String getName(@NonNull final Context context) {
-        return context.getString(mConfig.getLabelId());
-    }
-
-    @NonNull
-    @Override
-    public String getSiteUrl() {
-        return mConfig.getHostUrl();
-    }
-
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return mConfig.getLocale();
-    }
-
     /**
      * Derive the Locale from the actual url.
      * <p>
      * Sites which support multiple countries, should overwrite {@link #getLocale(Context)} with
-     * {@code getLocale(context, getSiteUrl()); }
+     * {@code getLocale(context, getHostUrl()); }
      *
      * @param context Current context
      * @param baseUrl to digest
@@ -162,16 +156,28 @@ public abstract class SearchEngineBase
         }
     }
 
+
+    //FIXME: Potentially unsafe 'if != null then cancel'
+    @AnyThread
     @Override
-    public void setCaller(@Nullable final Canceller caller) {
+    public void cancel() {
+        mCancelled.set(true);
+        synchronized (mImageDownloader) {
+            mImageDownloader.cancel();
+        }
+    }
+
+    @Override
+    public void setCaller(@Nullable final Cancellable caller) {
         mCaller = caller;
+        mCancelled.set(false);
     }
 
     @Override
     public boolean isCancelled() {
         // mCaller being null should only happen when we check if we're cancelled
-        // before a task was started.
-        return mCaller == null || mCaller.isCancelled();
+        // before a search was started.
+        return mCancelled.get() || mCaller == null || mCaller.isCancelled();
     }
 
     @NonNull
@@ -185,8 +191,34 @@ public abstract class SearchEngineBase
      * @param bundleSupplier to provide new (mock) Bundle instances.
      */
     @VisibleForTesting
-    public void setBundleSupplier(final Supplier<Bundle> bundleSupplier) {
+    public void setBundleSupplier(@NonNull final Supplier<Bundle> bundleSupplier) {
         mBundleSupplier = bundleSupplier;
     }
 
+    /**
+     * Convenience method to save an image using the engines specific network configuration.
+     *
+     * @param url    Image file URL
+     * @param bookId more or less unique id; e.g. isbn or website native id, etc...
+     * @param cIdx   0..n image index
+     * @param size   (optional) size parameter for engines/sites which support one
+     *
+     * @return File fileSpec, or {@code null} on failure
+     *
+     * @throws StorageException The covers directory is not available
+     */
+    @WorkerThread
+    @Nullable
+    public String saveImage(@NonNull final String url,
+                            @Nullable final String bookId,
+                            @IntRange(from = 0, to = 1) final int cIdx,
+                            @Nullable final ImageFileInfo.Size size)
+            throws StorageException {
+
+        final File tmpFile = mImageDownloader.getTempFile(getConfig().getFilenameSuffix(),
+                                                          bookId, cIdx, size);
+        final File file = mImageDownloader.fetch(url, tmpFile);
+
+        return file != null ? file.getAbsolutePath() : null;
+    }
 }

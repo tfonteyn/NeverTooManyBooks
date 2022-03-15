@@ -112,12 +112,23 @@ public class StripInfoBePreferencesViewModel
         /** Log tag. */
         private static final String TAG = "StripInfoValidateConTask";
 
+        @Nullable
+        private StripInfoAuth mStripInfoAuth;
+
         ValidateConnectionTask() {
             super(R.id.TASK_ID_VALIDATE_CONNECTION, TAG);
         }
 
         void connect() {
             execute();
+        }
+
+        @Override
+        public void cancel() {
+            super.cancel();
+            if (mStripInfoAuth != null) {
+                mStripInfoAuth.cancel();
+            }
         }
 
         /**
@@ -133,13 +144,15 @@ public class StripInfoBePreferencesViewModel
         @Override
         protected Boolean doWork(@NonNull final Context context)
                 throws IOException, CredentialsException {
+
             publishProgress(0, context.getString(R.string.progress_msg_connecting));
             final String url = SearchEngineRegistry
                     .getInstance()
                     .getByEngineId(SearchSites.STRIP_INFO_BE)
                     .getHostUrl();
 
-            new StripInfoAuth(url).login();
+            mStripInfoAuth = new StripInfoAuth(url);
+            mStripInfoAuth.login();
 
             return true;
         }

@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,23 +42,23 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.XmlDumpParser;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
  * <a href="https://www.kb.nl/">Royal Library, The Netherlands.</a>
  * <p>
  * ENHANCE: implement the new KB url/page
+ * make sure to add KbNlBookHandler#cancel()
  */
 public class KbNlSearchEngine
         extends SearchEngineBase
@@ -125,33 +126,69 @@ public class KbNlSearchEngine
                 .build();
     }
 
+    @Nullable
+    private FutureHttpGet<Boolean> mFutureHttpGet;
+
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mFutureHttpGet != null) {
+                mFutureHttpGet.cancel();
+            }
+        }
+    }
+
     @NonNull
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws StorageException, SearchException, CredentialsException {
+            throws StorageException,
+                   SearchException,
+                   CredentialsException {
 
         ServiceLocator.getInstance().getCookieManager();
 
         final Bundle bookData = newBundleInstance();
+
+        mFutureHttpGet = createFutureGetRequest();
 
         final String url = getSiteUrl() + String.format(BOOK_URL, validIsbn);
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 //        final DefaultHandler handler = new KbNlBookHandler(bookData);
         final DefaultHandler handler = new XmlDumpParser();
-        try (TerminatorConnection con = createConnection(url)) {
-            // Don't follow redirects, so we get the XML instead of the rendered page
-            con.setInstanceFollowRedirects(false); //9020612476
 
+        try {
             final SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
+            mFutureHttpGet.get(url, con -> {
+                // Don't follow redirects, so we get the XML instead of the rendered page
+                con.setInstanceFollowRedirects(false); //9020612476
 
-        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
+                try {
+                    parser.parse(con.getInputStream(), handler);
+                    checkForSeriesNameInTitle(bookData);
+                    return true;
+
+                } catch (@NonNull final IOException e) {
+                    throw new UncheckedIOException(e);
+                } catch (@NonNull final SAXException e) {
+                    throw new UncheckedSAXException(e);
+                }
+            });
+
+        } catch (@NonNull final SAXException e) {
+            // unwrap SAXException using getException() !
+            final Exception cause = e.getException();
+            if (cause instanceof StorageException) {
+                throw (StorageException) cause;
+            }
+            // wrap other parser exceptions
+            throw new SearchException(getName(context), e);
+
+        } catch (@NonNull final ParserConfigurationException | IOException e) {
             throw new SearchException(getName(context), e);
         }
-
-        checkForSeriesNameInTitle(bookData);
 
         if (isCancelled()) {
             return bookData;
@@ -179,7 +216,7 @@ public class KbNlSearchEngine
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "large";

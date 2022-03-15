@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
@@ -29,13 +30,29 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * For better or worse... this class and it's children implementations
  * are passed around a lot, and hence thighly coupled.
  * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
+ *
+ * <ul>
+ *     <li>{@link CredentialsException}: We cannot authenticate to the site,
+ *                                       the user MUST take action on it NOW.</li>
+ *    <li>{@link CertificateException}:  There is an issue with the site certificate,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link StorageException}:     Specific local storage issues,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link DataWriterException}:  The embedded Exception has the details,
+ *                                       should be reported to the user,
+ *                                       but action is optional.</li>
+ *    <li>{@link IOException}:           Generic IO issues.</li>
+ * </ul>
  *
  * @param <RESULTS> the result object from a {@link #write(Context, ProgressListener)}
  */
@@ -44,6 +61,10 @@ public abstract class DataWriterHelperBase<RESULTS> {
     /** <strong>What</strong> is going to be exported. */
     @NonNull
     private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
+
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    protected DataWriter<RESULTS> mDataWriter;
 
     /**
      * Do an incremental export. Definition of incremental depends on the writer.
@@ -87,14 +108,34 @@ public abstract class DataWriterHelperBase<RESULTS> {
         mIncremental = incremental;
     }
 
+    /**
+     * Perform a full write.
+     *
+     * @param context          Current context
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return results summary
+     *
+     * @see DataWriter
+     */
     @WorkerThread
     @NonNull
     public abstract RESULTS write(@NonNull Context context,
                                   @NonNull ProgressListener progressListener)
             throws DataWriterException,
+                   CertificateException,
+                   CredentialsException,
+                   SSLException,
                    StorageException,
-                   IOException,
-                   CertificateException;
+                   IOException;
+
+    public void cancel() {
+        synchronized (this) {
+            if (mDataWriter != null) {
+                mDataWriter.cancel();
+            }
+        }
+    }
 
     @Override
     @NonNull
@@ -104,4 +145,5 @@ public abstract class DataWriterHelperBase<RESULTS> {
                + ", mIncremental=" + mIncremental
                + '}';
     }
+
 }

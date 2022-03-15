@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
@@ -64,9 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderProcessor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
 /**
@@ -119,6 +117,7 @@ public class StripInfoReader
 
         mBookDao = ServiceLocator.getInstance().getBookDao();
 
+        // create a new instance just for our own use
         mSearchEngine = (StripInfoSearchEngine) SearchEngineRegistry
                 .getInstance().createSearchEngine(SearchSites.STRIP_INFO_BE);
 
@@ -167,11 +166,10 @@ public class StripInfoReader
     @Override
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException,
-                   DataReaderException,
+            throws DataReaderException,
                    CredentialsException,
-                   DiskFullException,
-                   CoverStorageException {
+                   StorageException,
+                   IOException {
 
         // Got internet?
         if (!NetworkUtils.isNetworkAvailable()) {
@@ -188,6 +186,7 @@ public class StripInfoReader
 
         final StripInfoAuth loginHelper = new StripInfoAuth(mSearchEngine.getSiteUrl());
         final String userId = loginHelper.login();
+
         mSearchEngine.setLoginHelper(loginHelper);
 
         final ServiceLocator serviceLocator = ServiceLocator.getInstance();
@@ -199,7 +198,7 @@ public class StripInfoReader
         mResults = new ReaderResults();
 
         try {
-            while (uc.hasMore() && !progressListener.isCancelled()) {
+            while (uc.hasMore() && !mSearchEngine.isCancelled()) {
                 final List<Bundle> page = uc.fetchPage(context, progressListener);
                 if (page != null && !page.isEmpty()) {
                     // We're committing by page.
@@ -217,24 +216,32 @@ public class StripInfoReader
                     }
                 }
             }
-        } catch (@NonNull final SearchException e) {
+        } catch (@NonNull final CredentialsException | SearchException e) {
             throw new DataReaderException(e);
         }
 
         // always set the sync date!
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        global.edit()
-              .putString(StripInfoAuth.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
-                      DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-              .apply();
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putString(StripInfoAuth.PK_LAST_SYNC, LocalDateTime.now(ZoneOffset.UTC).format(
+                        DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .apply();
+
         return mResults;
+    }
+
+    @Override
+    public void cancel() {
+        synchronized (mSearchEngine) {
+            mSearchEngine.cancel();
+        }
     }
 
     private void processPage(@NonNull final Context context,
                              @NonNull final List<Bundle> page,
                              @NonNull final ProgressListener progressListener)
-            throws DiskFullException,
-                   CoverStorageException,
+            throws StorageException,
                    SearchException,
                    CredentialsException {
 
@@ -242,7 +249,7 @@ public class StripInfoReader
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
 
         for (final Bundle colBook : page) {
-            if (!progressListener.isCancelled()) {
+            if (!mSearchEngine.isCancelled()) {
                 final long externalId = colBook.getLong(DBKey.SID_STRIP_INFO);
                 // lookup locally using the externalId column.
                 try (Cursor cursor = mBookDao.fetchByKey(DBKey.SID_STRIP_INFO,
@@ -296,8 +303,7 @@ public class StripInfoReader
                             final long externalId,
                             @NonNull final Bundle colBook,
                             @NonNull final Book book)
-            throws DiskFullException,
-                   CoverStorageException,
+            throws StorageException,
                    SearchException,
                    CredentialsException,
                    DaoWriteException {
@@ -343,8 +349,7 @@ public class StripInfoReader
 
     private void insertBook(@NonNull final Context context,
                             final long externalId)
-            throws DiskFullException,
-                   CoverStorageException,
+            throws StorageException,
                    SearchException,
                    CredentialsException,
                    DaoWriteException {
@@ -369,8 +374,7 @@ public class StripInfoReader
     @WorkerThread
     private void downloadFrontCover(@IntRange(from = 1) final long externalId,
                                     @NonNull final Bundle cData)
-            throws DiskFullException,
-                   CoverStorageException {
+            throws StorageException {
         final String url = cData.getString(UserCollection.BKEY_FRONT_COVER_URL);
         if (url != null) {
             final String fileSpec = mSearchEngine

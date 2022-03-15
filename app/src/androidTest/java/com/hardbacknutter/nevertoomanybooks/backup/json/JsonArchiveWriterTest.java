@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -71,7 +70,7 @@ public class JsonArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, CoverStorageException {
+            throws DaoWriteException, StorageException {
         super.setup();
         final Context context = mSl.getLocalizedAppContext();
         mBookInDb = mSl.getBookDao().count();

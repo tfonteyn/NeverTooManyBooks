@@ -55,7 +55,6 @@ import static org.mockito.Mockito.when;
  * - allow storing String null values
  * - putAll implementation
  */
-@SuppressWarnings("ReturnOfNull")
 public final class BundleMock {
 
     @SuppressWarnings("unchecked")

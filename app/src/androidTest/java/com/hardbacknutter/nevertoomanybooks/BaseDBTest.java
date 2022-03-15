@@ -28,7 +28,7 @@ import org.junit.Before;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class BaseDBTest {
 
@@ -37,7 +37,7 @@ public abstract class BaseDBTest {
     @Before
     @CallSuper
     public void setup()
-            throws DaoWriteException, CoverStorageException {
+            throws DaoWriteException, StorageException {
 
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                                        .detectLeakedSqlLiteObjects()

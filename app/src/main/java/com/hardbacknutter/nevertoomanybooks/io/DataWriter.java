@@ -28,8 +28,21 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
+/**
+ * <ul>
+ *     <li>{@link CredentialsException}: We cannot authenticate to the site,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link StorageException}:     Specific local storage issues,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link DataWriterException}:  The embedded Exception has the details,
+ *                                       should be reported to the user,
+ *                                       but action is optional.</li>
+ *    <li>{@link IOException}:           Generic IO issues.</li>
+ * </ul>
+ */
 @FunctionalInterface
 public interface DataWriter<RESULT>
         extends Closeable {
@@ -45,13 +58,21 @@ public interface DataWriter<RESULT>
      * @return results summary
      *
      * @throws DataWriterException on a decoding/parsing of data issue
-     * @throws IOException         on failure
+     * @throws StorageException    there is an issue with the storage media
+     * @throws IOException         on other failures
      */
     @WorkerThread
     @NonNull
     RESULT write(@NonNull Context context,
                  @NonNull ProgressListener progressListener)
-            throws StorageException, DataWriterException, IOException;
+            throws DataWriterException,
+                   CredentialsException,
+                   StorageException,
+                   IOException;
+
+
+    default void cancel() {
+    }
 
     /**
      * Override if the implementation needs to close something.

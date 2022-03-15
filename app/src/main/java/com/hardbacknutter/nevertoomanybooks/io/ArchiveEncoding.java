@@ -34,8 +34,6 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -54,7 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Archive encoding (formats) (partially) supported.
@@ -140,7 +139,7 @@ public enum ArchiveEncoding
 
         final String scheme = uri.getScheme();
         if (scheme != null && scheme.startsWith("http")) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("No support for http uri's");
         }
 
         // The below is all for file based imports
@@ -310,9 +309,7 @@ public enum ArchiveEncoding
      *
      * @return a new reader
      *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws SSLException        on secure connection failures
-     * @throws IOException         on other failures
+     * @see DataReader
      */
     @WorkerThread
     @NonNull
@@ -320,8 +317,9 @@ public enum ArchiveEncoding
             @NonNull final Context context,
             @NonNull final ImportHelper helper)
             throws DataReaderException,
-                   IOException,
-                   CoverStorageException {
+                   CredentialsException,
+                   StorageException,
+                   IOException {
 
         final DataReader<ArchiveMetaData, ImportResults> reader;
         switch (this) {

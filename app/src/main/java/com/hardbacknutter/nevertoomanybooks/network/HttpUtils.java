@@ -21,8 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.network;
 
 import android.util.Base64;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -35,7 +37,7 @@ public final class HttpUtils {
     public static final String POST = "POST";
 
     /** HTTP authentication header. */
-    public static final String AUTHORIZATION = "Authorization";
+    static final String AUTHORIZATION = "Authorization";
 
     /** HTTP Request Header. */
     static final String CONNECTION = "Connection";
@@ -65,6 +67,7 @@ public final class HttpUtils {
     private HttpUtils() {
     }
 
+    @AnyThread
     @NonNull
     public static String createBasicAuthHeader(@NonNull final String username,
                                                @NonNull final String password) {
@@ -75,6 +78,8 @@ public final class HttpUtils {
     /**
      * If already connected, simply check the response code.
      * Otherwise implicitly connect by getting the response code.
+     * <p>
+     * {@link TerminatorConnection} will call this internally.
      *
      * @param request   to check
      * @param siteResId site identifier
@@ -85,6 +90,7 @@ public final class HttpUtils {
      * @throws SocketTimeoutException    408: Request Time-Out.
      * @throws HttpStatusException       on any other HTTP failures
      */
+    @WorkerThread
     public static void checkResponseCode(@NonNull final HttpURLConnection request,
                                          @StringRes final int siteResId)
             throws IOException,
@@ -94,11 +100,12 @@ public final class HttpUtils {
                    HttpStatusException {
 
         final int responseCode = request.getResponseCode();
-        switch (responseCode) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                break;
 
+        if (responseCode < 400) {
+            return;
+        }
+
+        switch (responseCode) {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 throw new HttpUnauthorizedException(siteResId,
                                                     request.getResponseMessage(),
@@ -120,4 +127,5 @@ public final class HttpUtils {
                                               request.getURL());
         }
     }
+
 }

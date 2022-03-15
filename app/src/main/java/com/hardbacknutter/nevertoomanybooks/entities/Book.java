@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Represents the underlying data for a book.
@@ -246,7 +246,7 @@ public class Book
     /**
      * Get the cover for the given uuid. We'll attempt to find a jpg or a png.
      * <p>
-     * Any {@link CoverStorageException} is <strong>IGNORED</strong>
+     * Any {@link StorageException} is <strong>IGNORED</strong>
      *
      * @param uuid UUID of the book
      * @param cIdx 0..n image index
@@ -259,7 +259,7 @@ public class Book
         final File coverDir;
         try {
             coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final StorageException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getPersistedCoverFile", e);
             }
@@ -698,14 +698,14 @@ public class Book
      *
      * @return The persisted file
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      * @throws IOException           on other failures
      * @see #getPersistedCoverFile(int)
      */
     @NonNull
     public File persistCover(@NonNull final File downloadedFile,
                              @IntRange(from = 0, to = 1) final int cIdx)
-            throws CoverStorageException, IOException {
+            throws StorageException, IOException {
 
         final String uuid = getString(DBKey.KEY_BOOK_UUID);
         final String name;
@@ -740,7 +740,7 @@ public class Book
     /**
      * Get the <strong>current</strong> cover file for this book.
      * <p>
-     * Any {@link CoverStorageException} is <strong>IGNORED</strong>
+     * Any {@link StorageException} is <strong>IGNORED</strong>
      *
      * @param cIdx 0..n image index
      *
@@ -774,7 +774,7 @@ public class Book
                 final File coverDir;
                 try {
                     coverDir = CoverDir.getDir(ServiceLocator.getAppContext());
-                } catch (@NonNull final CoverStorageException e) {
+                } catch (@NonNull final StorageException e) {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "getCoverFile", e);
                     }
@@ -812,12 +812,12 @@ public class Book
      *
      * @return the File
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws IOException           on failure to make a copy of the permanent file
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on failure to make a copy of the permanent file
      */
     @NonNull
     public File createTempCoverFile(@IntRange(from = 0, to = 1) final int cIdx)
-            throws CoverStorageException, IOException {
+            throws StorageException, IOException {
 
         // the temp file we'll return
         // do NOT set BKEY_TMP_FILE_SPEC in this method.
@@ -845,7 +845,7 @@ public class Book
     public void removeCover(@IntRange(from = 0, to = 1) final int cIdx) {
         try {
             setCover(cIdx, null);
-        } catch (@NonNull final IOException | CoverStorageException ignore) {
+        } catch (@NonNull final IOException | StorageException ignore) {
             // safe to ignore, can't happen with a 'null' input.
         }
     }
@@ -858,14 +858,14 @@ public class Book
      *
      * @return the File after processing (either original, or a renamed/moved file)
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      * @throws IOException           on failure
      */
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public File setCover(@IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file)
-            throws CoverStorageException, IOException {
+            throws StorageException, IOException {
 
         if (mStage.getStage() == EntityStage.Stage.WriteAble
             || mStage.getStage() == EntityStage.Stage.Dirty) {

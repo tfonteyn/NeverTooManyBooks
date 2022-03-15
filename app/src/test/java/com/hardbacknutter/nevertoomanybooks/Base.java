@@ -34,6 +34,8 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
@@ -119,7 +122,8 @@ public class Base {
      */
     @BeforeEach
     @CallSuper
-    public void setUp() {
+    public void setup()
+            throws ParserConfigurationException, SAXException {
         // save the JDK locale first
         mJdkLocale = Locale.getDefault();
         // set as default

@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -68,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.ColorMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.FormatMapper;
 import com.hardbacknutter.nevertoomanybooks.sync.Mapper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -90,7 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
  */
 public class SearchCoordinator
         extends ViewModel
-        implements Canceller {
+        implements Cancellable {
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -145,7 +146,7 @@ public class SearchCoordinator
     /** Flag indicating at least one search is currently running. */
     private boolean mIsSearchActive;
     /** Flag indicating we're shutting down. */
-    private boolean mIsCancelled;
+    private AtomicBoolean mCancelled = new AtomicBoolean();
     /** Whether of not to fetch thumbnails. */
     @Nullable
     private boolean[] mFetchCover;
@@ -188,6 +189,7 @@ public class SearchCoordinator
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mSearchCoordinatorProgress;
     }
+
     /**
      * Process the message and start another task if required.
      *
@@ -239,14 +241,15 @@ public class SearchCoordinator
 
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                SearchEngineConfig config = mSearchEngineRegistry.getByEngineId(taskId);
                 Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|finished=" + context.getString(config.getLabelId()));
+                           + "|finished=" + mSearchEngineRegistry.getByEngineId(taskId)
+                                                                 .getName(context));
 
                 for (final SearchTask searchTask : mActiveTasks) {
-                    config = mSearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     Log.d(TAG, "mSearchTaskListener.onFinished"
-                               + "|running=" + context.getString(config.getLabelId()));
+                               + "|running="
+                               + mSearchEngineRegistry.getByEngineId(searchTask.getTaskId())
+                                                      .getName(context));
                 }
             }
 
@@ -269,7 +272,7 @@ public class SearchCoordinator
             final LiveDataEvent<TaskResult<Bundle>> message =
                     new LiveDataEvent<>(
                             new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR, mBookData));
-            if (mIsCancelled) {
+            if (mCancelled.get()) {
                 mSearchCoordinatorCancelled.setValue(message);
             } else {
                 mSearchCoordinatorFinished.setValue(message);
@@ -277,7 +280,7 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|wasCancelled=" + mIsCancelled
+                           + "|wasCancelled=" + mCancelled.get()
                            + "|searchErrors=" + searchErrors);
 
                 if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
@@ -287,8 +290,8 @@ public class SearchCoordinator
                         final int key = mSearchTasksStartTime.keyAt(i);
                         final long end = mSearchTasksEndTime.get(key);
 
-                        final String engineName = context.getString(
-                                mSearchEngineRegistry.getByEngineId(key).getLabelId());
+                        final String engineName = mSearchEngineRegistry.getByEngineId(key)
+                                                                       .getName(context);
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -315,6 +318,28 @@ public class SearchCoordinator
                                              (System.nanoTime() - processTime)
                                              / NANO_TO_MILLIS));
                 }
+            }
+        }
+    }
+
+    /**
+     * Handles both Successful and Failed searches.
+     * <p>
+     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
+     */
+    @NonNull
+    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
+        return mSearchCoordinatorFinished;
+    }
+
+    /**
+     * Cancel all searches.
+     */
+    public void cancel() {
+        mCancelled.set(true);
+        synchronized (mActiveTasks) {
+            for (final SearchTask searchTask : mActiveTasks) {
+                searchTask.cancel();
             }
         }
     }
@@ -360,16 +385,6 @@ public class SearchCoordinator
             onSearchTaskFinished(taskId, null);
         }
     };
-
-    /**
-     * Handles both Successful and Failed searches.
-     * <p>
-     * The Bundle will (optionally) contain {@link #BKEY_SEARCH_ERROR} with a list of errors.
-     */
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
-        return mSearchCoordinatorFinished;
-    }
 
     /** Observable. */
     @NonNull
@@ -430,24 +445,32 @@ public class SearchCoordinator
         return mIsSearchActive;
     }
 
-    /**
-     * Cancel all searches.
-     *
-     * @return {@code true}
-     */
-    public boolean cancel() {
-        mIsCancelled = true;
-        synchronized (mActiveTasks) {
-            for (final SearchTask searchTask : mActiveTasks) {
-                searchTask.cancel();
-            }
-        }
-        return true;
-    }
-
     @Override
     public boolean isCancelled() {
-        return mIsCancelled;
+        return mCancelled.get();
+    }
+
+    /**
+     * Search the given engine with the site specific book id.
+     *
+     * @param searchEngine         to use
+     * @param externalIdSearchText to search for
+     *
+     * @return {@code true} if the search was started.
+     */
+    public boolean searchByExternalId(@NonNull final SearchEngine searchEngine,
+                                      @NonNull final String externalIdSearchText) {
+        SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
+
+        // remove all other criteria (this is CRUCIAL)
+        clearSearchCriteria();
+
+        mExternalIdSearchText = new SparseArray<>();
+        mExternalIdSearchText.put(searchEngine.getEngineId(), externalIdSearchText);
+        prepareSearch();
+
+        mIsSearchActive = startSearch(searchEngine);
+        return mIsSearchActive;
     }
 
     /**
@@ -622,26 +645,61 @@ public class SearchCoordinator
     }
 
     /**
-     * Search the given engine with the site specific book id.
-     *
-     * @param searchEngine         to use
-     * @param externalIdSearchText to search for
-     *
-     * @return {@code true} if the search was started.
+     * Called after the search criteria are ready, and before starting the actual search.
+     * Clears a number of parameters so we can start the search with a clean slate.
      */
-    public boolean searchByExternalId(@NonNull final SearchEngine searchEngine,
-                                      @NonNull final String externalIdSearchText) {
-        SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
+    private void prepareSearch() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            mSearchStartTime = System.nanoTime();
+        }
 
-        // remove all other criteria (this is CRUCIAL)
-        clearSearchCriteria();
+        // Developer sanity checks
+        if (BuildConfig.DEBUG /* always */) {
+            if (!NetworkUtils.isNetworkAvailable()) {
+                throw new IllegalStateException("network should be checked before starting search");
+            }
 
-        mExternalIdSearchText = new SparseArray<>();
-        mExternalIdSearchText.put(searchEngine.getId(), externalIdSearchText);
-        prepareSearch();
+            if (!mActiveTasks.isEmpty()) {
+                throw new IllegalStateException("a search is already running");
+            }
 
-        mIsSearchActive = startSearch(searchEngine);
-        return mIsSearchActive;
+            // Note we don't care about publisher.
+            if (mAuthorSearchText.isEmpty()
+                && mTitleSearchText.isEmpty()
+                && mIsbnSearchText.isEmpty()
+                && (mExternalIdSearchText == null || mExternalIdSearchText.size() == 0)) {
+                throw new SanityCheck.MissingValueException("empty criteria");
+            }
+        }
+
+        // reset flags
+        mWaitingForExactCode = false;
+        mCancelled.set(false);
+        mIsSearchActive = false;
+
+        mBookData = new Bundle();
+        // no synchronized needed here
+        mSearchResults.clear();
+        // no synchronized needed here
+        mSearchFinishedMessages.clear();
+
+        mIsbn = new ISBN(mIsbnSearchText, mStrictIsbn);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "prepareSearch"
+                       + "|mExternalIdSearchText=" + mExternalIdSearchText
+                       + "|mIsbnSearchText=" + mIsbnSearchText
+                       + "|mIsbn=" + mIsbn
+                       + "|mStrictIsbn=" + mStrictIsbn
+                       + "|mAuthor=" + mAuthorSearchText
+                       + "|mTitle=" + mTitleSearchText
+                       + "|mPublisher=" + mPublisherSearchText);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            mSearchTasksStartTime.clear();
+            mSearchTasksEndTime.clear();
+        }
     }
 
     /**
@@ -697,98 +755,6 @@ public class SearchCoordinator
     }
 
     /**
-     * Called after the search criteria are ready, and before starting the actual search.
-     * Clears a number of parameters so we can start the search with a clean slate.
-     */
-    private void prepareSearch() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            mSearchStartTime = System.nanoTime();
-        }
-
-        // Developer sanity checks
-        if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable()) {
-                throw new IllegalStateException("network should be checked before starting search");
-            }
-
-            if (!mActiveTasks.isEmpty()) {
-                throw new IllegalStateException("a search is already running");
-            }
-
-            // Note we don't care about publisher.
-            if (mAuthorSearchText.isEmpty()
-                && mTitleSearchText.isEmpty()
-                && mIsbnSearchText.isEmpty()
-                && (mExternalIdSearchText == null || mExternalIdSearchText.size() == 0)) {
-                throw new SanityCheck.MissingValueException("empty criteria");
-            }
-        }
-
-        // reset flags
-        mWaitingForExactCode = false;
-        mIsCancelled = false;
-        mIsSearchActive = false;
-
-        mBookData = new Bundle();
-        // no synchronized needed here
-        mSearchResults.clear();
-        // no synchronized needed here
-        mSearchFinishedMessages.clear();
-
-        mIsbn = new ISBN(mIsbnSearchText, mStrictIsbn);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "prepareSearch"
-                       + "|mExternalIdSearchText=" + mExternalIdSearchText
-                       + "|mIsbnSearchText=" + mIsbnSearchText
-                       + "|mIsbn=" + mIsbn
-                       + "|mStrictIsbn=" + mStrictIsbn
-                       + "|mAuthor=" + mAuthorSearchText
-                       + "|mTitle=" + mTitleSearchText
-                       + "|mPublisher=" + mPublisherSearchText);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            mSearchTasksStartTime.clear();
-            mSearchTasksEndTime.clear();
-        }
-    }
-
-    /**
-     * Start all searches which have not been run yet.
-     *
-     * @return {@code true} if at least one search was started, {@code false} if none
-     */
-    private boolean startSearch() {
-        // if currentSearchSites is empty, we return false.
-        boolean atLeastOneStarted = false;
-        for (final Site site : Site.filterForEnabled(mAllSites)) {
-            // If the site has not been searched yet, search it
-            if (!mSearchResults.containsKey(site.engineId)) {
-                if (startSearch(site.getSearchEngine())) {
-                    atLeastOneStarted = true;
-                }
-            }
-        }
-        return atLeastOneStarted;
-    }
-
-    /**
-     * Start a single task.
-     *
-     * @return {@code true} if a search was started, {@code false} if not
-     */
-    private boolean startNextSearch() {
-        for (final Site site : Site.filterForEnabled(mAllSites)) {
-            // If the site has not been searched yet, search it
-            if (!mSearchResults.containsKey(site.engineId)) {
-                return startSearch(site.getSearchEngine());
-            }
-        }
-        return false;
-    }
-
-    /**
      * Start specified site search.
      *
      * @param searchEngine to use
@@ -798,7 +764,7 @@ public class SearchCoordinator
     private boolean startSearch(@NonNull final SearchEngine searchEngine) {
 
         // refuse new searches if we're shutting down.
-        if (mIsCancelled) {
+        if (mCancelled.get()) {
             return false;
         }
 
@@ -809,9 +775,11 @@ public class SearchCoordinator
         // check for a external id matching the site.
         String externalId = null;
         if (mExternalIdSearchText != null
-            && mExternalIdSearchText.size() > 0
-            && mExternalIdSearchText.get(searchEngine.getId()) != null) {
-            externalId = mExternalIdSearchText.get(searchEngine.getId());
+            && mExternalIdSearchText.size() > 0) {
+            final int engineId = searchEngine.getEngineId();
+            if (mExternalIdSearchText.get(engineId) != null) {
+                externalId = mExternalIdSearchText.get(engineId);
+            }
         }
 
         final SearchTask task = new SearchTask(searchEngine, mSearchTaskListener);
@@ -865,6 +833,40 @@ public class SearchCoordinator
 
         task.startSearch();
         return true;
+    }
+
+    /**
+     * Start all searches which have not been run yet.
+     *
+     * @return {@code true} if at least one search was started, {@code false} if none
+     */
+    private boolean startSearch() {
+        // if currentSearchSites is empty, we return false.
+        boolean atLeastOneStarted = false;
+        for (final Site site : Site.filterForEnabled(mAllSites)) {
+            // If the site has not been searched yet, search it
+            if (!mSearchResults.containsKey(site.engineId)) {
+                if (startSearch(site.getSearchEngine())) {
+                    atLeastOneStarted = true;
+                }
+            }
+        }
+        return atLeastOneStarted;
+    }
+
+    /**
+     * Start a single task.
+     *
+     * @return {@code true} if a search was started, {@code false} if not
+     */
+    private boolean startNextSearch() {
+        for (final Site site : Site.filterForEnabled(mAllSites)) {
+            // If the site has not been searched yet, search it
+            if (!mSearchResults.containsKey(site.engineId)) {
+                return startSearch(site.getSearchEngine());
+            }
+        }
+        return false;
     }
 
     /**
@@ -922,7 +924,7 @@ public class SearchCoordinator
         for (final Site site : sites) {
             final SearchEngine searchEngine = site.getSearchEngine();
 
-            final Bundle siteData = mSearchResults.get(searchEngine.getId());
+            final Bundle siteData = mSearchResults.get(searchEngine.getEngineId());
             if (siteData != null && !siteData.isEmpty()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "accumulateSiteData|searchEngine="
@@ -951,6 +953,44 @@ public class SearchCoordinator
         if (title == null || title.isEmpty()) {
             mBookData.putString(DBKey.KEY_TITLE, mTitleSearchText);
         }
+    }
+
+    /**
+     * Called when all is said and done. Collects all individual website errors (if any)
+     * into a single user-formatted message.
+     *
+     * @param context Current context
+     *
+     * @return the error message
+     */
+    @Nullable
+    private String accumulateErrors(@NonNull final Context context) {
+        String errorMessage = null;
+        // no synchronized needed, at this point all other threads have finished.
+        if (!mSearchFinishedMessages.isEmpty()) {
+            final StringBuilder sb = new StringBuilder();
+            for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
+                final SearchEngineConfig config = mSearchEngineRegistry
+                        .getByEngineId(entry.getKey());
+                final String engineName = config.getName(context);
+                final Exception exception = entry.getValue();
+
+                final String error;
+                if (exception == null) {
+                    error = context.getString(R.string.error_search_x_failed_y, engineName,
+                                              context.getString(R.string.cancelled));
+                } else {
+                    error = createSiteError(context, engineName, exception);
+                }
+
+                sb.append(error)
+                  .append('\n');
+            }
+            errorMessage = sb.toString();
+        }
+        //no longer needed
+        mSearchFinishedMessages.clear();
+        return errorMessage;
     }
 
     /**
@@ -1102,44 +1142,6 @@ public class SearchCoordinator
     }
 
 
-
-    /**
-     * Called when all is said and done. Collects all individual website errors (if any)
-     * into a single user-formatted message.
-     *
-     * @param context Current context
-     *
-     * @return the error message
-     */
-    @Nullable
-    private String accumulateErrors(@NonNull final Context context) {
-        String errorMessage = null;
-        // no synchronized needed, at this point all other threads have finished.
-        if (!mSearchFinishedMessages.isEmpty()) {
-            final StringBuilder sb = new StringBuilder();
-            for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final SearchEngineConfig config = mSearchEngineRegistry
-                        .getByEngineId(entry.getKey());
-                final String engineName = context.getString(config.getLabelId());
-                final Exception exception = entry.getValue();
-
-                final String error;
-                if (exception == null) {
-                    error = context.getString(R.string.error_search_x_failed_y, engineName,
-                                              context.getString(R.string.cancelled));
-                } else {
-                    error = createSiteError(context, engineName, exception);
-                }
-
-                sb.append(error)
-                  .append('\n');
-            }
-            errorMessage = sb.toString();
-        }
-        //no longer needed
-        mSearchFinishedMessages.clear();
-        return errorMessage;
-    }
 
     /**
      * Prepare an error message to show after the task finishes.

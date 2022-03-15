@@ -28,16 +28,9 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.UncheckedIOException;
+import java.util.Objects;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -45,7 +38,11 @@ import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 
 /**
@@ -70,6 +67,9 @@ public class CollectionFormParser
     private static final String FF_STRIP_ID = "stripId";
     private static final String FF_STRIP_COLLECTIE_ID = "stripCollectieId";
 
+    @NonNull
+    private final FutureHttpPost<Document> mFutureHttpPost;
+
     /**
      * Constructor.
      *
@@ -87,23 +87,31 @@ public class CollectionFormParser
         mIdEdition = FF_DRUK;
         mIdPricePaid = FF_AANKOOP_PRIJS;
         mIdAmount = FF_AANTAL;
+
+        final SearchEngineConfig config = SearchEngineRegistry
+                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+
+        mFutureHttpPost = new FutureHttpPost<Document>(
+                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
+                .setThrottler(StripInfoSearchEngine.THROTTLER)
+                .setContentType(HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**
      * Parse the form ('root') and put the results into the 'destBundle'.
      *
      * @param root         Element to parse
-     * @param destBundle   to store the results in
      * @param externalId   website book id
      * @param collectionId website book collection-id
+     * @param destBundle   to store the results in
      *
      * @throws IOException on any failure
      */
     @WorkerThread
     public void parse(@NonNull final Element root,
-                      @NonNull final Bundle destBundle,
                       @IntRange(from = 1) final long externalId,
-                      @IntRange(from = 1) final long collectionId)
+                      @IntRange(from = 1) final long collectionId,
+                      @NonNull final Bundle destBundle)
             throws IOException {
 
         mIdOwned = "stripCollectieInBezit-" + externalId;
@@ -111,8 +119,6 @@ public class CollectionFormParser
         mIdWanted = "stripCollectieInWishlist-" + externalId;
 
         parseFlags(root, destBundle);
-
-        Document details;
 
         final String postBody = new Uri.Builder()
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
@@ -122,41 +128,23 @@ public class CollectionFormParser
                 .build()
                 .getEncodedQuery();
 
-        StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
+        //noinspection ConstantConditions
+        final Document response = Objects.requireNonNull(
+                mFutureHttpPost.post(FORM_URL, postBody, (bis) -> {
+                    try {
+                        return Jsoup.parse(bis, null, FORM_URL);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }));
 
-        HttpURLConnection request = null;
-        try {
-            request = (HttpURLConnection) new URL(FORM_URL).openConnection();
-            request.setRequestMethod(HttpUtils.POST);
-            request.setRequestProperty(HttpUtils.CONTENT_TYPE,
-                                       HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
-            request.setDoOutput(true);
-
-            // explicit connect for clarity
-            request.connect();
-
-            try (OutputStream os = request.getOutputStream();
-                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                 Writer writer = new BufferedWriter(osw)) {
-                writer.write(postBody);
-                writer.flush();
-            }
-
-            HttpUtils.checkResponseCode(request, R.string.site_stripinfo_be);
-
-            try (InputStream is = request.getInputStream();
-                 BufferedInputStream bis = new BufferedInputStream(is)) {
-                details = Jsoup.parse(bis, null, FORM_URL);
-            }
-        } finally {
-            if (request != null) {
-                request.disconnect();
-            }
-        }
-
-        parseDetails(details, destBundle);
+        parseDetails(response, destBundle);
 
         // Add as last one in case of errors thrown
         destBundle.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
+    }
+
+    public void cancel() {
+        mFutureHttpPost.cancel();
     }
 }

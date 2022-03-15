@@ -25,8 +25,6 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 
-import javax.net.ssl.SSLException;
-
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -41,7 +39,7 @@ public class CalibreContentServerTest {
 
     @Test
     public void filenames()
-            throws CertificateException, SSLException, FileNotFoundException {
+            throws CertificateException, FileNotFoundException {
 
         final ArrayList<Author> authors = new ArrayList<>();
         authors.add(Author.from("Arthur C. Clarke"));

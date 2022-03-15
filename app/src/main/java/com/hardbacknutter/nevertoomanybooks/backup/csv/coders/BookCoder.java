@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.org.json.JSONException;
 
 /**
  * Note: the keys for the CSV columns are not the same as the internal Book keys
@@ -172,7 +173,7 @@ public class BookCoder {
     }
 
     @NonNull
-    public String encodeHeader() {
+    public String createHeader() {
         // row 0 with the column labels
         final StringBuilder columnLabels = new StringBuilder(EXPORT_FIELD_HEADERS_BASE);
         for (final Domain domain : mExternalIdDomains) {
@@ -184,50 +185,51 @@ public class BookCoder {
     }
 
     @NonNull
-    public String encode(@NonNull final Book book) {
+    public String encode(@NonNull final Book book)
+            throws JSONException {
         final StringJoiner line = new StringJoiner(",");
 
-        line.add(encode(book.getLong(DBKey.PK_ID)));
-        line.add(encode(book.getString(DBKey.KEY_BOOK_UUID)));
-        line.add(encode(book.getString(DBKey.UTC_DATE_LAST_UPDATED)));
-        line.add(encode(mAuthorCoder.encodeList(book.getAuthors())));
-        line.add(encode(book.getString(DBKey.KEY_TITLE)));
-        line.add(encode(book.getString(DBKey.KEY_ISBN)));
-        line.add(encode(mPublisherCoder.encodeList(book.getPublishers())));
-        line.add(encode(book.getString(DBKey.KEY_PRINT_RUN)));
-        line.add(encode(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
-        line.add(encode(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
-        line.add(encode(book.getLong(DBKey.BITMASK_EDITION)));
-        line.add(encode(book.getFloat(DBKey.KEY_RATING)));
-        line.add(encode(mBookshelfCoder.encodeList(book.getBookshelves())));
-        line.add(encode(book.getInt(DBKey.BOOL_READ)));
-        line.add(encode(mSeriesCoder.encodeList(book.getSeries())));
-        line.add(encode(book.getString(DBKey.KEY_PAGES)));
-        line.add(encode(book.getString(DBKey.KEY_PRIVATE_NOTES)));
-        line.add(encode(book.getInt(DBKey.KEY_BOOK_CONDITION)));
-        line.add(encode(book.getInt(DBKey.KEY_BOOK_CONDITION_COVER)));
-        line.add(encode(book.getDouble(DBKey.PRICE_LISTED)));
-        line.add(encode(book.getString(DBKey.PRICE_LISTED_CURRENCY)));
-        line.add(encode(book.getDouble(DBKey.PRICE_PAID)));
-        line.add(encode(book.getString(DBKey.PRICE_PAID_CURRENCY)));
-        line.add(encode(book.getString(DBKey.DATE_ACQUIRED)));
-        line.add(encode(book.getLong(DBKey.BITMASK_TOC)));
-        line.add(encode(book.getString(DBKey.KEY_LOCATION)));
-        line.add(encode(book.getString(DBKey.DATE_READ_START)));
-        line.add(encode(book.getString(DBKey.DATE_READ_END)));
-        line.add(encode(book.getString(DBKey.KEY_FORMAT)));
-        line.add(encode(book.getString(DBKey.KEY_COLOR)));
-        line.add(encode(book.getInt(DBKey.BOOL_SIGNED)));
-        line.add(encode(book.getString(DBKey.KEY_LOANEE)));
-        line.add(encode(mTocCoder.encodeList(book.getToc())));
-        line.add(encode(book.getString(DBKey.KEY_DESCRIPTION)));
-        line.add(encode(book.getString(DBKey.KEY_GENRE)));
-        line.add(encode(book.getString(DBKey.KEY_LANGUAGE)));
-        line.add(encode(book.getString(DBKey.UTC_DATE_ADDED)));
+        line.add(escapeLong(book.getLong(DBKey.PK_ID)));
+        line.add(escape(book.getString(DBKey.KEY_BOOK_UUID)));
+        line.add(escape(book.getString(DBKey.UTC_DATE_LAST_UPDATED)));
+        line.add(escape(mAuthorCoder.encodeList(book.getAuthors())));
+        line.add(escape(book.getString(DBKey.KEY_TITLE)));
+        line.add(escape(book.getString(DBKey.KEY_ISBN)));
+        line.add(escape(mPublisherCoder.encodeList(book.getPublishers())));
+        line.add(escape(book.getString(DBKey.KEY_PRINT_RUN)));
+        line.add(escape(book.getString(DBKey.DATE_BOOK_PUBLICATION)));
+        line.add(escape(book.getString(DBKey.DATE_FIRST_PUBLICATION)));
+        line.add(escapeLong(book.getLong(DBKey.BITMASK_EDITION)));
+        line.add(escapeDouble(book.getFloat(DBKey.KEY_RATING)));
+        line.add(escape(mBookshelfCoder.encodeList(book.getBookshelves())));
+        line.add(escapeLong(book.getInt(DBKey.BOOL_READ)));
+        line.add(escape(mSeriesCoder.encodeList(book.getSeries())));
+        line.add(escape(book.getString(DBKey.KEY_PAGES)));
+        line.add(escape(book.getString(DBKey.KEY_PRIVATE_NOTES)));
+        line.add(escapeLong(book.getInt(DBKey.KEY_BOOK_CONDITION)));
+        line.add(escapeLong(book.getInt(DBKey.KEY_BOOK_CONDITION_COVER)));
+        line.add(escapeDouble(book.getDouble(DBKey.PRICE_LISTED)));
+        line.add(escape(book.getString(DBKey.PRICE_LISTED_CURRENCY)));
+        line.add(escapeDouble(book.getDouble(DBKey.PRICE_PAID)));
+        line.add(escape(book.getString(DBKey.PRICE_PAID_CURRENCY)));
+        line.add(escape(book.getString(DBKey.DATE_ACQUIRED)));
+        line.add(escapeLong(book.getLong(DBKey.BITMASK_TOC)));
+        line.add(escape(book.getString(DBKey.KEY_LOCATION)));
+        line.add(escape(book.getString(DBKey.DATE_READ_START)));
+        line.add(escape(book.getString(DBKey.DATE_READ_END)));
+        line.add(escape(book.getString(DBKey.KEY_FORMAT)));
+        line.add(escape(book.getString(DBKey.KEY_COLOR)));
+        line.add(escapeLong(book.getInt(DBKey.BOOL_SIGNED)));
+        line.add(escape(book.getString(DBKey.KEY_LOANEE)));
+        line.add(escape(mTocCoder.encodeList(book.getToc())));
+        line.add(escape(book.getString(DBKey.KEY_DESCRIPTION)));
+        line.add(escape(book.getString(DBKey.KEY_GENRE)));
+        line.add(escape(book.getString(DBKey.KEY_LANGUAGE)));
+        line.add(escape(book.getString(DBKey.UTC_DATE_ADDED)));
 
-        line.add(encode(book.getInt(DBKey.KEY_CALIBRE_BOOK_ID)));
-        line.add(encode(book.getString(DBKey.KEY_CALIBRE_BOOK_UUID)));
-        line.add(encode(book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+        line.add(escapeLong(book.getInt(DBKey.KEY_CALIBRE_BOOK_ID)));
+        line.add(escape(book.getString(DBKey.KEY_CALIBRE_BOOK_UUID)));
+        line.add(escape(book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
         // we write the Calibre String ID! not the internal row id
         final long clbRowId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
@@ -238,7 +240,7 @@ public class BookCoder {
             final String clbStrId = mCalibreLibraryId2StrMap.get(clbRowId);
             // Guard against obsolete libraries (not actually sure this is needed... paranoia)
             if (clbStrId != null && !clbStrId.isEmpty()) {
-                line.add(encode(clbStrId));
+                line.add(escape(clbStrId));
             } else {
                 line.add("");
             }
@@ -248,7 +250,7 @@ public class BookCoder {
 
         // external ID's
         for (final Domain domain : mExternalIdDomains) {
-            line.add(encode(book.getString(domain.getName())));
+            line.add(escape(book.getString(domain.getName())));
         }
         //NEWTHINGS: adding a new search engine: optional: add engine specific keys
 
@@ -256,24 +258,24 @@ public class BookCoder {
     }
 
     @NonNull
-    private String encode(final long cell) {
-        return encode(String.valueOf(cell));
+    private String escapeLong(final long cell) {
+        return escape(String.valueOf(cell));
     }
 
     @NonNull
-    private String encode(final double cell) {
-        return encode(String.valueOf(cell));
+    private String escapeDouble(final double cell) {
+        return escape(String.valueOf(cell));
     }
 
     /**
      * Double quote all "'s and remove all newlines.
      *
-     * @param source to encode
+     * @param source to escape
      *
      * @return The encoded cell enclosed in escaped quotes
      */
     @NonNull
-    private String encode(@Nullable final String source) {
+    private String escape(@Nullable final String source) {
 
         if (source == null || "null".equalsIgnoreCase(source) || source.trim().isEmpty()) {
             return EMPTY_QUOTED_STRING;
@@ -351,7 +353,7 @@ public class BookCoder {
         decodeBookshelves(book);
         decodeCalibreData(book);
 
-        //URGENT: implement full parsing/formatting of incoming dates for validity
+        //FIXME: implement full parsing/formatting of incoming dates for validity
         //verifyDates(context, bookDao, book);
 
         return book;

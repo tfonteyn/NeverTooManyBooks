@@ -41,8 +41,9 @@ public class HttpUnauthorizedException
     /**
      * Constructor.
      *
-     * @param siteResId the site string res; which will be embedded in a default user message
-     * @param url       (optional) The full url, for debugging
+     * @param siteResId     the site string res; which will be embedded in a default user message
+     * @param statusMessage the original status message from the HTTP request
+     * @param url           (optional) The full url, for debugging
      */
     HttpUnauthorizedException(@StringRes final int siteResId,
                               @NonNull final String statusMessage,

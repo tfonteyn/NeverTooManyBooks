@@ -31,99 +31,32 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-
-import javax.net.ssl.SSLContext;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.network.Throttler;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
 public class ImageDownloader {
 
     /** Log tag. */
     private static final String TAG = "ImageDownloader";
 
-    /** The prefix an embedded image url will have. */
+    /** The prefix an embedded image url would have. */
     private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
-    /** Parameter for the {@link TerminatorConnection}. */
-    private int mConnectTimeoutInMs;
-    /** Parameter for the {@link TerminatorConnection}. */
-    private int mReadTimeoutInMs;
-    /** Parameter for the {@link TerminatorConnection}. */
-    @Nullable
-    private Throttler mThrottler;
-
-    /** Parameter for the {@link TerminatorConnection}. */
-    @Nullable
-    private SSLContext mSslContext;
-    /** Parameter for the {@link TerminatorConnection}. */
-    @Nullable
-    private String mAuthHeader;
-
-    /**
-     * Set the optional SSL context to use instead of the system one.
-     *
-     * @param sslContext (optional) SSL context.
-     */
-    @AnyThread
     @NonNull
-    public ImageDownloader setSslContext(@Nullable final SSLContext sslContext) {
-        mSslContext = sslContext;
-        return this;
-    }
+    private final FutureHttpGet<File> mFutureHttpGet;
 
-    /**
-     * Set the optional authentication header string.
-     *
-     * @param authHeader (optional) header string
-     */
-    @AnyThread
-    @NonNull
-    public ImageDownloader setAuthHeader(@Nullable final String authHeader) {
-        mAuthHeader = authHeader;
-        return this;
-    }
-
-    /**
-     * Set the optional throttler.
-     *
-     * @param throttler (optional) {@link Throttler} to use
-     */
-    @NonNull
-    public ImageDownloader setThrottler(@Nullable final Throttler throttler) {
-        mThrottler = throttler;
-        return this;
-    }
-
-    /**
-     * Set the optional timeouts.
-     *
-     * @param connectTimeoutInMs in millis, use {@code 0} for system default
-     */
-    @NonNull
-    public ImageDownloader setConnectTimeout(@IntRange(from = 0) final int connectTimeoutInMs) {
-        mConnectTimeoutInMs = connectTimeoutInMs;
-        return this;
-    }
-
-    /**
-     * Set the optional timeouts.
-     *
-     * @param readTimeoutInMs in millis, use {@code 0} for system default
-     */
-    @NonNull
-    public ImageDownloader setReadTimeout(@IntRange(from = 0) final int readTimeoutInMs) {
-        mReadTimeoutInMs = readTimeoutInMs;
-        return this;
+    public ImageDownloader(@NonNull final FutureHttpGet<File> futureHttpGet) {
+        mFutureHttpGet = futureHttpGet;
     }
 
     /**
@@ -137,7 +70,7 @@ public class ImageDownloader {
      *
      * @return file
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     @AnyThread
     @NonNull
@@ -145,7 +78,7 @@ public class ImageDownloader {
                             @Nullable final String bookId,
                             @IntRange(from = 0, to = 1) final int cIdx,
                             @Nullable final ImageFileInfo.Size size)
-            throws CoverStorageException {
+            throws StorageException {
 
         // keep all "_" even for empty parts. Easier to parse the name if needed.
         final String filename = System.currentTimeMillis()
@@ -167,13 +100,13 @@ public class ImageDownloader {
      *
      * @return Downloaded File, or {@code null} on failure
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     @Nullable
     @WorkerThread
     public File fetch(@NonNull final String url,
                       @NonNull final File destination)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         @Nullable
         final File savedFile;
 
@@ -186,21 +119,25 @@ public class ImageDownloader {
                     os.write(image);
                 }
                 savedFile = destination;
-
             } else {
-                try (TerminatorConnection con = new TerminatorConnection(url)) {
-                    con.setConnectTimeout(mConnectTimeoutInMs)
-                       .setReadTimeout(mReadTimeoutInMs)
-                       .setThrottler(mThrottler)
-                       .setSSLContext(mSslContext);
-
-                    if (mAuthHeader != null) {
-                        con.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
+                savedFile = mFutureHttpGet.get(url, con -> {
+                    try {
+                        return ImageUtils.copy(con.getInputStream(), destination);
+                    } catch (@NonNull final StorageException e) {
+                        throw new UncheckedStorageException(e);
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
                     }
-
-                    savedFile = ImageUtils.copy(con.getInputStream(), destination);
-                }
+                });
             }
+
+            // too small ? reject
+            // too big: N/A as we assume a picture from a website is already a good size
+            if (ImageUtils.isAcceptableSize(savedFile)) {
+                return savedFile;
+            }
+            return null;
+
         } catch (@NonNull final IOException e) {
             FileUtils.delete(destination);
 
@@ -222,13 +159,11 @@ public class ImageDownloader {
             }
             return null;
         }
+    }
 
-        // is the image not too small ?
-        // (too big: don't check assuming a picture from a website is already a good size)
-        if (!ImageUtils.isAcceptableSize(savedFile)) {
-            return null;
+    public void cancel() {
+        synchronized (mFutureHttpGet) {
+            mFutureHttpGet.cancel();
         }
-
-        return savedFile;
     }
 }

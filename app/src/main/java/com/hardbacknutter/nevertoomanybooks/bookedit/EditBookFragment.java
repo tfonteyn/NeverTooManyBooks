@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.FragmentId;
 import com.hardbacknutter.nevertoomanybooks.utils.WindowClass;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class EditBookFragment
         extends BaseFragment {
@@ -270,9 +270,9 @@ public class EditBookFragment
             mVm.saveBook(getContext());
             setResultsAndFinish();
 
-        } catch (@NonNull final CoverStorageException | DaoWriteException e) {
+        } catch (@NonNull final StorageException | DaoWriteException e) {
             Logger.error(TAG, e);
-            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
+            StandardDialogs.showError(getContext(), e.getUserMessage(getContext()));
         }
     }
 

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -36,11 +35,6 @@ public class NetworkUnavailableException
 
     public NetworkUnavailableException(@NonNull final String message) {
         super(message);
-    }
-
-    public NetworkUnavailableException(@NonNull final String message,
-                                       @Nullable final Throwable cause) {
-        super(message, cause);
     }
 
     @NonNull

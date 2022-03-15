@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.net.HttpURLConnection;
@@ -40,12 +41,13 @@ public class HttpNotFoundException
     /**
      * Constructor.
      *
-     * @param siteResId the site string res; which will be embedded in a default user message
-     * @param url       The full url, for debugging
+     * @param siteResId     the site string res; which will be embedded in a default user message
+     * @param statusMessage the original status message from the HTTP request
+     * @param url           (optional) The full url, for debugging
      */
     HttpNotFoundException(@StringRes final int siteResId,
                           @NonNull final String statusMessage,
-                          @NonNull final URL url) {
+                          @Nullable final URL url) {
         super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
     }
 

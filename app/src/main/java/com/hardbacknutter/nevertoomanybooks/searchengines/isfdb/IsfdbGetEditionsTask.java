@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -35,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * This task is bypassing {@link SearchEngine.AlternativeEditions}
@@ -49,6 +51,9 @@ public class IsfdbGetEditionsTask
     /** The isbn we're looking up. */
     private String mIsbn;
 
+    @Nullable
+    private IsfdbSearchEngine mSearchEngine;
+
     public IsfdbGetEditionsTask() {
         super(R.id.TASK_ID_SEARCH_EDITIONS, TAG);
     }
@@ -59,16 +64,27 @@ public class IsfdbGetEditionsTask
         execute();
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mSearchEngine != null) {
+                mSearchEngine.cancel();
+            }
+        }
+    }
+
     @NonNull
     @Override
     @WorkerThread
     protected List<Edition> doWork(@NonNull final Context context)
-            throws SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
-        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
+        // create a new instance just for our own use
+        mSearchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
-        searchEngine.setCaller(this);
+        mSearchEngine.setCaller(this);
 
-        return searchEngine.fetchEditionsByIsbn(context, mIsbn);
+        return mSearchEngine.fetchEditionsByIsbn(context, mIsbn);
     }
 }

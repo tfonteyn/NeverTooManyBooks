@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -71,7 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  *     <li>{@link RecordType#Cover}</li>
  * </ol>
  * <p>
- * The {@link #write(Context, ProgressListener)} method executes the interface method flow.
+ * The {@link DataWriter#write(Context, ProgressListener)} method executes
+ * the interface method flow.
  * <p>
  * 2020-12-21: we've moved to only having a single child class:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter}
@@ -126,8 +126,8 @@ public abstract class ArchiveWriterAbstract
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws DataWriterException,
-                   IOException,
-                   StorageException {
+                   StorageException,
+                   IOException {
 
         // do a cleanup before we start writing
         ServiceLocator.getInstance().getMaintenanceDao().purge();
@@ -237,7 +237,8 @@ public abstract class ArchiveWriterAbstract
     private File prepareBooks(@NonNull final Context context,
                               @Nullable final LocalDateTime dateSince,
                               @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
@@ -274,7 +275,8 @@ public abstract class ArchiveWriterAbstract
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.MetaData);
 
@@ -314,7 +316,8 @@ public abstract class ArchiveWriterAbstract
     private ExportResults writeRecord(@NonNull final Context context,
                                       @NonNull final RecordType recordType,
                                       @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final RecordEncoding encoding = getEncoding(recordType);
 
@@ -344,12 +347,12 @@ public abstract class ArchiveWriterAbstract
      * @param context          Current context
      * @param progressListener Progress and cancellation interface
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws IOException           on failure
+     * @throws StorageException The covers directory is not available
+     * @throws IOException      on failure
      */
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, IOException {
+            throws StorageException, IOException {
 
         progressListener.publishProgress(0, context.getString(R.string.lbl_covers_long));
 
@@ -361,6 +364,10 @@ public abstract class ArchiveWriterAbstract
 
         final String coverStr = context.getString(R.string.lbl_covers);
         for (final String filename : mResults.getCoverFileNames()) {
+            if (progressListener.isCancelled()) {
+                return;
+            }
+
             // We're using jpg, png.. don't bother compressing.
             // Compressing might actually make some image files bigger!
             putFile(filename, new File(coverDir, filename), false);

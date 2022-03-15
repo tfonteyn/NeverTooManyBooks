@@ -89,7 +89,8 @@ public class SearchEditionsTask
         }
 
         for (final Site site : Site.filterForEnabled(Site.Type.AltEditions.getSites())) {
-            final SearchEngine searchEngine = site.getSearchEngine(this);
+            final SearchEngine searchEngine = site.getSearchEngine();
+            searchEngine.setCaller(this);
             try {
                 // can we reach the site ?
                 NetworkUtils.ping(searchEngine.getSiteUrl());

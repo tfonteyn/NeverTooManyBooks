@@ -79,7 +79,8 @@ public class XmlArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final int booksToExport = ServiceLocator.getInstance().getBookDao()
                                                 .countBooksForExport(null);
@@ -99,8 +100,8 @@ public class XmlArchiveWriter
                 bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
                          + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
                 // 2. the actual data inside the container
-                results = recordWriter
-                        .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+                results = recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
+                                             progressListener);
 
                 // 3. the metadata
                 recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));

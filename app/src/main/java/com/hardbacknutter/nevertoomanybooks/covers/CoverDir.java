@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * The movable external directory for covers.
@@ -79,11 +80,11 @@ public final class CoverDir {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     @NonNull
     public static File getDir(@NonNull final Context context)
-            throws CoverStorageException {
+            throws StorageException {
 
         final int volume = getVolume(context);
 
@@ -106,11 +107,11 @@ public final class CoverDir {
      *
      * @return directory
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     @NonNull
     public static File getTemp(@NonNull final Context context)
-            throws CoverStorageException {
+            throws StorageException {
         return new File(getDir(context), DIR_TMP);
     }
 
@@ -126,11 +127,11 @@ public final class CoverDir {
      *
      * @return the actual volume
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     public static int initVolume(@NonNull final Context context,
                                  final int volume)
-            throws CoverStorageException {
+            throws StorageException {
 
         final StorageManager storage = (StorageManager)
                 context.getSystemService(Context.STORAGE_SERVICE);

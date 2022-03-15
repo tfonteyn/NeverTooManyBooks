@@ -81,7 +81,7 @@
         android:title="@string/lbl_timeouts">
         <SeekBarPreference
             android:defaultValue="10"
-            android:dependency="calibre.enabled"
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="stripinfo.timeout.connect"
             android:max="60"
@@ -91,7 +91,7 @@
             />
         <SeekBarPreference
             android:defaultValue="60"
-            android:dependency="calibre.enabled"
+            android:dependency="stripinfo.enabled"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:key="stripinfo.timeout.read"
             android:max="120"

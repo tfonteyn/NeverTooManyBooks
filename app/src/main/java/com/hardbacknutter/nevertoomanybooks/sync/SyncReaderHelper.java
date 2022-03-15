@@ -35,6 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.ReaderResults;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public final class SyncReaderHelper
         extends DataReaderHelperBase<SyncReaderMetaData, ReaderResults> {
@@ -110,7 +112,9 @@ public final class SyncReaderHelper
     protected DataReader<SyncReaderMetaData, ReaderResults> createReader(
             @NonNull final Context context)
             throws DataReaderException,
+                   CredentialsException,
                    CertificateException,
+                   StorageException,
                    IOException {
         return mSyncServer.createReader(context, this);
     }

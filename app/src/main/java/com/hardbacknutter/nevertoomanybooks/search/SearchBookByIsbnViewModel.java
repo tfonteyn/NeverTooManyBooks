@@ -167,6 +167,7 @@ public class SearchBookByIsbnViewModel
                                   .collect(Collectors.toList()));
 
                 } catch (@NonNull final UncheckedIOException e) {
+                    // caused by lines()
                     //noinspection ConstantConditions
                     throw e.getCause();
                 }

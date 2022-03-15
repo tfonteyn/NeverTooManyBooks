@@ -32,9 +32,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Hard coded not to fetch any images.
@@ -50,6 +49,9 @@ public class IsfdbGetBookTask
     /** ISFDB book edition to get. */
     @Nullable
     private Edition mEdition;
+
+    @Nullable
+    private IsfdbSearchEngine mSearchEngine;
 
     public IsfdbGetBookTask() {
         super(R.id.TASK_ID_ISFDB_GET_BOOK, TAG);
@@ -81,25 +83,35 @@ public class IsfdbGetBookTask
         execute();
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mSearchEngine != null) {
+                mSearchEngine.cancel();
+            }
+        }
+    }
+
     @NonNull
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context)
-            throws DiskFullException, CoverStorageException, SearchException,
-                   CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
-        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
+        // create a new instance just for our own use
+        mSearchEngine = (IsfdbSearchEngine)
                 SearchEngineRegistry.getInstance().createSearchEngine(SearchSites.ISFDB);
-        searchEngine.setCaller(this);
+        mSearchEngine.setCaller(this);
 
         final boolean[] fetchCovers = {false, false};
         if (mEdition != null) {
             final Bundle bookData = new Bundle();
-            searchEngine.fetchByEdition(context, mEdition, fetchCovers, bookData);
+            mSearchEngine.fetchByEdition(context, mEdition, fetchCovers, bookData);
             return bookData;
 
         } else if (mIsfdbId != 0) {
-            return searchEngine.searchByExternalId(context, String.valueOf(mIsfdbId), fetchCovers);
+            return mSearchEngine.searchByExternalId(context, String.valueOf(mIsfdbId), fetchCovers);
 
         } else {
             throw new IllegalStateException("how did we get here?");

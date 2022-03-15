@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.kbnl;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class KbNlBookHandlerTest
         extends Base {
@@ -56,25 +53,21 @@ class KbNlBookHandlerTest
     private SAXParser mParser;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         mHandler = new KbNlBookHandler(mRawData);
-        try {
-            mParser = factory.newSAXParser();
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            fail(e);
-        }
+        mParser = factory.newSAXParser();
     }
 
     @Test
-    void parseComic() {
+    void parseComic()
+            throws IOException, SAXException {
 
         try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
             mParser.parse(in, mHandler);
-        } catch (@NonNull final IOException | SAXException e) {
-            fail(e);
         }
 
         assertEquals("De buitengewone reis", mRawData.getString(DBKey.KEY_TITLE));
@@ -117,12 +110,11 @@ class KbNlBookHandlerTest
     }
 
     @Test
-    void parseBook() {
+    void parseBook()
+            throws IOException, SAXException {
 
         try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
             mParser.parse(in, mHandler);
-        } catch (@NonNull final IOException | SAXException e) {
-            fail(e);
         }
 
         assertEquals("De Foundation", mRawData.getString(DBKey.KEY_TITLE));

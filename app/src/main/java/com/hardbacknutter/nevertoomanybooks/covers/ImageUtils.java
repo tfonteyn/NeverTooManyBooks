@@ -37,7 +37,7 @@ import java.io.OutputStream;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public final class ImageUtils {
 
@@ -198,14 +198,16 @@ public final class ImageUtils {
      *
      * @return File written to (the one passed in)
      *
-     * @throws CoverStorageException The {@link CoverDir} directory is not available
+     * @throws StorageException      The {@link CoverDir} directory is not available
      * @throws FileNotFoundException if the input stream was {@code null}
      * @throws IOException           on other failures
      */
     @NonNull
     public static File copy(@Nullable final InputStream is,
                             @NonNull final File destFile)
-            throws CoverStorageException, FileNotFoundException, IOException {
+            throws StorageException,
+                   FileNotFoundException,
+                   IOException {
         if (is == null) {
             throw new FileNotFoundException("InputStream was NULL");
         }

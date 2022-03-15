@@ -31,11 +31,8 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -44,19 +41,30 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * are passed around a lot, and hence thighly coupled.
  * The alternative was a lot of duplicate code and a LOT of individual parameter passing.
  *
+ * <ul>
+ *     <li>{@link CredentialsException}: We cannot authenticate to the site,
+ *                                       the user MUST take action on it NOW.</li>
+ *    <li>{@link CertificateException}:  There is an issue with the site certificate,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link StorageException}:     Specific local storage issues,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link DataReaderException}:  The embedded Exception has the details,
+ *                                       should be reported to the user,
+ *                                       but action is optional.</li>
+ *    <li>{@link IOException}:           Generic IO issues.</li>
+ * </ul>
+ *
  * @param <METADATA> the result object from a {@link #readMetaData(Context)}
  * @param <RESULTS>  the result object from a {@link #read(Context, ProgressListener)}
  */
 public abstract class DataReaderHelperBase<METADATA, RESULTS> {
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private DataReader<METADATA, RESULTS> mReader;
-
     /** <strong>What</strong> is going to be imported. */
     @NonNull
     private final EnumSet<RecordType> mRecordTypes = EnumSet.noneOf(RecordType.class);
-
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private DataReader<METADATA, RESULTS> mDataReader;
     @Nullable
     private METADATA mMetaData;
 
@@ -130,8 +138,9 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     @NonNull
     protected abstract DataReader<METADATA, RESULTS> createReader(@NonNull Context context)
             throws DataReaderException,
+                   CredentialsException,
                    CertificateException,
-                   CoverStorageException,
+                   StorageException,
                    IOException;
 
     /**
@@ -141,27 +150,26 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
      *
      * @return Optional with {@link METADATA}
      *
-     * @throws DataReaderException         on a decoding/parsing of data issue
-     * @throws IOException             on other failures
-     * @throws SSLException            on secure connection failures
+     * @see DataReader
      */
     @NonNull
     public Optional<METADATA> readMetaData(@NonNull final Context context)
-            throws DataReaderException,
+            throws CredentialsException,
                    CertificateException,
+                   DataReaderException,
                    StorageException,
                    IOException {
 
         try {
-            mReader = createReader(context);
-            final Optional<METADATA> metaData = mReader.readMetaData(context);
+            mDataReader = createReader(context);
+            final Optional<METADATA> metaData = mDataReader.readMetaData(context);
             mMetaData = metaData.orElse(null);
             return metaData;
         } finally {
             synchronized (this) {
-                if (mReader != null) {
-                    mReader.close();
-                    mReader = null;
+                if (mDataReader != null) {
+                    mDataReader.close();
+                    mDataReader = null;
                 }
             }
         }
@@ -170,42 +178,42 @@ public abstract class DataReaderHelperBase<METADATA, RESULTS> {
     /**
      * Perform a full read.
      *
-     * @param context Current context
+     * @param context          Current context
+     * @param progressListener Progress and cancellation interface
      *
-     * @throws DataReaderException         on a decoding/parsing of data issue
-     * @throws IOException             on other failures
-     * @throws SSLException            on secure connection failures
+     * @return results summary
+     *
+     * @see DataReader
      */
     @NonNull
     @WorkerThread
     public RESULTS read(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws DataReaderException,
-                   IOException,
+            throws CertificateException,
+                   CredentialsException,
+                   DataReaderException,
                    StorageException,
-                   CredentialsException, CertificateException {
+                   IOException {
 
         SanityCheck.requireValue(mRecordTypes, "mRecordTypes");
 
         try {
-            mReader = createReader(context);
-            return mReader.read(context, progressListener);
+            mDataReader = createReader(context);
+            return mDataReader.read(context, progressListener);
         } finally {
             synchronized (this) {
-                if (mReader != null) {
-                    mReader.close();
-                    mReader = null;
+                if (mDataReader != null) {
+                    mDataReader.close();
+                    mDataReader = null;
                 }
             }
         }
     }
 
-    public void cancel(final int taskId) {
+    public void cancel() {
         synchronized (this) {
-            if (mReader != null) {
-                if (mReader.cancel(taskId)) {
-                    mReader = null;
-                }
+            if (mDataReader != null) {
+                mDataReader.cancel();
             }
         }
     }

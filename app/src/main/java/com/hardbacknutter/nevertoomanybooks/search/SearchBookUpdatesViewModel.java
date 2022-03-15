@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
@@ -97,10 +97,6 @@ public class SearchBookUpdatesViewModel
 
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
-
-    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
-    private boolean mIsCancelled;
-
 
     /** The (subset) of fields relevant to the current book. */
     private Map<String, SyncField> mCurrentFieldsWanted;
@@ -305,7 +301,7 @@ public class SearchBookUpdatesViewModel
             final int idCol = mCurrentCursor.getColumnIndex(DBKey.PK_ID);
 
             // loop/skip until we start a search for a book.
-            while (mCurrentCursor.moveToNext() && !mIsCancelled) {
+            while (mCurrentCursor.moveToNext() && !isCancelled()) {
 
                 mCurrentProgressCounter++;
 
@@ -415,14 +411,14 @@ public class SearchBookUpdatesViewModel
     boolean processOne(@NonNull final Context context,
                        @Nullable final Bundle bookData) {
 
-        if (!mIsCancelled && bookData != null && !bookData.isEmpty()) {
+        if (!isCancelled() && bookData != null && !bookData.isEmpty()) {
             //noinspection ConstantConditions
             final Book delta = mSyncProcessor.process(context, mCurrentBookId, mCurrentBook,
                                                       mCurrentFieldsWanted, bookData);
             if (delta != null) {
                 try {
                     mBookDao.update(context, delta, 0);
-                } catch (@NonNull final CoverStorageException | DaoWriteException e) {
+                } catch (@NonNull final StorageException | DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(TAG, e);
                 }
@@ -467,7 +463,7 @@ public class SearchBookUpdatesViewModel
         results.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
 
         // all books || a list of books || (single book && ) not cancelled
-        if (mBookIdList == null || mBookIdList.size() > 1 || !mIsCancelled) {
+        if (mBookIdList == null || mBookIdList.size() > 1 || !isCancelled()) {
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
@@ -488,7 +484,7 @@ public class SearchBookUpdatesViewModel
         } else {
             final LiveDataEvent<TaskResult<Bundle>> message =
                     new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_UPDATE_FIELDS, results));
-            if (mIsCancelled) {
+            if (isCancelled()) {
                 mSearchCoordinatorCancelled.setValue(message);
             } else {
                 mListFinished.setValue(message);
@@ -497,9 +493,8 @@ public class SearchBookUpdatesViewModel
     }
 
     @Override
-    public boolean cancel() {
-        mIsCancelled = true;
+    public void cancel() {
+        super.cancel();
         postSearch(null);
-        return true;
     }
 }

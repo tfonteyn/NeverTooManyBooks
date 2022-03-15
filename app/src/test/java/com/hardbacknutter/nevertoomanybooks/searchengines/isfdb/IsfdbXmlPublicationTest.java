@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
 import androidx.preference.PreferenceManager;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -34,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -49,10 +48,12 @@ class IsfdbXmlPublicationTest
     private IsfdbSearchEngine mSearchEngine;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(SearchSites.ISFDB).getSearchEngine(new MockCanceller());
+                .getSite(SearchSites.ISFDB).getSearchEngine();
+        mSearchEngine.setCaller(new MockCancellable());
         mSearchEngine.setBundleSupplier(BundleMock::create);
 
         // Override the default 'false'
@@ -76,15 +77,8 @@ class IsfdbXmlPublicationTest
                                                 mSearchEngine.getLocale(mContext));
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
-        final SAXParser parser;
-        try {
-            parser = factory.newSAXParser();
-            parser.parse(this.getClass().getResourceAsStream(filename), listHandler);
-        } catch (final SAXException e) {
-            if (!(e.getException() instanceof EOFException)) {
-                throw e;
-            }
-        }
+        final SAXParser parser = factory.newSAXParser();
+        parser.parse(this.getClass().getResourceAsStream(filename), listHandler);
 
         System.out.println(listHandler.getResult());
     }

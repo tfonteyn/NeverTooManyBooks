@@ -26,22 +26,25 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
+/**
+ * Dev note: DO NOT make this an IOException (again)!
+ */
 public class StorageException
         extends Exception
         implements LocalizedException {
 
     private static final long serialVersionUID = 6521262373361215281L;
 
-    public StorageException(@Nullable final String message) {
+    protected StorageException(@Nullable final String message) {
         super(message);
     }
 
-    public StorageException(@Nullable final String message,
-                            @Nullable final Throwable cause) {
+    protected StorageException(@Nullable final String message,
+                               @Nullable final Throwable cause) {
         super(message, cause);
     }
 
-    public StorageException(@Nullable final Throwable cause) {
+    protected StorageException(@Nullable final Throwable cause) {
         super(cause);
     }
 

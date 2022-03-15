@@ -70,9 +70,9 @@ public interface RecordReader
      *
      * @return results summary
      *
-     * @throws DataReaderException  on a decoding/parsing of data issue
-     * @throws StorageException there is an issue with the storage media
-     * @throws IOException      on other failures
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws StorageException    there is an issue with the storage media
+     * @throws IOException         on other failures
      */
     @WorkerThread
     @NonNull

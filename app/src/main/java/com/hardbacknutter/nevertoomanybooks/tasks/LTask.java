@@ -81,7 +81,7 @@ public abstract class LTask<Result>
 
     @Override
     @WorkerThread
-    protected void setFinished(@Nullable final Result result) {
+    protected void setTaskFinished(@Nullable final Result result) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onFinished(getTaskId(), result);
@@ -96,7 +96,7 @@ public abstract class LTask<Result>
 
     @Override
     @WorkerThread
-    protected void setCancelled(@Nullable final Result result) {
+    protected void setTaskCancelled(@Nullable final Result result) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onCancelled(getTaskId(), result);
@@ -113,7 +113,7 @@ public abstract class LTask<Result>
 
     @Override
     @WorkerThread
-    protected void setFailure(@NonNull final Exception e) {
+    protected void setTaskFailure(@NonNull final Exception e) {
         mHandler.post(() -> {
             if (mTaskListener.get() != null) {
                 mTaskListener.get().onFailure(getTaskId(), e);

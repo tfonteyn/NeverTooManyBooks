@@ -47,8 +47,6 @@ import java.io.FileNotFoundException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -95,11 +93,10 @@ public class CalibreHandler {
      * @param context Current context
      *
      * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     public CalibreHandler(@NonNull final Context context,
                           @NonNull final ViewModelStoreOwner viewModelStoreOwner)
-            throws CertificateException, SSLException {
+            throws CertificateException {
 
         mVm = new ViewModelProvider(viewModelStoreOwner).get(CalibreHandlerViewModel.class);
         mVm.init(context);

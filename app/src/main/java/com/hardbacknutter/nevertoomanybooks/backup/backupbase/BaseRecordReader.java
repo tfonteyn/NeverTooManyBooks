@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class BaseRecordReader
         implements RecordReader {
@@ -76,14 +76,15 @@ public abstract class BaseRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
      */
     protected void importBookWithUuid(@NonNull final Context context,
                                       @NonNull final ImportHelper helper,
                                       @NonNull final Book book,
                                       final long importNumericId)
-            throws CoverStorageException, DaoWriteException {
+            throws StorageException,
+                   DaoWriteException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBKey.KEY_BOOK_UUID);
 

@@ -26,8 +26,7 @@ import androidx.annotation.WorkerThread;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.function.Function;
+import java.io.UncheckedIOException;
 
 import javax.net.ssl.SSLProtocolException;
 
@@ -37,6 +36,7 @@ import org.jsoup.nodes.Document;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Provide a more or less robust base to load a url and parse the html with Jsoup.
@@ -62,6 +62,13 @@ public class JsoupLoader {
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String mCharSetName;
+
+    @NonNull
+    private final FutureHttpGet<Document> mFutureHttpGet;
+
+    public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
+        mFutureHttpGet = futureHttpGet;
+    }
 
     /**
      * Optionally override the user agent; can be set to {@code null} to revert to JSoup default.
@@ -99,17 +106,13 @@ public class JsoupLoader {
      * The content encoding is: "Accept-Encoding", "gzip"
      *
      * @param url                to fetch
-     * @param connectionProducer a provider that constructs a fully configured TerminatorConnection
-     *
      * @return the parsed Document
      *
      * @throws IOException on failure
      */
     @WorkerThread
     @NonNull
-    public Document loadDocument(@NonNull final String url,
-                                 @NonNull final Function<String, Optional<TerminatorConnection>>
-                                         connectionProducer)
+    public Document loadDocument(@NonNull final String url)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -123,16 +126,82 @@ public class JsoupLoader {
         mDocRequestUrl = url;
 
         // If the site drops connection, we retry once
-        int attempts = 2;
-        while (attempts > 0) {
+        // Note this is NOT the same as the retry mechanism of TerminatorConnection.
+        // The latter is a retry for the initial connect only.
+        // This retry is for when a successful connection gets dropped mid-read
+        // specifically due to SSLProtocolException | EOFException
+        int attemptsLeft = 2;
+
+        while (attemptsLeft > 0) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                 Logger.d(TAG, "loadDocument",
                          "REQUESTED|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
             }
 
-            try (TerminatorConnection con = connectionProducer.apply(mDocRequestUrl)
-                                                              .orElseThrow(NetworkException::new)) {
-                mDoc = doGet(con);
+            try {
+                mDoc = mFutureHttpGet.get(mDocRequestUrl, con -> {
+                    // Don't retry if the initial connection fails...
+                    con.setRetryCount(0);
+
+                    // added due to https://github.com/square/okhttp/issues/1517
+                    // it's a server issue, this is a workaround.
+                    con.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
+                    // some sites refuse to return content if they don't like the user-agent
+                    if (mUserAgent != null) {
+                        con.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
+                    }
+
+                    try {
+                        // GO!
+                        final InputStream is = con.getInputStream();
+
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                            Logger.d(TAG, "loadDocument",
+                                     "AFTER open"
+                                     + "\ncon.getURL=" + con.getURL()
+                                     + "\nlocation  =" + con.getHeaderField(HttpUtils.LOCATION));
+                        }
+
+                        // the original url will change after a redirect.
+                        // We need the actual url for further processing.
+                        String locationHeader = con.getHeaderField(HttpUtils.LOCATION);
+                        if (locationHeader == null || locationHeader.isEmpty()) {
+                            //noinspection ConstantConditions
+                            locationHeader = con.getURL().toString();
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                                Logger.d(TAG, "loadDocument", "location header not set, using url");
+                            }
+                        }
+
+                    /*
+                     VERY IMPORTANT: Explicitly set the baseUri to the location header.
+                     JSoup by default uses the absolute path from the inputStream
+                     and sets that as the document 'location'
+                     From JSoup docs:
+
+                    * Get the URL this Document was parsed from. If the starting URL is a redirect,
+                    * this will return the final URL from which the document was served from.
+                    * @return location
+                    public String location() {
+                        return location;
+                    }
+
+                    However that is WRONG (org.jsoup:jsoup:1.11.3)
+                    It will NOT resolve the redirect itself and 'location' == 'baseUri'
+                    */
+                        final Document document = Jsoup.parse(is, mCharSetName, locationHeader);
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
+                            Logger.d(TAG, "loadDocument",
+                                     "AFTER parsing|mDoc.location()=" + document.location());
+                        }
+
+                        return document;
+
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
                 return mDoc;
 
             } catch (@NonNull final SSLProtocolException | EOFException e) {
@@ -161,10 +230,17 @@ public class JsoupLoader {
                                  + "|e=" + e.getMessage()
                                  + "|mDocRequestUrl=\"" + mDocRequestUrl + '\"');
                 // we'll retry.
-                attempts--;
-                if (attempts == 0) {
+                attemptsLeft--;
+                if (attemptsLeft == 0) {
+                    // IOException
                     throw e;
                 }
+
+            } catch (@NonNull final StorageException e) {
+                // This is only here due to FutureHttpGet declaring StorageException;
+                // which her will never be thrown.
+                throw new IOException(e);
+
             } catch (@NonNull final IOException e) {
                 mDoc = null;
 
@@ -176,70 +252,12 @@ public class JsoupLoader {
         }
 
         // Shouldn't get here ... flw
-        throw new NetworkException("All attempts failed");
+        throw new IOException("Failed to get: " + mDocRequestUrl);
     }
 
-    @NonNull
-    private Document doGet(@NonNull final TerminatorConnection con)
-            throws IOException {
-        // Don't retry if the initial connection fails...
-        // We use our own retry mechanism here.
-        con.setRetryCount(0);
-
-        // added due to https://github.com/square/okhttp/issues/1517
-        // it's a server issue, this is a workaround.
-        con.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
-
-        if (mUserAgent != null) {
-            con.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
+    public void cancel() {
+        synchronized (mFutureHttpGet) {
+            mFutureHttpGet.cancel();
         }
-
-        // GO!
-        final InputStream inputStream = con.getInputStream();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-            Logger.d(TAG, "loadDocument",
-                     "AFTER open"
-                     + "\ncon.getURL=" + con.getURL()
-                     + "\nlocation  =" + con.getHeaderField(HttpUtils.LOCATION));
-        }
-
-        // the original url will change after a redirect.
-        // We need the actual url for further processing.
-        String locationHeader = con.getHeaderField(HttpUtils.LOCATION);
-        if (locationHeader == null || locationHeader.isEmpty()) {
-            //noinspection ConstantConditions
-            locationHeader = con.getURL().toString();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Logger.d(TAG, "loadDocument", "location header not set, using url");
-            }
-        }
-
-        /*
-         VERY IMPORTANT: Explicitly set the baseUri to the location header.
-         JSoup by default uses the absolute path from the inputStream
-         and sets that as the document 'location'
-         From JSoup docs:
-
-        * Get the URL this Document was parsed from. If the starting URL is a redirect,
-        * this will return the final URL from which the document was served from.
-        * @return location
-        public String location() {
-            return location;
-        }
-
-        However that is WRONG (org.jsoup:jsoup:1.11.3)
-        It will NOT resolve the redirect itself and 'location' == 'baseUri'
-        */
-        final Document document = Jsoup.parse(inputStream, mCharSetName, locationHeader);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-            Logger.d(TAG, "loadDocument",
-                     "AFTER parsing|mDoc.location()=" + document.location());
-        }
-
-        // Success
-        return document;
     }
 }

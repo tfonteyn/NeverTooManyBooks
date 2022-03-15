@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
@@ -99,7 +99,7 @@ public class BookTest {
      */
     @Before
     public void setup()
-            throws IOException, CoverStorageException {
+            throws IOException, StorageException {
 
         mBookshelfList.clear();
         mAuthorList.clear();
@@ -176,7 +176,7 @@ public class BookTest {
     private void prepareTempCover(@NonNull final Context context,
                                   @NonNull final List<File> files,
                                   final int cIdx)
-            throws IOException, CoverStorageException {
+            throws IOException, StorageException {
 
         mOriginalImageFileName[cIdx] = files.get(cIdx).getAbsolutePath();
         final File srcFile = new File(mOriginalImageFileName[cIdx]);
@@ -198,7 +198,7 @@ public class BookTest {
      */
     @Test
     public void book()
-            throws DaoWriteException, IOException, CoverStorageException {
+            throws DaoWriteException, IOException, StorageException {
 
         final ServiceLocator sl = ServiceLocator.getInstance();
         final Context context = sl.getLocalizedAppContext();
@@ -335,7 +335,7 @@ public class BookTest {
 
     @Test
     public void showBookVM()
-            throws DaoWriteException, CoverStorageException, IOException {
+            throws DaoWriteException, StorageException, IOException {
         final ServiceLocator sl = ServiceLocator.getInstance();
         final Context context = sl.getLocalizedAppContext();
         final BookDao bookDao = sl.getBookDao();
@@ -357,7 +357,7 @@ public class BookTest {
      */
     private Book prepareAndInsertBook(@NonNull final Context context,
                                       @NonNull final BookDao bookDao)
-            throws DaoWriteException, CoverStorageException, IOException {
+            throws DaoWriteException, StorageException, IOException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
@@ -388,7 +388,7 @@ public class BookTest {
     }
 
     private void checkBookAfterInitialInsert(final Book book)
-            throws CoverStorageException {
+            throws StorageException {
         final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
 
         assertEquals(EntityStage.Stage.Clean, book.getStage());

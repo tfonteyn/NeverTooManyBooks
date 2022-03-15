@@ -29,11 +29,12 @@
  *          The interface that the engine class implements and responsible for the actual searches.
  *      </li>
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig} :
- *          The annotation that configures the engine class.
+ *          The configuration for the engine class.
  *      </li>
  *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry} :
- *          A registry of all {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
+ *          A registry of all
+ *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine}
  *          classes and their
  *          {@link com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig}.
  *      </li>

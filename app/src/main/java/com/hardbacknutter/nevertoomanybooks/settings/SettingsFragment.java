@@ -59,8 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Global settings page.
@@ -409,9 +409,9 @@ public class SettingsFragment
             CoverDir.initVolume(getContext(), volume);
             return true;
 
-        } catch (@NonNull final CoverStorageException e) {
+        } catch (@NonNull final StorageException e) {
             // This should never happen... flw
-            StandardDialogs.showError(getContext(), R.string.error_storage_not_accessible);
+            StandardDialogs.showError(getContext(), e.getUserMessage(getContext()));
             return false;
         }
     }

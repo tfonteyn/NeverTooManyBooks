@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskStartException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
 class SingleFileDownloadTask
@@ -61,16 +62,26 @@ class SingleFileDownloadTask
         // sanity check
         if (mBook.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT).isEmpty()) {
             //TODO: use a better message
-            setFailure(new TaskStartException(R.string.error_download_failed));
+            setTaskFailure(new TaskStartException(R.string.error_download_failed));
             return;
         }
         execute();
     }
 
+    @Override
+    public void cancel() {
+        super.cancel();
+        synchronized (mServer) {
+            mServer.cancel();
+        }
+    }
+
     @NonNull
     @Override
     protected Uri doWork(@NonNull final Context context)
-            throws IOException, JSONException {
+            throws IOException,
+                   StorageException,
+                   JSONException {
 
         setIndeterminate(true);
         publishProgress(0, context.getString(R.string.progress_msg_please_wait));

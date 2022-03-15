@@ -33,6 +33,7 @@ import androidx.annotation.WorkerThread;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.Throttler;
 import com.hardbacknutter.nevertoomanybooks.searchengines.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
@@ -76,16 +77,14 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 
 /**
  * See notes in the package-info.java file.
@@ -124,10 +123,7 @@ public class IsfdbSearchEngine
     public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
     /** Type: {@code boolean}. */
     static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
-    public static final CharSequence PK_CONNECT_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_connect;
-    public static final CharSequence PK_READ_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_read;
+
     /**
      * As proposed by another user on the ISFDB wiki,
      * we're only going to send one request a second.
@@ -265,12 +261,15 @@ public class IsfdbSearchEngine
         return getSiteUrl() + CGI_BIN + CGI_PL + "?" + externalId;
     }
 
+    @Nullable
+    private FutureHttpGet<Boolean> mFutureHttpGet;
+
     @NonNull
     @Override
     public Bundle searchByExternalId(@NonNull final Context context,
                                      @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -287,7 +286,7 @@ public class IsfdbSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -307,7 +306,7 @@ public class IsfdbSearchEngine
                          @Nullable final String title,
                          @Nullable final String publisher,
                          @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final String url = getSiteUrl() + CGI_BIN + CGI_ADV_SEARCH_RESULTS + "?"
                            + "ORDERBY=pub_title"
@@ -364,29 +363,6 @@ public class IsfdbSearchEngine
         return bookData;
     }
 
-    @Nullable
-    @Override
-    public String searchCoverByIsbn(@NonNull final Context context,
-                                    @NonNull final String validIsbn,
-                                    @IntRange(from = 0, to = 1) final int cIdx,
-                                    @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
-
-        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
-        if (!editions.isEmpty()) {
-            final Edition edition = editions.get(0);
-            final Document document = loadDocumentByEdition(context, edition);
-            if (!isCancelled()) {
-                final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
-                if (!imageList.isEmpty()) {
-                    // let the system resolve any path variations
-                    return new File(imageList.get(0)).getAbsolutePath();
-                }
-            }
-        }
-        return null;
-    }
-
     /**
      * Search for edition data.
      *
@@ -409,6 +385,206 @@ public class IsfdbSearchEngine
                 .collect(Collectors.toList());
     }
 
+    @Nullable
+    @Override
+    public String searchCoverByIsbn(@NonNull final Context context,
+                                    @NonNull final String validIsbn,
+                                    @IntRange(from = 0, to = 1) final int cIdx,
+                                    @Nullable final ImageFileInfo.Size size)
+            throws StorageException, SearchException, CredentialsException {
+
+        final List<Edition> editions = fetchEditionsByIsbn(context, validIsbn);
+        if (!editions.isEmpty()) {
+            final Edition edition = editions.get(0);
+            final Document document = loadDocumentByEdition(context, edition);
+            if (!isCancelled()) {
+                final ArrayList<String> imageList = parseCovers(document, edition.getIsbn(), 0);
+                if (!imageList.isEmpty()) {
+                    // let the system resolve any path variations
+                    return new File(imageList.get(0)).getAbsolutePath();
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Second ContentBox contains the TOC.
+     * <pre>
+     *     {@code
+     *
+     * <div class="ContentBox">
+     *  <span class="containertitle">Collection Title:</span>
+     *  <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576">
+     *      The Days of Perky Pat
+     *  </a> &#8226;
+     *  [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461">
+     *      The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226;
+     *      collection by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23"
+     *     >Philip K. Dick</a>
+     *  <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c">
+     *      <span class="listingtext">(view Concise Listing)</span></a></h2>
+     *  <ul>
+     *
+     * <li> == entry
+     *
+     * }
+     * </pre>
+     *
+     * @param context  Current context
+     * @param document to parse
+     *
+     * @return the toc list
+     */
+    @WorkerThread
+    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
+                                         @NonNull final Document document) {
+
+        final boolean addSeriesFromToc = ServiceLocator.getGlobalPreferences()
+                                                       .getBoolean(PK_SERIES_FROM_TOC, false);
+        final ArrayList<TocEntry> toc = new ArrayList<>();
+
+        // <div class="ContentBox"> but there are two, so get last one
+        final Element contentBox = document.select(CSS_Q_DIV_CONTENTBOX).last();
+        if (contentBox != null) {
+            for (final Element li : contentBox.select("li")) {
+
+            /* LI entries, possibilities:
+            7
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
+                Introduction (The Days of Perky Pat)</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+                Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
+            &#8226; (1987)
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">James Tiptree, Jr.</a>
+
+            11
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
+            &#8226; (1955)
+            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                Philip K. Dick</a>
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
+            &#8226; (1952)
+            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
+                Philip K. Dick</a>
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
+            Introduction (Beyond Lies the Wub)</a>
+            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
+            Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
+            &#8226; (1987)
+            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
+
+            61
+            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
+                That Thou Art Mindful of Him</a>
+            &#8226; (1974)
+            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">Isaac Asimov</a>
+            (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
+                —That Thou Art Mindful of Him!</a></i>)
+
+            A book belonging to a Series will have one content entry with the same title
+            as the book, and potentially have the Series/nr in it:
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372">
+                The Delirium Brief</a>
+            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081">
+                Laundry Files</a> &#8226; 8]
+            &#8226; (2017)
+            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200">Charles Stross</a>
+
+            ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
+            ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
+
+            2019-07: translation information seems to be added,
+            and a further sub-classification (here: 'juvenile')
+
+            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238">
+                Zwerftocht Tussen de Sterren</a>
+            &#8226; juvenile
+            &#8226; (1973)
+            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">Robert A. Heinlein</a>
+            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
+                <i>Citizen of the Galaxy</i></a> 1957)
+
+            2019-09-26: this has been there for a longer time, but just noticed these:
+            ISBN: 90-290-1541-1
+            7 • Één Nacht per Jaar • interior artwork by John Stewart
+            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee
+                (trans. of One Night of the Year 1980)
+            39 • Aaches Geheim • interior artwork by Jim Pitts
+            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny
+                (trans. of The Places of Aache 1980)
+
+            iow: each story appears twice due to the extra interior artwork.
+            For now, we will get two entries in the TOC, same title but different author.
+            TODO: avoid duplicate TOC entries when there are two lines.
+             */
+                final String liAsString = li.toString();
+                String title = null;
+                Author author = null;
+                // find the first occurrence of each
+                for (final Element a : li.select("a")) {
+                    final String href = a.attr("href");
+
+                    if (title == null && href.contains(CGI_TITLE)) {
+                        title = ParseUtils.cleanName(a.text());
+                        //ENHANCE: tackle 'variant' titles later
+
+                    } else if (author == null && href.contains(CGI_EA)) {
+                        author = Author.from(ParseUtils.cleanName(a.text()));
+
+                    } else if (addSeriesFromToc && href.contains(CGI_PE)) {
+                        final Series series = Series.from(a.text());
+
+                        //  • 4] • (1987) • novel by
+                        final Node nextSibling = a.nextSibling();
+                        if (nextSibling != null) {
+                            String nr = nextSibling.toString();
+                            final int dotIdx = nr.indexOf('•');
+                            if (dotIdx != -1) {
+                                final int closeBrIdx = nr.indexOf(']');
+                                if (closeBrIdx > dotIdx) {
+                                    nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
+                                    if (!nr.isEmpty()) {
+                                        series.setNumber(nr);
+                                    }
+                                }
+                            }
+                        }
+                        mSeries.add(series);
+                    }
+                }
+
+                // no author found, set to 'unknown, unknown'
+                // example when this happens: ISBN=044100590X
+                // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151">
+                //      Appendixes (Dune)</a> • essay by uncredited
+                // </li>
+                if (author == null) {
+                    author = Author.createUnknownAuthor(context);
+                }
+                // very unlikely
+                if (title == null) {
+                    title = "";
+                }
+
+                // scan for first occurrence of "• (1234)"
+                final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
+                final String year = matcher.find() ? matcher.group(2) : "";
+                // see if we can use it as the first publication year for the book.
+                // i.e. if this entry has the same title as the book title
+                if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
+                    && title.equalsIgnoreCase(mTitle)) {
+                    mFirstPublicationYear = ParseUtils.digits(year);
+                }
+
+                toc.add(new TocEntry(author, title, year));
+            }
+        }
+        return toc;
+    }
 
     /**
      * Parses the downloaded {@link Document}.
@@ -575,7 +751,7 @@ public class IsfdbSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
         super.parse(context, document, fetchCovers, bookData);
 
         final DateParser dateParser = new FullDateParser(context);
@@ -896,184 +1072,6 @@ public class IsfdbSearchEngine
     }
 
     /**
-     * Second ContentBox contains the TOC.
-     * <pre>
-     *     {@code
-     *
-     * <div class="ContentBox">
-     *  <span class="containertitle">Collection Title:</span>
-     *  <a href="http://www.isfdb.org/cgi-bin/title.cgi?37576">
-     *      The Days of Perky Pat
-     *  </a> &#8226;
-     *  [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?22461">
-     *      The Collected Stories of Philip K. Dick</a> &#8226; 4] &#8226; (1987) &#8226;
-     *      collection by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23"
-     *     >Philip K. Dick</a>
-     *  <h2>Contents <a href="http://www.isfdb.org/cgi-bin/pl.cgi?230949+c">
-     *      <span class="listingtext">(view Concise Listing)</span></a></h2>
-     *  <ul>
-     *
-     * <li> == entry
-     *
-     * }
-     * </pre>
-     *
-     * @param context  Current context
-     * @param document to parse
-     *
-     * @return the toc list
-     */
-    @WorkerThread
-    private ArrayList<TocEntry> parseToc(@NonNull final Context context,
-                                         @NonNull final Document document) {
-
-        final boolean addSeriesFromToc = ServiceLocator.getGlobalPreferences()
-                                                       .getBoolean(PK_SERIES_FROM_TOC, false);
-        final ArrayList<TocEntry> toc = new ArrayList<>();
-
-        // <div class="ContentBox"> but there are two, so get last one
-        final Element contentBox = document.select(CSS_Q_DIV_CONTENTBOX).last();
-        if (contentBox != null) {
-            for (final Element li : contentBox.select("li")) {
-
-            /* LI entries, possibilities:
-            7
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
-                Introduction (The Days of Perky Pat)</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
-                Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 4]
-            &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">James Tiptree, Jr.</a>
-
-            11
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
-            &#8226; (1955)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
-                Philip K. Dick</a>
-
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
-            &#8226; (1952)
-            &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
-                Philip K. Dick</a>
-
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
-            Introduction (Beyond Lies the Wub)</a>
-            &#8226; [ <a href="http://www.isfdb.org/cgi-bin/pe.cgi?31226">
-            Introductions to the Collected Stories of Philip K. Dick</a> &#8226; 1]
-            &#8226; (1987)
-            &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
-
-            61
-            &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
-                That Thou Art Mindful of Him</a>
-            &#8226; (1974)
-            &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">Isaac Asimov</a>
-            (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
-                —That Thou Art Mindful of Him!</a></i>)
-
-            A book belonging to a Series will have one content entry with the same title
-            as the book, and potentially have the Series/nr in it:
-
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?2210372">
-                The Delirium Brief</a>
-            &#8226; [<a href="http://www.isfdb.org/cgi-bin/pe.cgi?23081">
-                Laundry Files</a> &#8226; 8]
-            &#8226; (2017)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?2200">Charles Stross</a>
-
-            ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
-            ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
-
-            2019-07: translation information seems to be added,
-            and a further sub-classification (here: 'juvenile')
-
-            <a href="http://www.isfdb.org/cgi-bin/title.cgi?1347238">
-                Zwerftocht Tussen de Sterren</a>
-            &#8226; juvenile
-            &#8226; (1973)
-            &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">Robert A. Heinlein</a>
-            (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
-                <i>Citizen of the Galaxy</i></a> 1957)
-
-            2019-09-26: this has been there for a longer time, but just noticed these:
-            ISBN: 90-290-1541-1
-            7 • Één Nacht per Jaar • interior artwork by John Stewart
-            9 • Één Nacht per Jaar • [Cyrion] • novelette by Tanith Lee
-                (trans. of One Night of the Year 1980)
-            39 • Aaches Geheim • interior artwork by Jim Pitts
-            41 • Aaches Geheim • [Dilvish] • short story by Roger Zelazny
-                (trans. of The Places of Aache 1980)
-
-            iow: each story appears twice due to the extra interior artwork.
-            For now, we will get two entries in the TOC, same title but different author.
-            TODO: avoid duplicate TOC entries when there are two lines.
-             */
-                final String liAsString = li.toString();
-                String title = null;
-                Author author = null;
-                // find the first occurrence of each
-                for (final Element a : li.select("a")) {
-                    final String href = a.attr("href");
-
-                    if (title == null && href.contains(CGI_TITLE)) {
-                        title = ParseUtils.cleanName(a.text());
-                        //ENHANCE: tackle 'variant' titles later
-
-                    } else if (author == null && href.contains(CGI_EA)) {
-                        author = Author.from(ParseUtils.cleanName(a.text()));
-
-                    } else if (addSeriesFromToc && href.contains(CGI_PE)) {
-                        final Series series = Series.from(a.text());
-
-                        //  • 4] • (1987) • novel by
-                        final Node nextSibling = a.nextSibling();
-                        if (nextSibling != null) {
-                            String nr = nextSibling.toString();
-                            final int dotIdx = nr.indexOf('•');
-                            if (dotIdx != -1) {
-                                final int closeBrIdx = nr.indexOf(']');
-                                if (closeBrIdx > dotIdx) {
-                                    nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
-                                    if (!nr.isEmpty()) {
-                                        series.setNumber(nr);
-                                    }
-                                }
-                            }
-                        }
-                        mSeries.add(series);
-                    }
-                }
-
-                // no author found, set to 'unknown, unknown'
-                // example when this happens: ISBN=044100590X
-                // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151">
-                //      Appendixes (Dune)</a> • essay by uncredited
-                // </li>
-                if (author == null) {
-                    author = Author.createUnknownAuthor(context);
-                }
-                // very unlikely
-                if (title == null) {
-                    title = "";
-                }
-
-                // scan for first occurrence of "• (1234)"
-                final Matcher matcher = YEAR_PATTERN.matcher(liAsString);
-                final String year = matcher.find() ? matcher.group(2) : "";
-                // see if we can use it as the first publication year for the book.
-                // i.e. if this entry has the same title as the book title
-                if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
-                    && title.equalsIgnoreCase(mTitle)) {
-                    mFirstPublicationYear = ParseUtils.digits(year);
-                }
-
-                toc.add(new TocEntry(author, title, year));
-            }
-        }
-        return toc;
-    }
-
-    /**
      * Parses the downloaded {@link Document} for the cover and fetches it when present.
      *
      * @param document to parse
@@ -1087,7 +1085,7 @@ public class IsfdbSearchEngine
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         /* First "ContentBox" contains all basic details.
          * <pre>
          *   {@code
@@ -1129,28 +1127,6 @@ public class IsfdbSearchEngine
             }
         }
         return imageList;
-    }
-
-
-    /**
-     * Get the list with {@link Edition} information for the given url.
-     *
-     * @param context Current context
-     * @param url     A fully qualified ISFDB search url
-     *
-     * @return list of editions found, can be empty, but never {@code null}
-     */
-    @WorkerThread
-    @NonNull
-    private List<Edition> fetchEditions(@NonNull final Context context,
-                                        @NonNull final String url)
-            throws SearchException, CredentialsException {
-
-        final Document document = loadDocument(context, url);
-        if (!isCancelled()) {
-            return parseEditions(document);
-        }
-        return new ArrayList<>();
     }
 
     /**
@@ -1251,26 +1227,26 @@ public class IsfdbSearchEngine
         return editions;
     }
 
-
     /**
-     * Fetch a book.
+     * Get the list with {@link Edition} information for the given url.
      *
-     * @param context     Current context
-     * @param edition     to get
-     * @param fetchCovers Set to {@code true} if we want to get covers
-     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
+     * @param context Current context
+     * @param url     A fully qualified ISFDB search url
+     *
+     * @return list of editions found, can be empty, but never {@code null}
      */
     @WorkerThread
-    void fetchByEdition(@NonNull final Context context,
-                        @NonNull final Edition edition,
-                        @NonNull final boolean[] fetchCovers,
-                        @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+    @NonNull
+    private List<Edition> fetchEditions(@NonNull final Context context,
+                                        @NonNull final String url)
+            throws SearchException, CredentialsException {
 
-        final Document document = loadDocumentByEdition(context, edition);
+        final Document document = loadDocument(context, url);
+
         if (!isCancelled()) {
-            parse(context, document, fetchCovers, bookData);
+            return parseEditions(document);
         }
+        return new ArrayList<>();
     }
 
     @NonNull
@@ -1425,6 +1401,37 @@ public class IsfdbSearchEngine
     }
 
     /**
+     * Fetch a book.
+     *
+     * @param context     Current context
+     * @param edition     to get
+     * @param fetchCovers Set to {@code true} if we want to get covers
+     * @param bookData    Bundle to update <em>(passed in to allow mocking)</em>
+     */
+    @WorkerThread
+    void fetchByEdition(@NonNull final Context context,
+                        @NonNull final Edition edition,
+                        @NonNull final boolean[] fetchCovers,
+                        @NonNull final Bundle bookData)
+            throws StorageException, SearchException, CredentialsException {
+
+        final Document document = loadDocumentByEdition(context, edition);
+        if (!isCancelled()) {
+            parse(context, document, fetchCovers, bookData);
+        }
+    }
+
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mFutureHttpGet != null) {
+                mFutureHttpGet.cancel();
+            }
+        }
+    }
+
+    /**
      * Fetch a (list of) publications by REST-url which returns an xml doc.
      *
      * @param context     Current context
@@ -1439,43 +1446,51 @@ public class IsfdbSearchEngine
                                            @NonNull final boolean[] fetchCovers,
                                            @SuppressWarnings("SameParameterValue")
                                            final int maxRecords)
-            throws StorageException, SearchException {
+            throws StorageException,
+                   SearchException {
+
+        mFutureHttpGet = createFutureGetRequest();
+
+        final SAXParserFactory factory = SAXParserFactory.newInstance();
 
         final IsfdbPublicationListHandler listHandler =
                 new IsfdbPublicationListHandler(this,
                                                 fetchCovers, maxRecords,
                                                 getLocale(context));
 
-        final SAXParserFactory factory = SAXParserFactory.newInstance();
-
         try {
             final SAXParser parser = factory.newSAXParser();
-            try (TerminatorConnection con = createConnection(url)) {
-                parser.parse(con.getInputStream(), listHandler);
-            }
 
-            if (isCancelled()) {
-                return new ArrayList<>();
-            }
+            mFutureHttpGet.get(url, con -> {
+                try {
+                    parser.parse(con.getInputStream(), listHandler);
+                    return true;
+
+                } catch (@NonNull final IOException e) {
+                    throw new UncheckedIOException(e);
+                } catch (@NonNull final SAXException e) {
+                    throw new UncheckedSAXException(e);
+                }
+            });
+
+            return listHandler.getResult();
 
         } catch (@NonNull final SAXException e) {
-            // unwrap SAXException if possible
-            final Exception embedded = e.getException();
-            if (embedded instanceof EOFException) {
+            // unwrap SAXException using getException() !
+            final Exception cause = e.getException();
+            if (cause instanceof EOFException) {
                 // not an error; we're done.
                 return listHandler.getResult();
 
-            } else if (embedded instanceof StorageException) {
-                throw (StorageException) embedded;
-            } else {
-                throw new SearchException(getName(context), e);
+            } else if (cause instanceof StorageException) {
+                throw (StorageException) cause;
             }
+            // wrap other parser exceptions
+            throw new SearchException(getName(context), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
             throw new SearchException(getName(context), e);
         }
-
-        return listHandler.getResult();
     }
 
 

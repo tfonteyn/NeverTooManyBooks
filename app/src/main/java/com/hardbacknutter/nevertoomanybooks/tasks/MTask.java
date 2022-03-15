@@ -67,7 +67,7 @@ public abstract class MTask<Result>
 
     @Override
     @WorkerThread
-    protected void setFinished(@Nullable final Result result) {
+    protected void setTaskFinished(@Nullable final Result result) {
         mFinishedObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
@@ -85,7 +85,7 @@ public abstract class MTask<Result>
 
     @Override
     @WorkerThread
-    protected void setCancelled(@Nullable final Result result) {
+    protected void setTaskCancelled(@Nullable final Result result) {
         mCancelObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), result)));
     }
 
@@ -101,7 +101,7 @@ public abstract class MTask<Result>
 
     @Override
     @WorkerThread
-    protected void setFailure(@NonNull final Exception e) {
+    protected void setTaskFailure(@NonNull final Exception e) {
         mFailureObservable.postValue(new LiveDataEvent<>(new TaskResult<>(getTaskId(), e)));
     }
 

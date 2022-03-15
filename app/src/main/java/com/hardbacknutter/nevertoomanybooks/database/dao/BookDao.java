@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public interface BookDao {
 
@@ -94,14 +94,14 @@ public interface BookDao {
      *
      * @return the row id of the newly inserted row
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      * @throws DaoWriteException     on failure
      */
     @IntRange(from = 1, to = Integer.MAX_VALUE)
     long insert(@NonNull Context context,
                 @NonNull Book /* in/out */ book,
                 @BookFlags int flags)
-            throws CoverStorageException, DaoWriteException;
+            throws StorageException, DaoWriteException;
 
     /**
      * Update the given {@link Book}.
@@ -115,13 +115,13 @@ public interface BookDao {
      *                May contain extra data which will be ignored.
      * @param flags   See {@link BookFlags} for flag definitions; {@code 0} for 'normal'.
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      * @throws DaoWriteException     on failure
      */
     void update(@NonNull Context context,
                 @NonNull Book book,
                 @BookFlags int flags)
-            throws CoverStorageException, DaoWriteException;
+            throws StorageException, DaoWriteException;
 
     /**
      * Delete the given book (and its covers).

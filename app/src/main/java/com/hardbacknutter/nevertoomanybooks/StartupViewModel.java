@@ -81,7 +81,7 @@ public class StartupViewModel
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
 
-    private final MutableLiveData<LiveDataEvent<TaskResult<Void>>> mFinished =
+    private final MutableLiveData<LiveDataEvent<Boolean>> mFinished =
             new MutableLiveData<>();
     private final MutableLiveData<LiveDataEvent<TaskResult<Exception>>> mFailure =
             new MutableLiveData<>();
@@ -105,6 +105,7 @@ public class StartupViewModel
         @Override
         public void onCancelled(final int taskId,
                                 @Nullable final Boolean result) {
+            // We should not get here as the user cannot cancel tasks
             cleanup(taskId);
         }
 
@@ -119,7 +120,7 @@ public class StartupViewModel
             synchronized (mAllTasks) {
                 mAllTasks.remove(taskId);
                 if (!isRunning()) {
-                    mFinished.setValue(null);
+                    mFinished.setValue(new LiveDataEvent<>(true));
                 }
             }
         }
@@ -161,10 +162,6 @@ public class StartupViewModel
         return mProposeBackup;
     }
 
-    int getStartupStage() {
-        return mStartupStage;
-    }
-
     int getNextStartupStage(@SuppressWarnings("SameParameterValue") final int max) {
         if (mStartupStage < max) {
             mStartupStage++;
@@ -180,18 +177,18 @@ public class StartupViewModel
     public void init(@NonNull final Context context) {
         if (mStartTasks) {
 
-            upgrade(context);
+            cleanObsoleteDirectories(context);
 
             // from here on, we have access to our log file
             Logger.cycleLogs();
 
-            // prepare the maintenance flags and counters.
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            final int maintenanceCountdown = global
-                    .getInt(PK_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
-            final int backupCountdown = global
-                    .getInt(ExportHelper.PK_BACKUP_COUNTDOWN,
-                            ExportHelper.BACKUP_COUNTDOWN_DEFAULT);
+
+            // prepare the maintenance flags and counters.
+            final int maintenanceCountdown = global.getInt(PK_MAINTENANCE_COUNTDOWN,
+                                                           MAINTENANCE_COUNTDOWN);
+            final int backupCountdown = global.getInt(ExportHelper.PK_BACKUP_COUNTDOWN,
+                                                      ExportHelper.BACKUP_COUNTDOWN_DEFAULT);
 
             global.edit()
                   .putInt(PK_MAINTENANCE_COUNTDOWN,
@@ -207,10 +204,23 @@ public class StartupViewModel
 
             mDoMaintenance = maintenanceCountdown == 0;
             mProposeBackup = backupCountdown == 0;
+
+
+            //FIXME: there is a recurring issue where style prefs are written to the global prefs
+            // when not intended. Instead of fixing that, we'll migrate styles to the db table.
+            // Until then, remove any accidental global style prefs.
+            final SharedPreferences.Editor editor = global.edit();
+            global.getAll()
+                  .keySet()
+                  .stream()
+                  .filter(key -> key.startsWith("style."))
+                  .forEach(editor::remove);
+
+            editor.apply();
         }
     }
 
-    private void upgrade(@NonNull final Context context) {
+    private void cleanObsoleteDirectories(@NonNull final Context context) {
         // Just delete the obsolete dirs.
         final File root = context.getExternalFilesDir(null);
         // If the user created sub dirs (we did not), then this will fail... oh well.
@@ -269,7 +279,7 @@ public class StartupViewModel
         }
 
         if (!isRunning()) {
-            mFinished.setValue(null);
+            mFinished.setValue(new LiveDataEvent<>(true));
         }
 
         return true;
@@ -283,17 +293,15 @@ public class StartupViewModel
     }
 
     /**
-     * Called when the task successfully finishes.
-     *
-     * @return the Result which can be considered to be complete and correct.
+     * Called when all tasks have finished.
      */
     @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Void>>> onFinished() {
+    public LiveData<LiveDataEvent<Boolean>> onFinished() {
         return mFinished;
     }
 
     /**
-     * Called when the task fails with an Exception.
+     * Called when a task fails with an Exception.
      *
      * @return the result is the Exception
      */

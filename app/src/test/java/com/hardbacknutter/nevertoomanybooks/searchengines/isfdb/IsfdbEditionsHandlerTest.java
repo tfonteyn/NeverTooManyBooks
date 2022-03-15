@@ -26,13 +26,16 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
@@ -54,10 +57,12 @@ class IsfdbEditionsHandlerTest
     private IsfdbSearchEngine mSearchEngine;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
-                .getSite(SearchSites.ISFDB).getSearchEngine(new MockCanceller());
+                .getSite(SearchSites.ISFDB).getSearchEngine();
+        mSearchEngine.setCaller(new MockCancellable());
     }
 
     @Test

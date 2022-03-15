@@ -59,9 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -196,7 +195,7 @@ public class AmazonSearchEngine
     private Bundle genericSearch(@NonNull final Context context,
                                  @NonNull final String url,
                                  @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url);
         final Bundle bookData = newBundleInstance();
@@ -212,7 +211,7 @@ public class AmazonSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         // Convert an ISBN13 to ISBN10 (i.e. the ASIN)
         final ISBN tmp = new ISBN(validIsbn);
@@ -228,7 +227,7 @@ public class AmazonSearchEngine
     public Bundle searchByBarcode(@NonNull final Context context,
                                   @NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         if (ASIN.isValidAsin(barcode)) {
             return genericSearch(context,
@@ -247,7 +246,7 @@ public class AmazonSearchEngine
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, validIsbn);
         final Document document = loadDocument(context, url);
@@ -267,7 +266,7 @@ public class AmazonSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
         super.parse(context, document, fetchCovers, bookData);
 
         final Locale siteLocale = getLocale(context, document.location().split("/")[2]);
@@ -518,7 +517,7 @@ public class AmazonSearchEngine
                                           @Nullable final String isbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
         final ArrayList<String> imageList = new ArrayList<>();
 

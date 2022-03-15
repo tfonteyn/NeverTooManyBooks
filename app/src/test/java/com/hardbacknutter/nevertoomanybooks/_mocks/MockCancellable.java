@@ -19,10 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks._mocks;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 
-public class MockCanceller
-        implements Canceller {
+public class MockCancellable
+        implements Cancellable {
+
+    @Override
+    public void cancel() {
+    }
 
     @Override
     public boolean isCancelled() {

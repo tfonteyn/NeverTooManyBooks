@@ -37,10 +37,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -78,7 +79,7 @@ public class FileManager {
      * @param isbn to search
      *
      * @return a {@link ImageFileInfo} object with or without a valid fileSpec,
-     * or {@code null} if there is no cached file at all
+     *         or {@code null} if there is no cached file at all
      */
     @Nullable
     @AnyThread
@@ -107,7 +108,7 @@ public class FileManager {
     @NonNull
     @WorkerThread
     public ImageFileInfo search(@NonNull final Context context,
-                                @NonNull final Canceller caller,
+                                @NonNull final Cancellable caller,
                                 @NonNull final String isbn,
                                 @IntRange(from = 0, to = 1) final int cIdx,
                                 @NonNull final ImageFileInfo.Size... sizes)
@@ -148,13 +149,17 @@ public class FileManager {
                     }
 
                     // Is this Site's SearchEngine available and suitable?
-                    final SearchEngine searchEngine = site.getSearchEngine(caller);
+                    final SearchEngine searchEngine = site.getSearchEngine();
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
 
+                        searchEngine.setCaller(caller);
+
+                        final SearchEngineConfig seConfig = searchEngine.getConfig();
+
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"
-                                       + "|searchEngine=" + searchEngine.getName(context)
+                                       + "|searchEngine=" + seConfig.getName(context)
                                        + "|isbn=" + isbn
                                        + "|cIdx=" + cIdx
                                        + "|size=" + size);
@@ -172,7 +177,7 @@ public class FileManager {
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|FAILED"
-                                           + "|searchEngine=" + searchEngine.getName(context)
+                                           + "|searchEngine=" + seConfig.getName(context)
                                            + "|imageFileInfo=" + imageFileInfo,
                                       e);
                             }
@@ -182,12 +187,12 @@ public class FileManager {
                         if (fileSpec != null) {
                             // we got a file
                             imageFileInfo = new ImageFileInfo(isbn, fileSpec, size,
-                                                              searchEngine.getId());
+                                                              seConfig.getEngineId());
                             mFiles.put(isbn, imageFileInfo);
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|SUCCESS"
-                                           + "|searchEngine=" + searchEngine.getName(context)
+                                           + "|searchEngine=" + seConfig.getName(context)
                                            + "|imageFileInfo=" + imageFileInfo);
                             }
                             // abort search, we got an image
@@ -196,7 +201,7 @@ public class FileManager {
                         } else {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|NO FILE"
-                                           + "|searchEngine=" + searchEngine.getName(context)
+                                           + "|searchEngine=" + seConfig.getName(context)
                                            + "|isbn=" + isbn
                                            + "|cIdx=" + cIdx
                                            + "|size=" + size);
@@ -205,7 +210,7 @@ public class FileManager {
 
                         // if the site we just searched only supports one image,
                         // disable it for THIS search
-                        if (!searchEngine.getConfig().supportsMultipleCoverSizes()) {
+                        if (!seConfig.supportsMultipleCoverSizes()) {
                             currentSearchSites &= ~site.engineId;
                         }
                     } else {
@@ -244,4 +249,5 @@ public class FileManager {
         // not strictly needed, but future-proof
         mFiles.clear();
     }
+
 }

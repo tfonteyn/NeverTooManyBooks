@@ -76,8 +76,6 @@ public class ProgressDelegate {
         return this;
     }
 
-    //URGENT: when cancelling during connecting to a remote server (e.g. calibre) this does not work.
-    // need to break the actual TerminatorConnection
     @NonNull
     public ProgressDelegate setOnCancelListener(@Nullable final View.OnClickListener listener) {
         mVb.btnCancel.setOnClickListener(listener);

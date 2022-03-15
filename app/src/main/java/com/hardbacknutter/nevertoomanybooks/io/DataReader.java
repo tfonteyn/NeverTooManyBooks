@@ -32,25 +32,20 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
-@FunctionalInterface
+/**
+ * <ul>
+ *     <li>{@link CredentialsException}: We cannot authenticate to the site,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link StorageException}:     Specific local storage issues,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link DataReaderException}:  The embedded Exception has the details,
+ *                                       should be reported to the user,
+ *                                       but action is optional.</li>
+ *    <li>{@link IOException}:           Generic IO issues.</li>
+ * </ul>
+ */
 public interface DataReader<METADATA, RESULTS>
         extends Closeable {
-
-    /**
-     * Checks if the current archive looks valid.
-     * The default implementation does nothing.
-     *
-     * @param context Current context
-     *
-     * @throws DataReaderException on a decoding/parsing of data issue
-     * @throws IOException         on other failures
-     */
-    @WorkerThread
-    default void validate(@NonNull final Context context)
-            throws DataReaderException,
-                   IOException {
-        // do nothing
-    }
 
     /**
      * Read the meta-data about what we'll attempt to import.
@@ -67,9 +62,29 @@ public interface DataReader<METADATA, RESULTS>
     @NonNull
     default Optional<METADATA> readMetaData(@NonNull final Context context)
             throws DataReaderException,
+                   CredentialsException,
                    StorageException,
                    IOException {
         return Optional.empty();
+    }
+
+    /**
+     * Checks if the current archive looks valid.
+     * This should usually be limited to looking at the meta-data.
+     * <p>
+     * The default implementation does nothing.
+     *
+     * @param context Current context
+     *
+     * @throws DataReaderException on a decoding/parsing of data issue
+     * @throws IOException         on other failures
+     */
+    @WorkerThread
+    default void validate(@NonNull final Context context)
+            throws DataReaderException,
+                   CredentialsException,
+                   IOException {
+        // do nothing
     }
 
     /**
@@ -89,28 +104,12 @@ public interface DataReader<METADATA, RESULTS>
     RESULTS read(@NonNull Context context,
                  @NonNull ProgressListener progressListener)
             throws DataReaderException,
+                   CredentialsException,
                    StorageException,
-                   IOException,
-                   CredentialsException;
+                   IOException;
 
-    /**
-     * Try to cancel the currently running read.
-     * <p>
-     * This is a <strong>PUSH</strong> action as compared to
-     * {@link ProgressListener#isCancelled()} which is a <strong>PULL</strong> action.
-     * <p>
-     * This would be used when the DataReader uses another helper object
-     * to which it would need to propagate the cancel signal.
-     * e.g. to cancel an http connection thread.
-     * <p>
-     * By default, we just return {@code true}.
-     *
-     * @param taskId of the task we're cancelling
-     *
-     * @return {@code true} if an actual read task was cancelled.
-     */
-    default boolean cancel(final int taskId) {
-        return true;
+    default void cancel() {
+
     }
 
     /**

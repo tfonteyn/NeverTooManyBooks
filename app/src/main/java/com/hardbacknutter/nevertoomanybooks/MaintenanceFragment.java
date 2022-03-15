@@ -45,8 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 @Keep
 public class MaintenanceFragment
@@ -120,7 +120,11 @@ public class MaintenanceFragment
             try {
                 bytes = purge(bookUuidList, false);
 
-            } catch (@NonNull final CoverStorageException | SecurityException e) {
+            } catch (@NonNull final StorageException e) {
+                StandardDialogs.showError(context, e.getUserMessage(context));
+                return;
+
+            } catch (@NonNull final SecurityException e) {
                 StandardDialogs.showError(context, ExMsg
                         .map(context, e)
                         .orElse(getString(R.string.error_storage_not_accessible)));
@@ -140,7 +144,10 @@ public class MaintenanceFragment
                         try {
                             purge(bookUuidList, true);
 
-                        } catch (@NonNull final CoverStorageException | SecurityException e) {
+                        } catch (@NonNull final StorageException e) {
+                            StandardDialogs.showError(context, e.getUserMessage(context));
+
+                        } catch (@NonNull final SecurityException e) {
                             StandardDialogs.showError(context, ExMsg
                                     .map(context, e)
                                     .orElse(getString(R.string.error_storage_not_accessible)));
@@ -221,11 +228,11 @@ public class MaintenanceFragment
      *
      * @return the total size in bytes of purgeable/purged files.
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     private long purge(@NonNull final Collection<String> bookUuidList,
                        final boolean reallyDelete)
-            throws CoverStorageException {
+            throws StorageException {
 
         // check for orphaned cover files
         final FileFilter coverFilter = file -> {
@@ -245,7 +252,7 @@ public class MaintenanceFragment
     }
 
     private long count(@Nullable final FileFilter coverFilter)
-            throws CoverStorageException {
+            throws StorageException {
         final Context context = getContext();
         //noinspection ConstantConditions
         return FileUtils.getUsedSpace(ServiceLocator.getLogDir(), null)
@@ -255,7 +262,7 @@ public class MaintenanceFragment
     }
 
     private long delete(@Nullable final FileFilter coverFilter)
-            throws CoverStorageException {
+            throws StorageException {
         final Context context = getContext();
         //noinspection ConstantConditions
         return FileUtils.deleteDirectory(ServiceLocator.getLogDir(), null, null)

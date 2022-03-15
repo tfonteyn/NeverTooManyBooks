@@ -35,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -45,13 +44,13 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -183,16 +182,17 @@ public class ExportHelper
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws DataWriterException,
-                   IOException,
+                   CredentialsException,
                    StorageException,
-                   CertificateException {
+                   IOException {
 
         Objects.requireNonNull(mUri, "mUri");
 
         final ExportResults results = new ExportResults();
 
-        try (DataWriter<ExportResults> writer = mEncoding.createWriter(context, this)) {
-            results.add(writer.write(context, progressListener));
+        try {
+            mDataWriter = mEncoding.createWriter(context, this);
+            results.add(mDataWriter.write(context, progressListener));
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
@@ -200,6 +200,13 @@ public class ExportHelper
             if (!progressListener.isCancelled()) {
                 FileUtils.delete(getTempFile(context));
                 throw e;
+            }
+        } finally {
+            synchronized (this) {
+                if (mDataWriter != null) {
+                    mDataWriter.close();
+                    mDataWriter = null;
+                }
             }
         }
 

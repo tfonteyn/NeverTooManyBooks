@@ -20,8 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.StylePersistenceLayerBundle;
@@ -34,8 +37,9 @@ class TextScaleTest
     private StylePersistenceLayer mLayerMock;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
         mLayerMock = new StylePersistenceLayerBundle();
     }
 

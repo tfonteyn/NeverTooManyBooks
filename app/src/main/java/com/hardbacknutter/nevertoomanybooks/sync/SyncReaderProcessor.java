@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Handles importing data with each field controlled by a {@link SyncAction}.
@@ -326,7 +326,7 @@ public final class SyncReaderProcessor
             try {
                 book.persistCover(new File(fileSpec), cIdx);
 
-            } catch (@NonNull final CoverStorageException | IOException e) {
+            } catch (@NonNull final StorageException | IOException e) {
                 // We're called in a loop, and the chance of an exception here is very low
                 // so let's log it, and quietly continue.
                 Logger.error(TAG, e, "processCoverImage|uuid="

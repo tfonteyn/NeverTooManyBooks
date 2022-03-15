@@ -35,14 +35,18 @@ public class ValidatorException
 
     private static final long serialVersionUID = -6649344132897810680L;
 
-    public ValidatorException(@NonNull final String message) {
-        super(message);
+    public ValidatorException(@NonNull final String localizedMessage) {
+        super(localizedMessage);
     }
 
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        final String msg = getMessage();
-        return msg != null ? msg : context.getString(R.string.error_unknown);
+        // if a custom message was added, use that.
+        if (getMessage() != null) {
+            return getMessage();
+        }
+
+        return context.getString(R.string.error_unknown);
     }
 }

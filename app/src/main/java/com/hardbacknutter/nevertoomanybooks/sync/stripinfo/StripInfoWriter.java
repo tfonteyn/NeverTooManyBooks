@@ -73,6 +73,11 @@ public class StripInfoWriter
         mDeleteLocalBook = mSyncWriterHelper.isDeleteLocalBooks();
     }
 
+    @Override
+    public void cancel() {
+        mCollectionForm.cancel();
+    }
+
     @NonNull
     @Override
     public SyncWriterResults write(@NonNull final Context context,

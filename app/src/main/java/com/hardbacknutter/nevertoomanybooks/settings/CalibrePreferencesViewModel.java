@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class CalibrePreferencesViewModel
         extends ViewModel {
@@ -84,12 +85,25 @@ public class CalibrePreferencesViewModel
         /** Log tag. */
         private static final String TAG = "CalibreValidateConTask";
 
+        @Nullable
+        private CalibreContentServer mServer;
+
         ValidateConnectionTask() {
             super(R.id.TASK_ID_VALIDATE_CONNECTION, TAG);
         }
 
         void connect() {
             execute();
+        }
+
+        @Override
+        public void cancel() {
+            synchronized (this) {
+                super.cancel();
+                if (mServer != null) {
+                    mServer.cancel();
+                }
+            }
         }
 
         /**
@@ -100,13 +114,16 @@ public class CalibrePreferencesViewModel
          * @return {@code true} on success
          *
          * @throws CertificateException on failures related to the user installed CA.
-         * @throws IOException          on failures
+         * @throws IOException          on other failures
          */
         @Nullable
         @Override
         protected Boolean doWork(@NonNull final Context context)
-                throws IOException, CertificateException {
-            return new CalibreContentServer(context).validateConnection();
+                throws IOException,
+                       StorageException,
+                       CertificateException {
+            mServer = new CalibreContentServer(context);
+            return mServer.validateConnection();
         }
     }
 }

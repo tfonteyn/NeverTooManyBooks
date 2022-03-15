@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.util.Objects;
@@ -71,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -198,10 +197,6 @@ public class JsonRecordReader
 
         } catch (@NonNull final JSONException e) {
             throw new DataReaderException(e);
-
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
         }
     }
 
@@ -211,7 +206,9 @@ public class JsonRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper helper,
                               @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, DataReaderException, IOException {
+            throws DataReaderException,
+                   StorageException,
+                   IOException {
 
         mResults = new ImportResults();
 
@@ -269,10 +266,6 @@ public class JsonRecordReader
             } catch (@NonNull final JSONException e) {
                 throw new DataReaderException(context.getString(
                         R.string.error_import_failed_for_record, recordType.getName()), e);
-
-            } catch (@NonNull final UncheckedIOException e) {
-                //noinspection ConstantConditions
-                throw e.getCause();
 
             } catch (@NonNull final Error e) {
                 // wrap it. Note this is not foolproof... the app might still crash!
@@ -401,7 +394,8 @@ public class JsonRecordReader
                            @NonNull final JSONObject root,
                            @NonNull final ImportHelper helper,
                            @NonNull final ProgressListener progressListener)
-            throws CoverStorageException, JSONException {
+            throws StorageException,
+                   JSONException {
 
         final JSONArray books = root.optJSONArray(RecordType.Books.getName());
         if (books == null || books.isEmpty()) {

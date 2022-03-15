@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 
 /**
  * Class to wrap common storage related functions.
@@ -182,21 +182,21 @@ public final class FileUtils {
     /**
      * Recursively copy the source Directory to the destination Directory.
      *
-     * @param sourceDir directory
-     * @param destDir   directory
-     * @param canceller (optional) to check for user cancellation
+     * @param sourceDir   directory
+     * @param destDir     directory
+     * @param cancellable (optional) to check for user cancellation
      *
      * @throws IOException on failure
      */
     public static void copyDirectory(@NonNull final File sourceDir,
                                      @NonNull final File destDir,
-                                     @Nullable final Canceller canceller)
+                                     @Nullable final Cancellable cancellable)
             throws IOException {
         // sanity check
         if (sourceDir.isDirectory() && destDir.isDirectory()) {
             //noinspection ConstantConditions
             for (final File file : sourceDir.listFiles()) {
-                if (canceller != null && canceller.isCancelled()) {
+                if (cancellable != null && cancellable.isCancelled()) {
                     return;
                 }
                 if (file.isFile()) {
@@ -206,7 +206,7 @@ public final class FileUtils {
                     final File destSubDir = new File(destDir, file.getName());
                     //noinspection ResultOfMethodCallIgnored
                     destSubDir.mkdir();
-                    copyDirectory(file, destSubDir, canceller);
+                    copyDirectory(file, destSubDir, cancellable);
                 }
             }
         }
@@ -274,28 +274,28 @@ public final class FileUtils {
      * Recursively delete files.
      * Does <strong>NOT</strong> delete the actual directory or any actual subdirectories.
      *
-     * @param root      directory
-     * @param filter    (optional) to apply; {@code null} for all files.
-     * @param canceller (optional) to check for user cancellation
+     * @param root        directory
+     * @param filter      (optional) to apply; {@code null} for all files.
+     * @param cancellable (optional) to check for user cancellation
      *
      * @return number of bytes deleted
      */
     public static long deleteDirectory(@NonNull final File root,
                                        @Nullable final FileFilter filter,
-                                       @Nullable final Canceller canceller) {
+                                       @Nullable final Cancellable cancellable) {
         long totalSize = 0;
         // sanity check
         if (root.isDirectory()) {
             //noinspection ConstantConditions
             for (final File file : root.listFiles(filter)) {
-                if (canceller != null && canceller.isCancelled()) {
+                if (cancellable != null && cancellable.isCancelled()) {
                     return totalSize;
                 }
                 if (file.isFile()) {
                     totalSize += file.length();
                     delete(file);
                 } else if (file.isDirectory()) {
-                    totalSize += deleteDirectory(file, filter, canceller);
+                    totalSize += deleteDirectory(file, filter, cancellable);
                 }
             }
         }

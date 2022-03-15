@@ -25,6 +25,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedInputStream;
@@ -33,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -63,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * TODO: add support for POST and signing
  */
+@SuppressWarnings("UnusedReturnValue")
 @WorkerThread
 public final class TerminatorConnection
         implements AutoCloseable {
@@ -79,6 +82,8 @@ public final class TerminatorConnection
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
+    @StringRes
+    private final int mSiteResId;
     @Nullable
     private Throttler mThrottler;
     @Nullable
@@ -91,6 +96,7 @@ public final class TerminatorConnection
     private boolean mCloseWasCalled;
     /** see {@link #setRetryCount(int)}. */
     private int mNrOfTries = NR_OF_TRIES;
+    private int mKillTimeoutInMs = KILL_TIMEOUT_MS;
 
     /**
      * Constructor.
@@ -100,8 +106,10 @@ public final class TerminatorConnection
      * @throws IOException on failure
      */
     @WorkerThread
-    public TerminatorConnection(@NonNull final String urlStr)
+    public TerminatorConnection(@NonNull final String urlStr,
+                                @StringRes final int siteResId)
             throws IOException {
+        mSiteResId = siteResId;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "Constructor|url=\"" + urlStr + '\"');
@@ -126,13 +134,13 @@ public final class TerminatorConnection
     /**
      * Set the optional connect-timeout.
      *
-     * @param timeoutInMs in millis, use {@code 0} for system default
+     * @param timeoutInMs in millis, use {@code 0} for infinite timeout
      */
     @NonNull
     public TerminatorConnection setConnectTimeout(@IntRange(from = 0) final int timeoutInMs) {
         Objects.requireNonNull(mRequest, "mRequest");
 
-        if (timeoutInMs > 0) {
+        if (timeoutInMs >= 0) {
             mRequest.setConnectTimeout(timeoutInMs);
         } else {
             mRequest.setConnectTimeout(CONNECT_TIMEOUT_MS);
@@ -143,18 +151,33 @@ public final class TerminatorConnection
     /**
      * Set the optional read-timeout.
      *
-     * @param timeoutInMs in millis, use {@code 0} for system default
+     * @param timeoutInMs in millis, use {@code 0} for infinite timeout
      */
     @NonNull
     public TerminatorConnection setReadTimeout(@IntRange(from = 0) final int timeoutInMs) {
         Objects.requireNonNull(mRequest, "mRequest");
 
-        if (timeoutInMs > 0) {
+        if (timeoutInMs >= 0) {
             mRequest.setReadTimeout(timeoutInMs);
         } else {
             mRequest.setReadTimeout(READ_TIMEOUT_MS);
         }
 
+        return this;
+    }
+
+    /**
+     * Set the optional kill-timeout.
+     *
+     * @param timeoutInMs in millis, use {@code 0} for infinite timeout
+     */
+    @NonNull
+    public TerminatorConnection setKillTimeout(@IntRange(from = 0) final int timeoutInMs) {
+        if (timeoutInMs >= 0) {
+            mKillTimeoutInMs = timeoutInMs;
+        } else {
+            mKillTimeoutInMs = KILL_TIMEOUT_MS;
+        }
         return this;
     }
 
@@ -180,6 +203,16 @@ public final class TerminatorConnection
 
         if (sslContext != null) {
             ((HttpsURLConnection) mRequest).setSSLSocketFactory(sslContext.getSocketFactory());
+        }
+        return this;
+    }
+
+    @NonNull
+    public TerminatorConnection setAuthHeader(@Nullable final String authHeader) {
+        Objects.requireNonNull(mRequest, "mRequest");
+
+        if (authHeader != null) {
+            mRequest.setRequestProperty(HttpUtils.AUTHORIZATION, authHeader);
         }
         return this;
     }
@@ -214,7 +247,24 @@ public final class TerminatorConnection
     /**
      * Open the actual connection and return the input stream.
      *
-     * @return input stream
+     * @return a BufferedInputStream for the request
+     *
+     * @throws UncheckedIOException on failure
+     */
+    @NonNull
+    public BufferedInputStream getInputStreamUEX()
+            throws UncheckedIOException {
+        try {
+            return getInputStream();
+        } catch (@NonNull final IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Open the actual connection and return the input stream.
+     *
+     * @return a BufferedInputStream for the request
      *
      * @throws IOException on failure
      */
@@ -227,11 +277,20 @@ public final class TerminatorConnection
         return mInputStream;
     }
 
+    @NonNull
+    public BufferedInputStream getInputStream(final int bufferSize)
+            throws IOException {
+        if (mInputStream == null) {
+            mInputStream = new BufferedInputStream(openInputStream(), bufferSize);
+        }
+        return mInputStream;
+    }
+
     /**
      * Perform the actual opening of the connection: initiate the InputStream
      * and setup the killer-thread.
      * <p>
-     * Called from {@link #getInputStream()}.
+     * Called from {@link #getInputStream} / {@link #getInputStreamUEX}.
      *
      * @return an input stream that reads from this open connection.
      *
@@ -260,19 +319,18 @@ public final class TerminatorConnection
                 // make the actual connection
                 final InputStream is = mRequest.getInputStream();
                 if (mRequest.getResponseCode() < 400) {
-                    // we'll close the connection on a background task after a 'kill' timeout,
-                    // so that we can cancel any runaway timeouts.
-                    mClosingThread = new Thread(new TerminatorThread(this, KILL_TIMEOUT_MS));
-                    mClosingThread.start();
+                    if (mKillTimeoutInMs > 0) {
+                        // we'll close the connection on a background task after a 'kill' timeout,
+                        // so that we can cancel any runaway timeouts.
+                        mClosingThread = new Thread(new TerminatorThread(this, mKillTimeoutInMs));
+                        mClosingThread.start();
+                    }
                     return is;
 
                 } else {
                     // throw any real error code without retrying.
                     close();
-                    throw new HttpStatusException(0,
-                                                  mRequest.getResponseCode(),
-                                                  mRequest.getResponseMessage(),
-                                                  mRequest.getURL());
+                    HttpUtils.checkResponseCode(mRequest, mSiteResId);
                 }
 
                 // these exceptions CAN be retried

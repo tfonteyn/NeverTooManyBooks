@@ -80,7 +80,8 @@ public class JsonArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final LocalDateTime dateSince = mHelper.getLastDone();
 

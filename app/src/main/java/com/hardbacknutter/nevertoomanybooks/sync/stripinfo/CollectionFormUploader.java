@@ -26,16 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import androidx.core.math.MathUtils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.UncheckedIOException;
+import java.util.Objects;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,7 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -81,6 +78,23 @@ public class CollectionFormUploader {
 
     /** Delegate common Element handling. */
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
+
+    @NonNull
+    private final FutureHttpPost<Document> mFutureHttpPost;
+
+    /**
+     * Constructor.
+     */
+    @AnyThread
+    public CollectionFormUploader() {
+        final SearchEngineConfig config = SearchEngineRegistry
+                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+
+        mFutureHttpPost = new FutureHttpPost<Document>(
+                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
+                .setThrottler(StripInfoSearchEngine.THROTTLER)
+                .setContentType(HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+    }
 
     /**
      * Set or reset the flag/checkbox 'In Bezit'.
@@ -158,7 +172,6 @@ public class CollectionFormUploader {
 
         final String postBody = new Uri.Builder()
                 .appendQueryParameter(FF_SCORE, ratingToSite(book))
-
                 .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
                 .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
                 .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
@@ -234,13 +247,13 @@ public class CollectionFormUploader {
         builder.appendQueryParameter(FF_LOCATIE, book.getString(DBKey.KEY_LOCATION));
         builder.appendQueryParameter(FF_OPMERKING, book.getString(DBKey.KEY_PRIVATE_NOTES));
 
-        final String postBody = builder
-                .appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
-                .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
-                .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
-                .appendQueryParameter(FORM_NAME, "collDetail")
-                .build()
-                .getEncodedQuery();
+        final String postBody =
+                builder.appendQueryParameter(FF_STRIP_ID, String.valueOf(externalId))
+                       .appendQueryParameter(FF_STRIP_COLLECTIE_ID, String.valueOf(collectionId))
+                       .appendQueryParameter(FORM_MODE, MODE_SEND_FORM)
+                       .appendQueryParameter(FORM_NAME, "collDetail")
+                       .build()
+                       .getEncodedQuery();
         //noinspection ConstantConditions
         doPost(postBody);
     }
@@ -332,6 +345,7 @@ public class CollectionFormUploader {
                     .getEncodedQuery();
             //noinspection ConstantConditions
             final Document responseForm = doPost(postBody);
+
             collectionId = mJSoupHelper.getInt(responseForm, FF_STRIP_COLLECTIE_ID);
             book.putLong(DBKey.KEY_STRIP_INFO_COLL_ID, collectionId);
 
@@ -358,41 +372,21 @@ public class CollectionFormUploader {
      *
      * @throws IOException on any failure
      */
-    @NonNull
     @WorkerThread
+    @NonNull
     private Document doPost(@NonNull final String postBody)
             throws IOException {
 
-        StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
-
-        HttpURLConnection request = null;
-        try {
-            request = (HttpURLConnection) new URL(FORM_URL).openConnection();
-            request.setRequestMethod(HttpUtils.POST);
-            request.setRequestProperty(HttpUtils.CONTENT_TYPE,
-                                       HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
-            request.setDoOutput(true);
-
-            // explicit connect for clarity
-            request.connect();
-
-            try (OutputStream os = request.getOutputStream();
-                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                 Writer writer = new BufferedWriter(osw)) {
-                writer.write(postBody);
-                writer.flush();
-            }
-
-            HttpUtils.checkResponseCode(request, R.string.site_stripinfo_be);
-
-            try (InputStream is = request.getInputStream();
-                 BufferedInputStream bis = new BufferedInputStream(is)) {
+        return Objects.requireNonNull(mFutureHttpPost.post(FORM_URL, postBody, (bis) -> {
+            try {
                 return Jsoup.parse(bis, null, FORM_URL);
+            } catch (@NonNull final IOException e) {
+                throw new UncheckedIOException(e);
             }
-        } finally {
-            if (request != null) {
-                request.disconnect();
-            }
-        }
+        }));
+    }
+
+    public void cancel() {
+        mFutureHttpPost.cancel();
     }
 }

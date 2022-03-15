@@ -58,8 +58,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -238,8 +236,8 @@ public class ShowBookDetailsFragment
                 mCalibreHandler = new CalibreHandler(getContext(), this)
                         .setProgressFrame(getProgressFrame());
                 mCalibreHandler.onViewCreated(this);
-            } catch (@NonNull final SSLException | CertificateException ignore) {
-                // ignore
+            } catch (@NonNull final CertificateException ignore) {
+                //ignore; the user would already have been warned on the BoB screen
             }
         }
 

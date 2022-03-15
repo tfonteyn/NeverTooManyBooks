@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
@@ -33,25 +34,22 @@ public class DataWriterException
         extends Exception
         implements LocalizedException {
 
-    private static final long serialVersionUID = -1777048008850619347L;
 
-    public DataWriterException(@NonNull final String message) {
-        super(message);
-    }
+    private static final long serialVersionUID = -1706696680423435433L;
 
     public DataWriterException(@NonNull final Throwable cause) {
         super(cause);
     }
 
-    public DataWriterException(@NonNull final String message,
-                               @NonNull final Throwable cause) {
-        super(message, cause);
-    }
-
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        //TODO: look at cause and give more details
-        return context.getString(R.string.error_export_failed);
+        // if a custom message was added, use that.
+        if (getMessage() != null) {
+            return getMessage();
+        }
+
+        return ExMsg.map(context, getCause())
+                    .orElse(context.getString(R.string.error_export_failed));
     }
 }

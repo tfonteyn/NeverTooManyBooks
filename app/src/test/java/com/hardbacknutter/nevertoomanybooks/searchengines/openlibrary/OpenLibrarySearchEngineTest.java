@@ -19,33 +19,32 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.openlibrary;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
-import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class OpenLibrarySearchEngineTest
         extends Base {
@@ -53,14 +52,17 @@ class OpenLibrarySearchEngineTest
     private OpenLibrarySearchEngine mSearchEngine;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
         mSearchEngine = (OpenLibrarySearchEngine) Site.Type.Data
-                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine(new MockCanceller());
+                .getSite(SearchSites.OPEN_LIBRARY).getSearchEngine();
+        mSearchEngine.setCaller(new MockCancellable());
     }
 
     @Test
-    void parse() {
+    void parse()
+            throws IOException, SearchException, StorageException {
         setLocale(Locale.UK);
 
         // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
@@ -70,11 +72,7 @@ class OpenLibrarySearchEngineTest
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             final String response = mSearchEngine.readResponseStream(is);
-            final JSONObject json = new JSONObject(response);
-            mSearchEngine.handleResponse(mContext, json,
-                                         new boolean[]{false, false}, mRawData);
-        } catch (@NonNull final DiskFullException | CoverStorageException | IOException e) {
-            fail(e);
+            mSearchEngine.handleResponse(mContext, response, new boolean[]{false, false}, mRawData);
         }
 
         assertNotNull(mRawData);

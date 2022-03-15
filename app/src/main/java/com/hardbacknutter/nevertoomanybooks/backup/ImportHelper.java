@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.UriInfo;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * The glue between the ViewModel and the underlying business logic to perform an import.
@@ -142,8 +143,10 @@ public final class ImportHelper
     @NonNull
     protected DataReader<ArchiveMetaData, ImportResults> createReader(
             @NonNull final Context context)
-            throws IOException, CoverStorageException,
-                   DataReaderException {
+            throws DataReaderException,
+                   CredentialsException,
+                   StorageException,
+                   IOException {
         return mEncoding.createReader(context, this);
     }
 

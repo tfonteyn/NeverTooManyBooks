@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -73,7 +72,7 @@ public class CsvArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, CoverStorageException {
+            throws DaoWriteException, StorageException {
         super.setup();
         mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
@@ -113,6 +112,7 @@ public class CsvArchiveWriterTest
             // -1 for the header line.
             exportCount = reader.lines().count() - 1;
         } catch (@NonNull final UncheckedIOException e) {
+            // caused by lines()
             //noinspection ConstantConditions
             throw e.getCause();
         }

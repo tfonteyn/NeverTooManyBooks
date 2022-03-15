@@ -31,8 +31,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -46,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoHandler;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoReader;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoWriter;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Note on mHasLastUpdateDateField / mSyncDateUserEditable:
@@ -142,13 +142,11 @@ public enum SyncServer
      * @return a new writer
      *
      * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @NonNull
     public DataWriter<SyncWriterResults> createWriter(@NonNull final Context context,
                                                       @NonNull final SyncWriterHelper helper)
-            throws CertificateException,
-                   SSLException {
+            throws CertificateException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(helper.getRecordTypes(), "getRecordTypes");
@@ -174,10 +172,7 @@ public enum SyncServer
      *
      * @return a new reader
      *
-     * @throws DataReaderException  on a decoding/parsing of data issue
-     * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
-     * @throws IOException          on other failures
+     * @see DataReader
      */
     @NonNull
     @WorkerThread
@@ -186,6 +181,8 @@ public enum SyncServer
             @NonNull final SyncReaderHelper helper)
             throws DataReaderException,
                    CertificateException,
+                   CredentialsException,
+                   StorageException,
                    IOException {
 
         if (BuildConfig.DEBUG /* always */) {

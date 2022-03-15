@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
@@ -130,6 +131,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
 
         private static final String TAG = "MetaDataReaderTask";
 
+        @Nullable
         private DataReaderHelperBase<METADATA, RESULTS> mHelper;
 
         MetaDataReaderTask() {
@@ -148,9 +150,13 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         }
 
         @Override
-        public boolean cancel() {
-            mHelper.cancel(getTaskId());
-            return super.cancel();
+        public void cancel() {
+            synchronized (this) {
+                super.cancel();
+                if (mHelper != null) {
+                    mHelper.cancel();
+                }
+            }
         }
 
         @WorkerThread
@@ -158,11 +164,12 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         @NonNull
         protected Optional<METADATA> doWork(@NonNull final Context context)
                 throws DataReaderException,
-                       IOException,
-                       StorageException,
+                       CertificateException,
                        CredentialsException,
-                       CertificateException {
+                       StorageException,
+                       IOException {
 
+            //noinspection ConstantConditions
             return mHelper.readMetaData(context);
         }
     }
@@ -172,6 +179,7 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
 
         private static final String TAG = "DataReaderTask";
 
+        @Nullable
         private DataReaderHelperBase<METADATA, RESULTS> mHelper;
 
         DataReaderTask() {
@@ -190,21 +198,26 @@ public abstract class DataReaderViewModel<METADATA, RESULTS>
         }
 
         @Override
-        public boolean cancel() {
-            mHelper.cancel(getTaskId());
-            return super.cancel();
+        public void cancel() {
+            synchronized (this) {
+                super.cancel();
+                if (mHelper != null) {
+                    mHelper.cancel();
+                }
+            }
         }
 
         @WorkerThread
         @Override
         @NonNull
         protected RESULTS doWork(@NonNull final Context context)
-                throws DataReaderException,
-                       IOException,
-                       StorageException,
+                throws CertificateException,
                        CredentialsException,
-                       CertificateException {
+                       DataReaderException,
+                       StorageException,
+                       IOException {
 
+            //noinspection ConstantConditions
             return mHelper.read(context, this);
         }
     }

@@ -33,7 +33,6 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +43,13 @@ import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
@@ -73,26 +70,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * The searches can throw 3 Exceptions:
  * <ul>
  *     <li>{@link CredentialsException}: We cannot authenticate to the site,
- *                                       the user MUST take action on NOW.</li>
- *     <li>{@link StorageException}: Specific local storage issues,
- *                                   the user MUST take action on NOW.</li>
- *     <li>{@link SearchException}: The embedded Exception has the details,
- *                                  should be reported to the user, but action is optional.</li>
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link StorageException}:     Specific local storage issues,
+ *                                       the user MUST take action on it NOW.</li>
+ *     <li>{@link SearchException}:      The embedded Exception has the details,
+ *                                       should be reported to the user,
+ *                                       but action is optional.</li>
  * </ul>
  */
-public interface SearchEngine {
+public interface SearchEngine
+        extends Cancellable {
 
     /** Log tag. */
     String TAG = "SearchEngine";
-
-    /**
-     * Get the engine id.
-     *
-     * @return engine id
-     */
-    @AnyThread
-    @SearchSites.EngineId
-    int getId();
 
     /**
      * Get the configuration for this engine.
@@ -104,13 +94,24 @@ public interface SearchEngine {
     SearchEngineConfig getConfig();
 
     /**
+     * Get the engine id.
+     *
+     * @return engine id
+     */
+    @SearchSites.EngineId
+    default int getEngineId() {
+        return getConfig().getEngineId();
+    }
+
+    /**
      * Get the name for this engine.
      *
      * @return name
      */
-    @AnyThread
     @NonNull
-    String getName(@NonNull Context context);
+    default String getName(@NonNull final Context context) {
+        return getConfig().getName(context);
+    }
 
     /**
      * Get the site url.
@@ -121,7 +122,9 @@ public interface SearchEngine {
      */
     @AnyThread
     @NonNull
-    String getSiteUrl();
+    default String getSiteUrl() {
+        return getConfig().getHostUrl();
+    }
 
     /**
      * Get the Locale for this engine.
@@ -135,7 +138,9 @@ public interface SearchEngine {
      */
     @AnyThread
     @NonNull
-    Locale getLocale(@NonNull Context context);
+    default Locale getLocale(@NonNull final Context context) {
+        return getConfig().getLocale();
+    }
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -153,7 +158,7 @@ public interface SearchEngine {
 
     /**
      * Reset the engine, ready for a new search.
-     * This is called by {@link Site#getSearchEngine}.
+     * This is called by {@link Site#getSearchEngine()}.
      * <p>
      * The default implementation calls {@code setCaller(null)}.
      * Custom implementations should do the same.
@@ -162,14 +167,13 @@ public interface SearchEngine {
         setCaller(null);
     }
 
-    default void setCaller(@Nullable final Canceller caller) {
-
-    }
-
-    @AnyThread
-    default boolean isCancelled() {
-        return false;
-    }
+    /**
+     * Set the caller to allow <strong>PULL</strong> checks if we should cancel the search.
+     * i.e. the engine will ask the caller at semi-regular intervals if it should quit.
+     *
+     * @param caller to check with
+     */
+    void setCaller(@Nullable Cancellable caller);
 
     /**
      * Optional to implement: sites which need a registration of some sorts.
@@ -228,7 +232,7 @@ public interface SearchEngine {
         }
 
         if (showAlert) {
-            final String siteName = context.getString(config.getLabelId());
+            final String siteName = config.getName(context);
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_baseline_warning_24)
@@ -266,75 +270,21 @@ public interface SearchEngine {
         return showAlert;
     }
 
-    /**
-     * Convenience method to create a connection using the engines specific network configuration.
-     *
-     * @param url to connect to
-     *
-     * @return the connection
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
     @NonNull
-    default TerminatorConnection createConnection(@NonNull final String url)
-            throws IOException {
-
-        final SearchEngineConfig config = getConfig();
-
-        return new TerminatorConnection(url)
-                .setConnectTimeout(config.getConnectTimeoutInMs())
-                .setReadTimeout(config.getReadTimeoutInMs())
-                .setThrottler(config.getThrottler());
-    }
-
-    /**
-     * Allows to pass the 'createConnection' method to external (to the SearchEngine) classes
-     * which can call it repeatedly without having to know about the SearchEngine class.
-     *
-     * @return a connection producer
-     */
-    default Function<String, Optional<TerminatorConnection>> createConnectionProducer() {
-        return url -> {
+    default <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
+        final Function<String, Optional<TerminatorConnection>> connectionProducer = url -> {
             try {
-                return Optional.of(createConnection(url));
+                final SearchEngineConfig config = getConfig();
+                return Optional.of(new TerminatorConnection(url, config.getLabelId())
+                                           .setConnectTimeout(config.getConnectTimeoutInMs())
+                                           .setReadTimeout(config.getReadTimeoutInMs())
+                                           .setThrottler(config.getThrottler()));
             } catch (@NonNull final IOException ignore) {
                 return Optional.empty();
             }
         };
-    }
 
-    /**
-     * Convenience method to save an image using the engines specific network configuration.
-     *
-     * @param url    Image file URL
-     * @param bookId more or less unique id; e.g. isbn or website native id, etc...
-     * @param cIdx   0..n image index
-     * @param size   (optional) size parameter for engines/sites which support one
-     *
-     * @return File fileSpec, or {@code null} on failure
-     *
-     * @throws CoverStorageException The covers directory is not available
-     */
-    @WorkerThread
-    @Nullable
-    default String saveImage(@NonNull final String url,
-                             @Nullable final String bookId,
-                             @IntRange(from = 0, to = 1) final int cIdx,
-                             @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException {
-
-        final SearchEngineConfig config = getConfig();
-
-        final ImageDownloader loader = new ImageDownloader()
-                .setConnectTimeout(config.getConnectTimeoutInMs())
-                .setReadTimeout(config.getReadTimeoutInMs())
-                .setThrottler(config.getThrottler());
-
-        final File tmpFile = loader.getTempFile(config.getFilenameSuffix(),
-                                                bookId, cIdx, size);
-        final File file = loader.fetch(url, tmpFile);
-        return file != null ? file.getAbsolutePath() : null;
+        return new FutureHttpGet<>(connectionProducer, getConfig().getRequestTimeoutInMs());
     }
 
     enum RegistrationAction {
@@ -535,15 +485,17 @@ public interface SearchEngine {
          * @param cIdx      0..n image index
          *
          * @return ArrayList with a single fileSpec (This is for convenience, as the result
-         * is meant to be stored into the book-data as a parcelable array;
-         * and it allows extending to multiple images at a future time)
+         *         is meant to be stored into the book-data as a parcelable array;
+         *         and it allows extending to multiple images at a future time)
          */
         @WorkerThread
         @NonNull
         default ArrayList<String> searchBestCoverByIsbn(@NonNull final Context context,
                                                         @NonNull final String validIsbn,
                                                         @IntRange(from = 0, to = 1) final int cIdx)
-                throws StorageException, SearchException, CredentialsException {
+                throws StorageException,
+                       SearchException,
+                       CredentialsException {
 
             final ArrayList<String> list = new ArrayList<>();
             String fileSpec = searchCoverByIsbn(context, validIsbn, cIdx,
@@ -579,6 +531,7 @@ public interface SearchEngine {
         @NonNull
         List<String> searchAlternativeEditions(@NonNull Context context,
                                                @NonNull String validIsbn)
-                throws CredentialsException, SearchException;
+                throws SearchException,
+                       CredentialsException;
     }
 }

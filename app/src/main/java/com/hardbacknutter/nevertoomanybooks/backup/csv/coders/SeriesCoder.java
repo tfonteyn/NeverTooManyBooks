@@ -53,7 +53,8 @@ public class SeriesCoder
 
     @NonNull
     @Override
-    public String encode(@NonNull final Series series) {
+    public String encode(@NonNull final Series series)
+            throws JSONException {
         String result = escape(series.getTitle(), ESCAPE_CHARS);
         if (!series.getNumber().isEmpty()) {
             // start with a space for readability
@@ -62,12 +63,8 @@ public class SeriesCoder
         }
 
         final JSONObject details = new JSONObject();
-        try {
-            if (series.isComplete()) {
-                details.put(DBKey.BOOL_SERIES_IS_COMPLETE, true);
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+        if (series.isComplete()) {
+            details.put(DBKey.BOOL_SERIES_IS_COMPLETE, true);
         }
 
         if (!details.isEmpty()) {

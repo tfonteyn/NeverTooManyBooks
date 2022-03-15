@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -36,10 +35,8 @@ import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -47,12 +44,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -71,16 +64,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -92,14 +79,15 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -161,17 +149,14 @@ public class CalibreContentServer {
     static final String RESPONSE_TAG_TOTAL_NUM = "total_num";
     /** Response root tag: Number of items returned in 'this' call. */
     static final String RESPONSE_TAG_NUM = "num";
-    private static final String PK_CONNECT_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_connect;
-    private static final String PK_READ_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_read;
+
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY = TAG + ":defLib";
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
-    public static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
+    static final String BKEY_EXT_INSTALLED = TAG + ":extInst";
 
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
@@ -196,16 +181,20 @@ public class CalibreContentServer {
      * And a huge buffer to download the eBook files themselves.
      */
     private static final int BUFFER_FILE = 1_048_576;
-    private static final int CONNECT_TIMEOUT_IN_SECONDS = 5;
-    private static final int READ_TIMEOUT_IN_SECONDS = 3;
+
+    private static final int CONNECT_TIMEOUT_IN_MS = 5_000;
+    private static final int READ_TIMEOUT_IN_MS = 3_000;
 
     private static final String ULR_AJAX_LIBRARY_INFO = "/ajax/library-info";
-
+    /** file suffix for cover files. */
+    private static final String FILENAME_SUFFIX = "CL";
     @NonNull
     private final Uri mServerUri;
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
     private final String mAuthHeader;
+    @Nullable
+    private final SSLContext mSslContext;
 
     /** As read from the Content Server. */
     @NonNull
@@ -213,21 +202,21 @@ public class CalibreContentServer {
     private final int mConnectTimeoutInMs;
     private final int mReadTimeoutInMs;
 
+    @NonNull
+    private final FutureHttpPost<Void> mFutureHttpPost;
+    @NonNull
+    private final FutureHttpGet<String> mFutureJsonFetchRequest;
+    @NonNull
+    private final FutureHttpGet<Uri> mFutureFileFetchRequest;
+    @NonNull
+    private final ImageDownloader mImageDownloader;
+
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary mDefaultLibrary;
-    @Nullable
-    private ImageDownloader mImageDownloader;
-    @Nullable
-    private SSLContext mSslContext;
-    private boolean mCalibreExtensionInstalled;
 
-    @GuardedBy("this")
-    @Nullable
-    private Future<String> mCurrentFetchJsonFuture;
-    @GuardedBy("this")
-    @Nullable
-    private Future<Uri> mCurrentFetchFileFuture;
+
+    private boolean mCalibreExtensionInstalled;
 
     /**
      * Constructor.
@@ -236,11 +225,10 @@ public class CalibreContentServer {
      * @param context Current context
      *
      * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @AnyThread
     public CalibreContentServer(@NonNull final Context context)
-            throws CertificateException, SSLException {
+            throws CertificateException {
         this(context, Uri.parse(getHostUrl()));
     }
 
@@ -251,24 +239,13 @@ public class CalibreContentServer {
      * @param uri     for the content server
      *
      * @throws CertificateException on failures related to a user installed CA.
-     * @throws SSLException         on secure connection failures
      */
     @AnyThread
     public CalibreContentServer(@NonNull final Context context,
                                 @NonNull final Uri uri)
-            throws CertificateException, SSLException {
+            throws CertificateException {
 
         mServerUri = uri;
-
-        // accommodate the (usually) self-signed CA certificate
-        if ("https".equals(mServerUri.getScheme())) {
-            try {
-                mSslContext = getSslContext(getCertificate(context));
-            } catch (@NonNull final IOException ignore) {
-                // we are (have to) assuming that the server CA is loaded
-                // in the Android system keystore.
-            }
-        }
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
@@ -282,10 +259,31 @@ public class CalibreContentServer {
             mAuthHeader = HttpUtils.createBasicAuthHeader(username, password);
         }
 
-        mConnectTimeoutInMs = 1000 * global.getInt(PK_CONNECT_TIMEOUT_IN_SECONDS,
-                                                   CONNECT_TIMEOUT_IN_SECONDS);
-        mReadTimeoutInMs = 1000 * global.getInt(PK_READ_TIMEOUT_IN_SECONDS,
-                                                READ_TIMEOUT_IN_SECONDS);
+        // accommodate the (usually) self-signed CA certificate
+        if ("https".equals(mServerUri.getScheme())) {
+            // *if* a certificate is configured *then*
+            // we might get a CertificateException.... which we MUST propagate!
+            mSslContext = getSslContext(context);
+        } else {
+            mSslContext = null;
+        }
+
+        mConnectTimeoutInMs = Prefs.getTimeoutValueInMs(
+                global, PREF_KEY + Prefs.pk_suffix_timeout_connect_in_seconds,
+                CONNECT_TIMEOUT_IN_MS);
+        mReadTimeoutInMs = Prefs.getTimeoutValueInMs(
+                global, PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
+                READ_TIMEOUT_IN_MS);
+
+        mFutureJsonFetchRequest = createFutureGetRequest();
+        mFutureFileFetchRequest = createFutureGetRequest();
+        mImageDownloader = new ImageDownloader(createFutureGetRequest());
+
+        mFutureHttpPost = new FutureHttpPost<Void>(
+                R.string.site_calibre, mConnectTimeoutInMs + mReadTimeoutInMs)
+                .setContentType(HttpUtils.CONTENT_TYPE_JSON)
+                .setAuthHeader(mAuthHeader)
+                .setSslContext(mSslContext);
     }
 
     /**
@@ -376,17 +374,19 @@ public class CalibreContentServer {
     /**
      * Create the custom SSLContext if there is a custom CA file configured.
      *
-     * @param ca the server CA
+     * @param context Current context
      *
      * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
      *
      * @throws CertificateException on failures related to a user installed CA.
      */
     @Nullable
-    private SSLContext getSslContext(@NonNull final X509Certificate ca)
-            throws CertificateException, SSLException {
+    private SSLContext getSslContext(@NonNull final Context context)
+            throws CertificateException {
 
         try {
+            final X509Certificate ca = getCertificate(context);
+
             final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
             keyStore.setCertificateEntry(SERVER_CA, ca);
@@ -400,22 +400,35 @@ public class CalibreContentServer {
 
             return sslContext;
 
-        } catch (@NonNull final KeyStoreException | NoSuchAlgorithmException e) {
-            // As we're using defaults for the keystore type and trust algorithm,
-            // we should never get these 2... flw
-            throw new SSLException(e);
-
         } catch (@NonNull final KeyManagementException e) {
             // wrap for ease of handling; it is in fact almost certain that
             // we would throw a CertificateException BEFORE we can even
             // get a KeyManagementException
             throw new CertificateException(e);
 
-        } catch (@NonNull final IOException ignore) {
-            // we are (have to) assuming that the server CA is loaded
-            // in the Android system keystore.
+        } catch (@NonNull final IOException | KeyStoreException | NoSuchAlgorithmException ignore) {
+            // All these exceptions, can be ignored and we are assuming
+            // that the server does not need a cert, or that the cert is
+            // loaded in the Android system keystore.
             return null;
         }
+    }
+
+    @NonNull
+    private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
+        final Function<String, Optional<TerminatorConnection>> connectionProducer = url -> {
+            try {
+                return Optional.of(new TerminatorConnection(url, R.string.site_calibre)
+                                           .setConnectTimeout(mConnectTimeoutInMs)
+                                           .setReadTimeout(mReadTimeoutInMs)
+                                           .setSSLContext(mSslContext)
+                                           .setAuthHeader(mAuthHeader));
+            } catch (@NonNull final IOException ignore) {
+                return Optional.empty();
+            }
+        };
+
+        return new FutureHttpGet<>(connectionProducer, mConnectTimeoutInMs + mReadTimeoutInMs);
     }
 
     /**
@@ -426,8 +439,10 @@ public class CalibreContentServer {
      * @throws IOException on failure
      */
     public boolean validateConnection()
-            throws IOException {
-        return !fetch(ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
+            throws
+            StorageException,
+            IOException {
+        return !fetch(mServerUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
     }
 
     boolean isMetaDataRead() {
@@ -458,7 +473,9 @@ public class CalibreContentServer {
      */
     @WorkerThread
     public void readMetaData(@NonNull final Context context)
-            throws IOException, JSONException {
+            throws IOException,
+                   StorageException,
+                   JSONException {
 
         mLibraries.clear();
         mDefaultLibrary = null;
@@ -468,7 +485,8 @@ public class CalibreContentServer {
         final Bookshelf currentBookshelf = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
-        final JSONObject source = new JSONObject(fetch(ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
+        final JSONObject source = new JSONObject(
+                fetch(mServerUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL));
 
         final JSONObject libraryMap = source.getJSONObject("library_map");
         final String defaultLibraryId = source.getString("default_library");
@@ -580,7 +598,7 @@ public class CalibreContentServer {
 
     private void loadCustomFieldDefinitions(@NonNull final CalibreLibrary library,
                                             final int bookId)
-            throws IOException, JSONException {
+            throws StorageException, IOException, JSONException {
 
         final Set<CustomFields.Field> customFields = new HashSet<>();
         final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
@@ -602,7 +620,7 @@ public class CalibreContentServer {
 
     @SuppressWarnings("unused")
     @AnyThread
-    public boolean isCalibreExtensionInstalled() {
+    public boolean isExtensionInstalled() {
         return mCalibreExtensionInstalled;
     }
 
@@ -654,12 +672,14 @@ public class CalibreContentServer {
     @Nullable
     public JSONObject getVirtualLibrariesForBooks(@NonNull final String libraryId,
                                                   @NonNull final JSONArray calibreIds)
-            throws IOException, JSONException {
+            throws IOException,
+                   StorageException,
+                   JSONException {
         if (!mCalibreExtensionInstalled) {
             return null;
         }
 
-        final String url = "/ntmb/virtual-libraries-for-books/"
+        final String url = mServerUri + "/ntmb/virtual-libraries-for-books/"
                            + getCsvIds(calibreIds) + "/" + libraryId;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -699,9 +719,11 @@ public class CalibreContentServer {
     public JSONObject getBookIds(@NonNull final String libraryId,
                                  @SuppressWarnings("SameParameterValue") final int num,
                                  final int offset)
-            throws IOException, JSONException {
+            throws StorageException,
+                   IOException,
+                   JSONException {
 
-        final String url = "/ajax/category/616c6c626f6f6b73/" + libraryId
+        final String url = mServerUri + "/ajax/category/616c6c626f6f6b73/" + libraryId
                            + "?num=" + num + "&offset=" + offset;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -739,9 +761,9 @@ public class CalibreContentServer {
                              @SuppressWarnings("SameParameterValue") final int num,
                              final int offset,
                              @NonNull final String query)
-            throws IOException, JSONException {
+            throws StorageException, IOException, JSONException {
 
-        final String url = "/ajax/search/" + libraryId
+        final String url = mServerUri + "/ajax/search/" + libraryId
                            + "?num=" + num + "&offset=" + offset + "&query=" + query;
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1021,9 +1043,9 @@ public class CalibreContentServer {
     @NonNull
     public JSONObject getBooks(@NonNull final String libraryId,
                                @NonNull final JSONArray calibreIds)
-            throws IOException, JSONException {
+            throws StorageException, IOException, JSONException {
 
-        final String url = "/ajax/books/" + libraryId
+        final String url = mServerUri + "/ajax/books/" + libraryId
                            + "?category_urls=false&ids=" + getCsvIds(calibreIds);
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
@@ -1062,9 +1084,10 @@ public class CalibreContentServer {
     @NonNull
     public JSONObject getBook(@NonNull final String libraryId,
                               @NonNull final String calibreUuid)
-            throws IOException, JSONException {
+            throws StorageException, IOException, JSONException {
 
-        final String url = "/ajax/book/" + calibreUuid + '/' + libraryId + "?id_is_uuid=true";
+        final String url = mServerUri + "/ajax/book/" + calibreUuid + '/' + libraryId
+                           + "?id_is_uuid=true";
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1082,9 +1105,9 @@ public class CalibreContentServer {
     @NonNull
     public JSONObject getBook(@NonNull final String libraryId,
                               final int calibreId)
-            throws IOException, JSONException {
+            throws StorageException, IOException, JSONException {
 
-        final String url = "/ajax/book/" + calibreId + '/' + libraryId;
+        final String url = mServerUri + "/ajax/book/" + calibreId + '/' + libraryId;
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -1092,24 +1115,18 @@ public class CalibreContentServer {
     @Nullable
     public File getCover(final int calibreId,
                          @NonNull final String coverUrl)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
-        if (mImageDownloader == null) {
-            mImageDownloader = new ImageDownloader()
-                    .setConnectTimeout(mConnectTimeoutInMs)
-                    .setReadTimeout(mReadTimeoutInMs)
-                    .setAuthHeader(mAuthHeader)
-                    .setSslContext(mSslContext);
-        }
         final File tmpFile = mImageDownloader
-                .getTempFile(TAG, String.valueOf(calibreId), 0, null);
+                .getTempFile(FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
+
         return mImageDownloader.fetch(mServerUri + coverUrl, tmpFile);
     }
 
     /**
-     * Fetch the given url path content as a single string.
+     * Fetch the given url content as a single string.
      *
-     * @param path   the path to read
+     * @param url    to read
      * @param buffer size for the read
      *
      * @return content
@@ -1120,55 +1137,23 @@ public class CalibreContentServer {
      * @throws IOException            on failures
      */
     @NonNull
-    private String fetch(@NonNull final String path,
+    private String fetch(@NonNull final String url,
                          final int buffer)
-            throws IOException,
-                   CancellationException {
+            throws CancellationException,
+                   StorageException,
+                   SocketTimeoutException,
+                   IOException {
 
-        try {
-            mCurrentFetchJsonFuture = ASyncExecutor.SERVICE.submit(() -> doFetch(path, buffer));
-            return mCurrentFetchJsonFuture.get(mConnectTimeoutInMs + mReadTimeoutInMs,
-                                               TimeUnit.MILLISECONDS);
-
-        } catch (@NonNull final RejectedExecutionException
-                | ExecutionException
-                | InterruptedException e) {
-            if (e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
-            }
-            throw new IOException(e);
-
-        } catch (@NonNull final TimeoutException e) {
-            throw new SocketTimeoutException(e.getMessage());
-
-        } finally {
-            mCurrentFetchJsonFuture = null;
-        }
-    }
-
-    @NonNull
-    private String doFetch(@NonNull final String path,
-                           final int buffer)
-            throws IOException {
-        try {
-            final HttpURLConnection request = createGetRequest(mServerUri + path);
-
-            request.connect();
-
-            HttpUtils.checkResponseCode(request, R.string.site_calibre);
-
-            try (InputStream is = request.getInputStream();
-                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        return mFutureJsonFetchRequest.get(url, con -> {
+            try (InputStreamReader isr = new InputStreamReader(con.getInputStream(),
+                                                               StandardCharsets.UTF_8);
                  BufferedReader reader = new BufferedReader(isr, buffer)) {
 
                 return reader.lines().collect(Collectors.joining());
-            } finally {
-                request.disconnect();
+            } catch (@NonNull final IOException e) {
+                throw new UncheckedIOException(e);
             }
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
-        }
+        });
     }
 
     /**
@@ -1190,130 +1175,54 @@ public class CalibreContentServer {
                   @NonNull final Book book,
                   @NonNull final Uri folder,
                   @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws CancellationException,
+                   StorageException,
+                   SocketTimeoutException,
+                   IOException {
 
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
 
-        try {
-            mCurrentFetchFileFuture = ASyncExecutor.SERVICE.submit(
-                    () -> doFetchFile(context, book, progressListener, destFile));
-            return mCurrentFetchFileFuture.get(mConnectTimeoutInMs + mReadTimeoutInMs,
-                                               TimeUnit.MILLISECONDS);
-
-        } catch (@NonNull final RejectedExecutionException
-                | ExecutionException
-                | InterruptedException e) {
-            // cleanup any partial download
-            if (destFile.exists()) {
-                //FIXME: we're ignoring any failure to delete
-                destFile.delete();
-            }
-            if (e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
-            }
-            throw new IOException(e);
-
-        } catch (@NonNull final TimeoutException e) {
-            throw new SocketTimeoutException(e.getMessage());
-
-        } finally {
-            mCurrentFetchFileFuture = null;
-        }
-    }
-
-    @NonNull
-    private Uri doFetchFile(@NonNull final Context context,
-                            @NonNull final Book book,
-                            @NonNull final ProgressListener progressListener,
-                            final DocumentFile destFile)
-            throws IOException {
-        // Build the URL from where to download the file
         final int id = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
         final String format = book.getString(DBKey.KEY_CALIBRE_BOOK_MAIN_FORMAT);
         final long libraryId = book.getLong(DBKey.FK_CALIBRE_LIBRARY);
 
-        final CalibreLibrary calibreLibrary =
-                mLibraries.stream()
-                          .filter(library -> library.getId() == libraryId)
-                          .findFirst()
-                          .orElseThrow(() -> new FileNotFoundException(context.getString(
-                                  R.string.error_file_not_found, String.valueOf(libraryId))));
+        final CalibreLibrary calibreLibrary = mLibraries
+                .stream()
+                .filter(library -> library.getId() == libraryId)
+                .findFirst()
+                .orElseThrow(() -> new FileNotFoundException(
+                        context.getString(R.string.error_file_not_found,
+                                          String.valueOf(libraryId))));
 
         final String url = mServerUri + "/get/" + format + "/" + id + "/"
                            + calibreLibrary.getLibraryStringId();
 
-        try {
-            final HttpURLConnection request = createGetRequest(url);
+        final Uri destUri = destFile.getUri();
 
-            request.connect();
-
-            HttpUtils.checkResponseCode(request, R.string.site_calibre);
-
-            final Uri destUri = destFile.getUri();
+        return mFutureFileFetchRequest.get(url, con -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
-                    try (InputStream is = request.getInputStream();
-                         BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
-                         BufferedOutputStream bos = new BufferedOutputStream(os)) {
-
+                    try (BufferedOutputStream bos = new BufferedOutputStream(os)) {
                         progressListener.publishProgress(0, context.getString(
                                 R.string.progress_msg_loading));
-                        FileUtils.copy(bis, bos);
+                        FileUtils.copy(con.getInputStream(BUFFER_FILE), bos);
                     }
                 }
-            } finally {
-                request.disconnect();
+            } catch (@NonNull final IOException e) {
+                if (destFile.exists()) {
+                    destFile.delete();
+                }
+                throw new UncheckedIOException(e);
             }
-
+            // the destFile is now properly closed.
             if (destFile.exists()) {
                 return destUri;
             } else {
-                throw new FileNotFoundException(context.getString(
-                        R.string.error_file_not_found, destFile.getName()));
+                throw new UncheckedIOException(
+                        new FileNotFoundException(context.getString(
+                                R.string.error_file_not_found, destFile.getName())));
             }
-        } catch (@NonNull final UncheckedIOException e) {
-            throw Objects.requireNonNull(e.getCause());
-        }
-    }
-
-    public boolean cancelFetch() {
-        synchronized (this) {
-            if (mCurrentFetchJsonFuture != null) {
-                return mCurrentFetchJsonFuture.cancel(true);
-            } else if (mCurrentFetchFileFuture != null) {
-                return mCurrentFetchFileFuture.cancel(true);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Create a GET request, but does not connect.
-     *
-     * @param url to use
-     *
-     * @return the request
-     *
-     * @throws IOException on any failure
-     */
-    @NonNull
-    private HttpURLConnection createGetRequest(@NonNull final String url)
-            throws IOException {
-
-        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        // Don't trust the caches when doing a GET; they have proven to be cumbersome on Android
-        request.setUseCaches(false);
-        request.setConnectTimeout(mConnectTimeoutInMs);
-        request.setReadTimeout(mReadTimeoutInMs);
-
-        if (mSslContext != null) {
-            ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
-        }
-        if (mAuthHeader != null) {
-            request.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
-        }
-
-        return request;
+        });
     }
 
     /**
@@ -1414,7 +1323,6 @@ public class CalibreContentServer {
         return FileUtils.buildValidFilename(name);
     }
 
-
     /**
      * Send updates to the server.
      *
@@ -1429,42 +1337,24 @@ public class CalibreContentServer {
                             @NonNull final JSONObject changes)
             throws IOException, JSONException {
 
-        final JSONObject data = new JSONObject();
-        data.put("changes", changes);
-
-        final JSONArray loadedBookIds = new JSONArray();
-        loadedBookIds.put(calibreId);
-        data.put("loaded_book_ids", loadedBookIds);
-        final String postBody = data.toString();
+        final JSONArray loadedBookIds = new JSONArray()
+                .put(calibreId);
 
         final String url = mServerUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
+        final String postBody = new JSONObject()
+                .put("changes", changes)
+                .put("loaded_book_ids", loadedBookIds)
+                .toString();
 
-        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        request.setRequestMethod(HttpUtils.POST);
-        request.setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON);
-        request.setDoOutput(true);
-        if (mSslContext != null) {
-            ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
-        }
-        if (mAuthHeader != null) {
-            request.setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader);
-        }
-
-        // explicit connect for clarity
-        request.connect();
-
-        try (OutputStream os = request.getOutputStream();
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw)) {
-            writer.write(postBody);
-            writer.flush();
-        }
-
-        try {
-            HttpUtils.checkResponseCode(request, R.string.site_calibre);
-        } finally {
-            request.disconnect();
-        }
+        mFutureHttpPost.post(url, postBody, null);
     }
 
+    public void cancel() {
+        synchronized (this) {
+            mFutureJsonFetchRequest.cancel();
+            mFutureFileFetchRequest.cancel();
+            mImageDownloader.cancel();
+            mFutureHttpPost.cancel();
+        }
+    }
 }

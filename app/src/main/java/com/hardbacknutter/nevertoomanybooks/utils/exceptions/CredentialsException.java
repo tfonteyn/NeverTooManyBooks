@@ -39,12 +39,6 @@ public class CredentialsException
     @StringRes
     private final int mSiteResId;
 
-    public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final Throwable cause) {
-        super(cause);
-        mSiteResId = siteResId;
-    }
-
     /**
      * Constructor.
      *
@@ -54,13 +48,6 @@ public class CredentialsException
     public CredentialsException(@StringRes final int siteResId,
                                 @NonNull final String message) {
         super(message);
-        mSiteResId = siteResId;
-    }
-
-    public CredentialsException(@StringRes final int siteResId,
-                                @NonNull final String message,
-                                @NonNull final Throwable cause) {
-        super(message, cause);
         mSiteResId = siteResId;
     }
 

@@ -89,19 +89,12 @@
         <!--
             This is the Activity that will appear in the app launcher
             The StartupActivity takes care of all pre-UI tasks.
-            When done, it starts the (real) main BooksOnBookshelf Activity.
-
-            android:configChanges -> we'll IGNORE these,
-            hence the Activity will not restart on those changes,
-            which makes handling the startup tasks a lot easier.
-
-            URGENT: this does mean that the "do you want to backup" dialog will be shown sideways....
+            When done, it starts the BooksOnBookshelf Activity.
 
             Using specific Theme for the startup activity so it looks like a dialog as intended.
         -->
         <activity
             android:name=".StartupActivity"
-            android:configChanges="locale|orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:exported="true"
             android:noHistory="true"

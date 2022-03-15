@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -38,6 +40,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
@@ -82,8 +85,9 @@ class UserCollectionTest
 
     @Override
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
 
         when(mBookshelfMapper.getOwnedBooksBookshelf(any())).thenReturn(mOwnedBookshelf);
         when(mBookshelfMapper.getWishListBookshelf(any())).thenReturn(mWishlistBookshelf);

@@ -71,9 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.CollectionFormParser;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.StripInfoAuth;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -134,7 +133,7 @@ public class StripInfoSearchEngine
     private final JSoupHelper mJSoupHelper = new JSoupHelper();
     @Nullable
     private StripInfoAuth mLoginHelper;
-
+    @Nullable
     private CollectionFormParser mCollectionFormParser;
 
     /**
@@ -179,6 +178,19 @@ public class StripInfoSearchEngine
         mLoginHelper = loginHelper;
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mCollectionFormParser != null) {
+                mCollectionFormParser.cancel();
+            }
+            if (mLoginHelper != null) {
+                mLoginHelper.cancel();
+            }
+        }
+    }
+
     @NonNull
     @Override
     public Document loadDocument(@NonNull final Context context,
@@ -208,7 +220,7 @@ public class StripInfoSearchEngine
     public Bundle searchByExternalId(@NonNull final Context context,
                                      @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -230,7 +242,7 @@ public class StripInfoSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -251,7 +263,7 @@ public class StripInfoSearchEngine
     public Bundle searchByBarcode(@NonNull final Context context,
                                   @NonNull final String barcode,
                                   @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
         // the search url is the same but we need to specifically support barcodes
         // to allow non-isbn codes.
         return searchByIsbn(context, barcode, fetchCovers);
@@ -276,7 +288,7 @@ public class StripInfoSearchEngine
                           @NonNull final Document document,
                           @NonNull final boolean[] fetchCovers,
                           @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException, CredentialsException {
+            throws StorageException, SearchException, CredentialsException {
 
         for (final Element section : document.select("section.c6")) {
             // A series:
@@ -316,7 +328,7 @@ public class StripInfoSearchEngine
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
         super.parse(context, document, fetchCovers, bookData);
 
         // extracted from the page header.
@@ -531,7 +543,7 @@ public class StripInfoSearchEngine
     private void processCover(@NonNull final Document document,
                               @IntRange(from = 0, to = 1) final int cIdx,
                               @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
         final String isbn = bookData.getString(DBKey.KEY_ISBN);
         final String url = parseCover(document, cIdx);
@@ -593,7 +605,7 @@ public class StripInfoSearchEngine
     private String saveCover(@Nullable final String isbn,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @NonNull final String url)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
         // if the site has no image: https://www.stripinfo.be/image.php?i=0
         // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
@@ -710,7 +722,7 @@ public class StripInfoSearchEngine
      * @param bookData        Bundle to update
      *
      * @return the website book id, or {@code 0} if not found.
-     * The latter should never happen unless the website structure was changed.
+     *         The latter should never happen unless the website structure was changed.
      */
     private long processExternalId(@NonNull final Element titleUrlElement,
                                    @NonNull final Bundle bookData) {
@@ -975,7 +987,7 @@ public class StripInfoSearchEngine
         final long collectionId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
         if (collectionId > 0) {
             try {
-                mCollectionFormParser.parse(document, bookData, externalId, collectionId);
+                mCollectionFormParser.parse(document, externalId, collectionId, bookData);
 
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG  /* always */) {

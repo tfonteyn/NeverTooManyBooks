@@ -149,11 +149,11 @@ public final class SearchEngineRegistry {
     }
 
     /**
-     * Create a SearchEngine instance.
+     * Create a SearchEngine instance based on the registered configuration for the given id.
      *
      * @param engineId the search engine id
      *
-     * @return the instance
+     * @return a new instance
      */
     @NonNull
     public SearchEngine createSearchEngine(@SearchSites.EngineId final int engineId) {

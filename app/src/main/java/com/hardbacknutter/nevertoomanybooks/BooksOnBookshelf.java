@@ -56,6 +56,8 @@ import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,8 +65,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
@@ -172,6 +172,8 @@ public class BooksOnBookshelf
     private static final int FAB_4_SEARCH_EXTERNAL_ID = 4;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
+
+
     /** {@link FragmentResultListener} request key. */
     private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
@@ -183,30 +185,23 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Void> mExportLauncher =
             registerForActivityResult(new ExportContract(), success -> {
             });
-
-    /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookPagerContract.Input> mDisplayBookLauncher =
-            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
-
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mStripInfoSyncLauncher;
-
     /** Bring up the synchronization options. */
     @Nullable
     private ActivityResultLauncher<Void> mCalibreSyncLauncher;
-
     /** Delegate to handle all interaction with a Calibre server. */
     @Nullable
     private CalibreHandler mCalibreHandler;
-
     /** Multi-type adapter to manage list connection to cursor. */
     @Nullable
     private BooklistAdapter mAdapter;
-
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
-
+    /** Display a Book. */
+    private final ActivityResultLauncher<ShowBookPagerContract.Input> mDisplayBookLauncher =
+            registerForActivityResult(new ShowBookPagerContract(), this::onBookEditFinished);
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher =
             registerForActivityResult(new ImportContract(), this::onImportFinished);
@@ -253,7 +248,7 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsContract(), data -> {
                 if (mVm.setSearchCriteria(data, true)) {
-                    //URGENT: switch bookshelf? all-books?
+                    //FIXME: switch bookshelf? all-books?
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
@@ -447,6 +442,18 @@ public class BooksOnBookshelf
 
         if (savedInstanceState == null) {
             TipManager.getInstance().display(this, R.string.tip_book_list, null);
+
+            if (mVm.isProposeBackup()) {
+                new MaterialAlertDialogBuilder(this)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
+                        .setTitle(R.string.app_name)
+                        .setMessage(R.string.warning_backup_request)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                mExportLauncher.launch(null))
+                        .create()
+                        .show();
+            }
         }
     }
 
@@ -473,7 +480,7 @@ public class BooksOnBookshelf
         }
     }
 
-    boolean isRootActivity() {
+    private boolean isRootActivity() {
         return isTaskRoot() && mVm.getSearchCriteria().isEmpty();
     }
 
@@ -542,9 +549,9 @@ public class BooksOnBookshelf
             try {
                 mCalibreHandler = new CalibreHandler(this, this)
                         .setProgressFrame(findViewById(R.id.progress_frame));
-
                 mCalibreHandler.onViewCreated(this, mVb.getRoot());
-            } catch (@NonNull final SSLException | CertificateException ignore) {
+            } catch (@NonNull final CertificateException ignore) {
+//                TipManager.getInstance().display(this, R.string.tip_calibre, null);
                 // ignore
             }
         }
@@ -1670,13 +1677,14 @@ public class BooksOnBookshelf
                             // do NOT reset the stored book id positioning
                             openEmbeddedBookDetails(bookId);
                         } else {
-                            // We didn't have visible embedded book detail,
-                            // so make sure to disabled stored book id positioning
+                            // We didn't have visible embedded book detail;
+                            // Make sure to disable the current stored book id positioning
                             mVm.setCurrentCenteredBookId(0);
                         }
                     });
                 } else {
-                    // We have target nodes, so make sure to disabled stored book id positioning
+                    // We have target nodes;
+                    // Make sure to disable the current stored book id positioning
                     mVm.setCurrentCenteredBookId(0);
 
                     // find the closest node showing the book, and scroll to it
@@ -1823,8 +1831,10 @@ public class BooksOnBookshelf
         final int position = 1 + node.getAdapterPosition();
 
         // Dev notes...
+        //
         // The recycler list will in fact extent at the top/bottom beyond the screen edge
         // It does this due to the CoordinatorLayout with the AppBar behaviour config.
+        //
         // We can't simply add some padding to the RV (i.e. ?attr/actionBarSize)
         // as that would initially show a good result, but as soon as we scroll
         // would show up as a blank bit at the bottom.
@@ -1836,18 +1846,33 @@ public class BooksOnBookshelf
         // and hence in practice NOT visible. Same to a lesser extent for the top.
         //
         // The logic/math here for the top of the screen works well.
+        //
         // Handling the bottom is harder. It works good enough, but not perfect.
         // It depends on the fact if you just scrolled the page up or down, and then
         // expanded or collapsed the last row. There are more combinations... to many.
         final int lastVisiblePos = mLayoutManager.findLastVisibleItemPosition();
 
-        //URGENT: more fine-tuning needed
-        // If the node is not in view, or at the edge, scroll it into view.
-        if ((firstVisiblePos < position) && (position <= lastVisiblePos)
-            && node.isExpanded()) {
+        // it should be on screen between the first and last visible rows.
+        final boolean onScreen = (firstVisiblePos < position) && (position <= lastVisiblePos);
+        final boolean isBook = node.getBookId() > 0;
+        final boolean isExpanded = node.isExpanded();
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG + ":scrollTo",
+                  "\nposition=" + position
+                  + "\nonScreen= " + onScreen
+                  + "\nisExpanded= " + isExpanded
+                  + "\nisBook= " + isBook
+                 );
+        }
+        //FIXME: more fine-tuning needed
+        if (onScreen && (isBook || isExpanded)) {
             mLayoutManager.scrollToPosition(position + 1);
         } else {
-            mLayoutManager.scrollToPosition(position);
+            // mLayoutManager.scrollToPosition(position);
+            // 2022-03-13: trying this alternative, just show it at the top,
+            // with an small offset(TODO: change according to sw)
+            mLayoutManager.scrollToPositionWithOffset(position, 150);
         }
     }
 

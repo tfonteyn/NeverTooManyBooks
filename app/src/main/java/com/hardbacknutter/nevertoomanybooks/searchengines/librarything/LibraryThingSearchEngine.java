@@ -24,9 +24,11 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -40,13 +42,15 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 
 /**
  * 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
@@ -69,6 +73,8 @@ public class LibraryThingSearchEngine
     private static final String PREF_KEY = "librarything";
     /** Type: {@code String}. */
     public static final String PK_HOST_URL = PREF_KEY + Prefs.pk_suffix_host_url;
+    @Nullable
+    private FutureHttpGet<Boolean> mFutureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -109,6 +115,16 @@ public class LibraryThingSearchEngine
         return getSiteUrl() + String.format("/work/%1$s", externalId);
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mFutureHttpGet != null) {
+                mFutureHttpGet.cancel();
+            }
+        }
+    }
+
     /**
      * Search for edition data.
      * <p>
@@ -126,15 +142,29 @@ public class LibraryThingSearchEngine
                                                   @NonNull final String validIsbn)
             throws SearchException {
 
+        mFutureHttpGet = createFutureGetRequest();
+
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
         final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
-        try (TerminatorConnection con = createConnection(url)) {
-            final SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
 
-        } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
+        try {
+            final SAXParser parser = factory.newSAXParser();
+            mFutureHttpGet.get(url, con -> {
+                try {
+                    parser.parse(con.getInputStream(), handler);
+                    return true;
+
+                } catch (@NonNull final IOException e) {
+                    throw new UncheckedIOException(e);
+                } catch (@NonNull final SAXException e) {
+                    throw new UncheckedSAXException(e);
+                }
+            });
+
+        } catch (@NonNull final StorageException | ParserConfigurationException
+                | SAXException | IOException e) {
             throw new SearchException(getName(context), e);
         }
         return handler.getResult();

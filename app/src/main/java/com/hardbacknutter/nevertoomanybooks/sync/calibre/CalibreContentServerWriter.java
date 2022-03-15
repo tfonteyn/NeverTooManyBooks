@@ -35,8 +35,6 @@ import java.time.ZoneOffset;
 import java.util.Iterator;
 import java.util.Optional;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
@@ -57,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -100,12 +99,11 @@ public class CalibreContentServerWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final SyncWriterHelper helper)
-            throws CertificateException, SSLException {
+            throws CertificateException {
 
         mHelper = helper;
         mServer = new CalibreContentServer(context);
@@ -115,11 +113,18 @@ public class CalibreContentServerWriter
         mDateParser = new ISODateParser();
     }
 
+    @Override
+    public void cancel() {
+        mServer.cancel();
+    }
+
     @NonNull
     @Override
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   StorageException,
+                   IOException {
 
         mResults = new SyncWriterResults();
 
@@ -159,7 +164,7 @@ public class CalibreContentServerWriter
     private void syncLibrary(@NonNull final CalibreLibrary library,
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws StorageException, IOException {
         final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
         try (Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
@@ -201,15 +206,14 @@ public class CalibreContentServerWriter
 
     private void syncBook(@NonNull final CalibreLibrary library,
                           @NonNull final Book book)
-            throws IOException, JSONException {
+            throws IOException, StorageException, JSONException {
 
         final int calibreId = book.getInt(DBKey.KEY_CALIBRE_BOOK_ID);
         final String calibreUuid = book.getString(DBKey.KEY_CALIBRE_BOOK_UUID);
 
         // ENHANCE: full sync in one go.
         //  The logic below is TO SLOW as we fetch each book individually
-        final JSONObject calibreBook = mServer
-                .getBook(library.getLibraryStringId(), calibreUuid);
+        final JSONObject calibreBook = mServer.getBook(library.getLibraryStringId(), calibreUuid);
 
         String dateStr = null;
         if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {

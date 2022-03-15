@@ -23,17 +23,20 @@ import android.content.Context;
 import android.os.Process;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.UncheckedIOException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
 /**
  * Common base for MutableLiveData / TaskListener driven tasks.
@@ -53,7 +56,7 @@ abstract class TaskBase<Result>
      * Set by a client or from within the task.
      * It's a <strong>request</strong> to cancel while running.
      */
-    private final AtomicBoolean mIsCancelled = new AtomicBoolean();
+    private final AtomicBoolean mCancelled = new AtomicBoolean();
 
     /** State of this task. */
     @NonNull
@@ -126,16 +129,26 @@ abstract class TaskBase<Result>
             try {
                 final Result result = doWork(context);
                 if (isCancelled()) {
-                    setCancelled(result);
+                    setTaskCancelled(result);
                 } else {
-                    setFinished(result);
+                    setTaskFinished(result);
                 }
             } catch (@NonNull final CancellationException e) {
-                setCancelled(null);
+                setTaskCancelled(null);
+
+            } catch (@NonNull final UncheckedStorageException e) {
+                Logger.error(mTaskName, e);
+                //noinspection ConstantConditions
+                setTaskFailure(e.getCause());
+
+            } catch (@NonNull final UncheckedIOException e) {
+                Logger.error(mTaskName, e);
+                //noinspection ConstantConditions
+                setTaskFailure(e.getCause());
 
             } catch (@NonNull final Exception e) {
                 Logger.error(mTaskName, e);
-                setFailure(e);
+                setTaskFailure(e);
             }
 
             mStatus = Status.Finished;
@@ -161,30 +174,38 @@ abstract class TaskBase<Result>
     /**
      * Called when the task successfully finishes.
      */
-    protected abstract void setFinished(@Nullable Result result);
-
-    /**
-     * Called when the task fails with an Exception.
-     */
-    protected abstract void setFailure(@NonNull Exception e);
-
-    @AnyThread
-    public boolean cancel() {
-        mIsCancelled.set(true);
-        return true;
-    }
-
-    @Override
-    @AnyThread
-    public boolean isCancelled() {
-        return mIsCancelled.get();
-    }
+    protected abstract void setTaskFinished(@Nullable Result result);
 
     /**
      * Called when the task was cancelled.
      */
-    protected abstract void setCancelled(@Nullable Result result);
+    protected abstract void setTaskCancelled(@Nullable Result result);
 
+    /**
+     * Called when the task fails with an Exception.
+     */
+    protected abstract void setTaskFailure(@NonNull Exception e);
+
+    //FIXME: Potentially unsafe 'if != null then cancel'
+    @Override
+    @CallSuper
+    @AnyThread
+    public void cancel() {
+        mCancelled.set(true);
+    }
+
+    /**
+     * Pull-request to check if this task is / should be cancelled.
+     *
+     * @return cancel-status
+     */
+    @Override
+    @AnyThread
+    public boolean isCancelled() {
+        return mCancelled.get();
+    }
+
+    @AnyThread
     public boolean isRunning() {
         return mStatus == Status.Running;
     }
@@ -244,13 +265,18 @@ abstract class TaskBase<Result>
      * Created -> Pending -> Running -> Finished.
      * <p>
      * Finished -> Pending -> Running -> Finished.
-     * <p>
-     * A task is {@link Status#Created} when it has never been queued.
      */
     public enum Status {
+        /** initial status before the task has been queued. */
         Created,
+        /** The task has been submitted, and is scheduled to start. */
         Pending,
+        /** The task is actively doing work. */
         Running,
+        /**
+         * The task is finished; it could have done so with success or failure,
+         * or it could have been cancelled. Regardless, it's 'done'
+         */
         Finished
     }
 }

@@ -36,9 +36,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class JsoupSearchEngineBase
         extends SearchEngineBase {
@@ -61,7 +60,7 @@ public abstract class JsoupSearchEngineBase
      */
     protected JsoupSearchEngineBase(@NonNull final SearchEngineConfig config) {
         super(config);
-        mJsoupLoader = new JsoupLoader();
+        mJsoupLoader = new JsoupLoader(createFutureGetRequest());
     }
 
     /**
@@ -90,7 +89,7 @@ public abstract class JsoupSearchEngineBase
                                  @NonNull final String url)
             throws SearchException, CredentialsException {
         try {
-            return mJsoupLoader.loadDocument(url, createConnectionProducer());
+            return mJsoupLoader.loadDocument(url);
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
@@ -108,8 +107,6 @@ public abstract class JsoupSearchEngineBase
      * @param document    to parse
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
-     *
-     * @throws CoverStorageException The covers directory is not available
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
@@ -118,7 +115,7 @@ public abstract class JsoupSearchEngineBase
                       @NonNull final Document document,
                       @NonNull final boolean[] fetchCovers,
                       @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.
         // But this way is more future oriented... maybe we'll need/can share more logic/data
@@ -127,5 +124,13 @@ public abstract class JsoupSearchEngineBase
         mAuthors.clear();
         mSeries.clear();
         mPublishers.clear();
+    }
+
+    @Override
+    public void cancel() {
+        super.cancel();
+        synchronized (mJsoupLoader) {
+            mJsoupLoader.cancel();
+        }
     }
 }

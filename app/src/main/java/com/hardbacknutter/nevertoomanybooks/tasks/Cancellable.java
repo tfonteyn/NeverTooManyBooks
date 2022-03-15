@@ -17,25 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.network;
+package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.AnyThread;
 
-public class ServerCommunicationException
-        extends NetworkException {
+/**
+ * A minimalistic interface for a Task, SearchEngine, DataReader, DataWriter, ...
+ * which can be passed to another class.
+ */
+public interface Cancellable {
 
-    private static final long serialVersionUID = 6749228883164538875L;
+    /**
+     * Check if the task is or should be cancelled.
+     *
+     * @return {@code true} if the task was cancelled before it finished/failed
+     *         {@code false} if it has not been started yet, or has finished/failed
+     */
+    @AnyThread
+    boolean isCancelled();
 
-    public ServerCommunicationException(@NonNull final String message) {
-        super(message);
-    }
-
-    public ServerCommunicationException(@NonNull final String message,
-                                        @NonNull final Throwable cause) {
-        super(message, cause);
-    }
-
-    public ServerCommunicationException(@NonNull final Throwable cause) {
-        super(cause);
-    }
+    /**
+     * Attempt to cancel execution of the current task.
+     * This is a REQUEST. Implementations might ignore this request.
+     */
+    @AnyThread
+    void cancel();
 }

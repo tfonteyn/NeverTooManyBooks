@@ -116,7 +116,8 @@ public class JsonRecordWriter
     @Override
     public void writeMetaData(@NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
         try {
             writer.write(new BundleCoder().encode(metaData.getData()).toString());
         } catch (@NonNull final JSONException e) {
@@ -130,7 +131,8 @@ public class JsonRecordWriter
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> recordTypes,
                                @NonNull final ProgressListener progressListener)
-            throws DataWriterException, IOException {
+            throws DataWriterException,
+                   IOException {
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -188,7 +190,7 @@ public class JsonRecordWriter
                     results.certificates++;
 
                 } catch (@NonNull final IOException | CertificateException ignore) {
-                    // no certificate (IOException) or invalid cert
+                    // no certificate (IOException) or invalid cert; just ignore it.
                 }
                 if (!certificates.isEmpty()) {
                     jsonData.put(RecordType.Certificates.getName(), certificates);

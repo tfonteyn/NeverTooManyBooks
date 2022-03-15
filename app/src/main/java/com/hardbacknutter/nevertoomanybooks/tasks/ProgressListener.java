@@ -27,7 +27,7 @@ import androidx.annotation.WorkerThread;
  * Listener interface for progress messages.
  */
 public interface ProgressListener
-        extends Canceller {
+        extends Cancellable {
 
     /**
      * Send a progress message.

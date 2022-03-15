@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
@@ -31,11 +32,14 @@ import androidx.lifecycle.ViewModel;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public abstract class DataWriterViewModel<RESULTS>
@@ -99,6 +103,7 @@ public abstract class DataWriterViewModel<RESULTS>
 
         private static final String TAG = "DataWriterTask";
 
+        @Nullable
         private DataWriterHelperBase<RESULTS> mHelper;
 
         DataWriterTask() {
@@ -116,15 +121,28 @@ public abstract class DataWriterViewModel<RESULTS>
             execute();
         }
 
+        @Override
+        public void cancel() {
+            synchronized (this) {
+                super.cancel();
+                if (mHelper != null) {
+                    mHelper.cancel();
+                }
+            }
+        }
+
         @WorkerThread
         @Override
         @NonNull
         protected RESULTS doWork(@NonNull final Context context)
                 throws DataWriterException,
-                       IOException,
+                       CertificateException,
+                       CredentialsException,
+                       SSLException,
                        StorageException,
-                       CertificateException {
+                       IOException {
 
+            //noinspection ConstantConditions
             return mHelper.write(context, this);
         }
     }

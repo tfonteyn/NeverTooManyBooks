@@ -55,7 +55,8 @@ public class AuthorCoder
 
     @NonNull
     @Override
-    public String encode(@NonNull final Author author) {
+    public String encode(@NonNull final Author author)
+            throws JSONException {
         // Note the use of NAME_SEPARATOR between family and given-names,
         // i.e. the names are considered ONE field with a private separator.
         // Always add the given-name even when empty!
@@ -64,15 +65,11 @@ public class AuthorCoder
                         + escape(author.getGivenNames(), ESCAPE_CHARS);
 
         final JSONObject details = new JSONObject();
-        try {
-            if (author.isComplete()) {
-                details.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, true);
-            }
-            if (author.getType() != Author.TYPE_UNKNOWN) {
-                details.put(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+        if (author.isComplete()) {
+            details.put(DBKey.BOOL_AUTHOR_IS_COMPLETE, true);
+        }
+        if (author.getType() != Author.TYPE_UNKNOWN) {
+            details.put(DBKey.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
         }
 
         if (!details.isEmpty()) {

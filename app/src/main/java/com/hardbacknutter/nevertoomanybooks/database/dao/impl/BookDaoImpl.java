@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -186,7 +186,8 @@ public class BookDaoImpl
     public long insert(@NonNull final Context context,
                        @NonNull final Book /* in/out */ book,
                        @BookFlags final int flags)
-            throws CoverStorageException, DaoWriteException {
+            throws StorageException,
+                   DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -254,7 +255,7 @@ public class BookDaoImpl
             try {
                 bookDaoHelper.persistCovers();
 
-            } catch (@NonNull final CoverStorageException e) {
+            } catch (@NonNull final StorageException e) {
                 book.putLong(PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
                 throw e;
@@ -284,7 +285,8 @@ public class BookDaoImpl
     public void update(@NonNull final Context context,
                        @NonNull final Book book,
                        @BookFlags final int flags)
-            throws CoverStorageException, DaoWriteException {
+            throws StorageException,
+                   DaoWriteException {
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -327,12 +329,8 @@ public class BookDaoImpl
 
                 ServiceLocator.getInstance().getFtsDao().update(book.getId());
 
-                //noinspection CaughtExceptionImmediatelyRethrown
                 try {
                     bookDaoHelper.persistCovers();
-
-                } catch (@NonNull final CoverStorageException e) {
-                    throw e;
 
                 } catch (@NonNull final IOException e) {
                     throw new DaoWriteException(ERROR_STORING_COVERS + book);
@@ -1319,7 +1317,7 @@ public class BookDaoImpl
                            + ",COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ", '')"
                            + _AS_ + KEY_LOANEE
 
-                           //URGENT: we should not join with all tables we MIGHT need
+                           //FIXME: we should not join with all tables we MIGHT need
 
                            // LEFT OUTER JOIN, columns default to NULL
                            + ','

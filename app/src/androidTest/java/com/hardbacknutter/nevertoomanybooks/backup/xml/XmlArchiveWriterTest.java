@@ -26,7 +26,6 @@ import androidx.test.filters.MediumTest;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.EnumSet;
 
 import org.junit.Before;
@@ -40,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.Assert.assertEquals;
@@ -56,7 +55,7 @@ public class XmlArchiveWriterTest
 
     @Before
     public void setup()
-            throws DaoWriteException, CoverStorageException {
+            throws DaoWriteException, StorageException {
         super.setup();
         mBookInDb = mSl.getBookDao().count();
         if (mBookInDb < 10) {
@@ -66,7 +65,7 @@ public class XmlArchiveWriterTest
 
     @Test
     public void write()
-            throws IOException, DataWriterException, StorageException, CertificateException {
+            throws IOException, DataWriterException, StorageException, CredentialsException {
 
         final Context context = mSl.getLocalizedAppContext();
         final File file = new File(context.getFilesDir(), TAG + ".xml");

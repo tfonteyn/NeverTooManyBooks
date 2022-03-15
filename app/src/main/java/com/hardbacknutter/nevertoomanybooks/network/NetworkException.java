@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.network;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -31,28 +30,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 /**
  * Should be thrown if the device has a generic network issue.
+ * This is basically an IOException with a localized message.
  */
 public class NetworkException
         extends IOException
         implements LocalizedException {
 
-
     private static final long serialVersionUID = -7713421228493196516L;
-
-    NetworkException() {
-    }
 
     NetworkException(@NonNull final String message) {
         super(message);
-    }
-
-    NetworkException(@NonNull final String message,
-                     @Nullable final Throwable cause) {
-        super(message, cause);
-    }
-
-    NetworkException(@NonNull final Throwable cause) {
-        super(cause);
     }
 
     @NonNull

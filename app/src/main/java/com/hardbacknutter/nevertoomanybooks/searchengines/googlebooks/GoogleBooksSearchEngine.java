@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -38,13 +39,14 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
@@ -69,6 +71,8 @@ public class GoogleBooksSearchEngine
                    SearchEngine.ByText {
 
     private static final Pattern SPACE_LITERAL = Pattern.compile(" ", Pattern.LITERAL);
+    @Nullable
+    private FutureHttpGet<Boolean> mFutureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -144,18 +148,28 @@ public class GoogleBooksSearchEngine
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws StorageException, SearchException {
+            throws StorageException,
+                   SearchException {
+
+        mFutureHttpGet = createFutureGetRequest();
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
+        // get the booklist, can return multiple books ('entry' elements)
+        final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
 
         try {
             final SAXParser parser = factory.newSAXParser();
+            mFutureHttpGet.get(url, con -> {
+                try {
+                    parser.parse(con.getInputStream(), listHandler);
+                    return true;
 
-            // get the booklist, can return multiple books ('entry' elements)
-            final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
-            try (TerminatorConnection con = createConnection(url)) {
-                parser.parse(con.getInputStream(), listHandler);
-            }
+                } catch (@NonNull final IOException e) {
+                    throw new UncheckedIOException(e);
+                } catch (@NonNull final SAXException e) {
+                    throw new UncheckedSAXException(e);
+                }
+            });
 
             if (isCancelled()) {
                 return;
@@ -163,31 +177,51 @@ public class GoogleBooksSearchEngine
 
             final List<String> urlList = listHandler.getResult();
 
-            // The entry handler takes care of an individual book ('entry')
-            final GoogleBooksEntryHandler handler =
-                    new GoogleBooksEntryHandler(this, fetchCovers, bookData,
-                                                getLocale(context));
             if (!urlList.isEmpty()) {
-                // only using the first one found, maybe future enhancement?
-                final String oneBookUrl = urlList.get(0);
+                // The entry handler takes care of an individual book ('entry')
+                final GoogleBooksEntryHandler handler = new GoogleBooksEntryHandler(
+                        this, fetchCovers, bookData, getLocale(context));
 
-                try (TerminatorConnection con = createConnection(oneBookUrl)) {
-                    parser.parse(con.getInputStream(), handler);
-                }
+                // only using the first one found, maybe future enhancement?
+                mFutureHttpGet.get(urlList.get(0), con -> {
+                    try {
+                        parser.parse(con.getInputStreamUEX(), handler);
+                        checkForSeriesNameInTitle(bookData);
+                        return true;
+                    } catch (@NonNull final IOException e) {
+                        throw new UncheckedIOException(e);
+                    } catch (@NonNull final SAXException e) {
+                        throw new UncheckedSAXException(e);
+                    }
+
+                });
+
             }
+
         } catch (@NonNull final SAXException e) {
-            // unwrap SAXException if possible
-            final Exception embedded = e.getException();
-            if (embedded instanceof StorageException) {
-                throw (StorageException) embedded;
+            // unwrap SAXException using getException() !
+            final Exception cause = e.getException();
+            if (cause instanceof StorageException) {
+                throw (StorageException) cause;
             }
+            // wrap other parser exceptions
             throw new SearchException(getName(context), e);
 
         } catch (@NonNull final ParserConfigurationException | IOException e) {
             throw new SearchException(getName(context), e);
+        } finally {
+            mFutureHttpGet = null;
         }
+    }
 
-        checkForSeriesNameInTitle(bookData);
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mFutureHttpGet != null) {
+                mFutureHttpGet.cancel();
+            }
+        }
     }
 
     /**

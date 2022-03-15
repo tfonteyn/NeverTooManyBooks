@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.org.json.JSONException;
 
 /**
  * A StringList contains a list of elements, separated by the {@link Coder#getElementSeparator()}.
@@ -178,7 +179,8 @@ public class StringList<E> {
      * @return Encoded string
      */
     @NonNull
-    public String encodeList(@NonNull final Collection<E> list) {
+    public String encodeList(@NonNull final Collection<E> list)
+            throws JSONException {
         // The factory will encode each element, and we simply concat all of them.
         return list.stream()
                    .map(mCoder::encode)
@@ -193,7 +195,8 @@ public class StringList<E> {
      * @return Encoded string
      */
     @NonNull
-    public String encodeElement(@NonNull final E element) {
+    public String encodeElement(@NonNull final E element)
+            throws JSONException {
         return mCoder.encode(element);
     }
 
@@ -212,7 +215,8 @@ public class StringList<E> {
          * @return string
          */
         @NonNull
-        String encode(@NonNull E obj);
+        String encode(@NonNull E obj)
+                throws JSONException;
 
         /**
          * Decode a <string>SINGLE</string> element.

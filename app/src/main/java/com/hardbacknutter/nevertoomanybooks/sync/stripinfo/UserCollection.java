@@ -42,9 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Fetches and parses the user collection list from the site.
@@ -145,7 +147,7 @@ public class UserCollection {
                    @NonNull final BookshelfMapper config) {
         mUserId = userId;
         mSearchEngine = searchEngine;
-        mJsoupLoader = new JsoupLoader();
+        mJsoupLoader = new JsoupLoader(mSearchEngine.createFutureGetRequest());
         mRowParser = new RowParser(context, config);
     }
 
@@ -169,7 +171,7 @@ public class UserCollection {
     @Nullable
     public List<Bundle> fetchPage(@NonNull final Context context,
                                   @NonNull final ProgressListener progressListener)
-            throws SearchException, IOException {
+            throws SearchException, StorageException, IOException {
 
         mCurrentPage++;
         if (!hasMore()) {
@@ -179,11 +181,11 @@ public class UserCollection {
         progressListener.publishProgress(1, context.getString(
                 R.string.progress_msg_loading_page, mCurrentPage));
 
-        final String url = mSearchEngine.getSiteUrl()
-                           + String.format(URL_MY_BOOKS, mUserId, mCurrentPage, mFlags);
+        final SearchEngineConfig config = mSearchEngine.getConfig();
+        final String url = config.getHostUrl() + String.format(URL_MY_BOOKS, mUserId,
+                                                               mCurrentPage, mFlags);
 
-        final Document currentDocument = mJsoupLoader
-                .loadDocument(url, mSearchEngine.createConnectionProducer());
+        final Document currentDocument = mJsoupLoader.loadDocument(url);
 
         final Element root = currentDocument.getElementById("collectionContent");
         if (root != null) {

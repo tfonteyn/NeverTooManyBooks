@@ -56,7 +56,7 @@ public class SqliteShellFragment
     public static final String TAG = "SqliteShellFragment";
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
-    //URGENT: add menu button/dialog to edit this number
+    //FIXME: add menu button/dialog to edit this number
     private static final int MAX_LINES = 200;
     private static final String UTF_8 = "utf-8";
     private static final String TEXT_HTML = "text/html";

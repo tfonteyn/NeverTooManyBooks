@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines;
 
+import android.content.Context;
+
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,7 +75,6 @@ public final class SearchEngineConfig {
     private final int mConnectTimeoutMs;
     /** The DEFAULT for the engine. */
     private final int mReadTimeoutMs;
-
     /**
      * This is a reference to the <strong>static</strong> object created in the SearchEngine
      * implementation class.
@@ -119,6 +120,7 @@ public final class SearchEngineConfig {
 
         mConnectTimeoutMs = builder.mConnectTimeoutMs;
         mReadTimeoutMs = builder.mReadTimeoutMs;
+
         mStaticThrottler = builder.mStaticThrottler;
 
         mSupportsMultipleCoverSizes = builder.mSupportsMultipleCoverSizes;
@@ -138,6 +140,11 @@ public final class SearchEngineConfig {
         }
     }
 
+    /**
+     * Get the engine id.
+     *
+     * @return engine id
+     */
     @SearchSites.EngineId
     public int getEngineId() {
         return mId;
@@ -151,6 +158,15 @@ public final class SearchEngineConfig {
     @StringRes
     public int getLabelId() {
         return mLabelId;
+    }
+
+    /**
+     * Get the name for this engine.
+     *
+     * @return name
+     */
+    public String getName(@NonNull final Context context) {
+        return context.getString(mLabelId);
     }
 
     @NonNull
@@ -167,8 +183,7 @@ public final class SearchEngineConfig {
     public String getHostUrl() {
         //noinspection ConstantConditions
         return ServiceLocator.getGlobalPreferences().getString(
-                mPrefKey + Prefs.pk_suffix_host_url,
-                mHostUrl);
+                mPrefKey + Prefs.pk_suffix_host_url, mHostUrl);
     }
 
     /**
@@ -197,25 +212,36 @@ public final class SearchEngineConfig {
     }
 
     /**
-     * Timeout we allow for a connection to work.
+     * Timeout we allow for a connection to be established.
      *
-     * @return defaults to 5 second. Can be overridden by preferences.
+     * @return milli seconds
      */
     public int getConnectTimeoutInMs() {
-        return ServiceLocator.getGlobalPreferences().getInt(
-                mPrefKey + Prefs.pk_suffix_timeout_connect,
+        return Prefs.getTimeoutValueInMs(
+                ServiceLocator.getGlobalPreferences(),
+                mPrefKey + Prefs.pk_suffix_timeout_connect_in_seconds,
                 mConnectTimeoutMs);
     }
 
     /**
-     * Timeout we allow for a response to a request.
+     * Timeout we allow for getting a response from the remote server.
      *
-     * @return defaults to 10 second. Can be overridden by preferences.
+     * @return milli seconds
      */
     public int getReadTimeoutInMs() {
-        return ServiceLocator.getGlobalPreferences().getInt(
-                mPrefKey + Prefs.pk_suffix_timeout_read,
+        return Prefs.getTimeoutValueInMs(
+                ServiceLocator.getGlobalPreferences(),
+                mPrefKey + Prefs.pk_suffix_timeout_read_in_seconds,
                 mReadTimeoutMs);
+    }
+
+    /**
+     * Convenience method: get the total timeout value for a request to a remote server.
+     *
+     * @return milli seconds
+     */
+    public int getRequestTimeoutInMs() {
+        return getConnectTimeoutInMs() + getReadTimeoutInMs();
     }
 
     /**
@@ -298,7 +324,6 @@ public final class SearchEngineConfig {
         private int mDomainMenuId;
 
         private int mConnectTimeoutMs = FIVE_SECONDS;
-
         private int mReadTimeoutMs = TEN_SECONDS;
 
         @Nullable

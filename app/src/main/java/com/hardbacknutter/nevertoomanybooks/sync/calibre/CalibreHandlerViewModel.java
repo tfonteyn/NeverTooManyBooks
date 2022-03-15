@@ -34,8 +34,6 @@ import java.security.cert.CertificateException;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -52,7 +50,7 @@ public class CalibreHandlerViewModel
     private Book mTempBook;
 
     public void init(@NonNull final Context context)
-            throws CertificateException, SSLException {
+            throws CertificateException {
         if (mServer == null) {
             mServer = new CalibreContentServer(context);
             mSingleFileDownloadTask = new SingleFileDownloadTask(mServer);

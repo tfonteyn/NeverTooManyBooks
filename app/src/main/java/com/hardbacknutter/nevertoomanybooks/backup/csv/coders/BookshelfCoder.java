@@ -64,16 +64,13 @@ public class BookshelfCoder
 
     @NonNull
     @Override
-    public String encode(@NonNull final Bookshelf bookshelf) {
+    public String encode(@NonNull final Bookshelf bookshelf)
+            throws JSONException {
         String result = escape(bookshelf.getName(), ESCAPE_CHARS);
 
         final JSONObject details = new JSONObject();
-        try {
-            if (!bookshelf.getStyleUuid().isEmpty()) {
-                details.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+        if (!bookshelf.getStyleUuid().isEmpty()) {
+            details.put(DBKey.FK_STYLE, bookshelf.getStyleUuid());
         }
 
         if (!details.isEmpty()) {

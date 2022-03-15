@@ -38,11 +38,10 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
 public final class NetworkUtils {
 
@@ -171,26 +171,18 @@ public final class NetworkUtils {
      */
     private static class DNSService {
 
-        private final ExecutorService executor;
-
-        DNSService() {
-            executor = Executors.newSingleThreadExecutor(r -> {
-                final Thread t = new Thread(r);
-                t.setDaemon(true);
-                return t;
-            });
-        }
-
         @NonNull
         InetAddress lookup(@NonNull final String host,
                            @SuppressWarnings("SameParameterValue") final long timeoutMs)
-                throws IOException,
+                throws CancellationException,
+                       IOException,
                        SocketTimeoutException,
                        UnknownHostException {
 
             Future<InetAddress> future = null;
             try {
-                future = getByName(host);
+                future = ASyncExecutor.SERVICE.submit(() -> InetAddress.getByName(host));
+
                 final InetAddress inetAddress = future.get(timeoutMs, TimeUnit.MILLISECONDS);
                 // sanity check
                 if (inetAddress == null) {
@@ -199,11 +191,18 @@ public final class NetworkUtils {
                 return inetAddress;
 
             } catch (@NonNull final ExecutionException e) {
-                // unwrap if we can
-                if (e.getCause() instanceof IOException) {
-                    throw (IOException) e.getCause();
+                final Throwable cause = e.getCause();
+
+                if (cause instanceof IOException) {
+                    throw (IOException) cause;
                 }
-                // Shouldn't happen... flw...
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
+                throw new UnknownHostException(host);
+
+            } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "", e);
                 }
@@ -213,23 +212,12 @@ public final class NetworkUtils {
                 // re-throw as if it's coming from the network call.
                 throw new SocketTimeoutException(host);
 
-            } catch (@NonNull final InterruptedException e) {
-                // re-throw as if it's coming from the network call.
-                throw new UnknownHostException(host);
-
             } finally {
+                // paranoia
                 if (future != null) {
                     future.cancel(true);
                 }
             }
-        }
-
-        @NonNull
-        private Future<InetAddress> getByName(@NonNull final String host) {
-            final FutureTask<InetAddress> future = new FutureTask<>(
-                    () -> InetAddress.getByName(host));
-            executor.execute(future);
-            return future;
         }
     }
 }

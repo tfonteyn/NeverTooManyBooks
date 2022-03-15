@@ -80,7 +80,7 @@ public final class ExMsg {
 
         } else if (e instanceof com.hardbacknutter.org.json.JSONException) {
             // we're supposed to catch all JSONException!
-            Log.e(TAG, "Please report if seen", e);
+            Log.e(TAG, "Please log a bug if you see this message: ", e);
             msg = context.getString(R.string.error_unknown_long,
                                     context.getString(R.string.pt_maintenance));
 

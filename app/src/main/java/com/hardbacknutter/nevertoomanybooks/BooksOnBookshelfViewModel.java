@@ -69,6 +69,8 @@ public class BooksOnBookshelfViewModel
     /** collapsed/expanded. */
     static final String BKEY_LIST_STATE = TAG + ":list.state";
 
+    static final String BKEY_PROPOSE_BACKUP = TAG + ":pb";
+
     /** Allows to set an explicit shelf. */
     static final String BKEY_BOOKSHELF = TAG + ":bs";
 
@@ -91,6 +93,10 @@ public class BooksOnBookshelfViewModel
     private boolean mForceRebuildInOnResume;
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
+
+    /** Flag to prompt the user to make a backup after startup. */
+    private boolean mProposeBackup;
+
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mBookshelf;
@@ -153,6 +159,8 @@ public class BooksOnBookshelfViewModel
             mRebuildMode = RebuildBooklist.getPreferredMode(context);
 
             if (args != null) {
+                mProposeBackup = args.getBoolean(BKEY_PROPOSE_BACKUP, false);
+
                 // extract search criteria if any are present
                 mSearchCriteria.from(args, true);
 
@@ -179,6 +187,13 @@ public class BooksOnBookshelfViewModel
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
         }
+    }
+
+    boolean isProposeBackup() {
+        // We only offer ONCE
+        final boolean tmp = mProposeBackup;
+        mProposeBackup = false;
+        return tmp;
     }
 
     void resetPreferredListRebuildMode(@NonNull final Context context) {

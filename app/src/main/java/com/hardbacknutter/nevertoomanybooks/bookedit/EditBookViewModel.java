@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class EditBookViewModel
         extends ViewModel {
@@ -298,11 +298,11 @@ public class EditBookViewModel
      *
      * @param context Current context
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws DaoWriteException     on failure
+     * @throws StorageException  The covers directory is not available
+     * @throws DaoWriteException on failure
      */
     void saveBook(@NonNull final Context context)
-            throws CoverStorageException, DaoWriteException {
+            throws StorageException, DaoWriteException {
 
         if (mBook.isNew()) {
             ServiceLocator.getInstance().getBookDao().insert(context, mBook, 0);

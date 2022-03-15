@@ -26,13 +26,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
-import com.hardbacknutter.nevertoomanybooks._mocks.MockCanceller;
+import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -43,9 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,10 +68,12 @@ class StripInfoTest
     private StripInfoSearchEngine mSearchEngine;
 
     @BeforeEach
-    public void setUp() {
-        super.setUp();
+    public void setup()
+            throws ParserConfigurationException, SAXException {
+        super.setup();
         mSearchEngine = (StripInfoSearchEngine) Site.Type.Data
-                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(new MockCanceller());
+                .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine();
+        mSearchEngine.setCaller(new MockCancellable());
     }
 
     @Test
@@ -455,8 +459,7 @@ class StripInfoTest
         try {
             mSearchEngine.parseMultiResult(mContext, document,
                                            new boolean[]{false, false}, mRawData);
-        } catch (@NonNull final DiskFullException | CoverStorageException | SearchException
-                | CredentialsException e) {
+        } catch (@NonNull final StorageException | SearchException | CredentialsException e) {
             fail(e);
         }
 

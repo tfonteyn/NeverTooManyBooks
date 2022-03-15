@@ -24,20 +24,14 @@ import android.content.SharedPreferences;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.CookieManager;
 import java.net.HttpCookie;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.StringJoiner;
 
@@ -45,9 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -61,17 +57,11 @@ public class StripInfoAuth {
     public static final String PREF_KEY = "stripinfo";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
-    public static final CharSequence PK_CONNECT_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_connect;
-    public static final CharSequence PK_READ_TIMEOUT_IN_SECONDS =
-            PREF_KEY + Prefs.pk_suffix_timeout_read;
 
+    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
     private static final String PK_LOGIN_TO_SEARCH = PREF_KEY + ".login.to.search";
     /** the id returned in the cookie. Stored for easy access. */
     private static final String PK_HOST_USER_ID = PREF_KEY + ".host.userId";
-
-    static final String PK_LAST_SYNC = PREF_KEY + ".last.sync.date";
-
     /** Log tag. */
     private static final String TAG = "StripInfoAuth";
 
@@ -87,6 +77,9 @@ public class StripInfoAuth {
     private static final String UTF_8 = "UTF-8";
 
     @NonNull
+    private final FutureHttpPost<Void> mFutureHttpPost;
+
+    @NonNull
     private final String mSiteUrl;
 
     @NonNull
@@ -97,6 +90,13 @@ public class StripInfoAuth {
 
         // Setup BEFORE doing first request!
         mCookieManager = ServiceLocator.getInstance().getCookieManager();
+
+        final SearchEngineConfig config = SearchEngineRegistry
+                .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
+
+        mFutureHttpPost = new FutureHttpPost<Void>(
+                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
+                .setThrottler(StripInfoSearchEngine.THROTTLER);
     }
 
     /**
@@ -172,12 +172,16 @@ public class StripInfoAuth {
 
     /**
      * Performs a login using the stored credentials.
+     * <p>
+     * Will check the cookie to see if we're already logged in,
+     * and return with success immediately.
      *
      * @return the valid user id
      *
      * @throws CredentialsException on login failure
      * @throws IOException          on other failures
      */
+    @WorkerThread
     @NonNull
     public String login()
             throws IOException, CredentialsException {
@@ -198,34 +202,15 @@ public class StripInfoAuth {
             return userId;
         }
 
-        // Prepare to login...
-        StripInfoSearchEngine.THROTTLER.waitUntilRequestAllowed();
+        final String url = mSiteUrl + USER_LOGIN_URL;
+        final String postBody = new StringJoiner("&")
+                .add("userName=" + URLEncoder.encode(username, UTF_8))
+                .add("passw=" + URLEncoder.encode(password, UTF_8))
+                .add("submit=Inloggen")
+                .add("frmName=login")
+                .toString();
 
-        final HttpURLConnection request = (HttpURLConnection)
-                new URL(mSiteUrl + USER_LOGIN_URL).openConnection();
-        request.setRequestMethod(HttpUtils.POST);
-        request.setDoOutput(true);
-
-        final StringJoiner postBody = new StringJoiner("&");
-        postBody.add("userName=" + URLEncoder.encode(username, UTF_8));
-        postBody.add("passw=" + URLEncoder.encode(password, UTF_8));
-        postBody.add("submit=Inloggen");
-        postBody.add("frmName=login");
-
-        // explicit connect for clarity
-        request.connect();
-        // send the login form
-        try (OutputStream os = request.getOutputStream();
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw)) {
-            writer.write(postBody.toString());
-            writer.flush();
-        }
-
-        // the server always sends a 200 OK, but do a sanity check
-        HttpUtils.checkResponseCode(request, R.string.site_stripinfo_be);
-
-        request.disconnect();
+        mFutureHttpPost.post(url, postBody, null);
 
         userId = getUserId(mCookieManager).orElse(null);
         if (userId != null) {
@@ -234,5 +219,10 @@ public class StripInfoAuth {
         }
 
         throw new CredentialsException(R.string.site_stripinfo_be, "login failed");
+    }
+
+
+    public void cancel() {
+        mFutureHttpPost.cancel();
     }
 }

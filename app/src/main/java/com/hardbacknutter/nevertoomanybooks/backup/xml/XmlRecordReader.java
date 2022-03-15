@@ -133,7 +133,8 @@ public class XmlRecordReader
     @NonNull
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context,
                                                   @NonNull final ArchiveReaderRecord record)
-            throws DataReaderException, IOException {
+            throws DataReaderException,
+                   IOException {
         final Bundle bundle = new Bundle();
         fromXml(record, new InfoReader(bundle));
         if (bundle.isEmpty()) {
@@ -149,7 +150,8 @@ public class XmlRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @NonNull final ImportHelper unused,
                               @NonNull final ProgressListener progressListener)
-            throws DataReaderException, IOException {
+            throws DataReaderException,
+                   IOException {
 
         final ImportResults results = new ImportResults();
 
@@ -185,7 +187,8 @@ public class XmlRecordReader
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
-            throws DataReaderException, IOException {
+            throws DataReaderException,
+                   IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final DefaultHandler handler = new XmlFilterHandler(buildFilters(accessor));
@@ -201,11 +204,16 @@ public class XmlRecordReader
             final SAXParser parser = factory.newSAXParser();
             parser.parse(source, handler);
 
-        } catch (@NonNull final ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-
         } catch (@NonNull final SAXException e) {
-            // wrap parser exceptions in an DataReaderException /
+            // unwrap SAXException using getException() !
+            final Exception cause = e.getException();
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            }
+            // wrap other parser exceptions
+            throw new DataReaderException(e);
+
+        } catch (@NonNull final ParserConfigurationException e) {
             throw new DataReaderException(e);
         }
     }

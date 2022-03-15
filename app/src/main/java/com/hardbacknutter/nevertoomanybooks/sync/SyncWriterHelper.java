@@ -31,11 +31,11 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.io.DataWriter;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class SyncWriterHelper
@@ -89,14 +89,23 @@ public class SyncWriterHelper
     public SyncWriterResults write(@NonNull final Context context,
                                    @NonNull final ProgressListener progressListener)
             throws DataWriterException,
-                   IOException,
+                   CertificateException,
+                   CredentialsException,
                    StorageException,
-                   CertificateException {
+                   IOException {
 
         Objects.requireNonNull(mSyncServer, "mSyncServer");
 
-        try (DataWriter<SyncWriterResults> writer = mSyncServer.createWriter(context, this)) {
-            return writer.write(context, progressListener);
+        try {
+            mDataWriter = mSyncServer.createWriter(context, this);
+            return mDataWriter.write(context, progressListener);
+        } finally {
+            synchronized (this) {
+                if (mDataWriter != null) {
+                    mDataWriter.close();
+                    mDataWriter = null;
+                }
+            }
         }
     }
 

@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 
 /**
  * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
@@ -243,21 +242,6 @@ public final class Site
 
         mSearchEngine.reset();
         return mSearchEngine;
-    }
-
-    /**
-     * Convenience method to get the {@link SearchEngine} instance for this site,
-     * and set the caller.
-     *
-     * @param caller to set
-     *
-     * @return (cached) instance
-     */
-    @NonNull
-    public SearchEngine getSearchEngine(@NonNull final Canceller caller) {
-        final SearchEngine searchEngine = getSearchEngine();
-        searchEngine.setCaller(caller);
-        return searchEngine;
     }
 
     @NonNull

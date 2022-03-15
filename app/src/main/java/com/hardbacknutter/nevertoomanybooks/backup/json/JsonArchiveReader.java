@@ -73,7 +73,8 @@ public class JsonArchiveReader
     @WorkerThread
     @Override
     public void validate(@NonNull final Context context)
-            throws DataReaderException, IOException {
+            throws DataReaderException,
+                   IOException {
         if (mMetaData == null) {
             // reading it will either assign a value to mMetaData, or throw exceptions
             readMetaData(context);
@@ -86,7 +87,8 @@ public class JsonArchiveReader
     @NonNull
     @Override
     public Optional<ArchiveMetaData> readMetaData(@NonNull final Context context)
-            throws IOException, DataReaderException {
+            throws DataReaderException,
+                   IOException {
 
         if (mMetaData == null) {
             @Nullable
@@ -121,7 +123,9 @@ public class JsonArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws DataReaderException, IOException, StorageException {
+            throws DataReaderException,
+                   StorageException,
+                   IOException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());

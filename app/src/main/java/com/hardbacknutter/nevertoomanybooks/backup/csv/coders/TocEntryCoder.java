@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.org.json.JSONException;
 
 /**
  * StringList factory for a {@link TocEntry}.
@@ -64,7 +65,8 @@ public class TocEntryCoder
 
     @NonNull
     @Override
-    public String encode(@NonNull final TocEntry tocEntry) {
+    public String encode(@NonNull final TocEntry tocEntry)
+            throws JSONException {
         final StringBuilder result = new StringBuilder(escape(tocEntry.getTitle(), ESCAPE_CHARS));
 
         tocEntry.getFirstPublicationDate().ifPresent(date -> {

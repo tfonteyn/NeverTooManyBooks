@@ -39,8 +39,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import javax.net.ssl.SSLException;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -66,8 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -160,12 +157,11 @@ public class CalibreContentServerReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws SSLException         on secure connection failures
      * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
                                       @NonNull final SyncReaderHelper helper)
-            throws CertificateException, SSLException {
+            throws CertificateException {
 
         mUpdateOption = helper.getUpdateOption();
         mSyncDate = helper.getSyncDate();
@@ -233,12 +229,14 @@ public class CalibreContentServerReader
 //    }
 
     @Override
-    public boolean cancel(final int taskId) {
-        return mServer.cancelFetch();
+    public void cancel() {
+        mServer.cancel();
     }
 
     private void readLibraryMetaData(@NonNull final Context context)
-            throws IOException, JSONException {
+            throws StorageException,
+                   IOException,
+                   JSONException {
 
         mServer.readMetaData(context);
         if (mLibrary == null) {
@@ -250,7 +248,9 @@ public class CalibreContentServerReader
     @Override
     @WorkerThread
     public Optional<SyncReaderMetaData> readMetaData(@NonNull final Context context)
-            throws DataReaderException, IOException {
+            throws DataReaderException,
+                   StorageException,
+                   IOException {
 
         try {
             readLibraryMetaData(context);
@@ -262,10 +262,9 @@ public class CalibreContentServerReader
         // the requested (or default) library
         args.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
         // and the full list
-        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST,
-                                    mServer.getLibraries());
-        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED,
-                        mServer.isCalibreExtensionInstalled());
+        args.putParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST, mServer.getLibraries());
+
+        args.putBoolean(CalibreContentServer.BKEY_EXT_INSTALLED, mServer.isExtensionInstalled());
 
         return Optional.of(new SyncReaderMetaData(args));
     }
@@ -275,7 +274,9 @@ public class CalibreContentServerReader
     @WorkerThread
     public ReaderResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws DiskFullException, CoverStorageException, DataReaderException, IOException {
+            throws DataReaderException,
+                   StorageException,
+                   IOException {
 
         final String progressMessage =
                 context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -394,11 +395,11 @@ public class CalibreContentServerReader
      * @param context     Current context
      * @param calibreBook the book data to import
      *
-     * @throws CoverStorageException The covers directory is not available
+     * @throws StorageException The covers directory is not available
      */
     private void handleBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if we already have the calibre book in the local database
@@ -461,7 +462,7 @@ public class CalibreContentServerReader
     private void updateBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook,
                             @NonNull final Book book)
-            throws DiskFullException, CoverStorageException, DaoWriteException {
+            throws StorageException, DaoWriteException {
 
         book.setStage(EntityStage.Stage.Dirty);
         copyCalibreData(context, calibreBook, book);
@@ -479,7 +480,7 @@ public class CalibreContentServerReader
 
     private void insertBook(@NonNull final Context context,
                             @NonNull final JSONObject calibreBook)
-            throws DiskFullException, CoverStorageException, DaoWriteException {
+            throws StorageException, DaoWriteException {
 
         // It's a new book; construct it using the calibre server data and insert it into the db
         final Book book = new Book();
@@ -507,13 +508,13 @@ public class CalibreContentServerReader
      * @param calibreBook the book data to import
      * @param localBook   the local book to add the data to
      *
-     * @throws CoverStorageException The covers directory is not available
-     * @throws JSONException         upon any error
+     * @throws StorageException The covers directory is not available
+     * @throws JSONException    upon any error
      */
     private void copyCalibreData(@NonNull final Context context,
                                  @NonNull final JSONObject calibreBook,
                                  @NonNull final Book localBook)
-            throws DiskFullException, CoverStorageException, JSONException {
+            throws StorageException, JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
         localBook.putInt(DBKey.KEY_CALIBRE_BOOK_ID, calibreBookId);

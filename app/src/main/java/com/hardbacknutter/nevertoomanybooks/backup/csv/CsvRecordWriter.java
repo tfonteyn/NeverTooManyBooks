@@ -37,9 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.org.json.JSONException;
 
 /**
  * <ul>Supports:
@@ -81,51 +83,56 @@ public class CsvRecordWriter
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> recordTypes,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws DataWriterException,
+                   IOException {
 
         final ExportResults results = new ExportResults();
 
-        if (recordTypes.contains(RecordType.Books)) {
+        try {
+            if (recordTypes.contains(RecordType.Books)) {
 
-            final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
-            final BookCoder bookCoder = new BookCoder(context);
+                final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
+                final BookCoder bookCoder = new BookCoder(context);
 
-            int delta = 0;
-            long lastUpdate = 0;
+                int delta = 0;
+                long lastUpdate = 0;
 
-            final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
-            try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+                final BookDao bookDao = ServiceLocator.getInstance().getBookDao();
+                try (Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
 
-                writer.write(bookCoder.encodeHeader());
-                writer.write("\n");
-
-                while (cursor.moveToNext() && !progressListener.isCancelled()) {
-
-                    final Book book = Book.from(cursor);
-
-                    writer.write(bookCoder.encode(book));
+                    writer.write(bookCoder.createHeader());
                     writer.write("\n");
 
-                    results.addBook(book.getId());
+                    while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                    if (collectCoverFilenames) {
-                        for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            final File coverFile = book.getPersistedCoverFile(cIdx);
-                            if (coverFile != null && coverFile.exists()) {
-                                results.addCover(coverFile);
+                        final Book book = Book.from(cursor);
+
+                        writer.write(bookCoder.encode(book));
+                        writer.write("\n");
+
+                        results.addBook(book.getId());
+
+                        if (collectCoverFilenames) {
+                            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                                final File coverFile = book.getPersistedCoverFile(cIdx);
+                                if (coverFile != null && coverFile.exists()) {
+                                    results.addCover(coverFile);
+                                }
                             }
                         }
-                    }
 
-                    delta++;
-                    final long now = System.currentTimeMillis();
-                    if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                        progressListener.publishProgress(delta, book.getTitle());
-                        lastUpdate = now;
-                        delta = 0;
+                        delta++;
+                        final long now = System.currentTimeMillis();
+                        if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
+                            progressListener.publishProgress(delta, book.getTitle());
+                            lastUpdate = now;
+                            delta = 0;
+                        }
                     }
                 }
             }
+        } catch (@NonNull final JSONException e) {
+            throw new DataWriterException(e);
         }
 
         return results;

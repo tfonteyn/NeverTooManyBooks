@@ -84,7 +84,7 @@ public class SearchTask
      */
     SearchTask(@NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
-        super(searchEngine.getId(),
+        super(searchEngine.getEngineId(),
               TAG + ' ' + searchEngine.getName(ServiceLocator.getAppContext()),
               taskListener);
 
@@ -158,6 +158,14 @@ public class SearchTask
         execute();
     }
 
+    @Override
+    public void cancel() {
+        super.cancel();
+        synchronized (mSearchEngine) {
+            mSearchEngine.cancel();
+        }
+    }
+
     @NonNull
     @Override
     @WorkerThread
@@ -209,7 +217,8 @@ public class SearchTask
 
             default:
                 // we should never get here...
-                throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName(context)
+                throw new IllegalArgumentException("SearchEngine "
+                                                   + mSearchEngine.getName(context)
                                                    + " does not implement By=" + mBy);
         }
 

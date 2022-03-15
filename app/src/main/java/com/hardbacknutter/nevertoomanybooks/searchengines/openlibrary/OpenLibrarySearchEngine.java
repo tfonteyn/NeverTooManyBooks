@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -57,8 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.FullDateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CoverStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.DiskFullException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -167,6 +166,8 @@ public class OpenLibrarySearchEngine
 
     /** The search keys in the json object we support: ISBN, external id. */
     private static final String SUPPORTED_KEYS = "ISBN,OLID";
+    @Nullable
+    private FutureHttpGet<String> mFutureHttpGet;
 
     /**
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
@@ -205,7 +206,7 @@ public class OpenLibrarySearchEngine
     public Bundle searchByExternalId(@NonNull final Context context,
                                      @NonNull final String externalId,
                                      @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -225,7 +226,7 @@ public class OpenLibrarySearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchCovers)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException, SearchException {
 
         final Bundle bookData = newBundleInstance();
 
@@ -253,7 +254,7 @@ public class OpenLibrarySearchEngine
                                     @NonNull final String validIsbn,
                                     @IntRange(from = 0, to = 1) final int cIdx,
                                     @Nullable final ImageFileInfo.Size size)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
         final String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -276,37 +277,42 @@ public class OpenLibrarySearchEngine
         return saveImage(url, validIsbn, cIdx, size);
     }
 
+    @Override
+    public void cancel() {
+        synchronized (this) {
+            super.cancel();
+            if (mFutureHttpGet != null) {
+                mFutureHttpGet.cancel();
+            }
+        }
+    }
 
     /**
      * Fetch and parse.
-     *
-     * @throws JSONException on any failure to parse.
      */
     private void fetchBook(@NonNull final Context context,
                            @NonNull final String url,
                            @NonNull final boolean[] fetchCovers,
                            @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException, SearchException {
+            throws StorageException,
+                   SearchException {
+
+        mFutureHttpGet = createFutureGetRequest();
+
         try {
             // get and store the result into a string.
-            final String response;
-            try (TerminatorConnection con = createConnection(url);
-                 InputStream is = con.getInputStream()) {
-                response = readResponseStream(is);
+            final String response = mFutureHttpGet
+                    .get(url, con -> readResponseStream(con.getInputStreamUEX()));
+
+            if (handleResponse(context, response, fetchCovers, bookData)) {
+                checkForSeriesNameInTitle(bookData);
             }
 
-            if (isCancelled()) {
-                return;
-            }
-
-            // json-ify and handle.
-            handleResponse(context, new JSONObject(response), fetchCovers, bookData);
-
-        } catch (@NonNull final JSONException | IOException e) {
+        } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);
+        } finally {
+            mFutureHttpGet = null;
         }
-
-        checkForSeriesNameInTitle(bookData);
     }
 
     /**
@@ -316,22 +322,17 @@ public class OpenLibrarySearchEngine
      *
      * @return the entire content
      *
-     * @throws IOException on any failure
+     * @throws UncheckedIOException on any failure
      */
     @VisibleForTesting
     @NonNull
     String readResponseStream(@NonNull final InputStream is)
-            throws IOException {
+            throws UncheckedIOException {
         // Don't close this stream!
         final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
         final BufferedReader reader = new BufferedReader(isr);
 
-        try {
-            return reader.lines().collect(Collectors.joining());
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
-        }
+        return reader.lines().collect(Collectors.joining());
     }
 
 
@@ -456,29 +457,44 @@ public class OpenLibrarySearchEngine
      * "ISBN:9780980200447"
      *
      * @param context     Current context
-     * @param jsonObject  the complete book record.
+     * @param response    the complete response; a String containing JSON
      * @param fetchCovers Set to {@code true} if we want to get covers
      * @param bookData    Bundle to update
+     *
+     * @return {@code true} on success, {@code false} if we were cancelled.
      */
     @VisibleForTesting
-    void handleResponse(@NonNull final Context context,
-                        @NonNull final JSONObject jsonObject,
-                        @NonNull final boolean[] fetchCovers,
-                        @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException {
+    boolean handleResponse(@NonNull final Context context,
+                           @NonNull final String response,
+                           @NonNull final boolean[] fetchCovers,
+                           @NonNull final Bundle bookData)
+            throws StorageException,
+                   SearchException {
 
-        final Iterator<String> it = jsonObject.keys();
-        // we only handle the first result for now.
-        if (it.hasNext()) {
-            final String topLevelKey = it.next();
-            final String[] data = topLevelKey.split(":");
-            if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                parse(context, data[1],
-                      jsonObject.getJSONObject(topLevelKey),
-                      fetchCovers,
-                      bookData);
+        try {
+            final JSONObject jsonObject = new JSONObject(response);
+
+            final Iterator<String> it = jsonObject.keys();
+            // we only handle the first result for now.
+            if (it.hasNext()) {
+                if (isCancelled()) {
+                    return false;
+                }
+
+                final String topLevelKey = it.next();
+                final String[] data = topLevelKey.split(":");
+                if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
+                    parse(context, data[1],
+                          jsonObject.getJSONObject(topLevelKey),
+                          fetchCovers,
+                          bookData);
+                }
             }
+        } catch (@NonNull final JSONException e) {
+            throw new SearchException(getName(context), e);
         }
+
+        return true;
     }
 
     /**
@@ -495,7 +511,7 @@ public class OpenLibrarySearchEngine
                        @NonNull final JSONObject document,
                        @NonNull final boolean[] fetchCovers,
                        @NonNull final Bundle bookData)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
         final DateParser dateParser = new FullDateParser(context);
 
@@ -677,7 +693,7 @@ public class OpenLibrarySearchEngine
                                           @NonNull final String validIsbn,
                                           @SuppressWarnings("SameParameterValue")
                                           @IntRange(from = 0, to = 1) final int cIdx)
-            throws DiskFullException, CoverStorageException {
+            throws StorageException {
 
         final ArrayList<String> list = new ArrayList<>();
 
