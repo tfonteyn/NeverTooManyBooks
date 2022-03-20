@@ -169,8 +169,10 @@
      -->
     <style name="TIE.ReadOnly">
         <item name="android:inputType">none</item>
+        <!-- installing an onClickListener will flip this to 'true' -->
         <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
+        <!-- needed for keyboard navigation. -->
+        <item name="android:focusable">true</item>
         <item name="android:cursorVisible">false</item>
         <item name="android:longClickable">false</item>
     </style>
