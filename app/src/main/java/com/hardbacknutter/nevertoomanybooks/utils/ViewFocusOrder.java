@@ -19,24 +19,30 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintHelper;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.progressindicator.BaseProgressIndicator;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
- * Ensure that next up/down/left/right View is visible.
- * Sets the nextFocusX attributes on the visible fields.
- * <p>
- * URGENT: 2022-02-28: fails to do a full job on sw800 tablet layout for editing a book
- * i.e. {@link com.hardbacknutter.nevertoomanybooks.bookedit.EditBookPublicationFragment}
+ * Set/fix the nextFocusX attributes on the visible fields.
  */
 public final class ViewFocusOrder {
 
@@ -102,6 +108,18 @@ public final class ViewFocusOrder {
                     v.setNextFocusRightId(id);
                 }
             };
+            final INextView getForward = new INextView() {
+                @Override
+                public int getNext(@NonNull final View v) {
+                    return v.getNextFocusForwardId();
+                }
+
+                @Override
+                public void setNext(@NonNull final View v,
+                                    @IdRes final int id) {
+                    v.setNextFocusForwardId(id);
+                }
+            };
 
             final SparseArray<View> vh = new SparseArray<>();
             getViews(rootView, vh);
@@ -109,6 +127,7 @@ public final class ViewFocusOrder {
             for (int i = 0; i < vh.size(); i++) {
                 final View v = vh.valueAt(i);
                 if (v.getVisibility() == View.VISIBLE) {
+                    fixNextView(vh, v, getForward);
                     fixNextView(vh, v, getDown);
                     fixNextView(vh, v, getUp);
                     fixNextView(vh, v, getLeft);
@@ -122,6 +141,8 @@ public final class ViewFocusOrder {
                 Log.d(TAG, "rootView=" + rootView, e);
             }
         }
+
+        debugDumpViewTree(rootView, 0, true);
     }
 
     /**
@@ -174,20 +195,25 @@ public final class ViewFocusOrder {
     /**
      * Passed a parent view, add it and all children view (if any) to the passed collection.
      *
-     * @param parent Parent View
-     * @param list   Collection
+     * @param view Parent View
+     * @param list Collection
      */
-    private static void getViews(@NonNull final View parent,
+    private static void getViews(@NonNull final View view,
                                  @NonNull final SparseArray<View> list) {
+        if (view instanceof ConstraintHelper
+            || view instanceof BaseProgressIndicator) {
+            return;
+        }
+
         // Get the view id and add it to collection if not already present.
         @IdRes
-        final int id = parent.getId();
-        if (id != View.NO_ID && (list.get(id) != null)) {
-            list.put(id, parent);
+        final int id = view.getId();
+        if (id != View.NO_ID && (list.get(id) == null)) {
+            list.put(id, view);
         }
         // If it's a ViewGroup, then process children recursively.
-        if (parent instanceof ViewGroup) {
-            final ViewGroup g = (ViewGroup) parent;
+        if (view instanceof ViewGroup) {
+            final ViewGroup g = (ViewGroup) view;
             final int nChildren = g.getChildCount();
             for (int i = 0; i < nChildren; i++) {
                 getViews(g.getChildAt(i), list);
@@ -198,33 +224,96 @@ public final class ViewFocusOrder {
     /**
      * Dump an entire view hierarchy to the output.
      */
+    @SuppressLint("LogConditional")
     @SuppressWarnings({"unused", "WeakerAccess"})
     public static void debugDumpViewTree(@Nullable final View view,
-                                         final int depth) {
+                                         final int depth,
+                                         final boolean withFocusPointers) {
         if (view == null) {
             Log.d(TAG, "debugDumpViewTree|view==NULL");
             return;
         }
 
         final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < depth * 4; i++) {
-            sb.append(' ');
+        if (depth > 0) {
+            for (int i = 0; i < depth * 4; i++) {
+                sb.append(' ');
+            }
         }
-        sb.append(view.getClass().getCanonicalName())
-          .append(" (").append(view.getId()).append("') ->");
+
+        sb.append(view.getClass().getSimpleName())
+          .append(" ('").append(getResName(view, view.getId())).append("') -> ");
 
         if (view instanceof TextView) {
-            String value = ((TextView) view).getText().toString().trim();
-            value = value.substring(0, Math.min(value.length(), 20));
-            sb.append(value);
-        } else {
-            Log.d(TAG, "debugDumpViewTree|" + sb);
+            final String value = ((TextView) view).getText().toString().trim();
+            sb.append("\"");
+            if (value.length() > 20) {
+                sb.append(value.substring(0, 19)).append("…");
+            } else {
+                sb.append(value);
+            }
+            sb.append("\"");
+            if (withFocusPointers) {
+                sb.append(dumpFocus(view));
+            }
+        } else if (view instanceof Checkable) {
+            sb.append(((Checkable) view).isChecked());
+            if (withFocusPointers) {
+                sb.append(dumpFocus(view));
+            }
+        } else if (view instanceof RatingBar) {
+            sb.append(((RatingBar) view).getNumStars());
+            if (withFocusPointers) {
+                sb.append(dumpFocus(view));
+            }
+        } else if (view instanceof ImageView) {
+            final Drawable drawable = ((ImageView) view).getDrawable();
+            if (drawable != null) {
+                sb.append(drawable.getIntrinsicWidth())
+                  .append(" x ")
+                  .append(drawable.getIntrinsicHeight());
+            } else {
+                sb.append("No image");
+            }
+            if (withFocusPointers) {
+                sb.append(dumpFocus(view));
+            }
         }
+
+        Log.d(TAG, "debugDumpViewTree|" + sb);
+
         if (view instanceof ViewGroup) {
             final ViewGroup g = (ViewGroup) view;
             for (int i = 0; i < g.getChildCount(); i++) {
-                debugDumpViewTree(g.getChildAt(i), depth + 1);
+                debugDumpViewTree(g.getChildAt(i), depth + 1, withFocusPointers);
             }
+        }
+    }
+
+    private static CharSequence dumpFocus(@NonNull final View view) {
+        return new StringBuilder()
+                .append("; F:").append(getResName(view, view.getNextFocusForwardId()))
+                .append(", D:").append(getResName(view, view.getNextFocusDownId()))
+                .append(", U:").append(getResName(view, view.getNextFocusUpId()))
+                .append(", L:").append(getResName(view, view.getNextFocusLeftId()))
+                .append(", R:").append(getResName(view, view.getNextFocusRightId()));
+    }
+
+    @NonNull
+    private static String getResName(@NonNull final View view,
+                                     @IdRes final int id) {
+        if (id == View.NO_ID) {
+            return "-1";
+        }
+        // our chips is dynamically fried, so they have no res name
+        if (view instanceof Chip && view.getId() == id) {
+            return String.valueOf(id);
+        }
+        try {
+            final String name = view.getResources().getResourceName(id);
+            return name.substring(name.indexOf(':'));
+        } catch (@NonNull final Resources.NotFoundException e) {
+            return String.valueOf(id);
         }
     }
 
