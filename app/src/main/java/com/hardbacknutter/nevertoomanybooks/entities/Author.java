@@ -445,19 +445,6 @@ public class Author
     }
 
     /**
-     * Convenience method to set the Type.
-     *
-     * @param type list of bits
-     */
-    public void setType(@NonNull final Iterable<Integer> type) {
-        int bitmask = 0;
-        for (final Integer bit : type) {
-            bitmask += bit;
-        }
-        mType = bitmask;
-    }
-
-    /**
      * Add a type to the current type(s).
      *
      * @param type to add
