@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -151,9 +152,10 @@ public class LibraryThingSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, con -> {
-                try {
-                    parser.parse(con.getInputStream(), handler);
+            mFutureHttpGet.get(url, request -> {
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        request.getInputStream())) {
+                    parser.parse(bis, handler);
                     return true;
 
                 } catch (@NonNull final IOException e) {

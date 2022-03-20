@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -301,8 +302,15 @@ public class OpenLibrarySearchEngine
 
         try {
             // get and store the result into a string.
-            final String response = mFutureHttpGet
-                    .get(url, con -> readResponseStream(con.getInputStreamUEX()));
+            final String response = mFutureHttpGet.get(url, request -> {
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        request.getInputStream())) {
+                    return readResponseStream(bis);
+
+                } catch (@NonNull final IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
 
             if (handleResponse(context, response, fetchCovers, bookData)) {
                 checkForSeriesNameInTitle(bookData);

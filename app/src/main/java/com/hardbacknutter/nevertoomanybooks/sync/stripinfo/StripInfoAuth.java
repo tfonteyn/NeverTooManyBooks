@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
 
@@ -94,9 +95,10 @@ public class StripInfoAuth {
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<Void>(
-                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
-                .setThrottler(StripInfoSearchEngine.THROTTLER);
+        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                       .setReadTimeout(config.getReadTimeoutInMs())
+                       .setThrottler(StripInfoSearchEngine.THROTTLER);
     }
 
     /**
@@ -184,7 +186,7 @@ public class StripInfoAuth {
     @WorkerThread
     @NonNull
     public String login()
-            throws IOException, CredentialsException {
+            throws IOException, CredentialsException, StorageException {
 
         // Always FIRST check the configuration for having a username/password.
         final SharedPreferences global = ServiceLocator.getGlobalPreferences();

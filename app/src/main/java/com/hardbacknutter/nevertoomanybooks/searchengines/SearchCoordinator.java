@@ -146,7 +146,7 @@ public class SearchCoordinator
     /** Flag indicating at least one search is currently running. */
     private boolean mIsSearchActive;
     /** Flag indicating we're shutting down. */
-    private AtomicBoolean mCancelled = new AtomicBoolean();
+    private final AtomicBoolean mCancelled = new AtomicBoolean();
     /** Whether of not to fetch thumbnails. */
     @Nullable
     private boolean[] mFetchCover;

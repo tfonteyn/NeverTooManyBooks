@@ -202,7 +202,7 @@ public class StripInfoSearchEngine
                 mLoginHelper = new StripInfoAuth(getSiteUrl());
                 try {
                     mLoginHelper.login();
-                } catch (@NonNull final IOException e) {
+                } catch (@NonNull final IOException | StorageException e) {
                     mLoginHelper = null;
                     throw new SearchException(getName(context), e);
                 }
@@ -987,9 +987,10 @@ public class StripInfoSearchEngine
         final long collectionId = mJSoupHelper.getInt(document, "stripCollectie-" + externalId);
         if (collectionId > 0) {
             try {
+                //noinspection ConstantConditions
                 mCollectionFormParser.parse(document, externalId, collectionId, bookData);
 
-            } catch (@NonNull final IOException e) {
+            } catch (@NonNull final IOException | StorageException e) {
                 if (BuildConfig.DEBUG  /* always */) {
                     Logger.d(TAG, "stripId=" + externalId
                                   + "|collectieId=" + collectionId, e);

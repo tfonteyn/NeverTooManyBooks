@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -120,9 +121,10 @@ public class ImageDownloader {
                 }
                 savedFile = destination;
             } else {
-                savedFile = mFutureHttpGet.get(url, con -> {
-                    try {
-                        return ImageUtils.copy(con.getInputStream(), destination);
+                savedFile = mFutureHttpGet.get(url, request -> {
+                    try (BufferedInputStream bis = new BufferedInputStream(
+                            request.getInputStream())) {
+                        return ImageUtils.copy(bis, destination);
                     } catch (@NonNull final StorageException e) {
                         throw new UncheckedStorageException(e);
                     } catch (@NonNull final IOException e) {

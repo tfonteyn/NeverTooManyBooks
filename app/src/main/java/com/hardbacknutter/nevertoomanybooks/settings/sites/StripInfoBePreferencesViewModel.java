@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.MTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskResult;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 public class StripInfoBePreferencesViewModel
         extends ViewModel {
@@ -143,7 +144,7 @@ public class StripInfoBePreferencesViewModel
         @Nullable
         @Override
         protected Boolean doWork(@NonNull final Context context)
-                throws IOException, CredentialsException {
+                throws IOException, CredentialsException, StorageException {
 
             publishProgress(0, context.getString(R.string.progress_msg_connecting));
             final String url = SearchEngineRegistry

@@ -36,6 +36,7 @@ import androidx.annotation.WorkerThread;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,7 +66,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.CancellationException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLContext;
@@ -83,7 +83,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncReaderMetaData;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -280,11 +279,12 @@ public class CalibreContentServer {
         mFutureFileFetchRequest = createFutureGetRequest();
         mImageDownloader = new ImageDownloader(createFutureGetRequest());
 
-        mFutureHttpPost = new FutureHttpPost<Void>(
-                R.string.site_calibre, mConnectTimeoutInMs + mReadTimeoutInMs)
-                .setContentType(HttpUtils.CONTENT_TYPE_JSON)
-                .setAuthHeader(mAuthHeader)
-                .setSslContext(mSslContext);
+        mFutureHttpPost = new FutureHttpPost<>(R.string.site_calibre);
+        mFutureHttpPost.setConnectTimeout(mConnectTimeoutInMs)
+                       .setReadTimeout(mReadTimeoutInMs)
+                       .setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON)
+                       .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
+                       .setSSLContext(mSslContext);
     }
 
     /**
@@ -425,19 +425,12 @@ public class CalibreContentServer {
 
     @NonNull
     private <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
-        final Function<String, Optional<TerminatorConnection>> connectionProducer = url -> {
-            try {
-                return Optional.of(new TerminatorConnection(url, R.string.site_calibre)
-                                           .setConnectTimeout(mConnectTimeoutInMs)
-                                           .setReadTimeout(mReadTimeoutInMs)
-                                           .setSSLContext(mSslContext)
-                                           .setAuthHeader(mAuthHeader));
-            } catch (@NonNull final IOException ignore) {
-                return Optional.empty();
-            }
-        };
-
-        return new FutureHttpGet<>(connectionProducer, mConnectTimeoutInMs + mReadTimeoutInMs);
+        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(R.string.site_calibre);
+        httpGet.setConnectTimeout(mConnectTimeoutInMs)
+               .setReadTimeout(mReadTimeoutInMs)
+               .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
+               .setSSLContext(mSslContext);
+        return httpGet;
     }
 
     /**
@@ -1153,9 +1146,10 @@ public class CalibreContentServer {
                    SocketTimeoutException,
                    IOException {
 
-        return mFutureJsonFetchRequest.get(url, con -> {
-            try (InputStreamReader isr = new InputStreamReader(con.getInputStream(),
-                                                               StandardCharsets.UTF_8);
+        return mFutureJsonFetchRequest.get(url, request -> {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    request.getInputStream());
+                 InputStreamReader isr = new InputStreamReader(bis, StandardCharsets.UTF_8);
                  BufferedReader reader = new BufferedReader(isr, buffer)) {
 
                 return reader.lines().collect(Collectors.joining());
@@ -1208,13 +1202,16 @@ public class CalibreContentServer {
 
         final Uri destUri = destFile.getUri();
 
-        return mFutureFileFetchRequest.get(url, con -> {
+        return mFutureFileFetchRequest.get(url, request -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
-                    try (BufferedOutputStream bos = new BufferedOutputStream(os)) {
+                    try (BufferedOutputStream bos = new BufferedOutputStream(os);
+                         BufferedInputStream bis = new BufferedInputStream(
+                                 request.getInputStream(), BUFFER_FILE)) {
+
                         progressListener.publishProgress(0, context.getString(
                                 R.string.progress_msg_loading));
-                        FileUtils.copy(con.getInputStream(BUFFER_FILE), bos);
+                        FileUtils.copy(bis, bos);
                     }
                 }
             } catch (@NonNull final IOException e) {
@@ -1344,7 +1341,7 @@ public class CalibreContentServer {
     public void pushChanges(@NonNull final String libraryId,
                             final int calibreId,
                             @NonNull final JSONObject changes)
-            throws IOException, JSONException {
+            throws IOException, JSONException, StorageException {
 
         final JSONArray loadedBookIds = new JSONArray()
                 .put(calibreId);

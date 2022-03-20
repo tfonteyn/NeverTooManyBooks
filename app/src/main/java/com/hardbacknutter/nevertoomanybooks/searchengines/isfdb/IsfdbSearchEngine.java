@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -1461,9 +1462,9 @@ public class IsfdbSearchEngine
         try {
             final SAXParser parser = factory.newSAXParser();
 
-            mFutureHttpGet.get(url, con -> {
-                try {
-                    parser.parse(con.getInputStream(), listHandler);
+            mFutureHttpGet.get(url, request -> {
+                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+                    parser.parse(bis, listHandler);
                     return true;
 
                 } catch (@NonNull final IOException e) {

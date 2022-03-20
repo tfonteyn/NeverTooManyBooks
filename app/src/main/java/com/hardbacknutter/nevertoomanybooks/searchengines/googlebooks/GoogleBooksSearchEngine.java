@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
@@ -159,9 +160,9 @@ public class GoogleBooksSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, con -> {
-                try {
-                    parser.parse(con.getInputStream(), listHandler);
+            mFutureHttpGet.get(url, request -> {
+                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
+                    parser.parse(bis, listHandler);
                     return true;
 
                 } catch (@NonNull final IOException e) {
@@ -183,9 +184,10 @@ public class GoogleBooksSearchEngine
                         this, fetchCovers, bookData, getLocale(context));
 
                 // only using the first one found, maybe future enhancement?
-                mFutureHttpGet.get(urlList.get(0), con -> {
-                    try {
-                        parser.parse(con.getInputStreamUEX(), handler);
+                mFutureHttpGet.get(urlList.get(0), request -> {
+                    try (BufferedInputStream bis = new BufferedInputStream(
+                            request.getInputStream())) {
+                        parser.parse(bis, handler);
                         checkForSeriesNameInTitle(bookData);
                         return true;
                     } catch (@NonNull final IOException e) {

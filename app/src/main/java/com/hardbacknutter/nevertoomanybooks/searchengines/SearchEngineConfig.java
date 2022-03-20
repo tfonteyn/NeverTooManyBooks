@@ -236,15 +236,6 @@ public final class SearchEngineConfig {
     }
 
     /**
-     * Convenience method: get the total timeout value for a request to a remote server.
-     *
-     * @return milli seconds
-     */
-    public int getRequestTimeoutInMs() {
-        return getConnectTimeoutInMs() + getReadTimeoutInMs();
-    }
-
-    /**
      * Get the throttler for regulating network access.
      * <p>
      * The <strong>static</strong> Throttler is created in the SearchEngine implementation class.

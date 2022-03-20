@@ -27,6 +27,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
@@ -161,12 +162,13 @@ public class KbNlSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, con -> {
+            mFutureHttpGet.get(url, request -> {
                 // Don't follow redirects, so we get the XML instead of the rendered page
-                con.setInstanceFollowRedirects(false); //9020612476
+                request.setInstanceFollowRedirects(false); //9020612476
 
-                try {
-                    parser.parse(con.getInputStream(), handler);
+                try (BufferedInputStream bis = new BufferedInputStream(
+                        request.getInputStream())) {
+                    parser.parse(bis, handler);
                     checkForSeriesNameInTitle(bookData);
                     return true;
 

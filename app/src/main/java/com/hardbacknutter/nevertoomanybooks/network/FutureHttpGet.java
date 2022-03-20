@@ -19,108 +19,111 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.UncheckedIOException;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
-import org.xml.sax.SAXException;
-
-import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
-public class FutureHttpGet<T> {
+public class FutureHttpGet<T>
+        extends FutureHttpBase<T> {
 
-    private final int mTimeoutInMs;
-    @NonNull
-    private final Function<String, Optional<TerminatorConnection>> mConnectionProducer;
+    private static final String TAG = "FutureHttpGet";
 
-    @Nullable
-    private Future<T> mFuture;
+    private static final String GET = "GET";
 
-    public FutureHttpGet(@NonNull final
-                         Function<String, Optional<TerminatorConnection>> connectionProducer,
-                         final int timeoutInMs) {
-        mConnectionProducer = connectionProducer;
-        mTimeoutInMs = timeoutInMs;
+    public FutureHttpGet(@StringRes final int siteResId) {
+        super(siteResId);
+    }
+
+    /**
+     * Perform the actual opening of the connection.
+     *
+     * @throws IOException on failure
+     */
+    private void connect(@NonNull final HttpURLConnection request)
+            throws IOException {
+
+        // If the site fails to connect, we retry.
+        int retry;
+        // sanity check
+        if (mNrOfTries > 0) {
+            retry = mNrOfTries;
+        } else {
+            retry = NR_OF_TRIES;
+        }
+
+        while (retry > 0) {
+            try {
+                if (mThrottler != null) {
+                    mThrottler.waitUntilRequestAllowed();
+                }
+
+                request.connect();
+                HttpUtils.checkResponseCode(request, mSiteResId);
+
+                // these exceptions CAN be retried
+            } catch (@NonNull final InterruptedIOException
+                    | FileNotFoundException
+                    | UnknownHostException e) {
+                // InterruptedIOException / SocketTimeoutException: connection timeout
+                // UnknownHostException: DNS or other low-level network issue
+                // FileNotFoundException: seen on some sites. A retry and the site was ok.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "open"
+                               + "|retry=" + retry
+                               + "|url=`" + request.getURL() + '`'
+                               + "|e=" + e);
+                }
+
+                retry--;
+                if (retry == 0) {
+                    request.disconnect();
+                    throw e;
+                }
+            }
+
+            try {
+                Thread.sleep(RETRY_AFTER_MS);
+            } catch (@NonNull final InterruptedException ignore) {
+            }
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "open|giving up|url=`" + request.getURL() + '`');
+        }
+        throw new NetworkException("Giving up");
     }
 
     @NonNull
     public T get(@NonNull final String url,
-                 @NonNull final Function<TerminatorConnection, T> callable)
+                 @NonNull final Function<HttpURLConnection, T> callable)
             throws StorageException,
                    CancellationException,
                    SocketTimeoutException,
                    IOException {
-        try {
-            mFuture = ASyncExecutor.SERVICE.submit(() -> {
-                try (TerminatorConnection con = mConnectionProducer
-                        .apply(url)
-                        .orElseThrow(() -> new IOException("Connection failed url=" + url))) {
-                    return callable.apply(con);
-                }
-            });
-            return mFuture.get(mTimeoutInMs, TimeUnit.MILLISECONDS);
 
-        } catch (@NonNull final ExecutionException e) {
-            final Throwable cause = e.getCause();
+        return Objects.requireNonNull(execute(url, GET, false, request -> {
+            try {
+                connect(request);
+                return callable.apply(request);
 
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
+            } catch (@NonNull final IOException e) {
+                throw new UncheckedIOException(e);
             }
-            if (cause instanceof UncheckedStorageException) {
-                //noinspection ConstantConditions
-                throw (StorageException) cause.getCause();
-            }
-            if (cause instanceof UncheckedIOException) {
-                //noinspection ConstantConditions
-                throw (IOException) cause.getCause();
-            }
-            if (cause instanceof UncheckedSAXException) {
-                final SAXException saxException = ((UncheckedSAXException) cause).getCause();
-                // unwrap SAXException using getException() !
-                final Exception saxCause = Objects.requireNonNull(saxException).getException();
-                if (saxCause instanceof IOException) {
-                    throw (IOException) saxCause;
-                }
-                if (saxCause instanceof StorageException) {
-                    throw (StorageException) saxCause;
-                }
-                throw new IOException(saxCause);
-            }
-
-            throw new IOException(cause);
-
-        } catch (@NonNull final RejectedExecutionException | InterruptedException e) {
-            throw new IOException(e);
-
-        } catch (@NonNull final TimeoutException e) {
-            // re-throw as if it's coming from the network call.
-            throw new SocketTimeoutException(e.getMessage());
-
-        } finally {
-            mFuture = null;
-        }
-    }
-
-    public void cancel() {
-        synchronized (this) {
-            if (mFuture != null) {
-                mFuture.cancel(true);
-            }
-        }
+        }));
     }
 }

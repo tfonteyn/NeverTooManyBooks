@@ -35,11 +35,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public final class HttpUtils {
 
-    /** HTTP Request method. */
-    public static final String POST = "POST";
-
-    /** HTTP authentication header. */
-    static final String AUTHORIZATION = "Authorization";
+    /** HTTP Request Header. */
+    public static final String AUTHORIZATION = "Authorization";
 
     /** HTTP Request Header. */
     static final String CONNECTION = "Connection";
@@ -72,8 +69,6 @@ public final class HttpUtils {
     /**
      * If already connected, simply check the response code.
      * Otherwise implicitly connect by getting the response code.
-     * <p>
-     * {@link TerminatorConnection} will call this internally.
      *
      * @param request   to check
      * @param siteResId site identifier

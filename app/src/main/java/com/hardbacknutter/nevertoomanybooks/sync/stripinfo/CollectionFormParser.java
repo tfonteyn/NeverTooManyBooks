@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Handles the userdata FORM from the individual book side ajax panel.
@@ -91,10 +92,12 @@ public class CollectionFormParser
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<Document>(
-                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
-                .setThrottler(StripInfoSearchEngine.THROTTLER)
-                .setContentType(HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                       .setReadTimeout(config.getReadTimeoutInMs())
+                       .setThrottler(StripInfoSearchEngine.THROTTLER)
+                       .setRequestProperty(HttpUtils.CONTENT_TYPE,
+                                           HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**
@@ -112,7 +115,7 @@ public class CollectionFormParser
                       @IntRange(from = 1) final long externalId,
                       @IntRange(from = 1) final long collectionId,
                       @NonNull final Bundle destBundle)
-            throws IOException {
+            throws IOException, StorageException {
 
         mIdOwned = "stripCollectieInBezit-" + externalId;
         mIdRead = "stripCollectieGelezen-" + externalId;

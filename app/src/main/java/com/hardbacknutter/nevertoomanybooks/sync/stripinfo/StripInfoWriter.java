@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterHelper;
 import com.hardbacknutter.nevertoomanybooks.sync.SyncWriterResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.ISODateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONException;
 
 public class StripInfoWriter
@@ -128,6 +129,8 @@ public class StripInfoWriter
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     Logger.error(TAG, e, "bookId=" + book.getId());
+                } catch (@NonNull final StorageException ignore) {
+                    // ignore, can't happen here
                 }
 
                 delta++;

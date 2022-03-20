@@ -33,19 +33,15 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
-import com.hardbacknutter.nevertoomanybooks.network.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Cancellable;
@@ -272,19 +268,12 @@ public interface SearchEngine
 
     @NonNull
     default <FRT> FutureHttpGet<FRT> createFutureGetRequest() {
-        final Function<String, Optional<TerminatorConnection>> connectionProducer = url -> {
-            try {
-                final SearchEngineConfig config = getConfig();
-                return Optional.of(new TerminatorConnection(url, config.getLabelId())
-                                           .setConnectTimeout(config.getConnectTimeoutInMs())
-                                           .setReadTimeout(config.getReadTimeoutInMs())
-                                           .setThrottler(config.getThrottler()));
-            } catch (@NonNull final IOException ignore) {
-                return Optional.empty();
-            }
-        };
-
-        return new FutureHttpGet<>(connectionProducer, getConfig().getRequestTimeoutInMs());
+        final SearchEngineConfig config = getConfig();
+        final FutureHttpGet<FRT> httpGet = new FutureHttpGet<>(config.getLabelId());
+        httpGet.setConnectTimeout(config.getConnectTimeoutInMs())
+               .setReadTimeout(config.getReadTimeoutInMs())
+               .setThrottler(config.getThrottler());
+        return httpGet;
     }
 
     enum RegistrationAction {

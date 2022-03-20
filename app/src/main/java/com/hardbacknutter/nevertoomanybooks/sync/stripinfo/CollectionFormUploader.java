@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.JSoupHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
 /**
  * Handles the userdata FORM from the individual book side ajax panel.
@@ -90,10 +91,12 @@ public class CollectionFormUploader {
         final SearchEngineConfig config = SearchEngineRegistry
                 .getInstance().getByEngineId(SearchSites.STRIP_INFO_BE);
 
-        mFutureHttpPost = new FutureHttpPost<Document>(
-                R.string.site_stripinfo_be, config.getRequestTimeoutInMs())
-                .setThrottler(StripInfoSearchEngine.THROTTLER)
-                .setContentType(HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
+        mFutureHttpPost = new FutureHttpPost<>(R.string.site_stripinfo_be);
+        mFutureHttpPost.setConnectTimeout(config.getConnectTimeoutInMs())
+                       .setReadTimeout(config.getReadTimeoutInMs())
+                       .setThrottler(StripInfoSearchEngine.THROTTLER)
+                       .setRequestProperty(HttpUtils.CONTENT_TYPE,
+                                           HttpUtils.CONTENT_TYPE_FORM_URL_ENCODED);
     }
 
     /**
@@ -109,7 +112,7 @@ public class CollectionFormUploader {
      */
     @WorkerThread
     public void setOwned(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final boolean owned = book.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED);
 
@@ -129,7 +132,7 @@ public class CollectionFormUploader {
      */
     @WorkerThread
     public void setRead(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final boolean read = book.getBoolean(DBKey.BOOL_READ);
 
@@ -149,7 +152,7 @@ public class CollectionFormUploader {
      */
     @WorkerThread
     public void setWanted(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final boolean wanted = book.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED);
 
@@ -158,7 +161,7 @@ public class CollectionFormUploader {
 
     @WorkerThread
     public void setRating(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
@@ -200,7 +203,7 @@ public class CollectionFormUploader {
      */
     @WorkerThread
     public void send(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
@@ -260,7 +263,7 @@ public class CollectionFormUploader {
 
     @WorkerThread
     public void delete(@NonNull final Book book)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
@@ -328,7 +331,7 @@ public class CollectionFormUploader {
     @WorkerThread
     private void setBooleanByMode(@NonNull final Book book,
                                   @NonNull final String mode)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, StorageException {
 
         final long externalId = book.getLong(DBKey.SID_STRIP_INFO);
         if (externalId == 0) {
@@ -375,7 +378,7 @@ public class CollectionFormUploader {
     @WorkerThread
     @NonNull
     private Document doPost(@NonNull final String postBody)
-            throws IOException {
+            throws IOException, StorageException {
 
         return Objects.requireNonNull(mFutureHttpPost.post(FORM_URL, postBody, (bis) -> {
             try {

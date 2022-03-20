@@ -23,9 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UncheckedIOException;
 
 import javax.net.ssl.SSLProtocolException;
@@ -46,25 +46,20 @@ public class JsoupLoader {
 
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
-
+    @NonNull
+    private final FutureHttpGet<Document> mFutureHttpGet;
     /** The downloaded and parsed web page. */
     @Nullable
     private Document mDoc;
-
     /** The <strong>request</strong> url for the web page. */
     @Nullable
     private String mDocRequestUrl;
-
     /** The user agent to send. Call {@link #setUserAgent(String)} to override. */
     @Nullable
     private String mUserAgent = HttpUtils.USER_AGENT_VALUE;
-
     /** {@code null} by default: for Jsoup to figure it out. */
     @Nullable
     private String mCharSetName;
-
-    @NonNull
-    private final FutureHttpGet<Document> mFutureHttpGet;
 
     public JsoupLoader(@NonNull final FutureHttpGet<Document> futureHttpGet) {
         mFutureHttpGet = futureHttpGet;
@@ -105,7 +100,8 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param url                to fetch
+     * @param url to fetch
+     *
      * @return the parsed Document
      *
      * @throws IOException on failure
@@ -139,57 +135,58 @@ public class JsoupLoader {
             }
 
             try {
-                mDoc = mFutureHttpGet.get(mDocRequestUrl, con -> {
-                    // Don't retry if the initial connection fails...
-                    con.setRetryCount(0);
+                // Don't retry if the initial connection fails...
+                mFutureHttpGet.setRetryCount(0);
 
+                mDoc = mFutureHttpGet.get(mDocRequestUrl, request -> {
                     // added due to https://github.com/square/okhttp/issues/1517
                     // it's a server issue, this is a workaround.
-                    con.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
+                    request.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
                     // some sites refuse to return content if they don't like the user-agent
                     if (mUserAgent != null) {
-                        con.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
+                        request.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
                     }
 
-                    try {
-                        // GO!
-                        final InputStream is = con.getInputStream();
+                    //GO!
+                    try (BufferedInputStream is = new BufferedInputStream(
+                            request.getInputStream())) {
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                             Logger.d(TAG, "loadDocument",
                                      "AFTER open"
-                                     + "\ncon.getURL=" + con.getURL()
-                                     + "\nlocation  =" + con.getHeaderField(HttpUtils.LOCATION));
+                                     + "\ncon.getURL=" + request.getURL()
+                                     + "\nlocation  =" + request.getHeaderField(
+                                             HttpUtils.LOCATION));
                         }
 
                         // the original url will change after a redirect.
                         // We need the actual url for further processing.
-                        String locationHeader = con.getHeaderField(HttpUtils.LOCATION);
+                        String locationHeader = request.getHeaderField(HttpUtils.LOCATION);
                         if (locationHeader == null || locationHeader.isEmpty()) {
-                            //noinspection ConstantConditions
-                            locationHeader = con.getURL().toString();
-
+                            locationHeader = request.getURL().toString();
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                                 Logger.d(TAG, "loadDocument", "location header not set, using url");
                             }
                         }
 
-                    /*
-                     VERY IMPORTANT: Explicitly set the baseUri to the location header.
-                     JSoup by default uses the absolute path from the inputStream
-                     and sets that as the document 'location'
-                     From JSoup docs:
+                        /*
+                         VERY IMPORTANT: Explicitly set the baseUri to the location header.
+                         JSoup by default uses the absolute path from the inputStream
+                         and sets that as the document 'location'
+                         From JSoup docs:
 
-                    * Get the URL this Document was parsed from. If the starting URL is a redirect,
-                    * this will return the final URL from which the document was served from.
-                    * @return location
-                    public String location() {
-                        return location;
-                    }
+                         Get the URL this Document was parsed from.
+                         If the starting URL is a redirect, this will return the
+                         final URL from which the document was served from.
 
-                    However that is WRONG (org.jsoup:jsoup:1.11.3)
-                    It will NOT resolve the redirect itself and 'location' == 'baseUri'
-                    */
+                         @return location
+                         public String location() {
+                            return location;
+                         }
+
+                        However that is WRONG (org.jsoup:jsoup:1.11.3)
+                        It will NOT resolve the redirect itself and 'location' == 'baseUri'
+                        */
                         final Document document = Jsoup.parse(is, mCharSetName, locationHeader);
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
                             Logger.d(TAG, "loadDocument",
@@ -222,9 +219,6 @@ public class JsoupLoader {
                 //  external/boringssl/src/ssl/tls_record.c:277 0xa0d78e9f:0x00000000)
                 // at com.android.org.conscrypt.NativeCrypto.SSL_read(Native Method)
                 // ...
-                // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
-                // at com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader.loadPage
-
                 // Log it as WARN, so at least we can get to know the frequency of these issues.
                 Logger.warn(TAG, "loadDocument"
                                  + "|e=" + e.getMessage()
