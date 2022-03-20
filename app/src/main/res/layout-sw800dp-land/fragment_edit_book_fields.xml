@@ -146,6 +146,27 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_description"
+            style="@style/TIL.Note"
+            android:layout_marginTop="@dimen/section_margin_top"
+            android:hint="@string/lbl_description"
+            app:layout_constraintEnd_toStartOf="@id/col2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/description"
+                style="@style/notesTextEntry"
+                android:imeOptions="actionDone"
+                tools:ignore="Autofill"
+                tools:maxLines="10"
+                tools:text="@tools:sample/lorem/random"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Isbn.Scan"
             android:layout_marginTop="@dimen/section_margin_top"
@@ -209,7 +230,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
             style="@style/TIL.ReadOnly"
@@ -223,27 +243,6 @@
                 android:id="@+id/bookshelves"
                 style="@style/TIE.ReadOnly"
                 tools:text="@sample/data.json/shelves/name"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_description"
-            style="@style/TIL.Note"
-            android:layout_marginTop="@dimen/section_margin_top"
-            android:hint="@string/lbl_description"
-            app:layout_constraintEnd_toStartOf="@id/col2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/description"
-                style="@style/notesTextEntry"
-                android:imeOptions="actionDone"
-                tools:ignore="Autofill"
-                tools:maxLines="10"
-                tools:text="@tools:sample/lorem/random"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

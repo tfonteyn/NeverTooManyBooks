@@ -77,7 +77,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
         <RadioGroup
             android:id="@+id/rg_book_type"
             android:layout_width="wrap_content"
@@ -110,7 +109,6 @@
                 android:text="@string/neither"
                 />
         </RadioGroup>
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"

@@ -96,6 +96,41 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_listed_currency"
+            style="@style/TIL.Currency"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/price_listed_currency"
+                style="@style/TIA.Currency"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                tools:text="USD"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_listed"
+            style="@style/TIL.Price"
+            android:hint="@string/lbl_price_listed"
+            app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/price_listed"
+                style="@style/TIE.Price.Listed"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="14.99"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
             style="@style/TIL.ReadOnly"
             android:hint="@string/lbl_first_publication"
@@ -164,41 +199,6 @@
                 android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="999"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_price_listed_currency"
-            style="@style/TIL.Currency"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
-            app:layout_constraintStart_toStartOf="parent"
-            >
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/price_listed_currency"
-                style="@style/TIA.Currency"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
-                tools:text="USD"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_price_listed"
-            style="@style/TIL.Price"
-            android:hint="@string/lbl_price_listed"
-            app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
-            app:layout_constraintTop_toBottomOf="@id/lbl_pages"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/price_listed"
-                style="@style/TIE.Price.Listed"
-                android:imeOptions="actionNext"
-                tools:ignore="Autofill"
-                tools:text="14.99"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
