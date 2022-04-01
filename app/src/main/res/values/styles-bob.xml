@@ -34,12 +34,17 @@
     <style name="BoB.Header" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
+    </style>
+
+    <!-- A single header field on the book-list header row. -->
+    <style name="BoB.Header.Large">
+        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
     </style>
 
     <!-- A single header field on the book-list header row. -->

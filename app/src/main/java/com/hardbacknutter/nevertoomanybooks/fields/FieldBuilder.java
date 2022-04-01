@@ -37,7 +37,7 @@ public class FieldBuilder<T, V extends View> {
     @NonNull
     protected final String mKey;
     @NonNull
-    protected FieldViewAccessor<T, V> mAccessor;
+    protected final FieldViewAccessor<T, V> mAccessor;
 
     @Nullable
     protected String mEntityKey;

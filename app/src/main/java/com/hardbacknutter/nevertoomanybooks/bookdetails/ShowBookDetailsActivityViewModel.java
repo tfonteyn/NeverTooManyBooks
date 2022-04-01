@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -40,22 +41,20 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.FieldBuilder;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BooleanIndicatorAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.EntityListChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.BitmaskFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
@@ -163,6 +162,13 @@ public class ShowBookDetailsActivityViewModel
         return mFields;
     }
 
+    @NonNull
+    Optional<Field<?, ? extends View>> getField(@IdRes final int id) {
+        return mFields.stream()
+                      .filter(field -> field.getId() == id)
+                      .findFirst();
+    }
+
     /**
      * Return the Field associated with the passed ID.
      *
@@ -187,27 +193,26 @@ public class ShowBookDetailsActivityViewModel
     private void initFields(@NonNull final Context context) {
 
         final Locale userLocale = context.getResources().getConfiguration().getLocales().get(0);
-        // These FieldFormatters can be shared between multiple fields.
+        // These FieldFormatters are shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
-        final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true, true);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
-        final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
+        final FieldFormatter<String> notesFormatter = new HtmlFormatter<>(true, true);
+        final ListFormatter<Entity> normalDetailListFormatter = new ListFormatter<>();
+        final ListFormatter<Entity> fullDetailListFormatter = new ListFormatter<>(Details.Full);
 
-        // book fields♠
+        // book fields
         mFields.add(new FieldBuilder<>(R.id.title, DBKey.KEY_TITLE,
                                        new TextViewAccessor<>())
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.author, Book.BKEY_AUTHOR_LIST,
-                                       new TextViewAccessor<>(new AuthorListFormatter(
-                                               Details.Full, false, true)))
+                                       new TextViewAccessor<>(fullDetailListFormatter))
                             .setEntityKey(DBKey.FK_AUTHOR)
                             .setRelatedFields(R.id.lbl_author)
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.series_title, Book.BKEY_SERIES_LIST,
-                                       new TextViewAccessor<>(new SeriesListFormatter(
-                                               Details.Full, false, true)))
+                                       new TextViewAccessor<>(fullDetailListFormatter))
                             .setEntityKey(DBKey.KEY_SERIES_TITLE)
                             .setRelatedFields(R.id.lbl_series)
                             .build());
@@ -218,7 +223,7 @@ public class ShowBookDetailsActivityViewModel
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.description, DBKey.KEY_DESCRIPTION,
-                                       new TextViewAccessor<>(htmlFormatter))
+                                       new TextViewAccessor<>(notesFormatter))
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.genre, DBKey.KEY_GENRE,
@@ -227,7 +232,7 @@ public class ShowBookDetailsActivityViewModel
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.language, DBKey.KEY_LANGUAGE,
-                                       new TextViewAccessor<>(languageFormatter))
+                                       new TextViewAccessor<>(new LanguageFormatter(userLocale)))
                             .setRelatedFields(R.id.lbl_language)
                             .build());
 
@@ -244,7 +249,7 @@ public class ShowBookDetailsActivityViewModel
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                       new TextViewAccessor<>(new CsvFormatter()))
+                                       new TextViewAccessor<>(normalDetailListFormatter))
                             .setEntityKey(DBKey.KEY_PUBLISHER_NAME)
                             .build());
 
@@ -259,8 +264,9 @@ public class ShowBookDetailsActivityViewModel
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.edition, DBKey.BITMASK_EDITION,
-                                       new BitmaskChipGroupAccessor(
-                                               Book.Edition::getEditions, false))
+                                       new TextViewAccessor<>(new BitmaskFormatter(
+                                               Details.Normal,
+                                               Book.Edition.getEditions(context))))
                             .setRelatedFields(R.id.lbl_edition)
                             .build());
 
@@ -278,11 +284,7 @@ public class ShowBookDetailsActivityViewModel
         // Personal fields
 
         mFields.add(new FieldBuilder<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                       new EntityListChipGroupAccessor<>(
-                                               () -> new ArrayList<>(
-                                                       ServiceLocator.getInstance()
-                                                                     .getBookshelfDao()
-                                                                     .getAll()), false))
+                                       new TextViewAccessor<>(normalDetailListFormatter))
                             .setEntityKey(DBKey.FK_BOOKSHELF)
                             .setRelatedFields(R.id.lbl_bookshelves)
                             .build());
@@ -314,7 +316,7 @@ public class ShowBookDetailsActivityViewModel
                             .build());
 
         mFields.add(new FieldBuilder<>(R.id.notes, DBKey.KEY_PRIVATE_NOTES,
-                                       new TextViewAccessor<>(htmlFormatter))
+                                       new TextViewAccessor<>(notesFormatter))
                             .setRelatedFields(R.id.lbl_notes)
                             .build());
 

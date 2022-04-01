@@ -268,6 +268,7 @@ public class EditBookFieldsFragment
             onPrepareMenu(menu);
         }
 
+        @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             switch (mIsbnValidityCheck) {
                 case Strict:

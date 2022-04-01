@@ -17,32 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist;
+package com.hardbacknutter.nevertoomanybooks.debug;
 
-import androidx.annotation.NonNull;
+import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
-public interface BookChangedListener {
+public class SqlitePreferenceFragment
+        extends BasePreferenceFragment {
 
-    /**
-     * Receive notifications that a Book was updated.
-     *
-     * @param book the book that changed,
-     *             or {@code null} to indicate multiple books were potentially changed.
-     * @param keys the item(s) that changed,
-     *             or {@code null} to indicate ALL data was potentially changed.
-     */
-    void onBookUpdated(@NonNull Book book,
-                       @Nullable String... keys);
-
-    /**
-     * React to a book having been deleted.
-     *
-     * @param bookId which was deleted
-     */
-    void onBookDeleted(long bookId);
-
-    void onSyncBook(long id);
+    @Override
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
+        setPreferencesFromResource(R.xml.preferences_sqlite_shell, rootKey);
+    }
 }

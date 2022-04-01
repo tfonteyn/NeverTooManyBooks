@@ -132,7 +132,8 @@ public class FieldImpl<T, V extends View>
                               @NonNull final View parent) {
         mFieldViewAccessor.setView(parent.findViewById(mId));
         if (!isUsed(global)) {
-            setVisibility(parent, View.GONE);
+            mFieldViewAccessor.requireView().setVisibility(View.GONE);
+            setRelatedFieldsVisibility(parent, View.GONE);
         }
     }
 
@@ -175,15 +176,6 @@ public class FieldImpl<T, V extends View>
         }
 
         setRelatedFieldsVisibility(parent, view.getVisibility());
-    }
-
-    @CallSuper
-    @Override
-    public void setVisibility(@NonNull final View parent,
-                              final int visibility) {
-        final View view = mFieldViewAccessor.requireView();
-        view.setVisibility(visibility);
-        setRelatedFieldsVisibility(parent, visibility);
     }
 
     /**

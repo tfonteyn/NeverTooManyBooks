@@ -23,7 +23,6 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="X_action_update">Ενημέρωση</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
-    <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>
@@ -434,7 +432,6 @@
     <string name="size_small">Μικρό</string>
     <string name="size_x_large">X-Μεγάλο</string>
     <string name="size_x_small">X-Μικρό</string>
-    <string name="size_xx_large">2X-Μεγάλο</string>
     <string name="style_builtin_acquired_date">Επίκτητος</string>
     <string name="style_builtin_added_date">Ημερομηνία προσθήκης</string>
     <string name="style_builtin_author_series">Συγγραφέας μετά σειρά</string>
@@ -642,7 +639,6 @@
     <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά</string>
     <string name="lbl_test_connection">Δοκιμάστε τη σύνδεση</string>
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
-    <string name="X_menu_import_all">Εισαγωγή όλων των βιβλίων</string>
     <string name="progress_end_export_successful">Η εξαγωγή ήταν επιτυχής</string>
     <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
     <string name="action_go">Μετάβαση</string>

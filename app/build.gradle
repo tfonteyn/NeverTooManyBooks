@@ -101,7 +101,7 @@ android {
     defaultConfig {
         applicationId "com.hardbacknutter.nevertoomanybooks"
         versionCode 13
-        versionName = "2.9.8"
+        versionName = '2.9.11'
 
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.sdkVersion

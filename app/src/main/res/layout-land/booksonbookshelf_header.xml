@@ -29,7 +29,7 @@
 
     <TextView
         android:id="@+id/style_name"
-        style="@style/BoB.Header"
+        style="@style/BoB.Header.Large"
         app:layout_constraintEnd_toStartOf="@id/book_count"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -35,18 +35,6 @@
     <item name="ROW_GRABBER_ICON" type="id" />
     <!-- END rows in a {@link RecyclerView} -->
 
-
-    <!-- BEGIN View tags -->
-    <!-- tags a Cover Image View with the task responsible to fetch the image -->
-    <item name="TAG_THUMBNAIL_TASK" type="id" />
-    <!-- tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
-    <item name="TAG_THUMBNAIL_UUID" type="id" />
-
-    <!-- Updating fields from the internet. We keep each field usage directly on the field selector. -->
-    <item name="TAG_FIELD_USAGE" type="id" />
-
-    <!-- END View tags -->
-
-    <!-- The 'name' field on the edit-style fragment. -->
+    <!-- The 'name' field for new/cloned styles on the edit-style fragment. -->
     <item name="STYLE_NAME_VIEW" type="id" />
 </resources>

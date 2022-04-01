@@ -29,6 +29,7 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
@@ -63,6 +64,14 @@
             android:summary="@string/pt_website_order_and_enable"
             android:title="@string/lbl_websites">
         </Preference>
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_baseline_data_usage_24"
+            android:key="network.allow.metered"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_allow_mobile_data" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.SearchInternetPreferenceFragment"
@@ -189,16 +198,25 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_baseline_tab_24"
             android:key="edit.book.tab.externalId"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
+            android:summaryOff="@string/disabled"
+            android:summaryOn="@string/enabled"
             android:title="@string/pt_allow_edit_external_id" />
+
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_baseline_people_24"
+            android:key="fields.visibility.loaned_to"
+            android:summaryOff="@string/disabled"
+            android:summaryOn="@string/enabled"
+            android:title="@string/lbl_lending" />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment"
             android:icon="@drawable/ic_baseline_cloud_24"
             android:key="psk_calibre"
-            android:summary="@string/lbl_calibre_content_server"
-            android:title="@string/site_calibre">
+            android:title="@string/lbl_calibre_content_server"
+            tools:summary="@string/disabled">
         </Preference>
 
         <!-- entries/values are set from code; default 0 == internal 'shared' storage. -->

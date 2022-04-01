@@ -520,6 +520,7 @@ public class SyncReaderFragment
             onPrepareMenu(menu);
         }
 
+        @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ACTION_CONFIRM)
                 .setEnabled(mVm.isReadyToGo());

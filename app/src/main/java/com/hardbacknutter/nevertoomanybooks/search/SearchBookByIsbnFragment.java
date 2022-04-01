@@ -395,6 +395,7 @@ public class SearchBookByIsbnFragment
             onPrepareMenu(menu);
         }
 
+        @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
                 .setChecked(mCoordinator.isStrictIsbn());

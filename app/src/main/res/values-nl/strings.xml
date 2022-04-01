@@ -464,7 +464,6 @@
     <string name="size_small">Klein</string>
     <string name="size_x_large">X-Groot</string>
     <string name="size_x_small">X-Klein</string>
-    <string name="size_xx_large">2X-Groot</string>
     <string name="statick">Statisch</string>
     <string name="strict">Strikt</string>
     <string name="style_builtin_acquired_date">Datum verworven</string>
@@ -567,7 +566,6 @@
     <string name="warning_x_is_not_a_valid_code">„%1$s” is geen geldige code</string>
     <string name="X_action_swap">Wisselen</string>
     <string name="X_action_update">Updaten</string>
-    <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="X_btn_continue_edit">Doorgaan met bewerken</string>
     <string name="X_btn_customize">Aanpassen…</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
@@ -601,7 +599,6 @@
     <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>
     <string name="X_vldt_failed_for_x">Validatie mislukt voor „%1$s”</string>
     <string name="X_warning_image_processing_failed">Afbeelding kan niet worden verwerkt.</string>
-    <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="yes">Ja</string>
     <string name="system">(Systeem)</string>
     <string name="system_default">(Systeemstandaard)</string>
@@ -639,7 +636,6 @@
     <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw</string>
     <string name="lbl_test_connection">Test de verbinding</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
-    <string name="X_menu_import_all">Importeer alle boeken</string>
     <string name="progress_end_export_successful">Export succesvol</string>
     <string name="error_export_failed">Export mislukt</string>
     <string name="action_go">Ga</string>

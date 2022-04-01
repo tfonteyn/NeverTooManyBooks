@@ -500,6 +500,7 @@ public abstract class EditBookBaseFragment
             onPrepareMenu(menu);
         }
 
+        @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             final Book book = mVm.getBook();
 

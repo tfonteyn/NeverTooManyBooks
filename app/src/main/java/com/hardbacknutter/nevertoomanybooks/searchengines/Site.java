@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminFragment;
 
 /**
@@ -299,16 +300,15 @@ public final class Site
     public enum Type
             implements Parcelable {
 
-        /** generic searches. */
+        /** {@link SearchEngine} - Generic searches (includes books AND covers). */
         Data(R.string.lbl_books, "data"),
-        /** Covers. */
-        Covers(R.string.lbl_covers, "covers"),
-        /** Alternative editions for a given isbn. */
+        /** {@link SearchEngine} - Alternative editions for a given isbn. */
         AltEditions(R.string.lbl_tab_alternative_editions, "alted"),
-        /**
-         * List of sites for which we store an id.
-         * FIXME: this is not actually 'search' functionality.
-         */
+
+        /** {@link CoverBrowserDialogFragment} - Dedicated covers searches. */
+        Covers(R.string.lbl_covers, "covers"),
+
+        /** List of sites for which we store an id. */
         ViewOnSite(R.string.menu_view_book_at, "view");
 
         /** {@link Parcelable}. */

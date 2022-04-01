@@ -343,7 +343,6 @@ public class StripInfoSearchEngine
                 return;
             }
 
-            // this code is not 100% foolproof yet, so surround with try/catch.
             try {
                 // use the title header to determine we are in a book row.
                 final Element titleHeader = row.selectFirst("h2.title");

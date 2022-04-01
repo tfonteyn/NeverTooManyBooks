@@ -92,6 +92,7 @@ public final class SearchSites {
 
     /** Site: Speculative Fiction only. e.g. Science-Fiction/Fantasy etc... */
     public static final int ISFDB = 1 << 4;
+
     /** Site: all genres. */
     public static final int OPEN_LIBRARY = 1 << 5;
 
@@ -117,7 +118,7 @@ public final class SearchSites {
             + "," + AMAZON
             + "," + GOOGLE_BOOKS
             + "," + LAST_DODO
-            + "," + KB_NL
+//            + "," + KB_NL
             + "," + OPEN_LIBRARY;
 
     private SearchSites() {

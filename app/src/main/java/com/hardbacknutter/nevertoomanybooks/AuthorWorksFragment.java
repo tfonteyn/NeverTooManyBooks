@@ -332,6 +332,7 @@ public class AuthorWorksFragment
             onPrepareMenu(menu);
         }
 
+        @Override
         public void onPrepareMenu(@NonNull final Menu menu) {
             // show if we got here with a specific bookshelf selected.
             // hide if the bookshelf was set to Bookshelf.ALL_BOOKS.

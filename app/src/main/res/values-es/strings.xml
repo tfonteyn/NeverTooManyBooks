@@ -23,7 +23,6 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Antologías</string>
     <string name="X_action_update">Actualizar</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
     <string name="X_error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">Intercambiar</string>
     <string name="X_tip_booklist_global_properties">Puede usar esta pantalla para configurar las características predeterminadas de todos los estilos de listas de libros. La mayoría de las propiedades pueden ser reemplazadas por estilos individuales, pero los valores predeterminados se definen aquí. Puede cambiar la forma en que se muestran las listas al inicio y ajustar una variedad de otras preferencias que se aplicarán a todos sus estilos cuando sea posible.</string>
     <string name="X_use_default_setting">Usar configuración predeterminada</string>
-    <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
@@ -435,7 +433,6 @@
     <string name="size_small">Pequeño</string>
     <string name="size_x_large">X-Grande</string>
     <string name="size_x_small">X-Pequeño</string>
-    <string name="size_xx_large">2X-Grande</string>
     <string name="style_builtin_acquired_date">Fecha de adquisición</string>
     <string name="style_builtin_added_date">Fecha de inclusión</string>
     <string name="style_builtin_author_series">Primero Autor después Serie</string>
@@ -642,7 +639,6 @@
     <string name="error_network_failed_try_again">Comprueba la conexión y vuelve a intentarlo</string>
     <string name="lbl_test_connection">Prueba la conexión</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
-    <string name="X_menu_import_all">Importar todos los libros</string>
     <string name="progress_end_export_successful">Exportación exitosa</string>
     <string name="error_export_failed">Exportación fallida</string>
     <string name="action_go">Ir</string>

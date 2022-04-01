@@ -35,29 +35,17 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <com.google.android.material.chip.ChipGroup
+    <TextView
         android:id="@+id/bookshelves"
+        style="@style/Field.Generic"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_bookshelves"
         app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-        >
-        <!-- chips will be added here dynamically -->
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            style="?attr/appChipDisplayStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/lbl_books"-->
-        <!--            />-->
-
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            style="?attr/appChipDisplayStyle"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:text="@string/lbl_all_bookshelves"-->
-        <!--            />-->
-    </com.google.android.material.chip.ChipGroup>
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/shelves/name"
+        />
 
     <TextView
         android:id="@+id/lbl_notes"
@@ -92,6 +80,14 @@
         app:layout_constraintTop_toBottomOf="@id/notes"
         />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/personal_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"
+        />
+
     <TextView
         android:id="@+id/lbl_date_acquired"
         style="@style/Label"
@@ -102,8 +98,8 @@
 
     <TextView
         android:id="@+id/date_acquired"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/signed"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
@@ -119,8 +115,8 @@
 
     <TextView
         android:id="@+id/price_paid"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/date_acquired"
         tools:ignore="SelectableText"
         tools:text="$45"
@@ -136,8 +132,8 @@
 
     <TextView
         android:id="@+id/condition"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_condition"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/price_paid"
         tools:ignore="SelectableText"
         tools:text="Very good"
@@ -153,8 +149,8 @@
 
     <TextView
         android:id="@+id/condition_cover"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/condition"
         tools:ignore="SelectableText"
         tools:text="Very good"
@@ -170,8 +166,8 @@
 
     <TextView
         android:id="@+id/read_start"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_read_start"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/condition_cover"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
@@ -187,8 +183,8 @@
 
     <TextView
         android:id="@+id/read_end"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_read_end"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/read_start"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/date/long"
@@ -204,8 +200,8 @@
 
     <TextView
         android:id="@+id/location"
-        style="@style/Field.Generic.Inline"
-        app:layout_constraintStart_toEndOf="@id/lbl_location_long"
+        style="@style/Field.Generic"
+        app:layout_constraintStart_toEndOf="@id/personal_middle"
         app:layout_constraintTop_toBottomOf="@id/read_end"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/location/name"

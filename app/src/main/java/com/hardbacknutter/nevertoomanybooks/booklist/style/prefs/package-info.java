@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,7 @@
  */
 
 /**
- * FIXME: using SharedPreferences was not a good idea.
- * Migrate to e.g. JSON and store the json string in the database.
+ * ENHANCE: Migrate SharedPreferences to e.g. JSON and store the json string in the database.
  * Sort of full circle ... legacy code stored styles as serialized classes,
  * but using JSON will allow clean backup/restore (as we have now with these PPrefs).
  *

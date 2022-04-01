@@ -36,6 +36,4 @@
     <dimen name="isbn_keypad_key_margin">4dp</dimen>
     <!-- The ISBN keypad backspace button width: 2x icon width. -->
     <dimen name="isbn_keypad_backspace_key_width">48dp</dimen>
-    <!-- The ISBN keypad backspace button (no text): center the icon: 1/2 icon width -->
-    <dimen name="isbn_keypad_backspace_key_icon_padding">12dp</dimen>
 </resources>

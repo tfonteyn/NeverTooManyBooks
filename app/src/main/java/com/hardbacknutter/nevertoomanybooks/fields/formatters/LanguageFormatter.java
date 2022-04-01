@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 /**
  * FieldFormatter for language fields.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong> but sharing the same Locale.</li>
  * </ul>
  */
 public class LanguageFormatter

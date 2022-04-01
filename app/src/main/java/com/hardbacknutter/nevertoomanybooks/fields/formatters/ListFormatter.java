@@ -28,54 +28,82 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
-public class AuthorListFormatter
-        extends HtmlFormatter<List<Author>> {
+/**
+ * <ul>
+ *      <li>Multiple fields: <strong>yes</strong> if they use the same details/delimiter</li>
+ * </ul>
+ */
+public class ListFormatter<T extends Entity>
+        extends HtmlFormatter<List<T>> {
 
     @NonNull
     private final Details mDetails;
-    private final boolean mSingleLine;
+
+    @NonNull
+    private final String mDelimiter;
+
+    /**
+     * Constructor.
+     * <p>
+     * Use {@link Details#Normal} with {@code "; "} as delimiter.
+     */
+    public ListFormatter() {
+        this(Details.Normal, "; ");
+    }
 
     /**
      * Constructor.
      *
-     * @param details     how much details to show
-     * @param singleLine  If set, then the format will use a single line, with the elements
-     *                    separated by a ';'. Otherwise it will use an HTML list.
-     * @param enableLinks {@code true} to enable links.
-     *                    Ignored if the View has an onClickListener
+     * @param details how much details to show
      */
-    public AuthorListFormatter(@NonNull final Details details,
-                               final boolean singleLine,
-                               final boolean enableLinks) {
-        super(enableLinks);
+    public ListFormatter(@NonNull final Details details) {
+        this(details, "; ");
+    }
+
+    /**
+     * Use {@link Details#Normal} with the given delimiter.
+     *
+     * @param delimiter to use
+     */
+    public ListFormatter(@NonNull final String delimiter) {
+        this(Details.Normal, delimiter);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param details   how much details to show
+     * @param delimiter to use if details is {@link Details#Normal}
+     */
+    @SuppressWarnings("WeakerAccess")
+    public ListFormatter(@NonNull final Details details,
+                         @NonNull final String delimiter) {
         mDetails = details;
-        mSingleLine = singleLine;
+        mDelimiter = delimiter;
     }
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final List<Author> rawValue) {
+                         @Nullable final List<T> rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         }
 
         switch (mDetails) {
-            case Full:
+            case Full: {
+                return rawValue.stream()
+                               .map(entity -> entity.getLabel(context, mDetails))
+                               .map(s -> "<li>" + s + "</li>")
+                               .collect(Collectors.joining("", "<ul>", "</ul>"));
+            }
             case Normal: {
-                if (mSingleLine) {
-                    return rawValue.stream()
-                                   .map(author -> author.getLabel(context, mDetails))
-                                   .collect(Collectors.joining("; "));
-                } else {
-                    return rawValue.stream()
-                                   .map(author -> author.getLabel(context, mDetails))
-                                   .map(s -> "<li>" + s + "</li>")
-                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
-                }
+                return rawValue.stream()
+                               .map(entity -> entity.getLabel(context, mDetails))
+                               .collect(Collectors.joining(mDelimiter));
             }
             case Short: {
                 if (rawValue.size() > 1) {

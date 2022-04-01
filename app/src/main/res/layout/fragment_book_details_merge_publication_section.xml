@@ -37,7 +37,7 @@
 
     <TextView
         android:id="@+id/first_publication"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_first_publication"
         app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
@@ -55,7 +55,7 @@
 
     <TextView
         android:id="@+id/isbn"
-        style="@style/Field.Isbn.Small"
+        style="@style/Field.Isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_isbn"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
@@ -73,7 +73,7 @@
 
     <TextView
         android:id="@+id/publisher"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/lbl_publication"
@@ -83,7 +83,7 @@
 
     <TextView
         android:id="@+id/date_published"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/publisher"
@@ -93,7 +93,7 @@
 
     <TextView
         android:id="@+id/price_listed"
-        style="@style/Field.Generic.Inline.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/date_published"
@@ -103,7 +103,7 @@
 
     <TextView
         android:id="@+id/format"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/price_listed"
@@ -113,7 +113,7 @@
 
     <TextView
         android:id="@+id/lbl_anthology"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         android:text="@string/lbl_anthology"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
@@ -122,7 +122,7 @@
 
     <TextView
         android:id="@+id/color"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/lbl_anthology"
@@ -132,7 +132,7 @@
 
     <TextView
         android:id="@+id/language"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/color"
@@ -142,7 +142,7 @@
 
     <TextView
         android:id="@+id/pages"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/lbl_publication"
         app:layout_constraintTop_toBottomOf="@id/language"
@@ -160,40 +160,19 @@
 
     <TextView
         android:id="@+id/print_run"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         tools:ignore="SelectableText"
         tools:text="limited to 150 copies"
         />
 
-    <com.google.android.material.chip.ChipGroup
+    <TextView
         android:id="@+id/edition"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Field.Generic"
         app:layout_constraintStart_toStartOf="@id/lbl_edition"
         app:layout_constraintTop_toBottomOf="@id/print_run"
-        >
-        <!-- chips will be added here dynamically -->
-        <!--            <com.google.android.material.chip.Chip-->
-        <!--                style="?attr/appChipDisplayStyle"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="@string/lbl_edition_first_edition"-->
-        <!--                />-->
-
-        <!--            <com.google.android.material.chip.Chip-->
-        <!--                style="?attr/appChipDisplayStyle"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="@string/lbl_edition_first_impression"-->
-        <!--                />-->
-
-        <!--            <com.google.android.material.chip.Chip-->
-        <!--                style="?attr/appChipDisplayStyle"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:text="@string/lbl_edition_book_club"-->
-        <!--                />-->
-    </com.google.android.material.chip.ChipGroup>
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/editions/name"
+        />
 </merge>

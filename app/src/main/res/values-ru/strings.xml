@@ -23,7 +23,6 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Названия антологий</string>
     <string name="X_action_update">Обновить</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">обменивать</string>
     <string name="X_tip_booklist_global_properties">Вы можете использовать этот экран, чтобы установить характеристики по умолчанию для всех стилей списка книг. Большинство свойств могут быть переопределены отдельными стилями, но значения по умолчанию определены здесь. Вы можете изменить способ отображения списков при запуске и настроить множество других параметров, которые будут применяться ко всем вашим стилям, когда это возможно.</string>
     <string name="X_use_default_setting">Использовать настройки по умолчанию</string>
-    <string name="X_warning_required_field_x">%1$s должен быть не пустым</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
     <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите «ОК», чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
@@ -427,7 +425,6 @@
     <string name="size_small">Маленький</string>
     <string name="size_x_large">X-большой</string>
     <string name="size_x_small">X-Маленький</string>
-    <string name="size_xx_large">2X-большой</string>
     <string name="style_builtin_acquired_date">приобретенный</string>
     <string name="style_builtin_added_date">Дата добавления</string>
     <string name="style_builtin_author_series">Сначала автор потом серия</string>
@@ -637,7 +634,6 @@
     <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
     <string name="lbl_test_connection">Проверить соединение</string>
     <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
-    <string name="X_menu_import_all">Импортировать все книги</string>
     <string name="progress_end_export_successful">Экспорт успешен</string>
     <string name="error_export_failed">Ошибка экспорта</string>
 

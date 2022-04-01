@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Details;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -73,14 +73,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.ExposedDropDownMenuAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.ListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -154,6 +152,9 @@ public class EditBookViewModel
     /** These FieldFormatters can be shared between multiple fields. */
     private FieldFormatter<String> mDateFormatter;
     private FieldFormatter<String> mLanguageFormatter;
+    private ListFormatter<Entity> mNormalDetailListFormatter;
+    private DoubleNumberFormatter mDoubleNumberFormatter;
+
     private boolean mIsChanged;
 
     int getCurrentTab() {
@@ -179,6 +180,8 @@ public class EditBookViewModel
             final Locale locale = context.getResources().getConfiguration().getLocales().get(0);
             mDateFormatter = new DateFieldFormatter(locale);
             mLanguageFormatter = new LanguageFormatter(locale);
+            mNormalDetailListFormatter = new ListFormatter<>();
+            mDoubleNumberFormatter = new DoubleNumberFormatter();
 
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_UUID);
@@ -583,7 +586,6 @@ public class EditBookViewModel
         return mListPriceCurrencies;
     }
 
-
     /**
      * Check if the passed Author is only used by this book.
      *
@@ -634,7 +636,6 @@ public class EditBookViewModel
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
-
     @NonNull
     LiveData<ArrayList<Author>> onAuthorList() {
         return mAuthorList;
@@ -650,7 +651,6 @@ public class EditBookViewModel
         return mPublisherList;
     }
 
-
     void updateAuthors(@NonNull final ArrayList<Author> list) {
         mBook.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, list);
         mAuthorList.setValue(list);
@@ -665,7 +665,6 @@ public class EditBookViewModel
         mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
         mPublisherList.setValue(list);
     }
-
 
     boolean changeForThisBook(@NonNull final Context context,
                               @NonNull final Author original,
@@ -777,7 +776,6 @@ public class EditBookViewModel
         return false;
     }
 
-
     void fixId(@NonNull final Context context,
                @NonNull final Author author) {
         ServiceLocator.getInstance().getAuthorDao()
@@ -859,9 +857,9 @@ public class EditBookViewModel
     }
 
     private void initFieldsMain(@NonNull final FragmentId fragmentId) {
+
         mFields.add(new EditFieldBuilder<>(R.id.author, Book.BKEY_AUTHOR_LIST,
-                                           new TextViewAccessor<>(new AuthorListFormatter(
-                                                   Details.Normal, true, false)))
+                                           new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
                             .setEntityKey(DBKey.FK_AUTHOR)
                             .setErrorViewId(R.id.lbl_author)
@@ -870,8 +868,7 @@ public class EditBookViewModel
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.series_title, Book.BKEY_SERIES_LIST,
-                                           new TextViewAccessor<>(new SeriesListFormatter(
-                                                   Details.Normal, true, false)))
+                                           new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
                             .setEntityKey(DBKey.KEY_SERIES_TITLE)
                             .setRelatedFields(R.id.lbl_series)
@@ -919,7 +916,7 @@ public class EditBookViewModel
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an {@link EditTextAccessor} with a (non Edit) FieldFormatter
         mFields.add(new EditFieldBuilder<>(R.id.bookshelves, Book.BKEY_BOOKSHELF_LIST,
-                                           new EditTextAccessor<>(new CsvFormatter(), true))
+                                           new EditTextAccessor<>(mNormalDetailListFormatter, true))
                             .setFragmentId(fragmentId)
                             .setEntityKey(DBKey.FK_BOOKSHELF)
                             .setRelatedFields(R.id.lbl_bookshelves)
@@ -947,7 +944,7 @@ public class EditBookViewModel
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.publisher, Book.BKEY_PUBLISHER_LIST,
-                                           new TextViewAccessor<>(new CsvFormatter()))
+                                           new TextViewAccessor<>(mNormalDetailListFormatter))
                             .setFragmentId(fragmentId)
                             .setEntityKey(DBKey.KEY_PUBLISHER_NAME)
                             .setRelatedFields(R.id.lbl_publisher)
@@ -970,7 +967,7 @@ public class EditBookViewModel
         // MUST be defined before the currency field is defined.
 
         mFields.add(new EditFieldBuilder<>(R.id.price_listed, DBKey.PRICE_LISTED,
-                                           new DecimalEditTextAccessor(new DoubleNumberFormatter()))
+                                           new DecimalEditTextAccessor(mDoubleNumberFormatter))
                             .setFragmentId(fragmentId)
                             .build());
 
@@ -991,7 +988,7 @@ public class EditBookViewModel
 
         mFields.add(new EditFieldBuilder<>(R.id.edition, DBKey.BITMASK_EDITION,
                                            new BitmaskChipGroupAccessor(
-                                                   Book.Edition::getEditions, true))
+                                                   Book.Edition::getEditions))
                             .setFragmentId(fragmentId)
                             .setRelatedFields(R.id.lbl_edition)
                             .build());
@@ -1022,9 +1019,8 @@ public class EditBookViewModel
                             .build());
 
         // MUST be defined before the currency.
-
         mFields.add(new EditFieldBuilder<>(R.id.price_paid, DBKey.PRICE_PAID,
-                                           new DecimalEditTextAccessor(new DoubleNumberFormatter()))
+                                           new DecimalEditTextAccessor(mDoubleNumberFormatter))
                             .setFragmentId(fragmentId)
                             .build());
 

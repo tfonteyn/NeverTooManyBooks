@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StripInfoDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.StyleDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.TocEntryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocaleImpl;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -239,7 +239,7 @@ public final class ServiceLocator {
         // While running JUnit tests we cannot get access or mock Resources.getSystem(),
         // ... so we need to cheat.
         if (BuildConfig.DEBUG /* always */) {
-            if (Logger.isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 return Locale.US;
             }
         }

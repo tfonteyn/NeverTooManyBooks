@@ -22,7 +22,6 @@
 <resources>
 
     <!-- Chip components created from code use these style attr values. -->
-    <attr name="appChipDisplayStyle" format="reference" />
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipInputStyle" format="reference" />
 
@@ -52,8 +51,8 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="DisregardablePreference">
-        <attr name="disregardButtonText" format="string" />
-        <attr name="disregardSummaryText" format="string" />
+    <declare-styleable name="TriStateMultiSelectListPreference">
+        <attr name="neutralButtonText" format="string" />
+        <attr name="neutralButtonSummaryText" format="string" />
     </declare-styleable>
 </resources>

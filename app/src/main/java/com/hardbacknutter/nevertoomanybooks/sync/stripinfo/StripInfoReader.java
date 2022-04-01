@@ -171,8 +171,7 @@ public class StripInfoReader
                    StorageException,
                    IOException {
 
-        // Got internet?
-        if (!NetworkUtils.isNetworkAvailable()) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

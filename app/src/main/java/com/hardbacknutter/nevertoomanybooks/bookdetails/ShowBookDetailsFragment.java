@@ -293,7 +293,7 @@ public class ShowBookDetailsFragment
         mVm.reloadBook();
 
         if (mBookChangedListener != null) {
-            mBookChangedListener.onBookUpdated(mVm.getBook(), null);
+            mBookChangedListener.onBookUpdated(mVm.getBook(), (String) null);
         }
     }
 
@@ -307,7 +307,7 @@ public class ShowBookDetailsFragment
         mVm.reloadBook();
 
         if (mBookChangedListener != null) {
-            mBookChangedListener.onBookUpdated(mVm.getBook(), null);
+            mBookChangedListener.onBookUpdated(mVm.getBook(), (String) null);
         }
     }
 
@@ -316,12 +316,25 @@ public class ShowBookDetailsFragment
         mAVm.updateFragmentResult();
 
         mAVm.requireField(R.id.read).setValue(read);
+
+        mAVm.getField(R.id.read_end).ifPresent(field -> {
+            final String date = mVm.getBook().getString(DBKey.DATE_READ_END);
+            //noinspection ConstantConditions
+            final SharedPreferences global = PreferenceManager
+                    .getDefaultSharedPreferences(getContext());
+            //noinspection unchecked
+            final Field<String, TextView> f = (Field<String, TextView>) (field);
+            f.setValue(date);
+            //noinspection ConstantConditions
+            f.setVisibility(global, getView(), true, false);
+        });
+
         if (mEmbedded) {
             mToolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
         }
 
         if (mBookChangedListener != null) {
-            mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ);
+            mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ, DBKey.DATE_READ_END);
         }
     }
 
@@ -567,7 +580,8 @@ public class ShowBookDetailsFragment
             onPrepareMenu(menu);
         }
 
-        private void onPrepareMenu(@NonNull final Menu menu) {
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
             updateMenuReadOptions(menu);
             updateMenuLendingOptions(menu);
 

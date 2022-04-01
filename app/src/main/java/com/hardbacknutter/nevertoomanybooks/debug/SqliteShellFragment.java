@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
@@ -45,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 
 /**
  * A crude sql shell.
@@ -56,7 +60,6 @@ public class SqliteShellFragment
     public static final String TAG = "SqliteShellFragment";
 
     private static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
-    //FIXME: add menu button/dialog to edit this number
     private static final int MAX_LINES = 200;
     private static final String UTF_8 = "utf-8";
     private static final String TEXT_HTML = "text/html";
@@ -76,6 +79,8 @@ public class SqliteShellFragment
     /** View Binding. */
     private FragmentSqliteShellBinding mVb;
     private SynchronizedDb mDb;
+
+    private int mMaxLines = MAX_LINES;
 
     @NonNull
     public static Fragment create(final boolean allowUpdates) {
@@ -111,6 +116,7 @@ public class SqliteShellFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         final Toolbar toolbar = getToolbar();
         mToolbarMenuProvider = new ToolbarMenuProvider();
         toolbar.addMenuProvider(mToolbarMenuProvider, getViewLifecycleOwner());
@@ -128,7 +134,15 @@ public class SqliteShellFragment
         });
     }
 
-//    private void textSmaller() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        mMaxLines = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                     .getInt(Prefs.pk_sqlite_max_lines, MAX_LINES);
+    }
+
+    //    private void textSmaller() {
 //        final WebSettings settings = outputView.getSettings();
 //        settings.setTextZoom(settings.getTextZoom() - 10);
 //    }
@@ -172,7 +186,7 @@ public class SqliteShellFragment
                     }
                     sb.append("</tr>");
 
-                    int maxLines = MAX_LINES;
+                    int maxLines = mMaxLines;
                     while (cursor.moveToNext() && maxLines > 0) {
                         final StringBuilder line = new StringBuilder();
                         for (int c = 0; c < cursor.getColumnCount(); c++) {
@@ -202,14 +216,20 @@ public class SqliteShellFragment
         public void onCreateMenu(@NonNull final Menu menu,
                                  @NonNull final MenuInflater menuInflater) {
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
-                .setIcon(mAllowUpdates ? R.drawable.ic_baseline_warning_24
+                .setIcon(mAllowUpdates ? R.drawable.ic_baseline_directions_run_dangerously_24
                                        : R.drawable.ic_baseline_directions_run_24)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
             menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,
                      R.string.debug_sq_shell_list_tables)
-                .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
+                .setIcon(R.drawable.ic_baseline_info_24)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+            menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES, 0,
+                     R.string.debug_sq_shell_max_rows)
+                .setIcon(R.drawable.ic_baseline_table_rows_24)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
         }
 
         @Override
@@ -222,6 +242,13 @@ public class SqliteShellFragment
 
             } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
                 executeSql(SQL_LIST_TABLES);
+                return true;
+
+            } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES) {
+                //noinspection ConstantConditions
+                final Intent intent = SettingsHostActivity
+                        .createIntent(getContext(), SqlitePreferenceFragment.class);
+                startActivity(intent);
                 return true;
             }
             return false;

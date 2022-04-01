@@ -384,7 +384,7 @@ public class Author
     @NonNull
     public static String getCondensedNames(@NonNull final Context context,
                                            @NonNull final List<Author> authors) {
-        // could/should? use AuthorListFormatter
+        // could/should? use ListFormatter
         if (authors.isEmpty()) {
             return "";
         } else {
@@ -483,6 +483,7 @@ public class Author
      *
      * @return the label to use.
      */
+    @Override
     @NonNull
     public String getLabel(@NonNull final Context context,
                            @NonNull final Details details) {

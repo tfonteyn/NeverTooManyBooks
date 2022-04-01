@@ -23,7 +23,6 @@
 <!-- Quotes „…”  - Regex to find wrong ones: ('|“|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Tytuły antologii</string>
     <string name="X_action_update">Zaktualizuj</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_use_default_setting">Użyj ustawień domyślnych</string>
-    <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
     <string name="acra_resDialogText">Vypadá to, že &APP_NAME; havaroval. Pokud je to možné, popište cokoliv, o čem si myslíte, že mohou být relevantní níže, a stiskněte „OK”, abyste nám poslali e-mail o havárii. E-mail se zobrazí před odesláním.</string>
@@ -429,7 +427,6 @@
     <string name="size_small">Mały</string>
     <string name="size_x_large">X-Duży</string>
     <string name="size_x_small">X-Mały</string>
-    <string name="size_xx_large">2X-Duży</string>
     <string name="style_builtin_acquired_date">Nabyty</string>
     <string name="style_builtin_added_date">Data dodania</string>
     <string name="style_builtin_author_series">Autor, seria</string>
@@ -638,7 +635,6 @@
     <string name="error_network_failed_try_again">Sprawdź połączenie i spróbuj ponownie</string>
     <string name="lbl_test_connection">Przetestuj połączenie</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
-    <string name="X_menu_import_all">Importuj wszystkie książki</string>
     <string name="progress_end_export_successful">Eksport powiódł się</string>
     <string name="error_export_failed">Eksport nie powiódł się</string>
     <string name="action_go">OK</string>

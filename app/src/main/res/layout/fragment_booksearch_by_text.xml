@@ -31,13 +31,24 @@
         style="@style/TopCentered"
         >
 
+        <TextView
+            android:id="@+id/txt_can_search"
+            style="@style/Text.Error"
+            android:layout_margin="@dimen/container_margin"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/warning_no_site_supports_this_method"
+            tools:visibility="visible"
+            />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_can_search"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

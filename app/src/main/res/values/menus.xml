@@ -230,5 +230,6 @@
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_EDIT_MAX_LINES" type="id" />
 
 </resources>

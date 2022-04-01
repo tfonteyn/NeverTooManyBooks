@@ -24,31 +24,33 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * FieldFormatter for a list field. Formats the ParcelableEntity's as a CSV String.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>no</strong></li>
  * </ul>
  */
-public class CsvFormatter
-        implements FieldFormatter<List<Entity>> {
+public class EntityFormatter<T extends Entity>
+        extends HtmlFormatter<T> {
+
+    /** how much details to show. */
+    private final Details mDetails;
+
+    /**
+     * Constructor.
+     *
+     * @param details how much details to show
+     */
+    public EntityFormatter(@NonNull final Details details) {
+        mDetails = details;
+    }
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final List<Entity> rawValue) {
-        if (rawValue == null || rawValue.isEmpty()) {
-            return "";
-
-        } else {
-            return rawValue.stream()
-                           .map(entity -> entity.getLabel(context))
-                           .collect(Collectors.joining(", "));
-        }
+                         @Nullable final T entity) {
+        return entity == null ? "" : entity.getLabel(context, mDetails);
     }
 }

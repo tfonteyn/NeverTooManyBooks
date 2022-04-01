@@ -23,7 +23,6 @@
 <!-- Quotes “…”  - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Seçmeler</string>
     <string name="X_action_update">Güncelle</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
-    <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
@@ -432,7 +430,6 @@
     <string name="size_small">Küçük</string>
     <string name="size_x_large">X-Büyük</string>
     <string name="size_x_small">X-Küçük</string>
-    <string name="size_xx_large">2X-Büyük</string>
     <string name="style_builtin_acquired_date">Edinilen</string>
     <string name="style_builtin_added_date">Eklenen günay</string>
     <string name="style_builtin_author_series">Önce yazar sonra seri</string>
@@ -639,7 +636,6 @@
     <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin</string>
     <string name="lbl_test_connection">Bağlantıyı test edin</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
-    <string name="X_menu_import_all">Tüm kitapları içe aktar</string>
     <string name="progress_end_export_successful">İhracat başarılı</string>
     <string name="error_export_failed">Dışa aktarılamadı</string>
     <string name="action_go">"Git"</string>

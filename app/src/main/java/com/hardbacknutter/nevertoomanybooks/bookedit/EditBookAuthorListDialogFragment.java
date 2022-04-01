@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Details;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.EntityFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
@@ -596,7 +596,7 @@ public class EditBookAuthorListDialogFragment
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
 
-            mFormatter = new AuthorFormatter(Details.Full, false);
+            mFormatter = new EntityFormatter<>(Details.Full);
         }
 
         @NonNull

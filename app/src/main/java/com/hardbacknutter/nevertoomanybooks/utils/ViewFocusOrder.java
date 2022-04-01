@@ -142,7 +142,7 @@ public final class ViewFocusOrder {
             }
         }
 
-        debugDumpViewTree(rootView, 0, true);
+        //debugDumpViewTree(rootView, 0, true);
     }
 
     /**

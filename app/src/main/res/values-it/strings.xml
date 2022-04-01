@@ -23,7 +23,6 @@
 <!-- Quotes «…»  - Regex to find wrong ones: ('|„|“|”|‘|’) -->
 <!--suppress LongLine -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="X_anthology_titles">Antologia titoli</string>
     <string name="X_action_update">Aggiorna</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">Scambiare</string>
     <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell\'elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all\'avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_use_default_setting">Utilizza le impostazioni predefinite</string>
-    <string name="X_warning_required_field_x">%1$s deve contenere un valore</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
     <string name="acra_resDialogText">&APP_NAME; sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca «OK» per inviarci un\'email relativa al blocco. Potrai verificare l\'email prima dell\'invio.</string>
@@ -432,7 +430,6 @@
     <string name="size_small">Piccolo</string>
     <string name="size_x_large">X-Grande</string>
     <string name="size_x_small">X-Piccolo</string>
-    <string name="size_xx_large">2X-Grande</string>
     <string name="style_builtin_acquired_date">Data di acquisizione</string>
     <string name="style_builtin_added_date">Data di inserimento</string>
     <string name="style_builtin_author_series">Autore e Collana</string>
@@ -641,7 +638,6 @@
     <string name="error_network_failed_try_again">Controlla la connessione e riprova</string>
     <string name="lbl_test_connection">Verifica la connessione</string>
     <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
-    <string name="X_menu_import_all">Importa tutti i libri</string>
     <string name="progress_end_export_successful">Esportazione riuscita</string>
     <string name="error_export_failed">Esportazione non riuscita</string>
     <string name="action_go">Pradėti</string>

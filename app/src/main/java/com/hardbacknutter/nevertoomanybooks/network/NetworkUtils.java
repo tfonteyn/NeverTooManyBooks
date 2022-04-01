@@ -28,6 +28,7 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -47,8 +48,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 
@@ -70,46 +70,58 @@ public final class NetworkUtils {
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
      * <p>
-     * When running a JUnit test, this method will always return {@code true}.
+     * When running a JUnit test, this method will always
+     * return {@link TestFlags#isInternetConnected}.
      *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable() {
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
         if (BuildConfig.DEBUG /* always */) {
-            if (Logger.isJUnitTest) {
-                return true;
+            if (TestFlags.isJUnit) {
+                return TestFlags.isInternetConnected;
             }
         }
 
         final ConnectivityManager connMgr = (ConnectivityManager)
-                ServiceLocator.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final Network network = connMgr.getActiveNetwork();
         if (network != null) {
+            // https://developer.android.com/training/basics/network-ops/reading-network-state
             final NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
             if (nc != null) {
-                // we need internet access.
+
+                // Indicates that the network is set up to access the internet.
+                // Note that this is about setup and not actual ability to reach public servers.
                 final boolean hasInternet =
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-                // and we need internet access actually working!
+
+                // Indicates the network has been found to provide actual access to
+                // the public internet last time it was probed.w
                 final boolean isValidated =
                         nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                    //noinspection NegativelyNamedBooleanVariable
-                    final boolean notMetered =
-                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+                // Indicates that the network is (not) metered.
+                final boolean isMetered =
+                        !nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-                    Log.d(TAG, "getNetworkConnectivity"
-                               + "|notMetered=" + notMetered
+                final boolean isMeteredAllowed = PreferenceManager
+                        .getDefaultSharedPreferences(context)
+                        .getBoolean(Prefs.pk_network_allow_metered, false);
+
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                    Log.d(TAG, "getNetworkCapabilities"
                                + "|hasInternet=" + hasInternet
-                               + "|isConnected=" + isValidated);
+                               + "|isValidated=" + isValidated
+                               + "|isMetered=" + isMetered
+                               + "|isMeteredAllowed=" + isMeteredAllowed
+                         );
                 }
 
-                return hasInternet && isValidated
-                       && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork());
-
+                return hasInternet
+                       && isValidated
+                       && (isMetered || isMeteredAllowed);
             }
         }
 
@@ -117,15 +129,10 @@ public final class NetworkUtils {
         return false;
     }
 
-    private static boolean allowMeteredNetwork() {
-        return ServiceLocator.getGlobalPreferences()
-                             .getBoolean(Prefs.pk_network_allow_metered, false);
-    }
-
     /**
      * Low level check if a url is reachable.
      * <p>
-     * A call to {@link #isNetworkAvailable()} should be made before calling this method.
+     * A call to {@link #isNetworkAvailable(Context)} should be made before calling this method.
      *
      * @param urlStr url to check
      *

@@ -70,7 +70,7 @@ public class FutureHttpPost<T>
                     writer.flush();
                 }
 
-                HttpUtils.checkResponseCode(request, mSiteResId);
+                checkResponseCode(request);
 
                 if (responseProcessor != null) {
                     try (InputStream is = request.getInputStream();

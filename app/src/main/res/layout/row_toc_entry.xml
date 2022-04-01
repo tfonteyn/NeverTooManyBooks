@@ -59,7 +59,7 @@
 
     <TextView
         android:id="@+id/year"
-        style="@style/Field.Generic.Small"
+        style="@style/Field.Generic"
         app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
@@ -69,7 +69,7 @@
 
     <TextView
         android:id="@+id/author"
-        style="@style/Field.Generic.Inline.Small"
+        style="@style/Field.Generic.Inline"
         app:layout_constraintStart_toEndOf="@id/year"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

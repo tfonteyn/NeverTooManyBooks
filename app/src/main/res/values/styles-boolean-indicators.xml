@@ -48,12 +48,6 @@
         <item name="android:src">@drawable/ic_signed</item>
     </style>
 
-    <!-- A book is signed. Meant to be used with a text label. -->
-    <style name="Flag.Signed.Check">
-        <item name="android:src">@drawable/ic_baseline_check_24</item>
-        <item name="android:tint">?attr/colorControlActivated</item>
-    </style>
-
     <!-- A book has been lend out. -->
     <style name="Flag.LendOut">
         <item name="android:contentDescription">@string/lbl_lend_out</item>

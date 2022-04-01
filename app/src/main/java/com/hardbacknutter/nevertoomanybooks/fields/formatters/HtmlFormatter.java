@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
 /**
  * FieldFormatter for HTML fields.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong> with the caveat that 'enableLinks'
- *      is the same value</li>
+ *      <li>Multiple fields: <strong>yes</strong> with the caveat that {@link #mEnableLinks}
+ *      and {@link #mConvertLineFeeds} must use the same value.</li>
  * </ul>
  *
  * @param <T> type of Field value.
@@ -56,13 +56,10 @@ public class HtmlFormatter<T>
 
     /**
      * Constructor.
-     *
-     * @param enableLinks {@code true} to enable links.
-     *                    Ignored if the View has an onClickListener
      */
     @SuppressWarnings("WeakerAccess")
-    public HtmlFormatter(final boolean enableLinks) {
-        mEnableLinks = enableLinks;
+    public HtmlFormatter() {
+        mEnableLinks = false;
         mConvertLineFeeds = false;
     }
 

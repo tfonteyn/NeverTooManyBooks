@@ -35,23 +35,13 @@
     Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
     -->
     <style name="Field.Generic">
-        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
     <style name="Field.Generic.Inline">
         <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
-
-    <!-- 'minor' detail field; for example format, isbn,... -->
-    <style name="Field.Generic.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
-    </style>
-
-    <style name="Field.Generic.Inline.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
-    </style>
-
 
     <style name="Field.BookTitle">
         <item name="android:textStyle">italic</item>
@@ -65,11 +55,7 @@
     </style>
 
     <style name="Field.Isbn">
-        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
-    </style>
-
-    <style name="Field.Isbn.Small">
-        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
     </style>
 
     <!-- A field which CAN be user-changed - used as a very quick edit to avoid editing a whole book. -->

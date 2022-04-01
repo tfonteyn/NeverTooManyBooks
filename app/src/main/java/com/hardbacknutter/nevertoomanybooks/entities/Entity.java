@@ -52,6 +52,22 @@ public interface Entity {
     String getLabel(@NonNull Context context);
 
     /**
+     * Get the label to use for <strong>displaying</strong>.
+     * <p>
+     * The default implementation ignores the details parameter.
+     *
+     * @param context Current context
+     * @param details the amount of details wanted
+     *
+     * @return the label to use.
+     */
+    @NonNull
+    default String getLabel(@NonNull final Context context,
+                            @NonNull final Details details) {
+        return getLabel(context);
+    }
+
+    /**
      * Convenience method; called by (some) implementations of {@link #getLabel(Context)}.
      *
      * @param context Current context

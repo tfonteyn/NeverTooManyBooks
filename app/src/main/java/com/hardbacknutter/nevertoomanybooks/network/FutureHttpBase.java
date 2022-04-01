@@ -25,12 +25,14 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.cert.Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -44,11 +46,13 @@ import java.util.function.Function;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedSAXException;
@@ -72,7 +76,7 @@ public abstract class FutureHttpBase<T> {
     private static final int READ_TIMEOUT_MS = 10_000;
 
     @StringRes
-    final int mSiteResId;
+    private final int mSiteResId;
 
     private final Map<String, String> mRequestProperties = new HashMap<>();
 
@@ -95,6 +99,71 @@ public abstract class FutureHttpBase<T> {
 
     FutureHttpBase(@StringRes final int siteResId) {
         mSiteResId = siteResId;
+    }
+
+    public static void dumpSSLException(@NonNull final HttpsURLConnection request,
+                                        @NonNull final SSLException e) {
+        try {
+            Logger.w("dumpSSLException", request.getURL().toString());
+            final Certificate[] serverCertificates = request.getServerCertificates();
+            if (serverCertificates != null && serverCertificates.length > 0) {
+                for (final Certificate c : serverCertificates) {
+                    Logger.w("dumpSSLException", c.toString());
+                }
+            }
+        } catch (@NonNull final Exception ex) {
+            Logger.d("dumpSSLException", "", ex);
+        }
+
+    }
+
+    /**
+     * If already connected, simply check the response code.
+     * Otherwise implicitly connect by getting the response code.
+     *
+     * @param request to check
+     *
+     * @throws IOException               on connect
+     * @throws HttpUnauthorizedException 401: Unauthorized.
+     * @throws HttpNotFoundException     404: Not Found.
+     * @throws SocketTimeoutException    408: Request Time-Out.
+     * @throws HttpStatusException       on any other HTTP failures
+     */
+    @WorkerThread
+    void checkResponseCode(@NonNull final HttpURLConnection request)
+            throws IOException,
+                   HttpUnauthorizedException,
+                   HttpNotFoundException,
+                   SocketTimeoutException,
+                   HttpStatusException {
+
+        final int responseCode = request.getResponseCode();
+
+        if (responseCode < 400) {
+            return;
+        }
+
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+                throw new HttpUnauthorizedException(mSiteResId,
+                                                    request.getResponseMessage(),
+                                                    request.getURL());
+
+            case HttpURLConnection.HTTP_NOT_FOUND:
+                throw new HttpNotFoundException(mSiteResId,
+                                                request.getResponseMessage(),
+                                                request.getURL());
+
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + request.getResponseMessage());
+
+            default:
+                throw new HttpStatusException(mSiteResId,
+                                              responseCode,
+                                              request.getResponseMessage(),
+                                              request.getURL());
+        }
     }
 
     /**
@@ -170,7 +239,7 @@ public abstract class FutureHttpBase<T> {
     }
 
     private int getFutureTimeout() {
-        return mConnectTimeoutInMs + (int) (2 * mReadTimeoutInMs);
+        return mConnectTimeoutInMs + (2 * mReadTimeoutInMs);
     }
 
     @Nullable

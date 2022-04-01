@@ -168,13 +168,4 @@
     <dimen name="top_centered_min_width">312dp</dimen>
     <dimen name="top_centered_max_width">600dp</dimen>
 
-
-    <!-- The maximum size for a generic TIL -->
-    <dimen name="til_constraint_width_max">400dp</dimen>
-    <!-- TODO: we might be getting a bit too clever... a TIL which has a TIL.Button.ExtEdit at the end...
-        The latter is 48dp + 8dp start margin; so... "til_constraint_width_max" - 48 - 8 = 344 -->
-    <dimen name="til_constraint_width_max_with_ext_edit">344dp</dimen>
-    <!-- all TIL fields align at the start. -->
-    <dimen name="til_constraint_horizontal_bias">0</dimen>
-
 </resources>

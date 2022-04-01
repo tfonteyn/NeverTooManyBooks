@@ -57,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ChecklistRecyclerAdapter;
  * <pre>
  *     {@code
  *         <declare-styleable name="TriStateMultiSelectListPreference">
- *           <attr name="disregardButtonText" format="string" />
- *           <attr name="disregardSummaryText" format="string" />
+ *           <attr name="neutralButtonText" format="string" />
+ *           <attr name="neutralButtonSummaryText" format="string" />
  *         </declare-styleable>
  *     }
  * </pre>
@@ -72,14 +72,14 @@ public class TriStateMultiSelectListPreference
 
     /** The text to use for the neutral button, which allows the user to choose "don't use". */
     @Nullable
-    private String mDisregardButtonText;
+    private String mNeutralButtonText;
 
     /**
      * The summary text to display if the preference is set to "don't use".
-     * If not set, then the text from mDisregardButtonText will be used.
+     * If not set, then the text from {@link #mNeutralButtonText} will be used.
      */
     @Nullable
-    private String mDisregardSummaryText;
+    private String mNeutralButtonSummaryText;
 
     @Nullable
     private Boolean mActive;
@@ -113,12 +113,12 @@ public class TriStateMultiSelectListPreference
                      @Nullable final AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray ta = context.getTheme().obtainStyledAttributes(
-                    attrs, R.styleable.DisregardablePreference, 0, 0);
+                    attrs, R.styleable.TriStateMultiSelectListPreference, 0, 0);
             try {
-                mDisregardButtonText =
-                        ta.getString(R.styleable.DisregardablePreference_disregardButtonText);
-                mDisregardSummaryText =
-                        ta.getString(R.styleable.DisregardablePreference_disregardSummaryText);
+                mNeutralButtonText = ta.getString(
+                        R.styleable.TriStateMultiSelectListPreference_neutralButtonText);
+                mNeutralButtonSummaryText = ta.getString(
+                        R.styleable.TriStateMultiSelectListPreference_neutralButtonSummaryText);
             } finally {
                 ta.recycle();
             }
@@ -132,11 +132,11 @@ public class TriStateMultiSelectListPreference
      * @return string, can be {@code null}
      */
     @Nullable
-    private String getDisregardSummaryText() {
-        if (mDisregardSummaryText != null) {
-            return mDisregardSummaryText;
-        } else if (mDisregardButtonText != null) {
-            return mDisregardButtonText;
+    private String getNeutralButtonSummaryText() {
+        if (mNeutralButtonSummaryText != null) {
+            return mNeutralButtonSummaryText;
+        } else if (mNeutralButtonText != null) {
+            return mNeutralButtonText;
         } else {
             return null;
         }
@@ -148,9 +148,9 @@ public class TriStateMultiSelectListPreference
      * @return string, can be {@code null}
      */
     @Nullable
-    private String getDisregardButtonText() {
-        if (mDisregardButtonText != null) {
-            return mDisregardButtonText;
+    private String getNeutralButtonText() {
+        if (mNeutralButtonText != null) {
+            return mNeutralButtonText;
         } else {
             return null;
         }
@@ -319,7 +319,7 @@ public class TriStateMultiSelectListPreference
             super.onPrepareDialogBuilder(builder);
 
             final String neutralText = ((TriStateMultiSelectListPreference) getPreference())
-                    .getDisregardButtonText();
+                    .getNeutralButtonText();
             if (neutralText != null) {
                 builder.setNeutralButton(neutralText, (d, w) -> mUnused = true);
             }
@@ -371,7 +371,7 @@ public class TriStateMultiSelectListPreference
          * {@link androidx.preference.Preference.SummaryProvider} implementation.
          *
          * @return a singleton instance of this simple
-         * {@link androidx.preference.Preference.SummaryProvider} implementation
+         *         {@link androidx.preference.Preference.SummaryProvider} implementation
          */
         public static TriStateMultiSelectListPreference.SimpleSummaryProvider getInstance() {
             if (sSimpleSummaryProvider == null) {
@@ -390,7 +390,7 @@ public class TriStateMultiSelectListPreference
                 return MultiSelectListPreferenceSummaryProvider
                         .getInstance().provideSummary(preference);
             } else {
-                return preference.getDisregardSummaryText();
+                return preference.getNeutralButtonSummaryText();
             }
         }
     }

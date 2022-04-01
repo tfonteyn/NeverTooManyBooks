@@ -312,7 +312,6 @@ public class BooklistGroup {
     private static String year(@NonNull String fieldSpec,
                                final boolean toLocal) {
 
-        //TODO: This covers a timezone offset for Dec-31 / Jan-01 only - how important is this?
         if (toLocal) {
             fieldSpec = localDateTimeExpression(fieldSpec);
         }

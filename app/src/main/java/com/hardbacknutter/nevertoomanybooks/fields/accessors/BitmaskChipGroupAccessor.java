@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * A {@code null} value is always handled as {@code 0}.
  * <p>
- * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
+ * Relies on {@link R.attr#appChipFilterStyle}
  */
 public class BitmaskChipGroupAccessor
         extends BaseFieldViewAccessor<Integer, ChipGroup> {
@@ -51,35 +51,26 @@ public class BitmaskChipGroupAccessor
     @Nullable
     private final View.OnClickListener mEditChipListener;
 
-    /** Are we viewing {@code false} or editing {@code true} a Field. */
-    private final boolean mIsEditable;
-
     /**
      * Constructor.
      *
-     * @param supplier   for a Map with all <strong>possible</strong> values
-     * @param isEditable flag
+     * @param supplier for a Map with all <strong>possible</strong> values
      */
-    public BitmaskChipGroupAccessor(@NonNull final Function<Context, Map<Integer, String>> supplier,
-                                    final boolean isEditable) {
+    public BitmaskChipGroupAccessor(@NonNull final
+                                    Function<Context, Map<Integer, String>> supplier) {
         mValuesSupplier = supplier;
-        mIsEditable = isEditable;
 
-        if (mIsEditable) {
-            mEditChipListener = view -> {
-                final Integer current = (Integer) view.getTag();
-                if (((Checkable) view).isChecked()) {
-                    // add
-                    mRawValue |= current;
-                } else {
-                    // remove
-                    mRawValue &= ~current;
-                }
-                broadcastChange();
-            };
-        } else {
-            mEditChipListener = null;
-        }
+        mEditChipListener = view -> {
+            final Integer current = (Integer) view.getTag();
+            if (((Checkable) view).isChecked()) {
+                // add
+                mRawValue |= current;
+            } else {
+                // remove
+                mRawValue &= ~current;
+            }
+            broadcastChange();
+        };
     }
 
     @NonNull
@@ -95,34 +86,23 @@ public class BitmaskChipGroupAccessor
         final ChipGroup chipGroup = getView();
         if (chipGroup != null) {
             chipGroup.removeAllViews();
+
             final Context context = chipGroup.getContext();
 
-            // *all* values
             for (final Map.Entry<Integer, String> entry :
                     mValuesSupplier.apply(context).entrySet()) {
 
-                final boolean isSet = (entry.getKey() & mRawValue) != 0;
-                // if editable, all values; if not editable only the set values.
-                if (isSet || mIsEditable) {
+                final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
+                chip.setChecked((entry.getKey() & mRawValue) != 0);
+                chip.setOnClickListener(mEditChipListener);
 
-                    final Chip chip;
-                    if (mIsEditable) {
-                        chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                        chip.setChecked(isSet);
-                        chip.setOnClickListener(mEditChipListener);
+                // RTL-friendly Chip Layout
+                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-                    } else {
-                        chip = new Chip(context, null, R.attr.appChipDisplayStyle);
-                    }
+                chip.setTag(entry.getKey());
+                chip.setText(entry.getValue());
 
-                    // RTL-friendly Chip Layout
-                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-
-                    chip.setTag(entry.getKey());
-                    chip.setText(entry.getValue());
-
-                    chipGroup.addView(chip);
-                }
+                chipGroup.addView(chip);
             }
         }
     }

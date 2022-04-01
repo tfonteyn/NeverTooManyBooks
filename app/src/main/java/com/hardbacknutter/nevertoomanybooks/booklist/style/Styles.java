@@ -41,8 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Helper class encapsulating {@link StyleDao} access and internal in-memory caches.
- * <p>
- * TODO: merge the two separate caches.
  */
 public class Styles {
 
@@ -55,21 +53,13 @@ public class Styles {
     private static final String ERROR_MISSING_UUID = "style.getUuid()";
 
     /**
-     * We keep a cache of Builtin styles in memory.
+     * We keep a cache of styles in memory.
      * Pre-loaded on first access.
      * Re-loaded when the Locale changes.
      * <p>
      * Key: uuid of style.
      */
-    private final Map<String, BuiltinStyle> mBuiltinStyleCache = new LinkedHashMap<>();
-    /**
-     * We keep a cache of User styles in memory.
-     * Pre-loaded on first access.
-     * Re-loaded when the Locale changes.
-     * <p>
-     * Key: uuid of style.
-     */
-    private final Map<String, UserStyle> mUserStyleCache = new LinkedHashMap<>();
+    private final Map<String, ListStyle> mCache = new LinkedHashMap<>();
 
     /**
      * Get the specified style; {@code null} if not found.
@@ -82,14 +72,7 @@ public class Styles {
     @Nullable
     public ListStyle getStyle(@NonNull final Context context,
                               @NonNull final String uuid) {
-        // Check Builtin first
-        final ListStyle style = getBuiltinStyles(context).get(uuid);
-        if (style != null) {
-            return style;
-        }
-
-        // User defined ? or null if not found
-        return getUserStyles(context).get(uuid);
+        return getAllStyles(context).get(uuid);
     }
 
     /**
@@ -105,7 +88,7 @@ public class Styles {
                                        @Nullable final String uuid) {
         if (uuid != null) {
             // Try to get user or builtin style
-            final ListStyle style = getStyle(context, uuid);
+            final ListStyle style = getAllStyles(context).get(uuid);
             if (style != null) {
                 return style;
             }
@@ -135,21 +118,17 @@ public class Styles {
      */
     @NonNull
     public ListStyle getDefault(@NonNull final Context context) {
+        final Map<String, ListStyle> allStyles = getAllStyles(context);
 
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getString(PREF_BL_STYLE_CURRENT_DEFAULT, BuiltinStyle.DEFAULT_UUID);
 
-        // Try to get user or builtin style
+        // Get the user or builtin or worst case the builtin default.
+        final ListStyle style = allStyles.get(uuid);
         //noinspection ConstantConditions
-        final ListStyle style = getStyle(context, uuid);
-        if (style != null) {
-            return style;
-        }
-        // fall back to the builtin default.
-        //noinspection ConstantConditions
-        return getBuiltinStyles(context).get(BuiltinStyle.DEFAULT_UUID);
+        return style != null ? style : allStyles.get(BuiltinStyle.DEFAULT_UUID);
     }
 
     /**
@@ -168,9 +147,7 @@ public class Styles {
                                      final boolean all) {
 
         // combine all styles in a NEW list; we need to keep the original lists as-is.
-        final Collection<ListStyle> list = new ArrayList<>();
-        list.addAll(getUserStyles(context).values());
-        list.addAll(getBuiltinStyles(context).values());
+        final Collection<ListStyle> list = new ArrayList<>(getAllStyles(context).values());
 
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
@@ -197,45 +174,26 @@ public class Styles {
     }
 
     /**
-     * Get the user-defined Styles.
+     * Get all styles.
      *
      * @param context Current context
      *
      * @return an ordered Map of styles
      */
     @NonNull
-    private Map<String, UserStyle> getUserStyles(@NonNull final Context context) {
-        if (mUserStyleCache.isEmpty()) {
-            mUserStyleCache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                                 .getUserStyles(context));
-        }
-        return mUserStyleCache;
-    }
+    private Map<String, ListStyle> getAllStyles(@NonNull final Context context) {
 
-    /**
-     * Get all builtin styles.
-     *
-     * @param context Current context
-     *
-     * @return an ordered Map of styles
-     */
-    @NonNull
-    private Map<String, BuiltinStyle> getBuiltinStyles(@NonNull final Context context) {
-
-        if (mBuiltinStyleCache.isEmpty()) {
-            mBuiltinStyleCache.putAll(ServiceLocator.getInstance().getStyleDao()
-                                                    .getBuiltinStyles(context));
+        if (mCache.isEmpty()) {
+            mCache.putAll(ServiceLocator.getInstance().getStyleDao()
+                                        .getBuiltinStyles(context));
+            mCache.putAll(ServiceLocator.getInstance().getStyleDao()
+                                        .getUserStyles(context));
         }
-        return mBuiltinStyleCache;
+        return mCache;
     }
 
     public void clearCache() {
-        // Clears the list of builtin styles. Why clear builtin data?
-        // Because the entries also contain the user 'preferred' and 'menu order' data
-        // which we want to be able to refresh after for example a restore from backup.
-        mBuiltinStyleCache.clear();
-
-        mUserStyleCache.clear();
+        mCache.clear();
     }
 
 
@@ -303,7 +261,7 @@ public class Styles {
         if (style.getId() == 0) {
             if (styleDao.insert(style) > 0) {
                 if (style.isUserDefined()) {
-                    mUserStyleCache.put(style.getUuid(), (UserStyle) style);
+                    mCache.put(style.getUuid(), (UserStyle) style);
                 }
                 return true;
             }
@@ -325,18 +283,13 @@ public class Styles {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             // Reminder: do NOT use requirePositiveValue here!
-            // It's perfectly find to update builtin styles here;
+            // It's perfectly fine to update builtin styles here;
             // ONLY new styles must be rejected
             SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
         }
 
         if (ServiceLocator.getInstance().getStyleDao().update(style)) {
-            // we're assuming the caches will exist & are populated
-            if (style.isUserDefined()) {
-                mUserStyleCache.put(style.getUuid(), (UserStyle) style);
-            } else {
-                mBuiltinStyleCache.put(style.getUuid(), (BuiltinStyle) style);
-            }
+            mCache.put(style.getUuid(), (BuiltinStyle) style);
             return true;
         }
         return false;
@@ -360,7 +313,7 @@ public class Styles {
 
         if (ServiceLocator.getInstance().getStyleDao().delete(style)) {
             if (style.isUserDefined()) {
-                mUserStyleCache.remove(style.getUuid());
+                mCache.remove(style.getUuid());
                 context.deleteSharedPreferences(style.getUuid());
             }
             return true;

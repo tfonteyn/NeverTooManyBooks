@@ -85,9 +85,14 @@ public abstract class SearchBookBaseFragment
                                               // no changes committed, temporary usage only
                                               mCoordinator.setSiteList(sites);
                                           }
+                                          explainSitesSupport(sites);
                                       });
     @Nullable
     private ProgressDelegate mProgressDelegate;
+
+    protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
+        // override as needed, e.g. SearchBookByTextFragment
+    }
 
     @NonNull
     protected abstract ResultIntentOwner getResultOwner();
@@ -125,7 +130,8 @@ public abstract class SearchBookBaseFragment
         });
 
         // Warn the user, but don't abort.
-        if (!NetworkUtils.isNetworkAvailable()) {
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -213,7 +219,9 @@ public abstract class SearchBookBaseFragment
             return;
         }
 
-        if (!NetworkUtils.isNetworkAvailable()) {
+        // Warn the user, AND abort.
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
@@ -222,9 +230,8 @@ public abstract class SearchBookBaseFragment
 
         // Start the lookup in a background search task.
         if (!onSearch()) {
-            //TODO: not the best error message, but it will do for now.
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_search_failed_network,
+            Snackbar.make(getView(), R.string.warning_search_failed,
                           Snackbar.LENGTH_LONG).show();
         }
     }

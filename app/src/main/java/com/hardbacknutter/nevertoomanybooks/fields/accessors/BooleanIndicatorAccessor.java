@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * Ties a boolean value to visible/gone for a generic View.
+ * Ties a boolean value to visible/gone for a <strong>generic</strong> View.
  * If the View is {@link Checkable}, then it's kept visible and the value (un)checked.
  * <p>
  * A {@code null} value is always handled as {@code false}.

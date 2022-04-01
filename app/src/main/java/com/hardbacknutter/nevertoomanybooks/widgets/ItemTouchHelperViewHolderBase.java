@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -97,6 +98,9 @@ public abstract class ItemTouchHelperViewHolderBase
 
     @Override
     public void onItemDragFinished() {
+        //2022-03-28: this used to work by just calling 'setBackground'
+        // It seems we now ALSO need to call 'setBackgroundColor' ??
+        itemView.setBackgroundColor(Color.TRANSPARENT);
         itemView.setBackground(mOriginalItemSelectedBackground);
     }
 }

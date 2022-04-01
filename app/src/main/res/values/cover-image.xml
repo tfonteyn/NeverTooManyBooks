@@ -25,6 +25,13 @@
     land: w533dp h296dp
 -->
 <resources>
+
+    <!-- View tag - tags a Cover Image View with the task responsible to fetch the image -->
+    <item name="TAG_THUMBNAIL_TASK" type="id" />
+    <!-- View tag - tags a Cover Image View with the 'uuid' (i.e. the book) it represents. -->
+    <item name="TAG_THUMBNAIL_UUID" type="id" />
+
+
     <!-- Predefined id's for cover image views; so we can use them in an array. -->
     <item name="cover_image_0" type="id" />
     <item name="cover_image_1" type="id" />

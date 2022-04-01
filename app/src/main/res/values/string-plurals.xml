@@ -19,56 +19,56 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
         cardinal -->
 
     <!-- displayed in the header of booklist -->
-    <plurals name="displaying_n_books">
+    <plurals name="displaying_n_books" tools:ignore="MissingTranslation">
         <item quantity="zero">No books</item>
         <item quantity="one">%1$d book displayed</item>
         <item quantity="other">Displaying %1$d books</item>
     </plurals>
 
-    <plurals name="n_books_found">
+    <plurals name="n_books_found" tools:ignore="MissingTranslation">
         <item quantity="zero">No books found</item>
         <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->
-    <plurals name="n_stars">
+    <plurals name="n_stars" tools:ignore="MissingTranslation">
         <item quantity="zero">%1$s stars</item>
         <item quantity="one">%1$s star</item>
         <item quantity="other">%1$s stars</item>
     </plurals>
 
     <!-- simple 1 or more plural. -->
-    <plurals name="lbl_styles">
+    <plurals name="lbl_styles" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_style</item>
         <item quantity="other">@string/lbl_styles</item>
     </plurals>
-    <plurals name="lbl_bookshelf">
+    <plurals name="lbl_bookshelf" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_bookshelf</item>
         <item quantity="other">@string/lbl_bookshelves</item>
     </plurals>
-    <plurals name="lbl_books">
+    <plurals name="lbl_books" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_book</item>
         <item quantity="other">@string/lbl_books</item>
     </plurals>
-    <plurals name="lbl_covers">
+    <plurals name="lbl_covers" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_cover_front</item>
         <item quantity="other">@string/lbl_covers</item>
     </plurals>
-    <plurals name="lbl_author">
+    <plurals name="lbl_author" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_author</item>
         <item quantity="other">@string/lbl_authors</item>
     </plurals>
-    <plurals name="lbl_series">
+    <plurals name="lbl_series" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_series</item>
         <item quantity="other">@string/lbl_series_multiple</item>
     </plurals>
-    <plurals name="lbl_publisher">
+    <plurals name="lbl_publisher" tools:ignore="MissingTranslation">
         <item quantity="one">@string/lbl_publisher</item>
         <item quantity="other">@string/lbl_publishers</item>
     </plurals>

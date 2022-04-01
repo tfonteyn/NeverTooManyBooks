@@ -51,14 +51,6 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_search_prefer_isbn10" />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_baseline_data_usage_24"
-            android:key="network.allow.metered"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_mobile_data" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

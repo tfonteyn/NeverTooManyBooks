@@ -185,7 +185,8 @@ public class SearchBookUpdatesFragment
 
     private void afterOnViewCreated() {
         // Warn the user, but don't abort.
-        if (!NetworkUtils.isNetworkAvailable()) {
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -207,7 +208,8 @@ public class SearchBookUpdatesFragment
             return;
         }
 
-        if (!NetworkUtils.isNetworkAvailable()) {
+        //noinspection ConstantConditions
+        if (!NetworkUtils.isNetworkAvailable(getContext())) {
             Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
@@ -216,7 +218,6 @@ public class SearchBookUpdatesFragment
         // If the user has selected to overwrite thumbnails...
         if (mVm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
-            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.menu_update_fields)

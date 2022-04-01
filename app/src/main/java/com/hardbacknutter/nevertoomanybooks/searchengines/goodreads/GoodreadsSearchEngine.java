@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
  * <p>
  * Goodreads is owned by Amazon and is shutting their API down.
  * LibraryThing is 40% owned by AbeBooks which is owned by Amazon and the API is already shut down.
- * TODO: remove the Goodreads code.
  */
 public class GoodreadsSearchEngine
         extends SearchEngineBase

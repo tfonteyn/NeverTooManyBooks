@@ -28,8 +28,8 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="calibre.enabled"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
+            android:summaryOff="@string/disabled"
+            android:summaryOn="@string/enabled"
             android:title="@string/menu_enable_sync_options" />
 
         <Preference

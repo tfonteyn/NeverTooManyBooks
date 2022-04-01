@@ -217,7 +217,7 @@ public class EditBookTocFragment
                               Snackbar.LENGTH_LONG).show()));
         mEditTocVm.onIsfdbBookFailure().observe(getViewLifecycleOwner(), message ->
                 message.getData().ifPresent(data -> Snackbar
-                        .make(mVb.getRoot(), R.string.warning_search_failed,
+                        .make(mVb.getRoot(), R.string.warning_book_not_found,
                               Snackbar.LENGTH_LONG).show()));
 
         mVb.tocList.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));

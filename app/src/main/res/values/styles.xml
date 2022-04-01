@@ -28,7 +28,7 @@
         <item name="android:layout_marginTop">@dimen/field_margin_top</item>
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">false</item>
-        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelSmall</item>
     </style>
 
     <!-- Label for a TextView with a 'check' at the end - used on view screens -->
@@ -36,9 +36,8 @@
         <item name="android:drawablePadding">@dimen/field_margin_inline</item>
         <item name="android:drawableEnd">@drawable/ic_baseline_check_24</item>
         <item name="drawableTint">?attr/colorControlActivated</item>
+        <item name="android:textAppearance">?attr/textAppearanceLabelMedium</item>
     </style>
-
-
 
     <!-- *************************************************************************************** -->
     <!-- Read-only, informative text -->
@@ -57,20 +56,14 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
     </style>
 
-    <!-- *************************************************************************************** -->
-    <!-- TODO: using a chip purely for displaying is not in the material guidelines...
-         Read-Only style for Book-view screen.
-         Used to list the bookshelves and the editions
-         -->
-    <!-- *************************************************************************************** -->
-    <style name="Chip.Display" parent="Widget.Material3.Chip.Suggestion.Elevated">
-        <item name="android:clickable">false</item>
-        <item name="android:textSize">12sp</item>
-        <item name="chipMinHeight">24dp</item>
-        <item name="ensureMinTouchTargetSize">false</item>
-        <item name="chipCornerRadius">2dp</item>
-        <item name="chipBackgroundColor">?android:attr/colorBackground</item>
+    <style name="Text.Error" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="android:textColor">?attr/colorError</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
+
 
     <!-- *************************************************************************************** -->
     <!-- FAB buttons -->

@@ -61,6 +61,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -1413,25 +1414,26 @@ public class BooksOnBookshelf
      * <p>
      * Other keys, or full books, will always trigger a list rebuild.
      *
-     * @param book the book that was changed,
+     * @param book the book that changed,
      *             or {@code null} to indicate multiple books were potentially changed.
-     * @param key  the item that was changed,
+     * @param keys the item(s) that changed,
      *             or {@code null} to indicate ALL data was potentially changed.
      */
     @Override
     public void onBookUpdated(@Nullable final Book book,
-                              @Nullable final String key) {
+                              @Nullable final String... keys) {
 
         // Reminder: the actual Book table (and/or relations) are ALREADY UPDATED.
         // The only thing we are updating here is the temporary BookList table
         // and the displayed data
         int[] positions = null;
 
-        if (DBKey.BOOL_READ.equals(key)) {
+        //TODO: optimize when/if we use more then 2 keys
+        if (keys != null && Arrays.asList(keys).contains(DBKey.BOOL_READ)) {
             Objects.requireNonNull(book);
             positions = mVm.onBookRead(book.getId(), book.getBoolean(DBKey.BOOL_READ));
 
-        } else if (DBKey.KEY_LOANEE.equals(key)) {
+        } else if (keys != null && Arrays.asList(keys).contains(DBKey.KEY_LOANEE)) {
             Objects.requireNonNull(book);
             positions = mVm.onBookLend(book.getId(), book.getLoanee().orElse(null));
 
@@ -1873,6 +1875,7 @@ public class BooksOnBookshelf
             // 2022-03-13: trying this alternative, just show it at the top,
             // with an small offset(TODO: change according to sw)
             mLayoutManager.scrollToPositionWithOffset(position, 150);
+            //FIXME: the show-at-top is to aggressive e.g. collapse a sub-section and it jumps top
         }
     }
 
@@ -1932,7 +1935,8 @@ public class BooksOnBookshelf
             onPrepareMenu(menu);
         }
 
-        private void onPrepareMenu(@NonNull final Menu menu) {
+        @Override
+        public void onPrepareMenu(@NonNull final Menu menu) {
             final boolean showPreferredOption =
                     mVm.getStyle(BooksOnBookshelf.this).getTopLevel() > 1;
             menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPANSION).setVisible(showPreferredOption);

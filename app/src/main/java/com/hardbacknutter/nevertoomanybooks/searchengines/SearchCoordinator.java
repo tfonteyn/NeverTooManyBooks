@@ -655,7 +655,7 @@ public class SearchCoordinator
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable()) {
+            if (!NetworkUtils.isNetworkAvailable(ServiceLocator.getAppContext())) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
 

@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesA
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverDir;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -76,6 +78,7 @@ public class SettingsFragment
     private static final String SIS_VOLUME_INDEX = TAG + ":vol";
 
     private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
+    private static final String PSK_CALIBRE = "psk_calibre";
 
     private final ActivityResultLauncher<Void> mEditSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
@@ -310,6 +313,16 @@ public class SettingsFragment
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final boolean enabled = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                                 .getBoolean(CalibreHandler.PK_ENABLED, false);
+        //noinspection ConstantConditions
+        findPreference(PSK_CALIBRE).setSummary(enabled ? R.string.enabled : R.string.disabled);
     }
 
     @Override

@@ -122,8 +122,7 @@ public class SearchAdminFragment
             tabPanel.setVisibility(View.GONE);
         }
 
-        //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
-        // and its re-use strategy.
+        // We do NOT want any page recycled/reused - hence cache/keep ALL pages.
         mVb.pager.setOffscreenPageLimit(mTabAdapter.getItemCount());
 
         mVb.pager.setAdapter(mTabAdapter);

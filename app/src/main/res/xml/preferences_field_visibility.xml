@@ -149,13 +149,6 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="fields.visibility.loaned_to"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/lbl_lending" />
-
-        <SwitchPreference
-            android:defaultValue="true"
             android:key="fields.visibility.notes"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

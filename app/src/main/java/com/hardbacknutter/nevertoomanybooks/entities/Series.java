@@ -596,10 +596,4 @@ public class Series
                + ", mNumber=`" + mNumber + '`'
                + '}';
     }
-
-    public enum Details {
-        Full,
-        Normal,
-        Short
-    }
 }

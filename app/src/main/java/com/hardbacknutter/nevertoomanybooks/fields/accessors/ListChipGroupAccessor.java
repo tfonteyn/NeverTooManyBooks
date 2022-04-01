@@ -42,9 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.ParcelableEntity;
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
- * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
+ * Relies on {@link R.attr#appChipFilterStyle}
  */
-public class EntityListChipGroupAccessor<T extends ParcelableEntity>
+public class ListChipGroupAccessor<T extends ParcelableEntity>
         extends BaseFieldViewAccessor<ArrayList<T>, ChipGroup> {
 
     @NonNull
@@ -53,36 +53,26 @@ public class EntityListChipGroupAccessor<T extends ParcelableEntity>
     @Nullable
     private final View.OnClickListener mEditChipListener;
 
-    /** Are we viewing {@code false} or editing {@code true} a Field. */
-    private final boolean mIsEditable;
-
     /**
      * Constructor.
      *
      * @param listSupplier for a list with all <strong>possible</strong> values
-     * @param isEditable   flag
      */
-    public EntityListChipGroupAccessor(@NonNull final Supplier<List<T>> listSupplier,
-                                       final boolean isEditable) {
+    public ListChipGroupAccessor(@NonNull final Supplier<List<T>> listSupplier) {
         mListSupplier = listSupplier;
-        mIsEditable = isEditable;
 
-        if (mIsEditable) {
-            mEditChipListener = view -> {
-                //noinspection unchecked
-                final T current = (T) view.getTag();
-                if (((Checkable) view).isChecked()) {
-                    //noinspection ConstantConditions
-                    mRawValue.add(current);
-                } else {
-                    //noinspection ConstantConditions
-                    mRawValue.remove(current);
-                }
-                broadcastChange();
-            };
-        } else {
-            mEditChipListener = null;
-        }
+        mEditChipListener = view -> {
+            //noinspection unchecked
+            final T current = (T) view.getTag();
+            if (((Checkable) view).isChecked()) {
+                //noinspection ConstantConditions
+                mRawValue.add(current);
+            } else {
+                //noinspection ConstantConditions
+                mRawValue.remove(current);
+            }
+            broadcastChange();
+        };
     }
 
     @NonNull
@@ -98,31 +88,22 @@ public class EntityListChipGroupAccessor<T extends ParcelableEntity>
         final ChipGroup chipGroup = getView();
         if (chipGroup != null) {
             chipGroup.removeAllViews();
+
             final Context context = chipGroup.getContext();
 
-            // *all* values
             for (final T entity : mListSupplier.get()) {
-                final boolean isSet = mRawValue.contains(entity);
-                // if editable, all values; if not editable only the set values.
-                if (isSet || mIsEditable) {
-                    final Chip chip;
-                    if (mIsEditable) {
-                        chip = new Chip(context, null, R.attr.appChipFilterStyle);
-                        chip.setChecked(isSet);
-                        chip.setOnClickListener(mEditChipListener);
 
-                    } else {
-                        chip = new Chip(context, null, R.attr.appChipDisplayStyle);
-                    }
+                final Chip chip = new Chip(context, null, R.attr.appChipFilterStyle);
+                chip.setChecked(mRawValue.contains(entity));
+                chip.setOnClickListener(mEditChipListener);
 
-                    // RTL-friendly Chip Layout
-                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+                // RTL-friendly Chip Layout
+                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
 
-                    chip.setTag(entity);
-                    chip.setText(entity.getLabel(context));
+                chip.setTag(entity);
+                chip.setText(entity.getLabel(context));
 
-                    chipGroup.addView(chip);
-                }
+                chipGroup.addView(chip);
             }
         }
     }

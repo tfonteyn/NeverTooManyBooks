@@ -35,7 +35,7 @@
     tools:viewBindingIgnore="true"
     >
 
-    <!-- FIXME: make width dependent on 'sw' value -->
+    <!-- TODO: make width dependent on 'sw' value -->
     <View
         android:layout_width="320dp"
         android:layout_height="1dp"

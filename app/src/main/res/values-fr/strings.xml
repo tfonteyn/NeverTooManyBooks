@@ -467,7 +467,6 @@
     <string name="size_small">Petit</string>
     <string name="size_x_large">X-Grand</string>
     <string name="size_x_small">X-Petit</string>
-    <string name="size_xx_large">2X-Grand</string>
     <string name="statick">Statique</string>
     <string name="strict">Strict</string>
     <string name="style_builtin_acquired_date">Date d\'acquisition</string>
@@ -570,7 +569,6 @@
     <string name="warning_x_is_not_a_valid_code">«%1$s» n\'est pas un code valable</string>
     <string name="X_action_swap">Échanger</string>
     <string name="X_action_update">Mettre à jour</string>
-    <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="X_btn_continue_edit">Continuer la modification</string>
     <string name="X_btn_customize">Personnaliser…</string>
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
@@ -604,7 +602,6 @@
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="X_vldt_failed_for_x">La validation a échoué pour «%1$s»</string>
     <string name="X_warning_image_processing_failed">L\'image n\'a pas pu être traitée.</string>
-    <string name="X_warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="yes">Oui</string>
     <string name="system">(Système)</string>
     <string name="system_default">(Paramètres par défaut)</string>
@@ -642,7 +639,6 @@
     <string name="error_network_failed_try_again">Vérifiez la connexion et réessayez</string>
     <string name="lbl_test_connection">Tester la connexion</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
-    <string name="X_menu_import_all">Importer tous les livres</string>
     <string name="progress_end_export_successful">Exportation réussie</string>
     <string name="error_export_failed">L\'exportation a échoué</string>
     <string name="action_go">OK</string>

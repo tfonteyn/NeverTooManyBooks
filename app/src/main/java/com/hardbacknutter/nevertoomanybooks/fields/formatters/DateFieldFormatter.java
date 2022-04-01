@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 /**
  * FieldFormatter for 'date' fields.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong> but sharing the same Locale.</li>
  * </ul>
  * <p>
  * This class can be used in two ways:

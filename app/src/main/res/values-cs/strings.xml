@@ -23,7 +23,6 @@
 <!-- Quotes „…“ - Regex to find wrong ones: ('|”|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
-    <string name="X_anthology_titles">Antologické tituly</string>
     <string name="X_action_update">Aktualizovat</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
@@ -34,7 +33,6 @@
     <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
     <string name="X_use_default_setting">Použít výchozí nastavení</string>
-    <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
     <string name="acra_resDialogText">Vypadá to, že došlo k neočekávanému pádu aplikace &APP_NAME;. Napište nám prosím o tomto problému všechny informace, které považujete za relevantní, a tlačítkem „OK“ nám je odešlete. Před odesláním mailu budete mít ještě možnost jej zkontrolovat.</string>
@@ -428,7 +426,6 @@
     <string name="size_small">Malý</string>
     <string name="size_x_large">X-Velký</string>
     <string name="size_x_small">X-Malý</string>
-    <string name="size_xx_large">2X-Velký</string>
     <string name="style_builtin_acquired_date">Získáno</string>
     <string name="style_builtin_added_date">Datum přidání</string>
     <string name="style_builtin_author_series">Autor, následně série</string>
@@ -638,7 +635,6 @@
     <string name="error_network_failed_try_again">Zkontrolujte připojení a zkuste to znovu</string>
     <string name="lbl_test_connection">Vyzkoušejte připojení</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
-    <string name="X_menu_import_all">Importujte všechny knihy</string>
     <string name="progress_end_export_successful">Export byl úspěšný</string>
     <string name="error_export_failed">Export se nezdařil</string>
     <string name="action_go">Přejít</string>

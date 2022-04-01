@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * FieldFormatter for 'Number' fields with the value being a 'double'
- * This includes the {@link Money} class.
+ * This includes the {@link Money} class when editing.
  *
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
@@ -54,7 +54,9 @@ public class DoubleNumberFormatter
         }
 
         final String formatted = String.valueOf(value);
-        if (formatted.endsWith(".0")) {
+        if (formatted.endsWith(".00")) {
+            return formatted.substring(0, formatted.length() - 3);
+        } else if (formatted.endsWith(".0")) {
             return formatted.substring(0, formatted.length() - 2);
         } else {
             return formatted;

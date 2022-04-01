@@ -84,7 +84,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="circularProgressIndicatorStyle">@style/App.Progress.Circle</item>
 
         <!-- Chip styles as attributes makes it easy to add chips from code -->
-        <item name="appChipDisplayStyle">@style/Chip.Display</item>
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
 

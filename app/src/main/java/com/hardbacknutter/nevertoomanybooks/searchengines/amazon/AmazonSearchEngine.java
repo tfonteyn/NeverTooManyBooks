@@ -75,11 +75,6 @@ import com.hardbacknutter.org.json.JSONObject;
  * Anything failing there is a bug.
  * <p>
  * Other Amazon sites should work for basic info (e.g. title) only.
- *
- * <strong>Warning:</strong> the french site lists author names in BOTH "given family"
- * and "family given" formats (the latter without a comma). There does not seem to be a preference.
- * So... we will incorrectly interpret the format "family given".
- * FIXME: when trying to find an author.. search our database twice with f/g and g/f
  * <p>
  * Should really implement the Amazon API.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
@@ -483,6 +478,12 @@ public class AmazonSearchEngine
             if (a != null) {
                 final String href = a.attr("href");
                 if (href.contains("byline")) {
+                    // Warning: the french site lists author names in BOTH "given family"
+                    // and "family given" formats (the latter without a comma).
+                    // There does not seem to be a preference.
+                    // So... we will incorrectly interpret the format "family given".
+                    //FIXME: search our database twice with f/g and g/f
+                    // this means parsing the 'a.text()' twice.. and french names... COMPLICATED
                     final Author author = Author.from(a.text());
 
                     final Element typeElement = span.selectFirst("span.contribution");

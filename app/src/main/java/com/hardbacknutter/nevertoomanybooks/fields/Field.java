@@ -74,15 +74,6 @@ public interface Field<T, V extends View> {
                        boolean keepHiddenFieldsHidden);
 
     /**
-     * <strong>Unconditionally</strong> set the visibility for the field and its related fields.
-     *
-     * @param parent     parent view; used to find the <strong>related fields</strong>
-     * @param visibility to use
-     */
-    void setVisibility(@NonNull View parent,
-                       int visibility);
-
-    /**
      * Set the value directly. (e.g. upon another field changing... etc...)
      *
      * @param value to set

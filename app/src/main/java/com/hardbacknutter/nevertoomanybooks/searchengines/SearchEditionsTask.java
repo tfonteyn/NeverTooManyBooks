@@ -83,8 +83,7 @@ public class SearchEditionsTask
         // Always add the original isbn!
         isbnList.add(mIsbn);
 
-        // Got internet?
-        if (!NetworkUtils.isNetworkAvailable()) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(this.getClass().getName());
         }
 

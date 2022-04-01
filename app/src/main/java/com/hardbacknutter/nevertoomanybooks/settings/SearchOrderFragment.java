@@ -131,7 +131,7 @@ public class SearchOrderFragment
         toolbar.setTitle(R.string.lbl_settings);
         toolbar.setSubtitle(R.string.lbl_websites);
 
-        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
+        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), BKEY_TYPE);
         mSiteList = mVm.getList(mType);
 
         //noinspection ConstantConditions

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -117,19 +118,38 @@ public class SearchBookByTextFragment
             mVb.title.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
             mVb.title.setOnEditorActionListener(this::onEditorAction);
         }
-        mVb.btnSearch.setOnClickListener(v -> startSearch());
 
         mVb.author.setText(mCoordinator.getAuthorSearchText());
         mVb.title.setText(mCoordinator.getTitleSearchText());
         mVb.publisher.setText(mCoordinator.getPublisherSearchText());
+
         populateAuthorList();
         populatePublisherList();
+
+        mVb.btnSearch.setOnClickListener(v -> startSearch());
+        explainSitesSupport(mCoordinator.getSiteList());
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
                     Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
                                           "searchByText", null));
+        }
+    }
+
+    protected void explainSitesSupport(@Nullable final ArrayList<Site> sites) {
+        if (sites != null
+            && sites.stream()
+                    .filter(Site::isEnabled)
+                    .map(Site::getSearchEngine)
+                    .anyMatch(se -> se instanceof SearchEngine.ByText)) {
+            mVb.btnSearch.setEnabled(true);
+            mVb.txtCanSearch.setVisibility(View.GONE);
+        } else {
+            mVb.btnSearch.setEnabled(false);
+            mVb.txtCanSearch.setVisibility(View.VISIBLE);
+            mVb.txtCanSearch.setText(getString(R.string.warning_no_site_supports_this_method,
+                                               getString(R.string.txt_author_title)));
         }
     }
 

@@ -128,6 +128,7 @@ public class ListStyleCoder
             return style;
 
         } else {
+            // It's a builtin style
             final ListStyle style = styles.getStyle(mContext, uuid);
             //noinspection ConstantConditions
             style.setPreferred(data.getBoolean(DBKey.BOOL_STYLE_IS_PREFERRED));
