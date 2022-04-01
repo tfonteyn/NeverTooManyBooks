@@ -74,7 +74,6 @@ public final class Logger {
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
-    public static boolean isJUnitTest;
 
     private Logger() {
     }
@@ -165,7 +164,7 @@ public final class Logger {
                                    @Nullable final Throwable e) {
         // do not write to the file if we're running in a JUnit test.
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 return;
             }
         }
@@ -307,7 +306,7 @@ public final class Logger {
     public static void w(@NonNull final String tag,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 System.out.println("JUnit|WARN|" + tag + "|" + msg);
             } else {
                 Log.w(tag, msg);
@@ -320,7 +319,7 @@ public final class Logger {
                          @NonNull final String msg,
                          @Nullable final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 System.out.println("JUnit|ERROR|" + tag + "|" + msg
                                    + (e != null ? "|" + e.getMessage() : "")
                                    + "\n" + getStackTraceString(e));
@@ -342,7 +341,7 @@ public final class Logger {
                          @NonNull final String method,
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 System.out.println("JUnit|DEBUG|" + tag
                                    + "|" + method
                                    + "|" + msg);
@@ -357,7 +356,7 @@ public final class Logger {
                          @NonNull final String msg,
                          @NonNull final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
+            if (TestFlags.isJUnit) {
                 System.out.println("JUnit|DEBUG|" + tag + "|" + msg
                                    + "|" + e.getMessage()
                                    + "\n" + getStackTraceString(e));

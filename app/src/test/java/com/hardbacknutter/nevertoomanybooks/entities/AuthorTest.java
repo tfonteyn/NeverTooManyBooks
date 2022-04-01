@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,7 +34,7 @@ class AuthorTest {
 
     @BeforeAll
     static void startUp() {
-        Logger.isJUnitTest = true;
+        TestFlags.isJUnit = true;
     }
 
     @Test

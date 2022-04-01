@@ -50,7 +50,7 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.librarything.LibraryThingSearchEngine;
@@ -97,7 +97,7 @@ public class Base {
 
     @BeforeAll
     static void startUp() {
-        Logger.isJUnitTest = true;
+        TestFlags.isJUnit = true;
     }
 
     /**

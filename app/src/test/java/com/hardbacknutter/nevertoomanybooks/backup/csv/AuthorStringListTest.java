@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,7 +79,7 @@ class AuthorStringListTest {
 
     @BeforeAll
     static void startUp() {
-        Logger.isJUnitTest = true;
+        TestFlags.isJUnit = true;
     }
 
     @BeforeEach

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.TestFlags;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -37,7 +37,7 @@ class DBDefinitionsTest {
 
     @BeforeAll
     static void startUp() {
-        Logger.isJUnitTest = true;
+        TestFlags.isJUnit = true;
     }
 
     @Test
