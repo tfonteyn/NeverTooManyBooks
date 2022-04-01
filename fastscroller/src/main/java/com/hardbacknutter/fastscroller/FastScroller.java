@@ -39,6 +39,27 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * <a href="https://stackoverflow.com/questions/47846873">
  * recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
+ * <p>
+ * <p>
+ * <p>
+ * ENHANCE: move the dimen settings to a declarable style,
+ * and read them from the xml definition of a RecyclerView
+ * <p>
+ * <!-- NOT IMPLEMENTED YET -->
+ * <declare-styleable name="FastScroller">
+ * <!-- Drawables come from system attributes:
+ * "android.R.attr.fastScrollTrackDrawable"
+ * "android.R.attr.fastScrollThumbDrawable"
+ * -->
+ * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_default_thickness -->
+ * <attr name="fsThickness" format="dimension" />
+ * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_minimum_range -->
+ * <attr name="fsMinRange" format="dimension" />
+ * <!-- RecyclerView/FastScroller: R.dimen.fastscroll_margin -->
+ * <attr name="fsMargin" format="dimension" />
+ * <!-- custom: absolute minimum size of the thumb -->
+ * <attr name="fsMinThumbSize" format="dimension" />
+ * </declare-styleable>
  */
 public final class FastScroller {
 
@@ -47,9 +68,6 @@ public final class FastScroller {
 
     /**
      * Constructor.
-     * <p>
-     * ENHANCE: move the drawable and dimen settings to a declarable style,
-     * and read them from the xml definition of a RecyclerView
      *
      * @param recyclerView the View to hook up
      * @param overlayType  Optional overlay
@@ -106,8 +124,8 @@ public final class FastScroller {
          * @param position to use
          *
          * @return an array with the lines. The length of the array is variable.
-         * The array itself <strong>CAN BE {@code null}</strong>.
-         * and individual lines in the array <strong>CAN BE {@code null}</strong>.
+         *         The array itself <strong>CAN BE {@code null}</strong>.
+         *         and individual lines in the array <strong>CAN BE {@code null}</strong>.
          */
         @Nullable
         String[] getPopupText(int position);
