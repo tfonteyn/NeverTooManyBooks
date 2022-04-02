@@ -192,9 +192,11 @@ public abstract class BooklistStyle
     void initPrefs(final boolean isPersistent) {
 
         mShowAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
-                                              Prefs.pk_show_author_name_given_first);
+                                              Prefs.pk_show_author_name_given_first,
+                                              false);
         mSortAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
-                                              Prefs.pk_sort_author_name_given_first);
+                                              Prefs.pk_sort_author_name_given_first,
+                                              false);
 
         mExpansionLevel = new PInteger(isPersistent, mPersistenceLayer,
                                        PK_LEVELS_EXPANSION, 1);
@@ -202,7 +204,8 @@ public abstract class BooklistStyle
                                        PK_LIST_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
 
         mUseGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
-                                                   PK_SCALE_GROUP_ROW, true);
+                                                   PK_SCALE_GROUP_ROW,
+                                                   true);
 
         mTextScale = new TextScale(isPersistent, mPersistenceLayer);
 

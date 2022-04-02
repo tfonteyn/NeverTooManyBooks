@@ -46,7 +46,7 @@ public class PBooleanTest
 
     @Test
     void cc() {
-        final PBoolean p1 = new PBoolean(false, mLayerMock, "no.p1");
+        final PBoolean p1 = new PBoolean(false, mLayerMock, "no.p1", false);
         p1.set(true);
 
         final PBoolean p2 = new PBoolean(false, mLayerMock, p1);

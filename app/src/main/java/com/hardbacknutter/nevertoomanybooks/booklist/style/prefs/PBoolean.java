@@ -51,20 +51,6 @@ public class PBoolean
 
     /**
      * Constructor. Uses the global setting as the default value,
-     * or {@code false} if there is no global default.
-     *
-     * @param isPersistent     flag
-     * @param persistenceLayer Style reference.
-     * @param key              preference key
-     */
-    public PBoolean(final boolean isPersistent,
-                    @Nullable final StylePersistenceLayer persistenceLayer,
-                    @NonNull final String key) {
-        this(isPersistent, persistenceLayer, key, false);
-    }
-
-    /**
-     * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
      * @param isPersistent     flag

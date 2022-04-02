@@ -80,14 +80,14 @@ public class ListScreenBookFields
                                        ListStyle.IMAGE_SCALE_DEFAULT);
 
         addField(new PBoolean(isPersistent, persistenceLayer, PK_COVERS, true));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUBLISHER));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUB_DATE));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_ISBN));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_FORMAT));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_LOCATION));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_RATING));
-        addField(new PBoolean(isPersistent, persistenceLayer, PK_BOOKSHELVES));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUBLISHER, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUB_DATE, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_ISBN, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_FORMAT, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_LOCATION, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_RATING, false));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_BOOKSHELVES, false));
     }
 
     /**

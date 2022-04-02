@@ -52,7 +52,7 @@ public abstract class AbstractLinkedTableBooklistGroup
         super(id, isPersistent, style);
         mDisplayDomain = createDisplayDomain();
 
-        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach);
+        mUnderEach = new PBoolean(mPersisted, mPersistenceLayer, pkUnderEach, false);
     }
 
     AbstractLinkedTableBooklistGroup(final boolean isPersistent,
