@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
+        android:id="@id/MENU_GROUP_AUTHOR_WORKS"
         android:checkableBehavior="single">
 
         <item
@@ -39,11 +40,12 @@
             android:title="@string/menu_author_works_book" />
 
     </group>
-
-    <item
-        android:id="@id/MENU_AUTHOR_WORKS_ALL_BOOKSHELVES"
-        android:checkable="true"
-        android:title="@string/lbl_all_bookshelves"
-        app:showAsAction="never"
-        />
+    <group android:id="@id/MENU_GROUP_AUTHOR_WORKS_BOOKSHELVES">
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_ALL_BOOKSHELVES"
+            android:checkable="true"
+            android:title="@string/lbl_all_bookshelves"
+            app:showAsAction="never"
+            />
+    </group>
 </menu>
