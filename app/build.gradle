@@ -305,9 +305,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:${jupiter_version}")
 
     // device tests use JUnit4
-    androidTestImplementation("androidx.test:core:${androidx_test_version}")
-    androidTestImplementation("androidx.test:runner:${androidx_test_version}")
-    androidTestImplementation("androidx.test:rules:${androidx_test_version}")
+    androidTestImplementation("androidx.test:core:${androidx_test_core_version}")
+    androidTestImplementation("androidx.test:runner:${androidx_test_runner_version}")
+    androidTestImplementation("androidx.test:rules:${androidx_test_rules_version}")
 
 //    testImplementation("org.robolectric:robolectric:4.4")
 //    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
