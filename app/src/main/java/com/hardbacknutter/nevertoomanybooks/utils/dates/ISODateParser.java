@@ -28,6 +28,7 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -37,7 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * Parser for dates coming from the database or other sources
  * where we are certain of the format is ISO.
  * <p>
- * FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * TEST: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * seems to be fixed, but the bug was never closed?
  */
 public class ISODateParser
         implements DateParser {
@@ -85,8 +87,7 @@ public class ISODateParser
                 default:
                     break;
             }
-            // } catch (@NonNull final DateTimeParseException ignore) {
-        } catch (@NonNull final RuntimeException ignore) {
+        } catch (@NonNull final DateTimeParseException ignore) {
             // ignore
         }
 
@@ -96,8 +97,7 @@ public class ISODateParser
         for (final DateTimeFormatter dtf : mParsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
-//            } catch (@NonNull final DateTimeParseException ignore) {
-            } catch (@NonNull final RuntimeException ignore) {
+            } catch (@NonNull final DateTimeParseException ignore) {
                 // ignore and try the next one
             }
         }

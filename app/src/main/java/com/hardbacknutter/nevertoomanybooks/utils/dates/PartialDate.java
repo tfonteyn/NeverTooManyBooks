@@ -27,10 +27,12 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -42,7 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * TEST: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * seems to be fixed, but the bug was never closed?
  */
 public class PartialDate
         implements Parcelable {
@@ -90,25 +93,28 @@ public class PartialDate
                        @IntRange(from = 0, to = 12) final int month,
                        @IntRange(from = 0, to = 31) final int day) {
         if (year < 1) {
-            mLocalDate = LocalDate.of(1, 1, 1);
-            mYearSet = false;
-            mMonthSet = false;
-            mDaySet = false;
-        } else if (month < 1) {
-            mLocalDate = LocalDate.of(year, 1, 1);
-            mYearSet = true;
-            mMonthSet = false;
-            mDaySet = false;
-        } else if (day < 1) {
-            mLocalDate = LocalDate.of(year, month, 1);
-            mYearSet = true;
-            mMonthSet = true;
-            mDaySet = false;
+            unset();
         } else {
-            mLocalDate = LocalDate.of(year, month, day);
-            mYearSet = true;
-            mMonthSet = true;
-            mDaySet = true;
+            try {
+                if (month < 1) {
+                    mLocalDate = LocalDate.of(year, 1, 1);
+                    mYearSet = true;
+                    mMonthSet = false;
+                    mDaySet = false;
+                } else if (day < 1) {
+                    mLocalDate = LocalDate.of(year, month, 1);
+                    mYearSet = true;
+                    mMonthSet = true;
+                    mDaySet = false;
+                } else {
+                    mLocalDate = LocalDate.of(year, month, day);
+                    mYearSet = true;
+                    mMonthSet = true;
+                    mDaySet = true;
+                }
+            } catch (@NonNull final DateTimeException e) {
+                unset();
+            }
         }
     }
 
@@ -119,23 +125,39 @@ public class PartialDate
      */
     private PartialDate(@NonNull final Parcel in) {
         mYearSet = in.readByte() != 0;
-        mMonthSet = in.readByte() != 0;
-        mDaySet = in.readByte() != 0;
         final int year = in.readInt();
+
+        mMonthSet = in.readByte() != 0;
         final int month = in.readInt();
+
+        mDaySet = in.readByte() != 0;
         final int dayOfMonth = in.readInt();
-        mLocalDate = LocalDate.of(year, month, dayOfMonth);
+
+        try {
+            mLocalDate = LocalDate.of(year, month, dayOfMonth);
+        } catch (@NonNull final DateTimeException e) {
+            // we should never get here... flw
+            unset();
+        }
+    }
+
+    private void unset() {
+        mLocalDate = LocalDate.of(1, 1, 1);
+        mYearSet = false;
+        mMonthSet = false;
+        mDaySet = false;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeByte((byte) (mYearSet ? 1 : 0));
-        dest.writeByte((byte) (mMonthSet ? 1 : 0));
-        dest.writeByte((byte) (mDaySet ? 1 : 0));
-
         dest.writeInt(mLocalDate.getYear());
+
+        dest.writeByte((byte) (mMonthSet ? 1 : 0));
         dest.writeInt(mLocalDate.getMonthValue());
+
+        dest.writeByte((byte) (mDaySet ? 1 : 0));
         dest.writeInt(mLocalDate.getDayOfMonth());
     }
 
@@ -170,18 +192,14 @@ public class PartialDate
                     mDaySet = true;
                     return;
                 }
-                // } catch (@NonNull final DateTimeParseException e) {
-            } catch (@NonNull final RuntimeException e) {
+            } catch (@NonNull final DateTimeParseException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "dateStr=" + dateStr, e);
                 }
             }
         }
 
-        mLocalDate = LocalDate.of(1, 1, 1);
-        mYearSet = false;
-        mMonthSet = false;
-        mDaySet = false;
+        unset();
     }
 
     @NonNull

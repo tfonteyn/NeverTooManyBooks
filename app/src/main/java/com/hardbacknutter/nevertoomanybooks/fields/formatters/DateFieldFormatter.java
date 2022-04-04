@@ -39,9 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * This class can be used in two ways:
  * <ol>
  *     <li>with a {@link TextViewAccessor}: the value is stored in the accessor,<br>
- *         This is meant to be used with a Date-Picker (i.e. the user selects a date).</li>
+ *         This is meant to be used with a Date-Picker (i.e. the user selects a date).
+ *         i.e. the {@link #extract(Context, String)} method is <strong>NOT</strong> called
+ *     </li>
  *     <li>with an {@link EditTextAccessor}: the value will be extracted from the View.<br>
- *         This is meant to be used as a free-entry field (i.e. the user types in the date).</li>
+ *         This is meant to be used as a free-entry field (i.e. the user types in the date).
+ *     </li>
  * </ol>
  */
 public class DateFieldFormatter

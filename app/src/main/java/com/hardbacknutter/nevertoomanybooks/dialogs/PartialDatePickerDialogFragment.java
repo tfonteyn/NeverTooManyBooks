@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
@@ -254,9 +255,14 @@ public class PartialDatePickerDialogFragment
         int currentlySelectedDay = mDay;
 
         // Determine the total days if we have a valid month/year
-        final int totalDays;
+        int totalDays;
         if (mYear != 0 && mMonth != 0) {
-            totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
+            try {
+                // Should never throw here, but paranoia...
+                totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
+            } catch (@NonNull final DateTimeException e) {
+                totalDays = 31;
+            }
         } else {
             // allow the user to start inputting with day first.
             totalDays = 31;

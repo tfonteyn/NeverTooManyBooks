@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
  * <p>
  * This object is thread-safe, but user locale specific at creation time.
  * <p>
- * FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * TEST: DateTimeParseException https://issuetracker.google.com/issues/158417777
+ * seems to be fixed, but the bug was never closed?
  * <p>
  * TODO: performance: create all parsers, then parse (and reuse the parsers)...
  * or create the parsers each time, but stop at first result.
@@ -192,8 +194,7 @@ public class FullDateParser
             for (final DateTimeFormatter dtf : parsers) {
                 try {
                     return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                } catch (@NonNull final RuntimeException ignore) {
+                } catch (@NonNull final DateTimeParseException ignore) {
                     // ignore and try the next one
                 }
             }
@@ -203,8 +204,7 @@ public class FullDateParser
         for (final DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
-//            } catch (@NonNull final DateTimeParseException ignore) {
-            } catch (@NonNull final RuntimeException ignore) {
+            } catch (@NonNull final DateTimeParseException ignore) {
                 // ignore and try the next one
             }
         }
