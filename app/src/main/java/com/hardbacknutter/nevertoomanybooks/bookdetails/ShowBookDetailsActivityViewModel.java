@@ -135,8 +135,6 @@ public class ShowBookDetailsActivityViewModel
      * The order we use to decide:
      * <ol>
      *     <li>Global visibility is set to HIDE -> return {@code false}</li>
-     *     <li>The fragment has no access to the style -> return the global visibility</li>
-     *     <li>The global style is set to HIDE -> {@code false}</li>
      *     <li>return the visibility as set in the style.</li>
      * </ol>
      *
@@ -276,8 +274,7 @@ public class ShowBookDetailsActivityViewModel
 
         mFields.add(new FieldBuilder<>(R.id.price_listed, DBKey.PRICE_LISTED,
                                        new TextViewAccessor<>(moneyFormatter))
-                            .setRelatedFields(R.id.price_listed_currency,
-                                              R.id.lbl_price_listed)
+                            .setRelatedFields(R.id.lbl_price_listed)
                             .build());
 
 
@@ -340,7 +337,7 @@ public class ShowBookDetailsActivityViewModel
 
         mFields.add(new FieldBuilder<>(R.id.price_paid, DBKey.PRICE_PAID,
                                        new TextViewAccessor<>(moneyFormatter))
-                            .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid)
+                            .setRelatedFields(R.id.lbl_price_paid)
                             .build());
     }
 }
