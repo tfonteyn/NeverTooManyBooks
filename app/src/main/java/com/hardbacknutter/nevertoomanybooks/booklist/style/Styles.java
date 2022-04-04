@@ -261,7 +261,7 @@ public class Styles {
         if (style.getId() == 0) {
             if (styleDao.insert(style) > 0) {
                 if (style.isUserDefined()) {
-                    mCache.put(style.getUuid(), (UserStyle) style);
+                    mCache.put(style.getUuid(), style);
                 }
                 return true;
             }
@@ -289,7 +289,7 @@ public class Styles {
         }
 
         if (ServiceLocator.getInstance().getStyleDao().update(style)) {
-            mCache.put(style.getUuid(), (BuiltinStyle) style);
+            mCache.put(style.getUuid(), style);
             return true;
         }
         return false;
