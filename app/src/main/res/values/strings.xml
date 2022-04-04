@@ -1663,6 +1663,8 @@
     <string name="warning_no_site_supports_this_method">WARNING: none of the currently selected sites supports searching by %1$s. Please use the site menu to enable alternative sites, or use a different search method.</string>
     <string name="txt_author_title">author/title</string>
 
+    <string name="certificate_summary">Subject: %1$s\nIssuer: %2$s</string>
+
 
     <!--    <string name="confirm_strip_info_import_collection">Do you want to import all your books? This could take some time. We strongly advice to take a backup before proceeding!</string>-->
 
