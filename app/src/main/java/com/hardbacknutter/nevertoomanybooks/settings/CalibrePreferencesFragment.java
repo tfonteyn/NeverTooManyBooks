@@ -24,14 +24,12 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 
@@ -51,19 +49,12 @@ public class CalibrePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "CalibrePreferencesFrag";
+
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
     private static final String PSK_PICK_FOLDER = "psk_pick_folder";
+
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
-    private CalibrePreferencesViewModel mVm;
-
-    private final OnBackPressedCallback mOnBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    proposeConnectionValidation(CalibreHandler.PK_ENABLED);
-                }
-            };
 
     private Preference mFolderPref;
     private Preference mCaPref;
@@ -74,9 +65,7 @@ public class CalibrePreferencesFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
-        mVm = new ViewModelProvider(this).get(CalibrePreferencesViewModel.class);
-
+        init(R.string.site_calibre, CalibreHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
         EditTextPreference etp;
@@ -120,7 +109,7 @@ public class CalibrePreferencesFragment
         //noinspection ConstantConditions
         mCaPref = findPreference(PSK_CA_FROM_FILE);
         //noinspection ConstantConditions
-        setCertificateSummary(mCaPref);
+        mCaPref.setSummary(createCaSummary());
         mCaPref.setOnPreferenceClickListener(preference -> {
             mOpenCaUriLauncher.launch("*/*");
             return true;
@@ -143,10 +132,6 @@ public class CalibrePreferencesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
         mPickFolderLauncher = registerForActivityResult(
                 new ActivityResultContracts.OpenDocumentTree(), uri -> {
                     if (uri != null) {
@@ -155,19 +140,6 @@ public class CalibrePreferencesFragment
                     }
                     setFolderSummary(mFolderPref);
                 });
-
-        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
-        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-    }
-
-    protected void validateConnection() {
-        mVm.validateConnection();
-    }
-
-    @Override
-    protected void cancelTask(final int taskId) {
-        mVm.cancelTask(taskId);
     }
 
     /**
@@ -208,37 +180,36 @@ public class CalibrePreferencesFragment
                     try (BufferedInputStream bis = new BufferedInputStream(is)) {
                         ca = (X509Certificate) CertificateFactory
                                 .getInstance("X.509").generateCertificate(bis);
-                        ca.checkValidity();
                     }
                     CalibreContentServer.setCertificate(getContext(), ca);
-
-                    mCaPref.setSummary("S: " + ca.getSubjectX500Principal().getName()
-                                       + "\nI: " + ca.getIssuerX500Principal().getName());
                 }
             } catch (@NonNull final IOException | CertificateException e) {
                 mCaPref.setSummary(R.string.error_certificate_invalid);
+                return;
             }
+
+            mCaPref.setSummary(createCaSummary());
         }
     }
 
     /**
-     * Read the existing CA file from storage, and set the preference summary.
-     *
-     * @param preference to use
+     * Read the existing CA file from storage, and create the preference summary.
      */
-    private void setCertificateSummary(@NonNull final Preference preference) {
+    @NonNull
+    private String createCaSummary() {
         try {
             //noinspection ConstantConditions
             final X509Certificate ca = CalibreContentServer.getCertificate(getContext());
             ca.checkValidity();
-            preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
-                                  + "\nI: " + ca.getIssuerX500Principal().getName());
+            return getString(R.string.certificate_summary,
+                             ca.getSubjectX500Principal().getName(),
+                             ca.getIssuerX500Principal().getName());
 
         } catch (@NonNull final CertificateException e) {
-            preference.setSummary(R.string.error_certificate_invalid);
+            return getString(R.string.error_certificate_invalid);
 
         } catch (@NonNull final IOException e) {
-            preference.setSummary(R.string.preference_not_set);
+            return getString(R.string.preference_not_set);
         }
     }
 }

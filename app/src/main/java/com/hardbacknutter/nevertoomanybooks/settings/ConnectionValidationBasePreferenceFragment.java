@@ -20,16 +20,24 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidatorViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDelegate;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
@@ -42,17 +50,53 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 public abstract class ConnectionValidationBasePreferenceFragment
         extends BasePreferenceFragment {
 
+    private ConnectionValidatorViewModel mVm;
+
+    private CharSequence mPkEnabled;
+
     @Nullable
     private ProgressDelegate mProgressDelegate;
 
-    /** start the validation. This is called from the proposal dialog by the user. */
-    protected abstract void validateConnection();
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    proposeValidation();
+                }
+            };
 
-    /** Cancels the validation. This is called from the progress dialog by the user. */
-    protected abstract void cancelTask(final int taskId);
+    @Override
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
+        mVm = new ViewModelProvider(this).get(ConnectionValidatorViewModel.class);
+        // mVm.init is done in child classes
+    }
 
-    protected void proposeConnectionValidation(@NonNull final CharSequence pkEnabled) {
-        final SwitchPreference sp = findPreference(pkEnabled);
+    protected void init(@StringRes final int siteResId,
+                        @NonNull final CharSequence pkEnabled) {
+        mVm.init(siteResId);
+        mPkEnabled = pkEnabled;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
+        mVm.onConnectionCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
+        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+    }
+
+    private void proposeValidation() {
+        Objects.requireNonNull(mPkEnabled, "mPkEnabled");
+        final SwitchPreference sp = findPreference(mPkEnabled);
         //noinspection ConstantConditions
         if (sp.isChecked()) {
             //noinspection ConstantConditions
@@ -64,7 +108,17 @@ public abstract class ConnectionValidationBasePreferenceFragment
                             popBackStackOrFinish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
                         d.dismiss();
-                        validateConnection();
+                        if (mProgressDelegate == null) {
+                            mProgressDelegate = new ProgressDelegate(getProgressFrame())
+                                    .setTitle(R.string.progress_msg_connecting)
+                                    .setPreventSleep(true)
+                                    .setIndeterminate(true)
+                                    .setOnCancelListener(v -> mVm.cancelTask(
+                                            R.id.TASK_ID_VALIDATE_CONNECTION));
+                        }
+                        //noinspection ConstantConditions
+                        mProgressDelegate.show(() -> getActivity().getWindow());
+                        mVm.validateConnection();
                     })
                     .create()
                     .show();
@@ -73,7 +127,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    protected void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
+    private void onProgress(@NonNull final LiveDataEvent<TaskProgress> message) {
         message.getData().ifPresent(data -> {
             if (mProgressDelegate == null) {
                 //noinspection ConstantConditions
@@ -81,14 +135,14 @@ public abstract class ConnectionValidationBasePreferenceFragment
                         .setTitle(R.string.lbl_test_connection)
                         .setPreventSleep(false)
                         .setIndeterminate(true)
-                        .setOnCancelListener(v -> cancelTask(data.taskId))
+                        .setOnCancelListener(v -> mVm.cancelTask(data.taskId))
                         .show(() -> getActivity().getWindow());
             }
             mProgressDelegate.onProgress(data);
         });
     }
 
-    protected void closeProgressDialog() {
+    private void closeProgressDialog() {
         if (mProgressDelegate != null) {
             //noinspection ConstantConditions
             mProgressDelegate.dismiss(getActivity().getWindow());
@@ -96,7 +150,7 @@ public abstract class ConnectionValidationBasePreferenceFragment
         }
     }
 
-    protected void onSuccess(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
+    private void onSuccess(@NonNull final LiveDataEvent<TaskResult<Boolean>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
@@ -117,7 +171,16 @@ public abstract class ConnectionValidationBasePreferenceFragment
         });
     }
 
-    protected void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
+    private void onCancelled(final LiveDataEvent<TaskResult<Boolean>> message) {
+        closeProgressDialog();
+
+        message.getData().ifPresent(data -> {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
+        });
+    }
+
+    private void onFailure(@NonNull final LiveDataEvent<TaskResult<Exception>> message) {
         closeProgressDialog();
 
         message.getData().ifPresent(data -> {
@@ -135,4 +198,5 @@ public abstract class ConnectionValidationBasePreferenceFragment
                     .show();
         });
     }
+
 }

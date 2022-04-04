@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
@@ -52,7 +53,8 @@ import com.hardbacknutter.org.json.JSONObject;
 /**
  * Handles all authentication for stripinfo.be access.
  */
-public class StripInfoAuth {
+public class StripInfoAuth
+        implements ConnectionValidator {
 
     /** Preferences prefix. */
     public static final String PREF_KEY = "stripinfo";
@@ -85,6 +87,14 @@ public class StripInfoAuth {
 
     @NonNull
     private final CookieManager mCookieManager;
+
+    public StripInfoAuth() {
+        this(SearchEngineRegistry
+                     .getInstance()
+                     .getByEngineId(SearchSites.STRIP_INFO_BE)
+                     .getHostUrl());
+
+    }
 
     public StripInfoAuth(@NonNull final String siteUrl) {
         mSiteUrl = siteUrl;
@@ -170,6 +180,14 @@ public class StripInfoAuth {
             }
         }
         return Optional.empty();
+    }
+
+    @WorkerThread
+    @Override
+    public boolean validateConnection()
+            throws IOException, CredentialsException, StorageException {
+        login();
+        return true;
     }
 
     /**

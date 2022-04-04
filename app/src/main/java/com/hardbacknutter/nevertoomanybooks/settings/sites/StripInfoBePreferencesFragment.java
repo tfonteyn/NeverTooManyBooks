@@ -21,18 +21,18 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.View;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.ConnectionValidationBasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.sync.stripinfo.BookshelfMapper;
@@ -44,22 +44,12 @@ public class StripInfoBePreferencesFragment
         extends ConnectionValidationBasePreferenceFragment {
 
     public static final String TAG = "StripInfoBePrefFrag";
-    private final OnBackPressedCallback mOnBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    proposeConnectionValidation(StripInfoHandler.PK_ENABLED);
-                }
-            };
-    private StripInfoBePreferencesViewModel mVm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
-        mVm = new ViewModelProvider(this).get(StripInfoBePreferencesViewModel.class);
-
+        init(R.string.site_stripinfo_be, StripInfoHandler.PK_ENABLED);
         setPreferencesFromResource(R.xml.preferences_site_stripinfo, rootKey);
 
         EditTextPreference etp;
@@ -93,9 +83,31 @@ public class StripInfoBePreferencesFragment
                 Bookshelf.getBookshelf(getContext(), Bookshelf.PREFERRED, Bookshelf.DEFAULT)
                          .getId());
 
-        final Pair<CharSequence[], CharSequence[]> values = mVm.getBookshelves();
+        final Pair<CharSequence[], CharSequence[]> values = getBookshelves();
         initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_OWNED, defValue, values);
         initBookshelfMapperPref(BookshelfMapper.PK_BOOKSHELF_WISHLIST, defValue, values);
+    }
+
+    /**
+     * Get two arrays with matching name and id's for all Bookshelves.
+     *
+     * @return Pair of (entries,entryValues)
+     */
+    @NonNull
+    private Pair<CharSequence[], CharSequence[]> getBookshelves() {
+        final ArrayList<Bookshelf> all;
+        all = ServiceLocator.getInstance().getBookshelfDao().getAll();
+        final CharSequence[] entries = new CharSequence[all.size()];
+        final CharSequence[] entryValues = new CharSequence[all.size()];
+
+        int i = 0;
+        for (final Bookshelf bookshelf : all) {
+            entries[i] = bookshelf.getName();
+            entryValues[i] = String.valueOf(bookshelf.getId());
+            i++;
+        }
+
+        return new Pair<>(entries, entryValues);
     }
 
     private void initBookshelfMapperPref(
@@ -117,28 +129,5 @@ public class StripInfoBePreferencesFragment
         if (p.getValue() == null) {
             p.setValue(defValue);
         }
-    }
-
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //noinspection ConstantConditions
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm.onConnectionSuccessful().observe(getViewLifecycleOwner(), this::onSuccess);
-        mVm.onConnectionFailed().observe(getViewLifecycleOwner(), this::onFailure);
-        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
-    }
-
-    protected void validateConnection() {
-        mVm.validateConnection();
-    }
-
-    @Override
-    protected void cancelTask(final int taskId) {
-        mVm.cancelTask(taskId);
     }
 }

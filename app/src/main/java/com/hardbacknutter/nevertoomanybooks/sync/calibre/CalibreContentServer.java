@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.network.ConnectionValidator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpPost;
 import com.hardbacknutter.nevertoomanybooks.network.HttpUtils;
@@ -129,7 +130,8 @@ import com.hardbacknutter.org.json.JSONObject;
  *   key:
  *   "library_path": "C:\\Users\\USER\\Downloads\\test",
  */
-public class CalibreContentServer {
+public class CalibreContentServer
+        implements ConnectionValidator {
 
     /** CA certificate identifier. */
     public static final String SERVER_CA = "CalibreContentServer.ca";
@@ -152,6 +154,7 @@ public class CalibreContentServer {
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
+
     /** Custom field for {@link SyncReaderMetaData}. */
     public static final String BKEY_LIBRARY = TAG + ":defLib";
     /** Custom field for {@link SyncReaderMetaData}. */
@@ -202,14 +205,14 @@ public class CalibreContentServer {
     private final int mConnectTimeoutInMs;
     private final int mReadTimeoutInMs;
 
-    @NonNull
-    private final FutureHttpPost<Void> mFutureHttpPost;
-    @NonNull
-    private final FutureHttpGet<String> mFutureJsonFetchRequest;
-    @NonNull
-    private final FutureHttpGet<Uri> mFutureFileFetchRequest;
-    @NonNull
-    private final ImageDownloader mImageDownloader;
+    @Nullable
+    private FutureHttpPost<Void> mFutureHttpPost;
+    @Nullable
+    private FutureHttpGet<String> mFutureJsonFetchRequest;
+    @Nullable
+    private FutureHttpGet<Uri> mFutureFileFetchRequest;
+    @Nullable
+    private ImageDownloader mImageDownloader;
 
     /** As read from the Content Server. */
     @Nullable
@@ -274,17 +277,6 @@ public class CalibreContentServer {
         mReadTimeoutInMs = Prefs.getTimeoutValueInMs(
                 global, PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
                 READ_TIMEOUT_IN_MS);
-
-        mFutureJsonFetchRequest = createFutureGetRequest();
-        mFutureFileFetchRequest = createFutureGetRequest();
-        mImageDownloader = new ImageDownloader(createFutureGetRequest());
-
-        mFutureHttpPost = new FutureHttpPost<>(R.string.site_calibre);
-        mFutureHttpPost.setConnectTimeout(mConnectTimeoutInMs)
-                       .setReadTimeout(mReadTimeoutInMs)
-                       .setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON)
-                       .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
-                       .setSSLContext(mSslContext);
     }
 
     /**
@@ -433,6 +425,17 @@ public class CalibreContentServer {
         return httpGet;
     }
 
+    @NonNull
+    private <FRT> FutureHttpPost<FRT> createFuturePostRequest() {
+        final FutureHttpPost<FRT> httpPost = new FutureHttpPost<>(R.string.site_calibre);
+        httpPost.setConnectTimeout(mConnectTimeoutInMs)
+                .setReadTimeout(mReadTimeoutInMs)
+                .setRequestProperty(HttpUtils.CONTENT_TYPE, HttpUtils.CONTENT_TYPE_JSON)
+                .setRequestProperty(HttpUtils.AUTHORIZATION, mAuthHeader)
+                .setSSLContext(mSslContext);
+        return httpPost;
+    }
+
     /**
      * Make a short call to test the connection.
      *
@@ -440,10 +443,11 @@ public class CalibreContentServer {
      *
      * @throws IOException on failure
      */
+    @WorkerThread
+    @Override
     public boolean validateConnection()
-            throws
-            StorageException,
-            IOException {
+            throws StorageException,
+                   IOException {
         return !fetch(mServerUri + ULR_AJAX_LIBRARY_INFO, BUFFER_SMALL).isEmpty();
     }
 
@@ -1119,6 +1123,11 @@ public class CalibreContentServer {
                          @NonNull final String coverUrl)
             throws StorageException {
 
+        synchronized (this) {
+            if (mImageDownloader == null) {
+                mImageDownloader = new ImageDownloader(createFutureGetRequest());
+            }
+        }
         final File tmpFile = mImageDownloader
                 .getTempFile(FILENAME_SUFFIX, String.valueOf(calibreId), 0, null);
 
@@ -1145,7 +1154,11 @@ public class CalibreContentServer {
                    StorageException,
                    SocketTimeoutException,
                    IOException {
-
+        synchronized (this) {
+            if (mFutureJsonFetchRequest == null) {
+                mFutureJsonFetchRequest = createFutureGetRequest();
+            }
+        }
         return mFutureJsonFetchRequest.get(url, request -> {
             try (BufferedInputStream bis = new BufferedInputStream(
                     request.getInputStream());
@@ -1202,6 +1215,11 @@ public class CalibreContentServer {
 
         final Uri destUri = destFile.getUri();
 
+        synchronized (this) {
+            if (mFutureFileFetchRequest == null) {
+                mFutureFileFetchRequest = createFutureGetRequest();
+            }
+        }
         return mFutureFileFetchRequest.get(url, request -> {
             try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
                 if (os != null) {
@@ -1352,15 +1370,29 @@ public class CalibreContentServer {
                 .put("loaded_book_ids", loadedBookIds)
                 .toString();
 
+        synchronized (this) {
+            if (mFutureHttpPost == null) {
+                mFutureHttpPost = createFuturePostRequest();
+            }
+        }
         mFutureHttpPost.post(url, postBody, null);
     }
 
     public void cancel() {
         synchronized (this) {
-            mFutureJsonFetchRequest.cancel();
-            mFutureFileFetchRequest.cancel();
-            mImageDownloader.cancel();
-            mFutureHttpPost.cancel();
+            if (mFutureJsonFetchRequest != null) {
+                mFutureJsonFetchRequest.cancel();
+            }
+            if (mFutureFileFetchRequest != null) {
+                mFutureFileFetchRequest.cancel();
+            }
+            if (mImageDownloader != null) {
+                mImageDownloader.cancel();
+            }
+            if (mFutureHttpPost != null) {
+                mFutureHttpPost.cancel();
+            }
         }
     }
+
 }
