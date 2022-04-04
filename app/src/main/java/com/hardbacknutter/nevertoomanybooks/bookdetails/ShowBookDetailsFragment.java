@@ -329,9 +329,7 @@ public class ShowBookDetailsFragment
             f.setVisibility(global, getView(), true, false);
         });
 
-        if (mEmbedded) {
-            mToolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
-        }
+        mToolbarMenuProvider.updateMenuReadOptions(getToolbar().getMenu());
 
         if (mBookChangedListener != null) {
             mBookChangedListener.onBookUpdated(book, DBKey.BOOL_READ, DBKey.DATE_READ_END);
@@ -354,13 +352,13 @@ public class ShowBookDetailsFragment
 
         if (!mEmbedded) {
             //noinspection ConstantConditions
-            String authors = Author.getCondensedNames(getContext(), book.getAuthors());
+            toolbar.setTitle(Author.getCondensedNames(getContext(), book.getAuthors()));
 
+            String title = book.getString(DBKey.KEY_TITLE);
             if (BuildConfig.DEBUG /* always */) {
-                authors = "[" + book.getId() + "] " + authors;
+                title = "[" + book.getId() + "] " + title;
             }
-            toolbar.setTitle(authors);
-            toolbar.setSubtitle(book.getString(DBKey.KEY_TITLE));
+            toolbar.setSubtitle(title);
         }
 
         final List<Field<?, ? extends View>> fields = mAVm.getFields();
