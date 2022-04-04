@@ -227,8 +227,7 @@ public final class ViewFocusOrder {
     @SuppressLint("LogConditional")
     @SuppressWarnings({"unused", "WeakerAccess"})
     public static void debugDumpViewTree(@Nullable final View view,
-                                         final int depth,
-                                         final boolean withFocusPointers) {
+                                         final int depth) {
         if (view == null) {
             Log.d(TAG, "debugDumpViewTree|view==NULL");
             return;
@@ -253,19 +252,13 @@ public final class ViewFocusOrder {
                 sb.append(value);
             }
             sb.append("\"");
-            if (withFocusPointers) {
-                sb.append(dumpFocus(view));
-            }
+            sb.append(dumpFocus(view));
         } else if (view instanceof Checkable) {
             sb.append(((Checkable) view).isChecked());
-            if (withFocusPointers) {
-                sb.append(dumpFocus(view));
-            }
+            sb.append(dumpFocus(view));
         } else if (view instanceof RatingBar) {
             sb.append(((RatingBar) view).getNumStars());
-            if (withFocusPointers) {
-                sb.append(dumpFocus(view));
-            }
+            sb.append(dumpFocus(view));
         } else if (view instanceof ImageView) {
             final Drawable drawable = ((ImageView) view).getDrawable();
             if (drawable != null) {
@@ -275,9 +268,7 @@ public final class ViewFocusOrder {
             } else {
                 sb.append("No image");
             }
-            if (withFocusPointers) {
-                sb.append(dumpFocus(view));
-            }
+            sb.append(dumpFocus(view));
         }
 
         Log.d(TAG, "debugDumpViewTree|" + sb);
@@ -285,7 +276,7 @@ public final class ViewFocusOrder {
         if (view instanceof ViewGroup) {
             final ViewGroup g = (ViewGroup) view;
             for (int i = 0; i < g.getChildCount(); i++) {
-                debugDumpViewTree(g.getChildAt(i), depth + 1, withFocusPointers);
+                debugDumpViewTree(g.getChildAt(i), depth + 1);
             }
         }
     }
