@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -120,18 +119,6 @@ class EditFieldImpl<T, V extends View>
     @IdRes
     private int mTextInputLayoutId;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    @IdRes
-    private int mResetBtnId;
-
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private T mResetValue;
-
-    @SuppressWarnings("FieldNotUsedInToString")
-    @Nullable
-    private WeakReference<View> mResetBtnViewReference;
-
     /**
      * Constructor.
      *
@@ -190,18 +177,6 @@ class EditFieldImpl<T, V extends View>
         mRelatedFields.add(viewId);
     }
 
-    /**
-     * Enable a clear/reset button for a picker enabled field.
-     *
-     * @param id         of the button (on which the onClickListener wil be set)
-     * @param resetValue value to set when clicked
-     */
-    void setResetButton(@IdRes final int id,
-                        @Nullable final T resetValue) {
-        mResetBtnId = id;
-        mResetValue = resetValue;
-    }
-
     @Override
     @CallSuper
     public void setParentView(@NonNull final SharedPreferences global,
@@ -213,14 +188,9 @@ class EditFieldImpl<T, V extends View>
             }
             if (mTextInputLayoutId != 0) {
                 final TextInputLayout til = parent.findViewById(mTextInputLayoutId);
-                til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue(null));
-            }
-            if (mResetBtnId != 0) {
-                mResetBtnViewReference = new WeakReference<>(parent.findViewById(mResetBtnId));
-                mResetBtnViewReference.get().setOnClickListener(v -> {
-                    mFieldViewAccessor.setValue(mResetValue);
-                    v.setVisibility(View.INVISIBLE);
-                });
+                if (til.getEndIconMode() == TextInputLayout.END_ICON_CLEAR_TEXT) {
+                    til.setEndIconOnClickListener(v -> mFieldViewAccessor.setValue(null));
+                }
             }
         }
     }
@@ -285,12 +255,6 @@ class EditFieldImpl<T, V extends View>
                     Log.w(TAG, "onChanged|mAfterFieldChangeListener was dead");
                 }
             }
-        }
-
-        if (mResetBtnViewReference != null) {
-            final View clearBtnView = Objects.requireNonNull(mResetBtnViewReference.get());
-            clearBtnView.setVisibility(mFieldViewAccessor.isEmpty()
-                                       ? View.INVISIBLE : View.VISIBLE);
         }
     }
 

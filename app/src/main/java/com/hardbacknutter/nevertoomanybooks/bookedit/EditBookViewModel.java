@@ -21,13 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.bookedit;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -47,7 +45,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.bookdetails.ViewBookOnWebsiteHandler;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -101,7 +98,7 @@ public class EditBookViewModel
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
     private final List<MenuHandler> mMenuHandlers = new ArrayList<>();
     private final Collection<FieldGroup> mFieldGroups = EnumSet.noneOf(FieldGroup.class);
-    private ListStyle mStyle;
+
     /**
      * The Book we're editing (creating/updating).
      */
@@ -184,10 +181,6 @@ public class EditBookViewModel
             mDoubleNumberFormatter = new DoubleNumberFormatter();
 
             if (args != null) {
-                final String styleUuid = args.getString(ListStyle.BKEY_UUID);
-                mStyle = ServiceLocator.getInstance().getStyles()
-                                       .getStyleOrDefault(context, styleUuid);
-
                 // 1. Do we have a bundle? e.g. after an internet search
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
                 if (bookData != null) {
@@ -383,34 +376,6 @@ public class EditBookViewModel
                         .forEach(key -> mBook.put(key, bookData.get(key)));
             }
         }
-    }
-
-    /**
-     * Check if this cover should should be shown / is used.
-     * <p>
-     * The order we use to decide:
-     * <ol>
-     *     <li>Global visibility is set to HIDE -> return {@code false}</li>
-     *     <li>The fragment has no access to the style -> return the global visibility</li>
-     *     <li>The global style is set to HIDE -> {@code false}</li>
-     *     <li>return the visibility as set in the style.</li>
-     * </ol>
-     *
-     * @param global Global preferences
-     * @param cIdx   0..n image index
-     *
-     * @return {@code true} if in use
-     */
-    boolean isCoverUsed(@NonNull final SharedPreferences global,
-                        @IntRange(from = 0, to = 1) final int cIdx) {
-
-        // Globally disabled overrules style setting
-        if (!DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
-            return false;
-        }
-
-        // let the style decide
-        return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
     }
 
     @NonNull
@@ -953,14 +918,12 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.date_published, DBKey.DATE_BOOK_PUBLICATION,
                                            new TextViewAccessor<>(mDateFormatter))
                             .setFragmentId(fragmentId)
-                            .setResetButton(R.id.date_published_clear, "")
                             .setTextInputLayout(R.id.lbl_date_published)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.first_publication, DBKey.DATE_FIRST_PUBLICATION,
                                            new TextViewAccessor<>(mDateFormatter))
                             .setFragmentId(fragmentId)
-                            .setResetButton(R.id.first_publication_clear, "")
                             .setTextInputLayout(R.id.lbl_first_publication)
                             .build());
 
@@ -1058,14 +1021,12 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.date_acquired, DBKey.DATE_ACQUIRED,
                                            new TextViewAccessor<>(mDateFormatter))
                             .setFragmentId(fragmentId)
-                            .setResetButton(R.id.date_acquired_clear, "")
                             .setTextInputLayout(R.id.lbl_date_acquired)
                             .build());
 
         mFields.add(new EditFieldBuilder<>(R.id.read_start, DBKey.DATE_READ_START,
                                            new TextViewAccessor<>(mDateFormatter))
                             .setFragmentId(fragmentId)
-                            .setResetButton(R.id.read_start_clear, "")
                             .setTextInputLayout(R.id.lbl_read_start)
                             .setFieldValidator(this::validateReadStartAndEndFields)
                             .build());
@@ -1073,7 +1034,6 @@ public class EditBookViewModel
         mFields.add(new EditFieldBuilder<>(R.id.read_end, DBKey.DATE_READ_END,
                                            new TextViewAccessor<>(mDateFormatter))
                             .setFragmentId(fragmentId)
-                            .setResetButton(R.id.read_end_clear, "")
                             .setTextInputLayout(R.id.lbl_read_end)
                             .setFieldValidator(this::validateReadStartAndEndFields)
                             .build());

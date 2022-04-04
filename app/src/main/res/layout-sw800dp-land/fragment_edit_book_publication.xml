@@ -89,7 +89,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.ListPicker"
             android:hint="@string/lbl_publisher"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +106,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.DatePicker"
             android:hint="@string/lbl_first_publication"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,19 +121,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
-            android:id="@+id/first_publication_clear"
-            style="@style/TIL.Button.Clear"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_first_publication"
-            app:layout_constraintEnd_toEndOf="@id/lbl_first_publication"
-            app:layout_constraintTop_toTopOf="@id/lbl_first_publication"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_published"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.DatePicker"
             android:hint="@string/lbl_date_published"
             app:layout_constraintEnd_toStartOf="@id/col1"
             app:layout_constraintStart_toStartOf="parent"
@@ -147,16 +137,6 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/date_published_clear"
-            style="@style/TIL.Button.Clear"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_date_published"
-            app:layout_constraintEnd_toEndOf="@id/lbl_date_published"
-            app:layout_constraintTop_toTopOf="@id/lbl_date_published"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
@@ -305,7 +285,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.DatePicker"
             android:hint="@string/lbl_read_start"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -320,19 +300,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
-            android:id="@+id/read_start_clear"
-            style="@style/TIL.Button.Clear"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_read_start"
-            app:layout_constraintEnd_toEndOf="@id/lbl_read_start"
-            app:layout_constraintTop_toTopOf="@id/lbl_read_start"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_end"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.DatePicker"
             android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -347,19 +317,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ImageButton
-            android:id="@+id/read_end_clear"
-            style="@style/TIL.Button.Clear"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_read_end"
-            app:layout_constraintEnd_toEndOf="@id/lbl_read_end"
-            app:layout_constraintTop_toTopOf="@id/lbl_read_end"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.DatePicker"
             android:hint="@string/lbl_date_acquired"
             app:layout_constraintEnd_toStartOf="@id/col2"
             app:layout_constraintStart_toStartOf="@id/col1"
@@ -373,16 +333,6 @@
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <ImageButton
-            android:id="@+id/date_acquired_clear"
-            style="@style/TIL.Button.Clear"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_date_acquired"
-            app:layout_constraintEnd_toEndOf="@id/lbl_date_acquired"
-            app:layout_constraintTop_toTopOf="@id/lbl_date_acquired"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible"
-            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid_currency"

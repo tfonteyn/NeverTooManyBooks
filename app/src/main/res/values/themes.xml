@@ -87,46 +87,9 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="appChipFilterStyle">@style/Widget.Material3.Chip.Filter</item>
         <item name="appChipInputStyle">@style/Widget.Material3.Chip.Input</item>
 
-
-        <!--
-            URGENT: unknown android bug in rendering ImageButton using Widget.Material3.Button.IconButton
-            Material 1.5.0-rc01 and 1.6.0-alpha03
-
-            Debugged down to the level of:
-
-            res/color/m3_text_button_background_color_selector.xml
-
-            <selector xmlns:android="http://schemas.android.com/apk/res/android">
-                <item android:color="?attr/colorSecondaryContainer" android:state_enabled="true" android:state_checked="true"/>
-
-                <item android:color="?attr/colorContainer"/>
-            </selector>
-
-            and laying out the ImageButton results in:
-
-            java.lang.UnsupportedOperationException: Failed to resolve attribute at index 0: TypedValue{t=0x2/d=0x7f0400ef a=-1}
-                at android.content.res.TypedArray.getColor(TypedArray.java:528)
-                at androidx.core.content.res.ColorStateListInflaterCompat.inflate(ColorStateListInflaterCompat.java:160)
-                at androidx.core.content.res.ColorStateListInflaterCompat.createFromXmlInner(ColorStateListInflaterCompat.java:125)
-                at androidx.core.content.res.ColorStateListInflaterCompat.createFromXml(ColorStateListInflaterCompat.java:104)
-                at androidx.core.content.res.ResourcesCompat.inflateColorStateList(ResourcesCompat.java:262)
-                at androidx.core.content.res.ResourcesCompat.getColorStateList(ResourcesCompat.java:236)
-                at androidx.core.content.ContextCompat.getColorStateList(ContextCompat.java:519)
-                at androidx.appcompat.content.res.AppCompatResources.getColorStateList(AppCompatResources.java:48)
-                at androidx.appcompat.widget.TintTypedArray.getColorStateList(TintTypedArray.java:178)
-                at androidx.appcompat.widget.AppCompatBackgroundHelper.loadFromAttributes(AppCompatBackgroundHelper.java:66)
-                at androidx.appcompat.widget.AppCompatImageButton.<init>(AppCompatImageButton.java:83)
-                at androidx.appcompat.widget.AppCompatImageButton.<init>(AppCompatImageButton.java:73)
-                at androidx.appcompat.app.AppCompatViewInflater.createImageButton(AppCompatViewInflater.java:226)
-
-            also see
-            https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/color/res/values/attrs.xml
-
-            Adding these to the actual "TIL.Button.Clear" does not work. But adding them to the theme it does.
-        -->
         <!-- The colors used by the color selectors -->
-        <item name="colorOnContainer">?attr/colorPrimary</item>
-        <item name="colorContainer">@android:color/transparent</item>
+        <!--        <item name="colorOnContainer">?attr/colorPrimary</item>-->
+        <!--        <item name="colorContainer">@android:color/transparent</item>-->
     </style>
 
     <!-- ThemeOverlay - used by both Day and Night themes. -->

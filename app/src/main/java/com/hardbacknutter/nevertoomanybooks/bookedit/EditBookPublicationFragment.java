@@ -67,6 +67,7 @@ public class EditBookPublicationFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Context context = getContext();
+
         //noinspection ConstantConditions
         mVm.initFields(context, FragmentId.Publication, FieldGroup.Publication);
         // on EXPANDED screens the notes fields are incorporated in the publication fragment
@@ -78,9 +79,14 @@ public class EditBookPublicationFragment
                                       publishers -> mVm.requireField(R.id.publisher)
                                                        .setValue(publishers));
 
+        // Publisher editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
-                .launch(getChildFragmentManager()));
+        mVb.lblPublisher.setEndIconOnClickListener(v -> editPublisher());
+        mVb.publisher.setOnClickListener(v -> editPublisher());
+    }
+
+    private void editPublisher() {
+        EditBookPublisherListDialogFragment.launch(getChildFragmentManager());
     }
 
 

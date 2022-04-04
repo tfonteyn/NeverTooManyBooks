@@ -93,7 +93,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.ListPicker"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
@@ -177,7 +177,7 @@
             android:id="@+id/lbl_isbn"
             style="@style/TIL.Isbn.Scan"
             android:layout_marginTop="@dimen/section_margin_top"
-            app:layout_constraintEnd_toStartOf="@id/btn_scan"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
@@ -192,18 +192,9 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btn_scan"
-            style="@style/TIL.Button.Scan"
-            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lbl_isbn"
-            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
-            />
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.ListPicker"
             android:hint="@string/lbl_series"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"
@@ -239,7 +230,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
-            style="@style/TIL.ReadOnly"
+            style="@style/TIL.ListPicker"
             android:hint="@string/lbl_bookshelves"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/col2"

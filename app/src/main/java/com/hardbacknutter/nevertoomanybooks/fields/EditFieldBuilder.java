@@ -40,10 +40,6 @@ public class EditFieldBuilder<T, V extends View>
     private int mTextInputLayoutId;
     @IdRes
     private int mErrorViewId;
-    @IdRes
-    private int mResetButtonId;
-    @Nullable
-    private T mResetValue;
     @Nullable
     private FieldValidator<T, V> mValidator;
 
@@ -121,22 +117,6 @@ public class EditFieldBuilder<T, V extends View>
         return this;
     }
 
-    /**
-     * Enable a clear/reset button for a picker enabled field.
-     *
-     * @param resetButtonId of the button (on which the onClickListener wil be set)
-     * @param resetValue    value to set when clicked
-     *
-     * @return {@code this} (for chaining)
-     */
-    @NonNull
-    public EditFieldBuilder<T, V> setResetButton(@IdRes final int resetButtonId,
-                                                 @Nullable final T resetValue) {
-        mResetButtonId = resetButtonId;
-        mResetValue = resetValue;
-        return this;
-    }
-
     @NonNull
     public EditField<T, V> build() {
         Objects.requireNonNull(mAccessor, "Missing FieldViewAccessor");
@@ -158,9 +138,6 @@ public class EditFieldBuilder<T, V extends View>
         }
         if (mValidator != null) {
             field.setFieldValidator(mValidator);
-        }
-        if (mResetButtonId != 0) {
-            field.setResetButton(mResetButtonId, mResetValue);
         }
         return field;
     }

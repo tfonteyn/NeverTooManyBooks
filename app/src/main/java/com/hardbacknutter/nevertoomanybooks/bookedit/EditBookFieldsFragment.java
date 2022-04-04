@@ -148,42 +148,37 @@ public class EditBookFieldsFragment
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         createCoverDelegates(global);
 
-        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
-
         mVm.onAuthorList().observe(getViewLifecycleOwner(),
                                    authors -> mVm.requireField(R.id.author)
                                                  .setValue(authors));
 
+        // Author editor (screen)
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
-                .launch(getChildFragmentManager()));
+        mVb.lblAuthor.setEndIconOnClickListener(v -> editAuthor());
+        mVb.author.setOnClickListener(v -> editAuthor());
 
         if (DBKey.isUsed(global, DBKey.KEY_SERIES_TITLE)) {
             mVm.onSeriesList().observe(getViewLifecycleOwner(),
                                        series -> mVm.requireField(R.id.series_title)
                                                     .setValue(series));
-
+            // Series editor (screen)
             // no listener/callback. We share the book view model in the Activity scope
-            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
-                    .launch(getChildFragmentManager()));
+            mVb.lblSeries.setEndIconOnClickListener(v -> editSeries());
+            mVb.seriesTitle.setOnClickListener(v -> editSeries());
         }
 
         // Bookshelves editor (dialog)
-        mVb.bookshelves.setOnClickListener(v -> {
-            final ArrayList<Bookshelf> allItems = new ArrayList<>(mVm.getAllBookshelves());
-            final ArrayList<Bookshelf> selectedItems = new ArrayList<>(
-                    mVm.getBook().getBookshelves());
+        mVb.lblBookshelves.setEndIconOnClickListener(v -> editBookshelves());
+        mVb.bookshelves.setOnClickListener(v -> editBookshelves());
 
-            mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
-                                            R.id.bookshelves, allItems, selectedItems);
-        });
-
+        // ISBN: manual edit of the field, or click the end-icon to scan a barcode
         mIsbnValidityCheck = ISBN.Validity.getLevel(global);
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 mVb.lblIsbn, mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+        mVb.lblIsbn.setEndIconOnClickListener(v -> mScannerLauncher.launch(this));
     }
 
     private void createCoverDelegates(@NonNull final SharedPreferences global) {
@@ -192,7 +187,8 @@ public class EditBookFieldsFragment
         final TypedArray height = res.obtainTypedArray(R.array.cover_edit_height);
         try {
             for (int cIdx = 0; cIdx < width.length(); cIdx++) {
-                if (mVm.isCoverUsed(global, cIdx)) {
+                // in edit mode, always show both covers unless globally disabled
+                if (DBKey.isUsed(global, DBKey.COVER_IS_USED[cIdx])) {
                     final int maxWidth = width.getDimensionPixelSize(cIdx, 0);
                     final int maxHeight = height.getDimensionPixelSize(cIdx, 0);
 
@@ -251,6 +247,23 @@ public class EditBookFieldsFragment
             final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
             mCoverHandler[cIdx].onBindView(view);
         }
+    }
+
+    private void editAuthor() {
+        EditBookAuthorListDialogFragment.launch(getChildFragmentManager());
+    }
+
+    private void editSeries() {
+        EditBookSeriesListDialogFragment.launch(getChildFragmentManager());
+    }
+
+    private void editBookshelves() {
+        final ArrayList<Bookshelf> allItems = new ArrayList<>(mVm.getAllBookshelves());
+        final ArrayList<Bookshelf> selectedItems = new ArrayList<>(
+                mVm.getBook().getBookshelves());
+
+        mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
+                                        R.id.bookshelves, allItems, selectedItems);
     }
 
     private class ToolbarMenuProvider
