@@ -35,7 +35,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UncheckedStorageException;
 
 /**
@@ -137,24 +136,20 @@ abstract class TaskBase<Result>
                 setTaskCancelled(null);
 
             } catch (@NonNull final UncheckedStorageException e) {
-                Logger.error(mTaskName, e);
                 //noinspection ConstantConditions
                 setTaskFailure(e.getCause());
 
             } catch (@NonNull final UncheckedIOException e) {
-                Logger.error(mTaskName, e);
                 //noinspection ConstantConditions
                 setTaskFailure(e.getCause());
 
             } catch (@NonNull final Exception e) {
-                Logger.error(mTaskName, e);
                 setTaskFailure(e);
             }
 
             mStatus = Status.Finished;
         });
     }
-
 
     /**
      * The actual 'work' method.
