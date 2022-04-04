@@ -239,7 +239,7 @@ public abstract class FutureHttpBase<T> {
     }
 
     private int getFutureTimeout() {
-        return mConnectTimeoutInMs + (2 * mReadTimeoutInMs);
+        return mConnectTimeoutInMs + mReadTimeoutInMs + 10;
     }
 
     @Nullable
