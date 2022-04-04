@@ -74,6 +74,8 @@ public class FutureHttpGet<T>
 
                 request.connect();
                 checkResponseCode(request);
+                // all fine, we're connected
+                return;
 
                 // these exceptions CAN be retried
             } catch (@NonNull final InterruptedIOException
