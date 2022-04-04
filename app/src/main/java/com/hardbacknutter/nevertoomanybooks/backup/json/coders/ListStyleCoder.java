@@ -72,7 +72,7 @@ public class ListStyleCoder
         out.put(DBKey.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
         if (style.isUserDefined()) {
-            out.put(STYLE_NAME, ((UserStyle) style).getName());
+            out.put(STYLE_NAME, style.getLabel(mContext));
 
             final JSONObject dest = new JSONObject();
             for (final PPref<?> source : style.getRawPreferences().values()) {
