@@ -78,9 +78,6 @@ public class MoneyFormatter
         try {
             final DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
             nf.setCurrency(currency);
-
-            // the result is rather dire... most currency symbols are shown as 3-char codes
-            // e.g. 'EUR','US$',...
             return nf.format(rawValue.getValue());
 
         } catch (@NonNull final IllegalArgumentException e) {
