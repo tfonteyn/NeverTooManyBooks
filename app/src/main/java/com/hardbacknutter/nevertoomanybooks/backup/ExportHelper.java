@@ -142,7 +142,7 @@ public class ExportHelper
                 // backwards compatibility
                 key = PREF_LAST_FULL_BACKUP_DATE;
             } else {
-                key = PREF_LAST_FULL_BACKUP_DATE + mEncoding.getFileExt();
+                key = PREF_LAST_FULL_BACKUP_DATE + "." + mEncoding.getFileExt();
             }
 
             final String lastDone = ServiceLocator.getGlobalPreferences().getString(key, null);
@@ -170,7 +170,7 @@ public class ExportHelper
                       // reset the startup prompt-counter.
                       .putInt(PK_BACKUP_COUNTDOWN, BACKUP_COUNTDOWN_DEFAULT);
             } else {
-                editor.putString(PREF_LAST_FULL_BACKUP_DATE + mEncoding.getFileExt(), date);
+                editor.putString(PREF_LAST_FULL_BACKUP_DATE + "." + mEncoding.getFileExt(), date);
             }
             editor.apply();
         }

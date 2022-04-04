@@ -63,28 +63,28 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 public enum ArchiveEncoding
         implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
-    Zip(".zip",
+    Zip("zip",
         R.string.lbl_archive_type_backup_zip,
         R.string.lbl_archive_type_backup_info),
 
     /** Books as a CSV file; full support for export/import. */
-    Csv(".csv", R.string.lbl_archive_type_csv,
+    Csv("csv", R.string.lbl_archive_type_csv,
         R.string.lbl_archive_type_csv_info),
 
     /** Books, Styles, Preferences in a JSON file; full support for export/import. */
-    Json(".json", R.string.lbl_archive_type_json,
+    Json("json", R.string.lbl_archive_type_json,
          R.string.lbl_archive_format_json_info),
 
     /** XML <strong>Export only</strong>. */
-    Xml(".xml", R.string.lbl_archive_type_xml,
+    Xml("xml", R.string.lbl_archive_type_xml,
         R.string.lbl_archive_format_xml_info),
 
     /** Database. */
-    SqLiteDb(".db", R.string.lbl_archive_type_db,
+    SqLiteDb("db", R.string.lbl_archive_type_db,
              R.string.lbl_archive_format_db_info),
 
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar", R.string.lbl_archive_type_backup_tar,
+    Tar("tar", R.string.lbl_archive_type_backup_tar,
         R.string.lbl_archive_type_backup_info);
 
     /** {@link Parcelable}. */
@@ -247,7 +247,7 @@ public enum ArchiveEncoding
     /**
      * Get the <strong>proposed</strong> archive file extension for writing an output file.
      *
-     * @return file name extension starting with a '.'
+     * @return file name extension
      */
     @NonNull
     public String getFileExt() {

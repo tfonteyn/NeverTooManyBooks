@@ -83,7 +83,18 @@ public class ExportFragment
     private MenuProvider mToolbarMenuProvider;
     /** The ViewModel. */
     private ExportViewModel mVm;
-    /** The launcher for picking a Uri to write to. */
+
+    /**
+     * The launcher for picking a Uri to write to.
+     * <p>
+     * Android: CreateDocument() is deprecated and we should use CreateDocument(mimeType).
+     * <p>
+     * Problem: we don't know the mimeType before the user decides on it and we cannot
+     * postpone calling registerForActivityResult or we get an exception:
+     * "Fragments must call registerForActivityResult() before they are created"
+     * <p>
+     * Solution: deep sigh... keep using deprecated constructor
+     */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::exportToUri);
@@ -297,7 +308,7 @@ public class ExportFragment
     private void exportPickUri() {
         // Create the proposed name for the archive. The user can change it.
         final String defName = "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                               + mVm.getExportHelper().getEncoding().getFileExt();
+                               + "." + mVm.getExportHelper().getEncoding().getFileExt();
         mCreateDocumentLauncher.launch(defName);
     }
 
