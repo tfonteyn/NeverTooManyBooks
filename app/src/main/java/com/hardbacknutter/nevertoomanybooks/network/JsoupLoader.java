@@ -137,17 +137,15 @@ public class JsoupLoader {
             try {
                 // Don't retry if the initial connection fails...
                 mFutureHttpGet.setRetryCount(0);
+                // added due to https://github.com/square/okhttp/issues/1517
+                // it's a server issue, this is a workaround.
+                mFutureHttpGet.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
+                // some sites refuse to return content if they don't like the user-agent
+                if (mUserAgent != null) {
+                    mFutureHttpGet.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
+                }
 
                 mDoc = mFutureHttpGet.get(mDocRequestUrl, request -> {
-                    // added due to https://github.com/square/okhttp/issues/1517
-                    // it's a server issue, this is a workaround.
-                    request.setRequestProperty(HttpUtils.CONNECTION, HttpUtils.CONNECTION_CLOSE);
-                    // some sites refuse to return content if they don't like the user-agent
-                    if (mUserAgent != null) {
-                        request.setRequestProperty(HttpUtils.USER_AGENT, mUserAgent);
-                    }
-
-                    //GO!
                     try (BufferedInputStream is = new BufferedInputStream(
                             request.getInputStream())) {
 
