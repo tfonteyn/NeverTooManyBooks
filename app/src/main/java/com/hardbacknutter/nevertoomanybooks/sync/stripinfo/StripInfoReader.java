@@ -196,9 +196,14 @@ public class StripInfoReader
 
         mResults = new ReaderResults();
 
+        int pageNr = 0;
         try {
-            while (uc.hasMore() && !mSearchEngine.isCancelled()) {
-                final List<Bundle> page = uc.fetchPage(context, progressListener);
+            // haven't started yet, or there are more pages.
+            while ((pageNr == 0 || uc.getMaxPages() > pageNr)
+                   && !mSearchEngine.isCancelled()) {
+
+                pageNr++;
+                final List<Bundle> page = uc.fetchPage(context, pageNr, progressListener);
                 if (page != null && !page.isEmpty()) {
                     // We're committing by page.
                     Synchronizer.SyncLock txLock = null;

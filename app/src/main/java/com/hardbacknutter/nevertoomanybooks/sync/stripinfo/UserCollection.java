@@ -40,9 +40,9 @@ import org.jsoup.nodes.Element;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.network.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineConfig;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -130,8 +130,6 @@ public class UserCollection {
     private final StripInfoSearchEngine mSearchEngine;
     @NonNull
     private final RowParser mRowParser;
-
-    private int mCurrentPage;
     private int mMaxPages = -1;
 
     /**
@@ -151,15 +149,15 @@ public class UserCollection {
         mRowParser = new RowParser(context, config);
     }
 
-    public boolean hasMore() {
-        // haven't started yet, or there are more pages.
-        return mCurrentPage == 0 || mMaxPages > mCurrentPage;
+    public int getMaxPages() {
+        return mMaxPages;
     }
 
     /**
-     * Fetch a single page. Use {@link #hasMore()} to loop.
+     * Fetch a single page.
      *
      * @param context          Current context
+     * @param pageNr           page number to fetch: 1..
      * @param progressListener Progress and cancellation interface
      *
      * @return list with book-data Bundles
@@ -170,53 +168,37 @@ public class UserCollection {
     @WorkerThread
     @Nullable
     public List<Bundle> fetchPage(@NonNull final Context context,
+                                  final int pageNr,
                                   @NonNull final ProgressListener progressListener)
             throws SearchException, StorageException, IOException {
 
-        mCurrentPage++;
-        if (!hasMore()) {
+        if (!(pageNr == 0 || mMaxPages > pageNr)) {
             throw new SearchException(mSearchEngine.getName(context), "Can't fetch more pages");
         }
 
         progressListener.publishProgress(1, context.getString(
-                R.string.progress_msg_loading_page, mCurrentPage));
+                R.string.progress_msg_loading_page, pageNr));
 
-        final SearchEngineConfig config = mSearchEngine.getConfig();
-        final String url = config.getHostUrl() + String.format(URL_MY_BOOKS, mUserId,
-                                                               mCurrentPage, mFlags);
+        final String url = mSearchEngine.getConfig().getHostUrl()
+                           + String.format(URL_MY_BOOKS, mUserId, pageNr, mFlags);
 
-        final Document currentDocument = mJsoupLoader.loadDocument(url);
-
-        final Element root = currentDocument.getElementById("collectionContent");
-        if (root != null) {
-            if (mCurrentPage == 1) {
-                parseMaxPages(context, root, progressListener);
-            }
-            return parsePage(root);
-        }
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "No 'collectionContent' found for url=" + url);
-        }
-
-        // The last page did not contain 'collectionContent'.
-        // Assume we reached the end.
-        return null;
+        final Document document = mJsoupLoader.loadDocument(url);
+        return parseDocument(context, document, pageNr, progressListener);
     }
 
-    private void parseMaxPages(@NonNull final Context context,
-                               @NonNull final Element root,
-                               @NonNull final ProgressListener progressListener)
+    private int parseMaxPages(@NonNull final Context context,
+                              @NonNull final Element root,
+                              @NonNull final ProgressListener progressListener)
             throws SearchException {
         final Element last = root.select("div.pagination > a").last();
         if (last != null) {
             try {
-                mMaxPages = Integer.parseInt(last.text());
+                final int maxPages = Integer.parseInt(last.text());
                 // If the last page has less books, this is to high... oh well...
-                progressListener.setMaxPos(mMaxPages * COLLECTION_CONTENT_ROWS);
+                progressListener.setMaxPos(maxPages * COLLECTION_CONTENT_ROWS);
                 progressListener.setIndeterminate(false);
                 progressListener.publishProgress(0, null);
-                return;
+                return maxPages;
 
             } catch (@NonNull final NumberFormatException e) {
                 throw new SearchException(mSearchEngine.getName(context),
@@ -227,6 +209,32 @@ public class UserCollection {
         throw new SearchException(mSearchEngine.getName(context), "No page numbers");
     }
 
+    @VisibleForTesting
+    @Nullable
+    List<Bundle> parseDocument(@NonNull final Context context,
+                               @NonNull final Document document,
+                               final int pageNr,
+                               @NonNull final ProgressListener progressListener)
+            throws SearchException {
+        final Element root = document.getElementById("collectionContent");
+        if (root != null) {
+            if (pageNr == 1) {
+                mMaxPages = parseMaxPages(context, root, progressListener);
+            }
+            return parsePage(root);
+        }
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (pageNr != mMaxPages) {
+                Log.d(TAG, "No 'collectionContent' found for url=" + document.location());
+            }
+        }
+
+        // The last page did not contain 'collectionContent'.
+        // Assume we reached the end.
+        return null;
+    }
+
     /**
      * Parse a "collectionContent".
      *
@@ -234,14 +242,14 @@ public class UserCollection {
      *
      * @return list with book data bundles for the page; can be empty
      */
-    @NonNull
     @AnyThread
+    @NonNull
     private List<Bundle> parsePage(@NonNull final Element root) {
         final List<Bundle> collection = new ArrayList<>();
 
         // showing 'progress' here is pointless as even older devices will be fast.
         for (final Element row : root.select("div.collectionRow")) {
-            final Bundle cData = new Bundle();
+            final Bundle cData = ServiceLocator.newBundle();
 
             parseRow(row, cData);
             if (!cData.isEmpty()) {
@@ -251,10 +259,9 @@ public class UserCollection {
         return collection;
     }
 
-    @VisibleForTesting
     @AnyThread
-    void parseRow(@NonNull final Element row,
-                  @NonNull final Bundle cData) {
+    private void parseRow(@NonNull final Element row,
+                          @NonNull final Bundle cData) {
         final String idAttr = row.id();
         // sanity check, each row is normally a book.
         if (idAttr.startsWith(ROW_ID_ATTR)) {
