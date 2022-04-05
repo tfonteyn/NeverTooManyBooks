@@ -19,11 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskProgress;
 
@@ -33,7 +32,7 @@ public class TestProgressListener
     @NonNull
     private final String mTag;
     private int mProgressCurrentPos;
-    private int mProgressMaxPos;
+    private int mMaxPos;
 
     public TestProgressListener(@NonNull final String tag) {
         mTag = tag;
@@ -45,10 +44,10 @@ public class TestProgressListener
         mProgressCurrentPos += delta;
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG  /* always */) {
-            Log.d(mTag + "|publishProgressStep",
-                  "mProgressCurrentPos=" + mProgressCurrentPos
-                  + "|delta=" + delta
-                  + "|message=" + message);
+            Logger.d(mTag, "publishProgressStep",
+                     "mProgressCurrentPos=" + mProgressCurrentPos
+                     + "|delta=" + delta
+                     + "|message=" + message);
         }
 
     }
@@ -57,7 +56,7 @@ public class TestProgressListener
     public void publishProgress(@NonNull final TaskProgress message) {
         // eat all message when in debug; it's to much of a slow down otherwise.
         if (BuildConfig.DEBUG  /* always */) {
-            Log.d(mTag + "|publishProgress", "message=" + message);
+            Logger.d(mTag, "publishProgress", "message=" + message);
         }
     }
 
@@ -72,17 +71,17 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        Log.d(mTag + "|setProgressIsIndeterminate", String.valueOf(indeterminate));
+        Logger.d(mTag, "setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
     public int getMaxPos() {
-        return mProgressMaxPos;
+        return mMaxPos;
     }
 
     @Override
-    public void setMaxPos(final int maxPosition) {
-        Log.d(mTag + "|setProgressMaxPos", String.valueOf(maxPosition));
-        mProgressMaxPos = maxPosition;
+    public void setMaxPos(final int maxPos) {
+        Logger.d(mTag, "setMaxPos", String.valueOf(maxPos));
+        mMaxPos = maxPos;
     }
 }
