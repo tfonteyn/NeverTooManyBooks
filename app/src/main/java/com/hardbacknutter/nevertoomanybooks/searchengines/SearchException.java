@@ -62,7 +62,7 @@ public class SearchException
     public String toString() {
         return "SearchException{"
                + "mSiteName='" + mSiteName + '\''
-               + super.toString()
+               + ", " + super.toString()
                + '}';
     }
 }
