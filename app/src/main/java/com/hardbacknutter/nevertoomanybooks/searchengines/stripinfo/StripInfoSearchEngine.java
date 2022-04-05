@@ -222,7 +222,7 @@ public class StripInfoSearchEngine
                                      @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
@@ -244,7 +244,7 @@ public class StripInfoSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url);
@@ -275,7 +275,7 @@ public class StripInfoSearchEngine
 
     /**
      * A multi result page was returned. Try and parse it.
-     * The <strong>first book</strong> link will be extracted and retries.
+     * The <strong>first book</strong> link will be extracted and retrieved.
      *
      * @param context     Current context
      * @param document    to parse

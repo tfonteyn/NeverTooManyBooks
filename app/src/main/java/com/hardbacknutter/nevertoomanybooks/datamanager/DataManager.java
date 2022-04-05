@@ -40,6 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
@@ -96,7 +97,7 @@ public class DataManager
      * Constructor.
      */
     protected DataManager() {
-        mRawData = new Bundle();
+        mRawData = ServiceLocator.newBundle();
     }
 
     /**

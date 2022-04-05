@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -209,7 +210,7 @@ public class OpenLibrarySearchEngine
                                      @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "OLID", externalId);
 
@@ -229,7 +230,7 @@ public class OpenLibrarySearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BASE_BOOK_URL, "ISBN", validIsbn);
 

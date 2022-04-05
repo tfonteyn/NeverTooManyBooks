@@ -28,6 +28,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
@@ -106,7 +107,7 @@ public class IsfdbGetBookTask
 
         final boolean[] fetchCovers = {false, false};
         if (mEdition != null) {
-            final Bundle bookData = new Bundle();
+            final Bundle bookData = ServiceLocator.newBundle();
             mSearchEngine.fetchByEdition(context, mEdition, fetchCovers, bookData);
             return bookData;
 

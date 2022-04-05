@@ -52,7 +52,7 @@ public class SearchBookByTextViewModel
     private final Collection<String> mRecentPublisherNames = new ArrayList<>();
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Bundle mResultData = new Bundle();
+    private final Bundle mResultData = ServiceLocator.newBundle();
     /** Flag: allow/provide searching by publisher. */
     private Boolean mUsePublisher;
 

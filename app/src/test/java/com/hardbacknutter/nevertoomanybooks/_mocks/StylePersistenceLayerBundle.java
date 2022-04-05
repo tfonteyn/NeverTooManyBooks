@@ -27,12 +27,13 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 public class StylePersistenceLayerBundle
         implements StylePersistenceLayer {
 
-    private final Bundle mBundle = new Bundle();
+    private final Bundle mBundle = ServiceLocator.newBundle();
 
     @Override
     public void remove(@NonNull final String key) {

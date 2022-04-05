@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -78,7 +79,7 @@ public class ArchiveMetaData
                                          final int version,
                                          @NonNull final ExportResults result) {
 
-        final ArchiveMetaData metaData = new ArchiveMetaData(new Bundle());
+        final ArchiveMetaData metaData = new ArchiveMetaData(ServiceLocator.newBundle());
 
         final Bundle data = metaData.getData();
 

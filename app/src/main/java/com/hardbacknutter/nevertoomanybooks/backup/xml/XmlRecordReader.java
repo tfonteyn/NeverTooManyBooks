@@ -135,7 +135,7 @@ public class XmlRecordReader
                                                   @NonNull final ArchiveReaderRecord record)
             throws DataReaderException,
                    IOException {
-        final Bundle bundle = new Bundle();
+        final Bundle bundle = ServiceLocator.newBundle();
         fromXml(record, new InfoReader(bundle));
         if (bundle.isEmpty()) {
             return Optional.empty();

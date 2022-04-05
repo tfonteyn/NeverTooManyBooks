@@ -333,7 +333,7 @@ public class Book
      */
     @NonNull
     public Bundle duplicate() {
-        final Bundle bookData = new Bundle();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         // Q: Why don't we get the DataManager#mRawData, remove the identifiers/dates and use that?
         // A: because we would need to clone mRawData before we can start removing fields,

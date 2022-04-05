@@ -168,7 +168,8 @@ public class Base {
         when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
 
 
-        ServiceLocator.create(mContext);
+        ServiceLocator.create(mContext, BundleMock::create);
+
         SearchEngineRegistry.create(mContext);
 
         setupStringResources(mResources);

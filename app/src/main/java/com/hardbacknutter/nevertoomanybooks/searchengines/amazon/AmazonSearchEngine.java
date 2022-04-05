@@ -193,7 +193,7 @@ public class AmazonSearchEngine
             throws StorageException, SearchException, CredentialsException {
 
         final Document document = loadDocument(context, url);
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
         }
@@ -231,7 +231,7 @@ public class AmazonSearchEngine
 
         } else {
             // not supported
-            return newBundleInstance();
+            return ServiceLocator.newBundle();
         }
     }
 

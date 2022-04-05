@@ -34,6 +34,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -183,7 +184,7 @@ class IsfdbPublicationListHandler
         switch (qName) {
             case XML_PUBLICATION:
                 mInPublication = true;
-                mPublicationData = mSearchEngine.newBundleInstance();
+                mPublicationData = ServiceLocator.newBundle();
                 mAuthors.clear();
                 mSeries.clear();
                 mPublishers.clear();

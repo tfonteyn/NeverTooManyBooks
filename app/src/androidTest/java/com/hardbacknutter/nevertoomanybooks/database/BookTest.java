@@ -343,7 +343,7 @@ public class BookTest {
         mBookId[0] = mBook[0].getId();
 
         final ShowBookDetailsViewModel vm = new ShowBookDetailsViewModel();
-        final Bundle args = new Bundle();
+        final Bundle args = ServiceLocator.newBundle();
         args.putLong(DBKey.FK_BOOK, mBookId[0]);
 
         vm.init(args);

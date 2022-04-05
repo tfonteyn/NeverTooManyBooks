@@ -30,6 +30,7 @@ import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderHelperBase;
@@ -45,7 +46,7 @@ public final class SyncReaderHelper
     @NonNull
     private final SyncServer mSyncServer;
     /** Extra arguments for specific readers. The reader must define them. */
-    private final Bundle mExtraArgs = new Bundle();
+    private final Bundle mExtraArgs = ServiceLocator.newBundle();
     /** <strong>How</strong> to handle individual fields. Can be {@code null}. aka unused. */
     @Nullable
     private SyncReaderProcessor mSyncProcessor;

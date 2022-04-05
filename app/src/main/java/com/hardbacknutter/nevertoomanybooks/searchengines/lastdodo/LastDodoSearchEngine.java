@@ -110,7 +110,7 @@ public class LastDodoSearchEngine
                                      @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BY_EXTERNAL_ID, externalId);
         final Document document = loadDocument(context, url);
@@ -127,7 +127,7 @@ public class LastDodoSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException, CredentialsException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         final String url = getSiteUrl() + String.format(BY_ISBN, validIsbn);
         final Document document = loadDocument(context, url);

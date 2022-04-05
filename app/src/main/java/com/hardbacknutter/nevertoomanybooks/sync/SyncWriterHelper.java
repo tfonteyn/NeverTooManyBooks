@@ -31,6 +31,7 @@ import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.DataWriterHelperBase;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
@@ -42,7 +43,7 @@ public class SyncWriterHelper
         extends DataWriterHelperBase<SyncWriterResults> {
 
     /** Extra arguments for specific writers. The writer must define them. */
-    private final Bundle mExtraArgs = new Bundle();
+    private final Bundle mExtraArgs = ServiceLocator.newBundle();
 
     /** <strong>Where</strong> we write to. */
     @Nullable

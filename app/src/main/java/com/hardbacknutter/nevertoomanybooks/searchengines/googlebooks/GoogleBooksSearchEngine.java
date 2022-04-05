@@ -40,6 +40,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
 import com.hardbacknutter.nevertoomanybooks.network.FutureHttpGet;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineBase;
@@ -102,7 +103,7 @@ public class GoogleBooksSearchEngine
                                @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         // %3A  :
         final String url = getSiteUrl() + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
@@ -121,7 +122,7 @@ public class GoogleBooksSearchEngine
                          @NonNull final boolean[] fetchCovers)
             throws StorageException, SearchException {
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         // %2B  +
         // %3A  :

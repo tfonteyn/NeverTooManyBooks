@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
@@ -124,6 +126,9 @@ public final class ServiceLocator {
     @Nullable
     private CookieManager mCookieManager;
 
+    /** Allows injecting a Mock Bundle supplier for JUnit tests. */
+    @NonNull
+    private Supplier<Bundle> mBundleSupplier = Bundle::new;
 
     /** Interfaces. */
     @Nullable
@@ -205,6 +210,18 @@ public final class ServiceLocator {
         }
     }
 
+    /**
+     * Public constructor for testing and recreation when testing.
+     *
+     * @param context        <strong>Application</strong> or <strong>test</strong> context.
+     * @param bundleSupplier to provide new (mock) Bundle instances.
+     */
+    public static void create(@NonNull final Context context,
+                              @NonNull final Supplier<Bundle> bundleSupplier) {
+        create(context);
+        sInstance.mBundleSupplier = bundleSupplier;
+    }
+
     @NonNull
     public static ServiceLocator getInstance() {
         return sInstance;
@@ -259,6 +276,19 @@ public final class ServiceLocator {
     }
 
     /**
+     * Create a "new Bundle()" using a supplier.
+     * This allows us to inject mock-bundle's when running a JUnit test.
+     * <p>
+     * Note: static as we're using this very frequently.
+     *
+     * @return bundle
+     */
+    @NonNull
+    public static Bundle newBundle() {
+        return sInstance.mBundleSupplier.get();
+    }
+
+    /**
      * Get a <strong>new</strong>> localized Application Context
      *
      * @return Application Context using the user preferred Locale
@@ -281,9 +311,10 @@ public final class ServiceLocator {
         }
 
         final Context appContext = sInstance.mAppContext;
+        final Supplier<Bundle> bundleSupplier = sInstance.mBundleSupplier;
         //noinspection ConstantConditions
         sInstance = null;
-        create(appContext);
+        create(appContext, bundleSupplier);
     }
 
     /**

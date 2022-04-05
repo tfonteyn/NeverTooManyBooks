@@ -677,7 +677,7 @@ public class SearchCoordinator
         mCancelled.set(false);
         mIsSearchActive = false;
 
-        mBookData = new Bundle();
+        mBookData = ServiceLocator.newBundle();
         // no synchronized needed here
         mSearchResults.clear();
         // no synchronized needed here

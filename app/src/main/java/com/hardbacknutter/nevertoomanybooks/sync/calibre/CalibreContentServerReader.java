@@ -258,7 +258,7 @@ public class CalibreContentServerReader
             throw new DataReaderException(e);
         }
 
-        final Bundle args = new Bundle();
+        final Bundle args = ServiceLocator.newBundle();
         // the requested (or default) library
         args.putParcelable(CalibreContentServer.BKEY_LIBRARY, mLibrary);
         // and the full list

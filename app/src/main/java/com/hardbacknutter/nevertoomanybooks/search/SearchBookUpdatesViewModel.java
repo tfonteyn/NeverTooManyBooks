@@ -459,7 +459,7 @@ public class SearchBookUpdatesViewModel
         // the last book id which was handled; can be used to restart the update.
         mFromBookIdOnwards = mCurrentBookId;
 
-        final Bundle results = new Bundle();
+        final Bundle results = ServiceLocator.newBundle();
         results.putLong(BKEY_LAST_BOOK_ID, mFromBookIdOnwards);
 
         // all books || a list of books || (single book && ) not cancelled

@@ -150,7 +150,7 @@ public class KbNlSearchEngine
 
         ServiceLocator.getInstance().getCookieManager();
 
-        final Bundle bookData = newBundleInstance();
+        final Bundle bookData = ServiceLocator.newBundle();
 
         mFutureHttpGet = createFutureGetRequest();
 
@@ -162,12 +162,12 @@ public class KbNlSearchEngine
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            mFutureHttpGet.get(url, request -> {
-                // Don't follow redirects, so we get the XML instead of the rendered page
-                request.setInstanceFollowRedirects(false); //9020612476
 
-                try (BufferedInputStream bis = new BufferedInputStream(
-                        request.getInputStream())) {
+            // Don't follow redirects, so we get the XML instead of the rendered page
+            mFutureHttpGet.setInstanceFollowRedirects(false); //9020612476
+
+            mFutureHttpGet.get(url, request -> {
+                try (BufferedInputStream bis = new BufferedInputStream(request.getInputStream())) {
                     parser.parse(bis, handler);
                     checkForSeriesNameInTitle(bookData);
                     return true;

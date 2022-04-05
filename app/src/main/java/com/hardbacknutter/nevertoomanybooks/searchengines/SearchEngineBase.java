@@ -26,7 +26,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.File;
@@ -178,21 +177,6 @@ public abstract class SearchEngineBase
         // mCaller being null should only happen when we check if we're cancelled
         // before a search was started.
         return mCancelled.get() || mCaller == null || mCaller.isCancelled();
-    }
-
-    @NonNull
-    public Bundle newBundleInstance() {
-        return mBundleSupplier.get();
-    }
-
-    /**
-     * Allow injecting mock bundles during testing.
-     *
-     * @param bundleSupplier to provide new (mock) Bundle instances.
-     */
-    @VisibleForTesting
-    public void setBundleSupplier(@NonNull final Supplier<Bundle> bundleSupplier) {
-        mBundleSupplier = bundleSupplier;
     }
 
     /**

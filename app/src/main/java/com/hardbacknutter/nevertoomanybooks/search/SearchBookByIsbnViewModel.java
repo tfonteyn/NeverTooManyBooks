@@ -64,7 +64,7 @@ public class SearchBookByIsbnViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Bundle mResultData = new Bundle();
+    private final Bundle mResultData = ServiceLocator.newBundle();
 
     /** Database Access. */
     private BookDao mBookDao;
