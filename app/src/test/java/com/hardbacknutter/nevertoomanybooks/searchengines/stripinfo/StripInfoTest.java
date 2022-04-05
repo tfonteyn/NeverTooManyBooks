@@ -437,7 +437,8 @@ class StripInfoTest
 
     /** Network access! */
     @Test
-    void parseMultiResult() {
+    void parseMultiResult()
+            throws SearchException, CredentialsException, StorageException {
         setLocale(Locale.FRANCE);
         final String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         // this is a multi-result, so use mSearchEngine.parseMultiResult
@@ -456,12 +457,7 @@ class StripInfoTest
         assertTrue(document.hasText());
 
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        try {
-            mSearchEngine.parseMultiResult(mContext, document,
-                                           new boolean[]{false, false}, mRawData);
-        } catch (@NonNull final StorageException | SearchException | CredentialsException e) {
-            fail(e);
-        }
+        mSearchEngine.parseMultiResult(mContext, document, new boolean[]{false, false}, mRawData);
 
         assertFalse(mRawData.isEmpty());
         System.out.println(mRawData);

@@ -19,8 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searchengines.isfdb;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -34,7 +36,6 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCancellable;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.Site;
 
@@ -54,7 +55,6 @@ class IsfdbXmlPublicationTest
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(SearchSites.ISFDB).getSearchEngine();
         mSearchEngine.setCaller(new MockCancellable());
-        mSearchEngine.setBundleSupplier(BundleMock::create);
 
         // Override the default 'false'
         mMockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();
@@ -78,7 +78,13 @@ class IsfdbXmlPublicationTest
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final SAXParser parser = factory.newSAXParser();
-        parser.parse(this.getClass().getResourceAsStream(filename), listHandler);
+        try {
+            parser.parse(this.getClass().getResourceAsStream(filename), listHandler);
+        } catch (@NonNull final SAXException e) {
+            if (!(e.getCause() instanceof EOFException)) {
+                throw e;
+            }
+        }
 
         System.out.println(listHandler.getResult());
     }

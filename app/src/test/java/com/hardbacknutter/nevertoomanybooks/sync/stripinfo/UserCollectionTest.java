@@ -21,11 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.sync.stripinfo;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -34,8 +31,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,21 +39,19 @@ import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searchengines.SearchException;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searchengines.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -94,7 +87,8 @@ class UserCollectionTest
     }
 
     @Test
-    void parseCollectionPage() {
+    void parseCollectionPage()
+            throws IOException, SearchException {
         setLocale(Locale.FRANCE);
 
         final String locationHeader = "https://www.stripinfo.be/userCollection/index/666/0/0/0000";
@@ -114,9 +108,10 @@ class UserCollectionTest
             assertNotNull(document);
             Assertions.assertTrue(document.hasText());
 
-            // should call this... but we can't as it uses "new Bundle()"
-            //final List<Bundle> collection = uc.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(uc, document);
+            final List<Bundle> collection = uc.parseDocument(mContext, document, 1, mLogger);
+
+            assertEquals(3, uc.getMaxPages());
+            assertNotNull(collection);
 
             assertEquals(25, collection.size());
 
@@ -138,13 +133,12 @@ class UserCollectionTest
             assertTrue(b0.getBoolean(DBKey.BOOL_STRIP_INFO_OWNED));
             assertTrue(b0.getBoolean(DBKey.BOOL_STRIP_INFO_WANTED));
 
-        } catch (@NonNull final IOException e) {
-            fail(e);
         }
     }
 
     @Test
-    void parseCollectionLastPage() {
+    void parseCollectionLastPage()
+            throws IOException, SearchException {
         setLocale(Locale.FRANCE);
 
         // The "3" == the 3rd page from the collection.
@@ -165,41 +159,9 @@ class UserCollectionTest
             assertNotNull(document);
             assertTrue(document.hasText());
 
-            // should call this... but we can't as it uses "new Bundle()"
-            //final List<Bundle> collection = uc.parse(mContext, document, mLogger);
-            final List<Bundle> collection = parseHere(uc, document);
-
+            final List<Bundle> collection = uc.parseDocument(mContext, document, 3, mLogger);
+            assertNotNull(collection);
             assertEquals(1, collection.size());
-
-        } catch (@NonNull final IOException e) {
-            fail(e);
         }
-    }
-
-    @NonNull
-    private List<Bundle> parseHere(@NonNull final UserCollection uc,
-                                   @NonNull final Document document) {
-
-        final Element root = document.getElementById("collectionContent");
-        assertNotNull(root);
-
-        final Element last = root.select("div.pagination > a").last();
-        assertNotNull(last);
-        assertEquals(3, Integer.parseInt(last.text()));
-
-        final List<Bundle> collection = new ArrayList<>();
-
-        final Elements rows = root.select("div.collectionRow");
-        assertFalse(rows.isEmpty());
-
-        for (final Element row : rows) {
-            final Bundle cData = BundleMock.create();
-
-            uc.parseRow(row, cData);
-            if (!cData.isEmpty()) {
-                collection.add(cData);
-            }
-        }
-        return collection;
     }
 }
