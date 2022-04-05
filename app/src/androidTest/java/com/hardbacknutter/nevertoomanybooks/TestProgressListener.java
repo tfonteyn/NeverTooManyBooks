@@ -33,7 +33,7 @@ public class TestProgressListener
     @NonNull
     private final String mTag;
     private int mProgressCurrentPos;
-    private int mProgressMaxPos;
+    private int mMaxPos;
 
     public TestProgressListener(@NonNull final String tag) {
         mTag = tag;
@@ -72,17 +72,17 @@ public class TestProgressListener
 
     @Override
     public void setIndeterminate(@Nullable final Boolean indeterminate) {
-        Log.d(mTag + "|setProgressIsIndeterminate", String.valueOf(indeterminate));
+        Log.d(mTag + "|setIndeterminate", String.valueOf(indeterminate));
     }
 
     @Override
     public int getMaxPos() {
-        return mProgressMaxPos;
+        return mMaxPos;
     }
 
     @Override
-    public void setMaxPos(final int maxPosition) {
-        Log.d(mTag + "|setProgressMaxPos", String.valueOf(maxPosition));
-        mProgressMaxPos = maxPosition;
+    public void setMaxPos(final int maxPos) {
+        Log.d(mTag + "|setMaxPos", String.valueOf(maxPos));
+        mMaxPos = maxPos;
     }
 }
