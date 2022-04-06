@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+@SuppressWarnings("CanBeFinal")
 public final class TestFlags {
 
     public static boolean isJUnit;
