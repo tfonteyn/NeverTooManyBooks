@@ -120,6 +120,12 @@ public final class ExMsg {
             // There was something wrong with certificates/key on the REMOTE end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);
 
+        } else if (e instanceof StackOverflowError) {
+            // This is BAD.... but we've only ever seen this in the emulator ... flw
+            // ^^^ 2022-04-06
+            msg = context.getString(R.string.error_unknown_long,
+                                    context.getString(R.string.pt_maintenance));
+
         } else if (e instanceof android.system.ErrnoException) {
             final int errno = ((android.system.ErrnoException) e).errno;
             // write failed: ENOSPC (No space left on device)
