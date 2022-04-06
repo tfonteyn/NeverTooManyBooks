@@ -32,7 +32,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -61,8 +60,6 @@ public abstract class SearchEngineBase
     private final ImageDownloader mImageDownloader;
     @Nullable
     private Cancellable mCaller;
-    @NonNull
-    private Supplier<Bundle> mBundleSupplier = Bundle::new;
 
     /**
      * Constructor.
