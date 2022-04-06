@@ -52,26 +52,19 @@ public class BookCoder
         implements JsonCoder<Book> {
 
     private final JsonCoder<Author> mAuthorCoder = new AuthorCoder();
+    private final JsonCoder<Bookshelf> mBookshelfCoder;
+    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
     private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
     private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
 
-    @NonNull
-    private final JsonCoder<Bookshelf> mBookshelfCoder;
-    @NonNull
-    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
-
     /**
      * Constructor.
-     *
-     * @param context Current context
      */
-    public BookCoder(@NonNull final Context context,
-                     @NonNull final JsonCoder<Bookshelf> bookshelfCoder,
-                     @NonNull final JsonCoder<CalibreLibrary> calibreLibraryCoder) {
+    public BookCoder(@NonNull final Context context) {
 
-        mBookshelfCoder = bookshelfCoder;
-        mCalibreLibraryCoder = calibreLibraryCoder;
+        mBookshelfCoder = new BookshelfCoder(context);
+        mCalibreLibraryCoder = new CalibreLibraryCoder(context);
     }
 
     @Override

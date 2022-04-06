@@ -25,7 +25,6 @@ import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,15 +62,12 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.io.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
-import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 import com.hardbacknutter.org.json.JSONArray;
@@ -119,21 +115,12 @@ public class JsonRecordReader
 
     /** Log tag. */
     private static final String TAG = "JsonRecordReader";
-    @NonNull
-    private final JsonCoder<Book> mBookCoder;
+
     @NonNull
     private final Set<RecordType> mImportEntriesAllowed;
-    @Nullable
-    private JsonCoder<Bookshelf> mBookshelfCoder;
-    @Nullable
-    private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
-    @Nullable
-    private JsonCoder<CalibreCustomField> mCalibreCustomFieldCoder;
 
     /**
      * Constructor.
-     * <p>
-     * Only supports {@link RecordType#Books}.
      *
      * @param context              Current context
      * @param importEntriesAllowed the record types we're allowed to read
@@ -143,33 +130,6 @@ public class JsonRecordReader
                             @NonNull final Set<RecordType> importEntriesAllowed) {
         super(context);
         mImportEntriesAllowed = importEntriesAllowed;
-
-        mBookCoder = new BookCoder(context, getBookshelfCoder(context),
-                                   getCalibreLibraryCoder(context));
-    }
-
-    @NonNull
-    private JsonCoder<Bookshelf> getBookshelfCoder(@NonNull final Context context) {
-        if (mBookshelfCoder == null) {
-            mBookshelfCoder = new BookshelfCoder(context);
-        }
-        return mBookshelfCoder;
-    }
-
-    @NonNull
-    private JsonCoder<CalibreLibrary> getCalibreLibraryCoder(@NonNull final Context context) {
-        if (mCalibreLibraryCoder == null) {
-            mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
-        }
-        return mCalibreLibraryCoder;
-    }
-
-    @NonNull
-    private JsonCoder<CalibreCustomField> getCalibreCustomFieldCoder() {
-        if (mCalibreCustomFieldCoder == null) {
-            mCalibreCustomFieldCoder = new CalibreCustomFieldCoder();
-        }
-        return mCalibreCustomFieldCoder;
     }
 
     @Override
@@ -387,7 +347,7 @@ public class JsonRecordReader
             final CalibreLibraryDao libraryDao =
                     ServiceLocator.getInstance().getCalibreLibraryDao();
 
-            getCalibreLibraryCoder(context)
+            new CalibreLibraryCoder(context)
                     .decode(jsonRoot)
                     .forEach(library -> {
                         libraryDao.fixId(library);
@@ -418,7 +378,7 @@ public class JsonRecordReader
             final CalibreCustomFieldDao dao =
                     ServiceLocator.getInstance().getCalibreCustomFieldDao();
 
-            getCalibreCustomFieldCoder()
+            new CalibreCustomFieldCoder()
                     .decode(jsonRoot)
                     .forEach(calibreCustomField -> {
                         dao.fixId(calibreCustomField);
@@ -468,13 +428,15 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
 
+        final JsonCoder<Book> bookCoder = new BookCoder(context);
+
         for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
 
             if (!db.inTransaction()) {
                 txLock = db.beginTransaction(true);
             }
             try {
-                final Book book = mBookCoder.decode(books.getJSONObject(i));
+                final Book book = bookCoder.decode(books.getJSONObject(i));
                 Objects.requireNonNull(book.getString(DBKey.KEY_BOOK_UUID), DBKey.KEY_BOOK_UUID);
 
                 final long importNumericId = book.getLong(DBKey.PK_ID);

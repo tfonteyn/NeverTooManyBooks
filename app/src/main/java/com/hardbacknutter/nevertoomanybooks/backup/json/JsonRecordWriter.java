@@ -84,13 +84,6 @@ public class JsonRecordWriter
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
-    @Nullable
-    private JsonCoder<Bookshelf> mBookshelfCoder;
-    @Nullable
-    private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
-    @Nullable
-    private JsonCoder<CalibreCustomField> mCalibreCustomFieldCoder;
-
     /**
      * Constructor.
      *
@@ -100,31 +93,6 @@ public class JsonRecordWriter
     @AnyThread
     public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-    }
-
-    @NonNull
-    private JsonCoder<Bookshelf> getBookshelfCoder(@NonNull final Context context) {
-        if (mBookshelfCoder == null) {
-            mBookshelfCoder = new BookshelfCoder(context);
-        }
-        return mBookshelfCoder;
-    }
-
-    @NonNull
-    private JsonCoder<CalibreLibrary> getCalibreLibraryCoder(@NonNull final Context context) {
-        if (mCalibreLibraryCoder == null) {
-            mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
-        }
-        return mCalibreLibraryCoder;
-    }
-
-    @NonNull
-    private JsonCoder<CalibreCustomField> getCalibreCustomFieldCoder(
-            @NonNull final Context context) {
-        if (mCalibreCustomFieldCoder == null) {
-            mCalibreCustomFieldCoder = new CalibreCustomFieldCoder();
-        }
-        return mCalibreCustomFieldCoder;
     }
 
     @Override
@@ -220,7 +188,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getBookshelfDao().getAll();
                 if (!bookshelves.isEmpty()) {
                     jsonData.put(RecordType.Bookshelves.getName(),
-                                 getBookshelfCoder(context).encode(bookshelves));
+                                 new BookshelfCoder(context).encode(bookshelves));
                 }
                 results.bookshelves = bookshelves.size();
             }
@@ -234,7 +202,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getCalibreLibraryDao().getAllLibraries();
                 if (!libraries.isEmpty()) {
                     jsonData.put(RecordType.CalibreLibraries.getName(),
-                                 getCalibreLibraryCoder(context).encode(libraries));
+                                 new CalibreLibraryCoder(context).encode(libraries));
                 }
                 results.calibreLibraries = libraries.size();
             }
@@ -248,7 +216,7 @@ public class JsonRecordWriter
                         ServiceLocator.getInstance().getCalibreCustomFieldDao().getCustomFields();
                 if (!fields.isEmpty()) {
                     jsonData.put(RecordType.CalibreCustomFields.getName(),
-                                 getCalibreCustomFieldCoder(context).encode(fields));
+                                 new CalibreCustomFieldCoder().encode(fields));
                 }
                 results.calibreCustomFields = fields.size();
             }
@@ -258,9 +226,7 @@ public class JsonRecordWriter
 
                 final boolean collectCoverFilenames = recordTypes.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context,
-                                                            getBookshelfCoder(context),
-                                                            getCalibreLibraryCoder(context));
+                final JsonCoder<Book> coder = new BookCoder(context);
 
                 int delta = 0;
                 long lastUpdate = 0;
@@ -310,5 +276,4 @@ public class JsonRecordWriter
 
         return results;
     }
-
 }

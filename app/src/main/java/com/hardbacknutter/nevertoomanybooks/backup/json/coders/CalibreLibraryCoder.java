@@ -47,10 +47,9 @@ public class CalibreLibraryCoder
     @NonNull
     private final JsonCoder<Bookshelf> mBookshelfCoder;
 
-    public CalibreLibraryCoder(@NonNull final Context context,
-                               @NonNull final JsonCoder<Bookshelf> bookshelfCoder) {
+    public CalibreLibraryCoder(@NonNull final Context context) {
         mContext = context;
-        mBookshelfCoder = bookshelfCoder;
+        mBookshelfCoder = new BookshelfCoder(context);
     }
 
     @NonNull
@@ -59,7 +58,6 @@ public class CalibreLibraryCoder
             throws JSONException {
 
         final JSONObject data = new JSONObject();
-
         data.put(DBKey.PK_ID, library.getId());
         data.put(DBKey.KEY_CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
         data.put(DBKey.KEY_CALIBRE_LIBRARY_UUID, library.getUuid());
