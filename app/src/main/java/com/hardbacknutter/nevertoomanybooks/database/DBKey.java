@@ -98,12 +98,11 @@ public final class DBKey {
     public static final String KEY_STRIP_INFO_AMOUNT = "si_coll_amount";
     public static final String UTC_DATE_LAST_SYNC_STRIP_INFO = "si_coll_last_sync";
 
-    /*
-     * ======================================================================================
-     * {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}.
-     * {@link DBDefinitions#TBL_CALIBRE_VIRTUAL_LIBRARIES}.
-     * ======================================================================================
-     */
+    /** {@link DBDefinitions#TBL_CALIBRE_CUSTOM_FIELDS}. */
+    public static final String CALIBRE_CUSTOM_FIELD_NAME = "clb_cf_name";
+    public static final String CALIBRE_CUSTOM_FIELD_TYPE = "clb_cf_type";
+    public static final String CALIBRE_CUSTOM_FIELD_MAPPING = "clb_cf_mapping";
+
     /** {@link DBDefinitions#TBL_CALIBRE_LIBRARIES}. */
     public static final String UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY = "clb_lib_last_sync";
     public static final String KEY_CALIBRE_LIBRARY_STRING_ID = "clb_lib_id";

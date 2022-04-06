@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
@@ -61,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BookshelfDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreCustomFieldDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.CalibreLibraryDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dao.impl.ColorDaoImpl;
@@ -147,6 +149,8 @@ public final class ServiceLocator {
     private CalibreDao mCalibreDao;
     @Nullable
     private CalibreLibraryDao mCalibreLibraryDao;
+    @Nullable
+    private CalibreCustomFieldDao mCalibreCustomFieldDao;
     @Nullable
     private ColorDao mColorDao;
     @Nullable
@@ -527,6 +531,21 @@ public final class ServiceLocator {
     @VisibleForTesting
     public void setCalibreLibraryDao(@Nullable final CalibreLibraryDao dao) {
         mCalibreLibraryDao = dao;
+    }
+
+    @NonNull
+    public CalibreCustomFieldDao getCalibreCustomFieldDao() {
+        synchronized (this) {
+            if (mCalibreCustomFieldDao == null) {
+                mCalibreCustomFieldDao = new CalibreCustomFieldDaoImpl();
+            }
+        }
+        return mCalibreCustomFieldDao;
+    }
+
+    @VisibleForTesting
+    public void setCalibreCustomFieldDao(@Nullable final CalibreCustomFieldDao dao) {
+        mCalibreCustomFieldDao = dao;
     }
 
     @NonNull

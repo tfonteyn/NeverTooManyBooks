@@ -94,11 +94,7 @@ public class JsonArchiveWriter
             final ExportResults results;
 
             final Set<RecordType> recordTypes = mHelper.getRecordTypes();
-            // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-            if (recordTypes.contains(RecordType.Books)) {
-                recordTypes.add(RecordType.Bookshelves);
-                recordTypes.add(RecordType.CalibreLibraries);
-            }
+            RecordType.addRelatedTypes(recordTypes);
 
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);

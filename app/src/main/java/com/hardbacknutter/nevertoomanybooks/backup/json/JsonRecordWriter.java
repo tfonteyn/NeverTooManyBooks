@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFieldCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
@@ -57,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataWriterException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.io.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.org.json.JSONArray;
@@ -72,6 +74,7 @@ import com.hardbacknutter.org.json.JSONObject;
  *      <li>{@link RecordType#Certificates}</li>
  *      <li>{@link RecordType#Bookshelves}</li>
  *      <li>{@link RecordType#CalibreLibraries}</li>
+ *      <li>{@link RecordType#CalibreCustomFields}</li>
  *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
@@ -85,6 +88,8 @@ public class JsonRecordWriter
     private JsonCoder<Bookshelf> mBookshelfCoder;
     @Nullable
     private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
+    @Nullable
+    private JsonCoder<CalibreCustomField> mCalibreCustomFieldCoder;
 
     /**
      * Constructor.
@@ -111,6 +116,15 @@ public class JsonRecordWriter
             mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
         }
         return mCalibreLibraryCoder;
+    }
+
+    @NonNull
+    private JsonCoder<CalibreCustomField> getCalibreCustomFieldCoder(
+            @NonNull final Context context) {
+        if (mCalibreCustomFieldCoder == null) {
+            mCalibreCustomFieldCoder = new CalibreCustomFieldCoder();
+        }
+        return mCalibreCustomFieldCoder;
     }
 
     @Override
@@ -225,6 +239,20 @@ public class JsonRecordWriter
                 results.calibreLibraries = libraries.size();
             }
 
+            if (recordTypes.contains(RecordType.CalibreCustomFields)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgress(1, context.getString(
+                        R.string.site_calibre));
+
+                final List<CalibreCustomField> fields =
+                        ServiceLocator.getInstance().getCalibreCustomFieldDao().getCustomFields();
+                if (!fields.isEmpty()) {
+                    jsonData.put(RecordType.CalibreCustomFields.getName(),
+                                 getCalibreCustomFieldCoder(context).encode(fields));
+                }
+                results.calibreCustomFields = fields.size();
+            }
+
             if (recordTypes.contains(RecordType.Books)
                 && !progressListener.isCancelled()) {
 
@@ -269,14 +297,17 @@ public class JsonRecordWriter
                 }
             }
 
-        } catch (@NonNull final JSONException e) {
+            // Write the complete json output in one go
+            if (!jsonData.isEmpty()) {
+                // can throw StackOverflowError;
+                // but we've only ever seen that in the emulator... flw
+                writer.write(jsonData.toString());
+            }
+
+        } catch (@NonNull final JSONException | StackOverflowError e) {
             throw new DataWriterException(e);
         }
 
-        // Write the complete json output in one go
-        if (!jsonData.isEmpty()) {
-            writer.write(jsonData.toString());
-        }
         return results;
     }
 

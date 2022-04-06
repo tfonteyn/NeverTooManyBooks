@@ -80,6 +80,7 @@ public class ZipArchiveWriter
             case Certificates:
             case Bookshelves:
             case CalibreLibraries:
+            case CalibreCustomFields:
             case Books:
             case AutoDetect:
                 return RecordEncoding.Json;

@@ -674,25 +674,25 @@ public class CalibreContentServerReader
             final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
             if (userMetaData != null) {
                 //noinspection ConstantConditions
-                for (final CustomFields.Field cf : mLibrary.getCustomFields()) {
+                for (final CalibreCustomField cf : mLibrary.getCustomFields()) {
                     final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
 
                     // Sanity check, at this point it should always be true
                     if (data != null && cf.type.equals(data.getString(
-                            CustomFields.METADATA_DATATYPE))) {
+                            CalibreCustomField.METADATA_DATATYPE))) {
 
-                        if (!data.isNull(CustomFields.VALUE)) {
+                        if (!data.isNull(CalibreCustomField.VALUE)) {
                             switch (cf.type) {
-                                case CustomFields.TYPE_BOOL: {
+                                case CalibreCustomField.TYPE_BOOL: {
                                     // always overwrite
                                     localBook.putBoolean(cf.dbKey,
-                                                         data.getBoolean(CustomFields.VALUE));
+                                                         data.getBoolean(CalibreCustomField.VALUE));
                                     break;
                                 }
-                                case CustomFields.TYPE_DATETIME:
-                                case CustomFields.TYPE_COMMENTS:
-                                case CustomFields.TYPE_TEXT: {
-                                    final String value = data.getString(CustomFields.VALUE);
+                                case CalibreCustomField.TYPE_DATETIME:
+                                case CalibreCustomField.TYPE_COMMENTS:
+                                case CalibreCustomField.TYPE_TEXT: {
+                                    final String value = data.getString(CalibreCustomField.VALUE);
                                     // don't overwrite the local value with a remote 'not-set' value
                                     if (!CalibreContentServer.VALUE_IS_NONE.equals(value)) {
                                         localBook.putString(cf.dbKey, value);

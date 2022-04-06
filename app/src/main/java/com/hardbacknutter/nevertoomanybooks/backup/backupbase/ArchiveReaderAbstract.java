@@ -61,13 +61,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  *     <li>v4: Books will contain REFERENCES to Bookshelves and CalibreLibraries;
  *              and FULL data on other related objects.
  *         <ul>
- *             <li>{@link RecordType#MetaData} :         {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Styles} :           {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Preferences} :      {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Certificates} :     {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Bookshelves} :      {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#CalibreLibraries} : {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Books} :            {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#MetaData} :            {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Styles} :              {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Preferences} :         {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Certificates} :        {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Bookshelves} :         {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#CalibreLibraries} :    {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#CalibreCustomFields} : {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Books} :               {@link RecordEncoding#Json}</li>
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
@@ -240,33 +241,25 @@ public abstract class ArchiveReaderAbstract
             throws DataReaderException, IOException, StorageException {
 
         final Set<RecordType> recordTypes = mHelper.getRecordTypes();
+        RecordType.addRelatedTypes(recordTypes);
+
+        int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
+
+        final boolean readCovers = recordTypes.contains(RecordType.Cover);
+        if (readCovers) {
+            mCoverReader = new CoverRecordReader();
+
+            final Optional<Integer> coverCount = metaData.getCoverCount();
+            if (coverCount.isPresent()) {
+                estimatedSteps += coverCount.get();
+            } else {
+                // We don't have a count, so assume each book has 1 cover.
+                estimatedSteps *= 2;
+            }
+        }
+        progressListener.setMaxPos(estimatedSteps);
 
         try {
-            final boolean readCertificates = recordTypes.contains(RecordType.Certificates);
-
-            final boolean readCovers = recordTypes.contains(RecordType.Cover);
-            if (readCovers) {
-                mCoverReader = new CoverRecordReader();
-            }
-
-            final boolean readBooks = recordTypes.contains(RecordType.Books);
-            if (readBooks) {
-                recordTypes.add(RecordType.Bookshelves);
-                recordTypes.add((RecordType.CalibreLibraries));
-            }
-
-            int estimatedSteps = 1 + metaData.getBookCount().orElse(0);
-            if (readCovers) {
-                final Optional<Integer> coverCount = metaData.getCoverCount();
-                if (coverCount.isPresent()) {
-                    estimatedSteps += coverCount.get();
-                } else {
-                    // We don't have a count, so assume each book has 1 cover.
-                    estimatedSteps *= 2;
-                }
-            }
-            progressListener.setMaxPos(estimatedSteps);
-
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (recordTypes.contains(RecordType.Styles)) {
@@ -300,10 +293,22 @@ public abstract class ArchiveReaderAbstract
                     final RecordType type = record.getType().get();
 
                     if ((type == RecordType.Cover && readCovers)
-                        || (type == RecordType.Certificates && readCertificates)
-                        || (type == RecordType.Bookshelves && readBooks)
-                        || (type == RecordType.CalibreLibraries && readBooks)
-                        || (type == RecordType.Books && readBooks)
+
+                        || (type == RecordType.Books
+                            && recordTypes.contains(RecordType.Books))
+
+                        || (type == RecordType.Bookshelves
+                            && recordTypes.contains(RecordType.Bookshelves))
+
+                        || (type == RecordType.Certificates
+                            && recordTypes.contains(RecordType.Certificates))
+
+                        || (type == RecordType.CalibreLibraries
+                            && recordTypes.contains(RecordType.CalibreLibraries))
+
+                        || (type == RecordType.CalibreCustomFields
+                            && recordTypes.contains(RecordType.CalibreCustomFields))
+
                     ) {
                         readRecord(context, recordTypes, record, progressListener);
                     }

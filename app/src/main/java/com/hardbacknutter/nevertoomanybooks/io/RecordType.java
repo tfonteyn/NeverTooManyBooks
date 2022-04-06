@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.io;
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.ServiceLocator;
@@ -29,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 
 /**
@@ -92,6 +94,13 @@ public enum RecordType {
      * ONLY ONE PER ARCHIVE.
      */
     CalibreLibraries("calibrelibraries"),
+
+    /**
+     * All information needed to encode/decode
+     * {@link CalibreCustomField} elements.
+     * ONLY ONE PER ARCHIVE.
+     */
+    CalibreCustomFields("calibreCustomFields"),
 
     /**
      * All information needed to encode/decode {@link Book} elements.
@@ -158,6 +167,20 @@ public enum RecordType {
             Logger.w(TAG, "getType|Unknown entry=" + entryName);
         }
         return Optional.empty();
+    }
+
+    // this is a quick hack.... we'll probably regret doing this in the future..
+    public static void addRelatedTypes(@NonNull final Set<RecordType> recordTypes) {
+        // If we're doing preferences, then implicitly handle calibre custom fields as well
+        if (recordTypes.contains(Preferences)) {
+            recordTypes.add(CalibreCustomFields);
+        }
+
+        // If we're doing books, then we must do its dependencies:
+        if (recordTypes.contains(Books)) {
+            recordTypes.add(Bookshelves);
+            recordTypes.add((CalibreLibraries));
+        }
     }
 
     /**

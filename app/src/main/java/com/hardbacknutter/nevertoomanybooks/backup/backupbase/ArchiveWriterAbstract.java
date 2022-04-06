@@ -60,12 +60,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
  * <p>
  * There is a <strong>strict order</strong> of the entries:
  * <ol>
+ *     <li>These always come first in the given order</li>
  *     <li>{@link RecordType#MetaData}</li>
  *     <li>{@link RecordType#Styles}</li
  *     <li>{@link RecordType#Preferences}</li>
+ *
+ *     <li>These depend on other types being included or not</li>
  *     <li>{@link RecordType#Certificates}</li>
  *     <li>{@link RecordType#Bookshelves}</li>
  *     <li>{@link RecordType#CalibreLibraries}</li>
+ *     <li>{@link RecordType#CalibreCustomFields}</li>
+ *
+ *     <li>These always come last in the given order</li>
  *     <li>{@link RecordType#Books}</li>
  *     <li>{@link RecordType#Cover}</li>
  * </ol>
@@ -133,12 +139,7 @@ public abstract class ArchiveWriterAbstract
         ServiceLocator.getInstance().getMaintenanceDao().purge();
 
         final Set<RecordType> recordTypes = mHelper.getRecordTypes();
-
-        // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-        if (recordTypes.contains(RecordType.Books)) {
-            recordTypes.add(RecordType.Bookshelves);
-            recordTypes.add(RecordType.CalibreLibraries);
-        }
+        RecordType.addRelatedTypes(recordTypes);
 
         final LocalDateTime dateSince = mHelper.getLastDone();
 
@@ -182,7 +183,8 @@ public abstract class ArchiveWriterAbstract
                                                       RecordType.Preferences,
                                                       RecordType.Certificates,
                                                       RecordType.Bookshelves,
-                                                      RecordType.CalibreLibraries);
+                                                      RecordType.CalibreLibraries,
+                                                      RecordType.CalibreCustomFields);
             for (final RecordType type : typeList) {
                 if (!progressListener.isCancelled() && recordTypes.contains(type)) {
                     mResults.add(writeRecord(context, type, progressListener));
@@ -299,6 +301,7 @@ public abstract class ArchiveWriterAbstract
      *     <li>{@link RecordType#Certificates}</li>
      *     <li>{@link RecordType#Bookshelves}</li>
      *     <li>{@link RecordType#CalibreLibraries}</li>
+     *     <li>{@link RecordType#CalibreCustomFields}</li>
      * </ul>
      * <p>
      * When writing, the 'compress' flag is set to {@code true}.

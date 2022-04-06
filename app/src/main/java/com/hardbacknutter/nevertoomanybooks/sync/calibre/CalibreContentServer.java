@@ -202,6 +202,9 @@ public class CalibreContentServer
     /** As read from the Content Server. */
     @NonNull
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
+
+    private final Set<CalibreCustomField> mCalibreCustomFields = new HashSet<>();
+
     private final int mConnectTimeoutInMs;
     private final int mReadTimeoutInMs;
 
@@ -213,12 +216,9 @@ public class CalibreContentServer
     private FutureHttpGet<Uri> mFutureFileFetchRequest;
     @Nullable
     private ImageDownloader mImageDownloader;
-
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary mDefaultLibrary;
-
-
     private boolean mCalibreExtensionInstalled;
 
     /**
@@ -277,6 +277,9 @@ public class CalibreContentServer
         mReadTimeoutInMs = Prefs.getTimeoutValueInMs(
                 global, PREF_KEY + Prefs.pk_suffix_timeout_read_in_seconds,
                 READ_TIMEOUT_IN_MS);
+
+        mCalibreCustomFields.addAll(ServiceLocator.getInstance().getCalibreCustomFieldDao()
+                                                  .getCustomFields());
     }
 
     /**
@@ -606,22 +609,22 @@ public class CalibreContentServer
                                             final int bookId)
             throws StorageException, IOException, JSONException {
 
-        final Set<CustomFields.Field> customFields = new HashSet<>();
+        final Set<CalibreCustomField> calibreCustomFields = new HashSet<>();
         final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
         if (userMetaData != null) {
             // check the supported fields
-            for (final CustomFields.Field cf : CustomFields.getFields()) {
+            for (final CalibreCustomField cf : mCalibreCustomFields) {
                 final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
                 // do we have a match? (this check is needed, it's NOT a sanity check)
                 if (data != null && cf.type.equals(data.getString(
-                        CustomFields.METADATA_DATATYPE))) {
-                    customFields.add(cf);
+                        CalibreCustomField.METADATA_DATATYPE))) {
+                    calibreCustomFields.add(cf);
                 }
             }
         }
         // finally, hook them up to the library itself.
-        library.setCustomFields(customFields);
+        library.setCustomFields(calibreCustomFields);
     }
 
     @SuppressWarnings("unused")

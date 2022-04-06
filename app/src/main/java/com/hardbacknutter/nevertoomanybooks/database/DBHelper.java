@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.searchengines.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
@@ -66,6 +67,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
@@ -104,7 +106,7 @@ public class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 16;
+    public static final int DATABASE_VERSION = 17;
 
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
@@ -369,6 +371,34 @@ public class DBHelper
                    + ')');
     }
 
+
+    /**
+     * Run at installation time a set of default fields.
+     *
+     * @param db Database Access
+     */
+    private void prepareCalibreCustomFieldsTable(@NonNull final SQLiteDatabase db) {
+        final String[][] all = {
+                {"#read", CalibreCustomField.TYPE_BOOL, DBKey.BOOL_READ},
+
+                {"#read_start", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_START},
+                {"#read_end", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
+                {"#date_read", CalibreCustomField.TYPE_DATETIME, DBKey.DATE_READ_END},
+
+                {"#notes", CalibreCustomField.TYPE_TEXT, DBKey.KEY_PRIVATE_NOTES},
+                {"#notes", CalibreCustomField.TYPE_COMMENTS, DBKey.KEY_PRIVATE_NOTES}
+        };
+
+        final ContentValues cv = new ContentValues();
+        for (final String[] row : all) {
+            cv.clear();
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, row[0]);
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, row[1]);
+            cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, row[2]);
+            db.insert(TBL_CALIBRE_CUSTOM_FIELDS.getName(), null, cv);
+        }
+    }
+
     /**
      * Create all database triggers.
      *
@@ -615,6 +645,8 @@ public class DBHelper
         // and the all/default shelves
         prepareBookshelfTable(context, db);
 
+        prepareCalibreCustomFieldsTable(db);
+
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(db, false);
 
@@ -797,6 +829,10 @@ public class DBHelper
             TBL_STRIPINFO_COLLECTION.create(db, true);
 
             context.deleteDatabase("taskqueue.db");
+        }
+        if (oldVersion < 17) {
+            TBL_CALIBRE_CUSTOM_FIELDS.create(db, true);
+            prepareCalibreCustomFieldsTable(db);
         }
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table:

@@ -132,7 +132,11 @@ public final class DBDefinitions {
 
     /** A bridge to a Calibre database. Partially imported data. */
     public static final TableDefinition TBL_CALIBRE_BOOKS;
+    /** The custom fields in Calibre, mapped to our local fields. */
+    public static final TableDefinition TBL_CALIBRE_CUSTOM_FIELDS;
+    /** The Calibre library(ies) to which we have/are connected. **/
     public static final TableDefinition TBL_CALIBRE_LIBRARIES;
+    /** The mapping of a Calibre Library/Virtual Library to a Bookshelf. */
     public static final TableDefinition TBL_CALIBRE_VIRTUAL_LIBRARIES;
 
     /** A bridge to the stripinfo.be site. Site specific imported data. */
@@ -308,6 +312,13 @@ public final class DBDefinitions {
     /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Expression or {@code null} for the physical lib. */
     public static final Domain DOM_CALIBRE_VIRT_LIB_EXPR;
 
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    public static final Domain DOM_CALIBRE_CUSTOM_FIELD_NAME;
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    public static final Domain DOM_CALIBRE_CUSTOM_FIELD_TYPE;
+    /** {@link #TBL_CALIBRE_CUSTOM_FIELDS} */
+    public static final Domain DOM_CALIBRE_CUSTOM_FIELD_MAPPING;
+
     /** {@link #TBL_CALIBRE_BOOKS}. */
     public static final Domain DOM_CALIBRE_BOOK_ID;
     /** {@link #TBL_CALIBRE_BOOKS}. */
@@ -439,11 +450,17 @@ public final class DBDefinitions {
         TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
 
-        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib").setAlias("clb_l");
-        TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib").setAlias("clb_vl");
-        TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books").setAlias("clb_b");
+        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib")
+                .setAlias("clb_l");
+        TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib")
+                .setAlias("clb_vl");
+        TBL_CALIBRE_CUSTOM_FIELDS = new TableDefinition("calibre_custom_fields")
+                .setAlias("clb_cf");
+        TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books")
+                .setAlias("clb_b");
 
-        TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles").setAlias("bls");
+        TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles")
+                .setAlias("bls");
 
         TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
                 .setAlias("bl_ns");
@@ -885,6 +902,21 @@ public final class DBDefinitions {
                         .withDefaultEmptyString()
                         .build();
 
+        DOM_CALIBRE_CUSTOM_FIELD_NAME =
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_NAME, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+
+        DOM_CALIBRE_CUSTOM_FIELD_TYPE =
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+
+        DOM_CALIBRE_CUSTOM_FIELD_MAPPING =
+                new Domain.Builder(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+
         DOM_CALIBRE_LIBRARY_UTC_DATE_LAST_SYNC =
                 new Domain.Builder(DBKey.UTC_DATE_LAST_SYNC_CALIBRE_LIBRARY,
                                    ColumnInfo.TYPE_DATETIME)
@@ -1302,7 +1334,6 @@ public final class DBDefinitions {
                 .addIndex(DBKey.FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
-
         TBL_CALIBRE_LIBRARIES
                 .addDomains(DOM_PK_ID,
                             DOM_FK_BOOKSHELF,
@@ -1331,23 +1362,14 @@ public final class DBDefinitions {
                           DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), TBL_CALIBRE_VIRTUAL_LIBRARIES);
 
-
-        TBL_BOOK_LIST_NODE_STATE
+        TBL_CALIBRE_CUSTOM_FIELDS
                 .addDomains(DOM_PK_ID,
-                            DOM_FK_BOOKSHELF,
-                            DOM_FK_STYLE,
+                            DOM_CALIBRE_CUSTOM_FIELD_NAME,
+                            DOM_CALIBRE_CUSTOM_FIELD_TYPE,
+                            DOM_CALIBRE_CUSTOM_FIELD_MAPPING)
+                .setPrimaryKey(DOM_PK_ID);
+        ALL_TABLES.put(TBL_CALIBRE_CUSTOM_FIELDS.getName(), TBL_CALIBRE_CUSTOM_FIELDS);
 
-                            DOM_BL_NODE_KEY,
-                            DOM_BL_NODE_LEVEL,
-                            DOM_BL_NODE_GROUP,
-                            DOM_BL_NODE_EXPANDED,
-                            DOM_BL_NODE_VISIBLE)
-                .setPrimaryKey(DOM_PK_ID)
-                .addIndex("BOOKSHELF_STYLE", false,
-                          DOM_FK_BOOKSHELF,
-                          DOM_FK_STYLE);
-        ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
-                       TBL_BOOK_LIST_NODE_STATE);
 
         TBL_STRIPINFO_COLLECTION
                 .addDomains(DOM_FK_BOOK,
@@ -1365,6 +1387,24 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_STRIPINFO_COLLECTION.getName(),
                        TBL_STRIPINFO_COLLECTION);
 
+
+
+        TBL_BOOK_LIST_NODE_STATE
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOKSHELF,
+                            DOM_FK_STYLE,
+
+                            DOM_BL_NODE_KEY,
+                            DOM_BL_NODE_LEVEL,
+                            DOM_BL_NODE_GROUP,
+                            DOM_BL_NODE_EXPANDED,
+                            DOM_BL_NODE_VISIBLE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("BOOKSHELF_STYLE", false,
+                          DOM_FK_BOOKSHELF,
+                          DOM_FK_STYLE);
+        ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(),
+                       TBL_BOOK_LIST_NODE_STATE);
     }
 
     static {

@@ -320,15 +320,15 @@ public class CalibreContentServerWriter
             }
         }
 
-        for (final CustomFields.Field cf : library.getCustomFields()) {
+        for (final CalibreCustomField cf : library.getCustomFields()) {
             switch (cf.type) {
-                case CustomFields.TYPE_BOOL: {
+                case CalibreCustomField.TYPE_BOOL: {
                     changes.put(cf.calibreKey, localBook.getBoolean(cf.dbKey));
                     break;
                 }
-                case CustomFields.TYPE_DATETIME:
-                case CustomFields.TYPE_COMMENTS:
-                case CustomFields.TYPE_TEXT: {
+                case CalibreCustomField.TYPE_DATETIME:
+                case CalibreCustomField.TYPE_COMMENTS:
+                case CalibreCustomField.TYPE_TEXT: {
                     changes.put(cf.calibreKey, localBook.getString(cf.dbKey));
                     break;
                 }

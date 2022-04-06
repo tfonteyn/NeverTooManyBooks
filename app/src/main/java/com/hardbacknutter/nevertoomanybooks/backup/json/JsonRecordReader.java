@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.backupbase.BaseRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreCustomFieldCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CalibreLibraryCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
@@ -55,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferences
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Styles;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -68,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.io.DataReader;
 import com.hardbacknutter.nevertoomanybooks.io.DataReaderException;
 import com.hardbacknutter.nevertoomanybooks.io.RecordType;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
 import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
@@ -87,6 +90,7 @@ import com.hardbacknutter.org.json.JSONTokener;
  *         <li>{@link RecordType#Certificates}</li>
  *         <li>{@link RecordType#Bookshelves}</li>
  *         <li>{@link RecordType#CalibreLibraries}</li>
+ *         <li>{@link RecordType#CalibreCustomFields}</li>
  *         <li>{@link RecordType#Books}</li>
  *     </ul>
  *     </li>
@@ -101,6 +105,7 @@ import com.hardbacknutter.org.json.JSONTokener;
  *              <li>{@link RecordType#Certificates}</li>
  *              <li>{@link RecordType#Bookshelves}</li>
  *              <li>{@link RecordType#CalibreLibraries}</li>
+ *              <li>{@link RecordType#CalibreCustomFields}</li>
  *              <li>{@link RecordType#Books}</li>
  *         </ul>
  *         </li>
@@ -122,6 +127,8 @@ public class JsonRecordReader
     private JsonCoder<Bookshelf> mBookshelfCoder;
     @Nullable
     private JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
+    @Nullable
+    private JsonCoder<CalibreCustomField> mCalibreCustomFieldCoder;
 
     /**
      * Constructor.
@@ -155,6 +162,14 @@ public class JsonRecordReader
             mCalibreLibraryCoder = new CalibreLibraryCoder(context, getBookshelfCoder(context));
         }
         return mCalibreLibraryCoder;
+    }
+
+    @NonNull
+    private JsonCoder<CalibreCustomField> getCalibreCustomFieldCoder() {
+        if (mCalibreCustomFieldCoder == null) {
+            mCalibreCustomFieldCoder = new CalibreCustomFieldCoder();
+        }
+        return mCalibreCustomFieldCoder;
     }
 
     @Override
@@ -256,6 +271,11 @@ public class JsonRecordReader
                     if (recordType == RecordType.CalibreLibraries
                         || recordType == RecordType.AutoDetect) {
                         readCalibreLibraries(context, root, helper);
+                    }
+
+                    if (recordType == RecordType.CalibreCustomFields
+                        || recordType == RecordType.AutoDetect) {
+                        readCalibreCustomFields(root, helper);
                     }
 
                     if (recordType == RecordType.Books
@@ -385,6 +405,37 @@ public class JsonRecordReader
                             }
                         } else {
                             libraryDao.insert(library);
+                        }
+                    });
+        }
+    }
+
+    private void readCalibreCustomFields(@NonNull final JSONObject root,
+                                         @NonNull final ImportHelper helper)
+            throws JSONException {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.CalibreCustomFields.getName());
+        if (jsonRoot != null) {
+            final CalibreCustomFieldDao dao =
+                    ServiceLocator.getInstance().getCalibreCustomFieldDao();
+
+            getCalibreCustomFieldCoder()
+                    .decode(jsonRoot)
+                    .forEach(calibreCustomField -> {
+                        dao.fixId(calibreCustomField);
+                        if (calibreCustomField.getId() > 0) {
+                            // The field already exists
+                            final DataReader.Updates updateOption = helper.getUpdateOption();
+                            switch (updateOption) {
+                                case Overwrite: {
+                                    dao.update(calibreCustomField);
+                                    break;
+                                }
+                                case OnlyNewer:
+                                case Skip:
+                                    break;
+                            }
+                        } else {
+                            dao.insert(calibreCustomField);
                         }
                     });
         }

@@ -1,0 +1,150 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.database.dao.impl;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.DBKey;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreCustomFieldDao;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.sync.calibre.CalibreCustomField;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_CUSTOM_FIELDS;
+
+public class CalibreCustomFieldDaoImpl
+        extends BaseDaoImpl
+        implements CalibreCustomFieldDao {
+
+    private static final String TAG = "CalibreCustomFieldDao";
+
+    private static final String BASE_SELECT =
+            SELECT_ + DBKey.PK_ID
+            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
+            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
+            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+            + _FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName();
+
+    private static final String SELECT_BY_ID =
+            BASE_SELECT + _WHERE_ + DBKey.PK_ID + "=?";
+
+
+    private static final String SELECT_ALL =
+            BASE_SELECT + _ORDER_BY_ + DBKey.CALIBRE_CUSTOM_FIELD_NAME + _COLLATION;
+
+
+    private static final String INSERT =
+            INSERT_INTO_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
+            + '(' + DBKey.CALIBRE_CUSTOM_FIELD_NAME
+            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_TYPE
+            + ',' + DBKey.CALIBRE_CUSTOM_FIELD_MAPPING
+            + ") VALUES(?,?,?)";
+
+    private static final String DELETE_BY_ID =
+            DELETE_FROM_ + TBL_CALIBRE_CUSTOM_FIELDS.getName()
+            + _WHERE_ + DBKey.PK_ID + "=?";
+
+    /**
+     * Constructor.
+     */
+    public CalibreCustomFieldDaoImpl() {
+        super(TAG);
+    }
+
+    @Override
+    public long fixId(@NonNull final CalibreCustomField calibreCustomField) {
+        final long id = find(calibreCustomField);
+        calibreCustomField.setId(id);
+        return id;
+    }
+
+    @Override
+    public long insert(@NonNull final CalibreCustomField calibreCustomField) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
+            stmt.bindString(1, calibreCustomField.calibreKey);
+            stmt.bindString(2, calibreCustomField.type);
+            stmt.bindString(3, calibreCustomField.dbKey);
+            final long iId = stmt.executeInsert();
+            if (iId > 0) {
+                calibreCustomField.setId(iId);
+            }
+            return iId;
+        }
+    }
+
+    @Override
+    public boolean update(@NonNull final CalibreCustomField calibreCustomField) {
+
+        final ContentValues cv = new ContentValues();
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_NAME, calibreCustomField.calibreKey);
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_TYPE, calibreCustomField.type);
+        cv.put(DBKey.CALIBRE_CUSTOM_FIELD_MAPPING, calibreCustomField.dbKey);
+
+        final int rowsAffected = mDb.update(TBL_CALIBRE_CUSTOM_FIELDS.getName(), cv,
+                                            DBKey.PK_ID + "=?",
+                                            new String[]{String.valueOf(
+                                                    calibreCustomField.getId())});
+        return 0 < rowsAffected;
+    }
+
+    @Override
+    public boolean delete(@NonNull final CalibreCustomField calibreCustomField) {
+        final int rowsAffected;
+
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
+            stmt.bindLong(1, calibreCustomField.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
+        if (rowsAffected > 0) {
+            calibreCustomField.setId(0);
+        }
+        return rowsAffected == 1;
+    }
+
+    @NonNull
+    @Override
+    public ArrayList<CalibreCustomField> getCustomFields() {
+        final ArrayList<CalibreCustomField> list = new ArrayList<>();
+        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final CalibreCustomField field = new CalibreCustomField(
+                        rowData.getLong(DBKey.PK_ID),
+                        rowData);
+                list.add(field);
+            }
+        }
+        return list;
+    }
+
+    private long find(@NonNull final CalibreCustomField calibreCustomField) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_BY_ID)) {
+            stmt.bindLong(1, calibreCustomField.getId());
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+}

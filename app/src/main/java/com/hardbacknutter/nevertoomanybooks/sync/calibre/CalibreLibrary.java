@@ -61,12 +61,12 @@ public class CalibreLibrary
 
     /**
      * The custom fields <strong>present</strong> on the server.
-     * This will be a subset of the supported fields from {@link CustomFields}.
+     * This will be a subset of the supported fields.
      * <p>
      * Not stored locally. Only valid while importing/exporting.
      */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Set<CustomFields.Field> mCustomFields = new HashSet<>();
+    private final Set<CalibreCustomField> mCalibreCustomFields = new HashSet<>();
 
     /** The list of virtual libs in this library. */
     private final ArrayList<CalibreVirtualLibrary> mVirtualLibraries = new ArrayList<>();
@@ -142,8 +142,8 @@ public class CalibreLibrary
 
         mTotalBooks = in.readInt();
         //noinspection ConstantConditions
-        Arrays.stream(in.readParcelableArray(CustomFields.Field.class.getClassLoader()))
-              .forEach(field -> mCustomFields.add((CustomFields.Field) field));
+        Arrays.stream(in.readParcelableArray(CalibreCustomField.class.getClassLoader()))
+              .forEach(field -> mCalibreCustomFields.add((CalibreCustomField) field));
     }
 
     @NonNull
@@ -202,13 +202,13 @@ public class CalibreLibrary
     }
 
     @NonNull
-    public Set<CustomFields.Field> getCustomFields() {
-        return mCustomFields;
+    public Set<CalibreCustomField> getCustomFields() {
+        return mCalibreCustomFields;
     }
 
-    void setCustomFields(final Set<CustomFields.Field> customFields) {
-        mCustomFields.clear();
-        mCustomFields.addAll(customFields);
+    void setCustomFields(final Set<CalibreCustomField> calibreCustomFields) {
+        mCalibreCustomFields.clear();
+        mCalibreCustomFields.addAll(calibreCustomFields);
     }
 
     @NonNull
@@ -235,7 +235,7 @@ public class CalibreLibrary
 
         dest.writeInt(mTotalBooks);
         //noinspection ZeroLengthArrayAllocation
-        dest.writeParcelableArray(mCustomFields.toArray(new CustomFields.Field[0]), flags);
+        dest.writeParcelableArray(mCalibreCustomFields.toArray(new CalibreCustomField[0]), flags);
     }
 
     @Override

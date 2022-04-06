@@ -134,11 +134,7 @@ public class JsonArchiveReader
         }
 
         final Set<RecordType> recordTypes = mHelper.getRecordTypes();
-        // If we're doing books, then we MUST do Bookshelves (and Calibre libraries)
-        if (recordTypes.contains(RecordType.Books)) {
-            recordTypes.add(RecordType.Bookshelves);
-            recordTypes.add((RecordType.CalibreLibraries));
-        }
+        RecordType.addRelatedTypes(recordTypes);
 
         try (RecordReader recordReader = new JsonRecordReader(context, recordTypes)) {
             // wrap the entire input into a single record.
