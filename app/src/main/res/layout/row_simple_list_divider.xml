@@ -19,23 +19,23 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- FIXME: frustration alert: the width is hardcoded because there just seems to be no way
-            of getting the width adjust to the maximum width of the other items in the RecyclerView
-            where this view is used.
-            When using android:gravity="fill_horizontal",
-            It always maximizes the width of the Dialog.
+<!-- Frustration alert: the width is hardcoded because there just seems to be no way
+     of getting the width adjust to the maximum width of the other items in the RecyclerView
+     where this view is used.
+     When using android:gravity="fill_horizontal",
+     It always maximizes the width of the Dialog.
+     Using 320dp works well for all screen from sw320dp to sw800.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center"
     android:orientation="vertical"
     tools:viewBindingIgnore="true"
     >
 
-    <!-- TODO: make width dependent on 'sw' value -->
     <View
         android:layout_width="320dp"
         android:layout_height="1dp"
