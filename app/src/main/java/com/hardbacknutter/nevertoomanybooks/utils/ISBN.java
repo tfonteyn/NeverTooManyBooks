@@ -507,6 +507,7 @@ public class ISBN {
      * <p>
      * This method does NOT check on a specific length (except as above) and whether
      * the actual digits form a valid code.
+     * If an illegal character is found, we return the digits found up to then.
      *
      * @param str to convert
      *
@@ -540,7 +541,8 @@ public class ISBN {
                 foundX = true;
 
             } else {
-                throw new NumberFormatException(ERROR_INVALID_CHARACTER + c);
+                // Invalid character found: don't throw; just return whatever we got up to now.
+                return digits;
             }
 
             digits.add(digit);
