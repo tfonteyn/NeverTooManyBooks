@@ -72,8 +72,6 @@ public final class ExMsg {
                                  @NonNull final Throwable e) {
         String msg = null;
 
-        //FIXME: review some of these error message and improve them
-
         // Use the embedded localised message if possible
         if (e instanceof LocalizedException) {
             msg = ((LocalizedException) e).getUserMessage(context);
@@ -123,6 +121,7 @@ public final class ExMsg {
         } else if (e instanceof StackOverflowError) {
             // This is BAD.... but we've only ever seen this in the emulator ... flw
             // ^^^ 2022-04-06
+            // TODO: give user detailed message
             msg = context.getString(R.string.error_unknown_long,
                                     context.getString(R.string.pt_maintenance));
 
