@@ -651,7 +651,7 @@
     <string name="lbl_library">Biblioteca</string>
     <string name="action_create">Creare</string>
     <string name="menu_download_folder">Cartella di download locale</string>
-    <string name="menu_download_ebook_format">Scarica eBook (%1s)</string>
+    <string name="menu_download_ebook_format">Scarica eBook (%1$s)</string>
     <string name="progress_msg_downloading">Download in corso…</string>
     <string name="progress_end_download_successful">Download riuscito</string>
     <string name="error_download_failed">Scaricamento fallito</string>
@@ -691,7 +691,7 @@
     <string name="btn_show_toc_long">Mostra sommario</string>
     <string name="lbl_collection">Collezione</string>
     <string name="neither">Nessuno dei due</string>
-    <string name="lbl_story_in_multiple_books">Questa storia è presente in più libri:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">«%1$s»\n è presente in più libri:\n\n%2$s</string>
     <string name="lbl_sql_query">Interrogazione SQL</string>
     <string name="lbl_book_detail_screen">Pagina dei dettagli del libro</string>
     <string name="lbl_date_last_updated">Data ultimo aggiornamento</string>

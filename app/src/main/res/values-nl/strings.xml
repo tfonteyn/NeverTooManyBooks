@@ -649,7 +649,7 @@
     <string name="lbl_library">Bibliotheek</string>
     <string name="action_create">Creëer</string>
     <string name="menu_download_folder">Lokale downloadmap</string>
-    <string name="menu_download_ebook_format">EBook downloaden (%1s)</string>
+    <string name="menu_download_ebook_format">EBook downloaden (%1$s)</string>
     <string name="progress_msg_downloading">Downloaden…</string>
     <string name="progress_end_download_successful">Download succesvol</string>
     <string name="error_download_failed">Download mislukt</string>
@@ -689,7 +689,7 @@
     <string name="btn_show_toc_long">Inhoudsopgave weergeven</string>
     <string name="lbl_collection">Collectie</string>
     <string name="neither">Geen van beide</string>
-    <string name="lbl_story_in_multiple_books">Dit verhaal is aanwezig in meerdere boeken:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s”\n is aanwezig in meerdere boeken:\n\n%2$s</string>
     <string name="lbl_sql_query">SQL-query</string>
     <string name="lbl_book_detail_screen">Pagina met boekdetails</string>
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>

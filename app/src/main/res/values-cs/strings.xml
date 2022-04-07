@@ -648,7 +648,7 @@
     <string name="lbl_library">Knihovny</string>
     <string name="action_create">Vytvořit</string>
     <string name="menu_download_folder">Místní složka pro stahování</string>
-    <string name="menu_download_ebook_format">Stáhnout eBook (%1s)</string>
+    <string name="menu_download_ebook_format">Stáhnout eBook (%1$s)</string>
     <string name="progress_msg_downloading">Stahování…</string>
     <string name="progress_end_download_successful">Stahování bylo úspěšné</string>
     <string name="error_download_failed">Stažení se nezdařilo</string>
@@ -689,7 +689,7 @@
     <string name="btn_show_toc_long">Zobrazit obsah</string>
     <string name="lbl_collection">Sbírka</string>
     <string name="neither">Ani</string>
-    <string name="lbl_story_in_multiple_books">Tento příběh je přítomen ve více knihách:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s“\n je přítomen ve více knihách:\n\n%2$s</string>
     <string name="lbl_sql_query">SQL dotaz</string>
     <string name="lbl_book_detail_screen">Stránka s podrobnostmi o knize</string>
     <string name="lbl_date_last_updated">Datum poslední aktualizace</string>

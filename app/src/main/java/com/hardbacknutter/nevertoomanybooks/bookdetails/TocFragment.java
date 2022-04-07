@@ -41,17 +41,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.BaseFragment;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.TocBaseAdapter;
 import com.hardbacknutter.nevertoomanybooks.database.DBKey;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentTocBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -222,21 +219,7 @@ public class TocFragment
                                          final int viewType) {
             final RowTocEntryBinding vb = RowTocEntryBinding.inflate(mInflater, parent, false);
             final Holder holder = new Holder(vb);
-
-            initTypeButton(holder.vb.btnType, viewType);
-
-            holder.vb.btnType.setOnClickListener(v -> {
-                final String titles = mAuthorWorkList
-                        .get(holder.getBindingAdapterPosition())
-                        .getBookTitles(v.getContext())
-                        .stream()
-                        .map(bt -> v.getContext().getString(R.string.list_element,
-                                                            bt.getLabel(v.getContext())))
-                        .collect(Collectors.joining("\n"));
-                StandardDialogs.infoPopup(
-                        holder.vb.btnType,
-                        v.getContext().getString(R.string.lbl_story_in_multiple_books, titles));
-            });
+            initTypeButton(holder, viewType);
 
             return holder;
         }

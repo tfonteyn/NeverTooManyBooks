@@ -648,7 +648,7 @@
     <string name="lbl_library">библиотека</string>
     <string name="action_create">Создайте</string>
     <string name="menu_download_folder">Локальная папка загрузки</string>
-    <string name="menu_download_ebook_format">Скачать электронную книгу (%1s)</string>
+    <string name="menu_download_ebook_format">Скачать электронную книгу (%1$s)</string>
     <string name="progress_msg_downloading">Скачивание…</string>
     <string name="progress_end_download_successful">Загрузка прошла успешно</string>
     <string name="error_download_failed">Загрузка не удалась</string>
@@ -689,7 +689,7 @@
     <string name="btn_show_toc_long">Показать оглавление</string>
     <string name="lbl_collection">Коллекция</string>
     <string name="neither">Ни один</string>
-    <string name="lbl_story_in_multiple_books">Эта история присутствует в нескольких книгах:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">«%1$s»\n присутствует в нескольких книгах:\n\n%2$s</string>
     <string name="lbl_sql_query">SQL-запрос</string>
     <string name="lbl_book_detail_screen">Страница сведений о книге</string>
     <string name="lbl_date_last_updated">Дата последнего обновления</string>

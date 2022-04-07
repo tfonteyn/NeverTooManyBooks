@@ -649,7 +649,7 @@
     <string name="lbl_library">Kitaplık</string>
     <string name="action_create">Oluşturmak</string>
     <string name="menu_download_folder">Yerel indirme klasörü</string>
-    <string name="menu_download_ebook_format">E-Kitabı İndir (%1s)</string>
+    <string name="menu_download_ebook_format">E-Kitabı İndir (%1$s)</string>
     <string name="progress_msg_downloading">İndiriliyor…</string>
     <string name="progress_end_download_successful">İndirme başarılı</string>
     <string name="error_download_failed">Yükleme başarısız</string>
@@ -690,7 +690,7 @@
     <string name="btn_show_toc_long">İçindekiler Tablosunu Göster</string>
     <string name="lbl_collection">Toplamak</string>
     <string name="neither">Hiç biri</string>
-    <string name="lbl_story_in_multiple_books">Bu hikaye birden fazla kitapta mevcuttur:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">“%1$s”\n birden fazla kitapta mevcuttur:\n\n%2$s</string>
     <string name="lbl_sql_query">SQL sorgusu</string>
     <string name="lbl_book_detail_screen">Kitap ayrıntıları sayfası</string>
     <string name="lbl_date_last_updated">Son güncelleme tarihi</string>

@@ -652,7 +652,7 @@
     <string name="lbl_library">βιβλιοθήκης</string>
     <string name="action_create">Δημιουργώ</string>
     <string name="menu_download_folder">Τοπικός φάκελος λήψης</string>
-    <string name="menu_download_ebook_format">Λήψη eBook (%1s)</string>
+    <string name="menu_download_ebook_format">Λήψη eBook (%1$s)</string>
     <string name="progress_msg_downloading">Λήψη…</string>
     <string name="progress_end_download_successful">Η λήψη ήταν επιτυχής</string>
     <string name="error_download_failed">Η λήψη απέτυχε</string>
@@ -692,7 +692,7 @@
     <string name="btn_show_toc_long">Εμφάνιση Πίνακα Περιεχομένων</string>
     <string name="lbl_collection">Συλλογή</string>
     <string name="neither">κανενα απο τα δυο</string>
-    <string name="lbl_story_in_multiple_books">Αυτή η ιστορία υπάρχει σε πολλά βιβλία:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">«%1$s»\n υπάρχει σε πολλά βιβλία:\n\n%2$s</string>
     <string name="lbl_sql_query">Ερώτημα SQL</string>
     <string name="lbl_book_detail_screen">Σελίδα λεπτομερειών βιβλίου</string>
     <string name="lbl_date_last_updated">Ημερομηνία τελευταίας ενημέρωσης</string>

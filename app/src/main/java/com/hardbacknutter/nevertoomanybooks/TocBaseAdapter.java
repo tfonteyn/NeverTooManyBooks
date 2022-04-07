@@ -33,8 +33,10 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.fastscroller.FastScroller;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -75,12 +77,32 @@ public abstract class TocBaseAdapter
         mTocEntryIcon = res.getDrawable(R.drawable.ic_baseline_library_books_24, theme);
     }
 
-    protected void initTypeButton(@NonNull final ImageButton btnType,
+    protected void initTypeButton(@NonNull final TocHolder holder,
                                   final int viewType) {
+        final ImageButton btnType = holder.getIconBtnView();
+
         if (viewType == AuthorWork.Type.TocEntry.value) {
             btnType.setImageDrawable(mTocEntryIcon);
             btnType.setContentDescription(mMultipleBooksStr);
+
+            btnType.setOnClickListener(v -> {
+                final Context context = v.getContext();
+                final String titles = mAuthorWorkList
+                        .get(holder.getBindingAdapterPosition())
+                        .getBookTitles(context)
+                        .stream()
+                        .map(bt -> context.getString(R.string.list_element,
+                                                     bt.getLabel(context)))
+                        .collect(Collectors.joining("\n"));
+                final String msg = context.getString(R.string.lbl_story_in_multiple_books,
+                                                     holder.getTitleView().getText().toString(),
+                                                     titles);
+                // x/y offsets more or less arbitrary
+                StandardDialogs.infoPopup(btnType, 24, -160, msg);
+            });
         } else {
+            // AuthorWork.Type.Book
+            // AuthorWork.Type.BookLight
             btnType.setImageDrawable(mBookEntryIcon);
             btnType.setContentDescription(mBookStr);
         }

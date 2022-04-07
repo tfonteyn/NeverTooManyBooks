@@ -651,7 +651,7 @@
     <string name="lbl_library">Bibliothek</string>
     <string name="action_create">Erstellen</string>
     <string name="menu_download_folder">Lokaler Download-Ordner</string>
-    <string name="menu_download_ebook_format">EBook herunterladen (%1s)</string>
+    <string name="menu_download_ebook_format">EBook herunterladen (%1$s)</string>
     <string name="progress_msg_downloading">Wird heruntergeladen…</string>
     <string name="progress_end_download_successful">Herunterladen erfolgreich</string>
     <string name="error_download_failed">Herunterladen fehlgeschlagen</string>
@@ -692,7 +692,7 @@
     <string name="btn_show_toc_long">Inhaltsverzeichnis anzeigen</string>
     <string name="lbl_collection">Sammlung</string>
     <string name="neither">Weder</string>
-    <string name="lbl_story_in_multiple_books">Diese Geschichte ist in mehreren Büchern vorhanden:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">„%1$s“\n ist in mehreren Büchern vorhanden:\n\n%2$s</string>
     <string name="lbl_sql_query">SQL-Abfrage</string>
     <string name="lbl_book_detail_screen">Seite mit den Buchdetails</string>
     <string name="lbl_date_last_updated">Datum zuletzt aktualisiert</string>

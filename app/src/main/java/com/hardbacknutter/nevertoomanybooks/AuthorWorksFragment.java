@@ -403,8 +403,7 @@ public class AuthorWorksFragment
                                          final int viewType) {
             final RowAuthorWorkBinding vb = RowAuthorWorkBinding.inflate(mInflater, parent, false);
             final Holder holder = new Holder(vb);
-
-            initTypeButton(holder.vb.btnType, viewType);
+            initTypeButton(holder, viewType);
 
             // click -> get the book(s) for that entry and display.
             holder.itemView.setOnClickListener(v -> gotoBook(holder.getBindingAdapterPosition()));

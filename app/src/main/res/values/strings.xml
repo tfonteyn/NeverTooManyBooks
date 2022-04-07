@@ -860,7 +860,7 @@
 
     <string name="menu_set_download_folder">Set the download folder</string>
     <string name="menu_download_folder">Local download folder</string>
-    <string name="menu_download_ebook_format">Download eBook (%1s)</string>
+    <string name="menu_download_ebook_format">Download eBook (%1$s)</string>
     <string name="progress_msg_downloading">Downloading…</string>
     <string name="progress_end_download_successful">Download successful</string>
     <string name="error_download_failed">Download failed</string>
@@ -1383,7 +1383,7 @@
 
     <string name="lbl_anthology">Anthology</string>
     <string name="lbl_collection">Collection</string>
-    <string name="lbl_story_in_multiple_books">This story is present in multiple books:\n\n%1s</string>
+    <string name="lbl_story_in_multiple_books">“%1$s”\n is present in multiple books:\n\n%2$s</string>
 
     <string name="lbl_format">Format</string>
     <!-- [VERIFIED] -->
