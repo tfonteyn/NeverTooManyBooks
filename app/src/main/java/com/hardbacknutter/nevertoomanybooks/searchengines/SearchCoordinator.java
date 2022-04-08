@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,8 @@ public class SearchCoordinator
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
+    /** The data returned from the search can contain this key with error messages. */
+    public static final String BKEY_SEARCH_ERROR = TAG + ":error";
 
     /**
      * List of front/back cover file specs as collected during the search.
@@ -106,7 +109,6 @@ public class SearchCoordinator
             TAG + ":fileSpec_array:1"
     };
 
-    public static final String BKEY_SEARCH_ERROR = TAG + ":error";
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
@@ -117,24 +119,28 @@ public class SearchCoordinator
     private final MutableLiveData<LiveDataEvent<TaskResult<Bundle>>>
             mSearchCoordinatorFinished = new MutableLiveData<>();
 
+
     /** List of Tasks being managed by *this* object. */
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
+
+    /** Flag indicating we're shutting down. */
+    private final AtomicBoolean mCancelled = new AtomicBoolean();
+
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
-    /** Mappers to apply. */
-    private final Collection<Mapper> mMappers = new ArrayList<>();
-    private final CoverFilter mCoverFilter = new CoverFilter();
+    private final Map<Integer, Bundle> mSearchResultsBySite = new HashMap<>();
 
     /** Accumulates the last message from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Integer, Exception>
-            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, Exception> mSearchErrorsBySite =
+            Collections.synchronizedMap(new HashMap<>());
+
     /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
-    private final Map<Integer, TaskProgress> mSearchProgressMessages = new HashMap<>();
+    private final Map<Integer, TaskProgress> mSearchProgressBySite = new HashMap<>();
 
-
+    /** Reference to the registry. */
+    private SearchEngineRegistry mSearchEngineRegistry;
     /**
      * Sites to search on. If this list is empty, all searches will return {@code false}.
      * This list includes both enabled and disabled sites.
@@ -143,15 +149,9 @@ public class SearchCoordinator
     /** Base message for progress updates. */
     @Nullable
     private String mBaseMessage;
-    /** Flag indicating at least one search is currently running. */
-    private boolean mIsSearchActive;
-    /** Flag indicating we're shutting down. */
-    private final AtomicBoolean mCancelled = new AtomicBoolean();
-    /** Whether of not to fetch thumbnails. */
-    @Nullable
-    private boolean[] mFetchCover;
+
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
-    private boolean mWaitingForExactCode;
+    private boolean mWaitingForIsbnOrCode;
     /** Original ISBN text for search. */
     @NonNull
     private String mIsbnSearchText = "";
@@ -171,155 +171,28 @@ public class SearchCoordinator
     /** Original publisher for search. */
     @NonNull
     private String mPublisherSearchText = "";
-    /** Accumulated book data. */
-    private Bundle mBookData;
+    /** Whether of not to fetch thumbnails. */
+    @Nullable
+    private boolean[] mFetchCover;
+
+
     /** DEBUG timer. */
     private long mSearchStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
-    private SearchEngineRegistry mSearchEngineRegistry;
+
+
     /** Cached string resource. */
     private String mListElementPrefixString;
-    private DateParser mDateParser;
+
+    private ResultsAccumulator mResultsAccumulator;
 
     /** Observable. */
     @NonNull
     public LiveData<LiveDataEvent<TaskProgress>> onProgress() {
         return mSearchCoordinatorProgress;
-    }
-
-    /**
-     * Process the message and start another task if required.
-     *
-     * @param taskId of task
-     * @param result of a search (can be null for failed/cancelled searches)
-     */
-    @SuppressLint("WrongConstant")
-    private void onSearchTaskFinished(final int taskId,
-                                      @Nullable final Bundle result) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            mSearchTasksEndTime.put(taskId, System.nanoTime());
-        }
-
-        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
-
-        // clear obsolete progress status
-        synchronized (mSearchProgressMessages) {
-            mSearchProgressMessages.remove(taskId);
-        }
-        // and update our listener.
-        mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
-
-        if (mWaitingForExactCode) {
-            if (result != null && hasIsbn(result)) {
-                mWaitingForExactCode = false;
-                // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = result.getString(DBKey.KEY_ISBN, "");
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn=" + mIsbnSearchText);
-                }
-
-                // Start the others...even if they have run before.
-                // They will redo the search WITH the ISBN.
-                startSearch();
-            } else {
-                // Start next one that has not run yet.
-                startNextSearch();
-            }
-        }
-
-        final boolean allDone;
-        synchronized (mActiveTasks) {
-            // Remove the finished task from our list
-            mActiveTasks.stream()
-                        .filter(searchTask -> searchTask.getTaskId() == taskId)
-                        .findFirst()
-                        .ifPresent(mActiveTasks::remove);
-
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|finished=" + mSearchEngineRegistry.getByEngineId(taskId)
-                                                                 .getName(context));
-
-                for (final SearchTask searchTask : mActiveTasks) {
-                    Log.d(TAG, "mSearchTaskListener.onFinished"
-                               + "|running="
-                               + mSearchEngineRegistry.getByEngineId(searchTask.getTaskId())
-                                                      .getName(context));
-                }
-            }
-
-            allDone = mActiveTasks.isEmpty();
-        }
-
-        if (allDone) {
-            // no more tasks ? Then send the results back to our creator.
-
-            final long processTime = System.nanoTime();
-
-            mIsSearchActive = false;
-            accumulateResults(context);
-            final String searchErrors = accumulateErrors(context);
-
-            if (searchErrors != null && !searchErrors.isEmpty()) {
-                mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
-            }
-
-            final LiveDataEvent<TaskResult<Bundle>> message =
-                    new LiveDataEvent<>(
-                            new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR, mBookData));
-            if (mCancelled.get()) {
-                mSearchCoordinatorCancelled.setValue(message);
-            } else {
-                mSearchCoordinatorFinished.setValue(message);
-            }
-
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|wasCancelled=" + mCancelled.get()
-                           + "|searchErrors=" + searchErrors);
-
-                if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-                    for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
-                        final long start = mSearchTasksStartTime.valueAt(i);
-                        // use the key, not the index!
-                        final int key = mSearchTasksStartTime.keyAt(i);
-                        final long end = mSearchTasksEndTime.get(key);
-
-                        final String engineName = mSearchEngineRegistry.getByEngineId(key)
-                                                                       .getName(context);
-
-                        if (end != 0) {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|engine=%20s:%10d ms",
-                                                     engineName,
-                                                     (end - start) / NANO_TO_MILLIS));
-                        } else {
-                            Log.d(TAG, String.format(Locale.ENGLISH,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|engine=%20s|never finished",
-                                                     engineName));
-                        }
-                    }
-
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|total search time: %10d ms",
-                                             (processTime - mSearchStartTime)
-                                             / NANO_TO_MILLIS));
-                    Log.d(TAG, String.format(Locale.ENGLISH,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|processing time: %10d ms",
-                                             (System.nanoTime() - processTime)
-                                             / NANO_TO_MILLIS));
-                }
-            }
-        }
     }
 
     /**
@@ -330,6 +203,12 @@ public class SearchCoordinator
     @NonNull
     public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchFinished() {
         return mSearchCoordinatorFinished;
+    }
+
+    /** Observable. */
+    @NonNull
+    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchCancelled() {
+        return mSearchCoordinatorCancelled;
     }
 
     /**
@@ -344,13 +223,18 @@ public class SearchCoordinator
         }
     }
 
+    @Override
+    protected void onCleared() {
+        cancel();
+    }
+
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<>() {
 
         @Override
         public void onProgress(@NonNull final TaskProgress message) {
-            synchronized (mSearchProgressMessages) {
-                mSearchProgressMessages.put(message.taskId, message);
+            synchronized (mSearchProgressBySite) {
+                mSearchProgressBySite.put(message.taskId, message);
             }
             // forward the accumulated progress
             mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
@@ -359,37 +243,79 @@ public class SearchCoordinator
         @Override
         public void onFinished(final int taskId,
                                @Nullable final Bundle result) {
-            Objects.requireNonNull(result);
-
-            synchronized (mSearchResults) {
-                mSearchResults.put(taskId, result);
-            }
-            onSearchTaskFinished(taskId, result);
+            onSearchTaskFinished(taskId, Objects.requireNonNull(result, "result"));
         }
 
         @Override
         public void onCancelled(final int taskId,
                                 @Nullable final Bundle result) {
-            synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(taskId, null);
-            }
+            // we'll deliver what we have found up to now (includes previous searches)
             onSearchTaskFinished(taskId, result);
         }
 
         @Override
         public void onFailure(final int taskId,
                               @Nullable final Exception exception) {
-            synchronized (mSearchFinishedMessages) {
-                mSearchFinishedMessages.put(taskId, exception);
+            synchronized (mSearchErrorsBySite) {
+                // Always store, even if null
+                mSearchErrorsBySite.put(taskId, exception);
             }
             onSearchTaskFinished(taskId, null);
         }
     };
 
-    /** Observable. */
-    @NonNull
-    public LiveData<LiveDataEvent<TaskResult<Bundle>>> onSearchCancelled() {
-        return mSearchCoordinatorCancelled;
+    public void cancelTask(@IdRes final int taskId) {
+        // reminder: this object, the SearchCoordinator is a pseudo task
+        // we're only using "cancelTask" to conform with other usage
+        cancel();
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return mCancelled.get();
+    }
+
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     */
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
+
+        if (mSearchEngineRegistry == null) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+                mSearchTasksStartTime = new SparseLongArray();
+                mSearchTasksEndTime = new SparseLongArray();
+            }
+
+            mSearchEngineRegistry = SearchEngineRegistry.getInstance();
+            mAllSites = Site.Type.Data.getSites();
+
+            mResultsAccumulator = new ResultsAccumulator(context);
+
+            mListElementPrefixString = context.getString(R.string.list_element);
+
+            if (args != null) {
+                final SharedPreferences global = PreferenceManager
+                        .getDefaultSharedPreferences(context);
+                mFetchCover = new boolean[]{
+                        DBKey.isUsed(global, DBKey.COVER_IS_USED[0]),
+                        DBKey.isUsed(global, DBKey.COVER_IS_USED[1])
+                };
+
+                mIsbnSearchText = args.getString(DBKey.KEY_ISBN, "");
+
+                mTitleSearchText = args.getString(DBKey.KEY_TITLE, "");
+
+                mAuthorSearchText = args.getString(
+                        SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
+
+                mPublisherSearchText = args.getString(
+                        SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
+            }
+        }
     }
 
     /**
@@ -412,19 +338,19 @@ public class SearchCoordinator
             sb = new StringBuilder();
         }
 
-        synchronized (mSearchProgressMessages) {
-            if (!mSearchProgressMessages.isEmpty()) {
+        synchronized (mSearchProgressBySite) {
+            if (!mSearchProgressBySite.isEmpty()) {
                 // if there was a baseMessage, add a linefeed to it.
                 if (sb.length() > 0) {
                     sb.append('\n');
                 }
                 // Append each task message
-                sb.append(mSearchProgressMessages
+                sb.append(mSearchProgressBySite
                                   .values().stream()
                                   .map(msg -> String.format(mListElementPrefixString, msg.text))
                                   .collect(Collectors.joining("\n")));
 
-                for (final TaskProgress taskProgress : mSearchProgressMessages.values()) {
+                for (final TaskProgress taskProgress : mSearchProgressBySite.values()) {
                     progressMax += taskProgress.maxPosition;
                     progressCount += taskProgress.position;
                 }
@@ -434,20 +360,6 @@ public class SearchCoordinator
 
         return new TaskProgress(R.id.TASK_ID_SEARCH_COORDINATOR, sb.toString(),
                                 progressMax, progressCount, null);
-    }
-
-    @Override
-    protected void onCleared() {
-        cancel();
-    }
-
-    public boolean isSearchActive() {
-        return mIsSearchActive;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return mCancelled.get();
     }
 
     /**
@@ -469,56 +381,68 @@ public class SearchCoordinator
         mExternalIdSearchText.put(searchEngine.getEngineId(), externalIdSearchText);
         prepareSearch();
 
-        mIsSearchActive = startSearch(searchEngine);
-        return mIsSearchActive;
+        return startSearch(searchEngine);
+    }
+
+    public boolean isSearchActive() {
+        synchronized (mActiveTasks) {
+            return !mActiveTasks.isEmpty();
+        }
     }
 
     /**
-     * Pseudo constructor.
-     *
-     * @param context Current context
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * Called after the search criteria are ready, and before starting the actual search.
+     * Clears a number of parameters so we can start the search with a clean slate.
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+    private void prepareSearch() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            mSearchStartTime = System.nanoTime();
+        }
 
-        if (mSearchEngineRegistry == null) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-                mSearchTasksStartTime = new SparseLongArray();
-                mSearchTasksEndTime = new SparseLongArray();
+        // Developer sanity checks
+        if (BuildConfig.DEBUG /* always */) {
+            if (!NetworkUtils.isNetworkAvailable(ServiceLocator.getAppContext())) {
+                throw new IllegalStateException("network should be checked before starting search");
             }
 
-            mSearchEngineRegistry = SearchEngineRegistry.getInstance();
-            mAllSites = Site.Type.Data.getSites();
-
-            mDateParser = new FullDateParser(context);
-
-            mListElementPrefixString = context.getString(R.string.list_element);
-
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            if (FormatMapper.isMappingAllowed(global)) {
-                mMappers.add(new FormatMapper());
-            }
-            if (ColorMapper.isMappingAllowed(global)) {
-                mMappers.add(new ColorMapper());
+            if (!mActiveTasks.isEmpty()) {
+                throw new IllegalStateException("a search is already running");
             }
 
-            if (args != null) {
-                mFetchCover = new boolean[]{
-                        DBKey.isUsed(global, DBKey.COVER_IS_USED[0]),
-                        DBKey.isUsed(global, DBKey.COVER_IS_USED[1])
-                };
-
-                mIsbnSearchText = args.getString(DBKey.KEY_ISBN, "");
-
-                mTitleSearchText = args.getString(DBKey.KEY_TITLE, "");
-
-                mAuthorSearchText = args.getString(
-                        SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
-
-                mPublisherSearchText = args.getString(
-                        SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
+            // Note we don't care about publisher.
+            if (mAuthorSearchText.isEmpty()
+                && mTitleSearchText.isEmpty()
+                && mIsbnSearchText.isEmpty()
+                && (mExternalIdSearchText == null || mExternalIdSearchText.size() == 0)) {
+                throw new SanityCheck.MissingValueException("empty criteria");
             }
+        }
+
+        // reset flags
+        mWaitingForIsbnOrCode = false;
+        mCancelled.set(false);
+
+        // no synchronized needed here
+        mSearchResultsBySite.clear();
+        // no synchronized needed here
+        mSearchErrorsBySite.clear();
+
+        mIsbn = new ISBN(mIsbnSearchText, mStrictIsbn);
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+            Log.d(TAG, "prepareSearch"
+                       + "|mExternalIdSearchText=" + mExternalIdSearchText
+                       + "|mIsbnSearchText=" + mIsbnSearchText
+                       + "|mIsbn=" + mIsbn
+                       + "|mStrictIsbn=" + mStrictIsbn
+                       + "|mAuthor=" + mAuthorSearchText
+                       + "|mTitle=" + mTitleSearchText
+                       + "|mPublisher=" + mPublisherSearchText);
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            mSearchTasksStartTime.clear();
+            mSearchTasksEndTime.clear();
         }
     }
 
@@ -645,64 +569,6 @@ public class SearchCoordinator
     }
 
     /**
-     * Called after the search criteria are ready, and before starting the actual search.
-     * Clears a number of parameters so we can start the search with a clean slate.
-     */
-    private void prepareSearch() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            mSearchStartTime = System.nanoTime();
-        }
-
-        // Developer sanity checks
-        if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable(ServiceLocator.getAppContext())) {
-                throw new IllegalStateException("network should be checked before starting search");
-            }
-
-            if (!mActiveTasks.isEmpty()) {
-                throw new IllegalStateException("a search is already running");
-            }
-
-            // Note we don't care about publisher.
-            if (mAuthorSearchText.isEmpty()
-                && mTitleSearchText.isEmpty()
-                && mIsbnSearchText.isEmpty()
-                && (mExternalIdSearchText == null || mExternalIdSearchText.size() == 0)) {
-                throw new SanityCheck.MissingValueException("empty criteria");
-            }
-        }
-
-        // reset flags
-        mWaitingForExactCode = false;
-        mCancelled.set(false);
-        mIsSearchActive = false;
-
-        mBookData = ServiceLocator.newBundle();
-        // no synchronized needed here
-        mSearchResults.clear();
-        // no synchronized needed here
-        mSearchFinishedMessages.clear();
-
-        mIsbn = new ISBN(mIsbnSearchText, mStrictIsbn);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "prepareSearch"
-                       + "|mExternalIdSearchText=" + mExternalIdSearchText
-                       + "|mIsbnSearchText=" + mIsbnSearchText
-                       + "|mIsbn=" + mIsbn
-                       + "|mStrictIsbn=" + mStrictIsbn
-                       + "|mAuthor=" + mAuthorSearchText
-                       + "|mTitle=" + mTitleSearchText
-                       + "|mPublisher=" + mPublisherSearchText);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
-            mSearchTasksStartTime.clear();
-            mSearchTasksEndTime.clear();
-        }
-    }
-
-    /**
      * Start a search.
      * <p>
      * If there is a valid ISBN/code, we start a concurrent search on all sites.
@@ -724,18 +590,39 @@ public class SearchCoordinator
             || mIsbn.isValid(mStrictIsbn)) {
 
             // then start a concurrent search
-            mWaitingForExactCode = false;
-            mIsSearchActive = startSearch();
+            mWaitingForIsbnOrCode = false;
+            return startSearch();
 
         } else {
             // We really want to ensure we get the same book from each,
             // so if the ISBN/code is NOT PRESENT, search the sites
             // one at a time until we get a ISBN/code.
-            mWaitingForExactCode = true;
-            mIsSearchActive = startNextSearch();
+            mWaitingForIsbnOrCode = true;
+            return startNextSearch();
+        }
+    }
+
+    /**
+     * Start <strong>all</strong>> searches, which have not been run yet, in parallel.
+     *
+     * @return {@code true} if at least one search was started, {@code false} if none
+     */
+    private boolean startSearch() {
+        // refuse new searches if we're shutting down.
+        if (mCancelled.get()) {
+            return false;
         }
 
-        return mIsSearchActive;
+        boolean atLeastOneStarted = false;
+        for (final Site site : Site.filterForEnabled(mAllSites)) {
+            // If the site has not been searched yet, search it
+            if (!mSearchResultsBySite.containsKey(site.engineId)) {
+                if (startSearch(site.getSearchEngine())) {
+                    atLeastOneStarted = true;
+                }
+            }
+        }
+        return atLeastOneStarted;
     }
 
     protected void setBaseMessage(@Nullable final String baseMessage) {
@@ -836,33 +723,19 @@ public class SearchCoordinator
     }
 
     /**
-     * Start all searches which have not been run yet.
-     *
-     * @return {@code true} if at least one search was started, {@code false} if none
-     */
-    private boolean startSearch() {
-        // if currentSearchSites is empty, we return false.
-        boolean atLeastOneStarted = false;
-        for (final Site site : Site.filterForEnabled(mAllSites)) {
-            // If the site has not been searched yet, search it
-            if (!mSearchResults.containsKey(site.engineId)) {
-                if (startSearch(site.getSearchEngine())) {
-                    atLeastOneStarted = true;
-                }
-            }
-        }
-        return atLeastOneStarted;
-    }
-
-    /**
      * Start a single task.
      *
      * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNextSearch() {
+        // refuse new searches if we're shutting down.
+        if (mCancelled.get()) {
+            return false;
+        }
+
         for (final Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
-            if (!mSearchResults.containsKey(site.engineId)) {
+            if (!mSearchResultsBySite.containsKey(site.engineId)) {
                 return startSearch(site.getSearchEngine());
             }
         }
@@ -870,88 +743,145 @@ public class SearchCoordinator
     }
 
     /**
-     * Accumulate data from all sites.
+     * Process the message and start another task if required.
      *
-     * <strong>Developer note:</strong> before you think you can simplify this method
-     * by working directly with engine-id and SearchEngines... DON'T
-     * Read class docs for {@link SearchSites} and {@link Site.Type#getDataSitesByReliability}.
-     *
-     * @param context Current context
+     * @param taskId of task
+     * @param result of a search (can be null for failed/cancelled searches)
      */
-    private void accumulateResults(@NonNull final Context context) {
-        // This list will be the actual order of the result we apply, based on the
-        // actual results and the default order.
-        final Collection<Site> sites = new ArrayList<>();
+    @SuppressLint("WrongConstant")
+    private synchronized void onSearchTaskFinished(final int taskId,
+                                                   @Nullable final Bundle result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+            mSearchTasksEndTime.put(taskId, System.nanoTime());
+        }
 
-        // determine the order of the sites which should give us the most reliable data.
-        if (mIsbn.isValid(true)) {
-            // If an ISBN was passed, ignore entries with the wrong ISBN,
-            // and put entries without ISBN at the end
-            final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
-            final List<Site> allSites = Site.Type.getDataSitesByReliability();
-            for (final Site site : allSites) {
-                if (mSearchResults.containsKey(site.engineId)) {
-                    final Bundle bookData = mSearchResults.get(site.engineId);
-                    if (bookData != null && bookData.containsKey(DBKey.KEY_ISBN)) {
-                        final String isbnFound = bookData.getString(DBKey.KEY_ISBN);
-                        // do they match?
-                        if (isbnFound != null && !isbnFound.isEmpty()
-                            && mIsbn.equals(ISBN.createISBN(isbnFound))) {
-                            sites.add(site);
-                        }
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "accumulateResults"
-                                       + "|mIsbn=" + mIsbn
-                                       + "|isbnFound=" + isbnFound);
-                        }
-                    } else {
-                        sitesWithoutIsbn.add(site);
+        final Context context = ServiceLocator.getInstance().getLocalizedAppContext();
+
+        // Remove the finished task from our list
+        synchronized (mActiveTasks) {
+            mActiveTasks.stream()
+                        .filter(searchTask -> searchTask.getTaskId() == taskId)
+                        .findFirst()
+                        .ifPresent(mActiveTasks::remove);
+
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                Log.d(TAG, "mSearchTaskListener.onFinished"
+                           + "|finished=" + mSearchEngineRegistry.getByEngineId(taskId)
+                                                                 .getName(context));
+
+                for (final SearchTask searchTask : mActiveTasks) {
+                    Log.d(TAG, "mSearchTaskListener.onFinished"
+                               + "|running="
+                               + mSearchEngineRegistry.getByEngineId(searchTask.getTaskId())
+                                                      .getName(context));
+                }
+            }
+        }
+
+        // ALWAYS store, even when null!
+        // Presence of the site/task id in the map is an indication that the site ws processed
+        synchronized (mSearchResultsBySite) {
+            mSearchResultsBySite.put(taskId, result);
+        }
+
+        // clear obsolete progress status
+        synchronized (mSearchProgressBySite) {
+            mSearchProgressBySite.remove(taskId);
+        }
+
+
+        // Start new search(es) as needed/allowed.
+        if (!mCancelled.get()) {
+            //  update our listener with the current progress status
+            mSearchCoordinatorProgress.setValue(new LiveDataEvent<>(accumulateProgress()));
+
+            if (mWaitingForIsbnOrCode) {
+                if (result != null && hasIsbn(result)) {
+                    mWaitingForIsbnOrCode = false;
+                    // replace the search text with the (we hope) exact ISBN/code
+                    mIsbnSearchText = result.getString(DBKey.KEY_ISBN, "");
+
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                        Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn="
+                                   + mIsbnSearchText);
                     }
+
+                    // Start the remaining searches, even if they have run before.
+                    // They will redo the search WITH the ISBN/code.
+                    startSearch();
+                } else {
+                    // sequentially start the next search which has not run yet.
+                    startNextSearch();
                 }
             }
-            // now add the less reliable ones at the end of the list.
-            sites.addAll(sitesWithoutIsbn);
-            // Add the passed ISBN first;
-            // avoids overwriting with potentially different isbn from the sites
-            mBookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
-
-        } else {
-            // If an ISBN was not passed, then just use the default order
-            sites.addAll(Site.Type.getDataSitesByReliability());
         }
 
-        // Merge the data we have in the order as decided upon above.
-        for (final Site site : sites) {
-            final SearchEngine searchEngine = site.getSearchEngine();
+        // any searches still running or did we get cancelled?
+        final boolean stopSearching;
+        synchronized (mActiveTasks) {
+            stopSearching = mActiveTasks.isEmpty() || mCancelled.get();
+        }
 
-            final Bundle siteData = mSearchResults.get(searchEngine.getEngineId());
-            if (siteData != null && !siteData.isEmpty()) {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "accumulateSiteData|searchEngine="
-                               + searchEngine.getName(context));
-                }
-                accumulateSiteData(searchEngine.getLocale(context), siteData);
+        if (stopSearching) {
+            final long processTime = System.nanoTime();
+
+            final Bundle bookData = accumulateResults(context);
+            final String searchErrors = accumulateErrors(context);
+            if (searchErrors != null && !searchErrors.isEmpty()) {
+                bookData.putString(BKEY_SEARCH_ERROR, searchErrors);
             }
-        }
 
-        // run the mappers
-        for (final Mapper mapper : mMappers) {
-            mapper.map(context, mBookData);
-        }
+            final LiveDataEvent<TaskResult<Bundle>> message =
+                    new LiveDataEvent<>(new TaskResult<>(R.id.TASK_ID_SEARCH_COORDINATOR,
+                                                         bookData));
+            if (mCancelled.get()) {
+                mSearchCoordinatorCancelled.setValue(message);
+            } else {
+                mSearchCoordinatorFinished.setValue(message);
+            }
 
-        // Pick the best covers for each list (if any) and clean/delete all others.
-        mCoverFilter.filter(mBookData);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "mSearchTaskListener.onFinished"
+                           + "|wasCancelled=" + mCancelled.get()
+                           + "|searchErrors=" + searchErrors);
 
-        // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = mBookData.getString(DBKey.KEY_ISBN);
-        if (isbnStr == null || isbnStr.isEmpty()) {
-            mBookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
-        }
+                if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+                    for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
+                        final long start = mSearchTasksStartTime.valueAt(i);
+                        // use the key, not the index!
+                        final int key = mSearchTasksStartTime.keyAt(i);
+                        final long end = mSearchTasksEndTime.get(key);
 
-        // If we did not get an title, use the one we originally searched for.
-        final String title = mBookData.getString(DBKey.KEY_TITLE);
-        if (title == null || title.isEmpty()) {
-            mBookData.putString(DBKey.KEY_TITLE, mTitleSearchText);
+                        final String engineName = mSearchEngineRegistry.getByEngineId(key)
+                                                                       .getName(context);
+
+                        if (end != 0) {
+                            Log.d(TAG, String.format(Locale.ENGLISH,
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|engine=%20s:%10d ms",
+                                                     engineName,
+                                                     (end - start) / NANO_TO_MILLIS));
+                        } else {
+                            Log.d(TAG, String.format(Locale.ENGLISH,
+                                                     "mSearchTaskListener.onFinished"
+                                                     + "|engine=%20s|never finished",
+                                                     engineName));
+                        }
+                    }
+
+                    Log.d(TAG, String.format(Locale.ENGLISH,
+                                             "mSearchTaskListener.onFinished"
+                                             + "|total search time: %10d ms",
+                                             (processTime - mSearchStartTime)
+                                             / NANO_TO_MILLIS));
+                    Log.d(TAG, String.format(Locale.ENGLISH,
+                                             "mSearchTaskListener.onFinished"
+                                             + "|processing time: %10d ms",
+                                             (System.nanoTime() - processTime)
+                                             / NANO_TO_MILLIS));
+                }
+            }
         }
     }
 
@@ -965,218 +895,112 @@ public class SearchCoordinator
      */
     @Nullable
     private String accumulateErrors(@NonNull final Context context) {
-        String errorMessage = null;
         // no synchronized needed, at this point all other threads have finished.
-        if (!mSearchFinishedMessages.isEmpty()) {
+        if (!mSearchErrorsBySite.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
-            for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final SearchEngineConfig config = mSearchEngineRegistry
-                        .getByEngineId(entry.getKey());
-                final String engineName = config.getName(context);
+            for (final Map.Entry<Integer, Exception> entry : mSearchErrorsBySite.entrySet()) {
+
+                final String siteName = mSearchEngineRegistry
+                        .getByEngineId(entry.getKey()).getName(context);
+
                 final Exception exception = entry.getValue();
+                final String msg = ExMsg.map(context, exception).orElseGet(() -> {
+                    // generic network related IOException message
+                    if (exception instanceof IOException) {
+                        return context.getString(R.string.error_search_failed_network);
+                    }
+                    // generic unknown message
+                    return context.getString(R.string.error_unknown);
+                });
 
-                final String error;
-                if (exception == null) {
-                    error = context.getString(R.string.error_search_x_failed_y, engineName,
-                                              context.getString(R.string.cancelled));
-                } else {
-                    error = createSiteError(context, engineName, exception);
-                }
-
-                sb.append(error)
+                sb.append(context.getString(R.string.error_search_x_failed_y, siteName, msg))
                   .append('\n');
             }
-            errorMessage = sb.toString();
+            mSearchErrorsBySite.clear();
+            return sb.toString();
         }
-        //no longer needed
-        mSearchFinishedMessages.clear();
-        return errorMessage;
+        return null;
     }
 
     /**
-     * Accumulate all data from the given site.
-     * <p>
-     * Copies data from passed Bundle to current accumulated data.
-     * Does some careful processing of the data.
-     * <p>
-     * The Bundle will contain by default only String and ArrayList based data.
-     * <p>
-     * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
-     */
-    private void accumulateSiteData(@NonNull final Locale siteLocale,
-                                    @NonNull final Bundle siteData) {
-
-        for (final String key : siteData.keySet()) {
-            if (DBKey.DATE_BOOK_PUBLICATION.equals(key)
-                || DBKey.DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(siteLocale, key, siteData);
-
-            } else if (Book.BKEY_AUTHOR_LIST.equals(key)
-                       || Book.BKEY_SERIES_LIST.equals(key)
-                       || Book.BKEY_PUBLISHER_LIST.equals(key)
-                       || Book.BKEY_TOC_LIST.equals(key)
-                       || BKEY_FILE_SPEC_ARRAY[0].equals(key)
-                       || BKEY_FILE_SPEC_ARRAY[1].equals(key)) {
-                accumulateList(key, siteData);
-
-            } else {
-                //FIXME: doing this will for example put a LONG id in the bundle
-                // as a String. This is as-designed, but you do get an Exception in the log
-                // when the data gets to the EditBook formatters. Harmless, but not clean.
-
-                // handle all normal String based entries
-                accumulateStringData(key, siteData);
-            }
-        }
-    }
-
-    /**
-     * Accumulate String data.
-     * Handles other types via a .toString()
+     * Called when all is said and done. Accumulate data from all sites.
      *
-     * @param key      Key of data
-     * @param siteData Source Bundle
-     */
-    private void accumulateStringData(@NonNull final String key,
-                                      @NonNull final Bundle siteData) {
-        final Object dataToAdd = siteData.get(key);
-        if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
-            return;
-        }
-
-        final String dest = mBookData.getString(key);
-        if (dest == null || dest.isEmpty()) {
-            // just use it
-            mBookData.putString(key, dataToAdd.toString());
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "accumulateStringData|copied"
-                           + "|key=" + key + "|value=`" + dataToAdd + '`');
-            }
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "accumulateStringData|skipping|key=" + key);
-            }
-        }
-    }
-
-    /**
-     * Grabs the 'new' date and checks if it's parsable.
-     * If so, then check if the previous date was actually valid at all.
-     * if not, use new date.
+     * <strong>Developer note:</strong> before you think you can simplify this method
+     * by working directly with engine-id and SearchEngines... DON'T
+     * Read class docs for {@link SearchSites} and {@link Site.Type#getDataSitesByReliability}.
      *
-     * @param siteLocale the specific Locale of the website
-     * @param key        for the date field
-     * @param siteData   to digest
+     * @param context Current context
+     *
+     * @return the accumulated book data bundle
      */
-    private void accumulateDates(@NonNull final Locale siteLocale,
-                                 @NonNull final String key,
-                                 @NonNull final Bundle siteData) {
-        final String currentDateHeld = mBookData.getString(key);
-        final String dataToAdd = siteData.getString(key);
+    @NonNull
+    private Bundle accumulateResults(@NonNull final Context context) {
+        // This list will be the actual order of the result we apply, based on the
+        // actual results and the default order.
+        final List<Site> sites = new ArrayList<>();
 
-        if (currentDateHeld == null || currentDateHeld.isEmpty()) {
-            // copy, even if the incoming date might not be valid.
-            // We'll deal with that later.
-            mBookData.putString(key, dataToAdd);
+        final Bundle bookData = ServiceLocator.newBundle();
 
-        } else {
-            // FIXME: there is overlap with some SearchEngines which already do a full
-            //  validity check on the dates they gather. We should avoid a double-check.
-            //
-            // Overwrite with the new date if we can parse it and
-            // if the current one was present but not valid.
-            if (dataToAdd != null) {
-                final LocalDateTime newDate = mDateParser.parse(dataToAdd, siteLocale);
-                if (newDate != null) {
-                    if (mDateParser.parse(currentDateHeld, siteLocale) == null) {
-                        // current date was invalid, use the new one instead.
-                        // (theoretically this check was not needed, as we should not have
-                        // an invalid date stored anyhow... but paranoia rules)
-                        mBookData.putString(key, newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "accumulateDates|copied"
-                                       + "|key=" + key + "|value=`" + dataToAdd + '`');
-                        }
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "accumulateDates|skipped|key=" + key);
+        // determine the order of the sites which should give us the most reliable data.
+        if (mIsbn.isValid(true)) {
+            // If an ISBN was passed, ignore entries with the wrong ISBN,
+            // and put entries without ISBN at the end
+            final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
+            for (final Site site : Site.Type.getDataSitesByReliability()) {
+                if (mSearchResultsBySite.containsKey(site.engineId)) {
+                    final Bundle siteData = mSearchResultsBySite.get(site.engineId);
+                    // any results for this site?
+                    if (siteData != null && !siteData.isEmpty()) {
+                        // yes; check isbn to determine the order in which we'll use the results
+                        if (siteData.containsKey(DBKey.KEY_ISBN)) {
+                            final String isbnFound = siteData.getString(DBKey.KEY_ISBN);
+                            // do they match?
+                            if (isbnFound != null && !isbnFound.isEmpty()
+                                && mIsbn.equals(ISBN.createISBN(isbnFound))) {
+                                sites.add(site);
+                            }
+
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "accumulateResults"
+                                           + "|mIsbn=" + mIsbn
+                                           + "|isbnFound=" + isbnFound);
+                            }
+                        } else {
+                            sitesWithoutIsbn.add(site);
                         }
                     }
                 }
             }
-        }
-    }
+            // now add the less reliable ones at the end of the list.
+            sites.addAll(sitesWithoutIsbn);
+            // Add the passed ISBN first;
+            // avoids overwriting with potentially different isbn from the sites
+            bookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
 
-    /**
-     * Accumulate ParcelableArrayList data.
-     * Add if not present, or append.
-     *
-     * @param key      Key of data
-     * @param siteData Source bundle with a ParcelableArrayList for the key
-     * @param <T>      type of items in the ArrayList
-     */
-    private <T extends Parcelable> void accumulateList(@NonNull final String key,
-                                                       @NonNull final Bundle siteData) {
-        final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
-        if (dataToAdd == null || dataToAdd.isEmpty()) {
-            return;
-        }
-
-        ArrayList<T> dest = mBookData.getParcelableArrayList(key);
-        if (dest == null || dest.isEmpty()) {
-            // just copy
-            dest = dataToAdd;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "accumulateList|copied"
-                           + "|key=" + key + "|value=`" + dataToAdd + '`');
-            }
         } else {
-            // append
-            dest.addAll(dataToAdd);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "accumulateList|appended"
-                           + "|key=" + key + "|value=`" + dataToAdd + '`');
-            }
+            // If an ISBN was not passed, then just use the default order
+            sites.addAll(Site.Type.getDataSitesByReliability());
         }
-        mBookData.putParcelableArrayList(key, dest);
+
+        // Merge the data we have in the order as decided upon above.
+        mResultsAccumulator.process(context, sites, mSearchResultsBySite, bookData);
+
+        // If we did not get an ISBN, use the one we originally searched for.
+        final String isbnStr = bookData.getString(DBKey.KEY_ISBN);
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            bookData.putString(DBKey.KEY_ISBN, mIsbnSearchText);
+        }
+
+        // If we did not get an title, use the one we originally searched for.
+        final String title = bookData.getString(DBKey.KEY_TITLE);
+        if (title == null || title.isEmpty()) {
+            bookData.putString(DBKey.KEY_TITLE, mTitleSearchText);
+        }
+
+        return bookData;
     }
 
-
-
-    /**
-     * Prepare an error message to show after the task finishes.
-     * <p>
-     * Dev Note: the return value should preferable fit on a single line
-     *
-     * @param context    Current context
-     * @param engineName the site where the error happened
-     * @param e          Exception to process
-     *
-     * @return user-friendly error message for the given site
-     */
-    @NonNull
-    private String createSiteError(@NonNull final Context context,
-                                   @NonNull final String engineName,
-                                   @NonNull final Exception e) {
-        final String msg = ExMsg.map(context, e).orElseGet(() -> {
-            // generic network related IOException message
-            if (e instanceof IOException) {
-                return context.getString(R.string.error_search_failed_network);
-            }
-            // generic unknown message
-            return context.getString(R.string.error_unknown);
-        });
-
-        return context.getString(R.string.error_search_x_failed_y, engineName, msg);
-    }
-
-    public void cancelTask(@IdRes final int taskId) {
-        // reminder: this object, the SearchCoordinator is a pseudo task
-        // we're only using "cancelTask" to conform with other usage
-        cancel();
-    }
-
-    public static class CoverFilter {
+    private static class CoverFilter {
 
         /**
          * Filter the {@link #BKEY_FILE_SPEC_ARRAY} present, selecting only the best
@@ -1254,5 +1078,207 @@ public class SearchCoordinator
             return null;
         }
     }
+
+    private static class ResultsAccumulator {
+
+        private static final Set<String> LIST_KEYS = Set.of(Book.BKEY_AUTHOR_LIST,
+                                                            Book.BKEY_SERIES_LIST,
+                                                            Book.BKEY_PUBLISHER_LIST,
+                                                            Book.BKEY_TOC_LIST,
+                                                            BKEY_FILE_SPEC_ARRAY[0],
+                                                            BKEY_FILE_SPEC_ARRAY[1]);
+        private static final Set<String> DATE_KEYS = Set.of(DBKey.DATE_BOOK_PUBLICATION,
+                                                            DBKey.DATE_FIRST_PUBLICATION);
+
+        private final CoverFilter mCoverFilter = new CoverFilter();
+
+        private final DateParser mDateParser;
+        /** Mappers to apply. */
+        private final Collection<Mapper> mMappers = new ArrayList<>();
+
+        ResultsAccumulator(@NonNull final Context context) {
+            mDateParser = new FullDateParser(context);
+
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            if (FormatMapper.isMappingAllowed(global)) {
+                mMappers.add(new FormatMapper());
+            }
+            if (ColorMapper.isMappingAllowed(global)) {
+                mMappers.add(new ColorMapper());
+            }
+        }
+
+        /**
+         * Accumulate all data from the given sites.
+         * <p>
+         * The Bundle will contain by default only String and ArrayList based data.
+         * Long etc... types will be stored as String data.
+         * <p>
+         * NEWTHINGS: if you add a new Search task that adds non-string based data,
+         * handle that here.
+         *
+         * @param context  Current context
+         * @param sites    the ordered list of sites
+         * @param bookData Destination bundle
+         */
+        public void process(@NonNull final Context context,
+                            @NonNull final List<Site> sites,
+                            @NonNull final Map<Integer, Bundle> searchResultsBySite,
+                            @NonNull final Bundle bookData) {
+            sites.stream()
+                 .map(Site::getSearchEngine)
+                 .forEach(searchEngine -> {
+                     final Bundle siteData = searchResultsBySite.get(searchEngine.getEngineId());
+                     if (siteData != null && !siteData.isEmpty()) {
+                         final Locale siteLocale = searchEngine.getLocale(context);
+
+                         for (final String key : siteData.keySet()) {
+                             if (DATE_KEYS.contains(key)) {
+                                 processDate(siteLocale, key, siteData, bookData);
+
+                             } else if (LIST_KEYS.contains(key)) {
+                                 processList(key, siteData, bookData);
+
+                             } else {
+                                 //FIXME: doing this will for example put a LONG id in
+                                 // the bundle as a String. This is as-designed, but you
+                                 // do get an Exception in the log when the data gets to
+                                 // the EditBook formatters. Harmless, but not clean.
+
+                                 // handle all normal String based entries
+                                 processString(key, siteData, bookData);
+                             }
+                         }
+                     }
+                 });
+
+            // run the mappers
+            mMappers.forEach(mapper -> mapper.map(context, bookData));
+
+            // Pick the best covers for each list (if any) and clean/delete all others.
+            mCoverFilter.filter(bookData);
+        }
+
+        /**
+         * Grabs the 'new' date and checks if it's parsable.
+         * If so, then check if the previous date was actually valid at all.
+         * if not, use new date.
+         *
+         * @param siteLocale the specific Locale of the website
+         * @param key        for the date field
+         * @param siteData   Source Bundle
+         * @param bookData   Destination bundle
+         */
+        private void processDate(@NonNull final Locale siteLocale,
+                                 @NonNull final String key,
+                                 @NonNull final Bundle siteData,
+                                 @NonNull final Bundle bookData) {
+            final String currentDateHeld = bookData.getString(key);
+            final String dataToAdd = siteData.getString(key);
+
+            if (currentDateHeld == null || currentDateHeld.isEmpty()) {
+                // copy, even if the incoming date might not be valid.
+                // We'll deal with that later.
+                bookData.putString(key, dataToAdd);
+
+            } else {
+                // FIXME: there is overlap with some SearchEngines which already do a full
+                //  validity check on the dates they gather. We should avoid a double-check.
+                //
+                // Overwrite with the new date if we can parse it and
+                // if the current one was present but not valid.
+                if (dataToAdd != null) {
+                    final LocalDateTime newDate = mDateParser.parse(dataToAdd, siteLocale);
+                    if (newDate != null) {
+                        if (mDateParser.parse(currentDateHeld, siteLocale) == null) {
+                            // current date was invalid, use the new one instead.
+                            // (theoretically this check was not needed, as we should not have
+                            // an invalid date stored anyhow... but paranoia rules)
+                            bookData.putString(key,
+                                               newDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "processDate|copied"
+                                           + "|key=" + key + "|value=`" + dataToAdd + '`');
+                            }
+                        } else {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                                Log.d(TAG, "processDate|skipped|key=" + key);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Accumulate ParcelableArrayList data.
+         * Add if not present, or append.
+         *
+         * @param <T>      type of items in the ArrayList
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param bookData Destination bundle
+         */
+        private <T extends Parcelable> void processList(@NonNull final String key,
+                                                        @NonNull final Bundle siteData,
+                                                        @NonNull final Bundle bookData) {
+            final ArrayList<T> dataToAdd = siteData.getParcelableArrayList(key);
+            if (dataToAdd == null || dataToAdd.isEmpty()) {
+                return;
+            }
+
+            ArrayList<T> dest = bookData.getParcelableArrayList(key);
+            if (dest == null || dest.isEmpty()) {
+                // just copy
+                dest = dataToAdd;
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                // append
+                dest.addAll(dataToAdd);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processList|appended"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            }
+            bookData.putParcelableArrayList(key, dest);
+        }
+
+        /**
+         * Accumulate String data.
+         * Handles other types via a .toString()
+         *
+         * @param key      Key of data
+         * @param siteData Source Bundle
+         * @param bookData Destination bundle
+         */
+        private void processString(@NonNull final String key,
+                                   @NonNull final Bundle siteData,
+                                   @NonNull final Bundle bookData) {
+            final Object dataToAdd = siteData.get(key);
+            if (dataToAdd == null || dataToAdd.toString().trim().isEmpty()) {
+                return;
+            }
+
+            final String dest = bookData.getString(key);
+            if (dest == null || dest.isEmpty()) {
+                // just use it
+                bookData.putString(key, dataToAdd.toString());
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|copied"
+                               + "|key=" + key + "|value=`" + dataToAdd + '`');
+                }
+            } else {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                    Log.d(TAG, "processString|skipping|key=" + key);
+                }
+            }
+        }
+    }
+
+
+
 
 }
