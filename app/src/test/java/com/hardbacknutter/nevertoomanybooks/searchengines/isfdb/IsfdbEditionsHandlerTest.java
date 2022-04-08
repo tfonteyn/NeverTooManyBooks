@@ -48,6 +48,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test parsing the Jsoup Document for ISFDB multi-edition data.
+ * <p>
+ * Unless noted, these tests will make a live call to the ISFDB website.
  */
 class IsfdbEditionsHandlerTest
         extends Base {
@@ -82,9 +84,35 @@ class IsfdbEditionsHandlerTest
         assertTrue(document.hasText());
 
         // we've set the doc, so no internet download will be done.
-        final List<Edition> editions = mSearchEngine.parseEditions(document);
+        final List<Edition> editions = mSearchEngine.parseEditions(mContext, document);
 
         assertEquals(24, editions.size());
+        assertEquals("eng", editions.get(0).getLangIso3());
+
+        System.out.println(editions);
+    }
+
+    @Test
+    void parseMultiEdition2() {
+        setLocale(Locale.UK);
+        final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?1360173";
+        final String filename = "/isfdb/1360173-multi-edition.html";
+
+        Document document = null;
+        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(in);
+            document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
+        }
+        assertNotNull(document);
+        assertTrue(document.hasText());
+
+        // we've set the doc, so no internet download will be done.
+        final List<Edition> editions = mSearchEngine.parseEditions(mContext, document);
+
+        assertEquals(4, editions.size());
+        assertEquals("nld", editions.get(0).getLangIso3());
 
         System.out.println(editions);
     }
