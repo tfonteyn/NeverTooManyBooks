@@ -169,6 +169,12 @@ public class IsfdbSearchEngine
     /** A CSS select query. */
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
+    /**
+     * We TRY to get the books language, but this is not always possible. For those occasions,
+     * default the English.
+     */
+    private static final String LANGUAGE_DEFAULT = "eng";
+
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
      Publication_Type</a>
@@ -226,6 +232,8 @@ public class IsfdbSearchEngine
     private String mFirstPublicationYear;
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String mIsbn;
+    @Nullable
+    private FutureHttpGet<Boolean> mFutureHttpGet;
 
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
@@ -255,15 +263,11 @@ public class IsfdbSearchEngine
                 .build();
     }
 
-
     @NonNull
     @Override
     public String createBrowserUrl(@NonNull final String externalId) {
         return getSiteUrl() + CGI_BIN + CGI_PL + "?" + externalId;
     }
-
-    @Nullable
-    private FutureHttpGet<Boolean> mFutureHttpGet;
 
     @NonNull
     @Override
@@ -278,6 +282,13 @@ public class IsfdbSearchEngine
         final Document document = loadDocument(context, url);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
+            // ISFDB only shows the books language on the publications page.
+            // We use that page in all other searches.
+            // However when searching by their native id, we're not visiting that page.
+            // Default to English...
+            if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
+                bookData.putString(DBKey.KEY_LANGUAGE, LANGUAGE_DEFAULT);
+            }
         }
         return bookData;
     }
@@ -997,7 +1008,7 @@ public class IsfdbSearchEngine
             }
         }
 
-        //ENHANCE: it would make much more sense to get the notes from the URL_TITLE_CGI page.
+        //ENHANCE: it would make much more sense to get the notes from the TITLE_CGI page.
         // and if there are none, then fall back to the notes on this page.
         final Elements notesDiv = contentBox.select("div.notes");
         if (!notesDiv.isEmpty()) {
@@ -1008,12 +1019,6 @@ public class IsfdbSearchEngine
             }
             bookData.putString(DBKey.KEY_DESCRIPTION, tmpString);
         }
-
-        // ISFDB does not offer the books language on the main page
-        // (although they store it in their database).
-        //ENHANCE: the site is adding language to the data; revisit. For now, default to English
-        bookData.putString(DBKey.KEY_LANGUAGE, "eng");
-
 
         // post-process all found data.
 
@@ -1152,13 +1157,15 @@ public class IsfdbSearchEngine
     /**
      * Parses the downloaded {@link Document} for the edition list.
      *
+     * @param context  Current context
      * @param document to parse
      *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @NonNull
     @VisibleForTesting
-    List<Edition> parseEditions(@NonNull final Document document) {
+    List<Edition> parseEditions(@NonNull final Context context,
+                                @NonNull final Document document) {
 
         final List<Edition> editions = new ArrayList<>();
 
@@ -1166,7 +1173,7 @@ public class IsfdbSearchEngine
 
         if (pageUrl.contains(CGI_PL)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            editions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, document));
+            editions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, null, document));
 
         } else if (pageUrl.contains(CGI_TITLE)
                    || pageUrl.contains(CGI_SE)
@@ -1175,6 +1182,23 @@ public class IsfdbSearchEngine
             // we have multiple editions. We get here from one of:
             // - direct link to the "title" of the publication; i.e. 'show the editions'
             // - search or advanced-search for the title.
+
+            // Editions are shown by language; hence we can extract the language from the header.
+            String lang = null;
+            final Element header = document.selectFirst("div.ContentBox");
+            if (header != null) {
+                final Element langHeader = header.selectFirst("b:contains(Language:)");
+                if (langHeader != null) {
+                    final Node node = langHeader.nextSibling();
+                    if (node != null) {
+                        final String langStr = node.toString().trim();
+                        lang = ServiceLocator
+                                .getInstance()
+                                .getLanguages()
+                                .getISO3FromDisplayName(getLocale(context), langStr);
+                    }
+                }
+            }
 
             final Element publications = document.selectFirst("table.publications");
             if (publications != null) {
@@ -1213,8 +1237,7 @@ public class IsfdbSearchEngine
                                     isbnStr = isbn.asText();
                                 }
                             }
-
-                            editions.add(new Edition(stripNumber(url, '?'), isbnStr));
+                            editions.add(new Edition(stripNumber(url, '?'), isbnStr, lang));
                         }
                     }
                 }
@@ -1245,7 +1268,7 @@ public class IsfdbSearchEngine
         final Document document = loadDocument(context, url);
 
         if (!isCancelled()) {
-            return parseEditions(document);
+            return parseEditions(context, document);
         }
         return new ArrayList<>();
     }
@@ -1419,6 +1442,15 @@ public class IsfdbSearchEngine
         final Document document = loadDocumentByEdition(context, edition);
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
+
+            if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
+                final String lang = edition.getLangIso3();
+                if (lang != null && !lang.isEmpty()) {
+                    bookData.putString(DBKey.KEY_LANGUAGE, lang);
+                } else {
+                    bookData.putString(DBKey.KEY_LANGUAGE, LANGUAGE_DEFAULT);
+                }
+            }
         }
     }
 

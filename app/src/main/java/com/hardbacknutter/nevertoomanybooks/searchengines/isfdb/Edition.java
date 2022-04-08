@@ -42,17 +42,22 @@ public class Edition {
      */
     @Nullable
     private final Document mDocument;
+    @Nullable
+    private final String mLangIso3;
 
     /**
      * Constructor: we found a link to a book.
      *
-     * @param isfdbId of the book we found
-     * @param isbn    of the book we found (as read from the site)
+     * @param isfdbId  of the book we found
+     * @param isbn     of the book we found (as read from the site)
+     * @param langIso3 the iso3 code for the language of this edition
      */
     Edition(final long isfdbId,
-            @Nullable final String isbn) {
+            @Nullable final String isbn,
+            @Nullable final String langIso3) {
         mIsfdbId = isfdbId;
         mIsbn = isbn;
+        mLangIso3 = langIso3;
         mDocument = null;
     }
 
@@ -65,10 +70,12 @@ public class Edition {
      */
     Edition(final long isfdbId,
             @Nullable final String isbn,
+            @Nullable final String langIso3,
             @Nullable final Document document) {
         mIsfdbId = isfdbId;
         mIsbn = isbn;
         mDocument = document;
+        mLangIso3 = langIso3;
     }
 
     @Nullable
@@ -85,12 +92,18 @@ public class Edition {
         return mIsfdbId;
     }
 
+    @Nullable
+    public String getLangIso3() {
+        return mLangIso3;
+    }
+
     @Override
     @NonNull
     public String toString() {
         return "Edition{"
                + "mIsfdbId=" + mIsfdbId
                + ", mIsbn=`" + mIsbn + '`'
+               + ", mLangIso3=`" + mLangIso3 + '`'
                + ", mDoc?=" + (mDocument != null)
                + '}';
     }
