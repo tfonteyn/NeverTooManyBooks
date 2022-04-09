@@ -1443,11 +1443,17 @@ public class IsfdbSearchEngine
         if (!isCancelled()) {
             parse(context, document, fetchCovers, bookData);
 
+            // if there was only a single book found, then we won't have passed via the
+            // publications page, and we won't have a language!
+            // We *could* during parsing force load the publication page,
+            // but that's quite an overhead just to get the language.
+            // Instead...
             if (!bookData.containsKey(DBKey.KEY_LANGUAGE)) {
                 final String lang = edition.getLangIso3();
                 if (lang != null && !lang.isEmpty()) {
                     bookData.putString(DBKey.KEY_LANGUAGE, lang);
                 } else {
+                    // ... just set English as the language and let the user manually correct it.
                     bookData.putString(DBKey.KEY_LANGUAGE, LANGUAGE_DEFAULT);
                 }
             }
