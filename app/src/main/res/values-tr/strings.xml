@@ -695,4 +695,10 @@
     <string name="lbl_book_detail_screen">Kitap ayrıntıları sayfası</string>
     <string name="lbl_date_last_updated">Son güncelleme tarihi</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Yalnızca bu tarihten sonra \n değiştirilen kitapları içe aktarın</string>
+    <string name="certificate_issued_to">Verilen: %1$s</string>
+    <string name="certificate_issued_by">Sertifikayı veren: %1$s</string>
+    <string name="error_file_not_found">Dosya bulunamadı: %1$s</string>
+    <string name="lbl_local_search">Bölgesel arama</string>
+    <string name="disabled">Kapalı</string>
+    <string name="error_unsupported_version_v">Desteklenmeyen sürüm: %1$d</string>
 </resources>

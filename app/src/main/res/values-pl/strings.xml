@@ -694,4 +694,10 @@
     <string name="lbl_book_detail_screen">Strona ze szczegółami książki</string>
     <string name="lbl_date_last_updated">Data ostatniej aktualizacji</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importuj tylko książki, które \n zostały zmodyfikowane od tej daty</string>
+    <string name="certificate_issued_to">Wystawiony dla: %1$s</string>
+    <string name="certificate_issued_by">Wystawca: %1$s</string>
+    <string name="error_file_not_found">Nie znaleziono pliku: %1$s</string>
+    <string name="lbl_local_search">Wyszukiwanie lokalne</string>
+    <string name="disabled">Wyłączony</string>
+    <string name="error_unsupported_version_v">Nieobsługiwana wersja: %1$d</string>
 </resources>

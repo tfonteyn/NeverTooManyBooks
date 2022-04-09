@@ -149,7 +149,8 @@ public class SearchBookByTextFragment
             mVb.btnSearch.setEnabled(false);
             mVb.txtCanSearch.setVisibility(View.VISIBLE);
             mVb.txtCanSearch.setText(getString(R.string.warning_no_site_supports_this_method,
-                                               getString(R.string.txt_author_title)));
+                                               getString(R.string.lbl_author)
+                                               + " / " + getString(R.string.lbl_title)));
         }
     }
 

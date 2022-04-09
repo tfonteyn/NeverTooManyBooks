@@ -694,4 +694,10 @@
     <string name="lbl_book_detail_screen">Страница сведений о книге</string>
     <string name="lbl_date_last_updated">Дата последнего обновления</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Импортировать только те книги, которые \n были изменены после этой даты</string>
+    <string name="certificate_issued_to">Кому выдан: %1$s</string>
+    <string name="certificate_issued_by">Кем выдан: %1$s</string>
+    <string name="lbl_local_search">Локальный поиск</string>
+    <string name="error_file_not_found">Файл не найден: %1$s</string>
+    <string name="disabled">Выключен</string>
+    <string name="error_unsupported_version_v">Неподдерживаемая версия: %1$d</string>
 </resources>

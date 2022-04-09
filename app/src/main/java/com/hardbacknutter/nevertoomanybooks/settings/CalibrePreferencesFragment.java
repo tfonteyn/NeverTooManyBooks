@@ -201,9 +201,11 @@ public class CalibrePreferencesFragment
             //noinspection ConstantConditions
             final X509Certificate ca = CalibreContentServer.getCertificate(getContext());
             ca.checkValidity();
-            return getString(R.string.certificate_summary,
-                             ca.getSubjectX500Principal().getName(),
-                             ca.getIssuerX500Principal().getName());
+            return getString(R.string.certificate_issued_to,
+                             ca.getSubjectX500Principal().getName())
+                   + '\n'
+                   + getString(R.string.certificate_issued_by,
+                               ca.getIssuerX500Principal().getName());
 
         } catch (@NonNull final CertificateException e) {
             return getString(R.string.error_certificate_invalid);

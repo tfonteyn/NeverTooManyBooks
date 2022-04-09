@@ -694,4 +694,10 @@
     <string name="lbl_book_detail_screen">Pagina met boekdetails</string>
     <string name="lbl_date_last_updated">Datum laatst bijgewerkt</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importeer alleen boeken die sinds \n deze datum zijn gewijzigd</string>
+    <string name="certificate_issued_to">Uitgegeven voor: %1$s</string>
+    <string name="certificate_issued_by">Uitgegeven door: %1$s</string>
+    <string name="error_file_not_found">Bestand niet gevonden: %1$s</string>
+    <string name="lbl_local_search">Lokaal zoeken</string>
+    <string name="disabled">Uitgeschakeld</string>
+    <string name="error_unsupported_version_v">Niet-ondersteunde versie: %1$d</string>
 </resources>

@@ -694,4 +694,10 @@
     <string name="lbl_book_detail_screen">Stránka s podrobnostmi o knize</string>
     <string name="lbl_date_last_updated">Datum poslední aktualizace</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Importujte pouze knihy, které \n byly od tohoto data změněny</string>
+    <string name="certificate_issued_to">Vydáno pro: %1$s</string>
+    <string name="certificate_issued_by">Vydal: %1$s</string>
+    <string name="error_file_not_found">Soubor nenalezen: %1$s</string>
+    <string name="lbl_local_search">Místní vyhledávání</string>
+    <string name="disabled">Vypnutý</string>
+    <string name="error_unsupported_version_v">Nepodporovaná verze: %1$d</string>
 </resources>

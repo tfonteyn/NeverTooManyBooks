@@ -697,4 +697,10 @@
     <string name="lbl_book_detail_screen">Σελίδα λεπτομερειών βιβλίου</string>
     <string name="lbl_date_last_updated">Ημερομηνία τελευταίας ενημέρωσης</string>
     <string name="lbl_import_books_option_new_and_updated_cutoff_date">Εισαγάγετε μόνο βιβλία που έχουν \n τροποποιηθεί από αυτήν την ημερομηνία</string>
+    <string name="certificate_issued_to">Εκδόθηκε σε: %1$s</string>
+    <string name="certificate_issued_by">Εκδόθηκε από: %1$s</string>
+    <string name="error_file_not_found">Το αρχείο δε βρέθηκε: %1$s</string>
+    <string name="lbl_local_search">Τοπική αναζήτηση</string>
+    <string name="disabled">Απενεργοποιημένο</string>
+    <string name="error_unsupported_version_v">Μη υποστηριζόμενη έκδοση: %1$d</string>
 </resources>
