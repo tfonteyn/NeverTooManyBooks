@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.network;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -35,6 +37,7 @@ import org.jsoup.nodes.Document;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.StorageException;
 
@@ -100,7 +103,8 @@ public class JsoupLoader {
      * <p>
      * The content encoding is: "Accept-Encoding", "gzip"
      *
-     * @param url to fetch
+     * @param context Current context
+     * @param url     to fetch
      *
      * @return the parsed Document
      *
@@ -108,7 +112,8 @@ public class JsoupLoader {
      */
     @WorkerThread
     @NonNull
-    public Document loadDocument(@NonNull final String url)
+    public Document loadDocument(@NonNull final Context context,
+                                 @NonNull final String url)
             throws IOException {
 
         // are we requesting the same url again ?
@@ -227,6 +232,13 @@ public class JsoupLoader {
                     // IOException
                     throw e;
                 }
+
+            } catch (@NonNull final HttpNotFoundException e) {
+                // Getting a 404 here is usually NOT an actual problem.
+                // We don't want to change the http response checker for debugging reason,
+                // but we DO change the message here:
+                e.setUserMessage(context.getString(R.string.warning_book_not_found));
+                throw e;
 
             } catch (@NonNull final StorageException e) {
                 // This is only here due to FutureHttpGet declaring StorageException;

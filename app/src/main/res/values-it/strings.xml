@@ -500,7 +500,7 @@
     <string name="X_info_not_authorized">Non autorizzato</string>
     <string name="lbl_registration">Registrazione su %1$s </string>
     <string name="lbl_scope_of_change">Intervallo modifica</string>
-    <string name="warning_search_failed">Ricerca del libro fallita.</string>
+    <string name="error_search_could_not_be_started">Ricerca del libro fallita.</string>
     <string name="lbl_search_for_books">Cerca per libro</string>
     <string name="lbl_search_isbn">Cerca ISBN</string>
     <string name="X_lbl_select_an_action">Seleziona un\'azione</string>

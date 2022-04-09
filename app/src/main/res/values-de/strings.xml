@@ -559,7 +559,7 @@
     <string name="warning_requires_at_least_1_field">Mindestens ein Feld darf nicht leer sein.</string>
     <string name="warning_requires_isbn">Diese Aktion erfordert eine gültige ISBN.</string>
     <string name="warning_requires_site_and_id">Wählen Sie eine Website und geben Sie eine ID ein.</string>
-    <string name="warning_search_failed">Die Suche nach dem Buch ist fehlgeschlagen.</string>
+    <string name="error_search_could_not_be_started">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
     <string name="cancelled">Abgebrochen</string>

@@ -37,6 +37,8 @@ public class HttpNotFoundException
         extends HttpStatusException {
 
     private static final long serialVersionUID = 6461290696382042369L;
+    @Nullable
+    private String mMessage;
 
     /**
      * Constructor.
@@ -51,10 +53,22 @@ public class HttpNotFoundException
         super(siteResId, HttpURLConnection.HTTP_NOT_FOUND, statusMessage, url);
     }
 
+    /**
+     * Override the default message.
+     *
+     * @param message to use
+     */
+    void setUserMessage(@NonNull final String message) {
+        mMessage = message;
+    }
+
     @NonNull
     @Override
     public String getUserMessage(@NonNull final Context context) {
-        if (getSiteResId() != 0) {
+        if (mMessage != null) {
+            return mMessage;
+
+        } else if (getSiteResId() != 0) {
             return context.getString(R.string.error_network_site_access_failed,
                                      context.getString(getSiteResId()));
         } else {

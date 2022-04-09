@@ -89,7 +89,7 @@ public abstract class JsoupSearchEngineBase
                                  @NonNull final String url)
             throws SearchException, CredentialsException {
         try {
-            return mJsoupLoader.loadDocument(url);
+            return mJsoupLoader.loadDocument(context, url);
 
         } catch (@NonNull final IOException e) {
             throw new SearchException(getName(context), e);

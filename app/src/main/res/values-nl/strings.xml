@@ -557,7 +557,7 @@
     <string name="warning_requires_at_least_1_field">Er moet op z\'n minst een veld ingevuld zijn.</string>
     <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
-    <string name="warning_search_failed">Het zoeken naar het boek is mislukt.</string>
+    <string name="error_search_could_not_be_started">Het zoeken naar het boek is mislukt.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
     <string name="cancelled">Geannuleerd</string>

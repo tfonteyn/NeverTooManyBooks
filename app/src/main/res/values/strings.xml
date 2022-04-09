@@ -166,7 +166,7 @@
 
     <!-- A search on a specific website failed, with the specified reason.
          param 1: site name; param 2: message      -->
-    <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
+    <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s</string>
 
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
 
@@ -212,10 +212,12 @@
          Only 10 line numbers will be listed -->
     <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
-    <!-- a lookup for a specific/known book failed (this message should NOT be shown as the result of a search). -->
+    <!-- STARTING a search has failed / no attempt to search was possible; this is an error! -->
+    <string name="error_search_could_not_be_started">Searching for the book failed.</string>
+    <!-- A search WAS done, but there is no book-data available; this is not an error. -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>
-    <!-- a SEARCH for a book which more or less matches what we were searching for failed. -->
-    <string name="warning_search_failed">Searching for the book failed.</string>
+    <!-- A search WAS done, but it partially failed. Some book-data might be available anyhow. -->
+    <string name="warning_book_not_always_found">Not all sites returned valid data.</string>
 
     <string name="warning_no_search_data_for_active_sites">No valid search data for active sites.</string>
 

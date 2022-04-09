@@ -141,17 +141,26 @@ public abstract class SearchBookBaseFragment
         closeProgressDialog();
         message.getData().map(TaskResult::requireResult).ifPresent(result -> {
             final String searchErrors = result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+            result.remove(SearchCoordinator.BKEY_SEARCH_ERROR);
+            final boolean hasBookData = !result.isEmpty();
+
             if (searchErrors != null) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_baseline_warning_24)
-                        .setTitle(R.string.warning_search_failed)
+                        .setTitle(hasBookData ? R.string.warning_book_not_always_found
+                                              : R.string.warning_book_not_found)
                         .setMessage(searchErrors)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            d.dismiss();
+                            if (hasBookData) {
+                                onSearchResults(result);
+                            }
+                        })
                         .create()
                         .show();
 
-            } else if (!result.isEmpty()) {
+            } else if (hasBookData) {
                 onSearchResults(result);
 
             } else {
@@ -231,7 +240,7 @@ public abstract class SearchBookBaseFragment
         // Start the lookup in a background search task.
         if (!onSearch()) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_search_failed,
+            Snackbar.make(getView(), R.string.error_search_could_not_be_started,
                           Snackbar.LENGTH_LONG).show();
         }
     }

@@ -499,7 +499,7 @@
     <string name="X_info_not_authorized">Yetkilendirilmemiş</string>
     <string name="lbl_registration">%1$s Kayıt</string>
     <string name="lbl_scope_of_change">Değişiklik kapsamı</string>
-    <string name="warning_search_failed">Kitap araması başarısız oldu.</string>
+    <string name="error_search_could_not_be_started">Kitap araması başarısız oldu.</string>
     <string name="lbl_search_for_books">Kitap ara</string>
     <string name="lbl_search_isbn">ISBN arama</string>
     <string name="X_lbl_select_an_action">Bir eylem seçin</string>

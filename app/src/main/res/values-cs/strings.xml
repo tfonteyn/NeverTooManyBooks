@@ -495,7 +495,7 @@
     <string name="X_info_not_authorized">Neautorizováno</string>
     <string name="lbl_registration">%1$s registrace</string>
     <string name="lbl_scope_of_change">Rozsah změny</string>
-    <string name="warning_search_failed">Vyhledávání knihy se nezdařilo.</string>
+    <string name="error_search_could_not_be_started">Vyhledávání knihy se nezdařilo.</string>
     <string name="lbl_search_for_books">Hledat knihy</string>
     <string name="lbl_search_isbn">Hledat ISBN</string>
     <string name="X_lbl_select_an_action">Zvolte akci</string>

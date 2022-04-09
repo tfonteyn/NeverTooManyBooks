@@ -495,7 +495,7 @@
     <string name="X_info_not_authorized">Не авторизовано</string>
     <string name="lbl_registration">Регистрация в %1$s</string>
     <string name="lbl_scope_of_change">Масштаб изменения</string>
-    <string name="warning_search_failed">Поиск книги не удался.</string>
+    <string name="error_search_could_not_be_started">Поиск книги не удался.</string>
     <string name="lbl_search_for_books">Поиск книг</string>
     <string name="lbl_search_isbn">поиск по ISBN</string>
     <string name="X_lbl_select_an_action">Выберете дествие</string>

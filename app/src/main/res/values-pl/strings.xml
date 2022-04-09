@@ -496,7 +496,7 @@
     <string name="X_info_not_authorized">Nieautoryzowany</string>
     <string name="lbl_registration">Rejestracja w %1$s</string>
     <string name="lbl_scope_of_change">Zakres zmiany</string>
-    <string name="warning_search_failed">Wyszukiwanie książki nie powiodło się.</string>
+    <string name="error_search_could_not_be_started">Wyszukiwanie książki nie powiodło się.</string>
     <string name="lbl_search_for_books">Szukaj książek</string>
     <string name="lbl_search_isbn">Szukj wg ISBN</string>
     <string name="X_lbl_select_an_action">Wybierz akcję</string>

@@ -560,7 +560,7 @@
     <string name="warning_requires_at_least_1_field">Au moins un champ ne doit pas être vide.</string>
     <string name="warning_requires_isbn">Cette action nécessite un ISBN valide.</string>
     <string name="warning_requires_site_and_id">Sélectionnez un site Web et entrez un identifiant.</string>
-    <string name="warning_search_failed">La recherche du livre a échoué.</string>
+    <string name="error_search_could_not_be_started">La recherche du livre a échoué.</string>
     <string name="warning_select_at_least_1_field">Choisissez au moins un champ à mettre à jour.</string>
     <string name="warning_select_at_least_1_group">Sélectionnez au moins un groupe.</string>
     <string name="cancelled">Tâche annulée.</string>

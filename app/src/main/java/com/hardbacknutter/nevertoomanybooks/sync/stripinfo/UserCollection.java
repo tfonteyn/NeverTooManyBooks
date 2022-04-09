@@ -182,7 +182,7 @@ public class UserCollection {
         final String url = mSearchEngine.getConfig().getHostUrl()
                            + String.format(URL_MY_BOOKS, mUserId, pageNr, mFlags);
 
-        final Document document = mJsoupLoader.loadDocument(url);
+        final Document document = mJsoupLoader.loadDocument(context, url);
         return parseDocument(context, document, pageNr, progressListener);
     }
 
