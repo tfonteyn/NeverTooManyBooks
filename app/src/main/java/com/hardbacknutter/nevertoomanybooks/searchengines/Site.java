@@ -376,7 +376,7 @@ public final class Site
          * @param order CSV string with site ID's
          *
          * @return new list instance containing the <strong>original</strong> site objects
-         * in the desired order.
+         *         in the desired order.
          */
         @VisibleForTesting
         public static List<Site> reorder(@NonNull final Collection<Site> sites,
@@ -545,10 +545,9 @@ public final class Site
         }
 
         /**
-         * Save the site settings and the order of the list.
+         * Save the settings for each site in this list + the order of the sites in the list.
          */
         public void savePrefs() {
-
             // Save the order of the given list (ID's) and
             // the individual site settings to preferences.
             final SharedPreferences.Editor ed = ServiceLocator.getGlobalPreferences().edit();
@@ -564,6 +563,26 @@ public final class Site
 
             ed.putString(PREFS_ORDER_PREFIX + mTypeName, order);
             ed.apply();
+
+            // for reference, the prefs will look somewhat like this:
+            //
+            //    <boolean name="search.site.amazon.covers.enabled" value="true" />
+            //    <boolean name="search.site.amazon.data.enabled" value="false" />
+            //    <boolean name="search.site.googlebooks.data.enabled" value="false" />
+            //    <boolean name="search.site.isfdb.alted.enabled" value="true" />
+            //    <boolean name="search.site.isfdb.covers.enabled" value="true" />
+            //    <boolean name="search.site.isfdb.data.enabled" value="true" />
+            //    <boolean name="search.site.kbnl.covers.enabled" value="false" />
+            //    <boolean name="search.site.kbnl.data.enabled" value="false" />
+            //    <boolean name="search.site.lastdodo.data.enabled" value="false" />
+            //    <boolean name="search.site.librarything.alted.enabled" value="true" />
+            //    <boolean name="search.site.openlibrary.covers.enabled" value="false" />
+            //    <boolean name="search.site.openlibrary.data.enabled" value="false" />
+            //    <boolean name="search.site.stripinfo.data.enabled" value="false" />
+            //
+            //    <string name="search.siteOrder.alted">4,16</string>
+            //    <string name="search.siteOrder.covers">2,16,32</string>
+            //    <string name="search.siteOrder.data">16,2,128,1,256,32</string>
         }
 
 
